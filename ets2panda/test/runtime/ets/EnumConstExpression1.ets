@@ -40,8 +40,8 @@ const y: string = -1.7976931348623157e308 + " min float" + 100;
 const z: string = 2.2250738585072014e-308 + " smallest positive float" + 0.0001;
 
 enum Color {
-    A = a as string,
-    B = b as String,
+    A = a,
+    B = b,
     C = c,
     D = d,
     E = e,

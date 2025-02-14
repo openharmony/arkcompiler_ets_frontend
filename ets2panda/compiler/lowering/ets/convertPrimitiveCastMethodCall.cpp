@@ -36,7 +36,6 @@ static ir::AstNode *ConvertMemberExpressionToAsExpression(ir::CallExpression *ca
         allocator, me->Object()->Clone(allocator, nullptr)->AsExpression(),
         checker->AllocNode<ir::OpaqueTypeNode>(toType, allocator), false);
     res->SetParent(call->Parent());
-    res->SetBoxingUnboxingFlags(call->GetBoxingUnboxingFlags());
 
     {
         auto scope = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), NearestScope(me));

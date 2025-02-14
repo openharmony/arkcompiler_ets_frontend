@@ -47,7 +47,7 @@ function main() {
 /* @@? 23:19 Error TypeError: Circular dependency detected for identifier: b */
 /* @@? 31:15 Error TypeError: Unresolved reference globalb */
 /* @@? 33:5 Error TypeError: Circular dependency detected for identifier: globalc */
-/* @@? 37:7 Error TypeError: Circular dependency detected for identifier: constb */
+/* @@? 36:7 Error TypeError: Circular dependency detected for identifier: consta */
 /* @@? 40:17 Error TypeError: Unresolved reference mainb */
 /* @@? 42:17 Error TypeError: Variable 'maind' is accessed before it's initialization. */
 /* @@? 43:9 Error TypeError: Circular dependency detected for identifier: maind */

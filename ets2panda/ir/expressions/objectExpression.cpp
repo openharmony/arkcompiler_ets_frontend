@@ -26,7 +26,7 @@ ObjectExpression::ObjectExpression([[maybe_unused]] Tag const tag, ObjectExpress
       decorators_(allocator->Adapter()),
       properties_(allocator->Adapter())
 {
-    preferredType_ = other.preferredType_;
+    SetPreferredType(other.PreferredType());
     isDeclaration_ = other.isDeclaration_;
     trailingComma_ = other.trailingComma_;
     optional_ = other.optional_;

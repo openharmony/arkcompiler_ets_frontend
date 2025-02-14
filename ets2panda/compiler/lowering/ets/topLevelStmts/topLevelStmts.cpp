@@ -101,10 +101,11 @@ bool TopLevelStatements::Perform(public_lib::Context *ctx, parser::Program *prog
         // NOTE(vpukhov): enforce compilation failure
     }
 
-    GlobalClassHandler globalClass(ctx->parser->AsETSParser(), ctx->Allocator());
+    GlobalClassHandler globalClass(ctx->parser->AsETSParser(), program->Allocator(), program);
     for (auto &[package, extPrograms] : program->ExternalSources()) {
         if (!extPrograms.front()->IsASTLowered()) {
             auto moduleDependencies = imports.HandleGlobalStmts(extPrograms);
+            globalClass.SetGlobalProgram(extPrograms.front());
             globalClass.SetupGlobalClass(extPrograms, &moduleDependencies);
             for (auto extProg : extPrograms) {
                 DeclareNamespaceExportAdjust(extProg, Name());
@@ -115,6 +116,7 @@ bool TopLevelStatements::Perform(public_lib::Context *ctx, parser::Program *prog
     ArenaVector<parser::Program *> mainModule(ctx->Allocator()->Adapter());
     mainModule.emplace_back(program);
     auto moduleDependencies = imports.HandleGlobalStmts(mainModule);
+    globalClass.SetGlobalProgram(program);
     globalClass.SetupGlobalClass(mainModule, &moduleDependencies);
     DeclareNamespaceExportAdjust(program, Name());
 

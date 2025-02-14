@@ -235,8 +235,8 @@
                             }
                           },
                           "init": {
-                            "type": "NumberLiteral",
-                            "value": 100,
+                            "type": "CharLiteral",
+                            "value": "d",
                             "loc": {
                               "start": {
                                 "line": 17,
@@ -301,56 +301,9 @@
                             }
                           },
                           "init": {
-                            "type": "ConditionalExpression",
-                            "test": {
-                              "type": "BooleanLiteral",
-                              "value": true,
-                              "loc": {
-                                "start": {
-                                  "line": 18,
-                                  "column": 17,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 18,
-                                  "column": 21,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "consequent": {
-                              "type": "Identifier",
-                              "name": "a",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 18,
-                                  "column": 24,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 18,
-                                  "column": 25,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "alternate": {
-                              "type": "NumberLiteral",
-                              "value": 68,
-                              "loc": {
-                                "start": {
-                                  "line": 18,
-                                  "column": 28,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 18,
-                                  "column": 30,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
+                            "type": "Identifier",
+                            "name": "a",
+                            "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 18,
@@ -496,56 +449,8 @@
                             }
                           },
                           "init": {
-                            "type": "ConditionalExpression",
-                            "test": {
-                              "type": "BooleanLiteral",
-                              "value": false,
-                              "loc": {
-                                "start": {
-                                  "line": 21,
-                                  "column": 15,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 21,
-                                  "column": 20,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "consequent": {
-                              "type": "Identifier",
-                              "name": "b",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 21,
-                                  "column": 23,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 21,
-                                  "column": 24,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "alternate": {
-                              "type": "NumberLiteral",
-                              "value": 68,
-                              "loc": {
-                                "start": {
-                                  "line": 21,
-                                  "column": 27,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 21,
-                                  "column": 29,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
+                            "type": "NumberLiteral",
+                            "value": 68,
                             "loc": {
                               "start": {
                                 "line": 21,
@@ -723,56 +628,9 @@
                             }
                           },
                           "init": {
-                            "type": "ConditionalExpression",
-                            "test": {
-                              "type": "BooleanLiteral",
-                              "value": true,
-                              "loc": {
-                                "start": {
-                                  "line": 24,
-                                  "column": 17,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 24,
-                                  "column": 21,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "consequent": {
-                              "type": "Identifier",
-                              "name": "c",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 24,
-                                  "column": 24,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 24,
-                                  "column": 25,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "alternate": {
-                              "type": "NumberLiteral",
-                              "value": 419,
-                              "loc": {
-                                "start": {
-                                  "line": 24,
-                                  "column": 28,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 24,
-                                  "column": 31,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
+                            "type": "Identifier",
+                            "name": "c",
+                            "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 24,
@@ -852,8 +710,8 @@
                             }
                           },
                           "init": {
-                            "type": "NumberLiteral",
-                            "value": 3,
+                            "type": "CharLiteral",
+                            "value": "\u0003",
                             "loc": {
                               "start": {
                                 "line": 26,
@@ -918,56 +776,8 @@
                             }
                           },
                           "init": {
-                            "type": "ConditionalExpression",
-                            "test": {
-                              "type": "BooleanLiteral",
-                              "value": false,
-                              "loc": {
-                                "start": {
-                                  "line": 27,
-                                  "column": 18,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 27,
-                                  "column": 23,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "consequent": {
-                              "type": "Identifier",
-                              "name": "c",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 27,
-                                  "column": 26,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 27,
-                                  "column": 27,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "alternate": {
-                              "type": "NumberLiteral",
-                              "value": 665,
-                              "loc": {
-                                "start": {
-                                  "line": 27,
-                                  "column": 30,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 27,
-                                  "column": 33,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
+                            "type": "NumberLiteral",
+                            "value": 665,
                             "loc": {
                               "start": {
                                 "line": 27,
@@ -1145,56 +955,9 @@
                             }
                           },
                           "init": {
-                            "type": "ConditionalExpression",
-                            "test": {
-                              "type": "BooleanLiteral",
-                              "value": true,
-                              "loc": {
-                                "start": {
-                                  "line": 30,
-                                  "column": 17,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 30,
-                                  "column": 21,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "consequent": {
-                              "type": "Identifier",
-                              "name": "c",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 30,
-                                  "column": 24,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 30,
-                                  "column": 25,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "alternate": {
-                              "type": "NumberLiteral",
-                              "value": 665,
-                              "loc": {
-                                "start": {
-                                  "line": 30,
-                                  "column": 28,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 30,
-                                  "column": 31,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
+                            "type": "Identifier",
+                            "name": "c",
+                            "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 30,
@@ -1340,56 +1103,9 @@
                             }
                           },
                           "init": {
-                            "type": "ConditionalExpression",
-                            "test": {
-                              "type": "BooleanLiteral",
-                              "value": true,
-                              "loc": {
-                                "start": {
-                                  "line": 33,
-                                  "column": 17,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 33,
-                                  "column": 21,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "consequent": {
-                              "type": "Identifier",
-                              "name": "c",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 33,
-                                  "column": 24,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 33,
-                                  "column": 25,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "alternate": {
-                              "type": "NumberLiteral",
-                              "value": 665419,
-                              "loc": {
-                                "start": {
-                                  "line": 33,
-                                  "column": 28,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 33,
-                                  "column": 34,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
+                            "type": "Identifier",
+                            "name": "c",
+                            "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 33,
@@ -1535,56 +1251,8 @@
                             }
                           },
                           "init": {
-                            "type": "ConditionalExpression",
-                            "test": {
-                              "type": "BooleanLiteral",
-                              "value": false,
-                              "loc": {
-                                "start": {
-                                  "line": 36,
-                                  "column": 19,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 36,
-                                  "column": 24,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "consequent": {
-                              "type": "Identifier",
-                              "name": "g",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 36,
-                                  "column": 27,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 36,
-                                  "column": 28,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "alternate": {
-                              "type": "NumberLiteral",
-                              "value": 30,
-                              "loc": {
-                                "start": {
-                                  "line": 36,
-                                  "column": 31,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 36,
-                                  "column": 33,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
+                            "type": "NumberLiteral",
+                            "value": 30,
                             "loc": {
                               "start": {
                                 "line": 36,
@@ -1965,57 +1633,9 @@
                             }
                           },
                           "init": {
-                            "type": "ConditionalExpression",
-                            "test": {
-                              "type": "BooleanLiteral",
-                              "value": true,
-                              "loc": {
-                                "start": {
-                                  "line": 42,
-                                  "column": 17,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 42,
-                                  "column": 21,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "consequent": {
-                              "type": "Identifier",
-                              "name": "a",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 42,
-                                  "column": 24,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 42,
-                                  "column": 25,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "alternate": {
-                              "type": "Identifier",
-                              "name": "b",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 42,
-                                  "column": 28,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 42,
-                                  "column": 29,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
+                            "type": "Identifier",
+                            "name": "a",
+                            "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 42,
@@ -2274,57 +1894,9 @@
                             }
                           },
                           "init": {
-                            "type": "ConditionalExpression",
-                            "test": {
-                              "type": "BooleanLiteral",
-                              "value": false,
-                              "loc": {
-                                "start": {
-                                  "line": 46,
-                                  "column": 15,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 46,
-                                  "column": 20,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "consequent": {
-                              "type": "Identifier",
-                              "name": "a",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 46,
-                                  "column": 23,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 46,
-                                  "column": 24,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "alternate": {
-                              "type": "Identifier",
-                              "name": "b",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 46,
-                                  "column": 27,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 46,
-                                  "column": 28,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
+                            "type": "Identifier",
+                            "name": "b",
+                            "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 46,
@@ -2617,7 +2189,7 @@
                               },
                               "end": {
                                 "line": 51,
-                                "column": 24,
+                                "column": 25,
                                 "program": "conditionalExpressionType.ets"
                               }
                             }
@@ -2630,7 +2202,7 @@
                             },
                             "end": {
                               "line": 51,
-                              "column": 24,
+                              "column": 25,
                               "program": "conditionalExpressionType.ets"
                             }
                           }
@@ -2645,7 +2217,7 @@
                         },
                         "end": {
                           "line": 51,
-                          "column": 25,
+                          "column": 26,
                           "program": "conditionalExpressionType.ets"
                         }
                       }
@@ -3044,8 +2616,8 @@
                             }
                           },
                           "init": {
-                            "type": "NumberLiteral",
-                            "value": 2,
+                            "type": "CharLiteral",
+                            "value": "\u0002",
                             "loc": {
                               "start": {
                                 "line": 56,
@@ -3110,57 +2682,9 @@
                             }
                           },
                           "init": {
-                            "type": "ConditionalExpression",
-                            "test": {
-                              "type": "BooleanLiteral",
-                              "value": false,
-                              "loc": {
-                                "start": {
-                                  "line": 58,
-                                  "column": 17,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 58,
-                                  "column": 22,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "consequent": {
-                              "type": "Identifier",
-                              "name": "a",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 58,
-                                  "column": 25,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 58,
-                                  "column": 26,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "alternate": {
-                              "type": "Identifier",
-                              "name": "b",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 58,
-                                  "column": 29,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 58,
-                                  "column": 30,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
+                            "type": "Identifier",
+                            "name": "b",
+                            "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 58,
@@ -3225,57 +2749,9 @@
                             }
                           },
                           "init": {
-                            "type": "ConditionalExpression",
-                            "test": {
-                              "type": "BooleanLiteral",
-                              "value": false,
-                              "loc": {
-                                "start": {
-                                  "line": 59,
-                                  "column": 15,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 59,
-                                  "column": 20,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "consequent": {
-                              "type": "Identifier",
-                              "name": "b",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 59,
-                                  "column": 23,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 59,
-                                  "column": 24,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "alternate": {
-                              "type": "Identifier",
-                              "name": "c",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 59,
-                                  "column": 27,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 59,
-                                  "column": 28,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
+                            "type": "Identifier",
+                            "name": "c",
+                            "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 59,
@@ -3340,57 +2816,9 @@
                             }
                           },
                           "init": {
-                            "type": "ConditionalExpression",
-                            "test": {
-                              "type": "BooleanLiteral",
-                              "value": false,
-                              "loc": {
-                                "start": {
-                                  "line": 60,
-                                  "column": 17,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 60,
-                                  "column": 22,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "consequent": {
-                              "type": "Identifier",
-                              "name": "c",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 60,
-                                  "column": 25,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 60,
-                                  "column": 26,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "alternate": {
-                              "type": "Identifier",
-                              "name": "d",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 60,
-                                  "column": 29,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 60,
-                                  "column": 30,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
+                            "type": "Identifier",
+                            "name": "d",
+                            "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 60,
@@ -3455,57 +2883,9 @@
                             }
                           },
                           "init": {
-                            "type": "ConditionalExpression",
-                            "test": {
-                              "type": "BooleanLiteral",
-                              "value": false,
-                              "loc": {
-                                "start": {
-                                  "line": 61,
-                                  "column": 18,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 61,
-                                  "column": 23,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "consequent": {
-                              "type": "Identifier",
-                              "name": "d",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 61,
-                                  "column": 26,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 61,
-                                  "column": 27,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "alternate": {
-                              "type": "Identifier",
-                              "name": "e",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 61,
-                                  "column": 30,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 61,
-                                  "column": 31,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
+                            "type": "Identifier",
+                            "name": "e",
+                            "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 61,
@@ -3570,57 +2950,9 @@
                             }
                           },
                           "init": {
-                            "type": "ConditionalExpression",
-                            "test": {
-                              "type": "BooleanLiteral",
-                              "value": false,
-                              "loc": {
-                                "start": {
-                                  "line": 62,
-                                  "column": 17,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 62,
-                                  "column": 22,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "consequent": {
-                              "type": "Identifier",
-                              "name": "e",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 62,
-                                  "column": 25,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 62,
-                                  "column": 26,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "alternate": {
-                              "type": "Identifier",
-                              "name": "f",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 62,
-                                  "column": 29,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 62,
-                                  "column": 30,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
+                            "type": "Identifier",
+                            "name": "f",
+                            "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 62,
@@ -3685,57 +3017,9 @@
                             }
                           },
                           "init": {
-                            "type": "ConditionalExpression",
-                            "test": {
-                              "type": "BooleanLiteral",
-                              "value": false,
-                              "loc": {
-                                "start": {
-                                  "line": 63,
-                                  "column": 17,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 63,
-                                  "column": 22,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "consequent": {
-                              "type": "Identifier",
-                              "name": "f",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 63,
-                                  "column": 25,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 63,
-                                  "column": 26,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
-                            "alternate": {
-                              "type": "Identifier",
-                              "name": "g",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 63,
-                                  "column": 29,
-                                  "program": "conditionalExpressionType.ets"
-                                },
-                                "end": {
-                                  "line": 63,
-                                  "column": 30,
-                                  "program": "conditionalExpressionType.ets"
-                                }
-                              }
-                            },
+                            "type": "Identifier",
+                            "name": "g",
+                            "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 63,

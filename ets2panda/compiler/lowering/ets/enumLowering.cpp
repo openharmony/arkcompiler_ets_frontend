@@ -160,6 +160,7 @@ template <typename ElementMaker>
 void EnumLoweringPhase::CreateEnumItemFields(const ir::TSEnumDeclaration *const enumDecl,
                                              ir::ClassDefinition *const enumClass, EnumType enumType)
 {
+    static_assert(ORDINAL_TYPE == ir::PrimitiveType::INT);
     int32_t ordinal = 0;
     auto createEnumItemField = [this, enumClass, enumType, &ordinal](ir::TSEnumMember *const member) {
         auto *const enumMemberIdent =
@@ -322,7 +323,7 @@ void EnumLoweringPhase::CreateCCtorForEnumClass(ir::ClassDefinition *const enumC
 ir::ClassProperty *EnumLoweringPhase::CreateOrdinalField(ir::ClassDefinition *const enumClass)
 {
     auto *const fieldIdent = Allocator()->New<ir::Identifier>(ORDINAL_NAME, Allocator());
-    auto *const intTypeAnnotation = Allocator()->New<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator());
+    auto *const intTypeAnnotation = Allocator()->New<ir::ETSPrimitiveType>(ORDINAL_TYPE, Allocator());
     auto *field =
         AllocNode<ir::ClassProperty>(fieldIdent, nullptr, intTypeAnnotation,
                                      ir::ModifierFlags::PRIVATE | ir::ModifierFlags::READONLY, Allocator(), false);
@@ -337,7 +338,7 @@ ir::ScriptFunction *EnumLoweringPhase::CreateFunctionForCtorOfEnumClass(ir::Clas
 {
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
 
-    auto *const intTypeAnnotation = AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator());
+    auto *const intTypeAnnotation = AllocNode<ir::ETSPrimitiveType>(ORDINAL_TYPE, Allocator());
     auto *const inputOrdinalParam = MakeFunctionParam(context_, PARAM_ORDINAL, intTypeAnnotation);
     params.push_back(inputOrdinalParam);
 
@@ -358,8 +359,8 @@ ir::ScriptFunction *EnumLoweringPhase::CreateFunctionForCtorOfEnumClass(ir::Clas
         ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
                                                 scriptFlags,  // CC-OFF(G.FMT.02) project code style
                                                 ir::ModifierFlags::CONSTRUCTOR |
-                                                    ir::ModifierFlags::PRIVATE,  // CC-OFF(G.FMT.02) project code style
-                                                Language(Language::Id::ETS)});   // CC-OFF(G.FMT.02) project code style
+                                                    ir::ModifierFlags::PUBLIC,  // CC-OFF(G.FMT.02) project code style
+                                                Language(Language::Id::ETS)});  // CC-OFF(G.FMT.02) project code style
 
     func->SetIdent(id);
 
@@ -385,11 +386,13 @@ ir::ScriptFunction *EnumLoweringPhase::CreateFunctionForCtorOfEnumClass(ir::Clas
                                                          ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
     auto *rightHandSide = AllocNode<ir::Identifier>(PARAM_ORDINAL, Allocator());
     rightHandSide->SetVariable(inputOrdinalParam->Ident()->Variable());
-    auto *initializer =
-        AllocNode<ir::AssignmentExpression>(leftHandSide, rightHandSide, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
-    auto initStatement = AllocNode<ir::ExpressionStatement>(initializer);
-    initStatement->SetParent(body);
-    body->AddStatement(initStatement);
+    if (!enumClass->IsDeclare()) {
+        auto *initializer =
+            AllocNode<ir::AssignmentExpression>(leftHandSide, rightHandSide, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+        auto initStatement = AllocNode<ir::ExpressionStatement>(initializer);
+        initStatement->SetParent(body);
+        body->AddStatement(initStatement);
+    }
 
     return func;
 }
@@ -400,6 +403,7 @@ void EnumLoweringPhase::CreateCtorForEnumClass(ir::ClassDefinition *const enumCl
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
 
     auto *const identClone = func->Id()->Clone(Allocator(), nullptr);
+    // NOTE(gogabr): constructor should be private, but interop_js complains, see test_js_use_ets_enum.ts
     auto *const methodDef = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::CONSTRUCTOR, identClone, funcExpr,
                                                             ir::ModifierFlags::PUBLIC, Allocator(), false);
     methodDef->SetParent(enumClass);
@@ -599,8 +603,7 @@ ir::Identifier *EnumLoweringPhase::CreateEnumValuesArray(const ir::TSEnumDeclara
                             lexer::Number(member->AsTSEnumMember()
                                                 ->Init()
                                                 ->AsNumberLiteral()
-                                                ->Number()
-                                                .GetValue<std::int64_t>()));
+                                                ->Number()));
                         return enumValueLiteral;
                     });
     // clang-format on
@@ -789,7 +792,8 @@ namespace {
 ir::VariableDeclaration *CreateForLoopInitVariableDeclaration(public_lib::Context *ctx,
                                                               ir::Identifier *const loopIdentifier)
 {
-    auto *const init = ctx->AllocNode<ir::NumberLiteral>("0");
+    static_assert(EnumLoweringPhase::ORDINAL_TYPE == ir::PrimitiveType::INT);
+    auto *const init = ctx->AllocNode<ir::NumberLiteral>(lexer::Number((int32_t)0));
     auto *const decl = ctx->AllocNode<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::LET, loopIdentifier, init);
     loopIdentifier->SetParent(decl);
     ArenaVector<ir::VariableDeclarator *> decls(ctx->Allocator()->Adapter());
@@ -959,7 +963,7 @@ void EnumLoweringPhase::CreateEnumGetOrdinalMethod(const ir::TSEnumDeclaration *
     body.push_back(returnStmt);
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    auto *const intTypeAnnotation = Allocator()->New<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator());
+    auto *const intTypeAnnotation = Allocator()->New<ir::ETSPrimitiveType>(ORDINAL_TYPE, Allocator());
 
     auto *const function =
         MakeFunction({std::move(params), std::move(body), intTypeAnnotation, enumDecl, ir::ModifierFlags::PUBLIC});

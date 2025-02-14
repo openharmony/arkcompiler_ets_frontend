@@ -806,7 +806,7 @@
                           "loc": {
                             "start": {
                               "line": 26,
-                              "column": 10,
+                              "column": 16,
                               "program": "binary_op.ets"
                             },
                             "end": {
@@ -1136,7 +1136,7 @@
                             "loc": {
                               "start": {
                                 "line": 31,
-                                "column": 11,
+                                "column": 17,
                                 "program": "binary_op.ets"
                               },
                               "end": {
@@ -1300,7 +1300,7 @@
                             "loc": {
                               "start": {
                                 "line": 32,
-                                "column": 11,
+                                "column": 17,
                                 "program": "binary_op.ets"
                               },
                               "end": {
@@ -1464,7 +1464,7 @@
                             "loc": {
                               "start": {
                                 "line": 33,
-                                "column": 11,
+                                "column": 17,
                                 "program": "binary_op.ets"
                               },
                               "end": {
@@ -1645,7 +1645,7 @@
                             "loc": {
                               "start": {
                                 "line": 34,
-                                "column": 17,
+                                "column": 23,
                                 "program": "binary_op.ets"
                               },
                               "end": {
@@ -2119,7 +2119,7 @@
                             "loc": {
                               "start": {
                                 "line": 40,
-                                "column": 11,
+                                "column": 15,
                                 "program": "binary_op.ets"
                               },
                               "end": {
@@ -3522,7 +3522,7 @@
                             "loc": {
                               "start": {
                                 "line": 59,
-                                "column": 11,
+                                "column": 16,
                                 "program": "binary_op.ets"
                               },
                               "end": {
@@ -3882,7 +3882,7 @@
                             "loc": {
                               "start": {
                                 "line": 64,
-                                "column": 11,
+                                "column": 15,
                                 "program": "binary_op.ets"
                               },
                               "end": {
@@ -4346,7 +4346,7 @@
                                 "loc": {
                                   "start": {
                                     "line": 70,
-                                    "column": 11,
+                                    "column": 15,
                                     "program": "binary_op.ets"
                                   },
                                   "end": {
@@ -4600,7 +4600,7 @@
                           "loc": {
                             "start": {
                               "line": 73,
-                              "column": 11,
+                              "column": 15,
                               "program": "binary_op.ets"
                             },
                             "end": {
@@ -4734,7 +4734,7 @@
                             "loc": {
                               "start": {
                                 "line": 74,
-                                "column": 11,
+                                "column": 15,
                                 "program": "binary_op.ets"
                               },
                               "end": {
@@ -4919,7 +4919,7 @@
                                           "loc": {
                                             "start": {
                                               "line": 75,
-                                              "column": 11,
+                                              "column": 15,
                                               "program": "binary_op.ets"
                                             },
                                             "end": {
@@ -5738,7 +5738,7 @@
                             "loc": {
                               "start": {
                                 "line": 77,
-                                "column": 17,
+                                "column": 23,
                                 "program": "binary_op.ets"
                               },
                               "end": {
@@ -6470,7 +6470,7 @@
               "loc": {
                 "start": {
                   "line": 26,
-                  "column": 10,
+                  "column": 16,
                   "program": "binary_op.ets"
                 },
                 "end": {
@@ -6776,7 +6776,7 @@
                 "loc": {
                   "start": {
                     "line": 31,
-                    "column": 11,
+                    "column": 17,
                     "program": "binary_op.ets"
                   },
                   "end": {
@@ -6932,7 +6932,7 @@
                 "loc": {
                   "start": {
                     "line": 32,
-                    "column": 11,
+                    "column": 17,
                     "program": "binary_op.ets"
                   },
                   "end": {
@@ -7088,7 +7088,7 @@
                 "loc": {
                   "start": {
                     "line": 33,
-                    "column": 11,
+                    "column": 17,
                     "program": "binary_op.ets"
                   },
                   "end": {
@@ -7261,7 +7261,7 @@
                 "loc": {
                   "start": {
                     "line": 34,
-                    "column": 17,
+                    "column": 23,
                     "program": "binary_op.ets"
                   },
                   "end": {
@@ -7703,7 +7703,7 @@
                 "loc": {
                   "start": {
                     "line": 40,
-                    "column": 11,
+                    "column": 15,
                     "program": "binary_op.ets"
                   },
                   "end": {
@@ -9002,7 +9002,7 @@
                 "loc": {
                   "start": {
                     "line": 59,
-                    "column": 11,
+                    "column": 16,
                     "program": "binary_op.ets"
                   },
                   "end": {
@@ -9338,7 +9338,7 @@
                 "loc": {
                   "start": {
                     "line": 64,
-                    "column": 11,
+                    "column": 15,
                     "program": "binary_op.ets"
                   },
                   "end": {
@@ -9770,7 +9770,7 @@
                     "loc": {
                       "start": {
                         "line": 70,
-                        "column": 11,
+                        "column": 15,
                         "program": "binary_op.ets"
                       },
                       "end": {
@@ -10016,7 +10016,7 @@
               "loc": {
                 "start": {
                   "line": 73,
-                  "column": 11,
+                  "column": 15,
                   "program": "binary_op.ets"
                 },
                 "end": {
@@ -10142,7 +10142,7 @@
                 "loc": {
                   "start": {
                     "line": 74,
-                    "column": 11,
+                    "column": 15,
                     "program": "binary_op.ets"
                   },
                   "end": {
@@ -10319,7 +10319,7 @@
                               "loc": {
                                 "start": {
                                   "line": 75,
-                                  "column": 11,
+                                  "column": 15,
                                   "program": "binary_op.ets"
                                 },
                                 "end": {
@@ -11122,7 +11122,7 @@
                 "loc": {
                   "start": {
                     "line": 77,
-                    "column": 17,
+                    "column": 23,
                     "program": "binary_op.ets"
                   },
                   "end": {

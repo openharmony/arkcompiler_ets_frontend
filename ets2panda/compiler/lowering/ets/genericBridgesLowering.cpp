@@ -62,7 +62,7 @@ std::string GenericBridgesPhase::CreateMethodDefinitionString(ir::ClassDefinitio
     }
 
     typeNodes.emplace_back(context_->AllocNode<ir::OpaqueTypeNode>(
-        const_cast<checker::Type *>(derivedFunction->Signature()->ReturnType()), context_->Allocator()));
+        const_cast<checker::Type *>(baseSignature->ReturnType()), context_->Allocator()));
     str1 += "): @@T" + std::to_string(typeNodes.size()) + ' ';
 
     typeNodes.emplace_back(context_->AllocNode<ir::OpaqueTypeNode>(
@@ -76,7 +76,7 @@ std::string GenericBridgesPhase::CreateMethodDefinitionString(ir::ClassDefinitio
 void GenericBridgesPhase::AddGenericBridge(ir::ClassDefinition const *const classDefinition,
                                            ir::MethodDefinition *const methodDefinition,
                                            checker::Signature const *baseSignature,
-                                           ir::ScriptFunction const *const derivedFunction) const
+                                           ir::ScriptFunction *const derivedFunction) const
 {
     auto *parser = context_->parser->AsETSParser();
     std::vector<ir::AstNode *> typeNodes {};
@@ -114,13 +114,17 @@ void GenericBridgesPhase::AddGenericBridge(ir::ClassDefinition const *const clas
     auto *methodType = methodDefinition->Id()->Variable()->TsType()->AsETSFunctionType();
 
     checker->BuildFunctionSignature(bridgeMethod->Function());
+    bridgeMethod->Function()->Signature()->AddSignatureFlag(checker::SignatureFlags::BRIDGE);
+
     auto *const bridgeMethodType = checker->BuildMethodType(bridgeMethod->Function());
-    checker->CheckIdenticalOverloads(methodType, bridgeMethodType, bridgeMethod);
+    checker->CheckIdenticalOverloads(methodType, bridgeMethodType, bridgeMethod, false,
+                                     checker::TypeRelationFlag::NONE);
     bridgeMethod->SetTsType(bridgeMethodType);
     methodType->AddCallSignature(bridgeMethod->Function()->Signature());
     methodDefinition->Id()->Variable()->SetTsType(methodType);
 
-    bridgeMethod->Check(checker);
+    bridgeMethod->Function()->Body()->Check(
+        checker);  // avoid checking overriding, this may fail if only return type is different.
 }
 
 void GenericBridgesPhase::ProcessScriptFunction(ir::ClassDefinition const *const classDefinition,
@@ -154,11 +158,13 @@ void GenericBridgesPhase::ProcessScriptFunction(ir::ClassDefinition const *const
     }
     baseSignature2 = baseSignature2->Substitute(relation, substitutions.derivedConstraints);
 
-    ir::ScriptFunction const *derivedFunction = nullptr;
+    ir::ScriptFunction *derivedFunction = nullptr;
     checker::ETSFunctionType const *methodType = derivedMethod->Id()->Variable()->TsType()->AsETSFunctionType();
     for (auto *signature : methodType->CallSignatures()) {
         signature = signature->Substitute(relation, substitutions.derivedConstraints);
-        if (overrides(baseSignature1, signature) || checker->HasSameAssemblySignature(baseSignature1, signature)) {
+        // A special case is when the overriding function's return type is going to be unboxed.
+        if ((overrides(baseSignature1, signature) || checker->HasSameAssemblySignature(baseSignature1, signature)) &&
+            baseSignature1->ReturnType()->IsETSUnboxableObject() == signature->ReturnType()->IsETSUnboxableObject()) {
             //  NOTE: we already have custom-implemented method with the required bridge signature.
             //  Probably sometimes we will issue warning notification here...
             return;

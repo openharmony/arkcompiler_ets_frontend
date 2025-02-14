@@ -212,7 +212,7 @@ TEST_F(LSPInlayHintsTests, VisitFunctionDeclarationLikeForReturnTypeTest1)
         };
     )"};
 
-    const std::string doubleString = "double";
+    const std::string doubleString = "Double";
     const size_t addIndex = 89;
     const size_t multiplyIndex = 186;
     const size_t i0 = 0;

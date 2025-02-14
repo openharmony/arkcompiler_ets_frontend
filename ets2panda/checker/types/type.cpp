@@ -49,6 +49,11 @@ bool Type::IsETSAsyncFuncReturnType() const
     return IsETSObjectType() && AsETSObjectType()->HasObjectFlag(ETSObjectFlags::ASYNC_FUNC_RETURN_TYPE);
 }
 
+bool Type::IsBuiltinNumeric() const noexcept
+{
+    return IsETSObjectType() && AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_NUMERIC);
+}
+
 bool Type::IsLambdaObject() const
 {
     if (IsETSObjectType() && (AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::FUNCTIONAL_INTERFACE) ||
@@ -149,36 +154,6 @@ Type *Type::Clone(Checker *const checker)
 Type *Type::Substitute([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] const Substitution *substitution)
 {
     return this;
-}
-
-std::uint32_t Type::GetPrecedence(Type const *type) noexcept
-{
-    ES2PANDA_ASSERT(type != nullptr);
-    if (type->HasTypeFlag(TypeFlag::BYTE)) {
-        return 1U;
-    }
-    if (type->HasTypeFlag(TypeFlag::CHAR)) {
-        return 2U;
-    }
-    if (type->HasTypeFlag(TypeFlag::SHORT)) {
-        return 3U;
-    }
-    if (type->HasTypeFlag(TypeFlag::INT)) {
-        return 4U;
-    }
-    if (type->HasTypeFlag(TypeFlag::LONG)) {
-        return 5U;
-    }
-    if (type->HasTypeFlag(TypeFlag::FLOAT)) {
-        return 6U;
-    }
-    if (type->HasTypeFlag(TypeFlag::DOUBLE)) {
-        return 7U;
-    }
-    if (type->HasTypeFlag(TypeFlag::BIGINT)) {
-        return 8U;
-    }
-    return 0U;
 }
 
 bool IsTypeError(Type const *tp)

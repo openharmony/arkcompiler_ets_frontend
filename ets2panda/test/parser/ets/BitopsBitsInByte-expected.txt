@@ -1690,43 +1690,8 @@
                             }
                           },
                           {
-                            "type": "MemberExpression",
-                            "object": {
-                              "type": "Identifier",
-                              "name": "BitopsBitsInByte",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 40,
-                                  "column": 19,
-                                  "program": "BitopsBitsInByte.ets"
-                                },
-                                "end": {
-                                  "line": 40,
-                                  "column": 35,
-                                  "program": "BitopsBitsInByte.ets"
-                                }
-                              }
-                            },
-                            "property": {
-                              "type": "Identifier",
-                              "name": "expected",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 40,
-                                  "column": 36,
-                                  "program": "BitopsBitsInByte.ets"
-                                },
-                                "end": {
-                                  "line": 40,
-                                  "column": 44,
-                                  "program": "BitopsBitsInByte.ets"
-                                }
-                              }
-                            },
-                            "computed": false,
-                            "optional": false,
+                            "type": "NumberLiteral",
+                            "value": 358400,
                             "loc": {
                               "start": {
                                 "line": 40,

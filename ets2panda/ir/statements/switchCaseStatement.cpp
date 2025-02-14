@@ -106,7 +106,7 @@ void SwitchCaseStatement::CheckAndTestCase(checker::ETSChecker *checker, checker
                                            checker::Type *unboxedDiscType, ir::Expression *node, bool &isDefaultCase)
 {
     if (test_ != nullptr) {
-        auto caseType = test_->Check(checker);
+        auto *caseType = checker->MaybeUnboxType(test_->Check(checker));
         bool validCaseType = true;
 
         if (caseType->HasTypeFlag(checker::TypeFlag::CHAR)) {

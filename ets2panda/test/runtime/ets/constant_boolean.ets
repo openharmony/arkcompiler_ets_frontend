@@ -17,9 +17,9 @@ const c1 = 1 == 6? true:false;
 const c2 = c1;
 
 function main() {
-    enum TestEnum { 
-        One = c2 as boolean ? 1: 0,
-        Two = true as boolean ? 5 : 10
+    enum TestEnum {
+        One = c2 ? 1: 0,
+        Two = true ? 5 : 10
     }
     assertEQ(TestEnum.One.valueOf(),0);
     assertEQ(TestEnum.Two.valueOf(),5);

@@ -1082,7 +1082,7 @@ void InitScopesPhaseETS::VisitTSEnumMember(ir::TSEnumMember *enumMember)
     if (var = VarBinder()->GetScope()->FindLocal(name, varbinder::ResolveBindingOptions::STATIC_VARIABLES);
         var == nullptr) {
         varbinder::Decl *decl = nullptr;
-        std::tie(decl, var) = VarBinder()->NewVarDecl<varbinder::LetDecl>(ident->Start(), name);
+        std::tie(decl, var) = VarBinder()->NewVarDecl<varbinder::ReadonlyDecl>(ident->Start(), name);
         var->SetScope(VarBinder()->GetScope());
         var->AddFlag(varbinder::VariableFlags::STATIC);
         decl->BindNode(enumMember);

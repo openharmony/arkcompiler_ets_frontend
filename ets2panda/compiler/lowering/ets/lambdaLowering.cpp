@@ -513,8 +513,12 @@ static ArenaVector<ark::es2panda::ir::Statement *> CreateRestArgumentsArrayReall
     auto *checker = ctx->GetChecker()->AsETSChecker();
 
     auto *restParameterType = lciInfo->lambdaSignature->RestVar()->TsType();
+
     auto *restParameterSubstituteType = restParameterType->Substitute(checker->Relation(), lciInfo->substitution);
     auto *elementType = checker->GetElementTypeOfArray(restParameterSubstituteType);
+    auto *elementTypeWithDefault = checker->TypeHasDefaultValue(elementType)
+                                       ? elementType
+                                       : checker->CreateETSUnionType({elementType, checker->GlobalETSUndefinedType()});
     std::stringstream statements;
     auto restParameterIndex = GenName(allocator).View();
     auto spreadArrIterator = GenName(allocator).View();
@@ -524,7 +528,7 @@ static ArenaVector<ark::es2panda::ir::Statement *> CreateRestArgumentsArrayReall
         statements << "let @@I1: int = 0;";
         if (elementType->IsETSReferenceType()) {
             // NOTE(vpukhov): this is a clear null-safety violation that should be rewitten with a runtime intrinsic
-            statements << "let @@I2: FixedArray<@@T3 | undefined> = new (@@T4 | undefined)[@@I5.length];";
+            statements << "let @@I2: FixedArray<@@T3> = new (@@T4)[@@I5.length];";
         } else {
             statements << "let @@I2: FixedArray<@@T3> = new (@@T4)[@@I5.length];";
         }
@@ -532,15 +536,15 @@ static ArenaVector<ark::es2panda::ir::Statement *> CreateRestArgumentsArrayReall
                    // CC-OFFNXT(G.FMT.06) false positive
                    << "for (let @@I9: @@T10 of @@I11){"
                    // CC-OFFNXT(G.FMT.06) false positive
-                   << "    @@I12[@@I13] = @@I14 as @@T15 as @@T16;"
-                   // CC-OFFNXT(G.FMT.06) false positive
-                   << "    @@I17 = @@I18 + 1;"
+                   << "    @@I12[@@I13] = @@I14 as @@T15;"
+                   // CC-OFFNXT(G.FMT.06, G.FMT.06-CPP) false positive
+                   << "    @@I16 = @@I17 + 1;"
                    << "}";
         args = parser->CreateFormattedStatement(
-            statements.str(), restParameterIndex, tmpArray, elementType, elementType, lciInfo->restParameterIdentifier,
-            lciInfo->restArgumentIdentifier, tmpArray, elementType, spreadArrIterator, checker->GlobalETSAnyType(),
-            lciInfo->restParameterIdentifier, lciInfo->restArgumentIdentifier, restParameterIndex, spreadArrIterator,
-            checker->MaybeBoxType(elementType), elementType, restParameterIndex, restParameterIndex);
+            statements.str(), restParameterIndex, tmpArray, elementTypeWithDefault, elementTypeWithDefault,
+            lciInfo->restParameterIdentifier, lciInfo->restArgumentIdentifier, tmpArray, elementType, spreadArrIterator,
+            checker->GlobalETSAnyType(), lciInfo->restParameterIdentifier, lciInfo->restArgumentIdentifier,
+            restParameterIndex, spreadArrIterator, elementType, restParameterIndex, restParameterIndex);
     } else {
         ES2PANDA_ASSERT(restParameterSubstituteType->IsETSResizableArrayType());
         auto *typeNode = allocator->New<ir::OpaqueTypeNode>(
@@ -613,8 +617,7 @@ static ArenaVector<ir::Expression *> CreateCallArgumentsForLambdaClassInvoke(pub
         }
         auto argName = lambdaParam->Name();
         auto *type = lambdaParam->TsType()->Substitute(checker->Relation(), lciInfo->substitution);
-        auto *arg = wrapToObject ? parser->CreateFormattedExpression("@@I1 as @@T2 as @@T3", argName,
-                                                                     checker->MaybeBoxType(type), type)
+        auto *arg = wrapToObject ? parser->CreateFormattedExpression("@@I1 as @@T2", argName, type)
                                  : allocator->New<ir::Identifier>(argName, allocator);
         callArguments.push_back(arg);
     }
@@ -864,7 +867,7 @@ static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, checker
         CreateEmptyLambdaClassDeclaration(ctx, info, newTypeParams, fnInterface, lambdaProviderClass);
     auto classDefinition = classDeclaration->Definition();
     if (info->isFunctionReference) {
-        classDefinition->SetFunctionalReferenceReferencedMethod(callee->Function()->Scope()->InternalName());
+        classDefinition->SetFunctionalReferenceReferencedMethod(callee);
         classDefinition->SetModifiers(classDefinition->Modifiers() |
                                       ir::ClassDefinitionModifiers::FUNCTIONAL_REFERENCE);
     }
@@ -1171,8 +1174,14 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
     newCallee->SetTsType(prop->TsType());
     newCallee->SetObjectType(ifaceType);
 
+    /* Pull out substituted call signature */
+    auto *funcIface =
+        ifaceType->HasObjectFlag(checker::ETSObjectFlags::INTERFACE) ? ifaceType : ifaceType->Interfaces()[0];
+    checker::Signature *callSig = funcIface->GetFunctionalInterfaceInvokeType()->CallSignatures()[0];
+    ES2PANDA_ASSERT(callSig != nullptr);
+
     call->SetCallee(newCallee);
-    call->SetSignature(prop->TsType()->AsETSFunctionType()->CallSignatures()[0]);
+    call->SetSignature(callSig);
 
     /* NOTE(gogabr): argument types may have been spoiled by widening/narrowing conversions.
        Repair them here.
@@ -1182,9 +1191,7 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
         if (arg->IsSpreadElement()) {
             continue;
         }
-        auto boxingFlags = arg->GetBoxingUnboxingFlags();
         Recheck(ctx->phaseManager, varBinder, checker, arg);
-        arg->SetBoxingUnboxingFlags(boxingFlags);
     }
 
     return call;

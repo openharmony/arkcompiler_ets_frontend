@@ -65,6 +65,7 @@ NullLiteral *NullLiteral::Clone(ArenaAllocator *const allocator, AstNode *const 
     }
     clone->SetTsType(TsType());
     clone->SetRange(Range());
+    clone->SetFolded(IsFolded());
     return clone;
 }
 }  // namespace ark::es2panda::ir

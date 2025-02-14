@@ -42,5 +42,6 @@
 #include "etsReadonlyType.h"
 #include "etsAnyType.h"
 #include "etsNeverType.h"
+#include "etsEnumType.h"
 
 #endif /* TYPES_H */

@@ -222,8 +222,6 @@ public:
 
     void LoadAccumulatorDynamicModule(const ir::AstNode *node, const ir::ETSImportDeclaration *import);
 
-    void ApplyBoxingConversion(const ir::AstNode *node);
-    void ApplyUnboxingConversion(const ir::AstNode *node);
     void ApplyConversion(const ir::AstNode *node)
     {
         if (targetType_ != nullptr) {
@@ -233,9 +231,6 @@ public:
     void ApplyConversionCast(const ir::AstNode *node, const checker::Type *targetType);
     void ApplyConversion(const ir::AstNode *node, const checker::Type *targetType);
     void ApplyCast(const ir::AstNode *node, const checker::Type *targetType);
-    void ApplyCastToBoxingFlags(const ir::AstNode *node, const ir::BoxingUnboxingFlags targetType);
-    void EmitBoxingConversion(ir::BoxingUnboxingFlags boxingFlag, const ir::AstNode *node);
-    void EmitBoxingConversion(const ir::AstNode *node);
     void SwapBinaryOpArgs(const ir::AstNode *node, VReg lhs);
     VReg MoveAccToReg(const ir::AstNode *node);
 
@@ -264,7 +259,7 @@ public:
     }
 
     void LoadStringLength(const ir::AstNode *node);
-    void LoadStringChar(const ir::AstNode *node, VReg stringObj, VReg charIndex);
+    void LoadStringChar(const ir::AstNode *node, VReg stringObj, VReg charIndex, bool needBox = false);
 
     void FloatIsNaN(const ir::AstNode *node);
     void DoubleIsNaN(const ir::AstNode *node);
@@ -455,9 +450,6 @@ public:
 
 private:
     const VReg dummyReg_ = VReg::RegStart();
-
-    void EmitUnboxedCall(const ir::AstNode *node, std::string_view signatureFlag, const checker::Type *targetType,
-                         const checker::Type *boxedType);
 
     void LoadConstantObject(const ir::Expression *node, const checker::Type *type);
     void StringBuilderAppend(const ir::AstNode *node, VReg builder);

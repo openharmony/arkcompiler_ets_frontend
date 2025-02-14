@@ -134,11 +134,6 @@ public:
     void Cast(TypeRelation *relation, Type *target) override;
     void CastTarget(TypeRelation *relation, Type *source) override;
 
-    std::tuple<bool, bool> ResolveConditionExpr() const override
-    {
-        return {false, false};
-    }
-
     void SetHelperSignature(Signature *signature) noexcept
     {
         helperSignature_ = signature;

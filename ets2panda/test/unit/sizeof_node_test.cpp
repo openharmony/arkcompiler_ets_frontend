@@ -62,17 +62,16 @@ size_t SizeOfNodeTest::SizeOf<AstNode>()
     AstNode *node = nullptr;
 
     // clang-format off
-    return SIZE_OF_VTABLE +
+    return Align(SIZE_OF_VTABLE +
         sizeof(node->parent_) +
         sizeof(node->range_) +
         sizeof(node->type_) +
         sizeof(node->flags_) +
         sizeof(node->astNodeFlags_) +
-        sizeof(node->boxingUnboxingFlags_) +
         sizeof(node->history_) +
         sizeof(node->variable_) +
         sizeof(node->originalNode_) +
-        sizeof(node->transformedNode_);
+        sizeof(node->transformedNode_));
     // clang-format on
 }
 
@@ -83,7 +82,8 @@ size_t SizeOfNodeTest::SizeOf<Typed<AstNode>>()
 
     // clang-format off
     return SizeOf<AstNode>() +
-        sizeof(node->tsType_);
+        sizeof(node->tsType_) +
+        sizeof(node->preferredType_);
     // clang-format on
 }
 
@@ -169,7 +169,8 @@ size_t SizeOfNodeTest::SizeOf<Typed<Statement>>()
 
     // clang-format off
     return SizeOf<Statement>() +
-        sizeof(node->tsType_);
+        sizeof(node->tsType_) +
+        sizeof(node->preferredType_);
     // clang-format on
 }
 

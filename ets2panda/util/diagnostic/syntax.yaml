@@ -1102,7 +1102,7 @@ syntax:
 
 - name: DIVISION_BY_ZERO
   id: 273
-  message: "Division by zero are not allowed in Enum or Annotation."
+  message: "Division by zero is not allowed."
 
 - name: UNSUPPORTED_OPERATOR_FOR_STRING
   id: 274

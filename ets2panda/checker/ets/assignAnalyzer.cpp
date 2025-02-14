@@ -14,7 +14,6 @@
  */
 
 #include "assignAnalyzer.h"
-#include <cstddef>
 
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
@@ -1352,8 +1351,8 @@ static bool IsDefaultValueType(const Type *type, bool isNonReadonlyField)
     if (type == nullptr) {
         return false;
     }
-    return (type->IsETSPrimitiveType() || type->IsETSNeverType() || type->IsETSUndefinedType() ||
-            type->IsETSNullType() ||
+    return (type->IsETSPrimitiveType() || (type->IsETSObjectType() && type->AsETSObjectType()->IsBoxedPrimitive()) ||
+            type->IsETSNeverType() || type->IsETSUndefinedType() || type->IsETSNullType() ||
             (type->PossiblyETSUndefined() && (!type->HasTypeFlag(checker::TypeFlag::GENERIC) ||
                                               (isNonReadonlyField && !CHECK_GENERIC_NON_READONLY_PROPERTIES))));
 }

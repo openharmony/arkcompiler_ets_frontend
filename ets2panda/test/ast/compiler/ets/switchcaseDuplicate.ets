@@ -22,13 +22,13 @@ class IndexStr {
   indexField: string = "title"
   foo() {
     switch (this.indexField) {
-      /* @@ label */case IndexField.TITLE:
+      case IndexField.TITLE:
           assertEQ(this.indexField, IndexField.TITLE)
           break;
-      case IndexField.TITLE:
+      /* @@ label */case IndexField.TITLE:
           assertEQ(this.indexField, IndexField.TITLE)
     }
   }
 }
 
-/* @@@ label Error TypeError: Variable has same value with another switch case  */
+/* @@@ label Error TypeError: Case duplicate  */

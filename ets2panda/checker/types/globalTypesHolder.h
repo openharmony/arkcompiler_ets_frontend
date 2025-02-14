@@ -75,6 +75,7 @@ enum class GlobalTypeId : std::size_t {
     ETS_INT_BUILTIN,
     ETS_INTEGRAL_BUILTIN,
     ETS_LONG_BUILTIN,
+    ETS_NUMERIC_BUILTIN,
     ETS_MAP_BUILTIN,
     ETS_RECORD_BUILTIN,
     ETS_ERROR_BUILTIN,
@@ -99,7 +100,6 @@ enum class GlobalTypeId : std::size_t {
     ETS_FUNCTION_BUILTIN,
     ETS_REGEXP_BUILTIN,
     ETS_ARRAY_BUILTIN,
-    ETS_ARRAY,
     ETS_INTEROP_JSRUNTIME_BUILTIN,
     ETS_INTEROP_JSVALUE_BUILTIN,
     ETS_BOX_BUILTIN,
@@ -113,6 +113,7 @@ enum class GlobalTypeId : std::size_t {
     ETS_DOUBLE_BOX_BUILTIN,
     ETS_BIG_INT_BUILTIN,
     ETS_BIG_INT,
+    ETS_ARRAY,
 
     ETS_FUNCTION0_CLASS,
     ETS_FUNCTION1_CLASS,
@@ -285,6 +286,7 @@ public:
     Type *GlobalIntegerBuiltinType();
     Type *GlobalIntegralBuiltinType();
     Type *GlobalLongBuiltinType();
+    Type *GlobalNumericBuiltinType();
     Type *GlobalErrorBuiltinType();
     Type *GlobalRuntimeBuiltinType();
     Type *GlobalShortBuiltinType();

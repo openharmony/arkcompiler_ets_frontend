@@ -51,7 +51,6 @@ for (let i = 1 in [0, 1, 2]) {}
 /* @@? 27:7 Error TypeError: need to specify target type for class composite */
 /* @@? 29:1 Error SyntaxError: Expected ')', got 'while'. */
 /* @@? 29:7 Error SyntaxError: Expected '(', got 'identification literal'. */
-/* @@? 29:7 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
 /* @@? 29:13 Error SyntaxError: Expected ')', got '{'. */
 /* @@? 31:9 Error SyntaxError: Unexpected token 'let'. */
 /* @@? 31:13 Error SyntaxError: Unexpected token 'x'. */

@@ -647,7 +647,7 @@
                                 "loc": {
                                   "start": {
                                     "line": 23,
-                                    "column": 9,
+                                    "column": 13,
                                     "program": "labeledWhileStatement.ets"
                                   },
                                   "end": {

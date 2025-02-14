@@ -53,11 +53,6 @@ public:
         targetType_ = targetType;
     }
 
-    std::tuple<bool, bool> ResolveConditionExpr() const override
-    {
-        return {false, false};
-    }
-
     void SetRecursive(bool value = true)
     {
         isRecursive_ = value;

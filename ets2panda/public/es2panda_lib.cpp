@@ -501,7 +501,9 @@ __attribute__((unused)) static Context *Parse(Context *ctx)
                                  ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB);
     }
     ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_PARSED : ES2PANDA_STATE_ERROR;
-    ctx->diagnosticEngine->FlushDiagnostic();
+    if (ctx->state == ES2PANDA_STATE_ERROR) {
+        ctx->diagnosticEngine->FlushDiagnostic();
+    }
     ctx->phaseManager->SetCurrentPhaseIdToAfterParse();
     return ctx;
 }

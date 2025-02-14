@@ -614,6 +614,7 @@ bool Lexer::ScanNumberRadix(bool leadingMinus, bool allowNumericSeparator)
     }
 
     GetToken().number_ = lexer::Number(number);
+    GetToken().number_.SetStr(SourceView(GetToken().Start().index, Iterator().Index()));
     return true;
 }
 

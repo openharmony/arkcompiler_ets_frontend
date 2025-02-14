@@ -589,8 +589,77 @@
                           }
                         },
                         "right": {
-                          "type": "NumberLiteral",
-                          "value": 3.1415,
+                          "type": "CallExpression",
+                          "callee": {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "Double",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 26,
+                                  "column": 16,
+                                  "program": "simple_types.ets"
+                                },
+                                "end": {
+                                  "line": 26,
+                                  "column": 22,
+                                  "program": "simple_types.ets"
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "toFloat",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 26,
+                                  "column": 23,
+                                  "program": "simple_types.ets"
+                                },
+                                "end": {
+                                  "line": 26,
+                                  "column": 30,
+                                  "program": "simple_types.ets"
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
+                            "loc": {
+                              "start": {
+                                "line": 26,
+                                "column": 16,
+                                "program": "simple_types.ets"
+                              },
+                              "end": {
+                                "line": 26,
+                                "column": 30,
+                                "program": "simple_types.ets"
+                              }
+                            }
+                          },
+                          "arguments": [
+                            {
+                              "type": "NumberLiteral",
+                              "value": 3.1415,
+                              "loc": {
+                                "start": {
+                                  "line": 26,
+                                  "column": 31,
+                                  "program": "simple_types.ets"
+                                },
+                                "end": {
+                                  "line": 26,
+                                  "column": 37,
+                                  "program": "simple_types.ets"
+                                }
+                              }
+                            }
+                          ],
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 26,
@@ -599,7 +668,7 @@
                             },
                             "end": {
                               "line": 26,
-                              "column": 22,
+                              "column": 38,
                               "program": "simple_types.ets"
                             }
                           }
@@ -612,7 +681,7 @@
                           },
                           "end": {
                             "line": 26,
-                            "column": 22,
+                            "column": 38,
                             "program": "simple_types.ets"
                           }
                         }
@@ -625,7 +694,7 @@
                         },
                         "end": {
                           "line": 26,
-                          "column": 22,
+                          "column": 38,
                           "program": "simple_types.ets"
                         }
                       }
@@ -1249,7 +1318,7 @@
               },
               "end": {
                 "line": 26,
-                "column": 22,
+                "column": 38,
                 "program": "simple_types.ets"
               }
             }

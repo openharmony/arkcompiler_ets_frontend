@@ -52,32 +52,6 @@ IntType *ETSChecker::CreateIntType(int32_t value)
     return ProgramAllocator()->New<IntType>(value);
 }
 
-IntType *ETSChecker::CreateIntTypeFromType(Type *type)
-{
-    if (!type->HasTypeFlag(TypeFlag::CONSTANT)) {
-        return GlobalIntType()->AsIntType();
-    }
-
-    if (type->IsIntType()) {
-        return type->AsIntType();
-    }
-
-    switch (ETSType(type)) {
-        case TypeFlag::CHAR: {
-            return CreateIntType(static_cast<int32_t>(type->AsCharType()->GetValue()));
-        }
-        case TypeFlag::BYTE: {
-            return CreateIntType(static_cast<int32_t>(type->AsByteType()->GetValue()));
-        }
-        case TypeFlag::SHORT: {
-            return CreateIntType(static_cast<int32_t>(type->AsShortType()->GetValue()));
-        }
-        default: {
-            return nullptr;
-        }
-    }
-}
-
 LongType *ETSChecker::CreateLongType(int64_t value)
 {
     return ProgramAllocator()->New<LongType>(value);

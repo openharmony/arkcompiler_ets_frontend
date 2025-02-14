@@ -105,7 +105,7 @@ bool ETSDynamicType::IsConvertible(Type const *target)
            target->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC | checker::TypeFlag::ETS_BOOLEAN);
 }
 
-ETSFunctionType *ETSDynamicType::CreateMethodTypeForProp(const util::StringView &name) const
+ETSFunctionType *ETSDynamicType::CreateMethodTypeForProp(util::StringView name) const
 {
     auto checker = GetRelation()->GetChecker()->AsETSChecker();
     return checker->CreateETSDynamicMethodType(name, {{}, Allocator()->Adapter()}, lang_);

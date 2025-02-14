@@ -19,7 +19,6 @@ enum Color {
     Red = b + "a" + 1 + 1,
     Blue = a + "Blue" + 3.123414515123516135135,
     Yelllow = "a" + 123401841039413413413431.123124,
-    Green = undefined + "12" + null + c'a' + (12 + 3) + 123,
 }
 
 function main() {
@@ -31,7 +30,4 @@ function main() {
 
     let yellowString = "a" + 123401841039413413413431.123124;
     assertEQ(Color.Yelllow.toString(), yellowString)
-
-    let greenString = undefined + "12" + null + c'a' + (12 + 3) + 123
-    assertEQ(Color.Green.toString(), greenString)
 }

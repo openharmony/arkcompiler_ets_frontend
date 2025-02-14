@@ -428,7 +428,7 @@
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 11,
+                                    "column": 20,
                                     "program": "string_template_1.ets"
                                   },
                                   "end": {

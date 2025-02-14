@@ -29,4 +29,4 @@ export let moreImportantInfo = importantInfo as number;
 /* @@? package_with_errors_2.ets:19:16 Error TypeError: Unresolved reference foo */
 /* @@? package_with_errors_2.ets:19:16 Error TypeError: This expression is not callable. */
 
-/* @@? package_with_errors_1.ets:19:32 Error TypeError: Cannot cast type 'String' to 'double' */
+/* @@? package_with_errors_1.ets:19:32 Error TypeError: Cannot cast type 'String' to 'Double' */

@@ -24,7 +24,7 @@
 
 #include "compiler/core/compileQueue.h"
 #include "parser/ETSparser.h"
-#include "checker/checker.h"
+#include "checker/ETSchecker.h"
 #include "checker/IsolatedDeclgenChecker.h"
 #include "compiler/core/emitter.h"
 

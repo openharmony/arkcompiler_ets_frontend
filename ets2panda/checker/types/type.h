@@ -143,10 +143,12 @@ public:
         return reinterpret_cast<const ETSResizableArrayType *>(this);
     }
 
-    bool IsETSDynamicType() const
+    [[nodiscard]] bool IsETSDynamicType() const noexcept
     {
         return IsETSObjectType() && HasTypeFlag(TypeFlag::ETS_DYNAMIC_FLAG);
     }
+
+    [[nodiscard]] bool IsBuiltinNumeric() const noexcept;
 
     ETSDynamicType *AsETSDynamicType()
     {
@@ -265,15 +267,24 @@ public:
         ToAssemblerType(ss);
     }
 
+    std::string ToAssemblerType() const
+    {
+        std::stringstream ss;
+        ToAssemblerType(ss);
+        return ss.str();
+    }
+
+    std::string ToAssemblerTypeWithRank() const
+    {
+        std::stringstream ss;
+        ToAssemblerTypeWithRank(ss);
+        return ss.str();
+    }
+
     virtual uint32_t Rank() const
     {
         return 0;
     }
-
-    virtual std::tuple<bool, bool> ResolveConditionExpr() const
-    {
-        ES2PANDA_UNREACHABLE();
-    };
 
     virtual void Identical(TypeRelation *relation, Type *other);
     virtual void AssignmentTarget(TypeRelation *relation, Type *source) = 0;
@@ -288,7 +299,6 @@ public:
                                           [[maybe_unused]] VarianceFlag varianceFlag)
     {
     }
-    [[nodiscard]] static std::uint32_t GetPrecedence(Type const *type) noexcept;
 
     virtual Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes);
     [[nodiscard]] virtual Type *Clone(Checker *checker);

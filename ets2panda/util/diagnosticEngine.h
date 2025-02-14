@@ -172,7 +172,6 @@ private:
     std::array<DiagnosticStorage, static_cast<size_t>(DiagnosticType::COUNT)> diagnostics_;
     std::unique_ptr<const DiagnosticPrinter> printer_;
     bool wError_ {false};
-    bool isFlushed_ {false};
 };
 
 }  // namespace ark::es2panda::util

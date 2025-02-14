@@ -60,6 +60,7 @@ void InterfacePropertyDeclarationsPhase::TransformOptionalFieldTypeAnnotation(pu
         types.push_back(ctx->AllocNode<ir::ETSUndefinedType>(ctx->Allocator()));
         auto *const unionType = ctx->AllocNode<ir::ETSUnionType>(std::move(types), ctx->Allocator());
         field->SetTypeAnnotation(unionType);
+        unionType->SetParent(field);
     }
     field->ClearModifier(ir::ModifierFlags::OPTIONAL);
 

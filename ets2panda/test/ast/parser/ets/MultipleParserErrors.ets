@@ -217,7 +217,7 @@ function main(): void {
 /* @@? 74:11 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
 /* @@? 77:20 Error TypeError: Interface expected here. */
 /* @@? 77:22 Error TypeError: 'I' type does not exist. */
-/* @@? 78:22 Error TypeError: Method fee(): int in B not overriding any method */
+/* @@? 78:22 Error TypeError: Method fee(): Int in B not overriding any method */
 /* @@? 83:7 Error TypeError: Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
 /* @@? 83:7 Error TypeError: Variable 'A' has already been declared. */
 /* @@? 84:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
@@ -265,13 +265,13 @@ function main(): void {
 /* @@? 137:21 Error SyntaxError: Unexpected token '{'. */
 /* @@? 141:16 Error TypeError: This expression is not callable. */
 /* @@? 145:18 Error TypeError: A is abstract therefore cannot be instantiated. */
-/* @@? 146:16 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
+/* @@? 146:20 Error TypeError: Property 'getInner' does not exist on type 'A' */
 /* @@? 148:25 Error TypeError: A is abstract therefore cannot be instantiated. */
 /* @@? 149:24 Error TypeError: A is abstract therefore cannot be instantiated. */
 /* @@? 151:20 Error TypeError: Cannot find type 'D0'. */
 /* @@? 151:29 Error TypeError: Cannot find type 'D0'. */
 /* @@? 157:16 Error TypeError: A is abstract therefore cannot be instantiated. */
-/* @@? 158:16 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
+/* @@? 158:18 Error TypeError: Property 'getInner' does not exist on type 'A' */
 /* @@? 161:9 Error SyntaxError: Identifier expected, got 'let'. */
 /* @@? 162:9 Error SyntaxError: Identifier expected, got 'const'. */
 /* @@? 163:9 Error SyntaxError: Identifier expected, got 'new'. */

@@ -717,9 +717,8 @@
                         {
                           "type": "SwitchCase",
                           "test": {
-                            "type": "Identifier",
-                            "name": "c",
-                            "decorators": [],
+                            "type": "NumberLiteral",
+                            "value": 210000,
                             "loc": {
                               "start": {
                                 "line": 37,

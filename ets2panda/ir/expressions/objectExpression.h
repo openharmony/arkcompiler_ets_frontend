@@ -66,16 +66,6 @@ public:
         return optional_;
     }
 
-    void SetPreferredType(checker::Type *const preferredType) noexcept
-    {
-        preferredType_ = preferredType;
-    }
-
-    [[nodiscard]] checker::Type *PreferredType() const noexcept
-    {
-        return preferredType_;
-    }
-
     [[nodiscard]] const ArenaVector<Decorator *> &Decorators() const noexcept
     {
         return decorators_;
@@ -126,7 +116,7 @@ public:
     void CleanUp() override
     {
         AstNode::CleanUp();
-        preferredType_ = nullptr;
+        SetPreferredType(nullptr);
     }
 
 private:
@@ -135,7 +125,6 @@ private:
 
     ArenaVector<Decorator *> decorators_;
     ArenaVector<Expression *> properties_;
-    checker::Type *preferredType_ {};
     bool isDeclaration_ {};
     bool trailingComma_ {};
     bool optional_ {};

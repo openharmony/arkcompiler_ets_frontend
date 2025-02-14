@@ -43,3 +43,9 @@ enum Colorj {
     B = "abc",
     M = ColorF.I == 4 ? ColorG.Red + ColorG.Green : "ac"
 }
+/* @@? 19:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
+/* @@? 23:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
+/* @@? 27:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
+/* @@? 31:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
+/* @@? 34:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
+/* @@? 44:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */

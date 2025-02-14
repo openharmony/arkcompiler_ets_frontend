@@ -205,86 +205,8 @@
                             }
                           },
                           "init": {
-                            "type": "TemplateLiteral",
-                            "expressions": [
-                              {
-                                "type": "TemplateLiteral",
-                                "expressions": [],
-                                "quasis": [
-                                  {
-                                    "type": "TemplateElement",
-                                    "value": {
-                                      "raw": "backtick = \`",
-                                      "cooked": "backtick = `"
-                                    },
-                                    "loc": {
-                                      "start": {
-                                        "line": 17,
-                                        "column": 23,
-                                        "program": "string_template_4.ets"
-                                      },
-                                      "end": {
-                                        "line": 17,
-                                        "column": 36,
-                                        "program": "string_template_4.ets"
-                                      }
-                                    }
-                                  }
-                                ],
-                                "loc": {
-                                  "start": {
-                                    "line": 17,
-                                    "column": 22,
-                                    "program": "string_template_4.ets"
-                                  },
-                                  "end": {
-                                    "line": 17,
-                                    "column": 37,
-                                    "program": "string_template_4.ets"
-                                  }
-                                }
-                              }
-                            ],
-                            "quasis": [
-                              {
-                                "type": "TemplateElement",
-                                "value": {
-                                  "raw": "nested ",
-                                  "cooked": "nested "
-                                },
-                                "loc": {
-                                  "start": {
-                                    "line": 17,
-                                    "column": 13,
-                                    "program": "string_template_4.ets"
-                                  },
-                                  "end": {
-                                    "line": 17,
-                                    "column": 20,
-                                    "program": "string_template_4.ets"
-                                  }
-                                }
-                              },
-                              {
-                                "type": "TemplateElement",
-                                "value": {
-                                  "raw": "",
-                                  "cooked": ""
-                                },
-                                "loc": {
-                                  "start": {
-                                    "line": 17,
-                                    "column": 38,
-                                    "program": "string_template_4.ets"
-                                  },
-                                  "end": {
-                                    "line": 17,
-                                    "column": 38,
-                                    "program": "string_template_4.ets"
-                                  }
-                                }
-                              }
-                            ],
+                            "type": "StringLiteral",
+                            "value": "nested backtick = `",
                             "loc": {
                               "start": {
                                 "line": 17,
@@ -383,9 +305,8 @@
                         },
                         "arguments": [
                           {
-                            "type": "Identifier",
-                            "name": "v",
-                            "decorators": [],
+                            "type": "StringLiteral",
+                            "value": "nested backtick = `",
                             "loc": {
                               "start": {
                                 "line": 18,
@@ -516,9 +437,8 @@
                         },
                         "arguments": [
                           {
-                            "type": "Identifier",
-                            "name": "v",
-                            "decorators": [],
+                            "type": "StringLiteral",
+                            "value": "nested backtick = `",
                             "loc": {
                               "start": {
                                 "line": 20,
@@ -533,9 +453,8 @@
                             }
                           },
                           {
-                            "type": "Identifier",
-                            "name": "expected",
-                            "decorators": [],
+                            "type": "StringLiteral",
+                            "value": "nested backtick = `",
                             "loc": {
                               "start": {
                                 "line": 20,

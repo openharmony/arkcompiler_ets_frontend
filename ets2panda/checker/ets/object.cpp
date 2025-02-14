@@ -1518,37 +1518,6 @@ void ETSChecker::CheckInnerClassMembers(const ETSObjectType *classType)
     }
 }
 
-lexer::Number ETSChecker::ExtractNumericValue(Type const *const indexType)
-{
-    TypeFlag typeKind = ETSType(indexType);
-    lexer::Number resNum;
-    switch (typeKind) {
-        case TypeFlag::BYTE: {
-            resNum = lexer::Number(indexType->AsByteType()->GetValue());
-            break;
-        }
-        case TypeFlag::SHORT: {
-            resNum = lexer::Number(indexType->AsShortType()->GetValue());
-            break;
-        }
-        case TypeFlag::INT: {
-            resNum = lexer::Number(indexType->AsIntType()->GetValue());
-            break;
-        }
-        case TypeFlag::FLOAT: {
-            resNum = lexer::Number(indexType->AsFloatType()->GetValue());
-            break;
-        }
-        case TypeFlag::DOUBLE: {
-            resNum = lexer::Number(indexType->AsDoubleType()->GetValue());
-            break;
-        }
-        default:
-            break;
-    }
-    return resNum;
-}
-
 bool ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
 {
     auto const expressionType = expr->Check(this);
@@ -1556,47 +1525,58 @@ bool ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
         return false;
     }
 
-    Type const *const unboxedExpressionType = MaybeUnboxInRelation(expressionType);
-    if (expressionType->IsETSObjectType() && (unboxedExpressionType != nullptr)) {
-        expr->AddBoxingUnboxingFlags(GetUnboxingFlag(unboxedExpressionType));
+    if (!expressionType->IsETSObjectType() ||
+        (!expressionType->AsETSObjectType()->HasObjectFlag(relaxed ? ETSObjectFlags::BUILTIN_ARRAY_NUMERIC
+                                                                   : ETSObjectFlags::BUILTIN_ARRAY_INDEX))) {
+        LogError(diagnostic::INVALID_INDEX_TYPE, {expressionType->ToString()}, expr->Start());
+        return false;
     }
 
-    Type const *const indexType = ApplyUnaryOperatorPromotion(expressionType);
-
-    if (relaxed && indexType != nullptr) {
-        lexer::Number resNum = ExtractNumericValue(indexType);
-        double value = resNum.GetDouble();
-        double intpart;
-        if (std::modf(value, &intpart) != 0.0) {
-            LogError(diagnostic::INDEX_NONINTEGRAL_FLOAT, {}, expr->Start());
-            return false;
-        }
-        bool tildeFlag = false;
-        if (expr->IsUnaryExpression() &&
-            expr->AsUnaryExpression()->OperatorType() == lexer::TokenType::PUNCTUATOR_TILDE) {
-            tildeFlag = true;
-        }
-        if ((tildeFlag && value > 0) || (!tildeFlag && value < 0)) {
-            LogError(diagnostic::NEGATIVE_INDEX, {}, expr->Start());
-            return false;
-        }
+    if (!relaxed || !expressionType->IsConstantType()) {
+        return true;
     }
 
-    if (indexType == nullptr ||
-        (!indexType->HasTypeFlag(relaxed ? (TypeFlag::ETS_ARRAY_INDEX | TypeFlag::ETS_FLOATING_POINT)
-                                         : TypeFlag::ETS_ARRAY_INDEX))) {
-        std::stringstream message("");
-        expressionType->ToString(message);
+    ES2PANDA_ASSERT(expr->IsNumberLiteral());
+    double value = expr->AsNumberLiteral()->Number().GetDouble();
 
-        LogError(diagnostic::INVALID_INDEX_TYPE, {message.str()}, expr->Start());
+    double intPart;
+    if (std::modf(value, &intPart) != 0.0) {
+        LogError(diagnostic::INDEX_NONINTEGRAL_FLOAT, {}, expr->Start());
+        return false;
+    }
+
+    if (intPart < 0.0) {
+        LogError(diagnostic::NEGATIVE_INDEX, {}, expr->Start());
         return false;
     }
 
     return true;
 }
 
-std::optional<std::size_t> ETSChecker::GetTupleElementAccessValue(const Type *const type)
+std::optional<std::size_t> ETSChecker::GetTupleElementAccessValue(const ir::Expression *expr)
 {
+    auto checkLongValBounds = [this](int64_t val, const lexer::SourcePosition &p) -> std::optional<size_t> {
+        if (val < 0) {
+            LogError(diagnostic::TUPLE_INDEX_OOB, {}, p);
+            return std::nullopt;
+        }
+        return static_cast<size_t>(val);
+    };
+
+    if (expr->IsNumberLiteral()) {
+        auto num = expr->AsNumberLiteral()->Number();
+        if (num.IsInt()) {
+            return checkLongValBounds(num.GetInt(), expr->Start());
+        }
+        if (num.IsLong()) {
+            return checkLongValBounds(num.GetLong(), expr->Start());
+        }
+        ES2PANDA_UNREACHABLE();
+    }
+
+    // Below code should be unreachable after removing primitives
+    auto type = expr->TsType();
+
     ES2PANDA_ASSERT(type->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
 
     switch (ETSType(type)) {
@@ -1625,14 +1605,9 @@ std::optional<std::size_t> ETSChecker::GetTupleElementAccessValue(const Type *co
 bool ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, ir::MemberExpression *const expr,
                                     const bool reportError)
 {
-    auto const expressionType = expr->Property()->Check(this);
-    auto const *const unboxedExpressionType = MaybeUnboxInRelation(expressionType);
+    auto const exprType = expr->Property()->Check(this);
+    auto const *const unboxedExpressionType = MaybeUnboxInRelation(exprType);
 
-    if (expressionType->IsETSObjectType() && (unboxedExpressionType != nullptr)) {
-        expr->Property()->AddBoxingUnboxingFlags(GetUnboxingFlag(unboxedExpressionType));
-    }
-
-    const auto *const exprType = expr->Property()->TsType();
     ES2PANDA_ASSERT(exprType != nullptr);
 
     if (!exprType->HasTypeFlag(TypeFlag::CONSTANT)) {
@@ -1645,14 +1620,13 @@ bool ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, ir::MemberE
         return false;
     }
 
-    if (!exprType->HasTypeFlag(TypeFlag::ETS_ARRAY_INDEX | TypeFlag::LONG)) {
-        if (reportError) {
-            LogError(diagnostic::TUPLE_INDEX_NOT_INT, {}, expr->Property()->Start());
-        }
+    if (!Relation()->IsSupertypeOf(GlobalIntBuiltinType(), exprType) &&
+        !Relation()->IsSupertypeOf(GlobalLongBuiltinType(), exprType)) {
+        LogError(diagnostic::TUPLE_INDEX_NOT_INT, {}, expr->Property()->Start());
         return false;
     }
 
-    auto exprValue = GetTupleElementAccessValue(exprType);
+    auto exprValue = GetTupleElementAccessValue(expr->Property());
     if (!exprValue.has_value() || (*exprValue >= tuple->GetTupleSize())) {
         if (reportError) {
             LogError(diagnostic::TUPLE_INDEX_OOB, {}, expr->Property()->Start());
@@ -1665,6 +1639,13 @@ bool ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, ir::MemberE
 
 bool ETSChecker::ValidateTupleIndexFromEtsObject(const ETSTupleType *const tuple, ir::MemberExpression *const expr)
 {
+    if (expr->Property() == nullptr || expr->Property()->Variable() == nullptr ||
+        expr->Property()->Variable()->Declaration() == nullptr ||
+        expr->Property()->Variable()->Declaration()->Node() == nullptr ||
+        expr->Property()->Variable()->Declaration()->Node()->AsClassElement() == nullptr) {
+        LogError(diagnostic::TUPLE_INDEX_NONCONST, {}, expr->Start());
+        return false;
+    }
     auto *value = expr->Property()->Variable()->Declaration()->Node()->AsClassElement()->Value();
     if (value == nullptr) {
         LogError(diagnostic::TUPLE_INDEX_NONCONST, {}, expr->Property()->Start());
@@ -1682,7 +1663,7 @@ bool ETSChecker::ValidateTupleIndexFromEtsObject(const ETSTupleType *const tuple
         return false;
     }
 
-    auto exprValue = GetTupleElementAccessValue(exprType);
+    auto exprValue = GetTupleElementAccessValue(expr);
     if (!exprValue.has_value() || (*exprValue >= tuple->GetTupleSize())) {
         LogError(diagnostic::TUPLE_INDEX_OOB, {}, expr->Property()->Start());
         return false;
@@ -1975,6 +1956,9 @@ static bool ShouldRemoveStaticSearchFlag(const ir::MemberExpression *const membe
         if (object->IsMemberExpression()) {
             object = object->AsMemberExpression()->Property();
         }
+        if (object->IsTypeNode()) {
+            return false;
+        }
         if (!object->IsIdentifier() || (object->AsIdentifier()->Variable() == nullptr) ||
             object->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::INITIALIZED)) {
             return true;
@@ -2014,6 +1998,9 @@ const varbinder::Variable *ETSChecker::GetTargetRef(const ir::MemberExpression *
     }
     if (memberExpr->Object()->IsMemberExpression()) {
         return memberExpr->Object()->AsMemberExpression()->PropVar();
+    }
+    if (memberExpr->Object()->IsTypeNode() && memberExpr->Object()->TsType()->IsETSObjectType()) {
+        return memberExpr->Object()->TsType()->Variable();
     }
     return nullptr;
 }
@@ -2538,26 +2525,8 @@ Type *ETSChecker::GetApparentType(Type *type)
 
 Type const *ETSChecker::GetApparentType(Type const *type) const
 {
-    auto currChecker = compiler::GetPhaseManager()->Context()->GetChecker()->AsETSChecker();
-    auto &apparentTypes = currChecker->apparentTypes_;
-    if (auto it = apparentTypes.find(type); LIKELY(it != apparentTypes.end())) {
-        return it->second;
-    }
-    // Relaxed for some types
-    if (type->IsETSTypeParameter()) {
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        return GetApparentType(type->AsETSTypeParameter()->GetConstraintType());
-    }
-    if (type->IsETSArrayType()) {
-        return type;
-    }
-    if (type->IsETSStringType()) {
-        return GlobalBuiltinETSStringType();
-    }
-    if (type->IsETSUnionType() || type->IsETSNonNullishType() || type->IsETSPartialTypeParameter()) {
-        ASSERT_PRINT(false, std::string("Type ") + type->ToString() + " was not found in apparent_types_");
-    }
-    return type;
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    return const_cast<Type const *>(const_cast<ETSChecker *>(this)->GetApparentType(const_cast<Type *>(type)));
 }
 
 ETSObjectType *ETSChecker::GetClosestCommonAncestor(ETSObjectType *source, ETSObjectType *target)

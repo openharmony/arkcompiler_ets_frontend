@@ -224,7 +224,7 @@
                 },
                 "end": {
                   "line": 18,
-                  "column": 33,
+                  "column": 34,
                   "program": "package_module_2.ets"
                 }
               }
@@ -260,7 +260,7 @@
               },
               "end": {
                 "line": 18,
-                "column": 33,
+                "column": 34,
                 "program": "package_module_2.ets"
               }
             }
@@ -295,7 +295,7 @@
                 },
                 "end": {
                   "line": 18,
-                  "column": 34,
+                  "column": 35,
                   "program": "package_module_1.ets"
                 }
               }
@@ -331,7 +331,7 @@
               },
               "end": {
                 "line": 18,
-                "column": 34,
+                "column": 35,
                 "program": "package_module_1.ets"
               }
             }

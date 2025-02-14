@@ -45,6 +45,8 @@ public:
     explicit SrcDumper(const ir::AstNode *node, bool isDeclgen, bool isIsolatedDeclgen = false);
 
     void Add(const std::string &str);
+    void Add(int8_t i);
+    void Add(int16_t i);
     void Add(int32_t i);
     void Add(int64_t l);
     void Add(float f);

@@ -15,16 +15,9 @@
 
 #include "ETSparser.h"
 
-#include "generated/tokenType.h"
 #include "lexer/lexer.h"
 #include "ir/expressions/literals/undefinedLiteral.h"
 #include "ir/ets/etsTuple.h"
-#include "macros.h"
-#include "parserFlags.h"
-#include "util/errorRecovery.h"
-#include "generated/diagnostic.h"
-#include "parserImpl.h"
-#include "util/recursiveGuard.h"
 
 namespace ark::es2panda::parser {
 class FunctionContext;
@@ -110,14 +103,24 @@ ir::Expression *ETSParser::ResolveArgumentUnaryExpr(ExpressionParseFlags flags)
 ir::Expression *ETSParser::CreateUnaryExpressionFromArgument(ir::Expression *argument, lexer::TokenType operatorType,
                                                              char32_t beginningChar)
 {
+    auto checkLiteral = [argument, beginningChar]() -> bool {
+        ir::NumberLiteral *literal = nullptr;
+        if (argument->IsNumberLiteral()) {
+            literal = argument->AsNumberLiteral();
+        } else if (argument->IsCallExpression() && argument->AsCallExpression()->Callee()->IsMemberExpression() &&
+                   argument->AsCallExpression()->Callee()->AsMemberExpression()->Object()->IsNumberLiteral()) {
+            literal = argument->AsCallExpression()->Callee()->AsMemberExpression()->Object()->AsNumberLiteral();
+        }
+        return literal != nullptr && ((beginningChar >= '0' && beginningChar <= '9') || (beginningChar == '.'));
+    };
+
     ir::Expression *returnExpr = nullptr;
     if (lexer::Token::IsUpdateToken(operatorType)) {
         returnExpr = AllocNode<ir::UpdateExpression>(argument, operatorType, true);
     } else if (operatorType == lexer::TokenType::KEYW_TYPEOF) {
         returnExpr = AllocNode<ir::TypeofExpression>(argument);
-    } else if (operatorType == lexer::TokenType::PUNCTUATOR_MINUS && argument->IsNumberLiteral()) {
-        bool argBeginWithDigitOrDot = (beginningChar >= '0' && beginningChar <= '9') || (beginningChar == '.');
-        returnExpr = argBeginWithDigitOrDot ? argument : AllocNode<ir::UnaryExpression>(argument, operatorType);
+    } else if (operatorType == lexer::TokenType::PUNCTUATOR_MINUS && checkLiteral()) {
+        returnExpr = argument;
     } else {
         returnExpr = AllocNode<ir::UnaryExpression>(argument, operatorType);
     }

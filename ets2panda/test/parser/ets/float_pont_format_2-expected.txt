@@ -205,40 +205,8 @@
                             }
                           },
                           "init": {
-                            "type": "BinaryExpression",
-                            "operator": "+",
-                            "left": {
-                              "type": "NumberLiteral",
-                              "value": 0.5,
-                              "loc": {
-                                "start": {
-                                  "line": 17,
-                                  "column": 13,
-                                  "program": "float_pont_format_2.ets"
-                                },
-                                "end": {
-                                  "line": 17,
-                                  "column": 15,
-                                  "program": "float_pont_format_2.ets"
-                                }
-                              }
-                            },
-                            "right": {
-                              "type": "NumberLiteral",
-                              "value": 0.5,
-                              "loc": {
-                                "start": {
-                                  "line": 17,
-                                  "column": 18,
-                                  "program": "float_pont_format_2.ets"
-                                },
-                                "end": {
-                                  "line": 17,
-                                  "column": 20,
-                                  "program": "float_pont_format_2.ets"
-                                }
-                              }
-                            },
+                            "type": "NumberLiteral",
+                            "value": 1,
                             "loc": {
                               "start": {
                                 "line": 17,

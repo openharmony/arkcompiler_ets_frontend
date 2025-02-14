@@ -513,178 +513,12 @@
                             }
                           },
                           "dimension": {
-                            "type": "BinaryExpression",
-                            "operator": "+",
-                            "left": {
-                              "type": "BinaryExpression",
-                              "operator": "*",
-                              "left": {
-                                "type": "BinaryExpression",
-                                "operator": "<<",
-                                "left": {
-                                  "type": "NumberLiteral",
-                                  "value": 1,
-                                  "loc": {
-                                    "start": {
-                                      "line": 23,
-                                      "column": 41,
-                                      "program": "AccessNSieve.ets"
-                                    },
-                                    "end": {
-                                      "line": 23,
-                                      "column": 42,
-                                      "program": "AccessNSieve.ets"
-                                    }
-                                  }
-                                },
-                                "right": {
-                                  "type": "MemberExpression",
-                                  "object": {
-                                    "type": "Identifier",
-                                    "name": "AccessNSieve",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 23,
-                                        "column": 46,
-                                        "program": "AccessNSieve.ets"
-                                      },
-                                      "end": {
-                                        "line": 23,
-                                        "column": 58,
-                                        "program": "AccessNSieve.ets"
-                                      }
-                                    }
-                                  },
-                                  "property": {
-                                    "type": "Identifier",
-                                    "name": "n1",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 23,
-                                        "column": 59,
-                                        "program": "AccessNSieve.ets"
-                                      },
-                                      "end": {
-                                        "line": 23,
-                                        "column": 61,
-                                        "program": "AccessNSieve.ets"
-                                      }
-                                    }
-                                  },
-                                  "computed": false,
-                                  "optional": false,
-                                  "loc": {
-                                    "start": {
-                                      "line": 23,
-                                      "column": 46,
-                                      "program": "AccessNSieve.ets"
-                                    },
-                                    "end": {
-                                      "line": 23,
-                                      "column": 61,
-                                      "program": "AccessNSieve.ets"
-                                    }
-                                  }
-                                },
-                                "loc": {
-                                  "start": {
-                                    "line": 23,
-                                    "column": 40,
-                                    "program": "AccessNSieve.ets"
-                                  },
-                                  "end": {
-                                    "line": 23,
-                                    "column": 62,
-                                    "program": "AccessNSieve.ets"
-                                  }
-                                }
-                              },
-                              "right": {
-                                "type": "MemberExpression",
-                                "object": {
-                                  "type": "Identifier",
-                                  "name": "AccessNSieve",
-                                  "decorators": [],
-                                  "loc": {
-                                    "start": {
-                                      "line": 23,
-                                      "column": 65,
-                                      "program": "AccessNSieve.ets"
-                                    },
-                                    "end": {
-                                      "line": 23,
-                                      "column": 77,
-                                      "program": "AccessNSieve.ets"
-                                    }
-                                  }
-                                },
-                                "property": {
-                                  "type": "Identifier",
-                                  "name": "n2",
-                                  "decorators": [],
-                                  "loc": {
-                                    "start": {
-                                      "line": 23,
-                                      "column": 78,
-                                      "program": "AccessNSieve.ets"
-                                    },
-                                    "end": {
-                                      "line": 23,
-                                      "column": 80,
-                                      "program": "AccessNSieve.ets"
-                                    }
-                                  }
-                                },
-                                "computed": false,
-                                "optional": false,
-                                "loc": {
-                                  "start": {
-                                    "line": 23,
-                                    "column": 65,
-                                    "program": "AccessNSieve.ets"
-                                  },
-                                  "end": {
-                                    "line": 23,
-                                    "column": 80,
-                                    "program": "AccessNSieve.ets"
-                                  }
-                                }
-                              },
-                              "loc": {
-                                "start": {
-                                  "line": 23,
-                                  "column": 40,
-                                  "program": "AccessNSieve.ets"
-                                },
-                                "end": {
-                                  "line": 23,
-                                  "column": 80,
-                                  "program": "AccessNSieve.ets"
-                                }
-                              }
-                            },
-                            "right": {
-                              "type": "NumberLiteral",
-                              "value": 1,
-                              "loc": {
-                                "start": {
-                                  "line": 23,
-                                  "column": 83,
-                                  "program": "AccessNSieve.ets"
-                                },
-                                "end": {
-                                  "line": 23,
-                                  "column": 84,
-                                  "program": "AccessNSieve.ets"
-                                }
-                              }
-                            },
+                            "type": "NumberLiteral",
+                            "value": 80001,
                             "loc": {
                               "start": {
                                 "line": 23,
-                                "column": 40,
+                                "column": 65,
                                 "program": "AccessNSieve.ets"
                               },
                               "end": {
@@ -2395,43 +2229,8 @@
                           }
                         },
                         "right": {
-                          "type": "MemberExpression",
-                          "object": {
-                            "type": "Identifier",
-                            "name": "AccessNSieve",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 46,
-                                "column": 31,
-                                "program": "AccessNSieve.ets"
-                              },
-                              "end": {
-                                "line": 46,
-                                "column": 43,
-                                "program": "AccessNSieve.ets"
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "n1",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 46,
-                                "column": 44,
-                                "program": "AccessNSieve.ets"
-                              },
-                              "end": {
-                                "line": 46,
-                                "column": 46,
-                                "program": "AccessNSieve.ets"
-                              }
-                            }
-                          },
-                          "computed": false,
-                          "optional": false,
+                          "type": "NumberLiteral",
+                          "value": 3,
                           "loc": {
                             "start": {
                               "line": 46,
@@ -2585,43 +2384,8 @@
                                     }
                                   },
                                   "right": {
-                                    "type": "MemberExpression",
-                                    "object": {
-                                      "type": "Identifier",
-                                      "name": "AccessNSieve",
-                                      "decorators": [],
-                                      "loc": {
-                                        "start": {
-                                          "line": 47,
-                                          "column": 31,
-                                          "program": "AccessNSieve.ets"
-                                        },
-                                        "end": {
-                                          "line": 47,
-                                          "column": 43,
-                                          "program": "AccessNSieve.ets"
-                                        }
-                                      }
-                                    },
-                                    "property": {
-                                      "type": "Identifier",
-                                      "name": "n2",
-                                      "decorators": [],
-                                      "loc": {
-                                        "start": {
-                                          "line": 47,
-                                          "column": 44,
-                                          "program": "AccessNSieve.ets"
-                                        },
-                                        "end": {
-                                          "line": 47,
-                                          "column": 46,
-                                          "program": "AccessNSieve.ets"
-                                        }
-                                      }
-                                    },
-                                    "computed": false,
-                                    "optional": false,
+                                    "type": "NumberLiteral",
+                                    "value": 10000,
                                     "loc": {
                                       "start": {
                                         "line": 47,
@@ -3164,43 +2928,8 @@
                             }
                           },
                           {
-                            "type": "MemberExpression",
-                            "object": {
-                              "type": "Identifier",
-                              "name": "AccessNSieve",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 55,
-                                  "column": 19,
-                                  "program": "AccessNSieve.ets"
-                                },
-                                "end": {
-                                  "line": 55,
-                                  "column": 31,
-                                  "program": "AccessNSieve.ets"
-                                }
-                              }
-                            },
-                            "property": {
-                              "type": "Identifier",
-                              "name": "expected",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 55,
-                                  "column": 32,
-                                  "program": "AccessNSieve.ets"
-                                },
-                                "end": {
-                                  "line": 55,
-                                  "column": 40,
-                                  "program": "AccessNSieve.ets"
-                                }
-                              }
-                            },
-                            "computed": false,
-                            "optional": false,
+                            "type": "NumberLiteral",
+                            "value": 14302,
                             "loc": {
                               "start": {
                                 "line": 55,

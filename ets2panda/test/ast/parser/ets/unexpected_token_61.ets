@@ -19,5 +19,4 @@ function main(): void {
     }
 }
 
-/* @@? 17:16 Error TypeError: Cannot assign to a constant variable i */
 /* @@@ label1 Error SyntaxError: Expected ';', got 'identification literal'. */

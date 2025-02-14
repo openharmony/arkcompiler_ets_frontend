@@ -1447,7 +1447,7 @@
                               "loc": {
                                 "start": {
                                   "line": 27,
-                                  "column": 21,
+                                  "column": 60,
                                   "program": "launch_expression.ets"
                                 },
                                 "end": {
@@ -1902,7 +1902,7 @@
                         "loc": {
                           "start": {
                             "line": 31,
-                            "column": 9,
+                            "column": 14,
                             "program": "launch_expression.ets"
                           },
                           "end": {
@@ -2569,7 +2569,7 @@
                                     "loc": {
                                       "start": {
                                         "line": 36,
-                                        "column": 51,
+                                        "column": 53,
                                         "program": "launch_expression.ets"
                                       },
                                       "end": {
@@ -3644,7 +3644,7 @@
                         "loc": {
                           "start": {
                             "line": 45,
-                            "column": 9,
+                            "column": 14,
                             "program": "launch_expression.ets"
                           },
                           "end": {
@@ -4109,7 +4109,7 @@
                                         "loc": {
                                           "start": {
                                             "line": 50,
-                                            "column": 36,
+                                            "column": 38,
                                             "program": "launch_expression.ets"
                                           },
                                           "end": {

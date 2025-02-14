@@ -76,11 +76,6 @@ public:
         return value_;
     }
 
-    std::tuple<bool, bool> ResolveConditionExpr() const override
-    {
-        return {IsConstantType(), IsConstantType() ? (GetValue().Length() != 0) : false};
-    }
-
 private:
     util::StringView value_ {};
 };

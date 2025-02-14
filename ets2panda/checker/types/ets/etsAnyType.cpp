@@ -33,8 +33,6 @@ void ETSAnyType::AssignmentTarget(TypeRelation *relation, Type *source)
     }
 
     if (relation->ApplyBoxing()) {
-        auto checker = relation->GetChecker()->AsETSChecker();
-        relation->GetNode()->AddBoxingUnboxingFlags(checker->GetBoxingFlag(checker->MaybeBoxType(source)));
         relation->Result(true);
     }
 }

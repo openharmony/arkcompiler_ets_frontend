@@ -202,64 +202,6 @@ static void HandleUnionPropertyAccess(public_lib::Context *ctx, varbinder::VarBi
     ES2PANDA_ASSERT(expr->PropVar() != nullptr);
 }
 
-static ir::TSAsExpression *GenAsExpression(public_lib::Context *ctx, checker::Type *const opaqueType,
-                                           ir::Expression *const node, ir::AstNode *const parent)
-{
-    auto *const typeNode = ctx->AllocNode<ir::OpaqueTypeNode>(opaqueType, ctx->Allocator());
-    auto *const asExpression = ctx->AllocNode<ir::TSAsExpression>(node, typeNode, false);
-    asExpression->SetParent(parent);
-    asExpression->Check(ctx->GetChecker()->AsETSChecker());
-    return asExpression;
-}
-
-/*
- *  Function that generates conversion from (union) to (primitive) type as to `as` expressions:
- *      (union) as (prim) => ((union) as (ref)) as (prim),
- *      where (ref) is some unboxable type from union constituent types.
- *  Finally, `(union) as (prim)` expression replaces union_node that came above.
- */
-static ir::TSAsExpression *UnionCastToPrimitive(public_lib::Context *ctx, checker::ETSObjectType *unboxableRef,
-                                                checker::Type *unboxedPrim, ir::Expression *unionNode)
-{
-    auto *const unionAsRefExpression = GenAsExpression(ctx, unboxableRef, unionNode, nullptr);
-    return GenAsExpression(ctx, unboxedPrim, unionAsRefExpression, unionNode->Parent());
-}
-
-static ir::TSAsExpression *HandleUnionCastToPrimitive(public_lib::Context *ctx, ir::TSAsExpression *expr)
-{
-    checker::ETSChecker *checker = ctx->GetChecker()->AsETSChecker();
-    auto *const unionType = expr->Expr()->TsType()->AsETSUnionType();
-    auto *sourceType = unionType->FindExactOrBoxedType(checker, expr->TsType());
-    if (sourceType == nullptr) {
-        sourceType = unionType->AsETSUnionType()->FindTypeIsCastableToSomeType(expr->Expr(), checker->Relation(),
-                                                                               expr->TsType());
-    }
-
-    if (sourceType != nullptr && expr->Expr()->GetBoxingUnboxingFlags() != ir::BoxingUnboxingFlags::NONE) {
-        auto *maybeUnboxingType = checker->MaybeUnboxInRelation(sourceType);
-        // when sourceType get `object`, it could cast to any primitive type but can't be unboxed;
-        if (maybeUnboxingType != nullptr && expr->TsType()->IsETSPrimitiveType()) {
-            auto *const asExpr = GenAsExpression(ctx, sourceType, expr->Expr(), expr);
-            asExpr->SetBoxingUnboxingFlags(checker->GetUnboxingFlag(maybeUnboxingType));
-            expr->Expr()->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
-            expr->SetExpr(asExpr);
-        }
-
-        return expr;
-    }
-
-    auto *const unboxableUnionType = sourceType != nullptr ? sourceType : unionType->FindUnboxableType();
-    auto *const unboxedUnionType = checker->MaybeUnboxInRelation(unboxableUnionType);
-    if (unboxableUnionType == nullptr || !unboxableUnionType->IsETSObjectType() || unboxedUnionType == nullptr) {
-        return expr;
-    }
-
-    auto *const node = UnionCastToPrimitive(ctx, unboxableUnionType->AsETSObjectType(), unboxedUnionType, expr->Expr());
-    node->SetParent(expr->Parent());
-
-    return node;
-}
-
 bool UnionLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     checker::ETSChecker *checker = ctx->GetChecker()->AsETSChecker();
@@ -273,12 +215,6 @@ bool UnionLowering::PerformForModule(public_lib::Context *ctx, parser::Program *
                     HandleUnionPropertyAccess(ctx, checker->VarBinder(), ast->AsMemberExpression());
                     return ast;
                 }
-            }
-            if (ast->IsTSAsExpression() && ast->AsTSAsExpression()->Expr()->TsType() != nullptr &&
-                ast->AsTSAsExpression()->Expr()->TsType()->IsETSUnionType() &&
-                ast->AsTSAsExpression()->TsType() != nullptr &&
-                ast->AsTSAsExpression()->TsType()->IsETSPrimitiveType()) {
-                return HandleUnionCastToPrimitive(ctx, ast->AsTSAsExpression());
             }
 
             return ast;

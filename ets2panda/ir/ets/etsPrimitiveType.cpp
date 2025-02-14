@@ -106,35 +106,35 @@ checker::Type *ETSPrimitiveType::GetType([[maybe_unused]] checker::ETSChecker *c
 {
     switch (GetPrimitiveType()) {
         case PrimitiveType::BYTE: {
-            SetTsType(checker->GlobalByteType());
+            SetTsType(checker->GlobalByteBuiltinType());
             return TsType();
         }
         case PrimitiveType::SHORT: {
-            SetTsType(checker->GlobalShortType());
+            SetTsType(checker->GlobalShortBuiltinType());
             return TsType();
         }
         case PrimitiveType::INT: {
-            SetTsType(checker->GlobalIntType());
+            SetTsType(checker->GlobalIntBuiltinType());
             return TsType();
         }
         case PrimitiveType::LONG: {
-            SetTsType(checker->GlobalLongType());
+            SetTsType(checker->GlobalLongBuiltinType());
             return TsType();
         }
         case PrimitiveType::FLOAT: {
-            SetTsType(checker->GlobalFloatType());
+            SetTsType(checker->GlobalFloatBuiltinType());
             return TsType();
         }
         case PrimitiveType::DOUBLE: {
-            SetTsType(checker->GlobalDoubleType());
+            SetTsType(checker->GlobalDoubleBuiltinType());
             return TsType();
         }
         case PrimitiveType::BOOLEAN: {
-            SetTsType(checker->GlobalETSBooleanType());
+            SetTsType(checker->GlobalETSBooleanBuiltinType());
             return TsType();
         }
         case PrimitiveType::CHAR: {
-            SetTsType(checker->GlobalCharType());
+            SetTsType(checker->GlobalCharBuiltinType());
             return TsType();
         }
         case PrimitiveType::VOID: {

@@ -34,5 +34,5 @@ function main(): void {
     assertEQ(instance.getX(), true);
 }
 
-/* @@@ label1 Error TypeError: Type 'boolean' has no call signatures.  */
+/* @@@ label1 Error TypeError: Type 'Boolean' has no call signatures.  */
 /* @@@ label Error TypeError: Cannot inherit from class C, because field x is inherited with a different declaration type  */

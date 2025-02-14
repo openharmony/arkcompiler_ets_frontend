@@ -42,7 +42,7 @@ function getUnion(): A | B {
 function main() {
     const u = getUnion()
     assertEQ(/* @@ label1 */u.fld1, 42)
-    assertEQ(/* @@ label2 */u.fld2, 42.0)
+    assertEQ(u.fld2, 42.0)
     assertEQ(/* @@ label3 */u.fld3[0], "abc")
     assertEQ(/* @@ label4 */u.fld4[0], "def")
     assertEQ(/* @@ label5 */u.fld5, 42.0)
@@ -52,7 +52,6 @@ function main() {
 }
 
 /* @@@ label1 Error TypeError: Member type must be the same for all union objects.  */
-/* @@@ label2 Error TypeError: Member type must be the same for all union objects.  */
 /* @@@ label3 Error TypeError: Member type must be the same for all union objects.  */
 /* @@@ label4 Error TypeError: Member type must be the same for all union objects.  */
 /* @@@ label5 Error TypeError: Member type must be the same for all union objects.  */

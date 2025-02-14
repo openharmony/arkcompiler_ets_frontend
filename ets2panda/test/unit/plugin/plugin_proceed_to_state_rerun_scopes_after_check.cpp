@@ -78,6 +78,7 @@ static bool ChangeAst(es2panda_Context *context)
     }
     std::cout << impl->AstNodeDumpEtsSrcConst(context, Ast) << std::endl;
     impl->AstNodeRecheck(context, Ast);
+    CheckForErrors("RECHECK", context);
     return true;
 }
 

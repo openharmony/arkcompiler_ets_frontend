@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,7 +13,17 @@
  * limitations under the License.
  */
 
-#include "narrowingWideningConverter.h"
+class A {
+    func(a: Double): String { return "of Double" }
+    func(a: Float): String { return "of Float" }
+    func(a: Int): String { return "of Int" }
+}
 
-namespace ark::es2panda::checker {
-}  // namespace ark::es2panda::checker
+function main(): int{
+    let c1: A = new A();
+    let helpbyte: Byte = new Byte(1 as byte);
+    if (c1.func(helpbyte) != "of Int") {
+        return 1;
+    }
+    return 0;
+}

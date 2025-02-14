@@ -23,7 +23,7 @@ void AnnotationUsage::TransformChildren(const NodeTransformer &cb, std::string_v
 {
     if (auto *transformedNode = cb(expr_); expr_ != transformedNode) {
         expr_->SetTransformedNode(transformationName, transformedNode);
-        expr_ = transformedNode->AsIdentifier();
+        expr_ = transformedNode->AsExpression();
     }
 
     for (auto *&it : VectorIterationGuard(properties_)) {

@@ -80,10 +80,6 @@ warning:
   id: 17
   message: "{} '{}' might already have been assigned."
 
-- name: PROP_MAYBE_UNINITIALIZED
-  id: 18
-  message: "Property '{}' might not have been initialized."
-
 - name: MAYBE_FALLTHROUGH
   id: 20
   message: "Possible fall-through into case"
@@ -111,3 +107,7 @@ warning:
 - name: UNREACHABLE_STMT
   id: 26
   message: "Unreachable statement."
+
+- name: IMPROPER_NUMERIC_CAST
+  id: 29
+  message: "'As' expression for cast is deprecated for numeric types. Use explicit conversion function {}.to{}(...) instead."

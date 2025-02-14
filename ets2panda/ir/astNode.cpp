@@ -130,10 +130,35 @@ void AstNode::TransformChildrenRecursively(const NodeTransformer &cb, std::strin
     TransformChildrenRecursivelyPostorder(cb, transformationName);
 }
 
+void AstNode::TransformChildrenRecursively(const NodeTransformer &pre, const NodeTraverser &post,
+                                           std::string_view transformationName)
+{
+    TransformChildren(
+        [&pre, &post, transformationName](AstNode *child) {
+            auto *childReplacement = pre(child);
+            childReplacement->TransformChildrenRecursively(pre, post, transformationName);
+            post(childReplacement);
+            return childReplacement;
+        },
+        transformationName);
+}
+
+void AstNode::TransformChildrenRecursively(const NodeTraverser &pre, const NodeTransformer &post,
+                                           std::string_view transformationName)
+{
+    TransformChildren(
+        [&pre, &post, transformationName](AstNode *child) {
+            pre(child);
+            child->TransformChildrenRecursively(pre, post, transformationName);
+            return post(child);
+        },
+        transformationName);
+}
+
 void AstNode::TransformChildrenRecursivelyPreorder(const NodeTransformer &cb, std::string_view transformationName)
 {
     TransformChildren(
-        [=](AstNode *child) {
+        [&cb, transformationName](AstNode *child) {
             auto *res = cb(child);
             res->TransformChildrenRecursivelyPreorder(cb, transformationName);
             return res;
@@ -144,7 +169,7 @@ void AstNode::TransformChildrenRecursivelyPreorder(const NodeTransformer &cb, st
 void AstNode::TransformChildrenRecursivelyPostorder(const NodeTransformer &cb, std::string_view transformationName)
 {
     TransformChildren(
-        [=](AstNode *child) {
+        [&cb, transformationName](AstNode *child) {
             child->TransformChildrenRecursivelyPostorder(cb, transformationName);
             return cb(child);
         },
@@ -158,7 +183,7 @@ void AstNode::IterateRecursively(const NodeTraverser &cb) const
 
 void AstNode::IterateRecursivelyPreorder(const NodeTraverser &cb) const
 {
-    Iterate([=](AstNode *child) {
+    Iterate([&cb](AstNode *child) {
         cb(child);
         child->IterateRecursivelyPreorder(cb);
     });
@@ -166,7 +191,7 @@ void AstNode::IterateRecursivelyPreorder(const NodeTraverser &cb) const
 
 void AstNode::IterateRecursivelyPostorder(const NodeTraverser &cb) const
 {
-    Iterate([=](AstNode *child) {
+    Iterate([&cb](AstNode *child) {
         child->IterateRecursivelyPostorder(cb);
         cb(child);
     });
@@ -183,7 +208,7 @@ void AnyChildHelper(bool *found, const NodePredicate &cb, AstNode *ast)
         return;
     }
 
-    ast->Iterate([=](AstNode *child) { AnyChildHelper(found, cb, child); });
+    ast->Iterate([&cb, found](AstNode *child) { AnyChildHelper(found, cb, child); });
 }
 
 bool AstNode::IsAnyChild(const NodePredicate &cb) const
@@ -282,6 +307,7 @@ void AstNode::CleanUp()
     }
     if (IsTyped()) {
         this->AsTyped()->SetTsType(nullptr);
+        this->AsTyped()->SetPreferredType(nullptr);
     }
 }
 
@@ -331,7 +357,6 @@ void AstNode::CopyTo(AstNode *other) const
     other->range_ = range_;
     other->flags_ = flags_;
     other->astNodeFlags_ = astNodeFlags_;
-    other->boxingUnboxingFlags_ = boxingUnboxingFlags_;
     other->history_ = history_;
     other->variable_ = variable_;
     other->originalNode_ = originalNode_;

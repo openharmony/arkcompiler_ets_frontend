@@ -29,14 +29,14 @@ function main() {
 }
 
 /* @@? 18:5 Error TypeError: Expected 1 arguments, got 2. */
-/* @@? 18:5 Error TypeError: No matching call signature for ("1", int) */
+/* @@? 18:5 Error TypeError: No matching call signature for ("1", Int) */
 /* @@? 19:5 Error TypeError: Expected 1 type arguments, got 2 . */
-/* @@? 19:5 Error TypeError: No matching call signature for ("1", int) */
+/* @@? 19:5 Error TypeError: No matching call signature for ("1", Int) */
 /* @@? 21:32 Error TypeError: Type 'T' is not compatible with the enclosing method's return type 'NonNullable<T>' */
 /* @@? 23:20 Error TypeError: Duplicate type parameter 'T'. */
 /* @@? 26:5 Error TypeError: Expected 2 arguments, got 1. */
-/* @@? 26:5 Error TypeError: No matching call signature for (int) */
+/* @@? 26:5 Error TypeError: No matching call signature for (Int) */
 /* @@? 27:5 Error TypeError: Expected 2 arguments, got 1. */
-/* @@? 27:5 Error TypeError: No matching call signature for (int) */
-/* @@? 28:5 Error TypeError: No matching call signature for (int, int) */
-/* @@? 28:26 Error TypeError: Type 'int' is not compatible with type 'String' at index 2 */
+/* @@? 27:5 Error TypeError: No matching call signature for (Int) */
+/* @@? 28:5 Error TypeError: No matching call signature for (Int, Int) */
+/* @@? 28:26 Error TypeError: Type 'Int' is not compatible with type 'String' at index 2 */

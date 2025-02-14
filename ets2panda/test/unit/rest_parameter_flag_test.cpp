@@ -328,7 +328,9 @@ TEST_F(RestParameterTest, external_function_with_rest_parameter_0)
 
 TEST_F(RestParameterTest, external_function_with_rest_parameter_1)
 {
-    SetCurrentProgram("");
+    SetCurrentProgram(R"(
+       let v = Math.max(0.0, 1.0, 2.0) // Ensure the func is actually called and reference processed by unboxLowering.
+    )");
     CheckRestParameterFlag("escompat.Math.max:escompat.Array;f64;", true);
 }
 

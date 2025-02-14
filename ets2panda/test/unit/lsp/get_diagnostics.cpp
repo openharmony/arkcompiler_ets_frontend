@@ -62,7 +62,7 @@ add("1", 2);)");
     ASSERT_EQ(result.diagnostic[thirdIndex].range_.end.character_, expectedFirstEndCharacter);
     ASSERT_EQ(result.diagnostic[thirdIndex].severity_, DiagnosticSeverity::Error);
     ASSERT_EQ(std::get<int>(result.diagnostic[thirdIndex].code_), 1);
-    ASSERT_EQ(result.diagnostic[thirdIndex].message_, R"(Type '"hello"' cannot be assigned to type 'double')");
+    ASSERT_EQ(result.diagnostic[thirdIndex].message_, R"(Type '"hello"' cannot be assigned to type 'Double')");
     ASSERT_EQ(result.diagnostic[thirdIndex].codeDescription_.href_, "test code description");
     auto const expectedSecondStartLine = 5;
     auto const expectedSecondStartCharacter = 5;
@@ -74,7 +74,7 @@ add("1", 2);)");
     ASSERT_EQ(result.diagnostic[0].range_.end.character_, expectedSecondEndCharacter);
     ASSERT_EQ(result.diagnostic[0].severity_, DiagnosticSeverity::Error);
     ASSERT_EQ(std::get<int>(result.diagnostic[0].code_), 1);
-    ASSERT_EQ(result.diagnostic[0].message_, R"(Type '"1"' is not compatible with type 'double' at index 1)");
+    ASSERT_EQ(result.diagnostic[0].message_, R"(Type '"1"' is not compatible with type 'Double' at index 1)");
     ASSERT_EQ(result.diagnostic[0].codeDescription_.href_, "test code description");
 }
 

@@ -108,12 +108,22 @@ static ir::Expression *CreateRestArgsArray(public_lib::Context *context, ArenaVe
 
     std::stringstream ss;
     auto *genSymIdent = Gensym(allocator);
+    auto *genSymIdent2 = Gensym(allocator);
+    // Was:
+    // ss << "let @@I1 : FixedArray<@@T2> = @@E3;";
+    // ss << "Array.from<@@T4>(@@I5);";
+    // Now:
+    // NOTE: refactor me!
     ss << "let @@I1 : FixedArray<@@T2> = @@E3;";
-    ss << "Array.from<@@T4>(@@I5);";
+    ss << "let @@I4 : Array<@@T5> = new Array<@@T6>(@@I7.length);";
+    ss << "for (let i = 0; i < @@I8.length; ++i) { @@I9[i] = @@I10[i]}";
+    ss << "@@I11;";
     auto *arrayExpr = checker->AllocNode<ir::ArrayExpression>(std::move(copiedArguments), allocator);
-    auto *loweringResult =
-        parser->CreateFormattedExpression(ss.str(), genSymIdent, type, arrayExpr, type->Clone(allocator, nullptr),
-                                          genSymIdent->Clone(allocator, nullptr));
+    auto *loweringResult = parser->CreateFormattedExpression(
+        ss.str(), genSymIdent, type->Clone(allocator, nullptr), arrayExpr, genSymIdent2, type,
+        type->Clone(allocator, nullptr), genSymIdent->Clone(allocator, nullptr), genSymIdent->Clone(allocator, nullptr),
+        genSymIdent2->Clone(allocator, nullptr), genSymIdent->Clone(allocator, nullptr),
+        genSymIdent2->Clone(allocator, nullptr));
     return loweringResult;
 }
 
@@ -126,7 +136,6 @@ static ir::CallExpression *RebuildCallExpression(public_lib::Context *context, i
 
     for (size_t i = 0; i < signature->Params().size(); ++i) {
         newArgs.push_back(originalCall->Arguments()[i]);
-        newArgs[i]->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
     }
 
     newArgs.push_back(restArgsArray);
@@ -137,7 +146,6 @@ static ir::CallExpression *RebuildCallExpression(public_lib::Context *context, i
     restArgsArray->SetParent(newCall);
     newCall->SetParent(originalCall->Parent());
     newCall->AddModifier(originalCall->Modifiers());
-    newCall->AddBoxingUnboxingFlags(originalCall->GetBoxingUnboxingFlags());
     newCall->SetTypeParams(originalCall->TypeParams());
     newCall->AddAstNodeFlags(ir::AstNodeFlags::RESIZABLE_REST);
 
@@ -167,7 +175,6 @@ static ir::ETSNewClassInstanceExpression *RebuildNewClassInstanceExpression(
     restArgsArray->SetParent(newCall);
     newCall->SetParent(originalCall->Parent());
     newCall->AddModifier(originalCall->Modifiers());
-    newCall->AddBoxingUnboxingFlags(originalCall->GetBoxingUnboxingFlags());
     auto *scope = NearestScope(newCall->Parent());
     auto bscope =
         varbinder::LexicalScope<varbinder::Scope>::Enter(context->GetChecker()->VarBinder()->AsETSBinder(), scope);

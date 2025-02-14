@@ -26,8 +26,6 @@
 #include "ir/base/scriptFunction.h"
 #include "ir/base/classProperty.h"
 #include "ir/statements/annotationDeclaration.h"
-#include "ir/ts/tsEnumDeclaration.h"
-#include "ir/ts/tsEnumMember.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
 #include "ir/ts/tsInterfaceBody.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
@@ -358,37 +356,64 @@ void ETSEmitter::GenExternalRecord(varbinder::RecordTable *recordTable, const pa
 }
 
 // Helper function to reduce EmitDefaultFieldValue size and pass code check
-static pandasm::ScalarValue CreateScalarValue(const checker::Type *type, checker::TypeFlag typeKind)
+// We assume that all the checks have been passes successfully and the value in number literal is valid.
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP, G.FUD.05) solid logic, big switch case
+static pandasm::ScalarValue CreateScalarValue(ir::Literal const *literal, checker::TypeFlag typeKind)
 {
     switch (typeKind) {
         case checker::TypeFlag::ETS_BOOLEAN: {
+            ES2PANDA_ASSERT(literal->IsBooleanLiteral());
             return pandasm::ScalarValue::Create<pandasm::Value::Type::U1>(
-                static_cast<uint8_t>(type->AsETSBooleanType()->GetValue()));
+                static_cast<uint8_t>(literal->AsBooleanLiteral()->Value()));
         }
         case checker::TypeFlag::BYTE: {
-            return pandasm::ScalarValue::Create<pandasm::Value::Type::I8>(type->AsByteType()->GetValue());
+            ES2PANDA_ASSERT(literal->IsNumberLiteral());
+            return pandasm::ScalarValue::Create<pandasm::Value::Type::I8>(
+                literal->AsNumberLiteral()
+                    ->Number()
+                    .GetValueAndCastTo<pandasm::ValueTypeHelperT<pandasm::Value::Type::I8>>());
         }
         case checker::TypeFlag::SHORT: {
-            return pandasm::ScalarValue::Create<pandasm::Value::Type::I16>(type->AsShortType()->GetValue());
+            ES2PANDA_ASSERT(literal->IsNumberLiteral());
+            return pandasm::ScalarValue::Create<pandasm::Value::Type::I16>(
+                literal->AsNumberLiteral()
+                    ->Number()
+                    .GetValueAndCastTo<pandasm::ValueTypeHelperT<pandasm::Value::Type::I16>>());
         }
         case checker::TypeFlag::INT: {
-            return pandasm::ScalarValue::Create<pandasm::Value::Type::I32>(type->AsIntType()->GetValue());
+            ES2PANDA_ASSERT(literal->IsNumberLiteral());
+            return pandasm::ScalarValue::Create<pandasm::Value::Type::I32>(
+                literal->AsNumberLiteral()
+                    ->Number()
+                    .GetValueAndCastTo<pandasm::ValueTypeHelperT<pandasm::Value::Type::I32>>());
         }
         case checker::TypeFlag::LONG: {
-            return pandasm::ScalarValue::Create<pandasm::Value::Type::I64>(type->AsLongType()->GetValue());
+            ES2PANDA_ASSERT(literal->IsNumberLiteral());
+            return pandasm::ScalarValue::Create<pandasm::Value::Type::I64>(
+                literal->AsNumberLiteral()
+                    ->Number()
+                    .GetValueAndCastTo<pandasm::ValueTypeHelperT<pandasm::Value::Type::I64>>());
         }
         case checker::TypeFlag::FLOAT: {
-            return pandasm::ScalarValue::Create<pandasm::Value::Type::F32>(type->AsFloatType()->GetValue());
+            ES2PANDA_ASSERT(literal->IsNumberLiteral());
+            return pandasm::ScalarValue::Create<pandasm::Value::Type::F32>(
+                literal->AsNumberLiteral()
+                    ->Number()
+                    .GetValueAndCastTo<pandasm::ValueTypeHelperT<pandasm::Value::Type::F32>>());
         }
         case checker::TypeFlag::DOUBLE: {
-            return pandasm::ScalarValue::Create<pandasm::Value::Type::F64>(type->AsDoubleType()->GetValue());
+            ES2PANDA_ASSERT(literal->IsNumberLiteral());
+            return pandasm::ScalarValue::Create<pandasm::Value::Type::F64>(
+                literal->AsNumberLiteral()->Number().GetDouble());
         }
         case checker::TypeFlag::CHAR: {
-            return pandasm::ScalarValue::Create<pandasm::Value::Type::U16>(type->AsCharType()->GetValue());
+            ES2PANDA_ASSERT(literal->IsCharLiteral());
+            return pandasm::ScalarValue::Create<pandasm::Value::Type::U16>(literal->AsCharLiteral()->Char());
         }
         case checker::TypeFlag::ETS_OBJECT: {
+            ES2PANDA_ASSERT(literal->IsStringLiteral());
             return pandasm::ScalarValue::Create<pandasm::Value::Type::STRING>(
-                type->AsETSObjectType()->AsETSStringType()->GetValue().Mutf8());
+                literal->AsStringLiteral()->Str().Mutf8());
         }
         default: {
             ES2PANDA_UNREACHABLE();
@@ -398,19 +423,14 @@ static pandasm::ScalarValue CreateScalarValue(const checker::Type *type, checker
 
 void ETSEmitter::EmitDefaultFieldValue(pandasm::Field &classField, const ir::Expression *init)
 {
-    if (init == nullptr) {
+    if (init == nullptr || !init->IsLiteral()) {
         return;
     }
 
     const auto *type = init->TsType();
-
-    if (!type->HasTypeFlag(checker::TypeFlag::CONSTANT)) {
-        return;
-    }
-
     auto typeKind = checker::ETSChecker::TypeKind(type);
     classField.metadata->SetFieldType(classField.type);
-    classField.metadata->SetValue(CreateScalarValue(type, typeKind));
+    classField.metadata->SetValue(CreateScalarValue(init->AsLiteral(), typeKind));
 }
 
 void ETSEmitter::GenInterfaceMethodDefinition(const ir::MethodDefinition *methodDef, bool external)
@@ -631,14 +651,23 @@ void ETSEmitter::GenClassRecord(const ir::ClassDefinition *classDef, bool extern
     Program()->recordTable.emplace(classRecord.name, std::move(classRecord));
 }
 
-// Helper function to check if the unary expression is a numeric literal with negation.
-// This expression should be handled during lowering with the associated issue number.
-static bool IsNegativeLiteralNode(const ir::UnaryExpression *expr)
+void ETSEmitter::ProcessArrayExpression(
+    std::string &baseName, std::vector<std::pair<std::string, std::vector<pandasm::LiteralArray::Literal>>> &result,
+    std::vector<pandasm::LiteralArray::Literal> &literals, const ir::Expression *elem)
 {
-    return expr->OperatorType() == lexer::TokenType::PUNCTUATOR_MINUS && expr->Argument()->IsNumberLiteral();
+    auto litArrays = CreateLiteralArray(baseName, elem);
+    auto emplaceLiteral = [&literals](panda_file::LiteralTag tag, const auto &value) {
+        literals.emplace_back(pandasm::LiteralArray::Literal {tag, value});
+    };
+
+    emplaceLiteral(panda_file::LiteralTag::TAGVALUE, static_cast<uint8_t>(panda_file::LiteralTag::LITERALARRAY));
+    emplaceLiteral(panda_file::LiteralTag::LITERALARRAY, litArrays.back().first);
+    for (const auto &item : litArrays) {
+        result.push_back(item);
+    }
 }
 
-void ETSEmitter::CreateEnumProp(const ir::ClassProperty *prop, pandasm::Field &field)
+static void CreateEnumProp(const ir::ClassProperty *prop, pandasm::Field &field)
 {
     if (prop->Value() == nullptr) {
         return;
@@ -654,22 +683,6 @@ void ETSEmitter::CreateEnumProp(const ir::ClassProperty *prop, pandasm::Field &f
         field.metadata->SetValue(pandasm::ScalarValue::Create<pandasm::Value::Type::STRING>(value));
     } else {
         ES2PANDA_UNREACHABLE();
-    }
-}
-
-void ETSEmitter::ProcessArrayExpression(
-    std::string &baseName, std::vector<std::pair<std::string, std::vector<pandasm::LiteralArray::Literal>>> &result,
-    std::vector<pandasm::LiteralArray::Literal> &literals, const ir::Expression *elem)
-{
-    auto litArrays = CreateLiteralArray(baseName, elem);
-    auto emplaceLiteral = [&literals](panda_file::LiteralTag tag, const auto &value) {
-        literals.emplace_back(pandasm::LiteralArray::Literal {tag, value});
-    };
-
-    emplaceLiteral(panda_file::LiteralTag::TAGVALUE, static_cast<uint8_t>(panda_file::LiteralTag::LITERALARRAY));
-    emplaceLiteral(panda_file::LiteralTag::LITERALARRAY, litArrays.back().first);
-    for (const auto &item : litArrays) {
-        result.push_back(item);
     }
 }
 
@@ -694,47 +707,54 @@ static void ProcessEnumExpression(std::vector<pandasm::LiteralArray::Literal> &l
 void ETSEmitter::ProcessArrayElement(const ir::Expression *elem, std::vector<pandasm::LiteralArray::Literal> &literals,
                                      std::string &baseName, LiteralArrayVector &result)
 {
-    switch (elem->Type()) {
-        case ir::AstNodeType::NUMBER_LITERAL: {
-            auto doubleValue = elem->AsNumberLiteral()->Number().GetDouble();
-            literals.emplace_back(pandasm::LiteralArray::Literal {
-                panda_file::LiteralTag::TAGVALUE, static_cast<uint8_t>(panda_file::LiteralTag::DOUBLE)});
-            literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::DOUBLE, doubleValue});
+    ES2PANDA_ASSERT(elem->IsLiteral() || elem->IsArrayExpression() || elem->IsMemberExpression());
+    if (elem->IsMemberExpression()) {
+        ProcessEnumExpression(literals, elem);
+        return;
+    }
+    auto emplaceLiteral = [&literals](panda_file::LiteralTag tag, auto value) {
+        literals.emplace_back(
+            pandasm::LiteralArray::Literal {panda_file::LiteralTag::TAGVALUE, static_cast<uint8_t>(tag)});
+        literals.emplace_back(pandasm::LiteralArray::Literal {tag, value});
+    };
+    // NOTE(dkofanov): Why 'LiteralTag::ARRAY_*'-types isn't used?
+    switch (checker::ETSChecker::TypeKind(elem->TsType())) {
+        case checker::TypeFlag::ETS_BOOLEAN: {
+            emplaceLiteral(panda_file::LiteralTag::BOOL, elem->AsBooleanLiteral()->Value());
             break;
         }
-        case ir::AstNodeType::BOOLEAN_LITERAL: {
-            bool boolValue = elem->AsBooleanLiteral()->Value();
-            literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::TAGVALUE,
-                                                                  static_cast<uint8_t>(panda_file::LiteralTag::BOOL)});
-            literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::BOOL, boolValue});
+        case checker::TypeFlag::CHAR:
+        case checker::TypeFlag::BYTE:
+        case checker::TypeFlag::SHORT:
+        case checker::TypeFlag::INT: {
+            emplaceLiteral(panda_file::LiteralTag::INTEGER,
+                           static_cast<uint32_t>(elem->AsNumberLiteral()->Number().GetInt()));
             break;
         }
-        case ir::AstNodeType::STRING_LITERAL: {
-            std::string stringValue {elem->AsStringLiteral()->Str().Utf8()};
-            literals.emplace_back(pandasm::LiteralArray::Literal {
-                panda_file::LiteralTag::TAGVALUE, static_cast<uint8_t>(panda_file::LiteralTag::STRING)});
-            literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::STRING, stringValue});
+        case checker::TypeFlag::LONG: {
+            emplaceLiteral(panda_file::LiteralTag::BIGINT,
+                           static_cast<uint64_t>(elem->AsNumberLiteral()->Number().GetInt()));
             break;
         }
-        case ir::AstNodeType::ARRAY_EXPRESSION: {
+        case checker::TypeFlag::FLOAT: {
+            emplaceLiteral(panda_file::LiteralTag::FLOAT, elem->AsNumberLiteral()->Number().GetFloat());
+            break;
+        }
+        case checker::TypeFlag::DOUBLE: {
+            emplaceLiteral(panda_file::LiteralTag::DOUBLE, elem->AsNumberLiteral()->Number().GetDouble());
+            break;
+        }
+        case checker::TypeFlag::ETS_OBJECT: {
+            emplaceLiteral(panda_file::LiteralTag::STRING, elem->AsStringLiteral()->ToString());
+            break;
+        }
+        case checker::TypeFlag::ETS_ARRAY: {
             ProcessArrayExpression(baseName, result, literals, elem);
             break;
         }
-        case ir::AstNodeType::MEMBER_EXPRESSION:
-        case ir::AstNodeType::CALL_EXPRESSION: {
-            ProcessEnumExpression(literals, elem);
-            break;
-        }
-        case ir::AstNodeType::UNARY_EXPRESSION: {
-            double doubleValue = (-1) * elem->AsUnaryExpression()->Argument()->AsNumberLiteral()->Number().GetDouble();
-            literals.emplace_back(pandasm::LiteralArray::Literal {
-                panda_file::LiteralTag::TAGVALUE, static_cast<uint8_t>(panda_file::LiteralTag::DOUBLE)});
-            literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::DOUBLE, doubleValue});
-            break;
-        }
-        default:
+        default: {
             ES2PANDA_UNREACHABLE();
-            break;
+        }
     }
 }
 
@@ -763,13 +783,9 @@ void ETSEmitter::CreateLiteralArrayProp(const ir::ClassProperty *prop, std::stri
         ++rank;
         elemType = checker->GetElementTypeOfArray(elemType);
     }
-    if (elemType->IsETSEnumType()) {
-        field.type = PandasmTypeWithRank(elemType, rank);
-    } else {
-        std::stringstream ss;
-        elemType->ToAssemblerType(ss);
-        field.type = pandasm::Type(ss.str(), rank);
-    }
+    std::stringstream ss;
+    elemType->ToAssemblerType(ss);
+    field.type = pandasm::Type(ss.str(), rank);
 
     auto value = prop->Value();
     if (value != nullptr) {
@@ -844,8 +860,8 @@ pandasm::AnnotationElement ETSEmitter::ProcessArrayType(const ir::ClassProperty 
                       std::string_view {litArrays.back().first}))};
 }
 
-pandasm::AnnotationElement ETSEmitter::ProcessETSEnumType(std::string &baseName, const ir::Expression *init,
-                                                          const checker::Type *type)
+static pandasm::AnnotationElement ProcessETSEnumType(std::string &baseName, const ir::Expression *init,
+                                                     const checker::Type *type)
 {
     auto declNode = init->AsMemberExpression()->PropVar()->Declaration()->Node();
     auto *initValue = declNode->AsClassProperty()->OriginEnumMember()->Init();
@@ -864,38 +880,19 @@ pandasm::AnnotationElement ETSEmitter::GenCustomAnnotationElement(const ir::Clas
 {
     const auto *init = prop->Value();
     const auto *type = init->TsType();
-    auto typeKind = checker::ETSChecker::TypeKind(type);
-    auto propName = prop->Id()->Name().Mutf8();
     if (type->IsETSArrayType() || type->IsETSResizableArrayType()) {
         return ProcessArrayType(prop, baseName, init);
     }
-
     if (type->IsETSEnumType()) {
         return ProcessETSEnumType(baseName, init, type);
     }
-    switch (checker::ETSChecker::TypeKind(
-        Context()->GetChecker()->AsETSChecker()->MaybeUnboxType(const_cast<checker::Type *>(type)))) {
-        case checker::TypeFlag::BYTE:
-        case checker::TypeFlag::SHORT:
-        case checker::TypeFlag::INT:
-        case checker::TypeFlag::LONG:
-        case checker::TypeFlag::FLOAT:
-        case checker::TypeFlag::DOUBLE:
-        case checker::TypeFlag::ETS_BOOLEAN:
-        case checker::TypeFlag::ETS_OBJECT: {
-            if (init->IsUnaryExpression() && IsNegativeLiteralNode(init->AsUnaryExpression())) {
-                double negNumberValue =
-                    (-1) * init->AsUnaryExpression()->Argument()->AsNumberLiteral()->Number().GetDouble();
-                return pandasm::AnnotationElement {
-                    propName, std::make_unique<pandasm::ScalarValue>(
-                                  pandasm::ScalarValue::Create<pandasm::Value::Type::F64>(negNumberValue))};
-            }
-            return pandasm::AnnotationElement {
-                propName, std::make_unique<pandasm::ScalarValue>(CreateScalarValue(init->TsType(), typeKind))};
-        }
-        default:
-            ES2PANDA_UNREACHABLE();
+    if (init->IsLiteral()) {
+        auto typeKind = checker::ETSChecker::TypeKind(type);
+        auto propName = prop->Id()->Name().Mutf8();
+        return pandasm::AnnotationElement {
+            propName, std::make_unique<pandasm::ScalarValue>(CreateScalarValue(init->AsLiteral(), typeKind))};
     }
+    ES2PANDA_UNREACHABLE();
 }
 
 pandasm::AnnotationData ETSEmitter::GenCustomAnnotation(ir::AnnotationUsage *anno, std::string &baseName)
@@ -1003,8 +1000,13 @@ pandasm::AnnotationData ETSEmitter::GenAnnotationFunctionalReference(const ir::C
     pandasm::AnnotationData functionalReference(Signatures::ETS_ANNOTATION_FUNCTIONAL_REFERENCE);
     pandasm::AnnotationElement value(
         Signatures::ANNOTATION_KEY_VALUE,
-        std::make_unique<pandasm::ScalarValue>(pandasm::ScalarValue::Create<pandasm::Value::Type::METHOD>(
-            const_cast<ir::ClassDefinition *>(classDef)->FunctionalReferenceReferencedMethod().Mutf8())));
+        std::make_unique<pandasm::ScalarValue>(
+            pandasm::ScalarValue::Create<pandasm::Value::Type::METHOD>(const_cast<ir::ClassDefinition *>(classDef)
+                                                                           ->FunctionalReferenceReferencedMethod()
+                                                                           ->Function()
+                                                                           ->Scope()
+                                                                           ->InternalName()
+                                                                           .Mutf8())));
     functionalReference.AddElement(std::move(value));
     return functionalReference;
 }
@@ -1051,32 +1053,37 @@ ir::MethodDefinition *ETSEmitter::FindAsyncImpl(ir::ScriptFunction *asyncFunc)
     const ir::ClassDefinition *classDef = ownerNode->AsClassDefinition();
     ES2PANDA_ASSERT(classDef != nullptr);
 
-    auto it =
-        std::find_if(classDef->Body().rbegin(), classDef->Body().rend(), [&implName, &asyncFunc](ir::AstNode *node) {
-            if (!node->IsMethodDefinition()) {
-                return false;
-            }
-            bool isSameName = node->AsMethodDefinition()->Id()->Name().Utf8() == implName;
-            bool isBothStaticOrInstance =
-                (node->Modifiers() & ir::ModifierFlags::STATIC) == (asyncFunc->Modifiers() & ir::ModifierFlags::STATIC);
-            return isSameName && isBothStaticOrInstance;
-        });
-    if (it == classDef->Body().rend()) {
+    ir::MethodDefinition *method = nullptr;
+    for (auto node : classDef->Body()) {
+        if (!node->IsMethodDefinition()) {
+            continue;
+        }
+        bool isSameName = node->AsMethodDefinition()->Id()->Name().Utf8() == implName;
+        bool isBothStaticOrInstance =
+            (node->Modifiers() & ir::ModifierFlags::STATIC) == (asyncFunc->Modifiers() & ir::ModifierFlags::STATIC);
+        if (isSameName && isBothStaticOrInstance) {
+            method = node->AsMethodDefinition();
+            break;
+        }
+    }
+    if (method == nullptr) {
         return nullptr;
     }
 
-    ir::MethodDefinition *method = (*it)->AsMethodDefinition();
     auto *checker = static_cast<checker::ETSChecker *>(Context()->GetChecker());
     checker::TypeRelation *typeRel = checker->Relation();
     checker::SavedTypeRelationFlagsContext savedFlagsCtx(typeRel, checker::TypeRelationFlag::NO_RETURN_TYPE_CHECK);
     method->Function()->Signature()->IsSubtypeOf(typeRel, asyncFunc->Signature());
-    auto overloadIt = method->Overloads().begin();
-    while (overloadIt != method->Overloads().end() && !typeRel->IsTrue()) {
-        method = *overloadIt;
-        method->Function()->Signature()->IsSubtypeOf(typeRel, asyncFunc->Signature());
-        ++overloadIt;
+    if (typeRel->IsTrue()) {
+        return method;
     }
-    return typeRel->IsTrue() ? method : nullptr;
+    for (auto overload : method->Overloads()) {
+        overload->Function()->Signature()->IsSubtypeOf(typeRel, asyncFunc->Signature());
+        if (typeRel->IsTrue()) {
+            return overload;
+        }
+    }
+    return nullptr;
 }
 
 pandasm::AnnotationData ETSEmitter::GenAnnotationAsync(ir::ScriptFunction *scriptFunc)

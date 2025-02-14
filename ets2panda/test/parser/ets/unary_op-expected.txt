@@ -433,25 +433,8 @@
                           }
                         },
                         "right": {
-                          "type": "UnaryExpression",
-                          "operator": "+",
-                          "prefix": true,
-                          "argument": {
-                            "type": "NumberLiteral",
-                            "value": 5,
-                            "loc": {
-                              "start": {
-                                "line": 19,
-                                "column": 10,
-                                "program": "unary_op.ets"
-                              },
-                              "end": {
-                                "line": 19,
-                                "column": 11,
-                                "program": "unary_op.ets"
-                              }
-                            }
-                          },
+                          "type": "NumberLiteral",
+                          "value": 5,
                           "loc": {
                             "start": {
                               "line": 19,
@@ -824,26 +807,8 @@
                           }
                         },
                         "right": {
-                          "type": "UnaryExpression",
-                          "operator": "!",
-                          "prefix": true,
-                          "argument": {
-                            "type": "Identifier",
-                            "name": "i",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 25,
-                                "column": 10,
-                                "program": "unary_op.ets"
-                              },
-                              "end": {
-                                "line": 25,
-                                "column": 11,
-                                "program": "unary_op.ets"
-                              }
-                            }
-                          },
+                          "type": "BooleanLiteral",
+                          "value": false,
                           "loc": {
                             "start": {
                               "line": 25,
@@ -1162,25 +1127,8 @@
               }
             },
             "value": {
-              "type": "UnaryExpression",
-              "operator": "+",
-              "prefix": true,
-              "argument": {
-                "type": "NumberLiteral",
-                "value": 5,
-                "loc": {
-                  "start": {
-                    "line": 19,
-                    "column": 10,
-                    "program": "unary_op.ets"
-                  },
-                  "end": {
-                    "line": 19,
-                    "column": 11,
-                    "program": "unary_op.ets"
-                  }
-                }
-              },
+              "type": "NumberLiteral",
+              "value": 5,
               "loc": {
                 "start": {
                   "line": 19,
@@ -1569,26 +1517,8 @@
               }
             },
             "value": {
-              "type": "UnaryExpression",
-              "operator": "!",
-              "prefix": true,
-              "argument": {
-                "type": "Identifier",
-                "name": "i",
-                "decorators": [],
-                "loc": {
-                  "start": {
-                    "line": 25,
-                    "column": 10,
-                    "program": "unary_op.ets"
-                  },
-                  "end": {
-                    "line": 25,
-                    "column": 11,
-                    "program": "unary_op.ets"
-                  }
-                }
-              },
+              "type": "BooleanLiteral",
+              "value": false,
               "loc": {
                 "start": {
                   "line": 25,

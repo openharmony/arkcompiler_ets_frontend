@@ -44,6 +44,7 @@
 #include "ir/ets/etsNewClassInstanceExpression.h"
 #include "ir/ets/etsStructDeclaration.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
+#include "checker/ETSAnalyzerHelpers.h"
 #include "checker/types/globalTypesHolder.h"
 #include "varbinder/variable.h"
 #include "varbinder/declaration.h"
@@ -282,7 +283,7 @@ void AliveAnalyzer::AnalyzeDoLoop(const ir::DoWhileStatement *doWhile)
     status_ = Or(status_, ResolveContinues(doWhile));
     AnalyzeNode(doWhile->Test());
     ES2PANDA_ASSERT(doWhile->Test()->TsType());
-    const auto exprRes = doWhile->Test()->TsType()->ResolveConditionExpr();
+    const auto exprRes = IsConstantTestValue(doWhile->Test());
     status_ = And(status_, static_cast<LivenessStatus>(!std::get<0>(exprRes) || !std::get<1>(exprRes)));
     status_ = Or(status_, ResolveBreaks(doWhile));
 }
@@ -292,7 +293,7 @@ void AliveAnalyzer::AnalyzeWhileLoop(const ir::WhileStatement *whileStmt)
     SetOldPendingExits(PendingExits());
     AnalyzeNode(whileStmt->Test());
     ES2PANDA_ASSERT(whileStmt->Test()->TsType());
-    const auto exprRes = whileStmt->Test()->TsType()->ResolveConditionExpr();
+    const auto exprRes = IsConstantTestValue(whileStmt->Test());
     status_ = And(status_, static_cast<LivenessStatus>(!std::get<0>(exprRes) || std::get<1>(exprRes)));
     AnalyzeStat(whileStmt->Body());
     status_ = Or(status_, ResolveContinues(whileStmt));
@@ -311,7 +312,7 @@ void AliveAnalyzer::AnalyzeForLoop(const ir::ForUpdateStatement *forStmt)
         AnalyzeNode(forStmt->Test());
         ES2PANDA_ASSERT(forStmt->Test()->TsType());
         condType = forStmt->Test()->TsType();
-        std::tie(resolveType, res) = forStmt->Test()->TsType()->ResolveConditionExpr();
+        std::tie(resolveType, res) = IsConstantTestValue(forStmt->Test());
         status_ = From(!resolveType || res);
     } else {
         status_ = LivenessStatus::ALIVE;

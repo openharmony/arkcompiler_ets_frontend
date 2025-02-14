@@ -49,6 +49,7 @@ class B {
 }
 
 /* @@? 17:5 Error SyntaxError: Namespace is allowed only at the top level or inside a namespace. */
+/* @@? 18:9 Error TypeError: Unresolved reference dfdfsfdf */
 /* @@? 20:5 Error SyntaxError: Namespace is allowed only at the top level or inside a namespace. */
 /* @@? 23:20 Error TypeError: Unresolved reference foo */
 /* @@? 27:11 Error TypeError: Property 'getInstance' does not exist on type 'B' */

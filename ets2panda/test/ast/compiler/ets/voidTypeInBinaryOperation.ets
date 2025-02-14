@@ -20,6 +20,6 @@ function main(): void {
   assertTrue(false || check())
 }
 
-/* @@? 20:3 Error TypeError: No matching call signature for assertTrue(void)   */
+/* @@? 20:3 Error TypeError: No matching call signature for assertTrue(Boolean|void)   */
+/* @@? 20:14 Error TypeError: Type 'Boolean|void' is not compatible with type 'Boolean' at index 1   */
 /* @@? 20:23 Error TypeError: Cannot use type 'void' as value.   */
-/* @@? 20:23 Error TypeError: Type 'void' is not compatible with type 'boolean' at index 1   */

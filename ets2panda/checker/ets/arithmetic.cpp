@@ -15,7 +15,7 @@
 
 #include "arithmetic.h"
 
-#include "checker/types/ts/nullType.h"
+#include "checker/types/globalTypesHolder.h"
 #include "lexer/token/token.h"
 
 namespace ark::es2panda::checker {
@@ -28,7 +28,7 @@ struct BinaryArithmOperands {
     checker::Type *reducedR;
 };
 
-static inline BinaryArithmOperands GetBinaryOperands(ETSChecker *checker, ir::BinaryExpression *expr)
+static BinaryArithmOperands GetBinaryOperands(ETSChecker *checker, ir::BinaryExpression *expr)
 {
     auto typeL = expr->Left()->Check(checker);
     auto typeR = expr->Right()->Check(checker);
@@ -46,20 +46,6 @@ static void LogOperatorCannotBeApplied(ETSChecker *checker, lexer::TokenType op,
 static void LogOperatorCannotBeApplied(ETSChecker *checker, BinaryArithmOperands const &ops)
 {
     LogOperatorCannotBeApplied(checker, ops.expr->OperatorType(), ops.typeL, ops.typeR, ops.expr->Start());
-}
-
-static inline void UnboxOperands(ETSChecker *checker, BinaryArithmOperands const &ops)
-{
-    auto const unbox = [checker](ir::Expression *expr, Type *type, Type *reducedType) {
-        if (type != reducedType) {
-            expr->AddBoxingUnboxingFlags(checker->GetUnboxingFlag(reducedType));
-        }
-        if (reducedType->IsETSEnumType()) {
-            expr->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
-        }
-    };
-    unbox(ops.expr->Left(), ops.typeL, ops.reducedL);
-    unbox(ops.expr->Right(), ops.typeR, ops.reducedR);
 }
 
 static inline void RepairTypeErrorsInOperands(Type **left, Type **right)
@@ -87,11 +73,31 @@ static inline void RepairTypeErrorWithDefault(Type **type, Type *dflt)
     }
 }
 
-static Type *EffectiveTypeOfNumericOp(ETSChecker *checker, Type *left, Type *right)
+static bool CheckOpArgsTypeEq(ETSChecker *checker, Type *left, Type *right, Type *type)
 {
-    ES2PANDA_ASSERT(left->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
-                    right->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
+    return ((left != nullptr) && (right != nullptr) && checker->IsTypeIdenticalTo(left, type) &&
+            checker->IsTypeIdenticalTo(right, type));
+}
 
+static bool FindOpArgsType(ETSChecker *checker, Type *left, Type *right, Type *target)
+{
+    return (checker->Relation()->IsSupertypeOf(target, left) || checker->Relation()->IsSupertypeOf(target, right));
+}
+
+bool ETSChecker::CheckIfNumeric(Type *type)
+{
+    if (type == nullptr) {
+        return false;
+    }
+    if (type->IsETSPrimitiveType()) {
+        return type->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC);
+    }
+    auto *unboxed = MaybeUnboxInRelation(type);
+    return (unboxed != nullptr) && unboxed->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC);
+}
+
+static Type *EffectivePrimitiveTypeOfNumericOp(ETSChecker *checker, Type *left, Type *right)
+{
     if (left->IsDoubleType() || right->IsDoubleType()) {
         return checker->GlobalDoubleType();
     }
@@ -101,7 +107,10 @@ static Type *EffectiveTypeOfNumericOp(ETSChecker *checker, Type *left, Type *rig
     if (left->IsLongType() || right->IsLongType()) {
         return checker->GlobalLongType();
     }
-    return checker->GlobalIntType();
+    if (left->IsCharType() && right->IsCharType()) {
+        return checker->GlobalCharType();
+    }
+    return checker->GlobalIntType();  // return int in case of primitive types by default
 }
 
 static Type *TryConvertToPrimitiveType(ETSChecker *checker, Type *type)
@@ -111,99 +120,80 @@ static Type *TryConvertToPrimitiveType(ETSChecker *checker, Type *type)
     }
 
     if (type->IsETSIntEnumType()) {
+        // Pull out the type argument to BaseEnum
+        if (type->AsETSObjectType()->SuperType() != nullptr &&
+            !type->AsETSObjectType()->SuperType()->TypeArguments().empty()) {
+            auto *baseEnumArg = type->AsETSObjectType()->SuperType()->TypeArguments()[0];
+            return checker->MaybeUnboxInRelation(baseEnumArg);
+        }
         return checker->GlobalIntType();
     }
+
     if (type->IsETSStringEnumType()) {
         return checker->GlobalETSStringLiteralType();
     }
     return checker->MaybeUnboxInRelation(type);
 }
 
-static std::pair<Type *, bool> BinaryCoerceToPrimitives(ETSChecker *checker, Type *left, Type *right,
-                                                        bool const promote)
+static Type *EffectiveTypeOfNumericOp(ETSChecker *checker, Type *left, Type *right)
+{
+    ES2PANDA_ASSERT(checker->CheckIfNumeric(left) && checker->CheckIfNumeric(right));
+
+    auto bothBoxed = left->IsETSUnboxableObject() && right->IsETSUnboxableObject();
+    if (!bothBoxed) {
+        return EffectivePrimitiveTypeOfNumericOp(checker, left, right);
+    }
+
+    auto globalTypesHolder = checker->GetGlobalTypesHolder();
+    if (FindOpArgsType(checker, left, right, globalTypesHolder->GlobalDoubleBuiltinType())) {
+        return globalTypesHolder->GlobalDoubleBuiltinType();
+    }
+    if (FindOpArgsType(checker, left, right, globalTypesHolder->GlobalFloatBuiltinType())) {
+        return globalTypesHolder->GlobalFloatBuiltinType();
+    }
+    if (FindOpArgsType(checker, left, right, globalTypesHolder->GlobalLongBuiltinType())) {
+        return globalTypesHolder->GlobalLongBuiltinType();
+    }
+    return globalTypesHolder->GlobalIntegerBuiltinType();  // return Int for Byte, Short, Int
+}
+
+static Type *BinaryGetPromotedType(ETSChecker *checker, Type *left, Type *right, bool const promote)
 {
     Type *const unboxedL = TryConvertToPrimitiveType(checker, left);
     Type *const unboxedR = TryConvertToPrimitiveType(checker, right);
     if (unboxedL == nullptr || unboxedR == nullptr) {
-        return {nullptr, false};
+        return nullptr;
     }
 
-    bool const bothConst = unboxedL->IsConstantType() && unboxedR->IsConstantType();
+    Type *typeL = left;
+    Type *typeR = right;
+
+    bool const bothBoxed = !typeL->IsETSPrimitiveType() && !typeR->IsETSPrimitiveType();
 
     if (!promote) {
-        return {unboxedR, bothConst};
+        return typeR;
     }
 
-    if (unboxedL->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
-        unboxedR->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
-        return {EffectiveTypeOfNumericOp(checker, unboxedL, unboxedR), bothConst};
-    }
-    return {unboxedR, bothConst};
-}
-
-Type *ETSChecker::NegateNumericType(Type *type, ir::Expression *node)
-{
-    ES2PANDA_ASSERT(type->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
-
-    TypeFlag typeKind = ETSType(type);
-    Type *result = nullptr;
-
-    switch (typeKind) {
-        case TypeFlag::BYTE: {
-            result = CreateByteType(-(type->AsByteType()->GetValue()));
-            break;
+    if (!bothBoxed) {
+        if (unboxedL->IsETSEnumType() || unboxedR->IsETSEnumType()) {
+            return nullptr;
         }
-        case TypeFlag::CHAR: {
-            result = CreateCharType(-(type->AsCharType()->GetValue()));
-            break;
+        if (!typeL->IsETSPrimitiveType()) {
+            typeL = checker->MaybeUnboxType(typeL);
         }
-        case TypeFlag::SHORT: {
-            result = CreateShortType(-(type->AsShortType()->GetValue()));
-            break;
-        }
-        case TypeFlag::INT: {
-            result = CreateIntType(-(type->AsIntType()->GetValue()));
-            break;
-        }
-        case TypeFlag::LONG: {
-            result = CreateLongType(-(type->AsLongType()->GetValue()));
-            break;
-        }
-        case TypeFlag::FLOAT: {
-            result = CreateFloatType(-(type->AsFloatType()->GetValue()));
-            break;
-        }
-        case TypeFlag::DOUBLE: {
-            result = CreateDoubleType(-(type->AsDoubleType()->GetValue()));
-            break;
-        }
-        default: {
-            ES2PANDA_UNREACHABLE();
+        if (!typeR->IsETSPrimitiveType()) {
+            typeR = checker->MaybeUnboxType(typeR);
         }
     }
 
-    node->SetTsType(result);
-    return result;
-}
-
-Type *ETSChecker::HandleRelationOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType)
-{
-    ES2PANDA_ASSERT(left->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
-                    right->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
-
-    if (left->IsDoubleType() || right->IsDoubleType()) {
-        return PerformRelationOperationOnTypes<DoubleType>(left, right, operationType);
+    if (checker->CheckIfNumeric(typeL) && checker->CheckIfNumeric(typeR)) {
+        return EffectiveTypeOfNumericOp(checker, typeL, typeR);
+    }
+    if (checker->CheckIfNumeric(typeR)) {
+        return typeR;
     }
 
-    if (left->IsFloatType() || right->IsFloatType()) {
-        return PerformRelationOperationOnTypes<FloatType>(left, right, operationType);
-    }
-
-    if (left->IsLongType() || right->IsLongType()) {
-        return PerformRelationOperationOnTypes<LongType>(left, right, operationType);
-    }
-
-    return PerformRelationOperationOnTypes<IntType>(left, right, operationType);
+    return typeL;
 }
 
 bool ETSChecker::CheckBinaryOperatorForBigInt(Type *left, Type *right, lexer::TokenType op)
@@ -250,6 +240,53 @@ bool ETSChecker::CheckBinaryPlusMultDivOperandsForUnionType(const Type *leftType
     return true;
 }
 
+void ETSChecker::SetGenerateValueOfFlags(std::tuple<checker::Type *, checker::Type *, Type *, Type *> types,
+                                         std::tuple<ir::Expression *, ir::Expression *> nodes)
+{
+    auto [leftType, rightType, _, __] = types;
+    auto [left, right] = nodes;
+    if (leftType->IsETSEnumType()) {
+        left->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
+    }
+    if (rightType->IsETSEnumType()) {
+        right->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
+    }
+}
+
+static bool TypeIsAppropriateForArithmetic(const checker::Type *type, ETSChecker *checker)
+{
+    return type->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) ||
+           (type->IsETSObjectType() &&
+            checker->Relation()->IsSupertypeOf(checker->GetGlobalTypesHolder()->GlobalNumericBuiltinType(), type));
+}
+
+static checker::Type *CheckBinaryOperatorForIntEnums(ETSChecker *checker, checker::Type *const leftType,
+                                                     checker::Type *const rightType)
+{
+    if (!leftType->IsETSEnumType() && !rightType->IsETSEnumType()) {
+        return nullptr;
+    }
+    if (TypeIsAppropriateForArithmetic(leftType, checker) && TypeIsAppropriateForArithmetic(rightType, checker)) {
+        Type *leftNumeric;
+        if (leftType->IsETSIntEnumType()) {
+            leftNumeric = checker->MaybeBoxInRelation(TryConvertToPrimitiveType(checker, leftType));
+        } else {
+            leftNumeric = leftType;
+        }
+
+        Type *rightNumeric;
+        if (rightType->IsETSIntEnumType()) {
+            rightNumeric = checker->MaybeBoxInRelation(TryConvertToPrimitiveType(checker, rightType));
+        } else {
+            rightNumeric = rightType;
+        }
+
+        return EffectiveTypeOfNumericOp(checker, leftNumeric, rightNumeric);
+    }
+
+    return nullptr;
+}
+
 checker::Type *ETSChecker::CheckBinaryOperatorMulDivMod(
     std::tuple<ir::Expression *, ir::Expression *, lexer::TokenType, lexer::SourcePosition> op, bool isEqualOp,
     std::tuple<checker::Type *, checker::Type *, Type *, Type *> types)
@@ -264,18 +301,13 @@ checker::Type *ETSChecker::CheckBinaryOperatorMulDivMod(
         return GlobalTypeError();
     }
 
-    checker::Type *tsType {};
-    auto const [promotedType, bothConst] = BinaryCoerceToPrimitives(this, unboxedL, unboxedR, !isEqualOp);
-    FlagExpressionWithUnboxing(leftType, unboxedL, left);
-    FlagExpressionWithUnboxing(rightType, unboxedR, right);
-
+    auto const promotedType = BinaryGetPromotedType(this, leftType, rightType, !isEqualOp);
     if (!CheckBinaryPlusMultDivOperandsForUnionType(leftType, rightType, left, right)) {
         return GlobalTypeError();
     }
 
-    if (promotedType == nullptr || !unboxedL->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) ||
-        !unboxedR->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
-        auto type = CheckBinaryOperatorForIntEnums(leftType, rightType);
+    if (promotedType == nullptr || !CheckIfNumeric(leftType) || !CheckIfNumeric(rightType)) {
+        auto type = CheckBinaryOperatorForIntEnums(this, leftType, rightType);
         if (type != nullptr) {
             return type;
         }
@@ -283,66 +315,42 @@ checker::Type *ETSChecker::CheckBinaryOperatorMulDivMod(
         return GlobalTypeError();
     }
 
-    if (bothConst) {
-        tsType = HandleArithmeticOperationOnTypes(leftType, rightType, operationType);
-    }
-
-    return (tsType != nullptr) ? tsType : promotedType;
-}
-
-checker::Type *ETSChecker::CheckBinaryOperatorForIntEnums(const checker::Type *const leftType,
-                                                          const checker::Type *const rightType)
-{
-    if (leftType->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
-        rightType->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
-        if (leftType->IsETSIntEnumType() && rightType->IsETSIntEnumType()) {
-            return GlobalIntType();
-        }
-        if (leftType->IsFloatType() || rightType->IsFloatType()) {
-            return GlobalFloatType();
-        }
-        if (leftType->IsDoubleType() || rightType->IsDoubleType()) {
-            return GlobalDoubleType();
-        }
-        if (leftType->IsLongType() || rightType->IsLongType()) {
-            return GlobalLongType();
-        }
-        return GlobalIntType();
-    }
-    return nullptr;
+    return promotedType;
 }
 
 checker::Type *ETSChecker::CheckBinaryBitwiseOperatorForIntEnums(const checker::Type *const leftType,
                                                                  const checker::Type *const rightType)
 {
-    if (leftType->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
-        rightType->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
+    if (!leftType->IsETSEnumType() && !rightType->IsETSEnumType()) {
+        return nullptr;
+    }
+    if (TypeIsAppropriateForArithmetic(leftType, this) && TypeIsAppropriateForArithmetic(rightType, this)) {
         if (leftType->IsETSIntEnumType() && rightType->IsETSIntEnumType()) {
-            return GlobalIntType();
+            return GlobalIntBuiltinType();
         }
         if (leftType->IsFloatType() || rightType->IsFloatType()) {
-            return GlobalIntType();
+            return GlobalIntBuiltinType();
         }
         if (leftType->IsDoubleType() || rightType->IsDoubleType()) {
-            return GlobalLongType();
+            return GlobalLongBuiltinType();
         }
         if (leftType->IsLongType() || rightType->IsLongType()) {
-            return GlobalLongType();
+            return GlobalLongBuiltinType();
         }
-        return GlobalIntType();
+        return GlobalIntBuiltinType();
     }
     return nullptr;
 }
 
-checker::Type *ETSChecker::CheckBinaryOperatorPlusForEnums(const checker::Type *const leftType,
-                                                           const checker::Type *const rightType)
+static checker::Type *CheckBinaryOperatorPlusForEnums(ETSChecker *checker, checker::Type *const leftType,
+                                                      checker::Type *const rightType)
 {
-    if (auto numericType = CheckBinaryOperatorForIntEnums(leftType, rightType); numericType != nullptr) {
+    if (auto numericType = CheckBinaryOperatorForIntEnums(checker, leftType, rightType); numericType != nullptr) {
         return numericType;
     }
     if ((leftType->IsETSStringEnumType() && (rightType->IsETSStringType() || rightType->IsETSStringEnumType())) ||
         (rightType->IsETSStringEnumType() && (leftType->IsETSStringType() || leftType->IsETSStringEnumType()))) {
-        return GlobalETSStringLiteralType();
+        return checker->GlobalETSStringLiteralType();
     }
     return nullptr;
 }
@@ -374,29 +382,19 @@ checker::Type *ETSChecker::CheckBinaryOperatorPlus(
     if (!CheckBinaryPlusMultDivOperandsForUnionType(leftType, rightType, left, right)) {
         return GlobalTypeError();
     }
-
-    auto const [promotedType, bothConst] = BinaryCoerceToPrimitives(this, unboxedL, unboxedR, !isEqualOp);
-    FlagExpressionWithUnboxing(leftType, unboxedL, left);
-    FlagExpressionWithUnboxing(rightType, unboxedR, right);
-
-    if (promotedType == nullptr || !unboxedL->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) ||
-        !unboxedR->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
-        auto type = CheckBinaryOperatorPlusForEnums(leftType, rightType);
+    auto const promotedType = BinaryGetPromotedType(this, leftType, rightType, !isEqualOp);
+    if (promotedType == nullptr || !CheckIfNumeric(rightType) || !CheckIfNumeric(leftType)) {
+        auto type = CheckBinaryOperatorPlusForEnums(this, leftType, rightType);
         if (type != nullptr) {
             return type;
         }
         LogError(diagnostic::BINOP_NONARITHMETIC_TYPE, {}, pos);
-        return GlobalTypeError();
-    }
-
-    if (bothConst) {
-        return HandleArithmeticOperationOnTypes(leftType, rightType, operationType);
     }
 
     return promotedType;
 }
 
-static checker::Type *GetBitwiseCompatibleType(ETSChecker *checker, Type *const type)
+[[maybe_unused]] static checker::Type *GetBitwiseCompatibleType(ETSChecker *checker, Type *const type)
 {
     switch (checker->ETSType(type)) {
         case TypeFlag::BYTE: {
@@ -430,8 +428,8 @@ checker::Type *ETSChecker::CheckBinaryOperatorShift(
     auto [left, right, operationType, pos] = op;
     auto [leftType, rightType, unboxedL, unboxedR] = types;
 
-    RepairTypeErrorWithDefault(&leftType, GlobalIntType());
-    RepairTypeErrorWithDefault(&rightType, GlobalIntType());
+    RepairTypeErrorWithDefault(&leftType, GlobalIntBuiltinType());
+    RepairTypeErrorWithDefault(&rightType, GlobalIntBuiltinType());
     RepairTypeErrorWithDefault(&unboxedL, GlobalIntType());
     RepairTypeErrorWithDefault(&unboxedR, GlobalIntType());
 
@@ -440,15 +438,10 @@ checker::Type *ETSChecker::CheckBinaryOperatorShift(
         return GlobalTypeError();
     }
 
-    auto promotedLeftType = ApplyUnaryOperatorPromotion(unboxedL, false, !isEqualOp);
-    auto promotedRightType = ApplyUnaryOperatorPromotion(unboxedR, false, !isEqualOp);
-
-    FlagExpressionWithUnboxing(leftType, unboxedL, left);
-    FlagExpressionWithUnboxing(rightType, unboxedR, right);
-
-    if (promotedLeftType == nullptr || !promotedLeftType->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) ||
-        promotedRightType == nullptr ||
-        !promotedRightType->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
+    auto promotedLeftType = GetUnaryOperatorPromotedType(leftType, !isEqualOp);
+    auto promotedRightType = GetUnaryOperatorPromotedType(rightType, !isEqualOp);
+    if (promotedLeftType == nullptr || promotedRightType == nullptr || !CheckIfNumeric(promotedLeftType) ||
+        !CheckIfNumeric(promotedRightType)) {
         auto type = CheckBinaryBitwiseOperatorForIntEnums(leftType, rightType);
         if (type != nullptr) {
             return type;
@@ -457,10 +450,22 @@ checker::Type *ETSChecker::CheckBinaryOperatorShift(
         return GlobalTypeError();
     }
 
-    if (promotedLeftType->HasTypeFlag(TypeFlag::CONSTANT) && promotedRightType->HasTypeFlag(TypeFlag::CONSTANT)) {
-        return HandleBitwiseOperationOnTypes(promotedLeftType, promotedRightType, operationType);
+    auto isPrim = promotedLeftType->IsETSPrimitiveType();
+    auto unboxedProm = MaybeUnboxType(promotedLeftType);
+    if (unboxedProm->IsFloatType() || unboxedProm->IsIntType()) {
+        return isPrim ? GlobalIntType() : GetGlobalTypesHolder()->GlobalIntegerBuiltinType();
     }
-    return GetBitwiseCompatibleType(this, promotedLeftType);
+
+    if (unboxedProm->IsLongType() || unboxedProm->IsDoubleType()) {
+        return isPrim ? GlobalLongType() : GetGlobalTypesHolder()->GlobalLongBuiltinType();
+    }
+
+    if (unboxedProm->IsByteType() || unboxedProm->IsShortType() || unboxedProm->IsCharType()) {
+        return promotedLeftType;
+    }
+
+    ES2PANDA_UNREACHABLE();
+    return nullptr;
 }
 
 checker::Type *ETSChecker::CheckBinaryOperatorBitwise(
@@ -481,19 +486,12 @@ checker::Type *ETSChecker::CheckBinaryOperatorBitwise(
         return GlobalTypeError();
     }
 
-    if (unboxedL != nullptr && unboxedL->HasTypeFlag(checker::TypeFlag::ETS_BOOLEAN) && unboxedR != nullptr &&
-        unboxedR->HasTypeFlag(checker::TypeFlag::ETS_BOOLEAN)) {
-        FlagExpressionWithUnboxing(leftType, unboxedL, left);
-        FlagExpressionWithUnboxing(rightType, unboxedR, right);
-        return HandleBooleanLogicalOperators(unboxedL, unboxedR, operationType);
+    if (CheckOpArgsTypeEq(this, unboxedL, unboxedR, GlobalETSBooleanType())) {
+        return GetGlobalTypesHolder()->GlobalETSBooleanBuiltinType();
     }
 
-    auto const [promotedType, bothConst] = BinaryCoerceToPrimitives(this, unboxedL, unboxedR, !isEqualOp);
-    FlagExpressionWithUnboxing(leftType, unboxedL, left);
-    FlagExpressionWithUnboxing(rightType, unboxedR, right);
-
-    if (promotedType == nullptr || !unboxedL->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) ||
-        !unboxedR->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
+    auto const promotedType = BinaryGetPromotedType(this, leftType, rightType, !isEqualOp);
+    if (promotedType == nullptr || !CheckIfNumeric(rightType) || !CheckIfNumeric(leftType)) {
         auto type = CheckBinaryBitwiseOperatorForIntEnums(leftType, rightType);
         if (type != nullptr) {
             return type;
@@ -501,17 +499,27 @@ checker::Type *ETSChecker::CheckBinaryOperatorBitwise(
         LogError(diagnostic::OP_NONNUMERIC, {}, pos);
         return GlobalTypeError();
     }
+    SetGenerateValueOfFlags(types, {left, right});
 
-    if (bothConst) {
-        return HandleBitwiseOperationOnTypes(leftType, rightType, operationType);
+    auto isPrim = promotedType->IsETSPrimitiveType();
+    auto unboxedProm = MaybeUnboxType(promotedType);
+    if (unboxedProm->IsFloatType() || unboxedProm->IsIntType()) {
+        return isPrim ? GlobalIntType() : GetGlobalTypesHolder()->GlobalIntegerBuiltinType();
     }
 
-    return SelectGlobalIntegerTypeForNumeric(promotedType);
+    if (unboxedProm->IsLongType() || unboxedProm->IsDoubleType()) {
+        return isPrim ? GlobalLongType() : GetGlobalTypesHolder()->GlobalLongBuiltinType();
+    }
+
+    if (unboxedProm->IsByteType() || unboxedProm->IsShortType() || unboxedProm->IsCharType()) {
+        return promotedType;
+    }
+    return nullptr;
 }
 
 checker::Type *ETSChecker::CheckBinaryOperatorLogical(ir::Expression *left, ir::Expression *right,
-                                                      ir::BinaryExpression *expr, checker::Type *leftType,
-                                                      checker::Type *rightType, Type *unboxedL, Type *unboxedR)
+                                                      checker::Type *leftType, checker::Type *rightType, Type *unboxedL,
+                                                      Type *unboxedR)
 {
     RepairTypeErrorsInOperands(&leftType, &rightType);
     RepairTypeErrorsInOperands(&unboxedL, &unboxedR);
@@ -524,42 +532,44 @@ checker::Type *ETSChecker::CheckBinaryOperatorLogical(ir::Expression *left, ir::
         right->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
         return CreateETSUnionType({MaybeBoxExpression(left), MaybeBoxExpression(right)});
     }
-    if (right->IsNumberLiteral() && AdjustNumberLiteralType(right->AsNumberLiteral(), rightType, leftType)) {
+    if (right->IsNumberLiteral()) {
         return leftType;
     }
-    if (left->IsNumberLiteral() && AdjustNumberLiteralType(left->AsNumberLiteral(), leftType, rightType)) {
+    if (left->IsNumberLiteral()) {
         return rightType;
-    }
-
-    if (HandleLogicalPotentialResult(left, right, expr, leftType)) {
-        ES2PANDA_ASSERT(expr->Result()->TsType() != nullptr);
-        return expr->Result()->TsType();
     }
 
     if (IsTypeIdenticalTo(leftType, rightType)) {
         return GetNonConstantType(leftType);
     }
 
-    if (IsTypeIdenticalTo(unboxedL, unboxedR)) {
-        FlagExpressionWithUnboxing(leftType, unboxedL, left);
-        FlagExpressionWithUnboxing(rightType, unboxedR, right);
-        return GetNonConstantType(unboxedL);
-    }
-
-    if (unboxedL != nullptr && unboxedL->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) && unboxedR != nullptr &&
-        unboxedR->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
-        FlagExpressionWithUnboxing(leftType, unboxedL, left);
-        FlagExpressionWithUnboxing(rightType, unboxedR, right);
-        return EffectiveTypeOfNumericOp(this, unboxedL, unboxedR);
-    }
-
     return CreateETSUnionType({MaybeBoxExpression(left), MaybeBoxExpression(right)});
 }
 
+static bool ContainsNumbers(ETSChecker *checker, Type *tp)
+{
+    auto isSubtypeOfNumeric = [checker](Type *tp2) {
+        return checker->Relation()->IsSupertypeOf(checker->GetGlobalTypesHolder()->GlobalNumericBuiltinType(), tp2);
+    };
+    if (isSubtypeOfNumeric(tp)) {
+        return true;
+    }
+    if (tp->IsETSUnionType()) {
+        for (auto *constituent : tp->AsETSUnionType()->ConstituentTypes()) {
+            if (isSubtypeOfNumeric(constituent)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+// CC-OFFNXT(huge_cyclomatic_complexity, huge_cca_cyclomatic_complexity[C++]) solid logic
 // NOTE: code inside this function follows the broken logic
 bool ETSChecker::CheckValidEqualReferenceType(checker::Type *const leftType, checker::Type *const rightType)
 {
-    auto isRelaxedType {[](checker::Type *const type) -> bool {
+    auto isRelaxedType {[&](checker::Type *const type) -> bool {
         return (type->IsETSObjectType() && type->AsETSObjectType()->IsGlobalETSObjectType()) || type->IsETSAnyType() ||
                type->IsETSNullType() || type->IsETSUndefinedType();
     }};
@@ -567,6 +577,18 @@ bool ETSChecker::CheckValidEqualReferenceType(checker::Type *const leftType, che
     // Equality expression is always allowed for *magic types*
     if (isRelaxedType(leftType) || isRelaxedType(rightType)) {
         return true;
+    }
+
+    // Any two types that can be numeric are comparable
+    if (ContainsNumbers(this, leftType) && ContainsNumbers(this, rightType)) {
+        return true;
+    }
+
+    // Boolean and any type that can be numeric or char are not comparable
+    if ((FindOpArgsType(this, leftType, rightType, GetGlobalTypesHolder()->GlobalNumericBuiltinType()) ||
+         FindOpArgsType(this, leftType, rightType, GetGlobalTypesHolder()->GlobalCharBuiltinType())) &&
+        FindOpArgsType(this, leftType, rightType, GetGlobalTypesHolder()->GlobalETSBooleanBuiltinType())) {
+        return false;
     }
 
     // NOTE (mxlgv): Skip for unions. Required implementation of the specification section:
@@ -593,6 +615,11 @@ bool ETSChecker::CheckValidEqualReferenceType(checker::Type *const leftType, che
             !Relation()->IsIdenticalTo(nonConstRhs, nonConstLhs)) {
             return false;
         }
+    }
+
+    if (FindOpArgsType(this, leftType, rightType, GetGlobalTypesHolder()->GlobalNumericBuiltinType()) &&
+        (leftType->IsETSEnumType() || rightType->IsETSEnumType())) {
+        return true;
     }
 
     // 7.24.5 Enumeration Relational Operators
@@ -666,13 +693,6 @@ static Type *HandelReferenceBinaryEquality(ETSChecker *checker, BinaryArithmOper
         return checker->CreateETSUnionType({typeL, typeR});
     }
 
-    if (typeL->IsETSEnumType() && typeR->IsETSEnumType()) {
-        if (checker->Relation()->IsIdenticalTo(typeL, typeR)) {
-            return typeL;
-        }
-        return nullptr;
-    }
-
     if (typeL->IsETSReferenceType() && typeR->IsETSReferenceType()) {
         checker->Relation()->SetNode(expr->Left());
         if (!checker->CheckValidEqualReferenceType(typeL, typeR)) {
@@ -698,8 +718,6 @@ static Type *CheckBinaryOperatorEqual(ETSChecker *checker, BinaryArithmOperands 
 {
     [[maybe_unused]] auto const [expr, typeL, typeR, reducedL, reducedR] = ops;
 
-    expr->Left()->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
-    expr->Right()->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
     if (typeL->IsTypeError()) {  // both are errors
         return checker->GlobalTypeError();
     }
@@ -710,12 +728,13 @@ static Type *CheckBinaryOperatorEqual(ETSChecker *checker, BinaryArithmOperands 
 
     if (reducedL->IsETSBooleanType() && reducedR->IsETSBooleanType()) {
         if (reducedL->IsConstantType() && reducedR->IsConstantType()) {
-            bool res = reducedL->AsETSBooleanType()->GetValue() == reducedR->AsETSBooleanType()->GetValue();
-            res = ((expr->OperatorType() == lexer::TokenType::PUNCTUATOR_EQUAL) == res);
-            return checker->CreateETSBooleanType(res);
+            return checker->GetGlobalTypesHolder()->GlobalETSBooleanBuiltinType();
         }
-        UnboxOperands(checker, ops);
-        return checker->GlobalETSBooleanType();
+        if (checker->CheckIfNumeric(typeL) && checker->CheckIfNumeric(typeR) && typeL->IsETSUnboxableObject() &&
+            typeR->IsETSUnboxableObject()) {
+            return typeL;
+        }
+        return reducedL;
     }
 
     return HandelReferenceBinaryEquality(checker, ops);
@@ -752,7 +771,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(ir::Expres
     RepairTypeErrorsInOperands(&leftType, &rightType);
     RepairTypeErrorsInOperands(&unboxedL, &unboxedR);
     if (leftType->IsTypeError()) {  // both are errors
-        return {GlobalETSBooleanType(), GlobalTypeError()};
+        return {GlobalETSBooleanBuiltinType(), GlobalTypeError()};
     }
 
     if ((leftType->IsETSUnionType() || rightType->IsETSUnionType()) &&
@@ -761,30 +780,30 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(ir::Expres
         operationType != lexer::TokenType::PUNCTUATOR_STRICT_EQUAL &&
         operationType != lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL) {
         LogError(diagnostic::BINOP_UNION, {}, pos);
-        return {GlobalETSBooleanType(), leftType};
+        return {GlobalETSBooleanBuiltinType(), leftType};
     }
 
-    auto *const promotedType = std::get<0>(BinaryCoerceToPrimitives(this, unboxedL, unboxedR, !isEqualOp));
-    FlagExpressionWithUnboxing(leftType, unboxedL, left);
-    FlagExpressionWithUnboxing(rightType, unboxedR, right);
+    auto const promotedType = BinaryGetPromotedType(this, leftType, rightType, !isEqualOp);
 
     if (leftType->IsETSUnionType() || rightType->IsETSUnionType()) {
-        return {GlobalETSBooleanType(), CreateETSUnionType({MaybeBoxExpression(left), MaybeBoxExpression(right)})};
+        return {GlobalETSBooleanBuiltinType(),
+                CreateETSUnionType({MaybeBoxExpression(left), MaybeBoxExpression(right)})};
     }
 
-    if (promotedType != nullptr && (unboxedL->IsETSBooleanType() != unboxedR->IsETSBooleanType())) {
+    if (promotedType != nullptr && unboxedL != nullptr && unboxedR != nullptr &&
+        unboxedL->IsETSBooleanType() != unboxedR->IsETSBooleanType()) {
         LogOperatorCannotBeApplied(this, operationType, leftType, rightType, pos);
-        return {GlobalETSBooleanType(), leftType};
+        return {GlobalETSBooleanBuiltinType(), leftType};
     }
 
     if (promotedType == nullptr) {
         if (!NonNumericTypesAreAppropriateForComparison(this, leftType, rightType)) {
             LogError(diagnostic::BINOP_INCOMPARABLE, {}, pos);
         }
-        return {GlobalETSBooleanType(), GlobalETSBooleanType()};
+        return {GlobalETSBooleanBuiltinType(), GlobalETSBooleanBuiltinType()};
     }
 
-    return {GlobalETSBooleanType(), promotedType};
+    return {GlobalETSBooleanBuiltinType(), promotedType};
 }
 
 std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorInstanceOf(lexer::SourcePosition pos, checker::Type *leftType,
@@ -792,59 +811,137 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorInstanceOf(lexer::Sour
 {
     RepairTypeErrorsInOperands(&leftType, &rightType);
     if (leftType->IsTypeError()) {  // both are errors
-        return {GlobalETSBooleanType(), GlobalTypeError()};
+        return {GlobalETSBooleanBuiltinType(), GlobalTypeError()};
     }
 
-    if (!IsReferenceType(leftType) || !IsReferenceType(rightType)) {
+    if (leftType->IsETSPrimitiveType() || rightType->IsETSPrimitiveType()) {
         LogError(diagnostic::BINOP_NOT_SAME, {}, pos);
-        return {GlobalETSBooleanType(), leftType};
+        return {GlobalETSBooleanBuiltinType(), leftType};
     }
 
     if (rightType->IsETSDynamicType() && !rightType->AsETSDynamicType()->HasDecl()) {
         LogError(diagnostic::INSTANCEOF_NOT_TYPE, {}, pos);
-        return {GlobalETSBooleanType(), leftType};
+        return {GlobalETSBooleanBuiltinType(), leftType};
     }
 
     checker::Type *opType = rightType->IsETSDynamicType() ? GlobalBuiltinJSValueType() : GlobalETSObjectType();
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    ComputeApparentType(rightType);
     RemoveStatus(checker::CheckerStatus::IN_INSTANCEOF_CONTEXT);
 
-    return {GlobalETSBooleanType(), opType};
+    return {GlobalETSBooleanBuiltinType(), opType};
 }
 
-bool ETSChecker::AdjustNumberLiteralType(ir::NumberLiteral *const literal, Type *literalType, Type *const otherType)
+template <typename T>
+static void ConvertNumberLiteralTo(ir::NumberLiteral *lit, Type *toType)
 {
-    if (otherType->IsETSObjectType() && !otherType->IsETSEnumType()) {
-        auto *const objectType = otherType->AsETSObjectType();
-        if (objectType->HasObjectFlag(ETSObjectFlags::BUILTIN_TYPE) && !objectType->IsETSStringType()) {
-            literal->RemoveBoxingUnboxingFlags(GetBoxingFlag(literalType));
-            literalType = MaybeUnboxInRelation(objectType);
-            literal->SetTsType(literalType);
-            literal->AddBoxingUnboxingFlags(GetBoxingFlag(literalType));
-            return true;
+    auto &number = lit->Number();
+    number.SetValue(number.GetValueAndCastTo<T>());
+    toType->AddTypeFlag(TypeFlag::CONSTANT);
+    lit->SetTsType(toType);
+}
+
+template <typename From, typename To>
+static bool CheckNumberLiteralValue(ETSChecker *checker, ir::NumberLiteral const *const lit)
+{
+    auto const maxTo = static_cast<From>(std::numeric_limits<To>::max());
+    auto const minTo = static_cast<From>(std::numeric_limits<To>::min());
+    auto const val = lit->Number().GetValue<From>();
+    if (val < minTo || val > maxTo) {
+        checker->LogError(diagnostic::CONSTANT_VALUE_OUT_OF_RANGE, {}, lit->Start());
+        return false;
+    }
+    return true;
+}
+
+//  Just to reduce the size of 'ConvertNumberLiteral'
+static void ConvertIntegerNumberLiteral(ETSChecker *checker, ir::NumberLiteral *lit, ETSObjectType *fromType,
+                                        ETSObjectType *toType)
+{
+    if (toType->HasObjectFlag(ETSObjectFlags::BUILTIN_LONG)) {
+        ConvertNumberLiteralTo<int64_t>(lit, checker->GlobalLongBuiltinType()->Clone(checker));
+    } else if (toType->HasObjectFlag(ETSObjectFlags::BUILTIN_INT)) {
+        if (!fromType->HasObjectFlag(ETSObjectFlags::BUILTIN_LONG) ||
+            CheckNumberLiteralValue<int64_t, int32_t>(checker, lit)) {
+            ConvertNumberLiteralTo<int32_t>(lit, checker->GlobalIntBuiltinType()->Clone(checker));
+        }
+    } else if (toType->HasObjectFlag(ETSObjectFlags::BUILTIN_SHORT)) {
+        if (fromType->HasObjectFlag(ETSObjectFlags::BUILTIN_LONG) &&
+            !CheckNumberLiteralValue<int64_t, int16_t>(checker, lit)) {
+            return;
+        }
+        if (fromType->HasObjectFlag(ETSObjectFlags::BUILTIN_INT) &&
+            !CheckNumberLiteralValue<int32_t, int16_t>(checker, lit)) {
+            return;
+        }
+        ConvertNumberLiteralTo<int16_t>(lit, checker->GlobalShortBuiltinType()->Clone(checker));
+    } else if (toType->HasObjectFlag(ETSObjectFlags::BUILTIN_BYTE)) {
+        if (fromType->HasObjectFlag(ETSObjectFlags::BUILTIN_LONG) &&
+            !CheckNumberLiteralValue<int64_t, int8_t>(checker, lit)) {
+            return;
+        }
+        if (fromType->HasObjectFlag(ETSObjectFlags::BUILTIN_INT) &&
+            !CheckNumberLiteralValue<int32_t, int8_t>(checker, lit)) {
+            return;
+        }
+        if (fromType->HasObjectFlag(ETSObjectFlags::BUILTIN_SHORT) &&
+            !CheckNumberLiteralValue<int16_t, int8_t>(checker, lit)) {
+            return;
+        }
+        ConvertNumberLiteralTo<int8_t>(lit, checker->GlobalByteBuiltinType()->Clone(checker));
+    }
+}
+
+static void ConvertNumberLiteral(ETSChecker *checker, ir::NumberLiteral *lit, ETSObjectType *toType)
+{
+    ES2PANDA_ASSERT(toType->IsBuiltinNumeric() && lit->TsType()->IsBuiltinNumeric());
+
+    if (auto *fromType = lit->TsType()->AsETSObjectType(); !checker->Relation()->IsIdenticalTo(fromType, toType)) {
+        switch (static_cast<ETSObjectFlags>(toType->ObjectFlags() & ETSObjectFlags::BUILTIN_NUMERIC)) {
+            case ETSObjectFlags::BUILTIN_DOUBLE:
+                ConvertNumberLiteralTo<double>(lit, checker->GlobalDoubleBuiltinType()->Clone(checker));
+                break;
+
+            case ETSObjectFlags::BUILTIN_FLOAT:
+                if (fromType->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE)) {
+                    checker->LogError(diagnostic::INVALID_ASSIGNMNENT, {fromType, toType}, lit->Start());
+                } else {
+                    ConvertNumberLiteralTo<float>(lit, checker->GlobalFloatBuiltinType()->Clone(checker));
+                }
+                break;
+
+            case ETSObjectFlags::BUILTIN_LONG:
+            case ETSObjectFlags::BUILTIN_INT:
+            case ETSObjectFlags::BUILTIN_SHORT:
+            case ETSObjectFlags::BUILTIN_BYTE:
+                if (fromType->HasObjectFlag(ETSObjectFlags::BUILTIN_FLOATING_POINT)) {
+                    checker->LogError(diagnostic::INVALID_ASSIGNMNENT, {fromType, toType}, lit->Start());
+                } else {
+                    ConvertIntegerNumberLiteral(checker, lit, fromType, toType);
+                }
+                break;
+
+            default:
+                ES2PANDA_UNREACHABLE();
         }
     }
-    return false;
 }
 
 Type *ETSChecker::CheckBinaryOperatorNullishCoalescing(ir::Expression *left, ir::Expression *right,
                                                        lexer::SourcePosition pos)
 {
     auto *leftType = left->TsType();
-    if (!IsReferenceType(leftType)) {
+    if (leftType->IsETSPrimitiveType()) {
         LogError(diagnostic::COALESCE_NOT_REF, {}, pos);
-        return leftType;
     }
     leftType = GetNonNullishType(leftType);
 
-    auto *rightType = MaybeBoxExpression(right);
+    auto *rightType = MaybeBoxType(right->TsType());
     if (IsTypeIdenticalTo(leftType, rightType)) {
         return leftType;
     }
 
     //  If possible and required update number literal type to the proper value (identical to left-side type)
-    if (right->IsNumberLiteral() && AdjustNumberLiteralType(right->AsNumberLiteral(), rightType, leftType)) {
+    if (right->IsNumberLiteral() && leftType->IsBuiltinNumeric()) {
+        ConvertNumberLiteral(this, right->AsNumberLiteral(), leftType->AsETSObjectType());
         return leftType;
     }
 
@@ -904,6 +1001,7 @@ struct TypeParams {
     Type *unboxedR;
 };
 
+// CC-OFFNXT(G.FUN.01, huge_method) solid logic
 static std::tuple<Type *, Type *> CheckBinaryOperatorHelper(ETSChecker *checker,
                                                             const BinaryOperatorParams &binaryParams,
                                                             const TypeParams &typeParams)
@@ -914,22 +1012,23 @@ static std::tuple<Type *, Type *> CheckBinaryOperatorHelper(ETSChecker *checker,
     checker::Type *const leftType = typeParams.leftType;
     checker::Type *const rightType = typeParams.rightType;
     checker::Type *tsType {};
+
     BinaryArithmOperands ops = GetBinaryOperands(checker, binaryParams.expr->AsBinaryExpression());
     BinaryArithmOperands opsRepaired = RepairTypeErrorsInOperands(ops);
 
     switch (binaryParams.operationType) {
         case lexer::TokenType::PUNCTUATOR_LOGICAL_AND:
         case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
-            tsType = checker->CheckBinaryOperatorLogical(left, right, binaryParams.expr->AsBinaryExpression(), leftType,
-                                                         rightType, typeParams.unboxedL, typeParams.unboxedR);
+            tsType = checker->CheckBinaryOperatorLogical(left, right, leftType, rightType, typeParams.unboxedL,
+                                                         typeParams.unboxedR);
             break;
         }
         case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL:
         case lexer::TokenType::PUNCTUATOR_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_EQUAL: {
-            if (Type *res = CheckBinaryOperatorEqual(checker, opsRepaired); res != nullptr) {
-                return {checker->GlobalETSBooleanType(), res};
+            if (auto res = CheckBinaryOperatorEqual(checker, opsRepaired); res != nullptr) {
+                return {checker->GetGlobalTypesHolder()->GlobalETSBooleanBuiltinType(), res};
             }
             [[fallthrough]];
         }
@@ -957,123 +1056,70 @@ static std::tuple<Type *, Type *> CheckBinaryOperatorHelper(ETSChecker *checker,
     return {tsType, tsType};
 }
 
-namespace {
-bool IsStringEnum(const ir::Expression *expr)
+static void TryAddValueOfFlagToStringEnumOperand(ir::Expression *op, const ir::Expression *otherOp)
 {
-    if (expr == nullptr) {
-        return false;
+    auto type = op->TsType();
+    auto otherType = otherOp->TsType();
+    if (type->IsETSStringEnumType() && (otherType->IsETSStringType() || otherType->IsETSStringEnumType())) {
+        op->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
     }
-
-    auto type = expr->TsType();
-    if (type == nullptr) {
-        return false;
-    }
-
-    return type->IsETSStringEnumType();
 }
 
-bool IsIntEnum(const ir::Expression *expr)
+static void TryAddValueOfFlagToIntEnumOperand(ir::Expression *op, const ir::Expression *otherOp)
 {
-    if (expr == nullptr) {
-        return false;
+    auto type = op->TsType();
+    auto otherType = otherOp->TsType();
+    if (type->IsETSIntEnumType() &&
+        ((otherType->IsETSObjectType() && otherType->AsETSObjectType()->IsBoxedPrimitive()) ||
+         otherType->IsETSIntEnumType())) {
+        op->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
     }
-
-    auto type = expr->TsType();
-    if (type == nullptr) {
-        return false;
-    }
-
-    return type->IsETSIntEnumType();
 }
 
-bool CheckNumericOperatorContext(ir::Expression *expression, lexer::TokenType op)
+static void CheckEnumInOperatorContext(ir::Expression *expression, lexer::TokenType opType, ir::Expression *left,
+                                       ir::Expression *right, ETSChecker *checker)
 {
-    const bool isMultiplicative = op == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
-                                  op == lexer::TokenType::PUNCTUATOR_DIVIDE || op == lexer::TokenType::PUNCTUATOR_MOD;
-    const bool isAdditive = op == lexer::TokenType::PUNCTUATOR_PLUS || op == lexer::TokenType::PUNCTUATOR_MINUS;
-    const bool isShift = op == lexer::TokenType::PUNCTUATOR_LEFT_SHIFT ||
-                         op == lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT ||
-                         op == lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT;
-    const bool isRelational =
-        op == lexer::TokenType::PUNCTUATOR_GREATER_THAN || op == lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL ||
-        op == lexer::TokenType::PUNCTUATOR_LESS_THAN || op == lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL;
-    const bool isEquality = op == lexer::TokenType::PUNCTUATOR_EQUAL || op == lexer::TokenType::PUNCTUATOR_NOT_EQUAL;
-    const bool isBitwise = op == lexer::TokenType::PUNCTUATOR_BITWISE_AND ||
-                           op == lexer::TokenType::PUNCTUATOR_BITWISE_OR ||
-                           op == lexer::TokenType::PUNCTUATOR_BITWISE_XOR;
-    const bool isConditionalAndOr =
-        op == lexer::TokenType::PUNCTUATOR_LOGICAL_AND || op == lexer::TokenType::PUNCTUATOR_LOGICAL_OR;
+    auto [lType, rType] = std::tuple {left->TsType(), right->TsType()};
 
-    if (IsIntEnum(expression)) {
-        if (isMultiplicative || isAdditive || isShift || isRelational || isEquality || isBitwise ||
-            isConditionalAndOr) {
-            expression->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
+    switch (opType) {
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN:
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_NOT_EQUAL: {
+            if (lType->IsETSEnumType() && rType->IsETSEnumType() && !checker->Relation()->IsIdenticalTo(lType, rType)) {
+                checker->LogError(diagnostic::BINOP_INCOMPARABLE, {}, expression->Start());
+                return;
+            }
+            [[fallthrough]];
         }
-        return true;
-    }
-    return false;
-}
-
-void CheckStringOperatorContext(ir::Expression *expression, checker::Type *otherType, lexer::TokenType op)
-{
-    const bool isEquality = op == lexer::TokenType::PUNCTUATOR_EQUAL || op == lexer::TokenType::PUNCTUATOR_NOT_EQUAL;
-    const bool isRelational =
-        op == lexer::TokenType::PUNCTUATOR_GREATER_THAN || op == lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL ||
-        op == lexer::TokenType::PUNCTUATOR_LESS_THAN || op == lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL;
-    if (IsStringEnum(expression) && (otherType->IsETSStringType() || otherType->IsETSStringEnumType())) {
-        if (op == lexer::TokenType::PUNCTUATOR_PLUS || isRelational || isEquality) {
-            expression->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
+        case lexer::TokenType::PUNCTUATOR_PLUS: {
+            TryAddValueOfFlagToStringEnumOperand(left, right);
+            TryAddValueOfFlagToStringEnumOperand(right, left);
+            [[fallthrough]];
         }
-    }
-}
-
-bool CheckRelationalOperatorsBetweenEnums(ir::Expression *left, ir::Expression *right, lexer::TokenType op)
-{
-    const bool isRelational =
-        op == lexer::TokenType::PUNCTUATOR_GREATER_THAN || op == lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL ||
-        op == lexer::TokenType::PUNCTUATOR_LESS_THAN || op == lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL;
-    const bool isEquality = op == lexer::TokenType::PUNCTUATOR_EQUAL || op == lexer::TokenType::PUNCTUATOR_NOT_EQUAL;
-
-    if (((IsStringEnum(left) && IsStringEnum(right)) ||
-         (IsIntEnum(left) && IsIntEnum(right)))) {  // NOTE(psiket) In case of int enums it has been already checked in
-                                                    // the CheckNumericOperatorContext function
-        if (isRelational || isEquality) {
-            left->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
-            right->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
-            return true;
+        case lexer::TokenType::PUNCTUATOR_MULTIPLY:
+        case lexer::TokenType::PUNCTUATOR_DIVIDE:
+        case lexer::TokenType::PUNCTUATOR_MOD:
+        case lexer::TokenType::PUNCTUATOR_MINUS:
+        case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT:
+        case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT:
+        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT:
+        case lexer::TokenType::PUNCTUATOR_BITWISE_AND:
+        case lexer::TokenType::PUNCTUATOR_BITWISE_OR:
+        case lexer::TokenType::PUNCTUATOR_BITWISE_XOR:
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_AND:
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
+            TryAddValueOfFlagToIntEnumOperand(left, right);
+            TryAddValueOfFlagToIntEnumOperand(right, left);
+            break;
         }
-    }
-    return false;
-}
-
-void CheckNeedToGenerateGetValueForBinaryExpression(ir::Expression *expression)
-{
-    if (!expression->IsBinaryExpression()) {
-        return;
-    }
-
-    auto binaryExpression = expression->AsBinaryExpression();
-    auto op = binaryExpression->OperatorType();
-    auto leftExp = binaryExpression->Left();
-    auto rightExp = binaryExpression->Right();
-
-    // Numeric Operator Context
-    auto leftIsIntEnum = CheckNumericOperatorContext(leftExp, op);
-    auto rightIsIntEnum = CheckNumericOperatorContext(rightExp, op);
-    if (leftIsIntEnum || rightIsIntEnum) {
-        return;
-    }
-
-    // String Operator Context
-    CheckStringOperatorContext(leftExp, rightExp->TsType(), op);
-    CheckStringOperatorContext(rightExp, leftExp->TsType(), op);
-
-    // Relational operators if both are enumeration Types
-    if (CheckRelationalOperatorsBetweenEnums(leftExp, rightExp, op)) {
-        return;
+        default:
+            // NOTE(dkofanov): What about the '+=' operation?
+            break;
     }
 }
-}  // namespace
 
 std::tuple<Type *, Type *> ETSChecker::CheckArithmeticOperations(
     ir::Expression *expr, std::tuple<ir::Expression *, ir::Expression *, lexer::TokenType, lexer::SourcePosition> op,
@@ -1089,16 +1135,22 @@ std::tuple<Type *, Type *> ETSChecker::CheckArithmeticOperations(
     if (rightType->IsETSUnionType()) {
         rightType = GetNonConstantType(rightType);
     }
+    CheckEnumInOperatorContext(expr, operationType, left, right, this);
 
     auto checkMap = GetCheckMap();
     if (checkMap.find(operationType) != checkMap.end()) {
         auto check = checkMap[operationType];
         auto tsType = check(this, std::make_tuple(left, right, operationType, pos), isEqualOp,
                             std::make_tuple(leftType, rightType, unboxedL, unboxedR));
+        if (tsType == nullptr) {
+            return {leftType, rightType};
+        }
+        if (tsType->IsETSPrimitiveType()) {
+            tsType = MaybeBoxType(tsType);
+        }
         return {tsType, tsType};
     }
 
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     return CheckBinaryOperatorHelper(this, {left, right, expr, operationType, pos, isEqualOp},
                                      {leftType, rightType, unboxedL, unboxedR});
 }
@@ -1147,8 +1199,6 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
         return {leftType, leftType};
     }
 
-    CheckNeedToGenerateGetValueForBinaryExpression(expr);
-
     const bool isLogicalExtendedOperator = (operationType == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) ||
                                            (operationType == lexer::TokenType::PUNCTUATOR_LOGICAL_OR);
     Type *unboxedL =
@@ -1166,57 +1216,6 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     return CheckArithmeticOperations(expr, std::make_tuple(left, right, operationType, pos), isEqualOp,
                                      std::make_tuple(leftType, rightType, unboxedL, unboxedR));
-}
-
-Type *ETSChecker::HandleArithmeticOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType)
-{
-    ES2PANDA_ASSERT(left->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
-                    right->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
-
-    if (left->IsDoubleType() || right->IsDoubleType()) {
-        return PerformArithmeticOperationOnTypes<DoubleType>(left, right, operationType);
-    }
-
-    if (left->IsFloatType() || right->IsFloatType()) {
-        return PerformArithmeticOperationOnTypes<FloatType>(left, right, operationType);
-    }
-
-    if (left->IsLongType() || right->IsLongType()) {
-        return PerformArithmeticOperationOnTypes<LongType>(left, right, operationType);
-    }
-
-    return PerformArithmeticOperationOnTypes<IntType>(left, right, operationType);
-}
-
-Type *ETSChecker::HandleBitwiseOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType)
-{
-    ES2PANDA_ASSERT(left->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
-                    right->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
-
-    if (left->IsDoubleType() || right->IsDoubleType()) {
-        return HandleBitWiseArithmetic<DoubleType, LongType>(left, right, operationType);
-    }
-
-    if (left->IsFloatType() || right->IsFloatType()) {
-        return HandleBitWiseArithmetic<FloatType, IntType>(left, right, operationType);
-    }
-
-    if (left->IsLongType() || right->IsLongType()) {
-        return HandleBitWiseArithmetic<LongType>(left, right, operationType);
-    }
-
-    return HandleBitWiseArithmetic<IntType>(left, right, operationType);
-}
-
-void ETSChecker::FlagExpressionWithUnboxing(Type *type, Type *unboxedType, ir::Expression *typeExpression)
-{
-    if (type->IsETSEnumType()) {
-        typeExpression->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
-        return;
-    }
-    if (type->IsETSObjectType() && (unboxedType != nullptr)) {
-        typeExpression->AddBoxingUnboxingFlags(GetUnboxingFlag(unboxedType));
-    }
 }
 
 }  // namespace ark::es2panda::checker

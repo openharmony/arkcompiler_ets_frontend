@@ -431,7 +431,7 @@
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 20,
+                                "column": 24,
                                 "program": "assert.ets"
                               },
                               "end": {

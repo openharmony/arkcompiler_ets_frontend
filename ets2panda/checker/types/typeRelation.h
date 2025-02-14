@@ -37,7 +37,6 @@ using ENUMBITOPS_OPERATORS;
 
 enum class TypeRelationFlag : uint32_t {
     NONE = 0U,
-    NARROWING = 1U << 0U,
     WIDENING = 1U << 1U,
     BOXING = 1U << 2U,
     UNBOXING = 1U << 3U,
@@ -63,10 +62,13 @@ enum class TypeRelationFlag : uint32_t {
     NO_THROW_GENERIC_TYPEALIAS = 1U << 24U,
     OVERRIDING_CONTEXT = 1U << 25U,
     IGNORE_REST_PARAM = 1U << 26U,
+    STRING_TO_CHAR = 1U << 27U,
+    OVERLOADING_CONTEXT = 1U << 28U,
+    NO_SUBSTITUTION_NEEDED = 1U << 29U,
 
     ASSIGNMENT_CONTEXT = WIDENING | BOXING | UNBOXING,
-    BRIDGE_CHECK = OVERRIDING_CONTEXT | IGNORE_TYPE_PARAMETERS | NO_RETURN_TYPE_CHECK,
-    CASTING_CONTEXT = NARROWING | WIDENING | BOXING | UNBOXING | UNCHECKED_CAST,
+    BRIDGE_CHECK = OVERRIDING_CONTEXT | IGNORE_TYPE_PARAMETERS,
+    CASTING_CONTEXT = WIDENING | BOXING | UNBOXING | UNCHECKED_CAST,
 };
 
 enum class RelationResult { TRUE, FALSE, UNKNOWN, MAYBE, CACHE_MISS, ERROR };
@@ -141,11 +143,6 @@ public:
     bool IsError() const
     {
         return result_ == RelationResult::ERROR;
-    }
-
-    bool ApplyNarrowing() const
-    {
-        return (flags_ & TypeRelationFlag::NARROWING) != 0;
     }
 
     bool ApplyWidening() const

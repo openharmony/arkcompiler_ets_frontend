@@ -38,11 +38,6 @@ public:
     TypeFacts GetTypeFacts() const override;
 
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
-
-    std::tuple<bool, bool> ResolveConditionExpr() const override
-    {
-        return {IsConstantType(), false};
-    }
 };
 }  // namespace ark::es2panda::checker
 

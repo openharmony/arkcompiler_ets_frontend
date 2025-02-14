@@ -81,7 +81,7 @@ void StringComparisonLowering::ProcessBinaryExpression(ir::BinaryExpression *exp
     checker::ETSChecker *checker = ctx->GetChecker()->AsETSChecker();
     ArenaVector<ir::Expression *> callArgs(checker->Allocator()->Adapter());
     ir::Expression *accessor = nullptr;
-    auto *zeroExpr = checker->AllocNode<ir::NumberLiteral>(util::StringView("0"));
+    auto *zeroExpr = checker->AllocNode<ir::NumberLiteral>(lexer::Number(int32_t(0)));
     auto *const callee = checker->AllocNode<ir::Identifier>("compareTo", checker->Allocator());
     auto *var = checker->GlobalBuiltinETSStringType()->GetProperty(callee->AsIdentifier()->Name(),
                                                                    checker::PropertySearchFlags::SEARCH_METHOD);

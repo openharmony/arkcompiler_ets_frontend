@@ -173,6 +173,13 @@ static bool DoIsolatedDeclgenCheck(const util::Options &options, const std::stri
     return true;
 }
 
+static bool CheckIfPhaseToSkip(util::Options &options, const std::string &name)
+{
+    return options.GetSkipPhases().count(name) > 0 ||
+           (options.IsGenerateDeclEnableIsolated() && name == compiler::InsertOptionalParametersAnnotation::NAME);
+}
+
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP, G.FUD.05) solid logic
 static bool RunVerifierAndPhases(public_lib::Context &context, parser::Program &program)
 {
     auto &options = const_cast<util::Options &>(*context.config->options);
@@ -184,13 +191,14 @@ static bool RunVerifierAndPhases(public_lib::Context &context, parser::Program &
         options.SetGenerateDeclEnabled(true);
     }
 
-    bool skipPhase = false;
+    bool afterCheckerPhase = false;
     while (auto phase = context.phaseManager->NextPhase()) {
         const auto name = std::string {phase->Name()};
-        skipPhase = options.GetSkipPhases().count(name) > 0 ||
-                    (options.IsGenerateDeclEnableIsolated() &&
-                     phase->Name() == compiler::InsertOptionalParametersAnnotation::NAME);
-        if (skipPhase) {
+        if (name == compiler::CheckerPhase::NAME) {
+            afterCheckerPhase = true;
+        }
+
+        if (CheckIfPhaseToSkip(options, name)) {
             continue;
         }
 
@@ -210,12 +218,13 @@ static bool RunVerifierAndPhases(public_lib::Context &context, parser::Program &
         if (!options.IsGenerateDeclEnableIsolated()) {
             verifier.IntroduceNewInvariants(phase->Name());
         }
+
         if (verifierEachPhase || options.HasVerifierPhase(phase->Name())) {
             verifier.Verify(phase->Name());
         }
 
         // Stop lowerings processing after Checker phase if any error happened.
-        if (phase->Name() == compiler::CheckerPhase::NAME && context.diagnosticEngine->IsAnyError()) {
+        if (afterCheckerPhase && context.diagnosticEngine->IsAnyError()) {
             return false;
         }
 

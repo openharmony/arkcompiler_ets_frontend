@@ -295,11 +295,15 @@ void ETSLReference::SetValueComputed(const ir::MemberExpression *memberExpr) con
         return;
     }
 
-    ES2PANDA_ASSERT(objectType->IsETSArrayType() || objectType->IsETSResizableArrayType());
-    auto vRegtype = etsg_->GetVRegType(baseReg_);
-    auto *elementType = vRegtype->IsETSArrayType() ? vRegtype->AsETSArrayType()->ElementType()
-                                                   : vRegtype->AsETSResizableArrayType()->ElementType();
-    etsg_->StoreArrayElement(Node(), baseReg_, propReg_, elementType);
+    if (objectType->IsETSArrayType() || objectType->IsETSResizableArrayType()) {
+        auto vRegtype = etsg_->GetVRegType(baseReg_);
+        auto *elementType = vRegtype->IsETSArrayType() ? vRegtype->AsETSArrayType()->ElementType()
+                                                       : vRegtype->AsETSResizableArrayType()->ElementType();
+        etsg_->StoreArrayElement(Node(), baseReg_, propReg_, elementType);
+        return;
+    }
+
+    ES2PANDA_ASSERT(objectType->IsETSNeverType());  // nothing to do, we're in dead code anyway
 }
 
 void ETSLReference::SetValueGetterSetter(const ir::MemberExpression *memberExpr) const

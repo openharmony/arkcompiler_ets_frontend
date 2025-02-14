@@ -169,6 +169,7 @@ void ComposeAsyncImplMethod(checker::ETSChecker *checker, ir::MethodDefinition *
         auto *baseOverloadImplMethod = node->BaseOverloadMethod()->AsyncPairMethod();
         implMethod->Function()->Id()->SetVariable(baseOverloadImplMethod->Function()->Id()->Variable());
         baseOverloadImplMethod->AddOverload(implMethod);
+        implMethod->SetParent(baseOverloadImplMethod);
     } else {
         classDef->EmplaceBody(implMethod);
     }

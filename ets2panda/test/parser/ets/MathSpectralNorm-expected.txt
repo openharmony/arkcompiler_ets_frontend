@@ -6832,43 +6832,8 @@
                             }
                           },
                           {
-                            "type": "MemberExpression",
-                            "object": {
-                              "type": "Identifier",
-                              "name": "MathSpectralNorm",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 87,
-                                  "column": 21,
-                                  "program": "MathSpectralNorm.ets"
-                                },
-                                "end": {
-                                  "line": 87,
-                                  "column": 37,
-                                  "program": "MathSpectralNorm.ets"
-                                }
-                              }
-                            },
-                            "property": {
-                              "type": "Identifier",
-                              "name": "expected",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 87,
-                                  "column": 38,
-                                  "program": "MathSpectralNorm.ets"
-                                },
-                                "end": {
-                                  "line": 87,
-                                  "column": 46,
-                                  "program": "MathSpectralNorm.ets"
-                                }
-                              }
-                            },
-                            "computed": false,
-                            "optional": false,
+                            "type": "NumberLiteral",
+                            "value": 5.08669,
                             "loc": {
                               "start": {
                                 "line": 87,
