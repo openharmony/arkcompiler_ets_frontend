@@ -53,7 +53,7 @@ public:
     }
 
     ark::pandasm::Function *GetFunction(std::string_view functionName,
-                                        const std::unique_ptr<ark::pandasm::Program> &program);
+                                        const std::map<std::string, ark::pandasm::Function> &table);
     ark::pandasm::Record *GetRecord(std::string_view recordName, const std::unique_ptr<ark::pandasm::Program> &program);
     void CompareActualWithExpected(const std::string &expectedValue, ark::pandasm::ScalarValue *scalarValue,
                                    const std::string &field);
@@ -71,11 +71,12 @@ public:
     void CheckRecordAnnotations(ark::pandasm::Program *program, const std::string &recordName,
                                 const AnnotationMap &expectedAnnotations);
 
-    void CheckFunctionAnnotations(ark::pandasm::Program *program, const std::string &functionName,
+    void CheckFunctionAnnotations(ark::pandasm::Program *program, const std::string &functionName, bool isStatic,
                                   const AnnotationMap &expectedAnnotations);
 
     void CheckFunctionParameterAnnotations(ark::pandasm::Program *program, const std::string &functionName,
-                                           const uint32_t &paramIndex, const AnnotationMap &expectedAnnotations);
+                                           bool isStatic, const uint32_t &paramIndex,
+                                           const AnnotationMap &expectedAnnotations);
 
     void CheckClassFieldAnnotations(ark::pandasm::Program *program, const std::string &recordName,
                                     const std::string &fieldName, const AnnotationMap &expectedAnnotations);

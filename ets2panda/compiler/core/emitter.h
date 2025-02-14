@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -109,6 +109,7 @@ public:
 
     void AddLiteralBuffer(const LiteralBuffer &literals, uint32_t index);
     void AddProgramElement(ProgramElement *programElement);
+    static std::string DumpAsmFunction(std::string name, const pandasm::Function &func);
     static void DumpAsm(const pandasm::Program *prog);
     pandasm::Program *Finalize(bool dumpDebugInfo, std::string_view globalClass = "");
 

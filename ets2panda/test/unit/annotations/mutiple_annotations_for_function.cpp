@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -84,8 +84,8 @@ public:
                                                          {
                                                              {"value", "2"},
                                                          }}};
-        AnnotationEmitTest::CheckFunctionAnnotations(program, functionName1, expectedFuncAnnotations1);
-        AnnotationEmitTest::CheckFunctionAnnotations(program, functionName2, expectedFuncAnnotations2);
+        AnnotationEmitTest::CheckFunctionAnnotations(program, functionName1, true, expectedFuncAnnotations1);
+        AnnotationEmitTest::CheckFunctionAnnotations(program, functionName2, true, expectedFuncAnnotations2);
     }
 
     void CheckLiteralArrayTable(pandasm::Program *program)

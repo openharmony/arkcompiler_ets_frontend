@@ -57,16 +57,18 @@ public:
         ASSERT_TRUE(HasExternalFlag(record)) << "Record '" << record->name << "' doesn't have External flag";
     }
 
-    void CheckFunctionExternalFlag(std::string_view functionName)
+    void CheckFunctionExternalFlag(std::string_view functionName, bool isStatic = false)
     {
-        pandasm::Function *fn = GetFunction(functionName);
+        pandasm::Function *fn =
+            GetFunction(functionName, isStatic ? program_->functionStaticTable : program_->functionInstanceTable);
         ASSERT_TRUE(fn != nullptr) << "Function '" << functionName << "' not found";
         ASSERT_TRUE(HasExternalFlag(fn)) << "Function '" << fn->name << "' doesn't have External flag";
     }
 
-    void CheckFunctionNoExternalFlag(std::string_view functionName)
+    void CheckFunctionNoExternalFlag(std::string_view functionName, bool isStatic = false)
     {
-        pandasm::Function *fn = GetFunction(functionName);
+        pandasm::Function *fn =
+            GetFunction(functionName, isStatic ? program_->functionStaticTable : program_->functionInstanceTable);
         ASSERT_TRUE(fn != nullptr) << "Function '" << functionName << "' not found";
         ASSERT_FALSE(HasExternalFlag(fn)) << "Function '" << fn->name << "' has External flag";
     }
@@ -104,13 +106,13 @@ private:
         return std::unique_ptr<pandasm::Program>(compiler.Compile(input, *options, de));
     }
 
-    pandasm::Function *GetFunction(std::string_view functionName)
+    pandasm::Function *GetFunction(std::string_view functionName, const std::map<std::string, pandasm::Function> &table)
     {
-        auto it = program_->functionTable.find(functionName.data());
-        if (it == program_->functionTable.end()) {
+        auto it = table.find(functionName.data());
+        if (it == table.end()) {
             return nullptr;
         }
-        return &it->second;
+        return const_cast<pandasm::Function *>(&it->second);
     }
 
     pandasm::Record *GetRecord(std::string_view recordName, const std::unique_ptr<ark::pandasm::Program> &program)
@@ -132,7 +134,7 @@ TEST_F(DeclareTest, function_without_overloads_0)
     SetCurrentProgram(R"(
         declare function foo(tmp: double): string
     )");
-    CheckFunctionExternalFlag("ETSGLOBAL.foo:f64;std.core.String;");
+    CheckFunctionExternalFlag("ETSGLOBAL.foo:f64;std.core.String;", true);
 }
 
 TEST_F(DeclareTest, function_with_overloads_0)
@@ -140,8 +142,8 @@ TEST_F(DeclareTest, function_with_overloads_0)
     SetCurrentProgram(R"(
         declare function foo(tmp?: double): string
     )");
-    CheckFunctionExternalFlag("ETSGLOBAL.foo:std.core.Double;std.core.String;");
-    CheckFunctionExternalFlag("ETSGLOBAL.foo:std.core.String;");
+    CheckFunctionExternalFlag("ETSGLOBAL.foo:std.core.Double;std.core.String;", true);
+    CheckFunctionExternalFlag("ETSGLOBAL.foo:std.core.String;", true);
 }
 
 // === Method of class ===

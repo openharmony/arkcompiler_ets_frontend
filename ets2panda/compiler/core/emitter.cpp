@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -460,7 +460,7 @@ void Emitter::AddProgramElement(ProgramElement *programElement)
     literalBufferIndex_ = newLiteralBufferIndex;
 
     auto *function = programElement->Function();
-    prog_->functionTable.emplace(function->name, std::move(*function));
+    prog_->AddToFunctionTable(std::move(*function));
 }
 
 static std::string CanonicalizeName(std::string name)
@@ -472,39 +472,51 @@ static std::string CanonicalizeName(std::string name)
     return name;
 }
 
+std::string Emitter::DumpAsmFunction(std::string name, const pandasm::Function &func)
+{
+    std::stringstream ss;
+
+    ss << ".function any " << CanonicalizeName(name) << '(';
+
+    for (uint32_t i = 0; i < func.GetParamsNum(); i++) {
+        ss << "any a" << std::to_string(i);
+
+        if (i != func.GetParamsNum() - 1) {
+            ss << ", ";
+        }
+    }
+
+    ss << ") {" << std::endl;
+
+    for (const auto &ins : func.ins) {
+        ss << (ins.setLabel ? "" : "\t") << ins.ToString("", true, func.GetTotalRegs()) << std::endl;
+    }
+
+    ss << "}" << std::endl << std::endl;
+
+    for (const auto &ct : func.catchBlocks) {
+        if (ct.exceptionRecord.empty()) {
+            ss << ".catchall ";
+        } else {
+            ss << ".catch " << ct.exceptionRecord << ", ";
+        }
+        ss << ct.tryBeginLabel << ", " << ct.tryEndLabel << ", " << ct.catchBeginLabel << std::endl << std::endl;
+    }
+    return ss.str();
+}
+
 void Emitter::DumpAsm(const pandasm::Program *prog)
 {
     auto &ss = std::cout;
 
     ss << ".language ECMAScript" << std::endl << std::endl;
 
-    for (auto &[name, func] : prog->functionTable) {
-        ss << ".function any " << CanonicalizeName(name) << '(';
+    for (const auto &[name, func] : prog->functionStaticTable) {
+        ss << DumpAsmFunction(name, func);
+    }
 
-        for (uint32_t i = 0; i < func.GetParamsNum(); i++) {
-            ss << "any a" << std::to_string(i);
-
-            if (i != func.GetParamsNum() - 1) {
-                ss << ", ";
-            }
-        }
-
-        ss << ") {" << std::endl;
-
-        for (const auto &ins : func.ins) {
-            ss << (ins.setLabel ? "" : "\t") << ins.ToString("", true, func.GetTotalRegs()) << std::endl;
-        }
-
-        ss << "}" << std::endl << std::endl;
-
-        for (const auto &ct : func.catchBlocks) {
-            if (ct.exceptionRecord.empty()) {
-                ss << ".catchall ";
-            } else {
-                ss << ".catch " << ct.exceptionRecord << ", ";
-            }
-            ss << ct.tryBeginLabel << ", " << ct.tryEndLabel << ", " << ct.catchBeginLabel << std::endl << std::endl;
-        }
+    for (const auto &[name, func] : prog->functionInstanceTable) {
+        ss << DumpAsmFunction(name, func);
     }
 
     ss << std::endl;

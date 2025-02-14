@@ -54,8 +54,8 @@ public:
         const AnnotationMap expectedFuncAnnotations = {
             {"Anno", {{"a", "1.000000"}}},
         };
-        AnnotationEmitTest::CheckFunctionAnnotations(program, funcName1, expectedFuncAnnotations);
-        AnnotationEmitTest::CheckFunctionAnnotations(program, funcName2, expectedFuncAnnotations);
+        AnnotationEmitTest::CheckFunctionAnnotations(program, funcName1, true, expectedFuncAnnotations);
+        AnnotationEmitTest::CheckFunctionAnnotations(program, funcName2, true, expectedFuncAnnotations);
     }
 
     void CheckFunctionParameterAnnotations(pandasm::Program *program)
@@ -81,11 +81,11 @@ public:
                  {"a", "3.000000"},
              }},
         };
-        AnnotationEmitTest::CheckFunctionParameterAnnotations(program, funcName1, paramIndex1,
+        AnnotationEmitTest::CheckFunctionParameterAnnotations(program, funcName1, true, paramIndex1,
                                                               expectedFuncAnnotations1);
-        AnnotationEmitTest::CheckFunctionParameterAnnotations(program, funcName2, paramIndex2,
+        AnnotationEmitTest::CheckFunctionParameterAnnotations(program, funcName2, false, paramIndex2,
                                                               expectedFuncAnnotations2);
-        AnnotationEmitTest::CheckFunctionParameterAnnotations(program, funcName2, paramIndex3,
+        AnnotationEmitTest::CheckFunctionParameterAnnotations(program, funcName2, false, paramIndex3,
                                                               expectedFuncAnnotations3);
     }
 

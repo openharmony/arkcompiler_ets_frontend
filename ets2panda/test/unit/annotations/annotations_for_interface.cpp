@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -85,9 +85,9 @@ public:
                  {"testBool", "0"},
              }},
         };
-        AnnotationEmitTest::CheckFunctionAnnotations(program, getter, expectedFuncAnnotations1);
-        AnnotationEmitTest::CheckFunctionAnnotations(program, setter, expectedFuncAnnotations1);
-        AnnotationEmitTest::CheckFunctionAnnotations(program, funcName, expectedFuncAnnotations2);
+        AnnotationEmitTest::CheckFunctionAnnotations(program, getter, false, expectedFuncAnnotations1);
+        AnnotationEmitTest::CheckFunctionAnnotations(program, setter, false, expectedFuncAnnotations1);
+        AnnotationEmitTest::CheckFunctionAnnotations(program, funcName, false, expectedFuncAnnotations2);
     }
 
 private:
