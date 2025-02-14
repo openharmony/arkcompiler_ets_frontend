@@ -27,6 +27,7 @@ bool IsObjectLiteralElement(ir::AstNode *node);
 ir::AstNode *GetContainingObjectLiteralNode(ir::AstNode *node);
 ir::AstNode *GetContextualTypeNode(ir::AstNode *node);
 ir::AstNode *GetPropertyNodeFromContextualType(ir::AstNode *node, ir::AstNode *contextualTypeNode);
+ir::AstNode *GetNodeAtLocationForQuickInfo(ir::AstNode *node);
 
 }  // namespace ark::es2panda::lsp
 
