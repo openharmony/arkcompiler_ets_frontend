@@ -36,6 +36,7 @@ namespace ark::es2panda::util {
 
 constexpr size_t SUPPORTED_INDEX_FILES_SIZE = 3;
 constexpr size_t SUPPORTED_EXTENSIONS_SIZE = 6;
+constexpr size_t ALLOWED_EXTENSIONS_SIZE = 8;
 
 static bool IsCompatibleExtension(const std::string &extension)
 {
@@ -299,7 +300,6 @@ StringView ImportPathManager::AppendExtensionOrIndexFileIfOmitted(const StringVi
     // Supported extensions: keep this checking order
     std::array<std::string, SUPPORTED_EXTENSIONS_SIZE> supportedExtensions = {".sts",   ".d.sts", ".ets",
                                                                               ".d.ets", ".ts",    ".d.ts"};
-
     for (const auto &extension : supportedExtensions) {
         if (ark::os::file::File::IsRegularFile(path.Mutf8() + extension)) {
             return GetRealPath(UString(path.Mutf8().append(extension), allocator_).View());
@@ -324,12 +324,24 @@ static std::string FormUnitName(std::string name)
 // Transform /a/b/c.sts to a.b.c
 static std::string FormRelativeModuleName(std::string relPath)
 {
-    if (auto pos = relPath.find_last_of('.'); pos != std::string::npos) {
-        relPath = relPath.substr(0, pos);
-    } else {
-        ASSERT_PRINT(false, "Invalid relative filename: " + relPath);
+    bool isMatched = false;
+    // Supported extensions: keep this checking order
+    std::array<std::string, ALLOWED_EXTENSIONS_SIZE> supportedExtensionsDesc = {".d.sts", ".sts", ".d.ets", ".ets",
+                                                                                ".d.ts",  ".ts",  ".js",    ".abc"};
+    for (const auto &ext : supportedExtensionsDesc) {
+        if (relPath.size() >= ext.size() && relPath.compare(relPath.size() - ext.size(), ext.size(), ext) == 0) {
+            relPath = relPath.substr(0, relPath.size() - ext.size());
+            isMatched = true;
+            break;
+        }
+    }
+    if (relPath.empty()) {
+        return "";
     }
 
+    if (!isMatched) {
+        ASSERT_PRINT(false, "Invalid relative filename: " + relPath);
+    }
     while (relPath[0] == util::PATH_DELIMITER) {
         relPath = relPath.substr(1);
     }
@@ -363,7 +375,8 @@ util::StringView ImportPathManager::FormModuleName(const util::Path &path, const
         if (filePath.rfind(unitPath, 0) != 0) {
             return std::nullopt;
         }
-        return FormUnitName(unitName) + "." + FormRelativeModuleName(filePath.substr(unitPath.size()));
+        auto relativePath = FormRelativeModuleName(filePath.substr(unitPath.size()));
+        return FormUnitName(unitName) + (relativePath.empty() ? "" : ("." + relativePath));
     };
     if (auto res = tryFormModuleName(arktsConfig_->Package(), arktsConfig_->BaseUrl()); res) {
         return util::UString(res.value(), allocator_).View();
