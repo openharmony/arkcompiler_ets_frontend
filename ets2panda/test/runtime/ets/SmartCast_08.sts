@@ -25,7 +25,7 @@ function foo(flag: boolean): int {
     if (flag) {
       throw new Error();
     }
-  } catch(ex: NullPointerException) {
+  } catch(ex: NullPointerError) {
     z = 2;
   } catch(ex) {
     w = undefined;

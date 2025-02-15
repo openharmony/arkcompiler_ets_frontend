@@ -59,8 +59,6 @@ void GlobalTypesHolder::AddETSEscompatLayer()
     builtinNameMappings_.emplace("Array", GlobalTypeId::ETS_ARRAY_BUILTIN);
     builtinNameMappings_.emplace("Date", GlobalTypeId::ETS_DATE_BUILTIN);
     builtinNameMappings_.emplace("Error", GlobalTypeId::ETS_ERROR_BUILTIN);
-    builtinNameMappings_.emplace("OutOfMemoryError", GlobalTypeId::ETS_OUT_OF_MEMORY_ERROR_BUILTIN);
-    builtinNameMappings_.emplace("NoSuchMethodError", GlobalTypeId::ETS_NO_SUCH_METHOD_ERROR_BUILTIN);
     builtinNameMappings_.emplace("DivideByZeroError", GlobalTypeId::ETS_DIVIDE_BY_ZERO_ERROR_BUILTIN);
     builtinNameMappings_.emplace("NullPointerError", GlobalTypeId::ETS_NULL_POINTER_ERROR_BUILTIN);
     builtinNameMappings_.emplace("UncaughtExceptionError", GlobalTypeId::ETS_UNCAUGHT_EXCEPTION_ERROR_BUILTIN);
@@ -170,11 +168,9 @@ void GlobalTypesHolder::AddEtsSpecificBuiltinTypes()
     builtinNameMappings_.emplace("Short", GlobalTypeId::ETS_SHORT_BUILTIN);
     builtinNameMappings_.emplace("StackTraceElement", GlobalTypeId::ETS_STACK_TRACE_ELEMENT_BUILTIN);
     builtinNameMappings_.emplace("StackTrace", GlobalTypeId::ETS_STACK_TRACE_BUILTIN);
-    builtinNameMappings_.emplace("NullPointerException", GlobalTypeId::ETS_NULL_POINTER_EXCEPTION_BUILTIN);
     builtinNameMappings_.emplace("ArrayIndexOutOfBoundsError",
                                  GlobalTypeId::ETS_ARRAY_INDEX_OUT_OF_BOUNDS_ERROR_BUILTIN);
     builtinNameMappings_.emplace("ArithmeticError", GlobalTypeId::ETS_ARITHMETIC_ERROR_BUILTIN);
-    builtinNameMappings_.emplace("ClassNotFoundException", GlobalTypeId::ETS_CLASS_NOT_FOUND_EXCEPTION_BUILTIN);
     builtinNameMappings_.emplace("ClassCastError", GlobalTypeId::ETS_CLASS_CAST_ERROR_BUILTIN);
     builtinNameMappings_.emplace("String", GlobalTypeId::ETS_STRING_BUILTIN);
     builtinNameMappings_.emplace("BigInt", GlobalTypeId::ETS_BIG_INT_BUILTIN);
@@ -520,11 +516,6 @@ Type *GlobalTypesHolder::GlobalStackTraceBuiltinType()
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_STACK_TRACE_BUILTIN));
 }
 
-Type *GlobalTypesHolder::GlobalNullPointerExceptionBuiltinType()
-{
-    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_NULL_POINTER_EXCEPTION_BUILTIN));
-}
-
 Type *GlobalTypesHolder::GlobalArrayIndexOutOfBoundsErrorBuiltinType()
 {
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_ARRAY_INDEX_OUT_OF_BOUNDS_ERROR_BUILTIN));
@@ -535,24 +526,9 @@ Type *GlobalTypesHolder::GlobalArithmeticErrorBuiltinType()
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_ARITHMETIC_ERROR_BUILTIN));
 }
 
-Type *GlobalTypesHolder::GlobalClassNotFoundExceptionBuiltinType()
-{
-    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_CLASS_NOT_FOUND_EXCEPTION_BUILTIN));
-}
-
 Type *GlobalTypesHolder::GlobalClassCastErrorBuiltinType() const noexcept
 {
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_CLASS_CAST_ERROR_BUILTIN));
-}
-
-Type *GlobalTypesHolder::GlobalClassOutOfMemoryErrorBuiltinType()
-{
-    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_OUT_OF_MEMORY_ERROR_BUILTIN));
-}
-
-Type *GlobalTypesHolder::GlobalNoSuchMethodErrorBuiltinType()
-{
-    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_NO_SUCH_METHOD_ERROR_BUILTIN));
 }
 
 Type *GlobalTypesHolder::GlobalAssertionErrorBuiltinType()

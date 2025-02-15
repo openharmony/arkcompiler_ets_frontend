@@ -82,13 +82,9 @@ enum class GlobalTypeId : std::size_t {
     ETS_SHORT_BUILTIN,
     ETS_STACK_TRACE_ELEMENT_BUILTIN,
     ETS_STACK_TRACE_BUILTIN,
-    ETS_NULL_POINTER_EXCEPTION_BUILTIN,
     ETS_ARRAY_INDEX_OUT_OF_BOUNDS_ERROR_BUILTIN,
     ETS_ARITHMETIC_ERROR_BUILTIN,
-    ETS_CLASS_NOT_FOUND_EXCEPTION_BUILTIN,
     ETS_CLASS_CAST_ERROR_BUILTIN,
-    ETS_OUT_OF_MEMORY_ERROR_BUILTIN,
-    ETS_NO_SUCH_METHOD_ERROR_BUILTIN,
     ETS_ASSERTION_ERROR_BUILTIN,
     ETS_DIVIDE_BY_ZERO_ERROR_BUILTIN,
     ETS_NULL_POINTER_ERROR_BUILTIN,
@@ -249,10 +245,8 @@ public:
     Type *GlobalShortBuiltinType();
     Type *GlobalStackTraceElementBuiltinType();
     Type *GlobalStackTraceBuiltinType();
-    Type *GlobalNullPointerExceptionBuiltinType();
     Type *GlobalArrayIndexOutOfBoundsErrorBuiltinType();
     Type *GlobalArithmeticErrorBuiltinType();
-    Type *GlobalClassNotFoundExceptionBuiltinType();
     [[nodiscard]] Type *GlobalClassCastErrorBuiltinType() const noexcept;
     Type *GlobalETSStringBuiltinType();
     Type *GlobalETSBigIntBuiltinType();
@@ -277,8 +271,6 @@ public:
 
     // ETS escompat layer
     Type *GlobalArrayBuiltinType();
-    Type *GlobalClassOutOfMemoryErrorBuiltinType();
-    Type *GlobalNoSuchMethodErrorBuiltinType();
     Type *GlobalAssertionErrorBuiltinType();
     Type *GlobalDivideByZeroErrorBuiltinType();
     Type *GlobalNullPointerErrorBuiltinType();
