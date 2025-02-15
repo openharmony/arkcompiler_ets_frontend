@@ -17,7 +17,7 @@ declare class A {
     [index : number /* @@ label */: /* @@ label1 */string
 /* @@ label2 */}
 
-/* @@ label3 */function main() {
+/* @@ label3 */function main/* @@ label5 */() {
     let a : A = new A();
 }
 
@@ -25,10 +25,6 @@ declare class A {
 /* @@@ label1 Error SyntaxError: An index signature must have a type annotation.  */
 /* @@@ label2 Error SyntaxError: Return type of index signature from exported class or interface need to be identifier  */
 /* @@@ label3 Error SyntaxError: Unexpected token 'function'.  */
+/* @@@ label5 Error TypeError: Native and Declare methods should have explicit return type. */
 /* @@@ label4 Error SyntaxError: Unexpected token 'eos', expected '}'.  */
-/* @@? 1:31 Error SyntaxError: Invalid Type */
-/* @@? 1:31 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 1:25 Error SyntaxError: Invalid Type */
-/* @@? 20:29 Error TypeError: Native and Declare methods should have explicit return type. */
-/* @@? 1:3  Error TypeError: Native and Declare methods should have explicit return type. */
 /* @@ label4 */

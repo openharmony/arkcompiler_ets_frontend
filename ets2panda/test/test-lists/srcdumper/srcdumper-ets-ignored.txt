@@ -50,6 +50,10 @@ ast/parser/ets/import_tests/import_alias/import_alias_3.sts
 ast/parser/ets/import_tests/import_alias/import_alias_4.sts
 ast/parser/ets/import_tests/import_name_conflict_5.sts
 ast/parser/ets/import_tests/type/import_type_2.sts
+ast/parser/ets/import_tests/export_and_import_class.sts
+ast/parser/ets/import_tests/export_and_import_top_level.sts
+ast/parser/ets/import_tests/import_type_error_in_class.sts
+ast/parser/ets/import_tests/import_type_error_top_level.sts
 ast/parser/ets/invalid_access_static.sts
 ast/parser/ets/lambda_optional_param_2.sts
 ast/parser/ets/loops.sts

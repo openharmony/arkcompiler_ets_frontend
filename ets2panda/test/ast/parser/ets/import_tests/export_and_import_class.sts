@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-declare class A {
-    [/* @@ label */&^ index : number]: string
+import {InImport} from "./import_type_error_in_class"
+
+export class InExport {
+    x: int = 0
 }
 
-function main() {
-    let a : A = new A();
-}
+let y = new InImport().y
 
-/* @@@ label Error SyntaxError: Unexpected token at  */
+// ignored because used only in import

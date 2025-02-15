@@ -56,11 +56,6 @@ ast/compiler/ets/expression/this_expression/undefined_class_for_this_2.sts
 
 # Issue #18241
 ast/compiler/ets/implicit_package_import/package_test_5/package_module_1.sts
-ast/parser/ets/ambient_indexer_4.sts
-ast/parser/ets/ambient_indexer_5.sts
-ast/parser/ets/ambient_indexer_7.sts
-ast/parser/ets/ambient_indexer_8.sts
-ast/parser/ets/ambient_indexer_9.sts
 
 # Issue: #22662
 ast/parser/ets/recordKeyTypeCheck04.sts
@@ -75,3 +70,9 @@ ast/compiler/ets/extension_accessor_tests/extensionGetterInWrongUsage.sts
 
 # Issue: ##22719
 ast/parser/ets/forOfType.sts
+
+# Checked only as imported modules. If these files are parsed directly, there will be
+# errors located in other files (import_type_error_in_class.sts/import_type_error_top_level.sts),
+# and such case cannot be checked in astchecker
+ast/parser/ets/import_tests/export_and_import_class.sts
+ast/parser/ets/import_tests/export_and_import_top_level.sts

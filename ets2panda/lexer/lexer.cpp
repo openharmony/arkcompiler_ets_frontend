@@ -154,8 +154,13 @@ void Lexer::SkipMultiLineComment()
                 LogSyntaxError("Unterminated multi-line comment");
                 return;
             }
+            case LEX_CHAR_CR: {
+                if (Iterator().Peek() == LEX_CHAR_LF) {
+                    Iterator().Forward(1);
+                }
+                [[fallthrough]];
+            }
             case LEX_CHAR_LF:
-            case LEX_CHAR_CR:
             case LEX_CHAR_LS:
             case LEX_CHAR_PS: {
                 pos_.nextTokenLine_++;
@@ -225,7 +230,18 @@ void Lexer::CheckNumberLiteralEnd()
     }
 
     const auto nextCp = Iterator().PeekCp();
-    if (KeywordsUtil::IsIdentifierStart(nextCp) || IsDecimalDigit(nextCp)) {
+    if (IsDecimalDigit(nextCp)) {
+        LogSyntaxError("Invalid numeric literal");
+        return;
+    }
+    CheckNumberLiteralEndForIdentifier();
+}
+
+void Lexer::CheckNumberLiteralEndForIdentifier()
+{
+    // This check is needed only in Ecmascript
+    const auto nextCp = Iterator().PeekCp();
+    if (KeywordsUtil::IsIdentifierStart(nextCp)) {
         LogSyntaxError("Invalid numeric literal");
     }
 }

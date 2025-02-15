@@ -17,7 +17,6 @@
 import {^7foo} from "."
 
 /* @@? 17:9 Error SyntaxError: Unexpected token, expected an identifier.  */
-/* @@? 17:11 Error SyntaxError: Invalid numeric literal  */
 /* @@? 17:10 Error SyntaxError: Unexpected token, expected ',' or '}'.  */
 /* @@? 17:10 Error SyntaxError: Unexpected token, expected 'from'.  */
 /* @@? 17:11 Error SyntaxError: Unexpected token, expected string literal.  */
