@@ -58,9 +58,6 @@ implementsClassPropertyUnionType2.sts
 override_for_partial_02.sts
 optional_field.sts
 
-#Issue 21188
-namespace_tests/nested_namespace_plus_equal.sts
-
 #Issue 22384
 Object-type-in-binary-logical-expression.sts
 trailing-lambda.sts
