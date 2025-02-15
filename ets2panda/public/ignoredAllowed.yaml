@@ -21,8 +21,9 @@ ignored_list:
     call_class:
       - name: AstNode
       - name: ClassElement
-      - name: TypedStatement
       - name: Annotated
+      - name: AnnotationAllowed
+      - name: Typed
       - name: Scope
       - name: Type
       - name: ObjectType
