@@ -15,8 +15,6 @@
 
 function testFunc(): void {}
 
-export default /* @@ err */{
+export default {
   testFunc
 }
-
-/* @@@ err Error SyntaxError: Unexpected token 'default'. Only declarations are allowed after 'export default' */

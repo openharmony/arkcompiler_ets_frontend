@@ -178,16 +178,16 @@ protected:
     friend class ETSNolintParser;
     friend class lexer::RegExpParser;
 
-    void LogError(util::DiagnosticType errorType, std::string_view errorMessage, const lexer::SourcePosition &pos);
-    void LogError(const diagnostic::DiagnosticKind &diagnostic,
-                  const util::DiagnosticMessageParams &diagnosticParams = {});
-    void LogError(const diagnostic::DiagnosticKind &diagnostic, const util::DiagnosticMessageParams &diagnosticParams,
-                  const lexer::SourcePosition &pos);
     void LogExpectedToken(lexer::TokenType tokenType);
     void LogUnexpectedToken(lexer::TokenType tokenType);
     void LogUnexpectedToken(lexer::Token const &token);
 
 public:
+    void LogError(util::DiagnosticType errorType, std::string_view errorMessage, const lexer::SourcePosition &pos);
+    void LogError(const diagnostic::DiagnosticKind &diagnostic,
+                  const util::DiagnosticMessageParams &diagnosticParams = {});
+    void LogError(const diagnostic::DiagnosticKind &diagnostic, const util::DiagnosticMessageParams &diagnosticParams,
+                  const lexer::SourcePosition &pos);
     void LogSyntaxError(std::string_view errorMessage);
     void LogSyntaxError(const util::DiagnosticMessageParams &list);
     void LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos);

@@ -31,6 +31,7 @@ ast/compiler/ets/annotation_tests/annotation_src.sts
 ast/parser/ets/interface_private_function_1.sts
 ast/compiler/ets/call_for_method_never_exist.sts
 ast/compiler/ets/import_tests/selective_export_tests/namespace_import_wrong_access_name.sts
+ast/compiler/ets/default_export/import_default.sts
 ast/compiler/ets/newClassInstanceExpression.sts
 ast/compiler/ets/superReferenceFromStaticContext.sts
 ast/compiler/ets/thisReferenceFromStaticContext.sts

@@ -55,6 +55,7 @@ GlobalClassHandler::ModuleDependencies ImportExportDecls::HandleGlobalStmts(Aren
         fieldMap_.clear();
         exportNameMap_.clear();
         exportedTypes_.clear();
+        exportDefaultName_ = nullptr;
         ProcessProgramStatements(program, program->Ast()->Statements(), moduleDependencies);
         for (auto const &[exportName, startLoc] : exportNameMap_) {
             const bool isType = exportedTypes_.find(exportName) != exportedTypes_.end();
@@ -106,7 +107,11 @@ void ImportExportDecls::HandleSelectiveExportWithAlias(util::StringView original
                 varbinder_->Program(), "Cannot export '" + originalFieldName.Mutf8() + "', it was already exported",
                 startLoc);
         }
-        field->AddModifier(ir::ModifierFlags::EXPORT);
+        if (originalFieldName == exportDefaultName_) {
+            field->AddModifier(ir::ModifierFlags::DEFAULT_EXPORT);
+        } else {
+            field->AddModifier(ir::ModifierFlags::EXPORT);
+        }
     }
 
     if (exportName != originalFieldName) {
@@ -176,6 +181,14 @@ void ImportExportDecls::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *
 {
     for (auto spec : exportDecl->Specifiers()) {
         auto local = spec->Local();
+        // If this was enterred more than once, CTE must has been logged in parser.
+        if ((exportDecl->Modifiers() & ir::ModifierFlags::DEFAULT_EXPORT) != 0) {
+            if (exportDefaultName_ != nullptr) {
+                parser_->LogError(diagnostic::EXPORT_DEFAULT_WITH_MUPLTIPLE_SPECIFIER, {}, local->Start());
+                continue;
+            }
+            exportDefaultName_ = local->Name();
+        }
         if (exportDecl->IsExportedType()) {
             exportedTypes_.insert(local->Name());
         }
