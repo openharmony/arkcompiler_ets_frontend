@@ -36,7 +36,8 @@ void FilterArgs(Span<const char *const> args, int &newArgc, const char **&newArg
     filteredArgs.push_back(args[0]);
     for (size_t i = 1; i < args.size(); ++i) {
         if (std::strcmp(args[i], "--export-all") == 0 ||
-            std::strncmp(args[i], "--output-dts", std::strlen("--output-dts")) == 0) {
+            std::strncmp(args[i], "--output-dts", std::strlen("--output-dts")) == 0 ||
+            std::strncmp(args[i], "--output-ts", std::strlen("--output-ts")) == 0) {
             continue;
         }
         filteredArgs.push_back(args[i]);
@@ -60,6 +61,10 @@ static DeclgenOptions ParseOptions(Span<const char *const> args)
                    std::strchr(args[i], '=') != nullptr) {
             std::string arg = args[i];
             options.outputDts = arg.substr(std::strlen("--output-dts="));
+        } else if (std::strncmp(args[i], "--output-ts", std::strlen("--output-ts")) == 0 &&
+                   std::strchr(args[i], '=') != nullptr) {
+            std::string arg = args[i];
+            options.outputTs = arg.substr(std::strlen("--output-ts="));
         }
     }
     return options;

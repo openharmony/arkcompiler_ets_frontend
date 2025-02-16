@@ -27,6 +27,7 @@ namespace ark::es2panda::declgen_ets2ts {
 struct DeclgenOptions {
     bool exportAll = false;
     std::string outputDts;
+    std::string outputTs;
 };
 
 // Consume program after checker stage and generate out_path typescript file with declarations
@@ -43,17 +44,27 @@ public:
     {
     }
 
-    std::stringstream &Output()
-    {
-        return output_;
-    }
-
     void SetDeclgenOptions(const DeclgenOptions &options)
     {
         declgenOptions_ = options;
     }
 
+    const DeclgenOptions &GetDeclgenOptions()
+    {
+        return declgenOptions_;
+    }
+
     void Generate();
+
+    std::string GetDtsOutput() const
+    {
+        return outputDts_.str();
+    }
+
+    std::string GetTsOutput() const
+    {
+        return outputTs_.str();
+    }
 
     static constexpr std::string_view INDENT = "    ";
 
@@ -63,8 +74,6 @@ private:
 
     void GenType(const checker::Type *checkerType);
     void GenFunctionType(const checker::ETSFunctionType *functionType, const ir::MethodDefinition *methodDef = nullptr);
-    void GenFunctionBody(const ir::MethodDefinition *methodDef, const checker::Signature *sig, const bool isConstructor,
-                         const bool isSetter);
     void GenObjectType(const checker::ETSObjectType *objectType);
     void GenEnumType(const checker::ETSIntEnumType *enumType);
     void GenUnionType(const checker::ETSUnionType *unionType);
@@ -85,7 +94,6 @@ private:
     void GenExport(const ir::Identifier *symbol);
     void GenExport(const ir::Identifier *symbol, const std::string &alias);
     void GenDefaultExport(const ir::Identifier *symbol);
-    void ExportIfNeeded(const ir::Identifier *symbol);
     bool ShouldEmitDeclarationSymbol(const ir::Identifier *symbol);
 
     template <class T, class CB>
@@ -96,16 +104,32 @@ private:
     void HandleClassDeclarationTypeInfo(const ir::ClassDefinition *classDef, const std::string_view &className);
     void ProcessClassBody(const ir::ClassDefinition *classDef, const bool isInGlobalClass);
 
-    void Out() {}
+    void OutDts() {}
+
     template <class F, class... T>
-    void Out(F &&first, T &&...rest)
+    void OutDts(F &&first, T &&...rest)
     {
-        output_ << first;
-        Out(std::forward<T>(rest)...);
+        outputDts_ << first;
+        OutDts(std::forward<T>(rest)...);
     }
-    void OutEndl(const std::size_t count = 1)
+
+    void OutTs() {}
+
+    template <class F, class... T>
+    void OutTs(F &&first, T &&...rest)
     {
-        ark::os::file::File::GetEndLine(output_, count);
+        outputTs_ << first;
+        OutTs(std::forward<T>(rest)...);
+    }
+
+    void OutEndlDts(const std::size_t count = 1)
+    {
+        ark::os::file::File::GetEndLine(outputDts_, count);
+    }
+
+    void OutEndlTs(const std::size_t count = 1)
+    {
+        ark::os::file::File::GetEndLine(outputTs_, count);
     }
 
     void ResetState()
@@ -120,12 +144,14 @@ private:
         std::string currentClassDescriptor {};
     } state_ {};
 
-    std::stringstream output_ {};
+    std::stringstream outputDts_;
+    std::stringstream outputTs_;
     checker::ETSChecker *checker_ {};
     const ark::es2panda::parser::Program *program_ {};
     ArenaAllocator allocator_;
     ArenaSet<std::string> objectArguments_;
     DeclgenOptions declgenOptions_ {};
+    std::string globalDesc_;
 };
 }  // namespace ark::es2panda::declgen_ets2ts
 
