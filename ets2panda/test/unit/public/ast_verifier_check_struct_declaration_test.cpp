@@ -35,7 +35,7 @@ TEST_F(ASTVerifierTest, StructDeclaration)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     const auto &messages = Verify<CheckStructDeclaration>(ast);
 
@@ -61,7 +61,7 @@ TEST_F(ASTVerifierTest, StructWithAnnotation)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     const auto &messages = Verify<CheckStructDeclaration>(ast);
 
@@ -83,7 +83,7 @@ TEST_F(ASTVerifierTest, StructWithComponent)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     const auto &messages = Verify<CheckStructDeclaration>(ast);
 
@@ -105,7 +105,7 @@ TEST_F(ASTVerifierTest, StructExtendsStruct)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     const auto &messages = Verify<CheckStructDeclaration>(ast);
 
@@ -127,7 +127,7 @@ TEST_F(ASTVerifierTest, StructExtendsClass)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     const auto &messages = Verify<CheckStructDeclaration>(ast);
 
@@ -152,7 +152,7 @@ TEST_F(ASTVerifierTest, StructExtendsEnum)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     const auto &messages = Verify<CheckStructDeclaration>(ast);
 
@@ -174,7 +174,7 @@ TEST_F(ASTVerifierTest, StructImplementInterface)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     const auto &messages = Verify<CheckStructDeclaration>(ast);
 
@@ -196,7 +196,7 @@ TEST_F(ASTVerifierTest, StructExtendsInterface)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     const auto &messages = Verify<CheckStructDeclaration>(ast);
 
@@ -216,7 +216,7 @@ TEST_F(ASTVerifierTest, StructExport)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     const auto &messages = Verify<CheckStructDeclaration>(ast);
 

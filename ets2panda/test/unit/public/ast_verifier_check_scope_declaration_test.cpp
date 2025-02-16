@@ -35,7 +35,7 @@ TEST_F(ASTVerifierTest, FunctionScope)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_LOWERED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     const auto &messages = Verify<CheckScopeDeclaration>(ast);
 
@@ -57,7 +57,7 @@ TEST_F(ASTVerifierTest, ForUpdateLoopScope)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_LOWERED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     const auto &messages = Verify<CheckScopeDeclaration>(ast);
 

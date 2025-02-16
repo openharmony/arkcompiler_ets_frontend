@@ -591,23 +591,16 @@ extern "C" __attribute__((unused)) es2panda_Program *ContextProgram(es2panda_Con
     return reinterpret_cast<es2panda_Program *>(ctx->parserProgram);
 }
 
-extern "C" __attribute__((unused)) es2panda_AstNode *ProgramAst(es2panda_Program *program)
-{
-    auto *pgm = reinterpret_cast<parser::Program *>(program);
-    return reinterpret_cast<es2panda_AstNode *>(pgm->Ast());
-}
+using ExternalSourceEntry = std::pair<char *, ArenaVector<parser::Program *> *>;
 
-using ExternalSourceEntry = std::pair<char const *, ArenaVector<parser::Program *> *>;
-
-extern "C" __attribute__((unused)) es2panda_ExternalSource **ProgramExternalSources(es2panda_Program *program,
-                                                                                    size_t *lenP)
+__attribute__((unused)) static es2panda_ExternalSource **ExternalSourcesToE2p(
+    ArenaAllocator *allocator, const parser::Program::ExternalSource &externalSources, size_t *lenP)
 {
-    auto *pgm = reinterpret_cast<parser::Program *>(program);
-    auto *allocator = pgm->VarBinder()->Allocator();
     auto *vec = allocator->New<ArenaVector<ExternalSourceEntry *>>(allocator->Adapter());
 
-    for (auto &[e_name, e_programs] : pgm->ExternalSources()) {
-        vec->push_back(allocator->New<ExternalSourceEntry>(StringViewToCString(allocator, e_name), &e_programs));
+    for (auto &[e_name, e_programs] : externalSources) {
+        vec->push_back(allocator->New<ExternalSourceEntry>(StringViewToCString(allocator, e_name),
+                                                           const_cast<ArenaVector<parser::Program *> *>(&e_programs)));
     }
 
     *lenP = vec->size();
@@ -802,8 +795,6 @@ es2panda_Impl g_impl = {
     ContextState,
     ContextErrorMessage,
     ContextProgram,
-    ProgramAst,
-    ProgramExternalSources,
     ExternalSourceName,
     ExternalSourcePrograms,
     AstNodeForEach,

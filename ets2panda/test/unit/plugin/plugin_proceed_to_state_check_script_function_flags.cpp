@@ -72,7 +72,7 @@ int main(int argc, char **argv)
     impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
     CheckForErrors("CHECKED", context);
 
-    auto Ast = impl->ProgramAst(impl->ContextProgram(context));
+    auto Ast = impl->ProgramAst(context, impl->ContextProgram(context));
 
     ctx = context;
     impl->AstNodeIterateConst(context, Ast, FindFooDef);

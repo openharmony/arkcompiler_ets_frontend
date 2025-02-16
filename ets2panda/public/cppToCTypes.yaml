@@ -2102,22 +2102,42 @@ change_types:
         name: Program
         namespace: 'parser'
       min_ptr_depth: 1
-      max_ptr_depth: 1
     new_args:
+    - type:
+        name: "es2panda_Program"
+        ptr_depth: '|es2panda_arg.type.ptr_depth_int|'
+      name: '|arg_name|'
+      namespace: "parser::"
     cast:
-      expression: auto |es2panda_arg.type.ptr_depth||arg_name|E2p = reinterpret_cast<Context *>(context)->parserProgram;
+      expression: >-
+        auto |es2panda_arg.type.ptr_depth||arg_name|E2p = 
+        reinterpret_cast<parser::Program *>(|arg_name|);
       var_name: '|arg_name|E2p'
+      reverse_cast:
+          start: reinterpret_cast<?const? parser::Program *>
+      call_cast:
+          call_var:
+            name: classInstance
+            type:
+              name: es2panda_Program
+              ptr_depth: 1
+          start: >-
+            (reinterpret_cast<?const? parser::Program *>(classInstance))->
 
   - es2panda_arg:
       name: '|arg_name|'
       type:
         name: Program
         namespace: 'parser'
-      min_ptr_depth: 0
       max_ptr_depth: 0
     new_args:
+    - type:
+        name: "es2panda_Program"
+        ptr_depth: 1
+      name: '|arg_name|'
+      namespace: "parser::"
     cast:
-      expression: auto &|arg_name|E2p = *(reinterpret_cast<Context *>(context)->parserProgram);
+      expression: auto &|arg_name|E2p = *reinterpret_cast<parser::Program *>(|arg_name|);
       var_name: '|arg_name|E2p'
 
   - es2panda_arg:
@@ -3182,6 +3202,52 @@ change_types:
       reverse_cast:
         start: 'StdStringToCString(reinterpret_cast<Context *>(context)->allocator, '
         end: ')'
+      var_name: '|arg_name|E2p'
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: "ExternalSource"
+      max_ptr_depth: 0
+      min_ptr_depth: 0
+    new_args:
+      - name: '|arg_name|'
+        type:
+          name: es2panda_ExternalSource
+          ptr_depth: 2
+        namespace: 'parser::'
+    return_args:
+      - name: '|arg_name|Len'
+        type:
+          name: size_t
+          ptr_depth: 1
+    cast:
+      reverse_cast:
+        start: 'auto apiRes = const_cast<?const? es2panda_ExternalSource **>(ExternalSourcesToE2p(reinterpret_cast<Context *>(context)->allocator, '
+        end: ', |arg_name|Len))'
+      var_name: '|arg_name|E2p'
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: "DirectExternalSource"
+      max_ptr_depth: 0
+      min_ptr_depth: 0
+    new_args:
+      - name: '|arg_name|'
+        type:
+          name: es2panda_ExternalSource
+          ptr_depth: 2
+        namespace: 'parser::'
+    return_args:
+      - name: '|arg_name|Len'
+        type:
+          name: size_t
+          ptr_depth: 1
+    cast:
+      reverse_cast:
+        start: 'auto apiRes = const_cast<?const? es2panda_ExternalSource **>(ExternalSourcesToE2p(reinterpret_cast<Context *>(context)->allocator, '
+        end: ', |arg_name|Len))'
       var_name: '|arg_name|E2p'
 
   - es2panda_arg:

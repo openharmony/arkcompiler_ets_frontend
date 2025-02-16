@@ -34,7 +34,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative1)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<ETSModule *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSModule *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     ast->AsETSModule()
         ->Statements()[1]
@@ -67,7 +67,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative2)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<ETSModule *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSModule *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     ast->AsETSModule()
         ->Statements()[1]
@@ -100,7 +100,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative3)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<ETSModule *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSModule *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     ast->AsETSModule()
         ->Statements()[1]

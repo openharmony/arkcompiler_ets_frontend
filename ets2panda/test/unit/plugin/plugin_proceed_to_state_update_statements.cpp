@@ -72,7 +72,7 @@ int main(int argc, char **argv)
     impl->ProceedToState(context, ES2PANDA_STATE_PARSED);
     CheckForErrors("PARSE", context);
 
-    auto *programNode = impl->ProgramAst(impl->ContextProgram(context));
+    auto *programNode = impl->ProgramAst(context, impl->ContextProgram(context));
 
     std::cout << impl->AstNodeDumpJSONConst(context, programNode) << std::endl;
 

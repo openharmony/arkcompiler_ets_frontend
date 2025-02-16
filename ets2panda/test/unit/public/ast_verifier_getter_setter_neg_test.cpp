@@ -50,7 +50,7 @@ TEST_F(ASTVerifierTest, ValidateGetterReturnTypeAnnotation)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     // Change annotation return type to void
     ast->IterateRecursively([&checker](ark::es2panda::ir::AstNode *child) {
@@ -93,7 +93,7 @@ TEST_F(ASTVerifierTest, ValidateGetterHasReturnStatement)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     // Remove return statements from getter
     ast->IterateRecursively([](ark::es2panda::ir::AstNode *child) {
@@ -138,7 +138,7 @@ TEST_F(ASTVerifierTest, ValidateGetterVoidReturnStatement)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     // Change return statement type to void
     ast->IterateRecursively([&checker](ark::es2panda::ir::AstNode *child) {

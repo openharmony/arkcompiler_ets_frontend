@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -52,7 +52,7 @@ static void ChangeCall(es2panda_AstNode *node, void *arg)
 
 void e2p_test_plugin_change_func_AfterParse(es2panda_Context *ctx)
 {
-    auto *ast = impl->ProgramAst(impl->ContextProgram(ctx));
+    auto *ast = impl->ProgramAst(ctx, impl->ContextProgram(ctx));
     std::cout << "Origin code (False Assert):" << std::endl;
     std::cout << impl->AstNodeDumpEtsSrcConst(ctx, ast) << std::endl;
     size_t n = 0;

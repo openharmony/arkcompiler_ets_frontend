@@ -122,7 +122,7 @@ int main(int argc, char **argv)
     impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
     CheckForErrors("CHECKED", context);
 
-    auto ast = impl->ProgramAst(impl->ContextProgram(context));
+    auto ast = impl->ProgramAst(context, impl->ContextProgram(context));
     FindImportDeclarations(context, ast);
 
     impl->ProceedToState(context, ES2PANDA_STATE_LOWERED);

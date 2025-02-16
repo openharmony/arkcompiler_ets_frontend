@@ -91,7 +91,7 @@ bool Verify(es2panda_Context *context)
     auto *memForScopesPhaseName = static_cast<char *>(impl->AllocMemory(context, scopesPhaseName.size() + 1, 1));
     std::copy_n(scopesPhaseName.c_str(), scopesPhaseName.size() + 1, memForScopesPhaseName);
 
-    auto verifier = impl->CreateASTVerifier(context);
+    auto verifier = impl->CreateASTVerifier(context, impl->ContextProgram(context));
     impl->ASTVerifierIntroduceNewInvariants(context, verifier, memForScopesPhaseName);
     impl->ASTVerifierVerify(context, verifier, memForScopesPhaseName);
     impl->ASTVerifierIntroduceNewInvariants(context, verifier, memForCheckerPhaseName);
@@ -101,7 +101,7 @@ bool Verify(es2panda_Context *context)
 
 static bool CheckVerifierOnChangedAst(es2panda_Context *context)
 {
-    auto Ast = impl->ProgramAst(impl->ContextProgram(context));
+    auto Ast = impl->ProgramAst(context, impl->ContextProgram(context));
     std::cout << impl->AstNodeDumpJSONConst(context, Ast) << std::endl;
     size_t n = 0;
     ctx = context;

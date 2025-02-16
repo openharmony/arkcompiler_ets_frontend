@@ -83,7 +83,7 @@ static void SetRightParent(es2panda_AstNode *node, void *arg)
 
 static bool ChangeAst(es2panda_Context *context)
 {
-    auto Ast = impl->ProgramAst(impl->ContextProgram(context));
+    auto Ast = impl->ProgramAst(context, impl->ContextProgram(context));
     std::cout << impl->AstNodeDumpJSONConst(context, Ast) << std::endl;
     size_t n = 0;
     ctx = context;

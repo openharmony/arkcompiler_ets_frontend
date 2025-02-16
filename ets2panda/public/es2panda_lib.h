@@ -136,8 +136,6 @@ struct es2panda_Impl {
     char const *(*ContextErrorMessage)(es2panda_Context *context);
 
     es2panda_Program *(*ContextProgram)(es2panda_Context *context);
-    es2panda_AstNode *(*ProgramAst)(es2panda_Program *program);
-    es2panda_ExternalSource **(*ProgramExternalSources)(es2panda_Program *program, size_t *len_p);
     char const *(*ExternalSourceName)(es2panda_ExternalSource *e_source);
     es2panda_Program **(*ExternalSourcePrograms)(es2panda_ExternalSource *e_source, size_t *len_p);
     void (*AstNodeForEach)(es2panda_AstNode *ast, void (*func)(es2panda_AstNode *, void *), void *arg);

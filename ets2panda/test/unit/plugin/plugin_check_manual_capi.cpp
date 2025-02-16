@@ -171,7 +171,7 @@ bool CheckExternalSource(es2panda_Context *ctx)
     g_impl->ProceedToState(ctx, ES2PANDA_STATE_BOUND);
 
     size_t externalSourceCnt {0};
-    auto **externalSourceList = g_impl->ProgramExternalSources(program, &externalSourceCnt);
+    auto **externalSourceList = g_impl->ProgramExternalSources(ctx, program, &externalSourceCnt);
     if (externalSourceList == nullptr) {
         return false;
     }

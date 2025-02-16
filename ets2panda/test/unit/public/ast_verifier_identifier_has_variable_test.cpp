@@ -39,7 +39,7 @@ TEST_F(ASTVerifierTest, LabelsHaveReferences)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     const auto &messages = Verify<IdentifierHasVariable>(ast);
     ASSERT_EQ(messages.size(), 0);
@@ -68,7 +68,7 @@ TEST_F(ASTVerifierTest, ExtensionFunction)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     const auto &messages = Verify<IdentifierHasVariable>(ast);
     ASSERT_EQ(messages.size(), 0);
@@ -89,7 +89,7 @@ TEST_F(ASTVerifierTest, Imports)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     const auto &messages = Verify<IdentifierHasVariable>(ast);
     ASSERT_EQ(messages.size(), 0);
@@ -110,7 +110,7 @@ TEST_F(ASTVerifierTest, OptionalLambdas)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_LOWERED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
 
     const auto &messages = Verify<IdentifierHasVariable>(ast);
     ASSERT_EQ(messages.size(), 0);
