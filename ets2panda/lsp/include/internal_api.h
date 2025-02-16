@@ -76,6 +76,12 @@ ir::AstNode *GetDefinitionAtPosition(es2panda_Context *context, size_t pos);
 // NOTE: now GetImplementation return same as GetDefinition
 ir::AstNode *GetImplementationAtPosition(es2panda_Context *context, size_t pos);
 
+void GetReferenceLocationAtPositionImpl(FileNodeInfo fileNodeInfo, es2panda_Context *referenceFileContext,
+                                        ReferenceLocationList *list);
+void RemoveFromFiles(std::vector<std::string> &files, const std::vector<std::string> &autoGenerateFolders);
+std::string GetOwnerId(ir::AstNode *node);
+std::string GetIdentifierName(ir::AstNode *node);
+
 }  // namespace ark::es2panda::lsp
 
 #endif

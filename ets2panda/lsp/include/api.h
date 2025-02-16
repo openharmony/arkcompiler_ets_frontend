@@ -26,6 +26,7 @@
 #include <variant>
 #include <vector>
 #include "public/es2panda_lib.h"
+#include "cancellation_token.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -135,6 +136,28 @@ typedef struct CommentRange {
     size_t end_;
     CommentKind kind_;
 } CommentRange;
+
+enum class AccessKind { READ, WRITE, READWRITE };
+
+typedef struct ReferenceLocation {
+    std::string uri;
+    size_t start;  // Start position
+    size_t end;    // End position
+    bool isDefinition;
+    AccessKind accessKind;
+    bool isImport;
+} ReferenceLocation;
+
+typedef struct FileNodeInfo {
+    std::string tokenName;
+    std::string tokenId;
+    FileNodeInfo(const std::string &token, const std::string &id) : tokenName(token), tokenId(id) {}
+} FileNodeInfo;
+
+typedef struct ReferenceLocationList {
+    std::vector<ReferenceLocation> referenceLocation;
+} ReferenceLocationList;
+
 typedef struct LSPAPI {
     DefinitionInfo *(*getDefinitionAtPosition)(char const *fileName, size_t position);
     References (*getFileReferences)(char const *fileName);
@@ -144,6 +167,9 @@ typedef struct LSPAPI {
     TextSpan (*getSpanOfEnclosingComment)(char const *fileName, size_t pos, bool onlyMultiLine);
     DiagnosticReferences (*getSemanticDiagnostics)(char const *fileName);
     DiagnosticReferences (*getSyntacticDiagnostics)(char const *fileName);
+    ReferenceLocationList (*getReferenceLocationAtPosition)(char const *fileName, size_t pos,
+                                                            const std::vector<std::string> &autoGenerateFolders,
+                                                            ark::es2panda::lsp::CancellationToken cancellationToken);
 } LSPAPI;
 
 LSPAPI const *GetImpl();
