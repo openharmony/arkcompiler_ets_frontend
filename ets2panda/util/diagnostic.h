@@ -134,6 +134,9 @@ public:
                         const lexer::SourceLocation &loc);
     ThrowableDiagnostic(DiagnosticType type, DiagnosticMessageParams params, std::string_view file = "",
                         size_t line = 0, size_t offset = 0);
+    ThrowableDiagnostic(DiagnosticType type, const diagnostic::DiagnosticKind &diagnosticKind,
+                        const util::DiagnosticMessageParams &diagnosticParams, std::string_view file,
+                        const lexer::SourceLocation &loc);
 
     DEFAULT_COPY_SEMANTIC(ThrowableDiagnostic);
     DEFAULT_MOVE_SEMANTIC(ThrowableDiagnostic);

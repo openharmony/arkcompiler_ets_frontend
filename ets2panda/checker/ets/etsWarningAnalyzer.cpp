@@ -70,7 +70,7 @@ void ETSWarningAnalyzer::AnalyzeClassDefForFinalModifier(const ir::ClassDefiniti
         }
     }
 
-    LogWarning("Suggest 'final' modifier for class", classDef->Ident()->Start());
+    LogWarning(diagnostic::SUGGEST_FINAL_MODIFIER_FOR_CLASS, classDef->Ident()->Start());
 }
 
 void ETSWarningAnalyzer::AnalyzeClassMethodForFinalModifier(const ir::MethodDefinition *methodDef,
@@ -113,7 +113,7 @@ void ETSWarningAnalyzer::AnalyzeClassMethodForFinalModifier(const ir::MethodDefi
     }
 
     if (suggestFinal) {
-        LogWarning("Suggest 'final' modifier for method", methodDef->Function()->Start());
+        LogWarning(diagnostic::SUGGEST_FINAL_MODIFIER_FOR_METHOD, classDef->Ident()->Start());
     }
 }
 
@@ -141,11 +141,11 @@ void ETSWarningAnalyzer::CheckTopLevelExpressions(const ir::Expression *expressi
         lexer::SourcePosition pos = exprCallee->Start();
         if (exprCallee->IsMemberExpression()) {
             pos = exprCallee->AsMemberExpression()->Object()->Start();
-            LogWarning("Prohibit top-level statements", pos);
+            LogWarning(diagnostic::PROHIBIT_TOP_LEVEL_STATEMENTS, pos);
         }
     } else if (expression->IsAssignmentExpression()) {
         const auto assignmentExpr = expression->AsAssignmentExpression();
-        LogWarning("Prohibit top-level statements", assignmentExpr->Left()->Start());
+        LogWarning(diagnostic::PROHIBIT_TOP_LEVEL_STATEMENTS, assignmentExpr->Left()->Start());
     }
 }
 
@@ -164,7 +164,7 @@ void ETSWarningAnalyzer::CheckProhibitedTopLevelStatements(const ir::Statement *
         case ir::AstNodeType::CLASS_PROPERTY:
             break;
         default:
-            LogWarning("Prohibit top-level statements", statement->Start());
+            LogWarning(diagnostic::PROHIBIT_TOP_LEVEL_STATEMENTS, statement->Start());
             break;
     }
 }
@@ -216,7 +216,7 @@ void ETSWarningAnalyzer::ETSWarningBoostEqualityStatement(const ir::AstNode *nod
         if (binExpr->OperatorType() == lexer::TokenType::PUNCTUATOR_EQUAL ||
             binExpr->OperatorType() == lexer::TokenType::PUNCTUATOR_NOT_EQUAL) {
             if (binExpr->Right()->IsNullLiteral() && !binExpr->Left()->IsNullLiteral()) {
-                LogWarning("Boost Equality Statement. Change sides of binary expression", node->Start());
+                LogWarning(diagnostic::BOOST_EQUALITY_STATEMENT, node->Start());
             }
         }
     }
@@ -228,7 +228,7 @@ void ETSWarningAnalyzer::ETSWarningRemoveAsync(const ir::AstNode *node)
     if (node->IsMethodDefinition() && !program_->NodeContainsETSNolint(node, ETSWarnings::ETS_REMOVE_ASYNC)) {
         const auto methodDefinition = node->AsMethodDefinition();
         if (methodDefinition->IsAsync()) {
-            LogWarning("Replace asynchronous function with coroutine", methodDefinition->Start());
+            LogWarning(diagnostic::REPLACE_ASYNC_FUNCTION_WITH_COROUTINE, methodDefinition->Start());
         }
     }
     node->Iterate([&](auto *childNode) { ETSWarningRemoveAsync(childNode); });
@@ -239,7 +239,7 @@ void ETSWarningAnalyzer::ETSWarningRemoveLambda(const ir::AstNode *node)
     ASSERT(node != nullptr);
 
     if (node->IsArrowFunctionExpression() && !program_->NodeContainsETSNolint(node, ETSWarnings::ETS_REMOVE_LAMBDA)) {
-        LogWarning("Replace the lambda function with a regular function", node->Start());
+        LogWarning(diagnostic::REPLACE_LAMBDA_FUNCTION_WITH_REGULAR_FUNCTION, node->Start());
     }
     node->Iterate([&](auto *childNode) { ETSWarningRemoveLambda(childNode); });
 }
@@ -249,33 +249,39 @@ void ETSWarningAnalyzer::CheckTypeOfBoxing(const ir::AstNode *node)
     ASSERT(node != nullptr);
     const auto flags = node->GetBoxingUnboxingFlags();
     if ((flags & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0) {
+        std::string diagnosticParam;
         switch (static_cast<ir::BoxingUnboxingFlags>(flags & ir::BoxingUnboxingFlags::BOXING_FLAG)) {
             case ir::BoxingUnboxingFlags::BOX_TO_INT:
-                LogWarning("Implicit Boxing to Int" + GetBoxingUnboxingType(node), node->Start());
+                diagnosticParam = "Int";
                 break;
             case ir::BoxingUnboxingFlags::BOX_TO_BOOLEAN:
-                LogWarning("Implicit Boxing to Boolean" + GetBoxingUnboxingType(node), node->Start());
+                diagnosticParam = "Boolean";
                 break;
             case ir::BoxingUnboxingFlags::BOX_TO_BYTE:
-                LogWarning("Implicit Boxing to Byte" + GetBoxingUnboxingType(node), node->Start());
+                diagnosticParam = "Byte";
                 break;
             case ir::BoxingUnboxingFlags::BOX_TO_CHAR:
-                LogWarning("Implicit Boxing to Char" + GetBoxingUnboxingType(node), node->Start());
+                diagnosticParam = "Char";
                 break;
             case ir::BoxingUnboxingFlags::BOX_TO_DOUBLE:
-                LogWarning("Implicit Boxing to Double" + GetBoxingUnboxingType(node), node->Start());
+                diagnosticParam = "Double";
                 break;
             case ir::BoxingUnboxingFlags::BOX_TO_FLOAT:
-                LogWarning("Implicit Boxing to Float" + GetBoxingUnboxingType(node), node->Start());
+                diagnosticParam = "Float";
                 break;
             case ir::BoxingUnboxingFlags::BOX_TO_LONG:
-                LogWarning("Implicit Boxing to Long" + GetBoxingUnboxingType(node), node->Start());
+                diagnosticParam = "Long";
                 break;
             case ir::BoxingUnboxingFlags::BOX_TO_SHORT:
-                LogWarning("Implicit Boxing to Short" + GetBoxingUnboxingType(node), node->Start());
+                diagnosticParam = "Short";
                 break;
             default:
                 break;
+        }
+
+        if (!diagnosticParam.empty()) {
+            util::DiagnosticMessageParams diagnosticParams = {diagnosticParam, GetBoxingUnboxingType(node)};
+            LogWarning(diagnostic::IMPLICIT_BOXING_TO, diagnosticParams, node->Start());
         }
     }
 }
@@ -285,36 +291,39 @@ void ETSWarningAnalyzer::CheckTypeOfUnboxing(const ir::AstNode *node)
     ASSERT(node != nullptr);
     const auto flags = node->GetBoxingUnboxingFlags();
     if ((flags & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0) {
+        std::string diagnosticParam;
         switch (static_cast<ir::BoxingUnboxingFlags>(flags & ir::BoxingUnboxingFlags::UNBOXING_FLAG)) {
             case ir::BoxingUnboxingFlags::UNBOX_TO_INT:
-                LogWarning("Implicit Unboxing to int" + GetBoxingUnboxingType(node), node->Start());
+                diagnosticParam = "Int";
                 break;
             case ir::BoxingUnboxingFlags::UNBOX_TO_BOOLEAN:
-                LogWarning("Implicit Unboxing to boolean" + GetBoxingUnboxingType(node), node->Start());
+                diagnosticParam = "Boolean";
                 break;
             case ir::BoxingUnboxingFlags::UNBOX_TO_BYTE:
-                LogWarning("Implicit Unboxing to byte" + GetBoxingUnboxingType(node), node->Start());
+                diagnosticParam = "Byte";
                 break;
             case ir::BoxingUnboxingFlags::UNBOX_TO_CHAR:
-                LogWarning("Implicit Unboxing to char" + GetBoxingUnboxingType(node), node->Start());
+                diagnosticParam = "Char";
                 break;
             case ir::BoxingUnboxingFlags::UNBOX_TO_DOUBLE:
-                LogWarning("Implicit Unboxing to double" + GetBoxingUnboxingType(node), node->Start());
+                diagnosticParam = "Double";
                 break;
             case ir::BoxingUnboxingFlags::UNBOX_TO_FLOAT:
-                LogWarning("Implicit Unboxing to float" + GetBoxingUnboxingType(node), node->Start());
+                diagnosticParam = "Float";
                 break;
             case ir::BoxingUnboxingFlags::UNBOX_TO_LONG:
-                LogWarning("Implicit Unboxing to long" + GetBoxingUnboxingType(node), node->Start());
+                diagnosticParam = "Long";
                 break;
             case ir::BoxingUnboxingFlags::UNBOX_TO_SHORT:
-                LogWarning("Implicit Unboxing to short" + GetBoxingUnboxingType(node), node->Start());
-                break;
-            case ir::BoxingUnboxingFlags::UNBOX_TO_ENUM:
-                LogWarning("Implicit Unboxing to enum" + GetBoxingUnboxingType(node), node->Start());
+                diagnosticParam = "Short";
                 break;
             default:
                 break;
+        }
+
+        if (!diagnosticParam.empty()) {
+            util::DiagnosticMessageParams diagnosticParams = {diagnosticParam, GetBoxingUnboxingType(node)};
+            LogWarning(diagnostic::IMPLICIT_BOXING_TO, diagnosticParams, node->Start());
         }
     }
 }
@@ -386,9 +395,24 @@ void ETSWarningAnalyzer::ETSWarningImplicitBoxingUnboxing(const ir::AstNode *nod
     node->Iterate([&](auto *childNode) { ETSWarningImplicitBoxingUnboxing(childNode); });
 }
 
-void ETSWarningAnalyzer::LogWarning(const std::string &message, const lexer::SourcePosition &pos)
+void ETSWarningAnalyzer::LogWarning(const std::string &message, const lexer::SourcePosition &position)
 {
-    diagnosticEngine_.LogWarning(program_, message, pos);
+    diagnosticEngine_.LogWarning(program_, message, position);
+}
+
+void ETSWarningAnalyzer::LogWarning(const diagnostic::DiagnosticKind &diagnostic,
+                                    const lexer::SourcePosition &position) const
+{
+    util::DiagnosticMessageParams diagnosticParams;
+    this->LogWarning(diagnostic, diagnosticParams, position);
+}
+
+void ETSWarningAnalyzer::LogWarning(const diagnostic::DiagnosticKind &diagnostic,
+                                    util::DiagnosticMessageParams &diagnosticParams,
+                                    const lexer::SourcePosition &position) const
+{
+    auto loc = position.ToLocation(program_);
+    diagnosticEngine_.LogWarning(diagnostic, std::move(diagnosticParams), program_->SourceFilePath().Utf8(), loc);
 }
 
 }  // namespace ark::es2panda::checker
