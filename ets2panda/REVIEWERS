@@ -40,6 +40,7 @@
 /ets2panda/parser/statementParser.cpp @zelentsovdmitry @igelhaus @Prof1983 @chernykhsergey
 /ets2panda/scripts/*-build.sh @titovatatiana @igelhaus @Prof1983
 /ets2panda/scripts/arkui* @titovatatiana @igelhaus @Prof1983
+/ets2panda/util/diagnostic* @chernykhsergey @igelhaus @Prof1983
 /test/workload/ignored*.txt     @shirunova_viktoria @kuchkovairina @gavin1012_hw @zhuheng27
 /ets2panda/checker/ets/dynamic.cpp @vpukhov @igelhaus @Prof1983
 /ets2panda/checker/ets/function.cpp @vpukhov @gogabr @igelhaus @Prof1983
