@@ -16,7 +16,7 @@ semantic:
   id: 1
   message: Return type of async function must be 'Promise'.
 
-- name: NO_CALL_SINGATURE
+- name: NO_CALL_SIGNATURE
   id: 2
   message: Type '{}' has no call signatures.
 
@@ -35,3 +35,15 @@ semantic:
 - name: STANDARD_ANNOTATION_REQUIRED
   id: 6
   message: Only standard annotations are allowed to be applied on annotations.
+
+- name: ABSTRACT_CLASS_AS_ARRAY_ELEMENT_TYPE
+  id: 7
+  message: Cannot use array creation expression with abstract classes and interfaces.
+
+- name: TYPE_PARAMETER_AS_ARRAY_ELEMENT_TYPE
+  id: 8
+  message: Cannot use array creation expression with type parameter.
+
+- name: NON_SUPERTYPE_OF_UNDEFINED_AS_ARRAY_ELEMENT_TYPE
+  id: 9
+  message: Cannot use array creation expression with non-constructable element type which is non-assignable from undefined.

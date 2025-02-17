@@ -411,16 +411,20 @@ static bool CheckArrayElementType(ETSChecker *checker, T *newArrayInstanceExpr)
             checker->ValidateSignatureAccessibility(calleeObj, nullptr, newArrayInstanceExpr->Signature(),
                                                     newArrayInstanceExpr->Start());
         } else {
-            checker->LogTypeError("Cannot use array creation expression with abstract classes and interfaces.",
-                                  newArrayInstanceExpr->Start());
+            checker->LogError(diagnostic::ABSTRACT_CLASS_AS_ARRAY_ELEMENT_TYPE, {}, newArrayInstanceExpr->Start());
             return false;
         }
-    } else if (!checker->Relation()->IsSupertypeOf(elementType, checker->GlobalETSUndefinedType())) {
-        checker->LogTypeError(
-            "Cannot use array creation expression with non-constructable element type which is "
-            "non-assignable from undefined.",
-            newArrayInstanceExpr->Start());
-        return false;
+    } else {
+        if (!checker->Relation()->IsSupertypeOf(elementType, checker->GlobalETSUndefinedType()) &&
+            !checker->Relation()->IsIdenticalTo(checker->GetApparentType(elementType), elementType)) {
+            checker->LogError(diagnostic::TYPE_PARAMETER_AS_ARRAY_ELEMENT_TYPE, {}, newArrayInstanceExpr->Start());
+            return false;
+        }
+        if (!checker->Relation()->IsSupertypeOf(elementType, checker->GlobalETSUndefinedType())) {
+            checker->LogError(diagnostic::NON_SUPERTYPE_OF_UNDEFINED_AS_ARRAY_ELEMENT_TYPE, {},
+                              newArrayInstanceExpr->Start());
+            return false;
+        }
     }
     return true;
 }
@@ -1239,7 +1243,7 @@ Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, Type *calleeType) con
 
     if (!calleeType->IsETSFunctionType() && !expr->IsETSConstructorCall() &&
         !calleeType->IsETSExtensionFuncHelperType()) {
-        checker->LogError(diagnostic::NO_CALL_SINGATURE, {calleeType}, expr->Start());
+        checker->LogError(diagnostic::NO_CALL_SIGNATURE, {calleeType}, expr->Start());
         return checker->GlobalTypeError();
     }
 
