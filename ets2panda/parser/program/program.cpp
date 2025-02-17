@@ -72,7 +72,7 @@ void Program::SetPackageInfo(const util::StringView &name, ModuleKind kind)
 // NOTE(vpukhov): part of ongoing design
 void Program::MaybeTransformToDeclarationModule()
 {
-    if (IsPackage()) {
+    if (IsPackage() || ast_->Statements().empty()) {
         return;
     }
     for (auto stmt : ast_->Statements()) {
