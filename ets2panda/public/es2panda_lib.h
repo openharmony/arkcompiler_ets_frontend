@@ -88,6 +88,7 @@ typedef struct es2panda_VReg es2panda_VReg;
 typedef struct es2panda_IRNode es2panda_IRNode;
 typedef struct es2panda_ErrorLogger es2panda_ErrorLogger;
 typedef struct es2panda_VerificationContext es2panda_VerificationContext;
+typedef struct es2panda_ImportPathManager es2panda_ImportPathManager;
 typedef void (*NodeTraverser)(es2panda_AstNode *);
 typedef es2panda_AstNode *(*NodeTransformer)(es2panda_AstNode *);
 typedef bool (*NodePredicate)(es2panda_AstNode *);

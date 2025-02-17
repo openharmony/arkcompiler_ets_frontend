@@ -72,7 +72,7 @@ def skip_string(data: str, pos: int = 0, pos_end: int = MAX_LEN) -> int:
     pos = data.find(current_quote, pos + 1)
 
     # Skip escaped quotes
-    while pos > 0 and pos < min(len(data), pos_end) and data[pos - 1] == "\\":
+    while pos > 0 and pos < min(len(data), pos_end) and data[pos - 1] == "\\" and (pos == 1 or data[pos - 2] != "\\"):
         pos = data.find(current_quote, pos + 1)
 
     if pos == -1 or pos >= min(len(data), pos_end):
@@ -86,6 +86,7 @@ def find_first_of_characters(characters: str, data: str, pos: int = 0, pos_end: 
         if "'" not in characters and '"' not in characters and data[pos] in "'\"":
             pos = skip_rstring(data, pos)
             pos = skip_string(data, pos)
+            continue
         if data[pos] in characters:
             return pos
         pos += 1
