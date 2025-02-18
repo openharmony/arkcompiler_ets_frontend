@@ -37,6 +37,8 @@ const GENERATED_DESTRUCT_OBJECT_TRESHOLD = 1000;
 const GENERATED_DESTRUCT_ARRAY_NAME = 'GeneratedDestructArray_';
 const GENERATED_DESTRUCT_ARRAY_TRESHOLD = 1000;
 
+const SPECIAL_LIB_NAME = 'specialAutofixLib';
+
 export interface Autofix {
   replacementText: string;
   start: number;
@@ -2036,5 +2038,11 @@ export class Autofixer {
       pattern = literalText.slice(1, lastSlashIndex);
     }
     return { pattern, flag };
+  }
+
+  fixDebuggerStatement(debuggerStmt: ts.DebuggerStatement): Autofix[] {
+    void this;
+    const text = SPECIAL_LIB_NAME + '.debugger()';
+    return [{ start: debuggerStmt.getStart(), end: debuggerStmt.getEnd(), replacementText: text }];
   }
 }
