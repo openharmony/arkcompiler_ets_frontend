@@ -1459,6 +1459,12 @@ void ETSGen::CastToChar([[maybe_unused]] const ir::AstNode *node)
     auto typeKind = checker::ETSChecker::TypeKind(GetAccumulatorType());
     switch (typeKind) {
         case checker::TypeFlag::CHAR: {
+            if (node->IsCharLiteral()) {
+                auto type = node->AsCharLiteral()->TsType();
+                if (type->TypeFlags() == (checker::TypeFlag::CONSTANT | checker::TypeFlag::BYTE)) {
+                    SetAccumulatorType(type);
+                }
+            }
             return;
         }
         case checker::TypeFlag::ETS_BOOLEAN: {
@@ -1812,6 +1818,10 @@ void ETSGen::CastToString(const ir::AstNode *const node)
 {
     const auto *const sourceType = GetAccumulatorType();
     if (sourceType->IsETSStringType()) {
+        return;
+    }
+    if (sourceType->IsETSCharType()) {
+        Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_OBJECT_TO_STRING, dummyReg_, 0);
         return;
     }
     if (sourceType->IsETSPrimitiveType()) {
