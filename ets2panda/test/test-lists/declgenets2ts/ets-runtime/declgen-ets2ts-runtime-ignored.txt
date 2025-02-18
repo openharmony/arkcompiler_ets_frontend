@@ -197,6 +197,7 @@ class-fields-same-name.sts
 class-init.sts
 class-init2.sts
 class-virtual-call.sts
+class_implements_interface.sts
 classGetterSetter.sts
 common_property_union_access.sts
 conditionalExpression2.sts
