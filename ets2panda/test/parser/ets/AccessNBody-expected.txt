@@ -14766,29 +14766,72 @@
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
                           "type": "Identifier",
-                          "name": "ret",
+                          "name": "assertEQ",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 152,
-                              "column": 16
+                              "column": 9
                             },
                             "end": {
                               "line": 152,
-                              "column": 19
+                              "column": 17
                             }
                           }
                         },
-                        "right": {
-                          "type": "MemberExpression",
-                          "object": {
-                            "type": "ThisExpression",
+                        "arguments": [
+                          {
+                            "type": "Identifier",
+                            "name": "ret",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 152,
+                                "column": 18
+                              },
+                              "end": {
+                                "line": 152,
+                                "column": 21
+                              }
+                            }
+                          },
+                          {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "ThisExpression",
+                              "loc": {
+                                "start": {
+                                  "line": 152,
+                                  "column": 23
+                                },
+                                "end": {
+                                  "line": 152,
+                                  "column": 27
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "expected",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 152,
+                                  "column": 28
+                                },
+                                "end": {
+                                  "line": 152,
+                                  "column": 36
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 152,
@@ -14796,60 +14839,34 @@
                               },
                               "end": {
                                 "line": 152,
-                                "column": 27
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "expected",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 152,
-                                "column": 28
-                              },
-                              "end": {
-                                "line": 152,
                                 "column": 36
                               }
                             }
                           },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 152,
-                              "column": 23
-                            },
-                            "end": {
-                              "line": 152,
-                              "column": 36
+                          {
+                            "type": "StringLiteral",
+                            "value": "Incorrect result",
+                            "loc": {
+                              "start": {
+                                "line": 152,
+                                "column": 39
+                              },
+                              "end": {
+                                "line": 152,
+                                "column": 57
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 152,
-                            "column": 16
+                            "column": 9
                           },
                           "end": {
                             "line": 152,
-                            "column": 36
-                          }
-                        }
-                      },
-                      "second": {
-                        "type": "StringLiteral",
-                        "value": "Incorrect result",
-                        "loc": {
-                          "start": {
-                            "line": 152,
-                            "column": 38
-                          },
-                          "end": {
-                            "line": 152,
-                            "column": 56
+                            "column": 58
                           }
                         }
                       },
@@ -14860,7 +14877,7 @@
                         },
                         "end": {
                           "line": 152,
-                          "column": 57
+                          "column": 59
                         }
                       }
                     }

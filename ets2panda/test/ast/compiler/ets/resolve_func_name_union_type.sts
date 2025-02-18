@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,9 +22,9 @@ function pi(): number {
 
 function main() {
     let v: UT = pi
-    assert (v as NumFunc)() == 3.14
+    assertTrue((v as NumFunc)() == 3.14); // Is used 'assertTrue' due to #22840
 }
 
 /* @@? 24:17 Error TypeError: Type '() => double' cannot be assigned to type '() => void|Double'  */
-/* @@? 25:12 Error TypeError: Cannot use type 'void' as value.   */
-/* @@? 25:12 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type.  */
+/* @@? 25:16 Error TypeError: Cannot use type 'void' as value.   */
+/* @@? 25:16 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type.  */

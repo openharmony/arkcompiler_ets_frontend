@@ -3195,31 +3195,74 @@
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
                           "type": "Identifier",
-                          "name": "result",
+                          "name": "assertEQ",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 53,
-                              "column": 12
+                              "column": 5
                             },
                             "end": {
                               "line": 53,
-                              "column": 18
+                              "column": 13
                             }
                           }
                         },
-                        "right": {
-                          "type": "MemberExpression",
-                          "object": {
+                        "arguments": [
+                          {
                             "type": "Identifier",
-                            "name": "ControlFlowRecursive",
+                            "name": "result",
                             "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 53,
+                                "column": 14
+                              },
+                              "end": {
+                                "line": 53,
+                                "column": 20
+                              }
+                            }
+                          },
+                          {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "ControlFlowRecursive",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 53,
+                                  "column": 22
+                                },
+                                "end": {
+                                  "line": 53,
+                                  "column": 42
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "expected",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 53,
+                                  "column": 43
+                                },
+                                "end": {
+                                  "line": 53,
+                                  "column": 51
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 53,
@@ -3227,60 +3270,34 @@
                               },
                               "end": {
                                 "line": 53,
-                                "column": 42
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "expected",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 53,
-                                "column": 43
-                              },
-                              "end": {
-                                "line": 53,
                                 "column": 51
                               }
                             }
                           },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 53,
-                              "column": 22
-                            },
-                            "end": {
-                              "line": 53,
-                              "column": 51
+                          {
+                            "type": "StringLiteral",
+                            "value": "Incorrect result",
+                            "loc": {
+                              "start": {
+                                "line": 53,
+                                "column": 54
+                              },
+                              "end": {
+                                "line": 53,
+                                "column": 72
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 53,
-                            "column": 12
+                            "column": 5
                           },
                           "end": {
                             "line": 53,
-                            "column": 51
-                          }
-                        }
-                      },
-                      "second": {
-                        "type": "StringLiteral",
-                        "value": "Incorrect result",
-                        "loc": {
-                          "start": {
-                            "line": 53,
-                            "column": 53
-                          },
-                          "end": {
-                            "line": 53,
-                            "column": 71
+                            "column": 73
                           }
                         }
                       },
@@ -3291,7 +3308,7 @@
                         },
                         "end": {
                           "line": 53,
-                          "column": 72
+                          "column": 74
                         }
                       }
                     }

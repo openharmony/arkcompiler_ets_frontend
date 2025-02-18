@@ -4950,31 +4950,74 @@
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
                           "type": "Identifier",
-                          "name": "total",
+                          "name": "assertEQ",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 74,
-                              "column": 16
+                              "column": 9
                             },
                             "end": {
                               "line": 74,
-                              "column": 21
+                              "column": 17
                             }
                           }
                         },
-                        "right": {
-                          "type": "MemberExpression",
-                          "object": {
+                        "arguments": [
+                          {
                             "type": "Identifier",
-                            "name": "MathCordic",
+                            "name": "total",
                             "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 74,
+                                "column": 18
+                              },
+                              "end": {
+                                "line": 74,
+                                "column": 23
+                              }
+                            }
+                          },
+                          {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "MathCordic",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 74,
+                                  "column": 25
+                                },
+                                "end": {
+                                  "line": 74,
+                                  "column": 35
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "expected",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 74,
+                                  "column": 36
+                                },
+                                "end": {
+                                  "line": 74,
+                                  "column": 44
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 74,
@@ -4982,60 +5025,34 @@
                               },
                               "end": {
                                 "line": 74,
-                                "column": 35
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "expected",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 74,
-                                "column": 36
-                              },
-                              "end": {
-                                "line": 74,
                                 "column": 44
                               }
                             }
                           },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 74,
-                              "column": 25
-                            },
-                            "end": {
-                              "line": 74,
-                              "column": 44
+                          {
+                            "type": "StringLiteral",
+                            "value": "Incorrect result",
+                            "loc": {
+                              "start": {
+                                "line": 74,
+                                "column": 47
+                              },
+                              "end": {
+                                "line": 74,
+                                "column": 65
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 74,
-                            "column": 16
+                            "column": 9
                           },
                           "end": {
                             "line": 74,
-                            "column": 44
-                          }
-                        }
-                      },
-                      "second": {
-                        "type": "StringLiteral",
-                        "value": "Incorrect result",
-                        "loc": {
-                          "start": {
-                            "line": 74,
-                            "column": 46
-                          },
-                          "end": {
-                            "line": 74,
-                            "column": 64
+                            "column": 66
                           }
                         }
                       },
@@ -5046,7 +5063,7 @@
                         },
                         "end": {
                           "line": 74,
-                          "column": 65
+                          "column": 67
                         }
                       }
                     }

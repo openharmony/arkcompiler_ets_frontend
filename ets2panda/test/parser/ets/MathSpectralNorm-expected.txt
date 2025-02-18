@@ -5553,31 +5553,74 @@
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
                           "type": "Identifier",
-                          "name": "total",
+                          "name": "assertEQ",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 87,
-                              "column": 12
+                              "column": 5
                             },
                             "end": {
                               "line": 87,
-                              "column": 17
+                              "column": 13
                             }
                           }
                         },
-                        "right": {
-                          "type": "MemberExpression",
-                          "object": {
+                        "arguments": [
+                          {
                             "type": "Identifier",
-                            "name": "MathSpectralNorm",
+                            "name": "total",
                             "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 87,
+                                "column": 14
+                              },
+                              "end": {
+                                "line": 87,
+                                "column": 19
+                              }
+                            }
+                          },
+                          {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "MathSpectralNorm",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 87,
+                                  "column": 21
+                                },
+                                "end": {
+                                  "line": 87,
+                                  "column": 37
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "expected",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 87,
+                                  "column": 38
+                                },
+                                "end": {
+                                  "line": 87,
+                                  "column": 46
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 87,
@@ -5585,60 +5628,34 @@
                               },
                               "end": {
                                 "line": 87,
-                                "column": 37
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "expected",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 87,
-                                "column": 38
-                              },
-                              "end": {
-                                "line": 87,
                                 "column": 46
                               }
                             }
                           },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 87,
-                              "column": 21
-                            },
-                            "end": {
-                              "line": 87,
-                              "column": 46
+                          {
+                            "type": "StringLiteral",
+                            "value": "Incorrect result",
+                            "loc": {
+                              "start": {
+                                "line": 87,
+                                "column": 49
+                              },
+                              "end": {
+                                "line": 87,
+                                "column": 67
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 87,
-                            "column": 12
+                            "column": 5
                           },
                           "end": {
                             "line": 87,
-                            "column": 46
-                          }
-                        }
-                      },
-                      "second": {
-                        "type": "StringLiteral",
-                        "value": "Incorrect result",
-                        "loc": {
-                          "start": {
-                            "line": 87,
-                            "column": 48
-                          },
-                          "end": {
-                            "line": 87,
-                            "column": 66
+                            "column": 68
                           }
                         }
                       },
@@ -5649,7 +5666,7 @@
                         },
                         "end": {
                           "line": 87,
-                          "column": 67
+                          "column": 69
                         }
                       }
                     }

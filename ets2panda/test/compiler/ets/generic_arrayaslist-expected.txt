@@ -7764,85 +7764,102 @@
                   "type": "BlockStatement",
                   "statements": [
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": ">",
-                        "left": {
-                          "type": "MemberExpression",
-                          "object": {
-                            "type": "ThisExpression",
-                            "loc": {
-                              "start": {
-                                "line": 93,
-                                "column": 17
-                              },
-                              "end": {
-                                "line": 93,
-                                "column": 21
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "curSize",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 93,
-                                "column": 22
-                              },
-                              "end": {
-                                "line": 93,
-                                "column": 29
-                              }
-                            }
-                          },
-                          "computed": false,
-                          "optional": false,
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "Identifier",
+                          "name": "assertLT",
+                          "decorators": [],
                           "loc": {
                             "start": {
+                              "line": 93,
+                              "column": 9
+                            },
+                            "end": {
                               "line": 93,
                               "column": 17
-                            },
-                            "end": {
-                              "line": 93,
-                              "column": 29
                             }
                           }
                         },
-                        "right": {
-                          "type": "NumberLiteral",
-                          "value": 0,
-                          "loc": {
-                            "start": {
-                              "line": 93,
-                              "column": 32
-                            },
-                            "end": {
-                              "line": 93,
-                              "column": 33
+                        "arguments": [
+                          {
+                            "type": "NumberLiteral",
+                            "value": 0,
+                            "loc": {
+                              "start": {
+                                "line": 93,
+                                "column": 18
+                              },
+                              "end": {
+                                "line": 93,
+                                "column": 19
+                              }
                             }
-                          }
-                        },
-                        "loc": {
-                          "start": {
-                            "line": 93,
-                            "column": 16
                           },
-                          "end": {
-                            "line": 93,
-                            "column": 34
+                          {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "ThisExpression",
+                              "loc": {
+                                "start": {
+                                  "line": 93,
+                                  "column": 21
+                                },
+                                "end": {
+                                  "line": 93,
+                                  "column": 25
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "curSize",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 93,
+                                  "column": 26
+                                },
+                                "end": {
+                                  "line": 93,
+                                  "column": 33
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
+                            "loc": {
+                              "start": {
+                                "line": 93,
+                                "column": 21
+                              },
+                              "end": {
+                                "line": 93,
+                                "column": 33
+                              }
+                            }
+                          },
+                          {
+                            "type": "StringLiteral",
+                            "value": "No data to popFront from ArrayAsList!",
+                            "loc": {
+                              "start": {
+                                "line": 93,
+                                "column": 35
+                              },
+                              "end": {
+                                "line": 93,
+                                "column": 74
+                              }
+                            }
                           }
-                        }
-                      },
-                      "second": {
-                        "type": "StringLiteral",
-                        "value": "No data to popFront from ArrayAsList!",
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 93,
-                            "column": 36
+                            "column": 9
                           },
                           "end": {
                             "line": 93,
@@ -7857,7 +7874,7 @@
                         },
                         "end": {
                           "line": 93,
-                          "column": 75
+                          "column": 76
                         }
                       }
                     },
@@ -9924,18 +9941,32 @@
                   "type": "BlockStatement",
                   "statements": [
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": ">",
-                        "left": {
-                          "type": "MemberExpression",
-                          "object": {
-                            "type": "ThisExpression",
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "Identifier",
+                          "name": "assertTrue",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 115,
+                              "column": 9
+                            },
+                            "end": {
+                              "line": 115,
+                              "column": 19
+                            }
+                          }
+                        },
+                        "arguments": [
+                          {
+                            "type": "NumberLiteral",
+                            "value": 0,
                             "loc": {
                               "start": {
                                 "line": 115,
-                                "column": 17
+                                "column": 20
                               },
                               "end": {
                                 "line": 115,
@@ -9943,70 +9974,73 @@
                               }
                             }
                           },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "curSize",
-                            "decorators": [],
+                          {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "ThisExpression",
+                              "loc": {
+                                "start": {
+                                  "line": 115,
+                                  "column": 23
+                                },
+                                "end": {
+                                  "line": 115,
+                                  "column": 27
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "curSize",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 115,
+                                  "column": 28
+                                },
+                                "end": {
+                                  "line": 115,
+                                  "column": 35
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 115,
-                                "column": 22
+                                "column": 23
                               },
                               "end": {
                                 "line": 115,
-                                "column": 29
+                                "column": 35
                               }
                             }
                           },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 115,
-                              "column": 17
-                            },
-                            "end": {
-                              "line": 115,
-                              "column": 29
+                          {
+                            "type": "StringLiteral",
+                            "value": "No data to popBack in ArrayAsList!",
+                            "loc": {
+                              "start": {
+                                "line": 115,
+                                "column": 37
+                              },
+                              "end": {
+                                "line": 115,
+                                "column": 73
+                              }
                             }
                           }
-                        },
-                        "right": {
-                          "type": "NumberLiteral",
-                          "value": 0,
-                          "loc": {
-                            "start": {
-                              "line": 115,
-                              "column": 32
-                            },
-                            "end": {
-                              "line": 115,
-                              "column": 33
-                            }
-                          }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 115,
-                            "column": 16
+                            "column": 9
                           },
                           "end": {
                             "line": 115,
-                            "column": 34
-                          }
-                        }
-                      },
-                      "second": {
-                        "type": "StringLiteral",
-                        "value": "No data to popBack in ArrayAsList!",
-                        "loc": {
-                          "start": {
-                            "line": 115,
-                            "column": 36
-                          },
-                          "end": {
-                            "line": 115,
-                            "column": 72
+                            "column": 74
                           }
                         }
                       },
@@ -10017,7 +10051,7 @@
                         },
                         "end": {
                           "line": 115,
-                          "column": 72
+                          "column": 75
                         }
                       }
                     },
@@ -10921,32 +10955,49 @@
                   "type": "BlockStatement",
                   "statements": [
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BooleanLiteral",
-                        "value": false,
-                        "loc": {
-                          "start": {
-                            "line": 129,
-                            "column": 16
-                          },
-                          "end": {
-                            "line": 129,
-                            "column": 21
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "Identifier",
+                          "name": "assertTrue",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 129,
+                              "column": 9
+                            },
+                            "end": {
+                              "line": 129,
+                              "column": 19
+                            }
                           }
-                        }
-                      },
-                      "second": {
-                        "type": "StringLiteral",
-                        "value": "Not implemented: internal issue with calling equals",
+                        },
+                        "arguments": [
+                          {
+                            "type": "BooleanLiteral",
+                            "value": false,
+                            "loc": {
+                              "start": {
+                                "line": 129,
+                                "column": 20
+                              },
+                              "end": {
+                                "line": 129,
+                                "column": 25
+                              }
+                            }
+                          }
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 129,
-                            "column": 23
+                            "column": 9
                           },
                           "end": {
                             "line": 129,
-                            "column": 76
+                            "column": 26
                           }
                         }
                       },
@@ -10957,7 +11008,7 @@
                         },
                         "end": {
                           "line": 129,
-                          "column": 77
+                          "column": 26
                         }
                       }
                     },
@@ -21953,3 +22004,4 @@
     }
   }
 }
+TypeError: No matching call signature for assertTrue(int, int, "No data to popBack in ArrayAsList!") [generic_arrayaslist.sts:115:9]

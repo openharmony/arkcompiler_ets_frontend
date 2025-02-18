@@ -3118,51 +3118,67 @@
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
                           "type": "Identifier",
-                          "name": "cnt",
+                          "name": "assertEQ",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 46,
-                              "column": 12
+                              "column": 5
                             },
                             "end": {
                               "line": 46,
-                              "column": 15
+                              "column": 13
                             }
                           }
                         },
-                        "right": {
-                          "type": "NumberLiteral",
-                          "value": 90,
-                          "loc": {
-                            "start": {
-                              "line": 46,
-                              "column": 19
-                            },
-                            "end": {
-                              "line": 46,
-                              "column": 21
+                        "arguments": [
+                          {
+                            "type": "Identifier",
+                            "name": "cnt",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 46,
+                                "column": 14
+                              },
+                              "end": {
+                                "line": 46,
+                                "column": 17
+                              }
+                            }
+                          },
+                          {
+                            "type": "NumberLiteral",
+                            "value": 90,
+                            "loc": {
+                              "start": {
+                                "line": 46,
+                                "column": 19
+                              },
+                              "end": {
+                                "line": 46,
+                                "column": 21
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 46,
-                            "column": 12
+                            "column": 5
                           },
                           "end": {
                             "line": 46,
-                            "column": 21
+                            "column": 22
                           }
                         }
                       },
-                      "second": null,
                       "loc": {
                         "start": {
                           "line": 46,
@@ -3170,7 +3186,7 @@
                         },
                         "end": {
                           "line": 46,
-                          "column": 21
+                          "column": 23
                         }
                       }
                     }

@@ -1478,43 +1478,60 @@
                               "type": "BlockStatement",
                               "statements": [
                                 {
-                                  "type": "AssertStatement",
-                                  "test": {
-                                    "type": "BinaryExpression",
-                                    "operator": "==",
-                                    "left": {
+                                  "type": "ExpressionStatement",
+                                  "expression": {
+                                    "type": "CallExpression",
+                                    "callee": {
                                       "type": "Identifier",
-                                      "name": "it",
+                                      "name": "assertEQ",
                                       "decorators": [],
                                       "loc": {
                                         "start": {
                                           "line": 41,
+                                          "column": 7
+                                        },
+                                        "end": {
+                                          "line": 41,
                                           "column": 15
-                                        },
-                                        "end": {
-                                          "line": 41,
-                                          "column": 17
                                         }
                                       }
                                     },
-                                    "right": {
-                                      "type": "StringLiteral",
-                                      "value": "one: in for",
-                                      "loc": {
-                                        "start": {
-                                          "line": 41,
-                                          "column": 21
-                                        },
-                                        "end": {
-                                          "line": 41,
-                                          "column": 34
+                                    "arguments": [
+                                      {
+                                        "type": "Identifier",
+                                        "name": "it",
+                                        "decorators": [],
+                                        "loc": {
+                                          "start": {
+                                            "line": 41,
+                                            "column": 16
+                                          },
+                                          "end": {
+                                            "line": 41,
+                                            "column": 18
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "type": "StringLiteral",
+                                        "value": "one,  in for",
+                                        "loc": {
+                                          "start": {
+                                            "line": 41,
+                                            "column": 20
+                                          },
+                                          "end": {
+                                            "line": 41,
+                                            "column": 34
+                                          }
                                         }
                                       }
-                                    },
+                                    ],
+                                    "optional": false,
                                     "loc": {
                                       "start": {
                                         "line": 41,
-                                        "column": 14
+                                        "column": 7
                                       },
                                       "end": {
                                         "line": 41,
@@ -1522,11 +1539,10 @@
                                       }
                                     }
                                   },
-                                  "second": null,
                                   "loc": {
                                     "start": {
                                       "line": 41,
-                                      "column": 8
+                                      "column": 7
                                     },
                                     "end": {
                                       "line": 41,
@@ -1595,43 +1611,60 @@
                                 "type": "BlockStatement",
                                 "statements": [
                                   {
-                                    "type": "AssertStatement",
-                                    "test": {
-                                      "type": "BinaryExpression",
-                                      "operator": "==",
-                                      "left": {
+                                    "type": "ExpressionStatement",
+                                    "expression": {
+                                      "type": "CallExpression",
+                                      "callee": {
                                         "type": "Identifier",
-                                        "name": "it",
+                                        "name": "assertEQ",
                                         "decorators": [],
                                         "loc": {
                                           "start": {
                                             "line": 43,
+                                            "column": 7
+                                          },
+                                          "end": {
+                                            "line": 43,
                                             "column": 15
-                                          },
-                                          "end": {
-                                            "line": 43,
-                                            "column": 17
                                           }
                                         }
                                       },
-                                      "right": {
-                                        "type": "StringLiteral",
-                                        "value": "two: in for",
-                                        "loc": {
-                                          "start": {
-                                            "line": 43,
-                                            "column": 21
-                                          },
-                                          "end": {
-                                            "line": 43,
-                                            "column": 34
+                                      "arguments": [
+                                        {
+                                          "type": "Identifier",
+                                          "name": "it",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 43,
+                                              "column": 16
+                                            },
+                                            "end": {
+                                              "line": 43,
+                                              "column": 18
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "type": "StringLiteral",
+                                          "value": "two,  in for",
+                                          "loc": {
+                                            "start": {
+                                              "line": 43,
+                                              "column": 20
+                                            },
+                                            "end": {
+                                              "line": 43,
+                                              "column": 34
+                                            }
                                           }
                                         }
-                                      },
+                                      ],
+                                      "optional": false,
                                       "loc": {
                                         "start": {
                                           "line": 43,
-                                          "column": 14
+                                          "column": 7
                                         },
                                         "end": {
                                           "line": 43,
@@ -1639,15 +1672,14 @@
                                         }
                                       }
                                     },
-                                    "second": null,
                                     "loc": {
                                       "start": {
                                         "line": 43,
-                                        "column": 8
+                                        "column": 7
                                       },
                                       "end": {
                                         "line": 43,
-                                        "column": 35
+                                        "column": 36
                                       }
                                     }
                                   }
@@ -1712,43 +1744,60 @@
                                   "type": "BlockStatement",
                                   "statements": [
                                     {
-                                      "type": "AssertStatement",
-                                      "test": {
-                                        "type": "BinaryExpression",
-                                        "operator": "==",
-                                        "left": {
+                                      "type": "ExpressionStatement",
+                                      "expression": {
+                                        "type": "CallExpression",
+                                        "callee": {
                                           "type": "Identifier",
-                                          "name": "it",
+                                          "name": "assertEQ",
                                           "decorators": [],
                                           "loc": {
                                             "start": {
                                               "line": 45,
+                                              "column": 7
+                                            },
+                                            "end": {
+                                              "line": 45,
                                               "column": 15
-                                            },
-                                            "end": {
-                                              "line": 45,
-                                              "column": 17
                                             }
                                           }
                                         },
-                                        "right": {
-                                          "type": "StringLiteral",
-                                          "value": "three: in for",
-                                          "loc": {
-                                            "start": {
-                                              "line": 45,
-                                              "column": 21
-                                            },
-                                            "end": {
-                                              "line": 45,
-                                              "column": 36
+                                        "arguments": [
+                                          {
+                                            "type": "Identifier",
+                                            "name": "it",
+                                            "decorators": [],
+                                            "loc": {
+                                              "start": {
+                                                "line": 45,
+                                                "column": 16
+                                              },
+                                              "end": {
+                                                "line": 45,
+                                                "column": 18
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "StringLiteral",
+                                            "value": "three,  in for",
+                                            "loc": {
+                                              "start": {
+                                                "line": 45,
+                                                "column": 20
+                                              },
+                                              "end": {
+                                                "line": 45,
+                                                "column": 36
+                                              }
                                             }
                                           }
-                                        },
+                                        ],
+                                        "optional": false,
                                         "loc": {
                                           "start": {
                                             "line": 45,
-                                            "column": 14
+                                            "column": 7
                                           },
                                           "end": {
                                             "line": 45,
@@ -1756,15 +1805,14 @@
                                           }
                                         }
                                       },
-                                      "second": null,
                                       "loc": {
                                         "start": {
                                           "line": 45,
-                                          "column": 8
+                                          "column": 7
                                         },
                                         "end": {
                                           "line": 45,
-                                          "column": 37
+                                          "column": 38
                                         }
                                       }
                                     }
@@ -1784,30 +1832,60 @@
                                   "type": "BlockStatement",
                                   "statements": [
                                     {
-                                      "type": "AssertStatement",
-                                      "test": {
-                                        "type": "BooleanLiteral",
-                                        "value": false,
+                                      "type": "ExpressionStatement",
+                                      "expression": {
+                                        "type": "CallExpression",
+                                        "callee": {
+                                          "type": "Identifier",
+                                          "name": "assertTrue",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 47,
+                                              "column": 7
+                                            },
+                                            "end": {
+                                              "line": 47,
+                                              "column": 17
+                                            }
+                                          }
+                                        },
+                                        "arguments": [
+                                          {
+                                            "type": "BooleanLiteral",
+                                            "value": false,
+                                            "loc": {
+                                              "start": {
+                                                "line": 47,
+                                                "column": 18
+                                              },
+                                              "end": {
+                                                "line": 47,
+                                                "column": 23
+                                              }
+                                            }
+                                          }
+                                        ],
+                                        "optional": false,
                                         "loc": {
                                           "start": {
                                             "line": 47,
-                                            "column": 14
+                                            "column": 7
                                           },
                                           "end": {
                                             "line": 47,
-                                            "column": 21
+                                            "column": 24
                                           }
                                         }
                                       },
-                                      "second": null,
                                       "loc": {
                                         "start": {
                                           "line": 47,
-                                          "column": 8
+                                          "column": 7
                                         },
                                         "end": {
                                           "line": 47,
-                                          "column": 22
+                                          "column": 25
                                         }
                                       }
                                     }

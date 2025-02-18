@@ -478,22 +478,52 @@
                           },
                           "consequent": [
                             {
-                              "type": "AssertStatement",
-                              "test": {
-                                "type": "BooleanLiteral",
-                                "value": false,
+                              "type": "ExpressionStatement",
+                              "expression": {
+                                "type": "CallExpression",
+                                "callee": {
+                                  "type": "Identifier",
+                                  "name": "assertTrue",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 25,
+                                      "column": 19
+                                    },
+                                    "end": {
+                                      "line": 25,
+                                      "column": 29
+                                    }
+                                  }
+                                },
+                                "arguments": [
+                                  {
+                                    "type": "BooleanLiteral",
+                                    "value": false,
+                                    "loc": {
+                                      "start": {
+                                        "line": 25,
+                                        "column": 30
+                                      },
+                                      "end": {
+                                        "line": 25,
+                                        "column": 35
+                                      }
+                                    }
+                                  }
+                                ],
+                                "optional": false,
                                 "loc": {
                                   "start": {
                                     "line": 25,
-                                    "column": 26
+                                    "column": 19
                                   },
                                   "end": {
                                     "line": 25,
-                                    "column": 31
+                                    "column": 36
                                   }
                                 }
                               },
-                              "second": null,
                               "loc": {
                                 "start": {
                                   "line": 25,
@@ -501,7 +531,7 @@
                                 },
                                 "end": {
                                   "line": 25,
-                                  "column": 32
+                                  "column": 37
                                 }
                               }
                             },
@@ -511,11 +541,11 @@
                               "loc": {
                                 "start": {
                                   "line": 25,
-                                  "column": 33
+                                  "column": 38
                                 },
                                 "end": {
                                   "line": 25,
-                                  "column": 39
+                                  "column": 44
                                 }
                               }
                             }
@@ -527,7 +557,7 @@
                             },
                             "end": {
                               "line": 25,
-                              "column": 39
+                              "column": 44
                             }
                           }
                         },
@@ -580,22 +610,52 @@
                           },
                           "consequent": [
                             {
-                              "type": "AssertStatement",
-                              "test": {
-                                "type": "BooleanLiteral",
-                                "value": false,
+                              "type": "ExpressionStatement",
+                              "expression": {
+                                "type": "CallExpression",
+                                "callee": {
+                                  "type": "Identifier",
+                                  "name": "assertTrue",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 26,
+                                      "column": 19
+                                    },
+                                    "end": {
+                                      "line": 26,
+                                      "column": 29
+                                    }
+                                  }
+                                },
+                                "arguments": [
+                                  {
+                                    "type": "BooleanLiteral",
+                                    "value": false,
+                                    "loc": {
+                                      "start": {
+                                        "line": 26,
+                                        "column": 30
+                                      },
+                                      "end": {
+                                        "line": 26,
+                                        "column": 35
+                                      }
+                                    }
+                                  }
+                                ],
+                                "optional": false,
                                 "loc": {
                                   "start": {
                                     "line": 26,
-                                    "column": 26
+                                    "column": 19
                                   },
                                   "end": {
                                     "line": 26,
-                                    "column": 31
+                                    "column": 36
                                   }
                                 }
                               },
-                              "second": null,
                               "loc": {
                                 "start": {
                                   "line": 26,
@@ -603,7 +663,7 @@
                                 },
                                 "end": {
                                   "line": 26,
-                                  "column": 32
+                                  "column": 37
                                 }
                               }
                             },
@@ -613,11 +673,11 @@
                               "loc": {
                                 "start": {
                                   "line": 26,
-                                  "column": 33
+                                  "column": 38
                                 },
                                 "end": {
                                   "line": 26,
-                                  "column": 39
+                                  "column": 44
                                 }
                               }
                             }
@@ -629,7 +689,7 @@
                             },
                             "end": {
                               "line": 26,
-                              "column": 39
+                              "column": 44
                             }
                           }
                         },

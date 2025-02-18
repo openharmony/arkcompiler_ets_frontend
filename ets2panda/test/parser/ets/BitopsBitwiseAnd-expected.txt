@@ -568,31 +568,74 @@
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
                           "type": "Identifier",
-                          "name": "bitwiseAndValue",
+                          "name": "assertEQ",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 26,
-                              "column": 12
+                              "column": 5
                             },
                             "end": {
                               "line": 26,
-                              "column": 27
+                              "column": 13
                             }
                           }
                         },
-                        "right": {
-                          "type": "MemberExpression",
-                          "object": {
+                        "arguments": [
+                          {
                             "type": "Identifier",
-                            "name": "BitopsBitwiseAnd",
+                            "name": "bitwiseAndValue",
                             "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 26,
+                                "column": 14
+                              },
+                              "end": {
+                                "line": 26,
+                                "column": 29
+                              }
+                            }
+                          },
+                          {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "BitopsBitwiseAnd",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 26,
+                                  "column": 31
+                                },
+                                "end": {
+                                  "line": 26,
+                                  "column": 47
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "expected",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 26,
+                                  "column": 48
+                                },
+                                "end": {
+                                  "line": 26,
+                                  "column": 56
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 26,
@@ -600,60 +643,34 @@
                               },
                               "end": {
                                 "line": 26,
-                                "column": 47
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "expected",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 26,
-                                "column": 48
-                              },
-                              "end": {
-                                "line": 26,
                                 "column": 56
                               }
                             }
                           },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 26,
-                              "column": 31
-                            },
-                            "end": {
-                              "line": 26,
-                              "column": 56
+                          {
+                            "type": "StringLiteral",
+                            "value": "Incorrect result",
+                            "loc": {
+                              "start": {
+                                "line": 26,
+                                "column": 59
+                              },
+                              "end": {
+                                "line": 26,
+                                "column": 77
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 26,
-                            "column": 12
+                            "column": 5
                           },
                           "end": {
                             "line": 26,
-                            "column": 56
-                          }
-                        }
-                      },
-                      "second": {
-                        "type": "StringLiteral",
-                        "value": "Incorrect result",
-                        "loc": {
-                          "start": {
-                            "line": 26,
-                            "column": 58
-                          },
-                          "end": {
-                            "line": 26,
-                            "column": 76
+                            "column": 78
                           }
                         }
                       },
@@ -664,7 +681,7 @@
                         },
                         "end": {
                           "line": 26,
-                          "column": 77
+                          "column": 79
                         }
                       }
                     }

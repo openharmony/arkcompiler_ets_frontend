@@ -38,7 +38,7 @@ class A {
 function main(): int {
     let a = new A;
     for(let it of a) {
-        assert it == a.data[idx];
+        assertEQ(it, a.data[idx]);
         ++idx;
     }
     return 0;

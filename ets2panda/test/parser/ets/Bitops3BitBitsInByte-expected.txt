@@ -1681,31 +1681,74 @@
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
                           "type": "Identifier",
-                          "name": "sum",
+                          "name": "assertEQ",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 37,
-                              "column": 12
+                              "column": 5
                             },
                             "end": {
                               "line": 37,
-                              "column": 15
+                              "column": 13
                             }
                           }
                         },
-                        "right": {
-                          "type": "MemberExpression",
-                          "object": {
+                        "arguments": [
+                          {
                             "type": "Identifier",
-                            "name": "Bitops3BitBitsInByte",
+                            "name": "sum",
                             "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 37,
+                                "column": 14
+                              },
+                              "end": {
+                                "line": 37,
+                                "column": 17
+                              }
+                            }
+                          },
+                          {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "Bitops3BitBitsInByte",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 37,
+                                  "column": 19
+                                },
+                                "end": {
+                                  "line": 37,
+                                  "column": 39
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "expected",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 37,
+                                  "column": 40
+                                },
+                                "end": {
+                                  "line": 37,
+                                  "column": 48
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 37,
@@ -1713,60 +1756,34 @@
                               },
                               "end": {
                                 "line": 37,
-                                "column": 39
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "expected",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 37,
-                                "column": 40
-                              },
-                              "end": {
-                                "line": 37,
                                 "column": 48
                               }
                             }
                           },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 37,
-                              "column": 19
-                            },
-                            "end": {
-                              "line": 37,
-                              "column": 48
+                          {
+                            "type": "StringLiteral",
+                            "value": "Incorrect result",
+                            "loc": {
+                              "start": {
+                                "line": 37,
+                                "column": 51
+                              },
+                              "end": {
+                                "line": 37,
+                                "column": 69
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 37,
-                            "column": 12
+                            "column": 5
                           },
                           "end": {
                             "line": 37,
-                            "column": 48
-                          }
-                        }
-                      },
-                      "second": {
-                        "type": "StringLiteral",
-                        "value": "Incorrect result",
-                        "loc": {
-                          "start": {
-                            "line": 37,
-                            "column": 50
-                          },
-                          "end": {
-                            "line": 37,
-                            "column": 68
+                            "column": 70
                           }
                         }
                       },
@@ -1777,7 +1794,7 @@
                         },
                         "end": {
                           "line": 37,
-                          "column": 68
+                          "column": 71
                         }
                       }
                     }

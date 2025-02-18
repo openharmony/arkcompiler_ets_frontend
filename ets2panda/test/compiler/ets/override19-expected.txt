@@ -901,7 +901,7 @@
                               },
                               "end": {
                                 "line": 30,
-                                "column": 11
+                                "column": 13
                               }
                             }
                           },
@@ -912,7 +912,7 @@
                             },
                             "end": {
                               "line": 30,
-                              "column": 11
+                              "column": 13
                             }
                           }
                         }
@@ -925,38 +925,66 @@
                         },
                         "end": {
                           "line": 30,
-                          "column": 11
+                          "column": 13
                         }
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "MemberExpression",
-                            "object": {
-                              "type": "Identifier",
-                              "name": "o",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 30,
-                                  "column": 12
-                                },
-                                "end": {
-                                  "line": 30,
-                                  "column": 13
-                                }
-                              }
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "Identifier",
+                          "name": "assertEQ",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 30,
+                              "column": 5
                             },
-                            "property": {
-                              "type": "Identifier",
-                              "name": "$_hashCode",
-                              "decorators": [],
+                            "end": {
+                              "line": 30,
+                              "column": 13
+                            }
+                          }
+                        },
+                        "arguments": [
+                          {
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "MemberExpression",
+                              "object": {
+                                "type": "Identifier",
+                                "name": "o",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 30,
+                                    "column": 14
+                                  },
+                                  "end": {
+                                    "line": 30,
+                                    "column": 15
+                                  }
+                                }
+                              },
+                              "property": {
+                                "type": "Identifier",
+                                "name": "$_hashCode",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 30,
+                                    "column": 16
+                                  },
+                                  "end": {
+                                    "line": 30,
+                                    "column": 26
+                                  }
+                                }
+                              },
+                              "computed": false,
+                              "optional": false,
                               "loc": {
                                 "start": {
                                   "line": 30,
@@ -964,62 +992,50 @@
                                 },
                                 "end": {
                                   "line": 30,
-                                  "column": 24
+                                  "column": 26
                                 }
                               }
                             },
-                            "computed": false,
+                            "arguments": [],
                             "optional": false,
                             "loc": {
                               "start": {
                                 "line": 30,
-                                "column": 12
+                                "column": 14
                               },
                               "end": {
                                 "line": 30,
-                                "column": 24
+                                "column": 28
                               }
                             }
                           },
-                          "arguments": [],
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 30,
-                              "column": 12
-                            },
-                            "end": {
-                              "line": 30,
-                              "column": 26
+                          {
+                            "type": "NumberLiteral",
+                            "value": 4,
+                            "loc": {
+                              "start": {
+                                "line": 30,
+                                "column": 30
+                              },
+                              "end": {
+                                "line": 30,
+                                "column": 31
+                              }
                             }
                           }
-                        },
-                        "right": {
-                          "type": "NumberLiteral",
-                          "value": 4,
-                          "loc": {
-                            "start": {
-                              "line": 30,
-                              "column": 30
-                            },
-                            "end": {
-                              "line": 30,
-                              "column": 31
-                            }
-                          }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 30,
-                            "column": 12
+                            "column": 5
                           },
                           "end": {
                             "line": 30,
-                            "column": 31
+                            "column": 32
                           }
                         }
                       },
-                      "second": null,
                       "loc": {
                         "start": {
                           "line": 30,
@@ -1027,7 +1043,7 @@
                         },
                         "end": {
                           "line": 30,
-                          "column": 31
+                          "column": 33
                         }
                       }
                     }

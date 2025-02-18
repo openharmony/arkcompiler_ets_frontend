@@ -27,9 +27,9 @@ function callAsyncLambda(): void {
         is_call_async_lambda = true;
     }
 
-    assert(is_call_async_lambda == false);
+    assertEQ(is_call_async_lambda, false);
     await /* @@ label */async_lambda();
-    assert(is_call_async_lambda == true);
+    assertEQ(is_call_async_lambda, true);
 }
 
 function main(): void {
