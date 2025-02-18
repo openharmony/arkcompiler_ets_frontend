@@ -21,7 +21,7 @@ export class BuildMode extends BaseMode {
     super(buildConfig);
   }
 
-  public run() : void {
+  public async run(): Promise<void> {
     super.run();
   }
 }

@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -36,4 +37,17 @@ export function changeFileExtension(file: string, targetExt: string, originExt =
   let currentExt = originExt.length === 0 ? path.extname(file) : originExt;
   let fileWithoutExt = file.substring(0, file.lastIndexOf(currentExt));
   return fileWithoutExt + targetExt;
+}
+
+export function ensurePathExists(filePath: string): void {
+  try {
+    const dirPath: string = path.dirname(filePath);
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(`Error: ${error.message}`);
+    }
+  }
 }

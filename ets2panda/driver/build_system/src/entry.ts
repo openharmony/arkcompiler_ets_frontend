@@ -13,37 +13,30 @@
  * limitations under the License.
  */
 
+import * as fs from 'fs';
 import * as path from 'path';
 
 import {
-  buildConfig,
   BuildConfigType,
   processBuildConfig
 } from './init/process_build_config';
 import { BuildMode } from './build/build_mode';
+import { BUILD_TYPE_BUILD } from './pre_define';
 
 export function build(projectConfig: Record<string, BuildConfigType>): void {
-  processBuildConfig(projectConfig);
+  let buildConfig: Record<string, BuildConfigType> = processBuildConfig(projectConfig);
 
-  if (projectConfig.buildMode === 'build') {
+  if (projectConfig.buildType === BUILD_TYPE_BUILD) {
     let buildMode: BuildMode = new BuildMode(buildConfig);
     buildMode.run();
   }
 }
 
-
 function main(): void {
   console.log(process.argv);
-  let file: string = process.argv[2]; // input file
 
-  let projectConfig: Record<string, BuildConfigType> = {
-    entryFiles: [path.resolve(file)],
-    buildMode: 'build',
-    outputDir: __dirname,
-    compileToolPath:
-      path.resolve(__dirname, '..', 'node_modules', 'libarkts', 'arkoala-arkts', 'node_modules', '@panda', 'sdk')
-  };
-
+  const buildConfigPath: string = path.resolve(process.argv[2]);
+  const projectConfig: Record<string, BuildConfigType> = JSON.parse(fs.readFileSync(buildConfigPath, 'utf-8'));
   build(projectConfig);
 }
 

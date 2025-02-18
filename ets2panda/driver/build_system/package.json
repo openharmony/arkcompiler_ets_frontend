@@ -7,8 +7,8 @@
       "clean": "rimraf dist",
       "build": "npm run clean && tsc",
       "build_debug": "npm run clean && tsc --sourceMap",
-      "generate_abc": "npm run build && node ./dist/entry.js test/a.sts",
-      "run_abc": "./node_modules/libarkts/arkoala-arkts/node_modules/@panda/sdk/linux_host_tools/bin/ark --load-runtimes=ets --boot-panda-files=./node_modules/libarkts/arkoala-arkts/node_modules/@panda/sdk/ets/etsstdlib.abc test/a.abc ETSGLOBAL::main",
+      "generate_abc": "npm run build && node ./dist/entry.js test/demo_hap/build_config.json",
+      "run_abc": "./node_modules/libarkts/arkoala-arkts/node_modules/@panda/sdk/linux_host_tools/bin/ark --load-runtimes=ets --boot-panda-files=./node_modules/libarkts/arkoala-arkts/node_modules/@panda/sdk/ets/etsstdlib.abc dist/modules_static.abc entry.b.ETSGLOBAL::main",
       "run": "npm run generate_abc && npm run run_abc"
     },
     "devDependencies": {
