@@ -1,0 +1,14 @@
+{
+    "result": [
+        {
+            "line": 23,
+            "column": 3,
+            "endLine": 23,
+            "endColumn": 9,
+            "problem": "MultipleStaticBlocks",
+            "suggest": "",
+            "rule": "Only one static block is supported (arkts-no-multiple-static-blocks)",
+            "severity": "ERROR"
+        }
+    ]
+}

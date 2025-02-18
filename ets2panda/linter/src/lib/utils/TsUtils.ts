@@ -2864,7 +2864,7 @@ export class TsUtils {
   }
 
   static checkGeneralDeclaration(stmt: ts.Statement, name: string): boolean {
-    if (ts.isFunctionDeclaration(stmt)) {
+    if (ts.isFunctionDeclaration(stmt) && stmt.body !== undefined) {
       return (
         stmt.body!.statements.some((innerStmt) => {
           return TsUtils.checkDeclarationInVariableStatement(innerStmt, name);

@@ -87,6 +87,20 @@ function parseCommand(program: Command, cmdArgs: string[]): ParsedCommand {
   };
 }
 
+function formOptionPaths(cmdlOptions: CommandLineOptions, options:OptionValues): CommandLineOptions {
+  let opts = cmdlOptions;
+  if (options.sdkExternalApiPath) {
+    opts.sdkExternalApiPath = options.sdkExternalApiPath;
+  }
+  if (options.sdkDefaultApiPath) {
+    opts.sdkDefaultApiPath = options.sdkDefaultApiPath;
+  }
+  if (options.arktsWholeProjectPath) {
+    opts.arktsWholeProjectPath = options.arktsWholeProjectPath;
+  }
+  return opts;
+}
+
 function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
   const opts: CommandLineOptions = {
     inputFiles: parsedCmd.args.inputFiles,
@@ -126,16 +140,11 @@ function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
   if (options.ideInteractive) {
     opts.linterOptions.ideInteractive = true;
   }
-  if (options.sdkExternalApiPath) {
-    opts.sdkExternalApiPath = options.sdkExternalApiPath;
+  if (options.migrate !== undefined) {
+    opts.linterOptions.migratorMode = options.migrate;
+    opts.linterOptions.enableAutofix = true;
   }
-  if (options.sdkDefaultApiPath) {
-    opts.sdkDefaultApiPath = options.sdkDefaultApiPath;
-  }
-  if (options.arktsWholeProjectPath) {
-    opts.arktsWholeProjectPath = options.arktsWholeProjectPath;
-  }
-  return opts;
+  return formOptionPaths(opts, options);
 }
 
 function createCommand(): Command {
@@ -163,6 +172,7 @@ function createCommand(): Command {
     option('--warnings-as-errors', 'treat warnings as errors').
     option('--no-check-ts-as-source', 'check TS files as third-party libary').
     option('--no-use-rt-logic', 'run linter with SDK logic').
+    option('--migrate', 'run as ArkTS migrator').
     option('--deveco-plugin-mode', 'run as IDE plugin (obsolete)');
   program.arguments('[srcFile...]').description('files to be verified');
   return program;

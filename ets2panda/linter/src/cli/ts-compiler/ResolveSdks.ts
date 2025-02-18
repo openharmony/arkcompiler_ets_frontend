@@ -69,11 +69,12 @@ export function createCompilerHost(
   return customCompilerHost;
 }
 
-function getResolveModule(modulePath: string, type): ts.ResolvedModuleFull {
+function getResolveModule(modulePath: string, type: string): ts.ResolvedModuleFull {
+
   return {
     resolvedFileName: modulePath,
     isExternalLibraryImport: false,
-    extension: type
+    extension: ts.Extension[type as keyof typeof ts.Extension]
   };
 }
 
