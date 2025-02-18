@@ -20,7 +20,9 @@
 
 using ark::es2panda::lsp::Initializer;
 
-TEST_F(LSPAPITests, GetSyntacticClassifications1)
+class LspClassificationTests : public LSPAPITests {};
+
+TEST_F(LspClassificationTests, GetSyntacticClassifications1)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext("class-name.sts", ES2PANDA_STATE_PARSED, R"(class A {};)");
@@ -38,7 +40,7 @@ TEST_F(LSPAPITests, GetSyntacticClassifications1)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetSyntacticClassifications2)
+TEST_F(LspClassificationTests, GetSyntacticClassifications2)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
@@ -57,7 +59,7 @@ TEST_F(LSPAPITests, GetSyntacticClassifications2)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetSyntacticClassifications3)
+TEST_F(LspClassificationTests, GetSyntacticClassifications3)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
@@ -76,7 +78,7 @@ TEST_F(LSPAPITests, GetSyntacticClassifications3)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetSyntacticClassifications4)
+TEST_F(LspClassificationTests, GetSyntacticClassifications4)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
@@ -95,7 +97,7 @@ TEST_F(LSPAPITests, GetSyntacticClassifications4)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetSyntacticClassifications5)
+TEST_F(LspClassificationTests, GetSyntacticClassifications5)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
@@ -114,7 +116,7 @@ TEST_F(LSPAPITests, GetSyntacticClassifications5)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetSyntacticClassifications6)
+TEST_F(LspClassificationTests, GetSyntacticClassifications6)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
@@ -133,7 +135,7 @@ TEST_F(LSPAPITests, GetSyntacticClassifications6)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetSyntacticClassifications7)
+TEST_F(LspClassificationTests, GetSyntacticClassifications7)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext("number-type.sts", ES2PANDA_STATE_PARSED, R"(let num = 1;)");
@@ -151,7 +153,7 @@ TEST_F(LSPAPITests, GetSyntacticClassifications7)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetSyntacticClassifications8)
+TEST_F(LspClassificationTests, GetSyntacticClassifications8)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext("string-type.sts", ES2PANDA_STATE_PARSED, R"(let str = "123";)");
@@ -169,7 +171,7 @@ TEST_F(LSPAPITests, GetSyntacticClassifications8)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetSyntacticClassifications9)
+TEST_F(LspClassificationTests, GetSyntacticClassifications9)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext("boolean-type.sts", ES2PANDA_STATE_PARSED, R"(let a = true;
@@ -197,7 +199,7 @@ let b = false;)");
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetSyntacticClassifications10)
+TEST_F(LspClassificationTests, GetSyntacticClassifications10)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext("null-type.sts", ES2PANDA_STATE_PARSED, R"(type tmp = null;)");
@@ -223,7 +225,7 @@ TEST_F(LSPAPITests, GetSyntacticClassifications10)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetSyntacticClassifications11)
+TEST_F(LspClassificationTests, GetSyntacticClassifications11)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext(
@@ -276,7 +278,7 @@ TEST_F(LSPAPITests, GetSyntacticClassifications11)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetSyntacticClassifications12)
+TEST_F(LspClassificationTests, GetSyntacticClassifications12)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext(
@@ -326,7 +328,7 @@ TEST_F(LSPAPITests, GetSyntacticClassifications12)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetSemanticClassifications1)
+TEST_F(LspClassificationTests, GetSemanticClassifications1)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
@@ -346,7 +348,7 @@ TEST_F(LSPAPITests, GetSemanticClassifications1)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetSemanticClassifications2)
+TEST_F(LspClassificationTests, GetSemanticClassifications2)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
@@ -366,7 +368,7 @@ TEST_F(LSPAPITests, GetSemanticClassifications2)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetSemanticClassifications3)
+TEST_F(LspClassificationTests, GetSemanticClassifications3)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext("enum-name.sts", ES2PANDA_STATE_CHECKED,
@@ -385,7 +387,7 @@ TEST_F(LSPAPITests, GetSemanticClassifications3)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetSemanticClassifications4)
+TEST_F(LspClassificationTests, GetSemanticClassifications4)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
@@ -404,7 +406,7 @@ TEST_F(LSPAPITests, GetSemanticClassifications4)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetSemanticClassifications5)
+TEST_F(LspClassificationTests, GetSemanticClassifications5)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
