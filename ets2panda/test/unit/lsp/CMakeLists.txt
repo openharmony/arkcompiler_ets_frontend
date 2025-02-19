@@ -21,6 +21,7 @@ ets2panda_add_gtest(lsp_api_test CPP_SOURCES
     lsp_api_test.cpp
     cancellation_token_test.cpp
     get_span_of_enclosing_comment_test.cpp
+    user_preferences.cpp
 )
 
 ets2panda_add_gtest(lsp_api_classifier_test CPP_SOURCES
