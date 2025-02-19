@@ -638,33 +638,18 @@ ArenaVector<ir::AstNode *> RemoveRefDuplicates(const ArenaVector<ir::AstNode *> 
     return ArenaVector<ir::AstNode *>(uniqueNodes.begin(), uniqueNodes.end(), allocator->Adapter());
 }
 
-ir::AstNode *FindDeclarationForIdentifier(ir::Identifier *node)
-{
-    auto idVar = node->Variable();
-    if (idVar == nullptr) {
-        return nullptr;
-    }
-    auto decl = idVar->Declaration();
-    if (decl == nullptr) {
-        return nullptr;
-    }
-    return decl->Node();
-}
-
-void FindAllChildHelper(ArenaVector<ir::AstNode *> &results, const ir::NodePredicate &cb, ir::AstNode *ast)
+void FindAllChildHelper(ir::AstNode *ast, const ir::NodePredicate &cb, ArenaVector<ir::AstNode *> &results)
 {
     if (cb(ast)) {
         results.push_back(ast);
     }
 
-    ast->Iterate([&results, cb](ir::AstNode *child) { FindAllChildHelper(results, cb, child); });
+    ast->Iterate([&results, cb](ir::AstNode *child) { FindAllChildHelper(child, cb, results); });
 }
 
-ArenaVector<ir::AstNode *> FindAllChild(const ir::NodePredicate &cb, const ir::AstNode *ast, ArenaAllocator *allocator)
+void FindAllChild(const ir::AstNode *ast, const ir::NodePredicate &cb, ArenaVector<ir::AstNode *> &results)
 {
-    ArenaVector<ir::AstNode *> results(allocator->Adapter());
-    ast->Iterate([&results, cb](ir::AstNode *child) { FindAllChildHelper(results, cb, child); });
-    return results;
+    ast->Iterate([&results, cb](ir::AstNode *child) { FindAllChildHelper(child, cb, results); });
 }
 
 ArenaVector<ir::AstNode *> FindReferencesByName(ir::AstNode *ast, ir::AstNode *decl, ir::AstNode *node,
@@ -673,10 +658,11 @@ ArenaVector<ir::AstNode *> FindReferencesByName(ir::AstNode *ast, ir::AstNode *d
     ASSERT(node->IsIdentifier());
     auto name = node->AsIdentifier()->Name();
     auto checkFunc = [&name, &decl](ir::AstNode *child) {
-        return child->IsIdentifier() && FindDeclarationForIdentifier(child->AsIdentifier()) == decl &&
+        return child->IsIdentifier() && compiler::DeclarationFromIdentifier(child->AsIdentifier()) == decl &&
                child->AsIdentifier()->Name() == name;
     };
-    auto references = FindAllChild(checkFunc, ast, allocator);
+    auto references = ArenaVector<ir::AstNode *>(allocator->Adapter());
+    FindAllChild(ast, checkFunc, references);
 
     auto uniqueReferences = RemoveRefDuplicates(references, allocator);
     std::sort(uniqueReferences.begin(), uniqueReferences.end(), [](const ir::AstNode *a, const ir::AstNode *b) {
@@ -703,7 +689,7 @@ DocumentHighlights GetSemanticDocumentHighlights(es2panda_Context *context, size
     if (!touchingToken->IsIdentifier()) {
         return DocumentHighlights(fileName, {});
     }
-    auto decl = FindDeclarationForIdentifier(touchingToken->AsIdentifier());
+    auto decl = compiler::DeclarationFromIdentifier(touchingToken->AsIdentifier());
     if (decl == nullptr) {
         return DocumentHighlights(fileName, {});
     }

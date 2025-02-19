@@ -28,6 +28,7 @@
 #include "public/es2panda_lib.h"
 #include "cancellation_token.h"
 #include "find_references.h"
+#include "completions.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -356,6 +357,7 @@ typedef struct LSPAPI {
                                  const std::vector<ark::es2panda::SourceFile> &srcFiles,
                                  const ark::es2panda::SourceFile &srcFile, size_t position);
     std::vector<FileDiagnostic> (*getSuggestionDiagnostics)(es2panda_Context *context);
+    ark::es2panda::lsp::CompletionInfo (*getCompletionsAtPosition)(char const *fileName, size_t position);
 } LSPAPI;
 
 LSPAPI const *GetImpl();

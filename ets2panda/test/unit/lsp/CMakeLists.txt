@@ -55,3 +55,7 @@ ets2panda_add_gtest(lsp_api_slc_tests CPP_SOURCES
 ets2panda_add_gtest(lsp_api_test_suggestion_diagnostics CPP_SOURCES
     suggestion_diagnostics_test.cpp
 )
+
+ets2panda_add_gtest(lsp_api_completions_test CPP_SOURCES
+    get_completions.cpp
+)

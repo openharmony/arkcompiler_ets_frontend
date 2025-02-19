@@ -84,6 +84,8 @@ void GetReferenceLocationAtPositionImpl(FileNodeInfo fileNodeInfo, es2panda_Cont
 void RemoveFromFiles(std::vector<std::string> &files, const std::vector<std::string> &autoGenerateFolders);
 std::string GetOwnerId(ir::AstNode *node);
 std::string GetIdentifierName(ir::AstNode *node);
+bool NodeHasTokens(const ir::AstNode *node);
+void FindAllChild(const ir::AstNode *ast, const ir::NodePredicate &cb, ArenaVector<ir::AstNode *> &results);
 
 }  // namespace ark::es2panda::lsp
 
