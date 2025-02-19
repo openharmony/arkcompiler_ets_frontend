@@ -31,6 +31,7 @@ endif()
 
 add_custom_target(es2panda_tests COMMENT "Running es2panda test suites")
 add_custom_target(es2panda_gtests COMMENT "Running es2panda gtest suites")
+set(DEFAULT_TEST_GROUP ets_tests)
 
 # List for accumulation of all ets gtests binary paths.
 # It's used by CI to archive these binaries into a single artifact
