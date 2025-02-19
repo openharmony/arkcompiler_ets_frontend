@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-export default /* @@ err */{foo} from "./for_re-export"
+export default {foo} /* @@ err */from "./for_re-export"
 
-/* @@@ err Error SyntaxError: Unexpected token 'default'. Only declarations are allowed after 'export default' */
+/* @@@ err Error SyntaxError: Cannot use 'export default' in re-export context */

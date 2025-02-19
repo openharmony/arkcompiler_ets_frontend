@@ -13,6 +13,10 @@
  * limitations under the License.
  */
 
-export default * /* @@ err */from "./for_re-export"
 
-/* @@@ err Error SyntaxError: Cannot use 'export default' in re-export context */
+class B {
+    static fooB(){
+    }
+}
+
+export default {B}

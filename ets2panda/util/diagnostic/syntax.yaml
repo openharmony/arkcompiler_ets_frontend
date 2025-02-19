@@ -27,3 +27,7 @@ syntax:
 - name: AMBIENT_CLASS_MISSING_BODY
   id: 4
   message: Ambient class declarations must have a body.
+
+- name: EXPORT_DEFAULT_WITH_MUPLTIPLE_SPECIFIER
+  id: 5
+  message: export default is not allowed to export multiple specifiers.

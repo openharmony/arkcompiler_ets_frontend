@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
-export default * /* @@ err */from "./for_re-export"
+import FOOA from './export_default1'
+import FOOB from './export_default2'
 
-/* @@@ err Error SyntaxError: Cannot use 'export default' in re-export context */
+FOOA.fooA();
+FOOB.fooB();

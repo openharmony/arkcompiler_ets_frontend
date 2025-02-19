@@ -13,6 +13,17 @@
  * limitations under the License.
  */
 
-export default * /* @@ err */from "./for_re-export"
 
-/* @@@ err Error SyntaxError: Cannot use 'export default' in re-export context */
+class A {
+    static foo(){
+    }
+}
+
+class B {
+    static foo(){
+    }
+}
+
+export default {A, B}
+
+/* @@? 27:20 Error SyntaxError: export default is not allowed to export multiple specifiers.  */
