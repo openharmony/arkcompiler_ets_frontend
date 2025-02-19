@@ -52,6 +52,14 @@ typedef struct TextSpan {
     size_t start;
     size_t length;
     TextSpan(size_t s, size_t l) : start(s), length(l) {}
+    bool operator==(const TextSpan &other) const
+    {
+        return start == other.start && length == other.length;
+    }
+    bool operator!=(const TextSpan &other) const
+    {
+        return !(*this == other);
+    }
 } TextSpan;
 
 typedef struct Position {
@@ -186,12 +194,137 @@ typedef struct DocumentHighlightsReferences {
     std::vector<DocumentHighlights> documentHighlights_;
 } DocumentHighlightsReferences;
 
+struct SymbolDisplayPart {
+private:
+    std::string text_;
+    std::string kind_;
+
+public:
+    explicit SymbolDisplayPart(std::string text = "", std::string kind = "")
+        : text_ {std::move(text)}, kind_ {std::move(kind)}
+    {
+    }
+
+    std::string GetText() const
+    {
+        return text_;
+    }
+    std::string GetKind() const
+    {
+        return kind_;
+    }
+
+    bool operator==(const SymbolDisplayPart &other) const
+    {
+        return text_ == other.text_ && kind_ == other.kind_;
+    }
+    bool operator!=(const SymbolDisplayPart &other) const
+    {
+        return !(*this == other);
+    }
+};
+
+struct DocTagInfo {
+private:
+    std::string name_;
+    std::string text_;
+
+public:
+    explicit DocTagInfo(std::string name = "", std::string text = "") : name_ {std::move(name)}, text_ {std::move(text)}
+    {
+    }
+
+    std::string GetName() const
+    {
+        return name_;
+    }
+    std::string GetText() const
+    {
+        return text_;
+    }
+
+    bool operator==(const DocTagInfo &other) const
+    {
+        return name_ == other.name_ && text_ == other.text_;
+    }
+    bool operator!=(const DocTagInfo &other) const
+    {
+        return !(*this == other);
+    }
+};
+
+struct QuickInfo {
+private:
+    std::string kind_;
+    std::string kindModifiers_;
+    TextSpan textSpan_;
+    std::vector<SymbolDisplayPart> displayParts_;
+    std::vector<SymbolDisplayPart> document_;
+    std::vector<DocTagInfo> tags_;
+    std::string fileName_;
+
+public:
+    explicit QuickInfo(std::string kind = "", std::string kindModifiers = "", TextSpan span = TextSpan(0, 0),
+                       std::vector<SymbolDisplayPart> displayParts = {}, std::vector<SymbolDisplayPart> document = {},
+                       std::vector<DocTagInfo> tags = {}, std::string fileName = "")
+        : kind_ {std::move(kind)},
+          kindModifiers_ {std::move(kindModifiers)},
+          textSpan_ {span},
+          displayParts_ {std::move(displayParts)},
+          document_ {std::move(document)},
+          tags_ {std::move(tags)},
+          fileName_ {std::move(fileName)}
+    {
+    }
+
+    std::string GetKind() const
+    {
+        return kind_;
+    }
+    std::string GetKindModifiers() const
+    {
+        return kindModifiers_;
+    }
+    TextSpan GetTextSpan() const
+    {
+        return textSpan_;
+    }
+    std::vector<SymbolDisplayPart> GetDisplayParts() const
+    {
+        return displayParts_;
+    }
+    std::vector<SymbolDisplayPart> GetDocument() const
+    {
+        return document_;
+    }
+    std::vector<DocTagInfo> GetTags() const
+    {
+        return tags_;
+    }
+    std::string GetFileName() const
+    {
+        return fileName_;
+    }
+
+    bool operator==(const QuickInfo &other) const
+    {
+        return kind_ == other.kind_ && kindModifiers_ == other.kindModifiers_ && textSpan_ == other.textSpan_ &&
+               displayParts_ == other.displayParts_ && document_ == other.document_ && tags_ == other.tags_ &&
+               fileName_ == other.fileName_;
+    }
+    bool operator!=(const QuickInfo &other) const
+    {
+        return !(*this == other);
+    }
+};
+
 typedef struct LSPAPI {
     DefinitionInfo *(*getDefinitionAtPosition)(char const *fileName, size_t position);
     References (*getFileReferences)(char const *fileName);
     References (*getReferencesAtPosition)(char const *fileName, size_t position);
     es2panda_AstNode *(*getPrecedingToken)(es2panda_Context *context, const size_t pos);
     std::string (*getCurrentTokenValue)(char const *fileName, size_t position);
+    QuickInfo (*getQuickInfoAtPosition)(const char *fileName, size_t position);
     TextSpan (*getSpanOfEnclosingComment)(char const *fileName, size_t pos, bool onlyMultiLine);
     DiagnosticReferences (*getSemanticDiagnostics)(char const *fileName);
     DiagnosticReferences (*getSyntacticDiagnostics)(char const *fileName);
