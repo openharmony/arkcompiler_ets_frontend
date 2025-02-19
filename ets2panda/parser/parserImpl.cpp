@@ -1280,7 +1280,9 @@ void ParserImpl::LogUnexpectedToken(lexer::TokenType tokenType)
 
 void ParserImpl::LogUnexpectedToken(lexer::Token const &token)
 {
-    LogSyntaxError(std::string(UNEXPECTED_TOKEN).append(token.ToString()).append("'."));
+    if (token.ToString() != ERROR_LITERAL) {
+        LogError(diagnostic::UNEXPECTED_TOKEN_PARAM, {token.ToString()});
+    }
 }
 
 void ParserImpl::LogExpectedToken(lexer::TokenType tokenType)
