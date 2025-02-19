@@ -158,6 +158,34 @@ typedef struct ReferenceLocationList {
     std::vector<ReferenceLocation> referenceLocation;
 } ReferenceLocationList;
 
+enum class HighlightSpanKind { NONE, DEFINITION, REFERENCE, WRITTEN_REFERENCE };
+
+typedef struct HighlightSpan {
+    std::string fileName_;
+    bool isInString_;
+    TextSpan textSpan_;
+    TextSpan contextSpan_;
+    HighlightSpanKind kind_;
+    HighlightSpan(std::string fileName = "fileName", bool isInString = false, TextSpan textSpan = {0, 0},
+                  TextSpan contextSpan = {0, 0}, HighlightSpanKind kind = HighlightSpanKind::NONE)
+        : fileName_(fileName), isInString_(isInString), textSpan_(textSpan), contextSpan_(contextSpan), kind_(kind)
+    {
+    }
+} HighlightSpan;
+
+typedef struct DocumentHighlights {
+    std::string fileName_;
+    std::vector<HighlightSpan> highlightSpans_;
+    DocumentHighlights(std::string fileName = "fileName", std::vector<HighlightSpan> highlightSpans = {})
+        : fileName_(fileName), highlightSpans_(highlightSpans)
+    {
+    }
+} DocumentHighlights;
+
+typedef struct DocumentHighlightsReferences {
+    std::vector<DocumentHighlights> documentHighlights_;
+} DocumentHighlightsReferences;
+
 typedef struct LSPAPI {
     DefinitionInfo *(*getDefinitionAtPosition)(char const *fileName, size_t position);
     References (*getFileReferences)(char const *fileName);
@@ -170,6 +198,7 @@ typedef struct LSPAPI {
     ReferenceLocationList (*getReferenceLocationAtPosition)(char const *fileName, size_t pos,
                                                             const std::vector<std::string> &autoGenerateFolders,
                                                             ark::es2panda::lsp::CancellationToken cancellationToken);
+    DocumentHighlightsReferences (*getDocumentHighlights)(char const *fileName, size_t position);
 } LSPAPI;
 
 LSPAPI const *GetImpl();

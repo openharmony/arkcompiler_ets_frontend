@@ -14,6 +14,7 @@
 ets2panda_add_gtest(lsp_api_test_1 CPP_SOURCES
     get_file_references_test.cpp
     get_references_at_position_test.cpp
+    document_highlights.cpp
 )
 
 ets2panda_add_gtest(lsp_api_test CPP_SOURCES
