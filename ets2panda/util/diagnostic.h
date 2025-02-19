@@ -42,7 +42,18 @@ class SourceLocation;
 
 namespace ark::es2panda::util {
 
-enum DiagnosticType { BEGIN = 0, FATAL = BEGIN, SYNTAX, SEMANTIC, WARNING, PLUGIN, COUNT = PLUGIN, INVALID };
+enum DiagnosticType {
+    BEGIN = 0,
+    FATAL = BEGIN,
+    SYNTAX,
+    SEMANTIC,
+    WARNING,
+    PLUGIN,
+    DECLGEN_ETS2TS_ERROR,
+    DECLGEN_ETS2TS_WARNING,
+    COUNT,
+    INVALID
+};
 const char *DiagnosticTypeToString(DiagnosticType type);
 
 class DiagnosticBase {
@@ -159,6 +170,10 @@ public:
     explicit Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
                         const util::DiagnosticMessageParams &diagnosticParams, std::string_view file = "",
                         size_t line = 0, size_t offset = 0);
+    explicit Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
+                        const util::DiagnosticMessageParams &diagnosticParams, const parser::Program *program,
+                        const lexer::SourcePosition &poc);
+
     NO_COPY_SEMANTIC(Diagnostic);
     DEFAULT_MOVE_SEMANTIC(Diagnostic);
     ~Diagnostic() override = default;

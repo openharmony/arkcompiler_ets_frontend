@@ -156,6 +156,10 @@ const char *DiagnosticTypeToString(DiagnosticType type)
             return "Warning";
         case DiagnosticType::PLUGIN:
             return "Plugin error";
+        case DiagnosticType::DECLGEN_ETS2TS_ERROR:
+            return "Declgen ets2ts error";
+        case DiagnosticType::DECLGEN_ETS2TS_WARNING:
+            return "Declgen ets2ts warning";
         default:
             UNREACHABLE();
     }
@@ -206,4 +210,12 @@ Diagnostic::Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
       diagnosticParams_(FormatParams(diagnosticParams))
 {
 }
+
+Diagnostic::Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
+                       const util::DiagnosticMessageParams &diagnosticParams, const parser::Program *program,
+                       const lexer::SourcePosition &poc)
+    : DiagnosticBase(program, poc), diagnosticKind_(&diagnosticKind), diagnosticParams_(FormatParams(diagnosticParams))
+{
+}
+
 }  // namespace ark::es2panda::util
