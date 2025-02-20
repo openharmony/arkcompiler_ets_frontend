@@ -435,3 +435,4 @@ verifier_acc_type1.sts
 visible_signatures.sts
 nestedNameSpaceWithStaticField.sts
 implicit_this_array.sts
+stringInSwitchCase.sts
