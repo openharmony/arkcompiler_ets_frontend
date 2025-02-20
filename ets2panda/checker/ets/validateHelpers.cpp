@@ -275,7 +275,13 @@ void ETSChecker::ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaratio
                 return node;
             }
 
-            auto *const typeParamType = exactTypeParams->Params().at(typeParamIdx);
+            ir::TypeNode *typeParamType = nullptr;
+
+            if (exactTypeParams->Params().size() > typeParamIdx) {
+                typeParamType = exactTypeParams->Params().at(typeParamIdx);
+            } else {
+                typeParamType = typeAliasNode->TypeParams()->Params().at(typeParamIdx)->DefaultType();
+            }
 
             if (!typeParamType->IsETSTypeReference()) {
                 checkTypealias = false;

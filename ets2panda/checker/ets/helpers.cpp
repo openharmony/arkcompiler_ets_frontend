@@ -1180,6 +1180,32 @@ static void CollectAliasParametersForBoxing(Type *expandedAliasType, std::set<Ty
     }
 }
 
+bool ETSChecker::CheckMinimumTypeArgsPresent(const ir::TSTypeAliasDeclaration *typeAliasNode,
+                                             const ir::TSTypeParameterInstantiation *typeParams)
+{
+    size_t minNumberOfTypeParams =
+        std::count_if(typeAliasNode->TypeParams()->Params().begin(), typeAliasNode->TypeParams()->Params().end(),
+                      [](const ir::TSTypeParameter *param) { return param->DefaultType() == nullptr; });
+    if (minNumberOfTypeParams > typeParams->Params().size() ||
+        typeParams->Params().size() > typeAliasNode->TypeParams()->Params().size()) {
+        LogError(diagnostic::EXPECTED_TYPE_ARGUMENTS, {minNumberOfTypeParams, typeParams->Params().size()},
+                 typeParams->Start());
+        return true;
+    }
+
+    return false;
+}
+
+ir::TypeNode *ETSChecker::ResolveTypeNodeForTypeArg(const ir::TSTypeAliasDeclaration *typeAliasNode,
+                                                    const ir::TSTypeParameterInstantiation *typeParams, size_t idx)
+{
+    if (typeParams->Params().size() > idx) {
+        return typeParams->Params().at(idx);
+    }
+
+    return typeAliasNode->TypeParams()->Params().at(idx)->DefaultType();
+}
+
 Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypeParameterInstantiation *const typeParams)
 {
     ES2PANDA_ASSERT(name->IsIdentifier() && name->AsIdentifier()->Variable() &&
@@ -1211,8 +1237,8 @@ Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypePa
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     Type *const aliasType = GetReferencedTypeBase(name);
     auto *substitution = NewSubstitution();
-    if (typeAliasNode->TypeParams()->Params().size() != typeParams->Params().size()) {
-        LogError(diagnostic::GENERIC_ALIAS_PARAM_COUNT_MISMATCH, {}, typeParams->Start());
+
+    if (CheckMinimumTypeArgsPresent(typeAliasNode, typeParams)) {
         return GlobalTypeError();
     }
 
@@ -1226,10 +1252,12 @@ Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypePa
         if (!typeAliasType->IsETSTypeParameter()) {
             continue;
         }
-        auto paramType = typeParams->Params().at(idx)->TsType();
+
+        ir::TypeNode *typeNode = ResolveTypeNodeForTypeArg(typeAliasNode, typeParams, idx);
+        auto paramType = typeNode->GetType(this);
+
         if (parametersNeedToBeBoxed.find(typeAliasType) != parametersNeedToBeBoxed.end()) {
-            auto boxedType = MaybeBoxInRelation(typeParams->Params().at(idx)->GetType(this));
-            if (boxedType != nullptr) {
+            if (const auto boxedType = MaybeBoxInRelation(typeNode->GetType(this)); boxedType != nullptr) {
                 paramType = boxedType;
             }
         }

@@ -437,3 +437,4 @@ visible_signatures.sts
 nestedNameSpaceWithStaticField.sts
 implicit_this_array.sts
 stringInSwitchCase.sts
+DefaultTypeParamWithTypeAlias.sts

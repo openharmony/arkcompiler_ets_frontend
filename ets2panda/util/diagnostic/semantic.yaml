@@ -1105,3 +1105,7 @@ semantic:
 - name: RTYPE_PARAM_COUNT_MISMATCH
   id: 274
   message: "Expected {} type arguments, got {} ."
+
+- name: EXPECTED_TYPE_ARGUMENTS
+  id: 275
+  message: "Expected at least {} type arguments, but got {}."
