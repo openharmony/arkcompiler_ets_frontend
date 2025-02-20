@@ -1397,12 +1397,54 @@ export class Autofixer {
 
     // Note: Bodyless ctors can't have parameter properties.
     if (ctorDecl.body) {
-      const newBody = ts.factory.createBlock(fieldInitStmts.concat(ctorDecl.body.statements), true);
+      const beforeFieldStmts: ts.Statement[] = [];
+      const afterFieldStmts: ts.Statement[] = [];
+      const hasSuperExpressionStatement: boolean = this.hasSuperExpression(
+        ctorDecl.body,
+        beforeFieldStmts,
+        afterFieldStmts
+      );
+      let finalStmts: ts.Statement[] = [];
+      if (hasSuperExpressionStatement) {
+        finalStmts = beforeFieldStmts.concat(fieldInitStmts).concat(afterFieldStmts);
+      } else {
+        finalStmts = fieldInitStmts.concat(ctorDecl.body.statements);
+      }
+      const newBody = ts.factory.createBlock(finalStmts, true);
       const newBodyText = this.printer.printNode(ts.EmitHint.Unspecified, newBody, ctorDecl.getSourceFile());
       autofixes.push({ start: ctorDecl.body.getStart(), end: ctorDecl.body.getEnd(), replacementText: newBodyText });
     }
 
     return autofixes;
+  }
+
+  private hasSuperExpression(
+    body: ts.Block,
+    beforeFieldStmts: ts.Statement[],
+    afterFieldStmts: ts.Statement[]
+  ): boolean {
+    void this;
+    let hasSuperExpressionStatement = false;
+    ts.forEachChild(body, (node) => {
+      if (this.isSuperCallStmt(node as ts.Statement)) {
+        hasSuperExpressionStatement = true;
+        beforeFieldStmts.push(node as ts.Statement);
+      } else if (hasSuperExpressionStatement) {
+        afterFieldStmts.push(node as ts.Statement);
+      } else {
+        beforeFieldStmts.push(node as ts.Statement);
+      }
+    });
+    return hasSuperExpressionStatement;
+  }
+
+  private isSuperCallStmt(node: ts.Statement): boolean {
+    void this;
+    if (ts.isExpressionStatement(node) && ts.isCallExpression(node.expression)) {
+      const expr = node.expression.expression;
+      return expr.kind === ts.SyntaxKind.SuperKeyword;
+    }
+    return false;
   }
 
   private fixCtorParameterPropertiesProcessParam(
@@ -1419,9 +1461,13 @@ export class Autofixer {
 
     if (this.utils.hasAccessModifier(param)) {
       const propIdent = ts.factory.createIdentifier(param.name.text);
+      const modifiers = ts.getModifiers(param);
+      const paramModifiers = modifiers?.filter((x) => {
+        return x.kind !== ts.SyntaxKind.OverrideKeyword;
+      });
 
       const newFieldNode = ts.factory.createPropertyDeclaration(
-        ts.getModifiers(param),
+        paramModifiers,
         propIdent,
         undefined,
         paramType,
