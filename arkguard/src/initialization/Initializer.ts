@@ -122,7 +122,7 @@ function initArkGuardConfig(
   };
 
   const arkObfuscator: ArkObfuscator = new ArkObfuscator();
-  arkObfuscator.init(arkguardConfig);
+  arkObfuscator.init(arkguardConfig, obfuscationCacheDir);
   if (mergedObConfig.options.applyNameCache && mergedObConfig.options.applyNameCache.length > 0) {
     readNameCache(mergedObConfig.options.applyNameCache, printObfLogger);
   } else {

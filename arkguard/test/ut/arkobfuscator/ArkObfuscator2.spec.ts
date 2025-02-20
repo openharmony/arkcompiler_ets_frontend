@@ -45,6 +45,7 @@ import {
   writeObfuscationNameCache,
   writeUnobfuscationContent,
   unobfuscationNamesObj,
+  FileUtils,
 } from '../../../src/ArkObfuscator'; 
 
 import {
@@ -62,8 +63,10 @@ import {
   historyFileNameMangledTable,
 } from '../../../src/transformers/rename/RenameFileNameTransformer';
 import { LocalVariableCollections } from '../../../src/utils/CommonCollections';
+import { SOURCE_FILE_PATHS, projectWhiteListManager } from '../../../src/utils/ProjectCollections';
 import { FilePathObj } from '../../../src/common/type';
 import { historyAllUnobfuscatedNamesMap } from '../../../src/initialization/Initializer';
+import path from 'path';
 
 describe('Tester Cases for <ArkObfuscator>', function () {
   let obfuscator: ArkObfuscator;
@@ -155,6 +158,61 @@ export declare function findElement<T>(arr: T[], callback: (item: T) => boolean)
       const actualContent = textWriter.getText();
       const expectContent = `function subtract(a, b) {return a - b;}`;
       expect(actualContent === expectContent).to.be.true;
+    });
+
+    it('should not init incremental cache when cachePath is not passed', () => {
+      const config: IOptions = {
+        mNameObfuscation: {
+          mEnable: true,
+          mRenameProperties: true,
+          mReservedProperties: [],
+        },
+        mCompact: true,
+        mEnableSourceMap: true,
+        mRemoveComments: true
+      };
+      obfuscator.init(config);
+      expect(obfuscator.fileContentManager).to.be.undefined;
+      expect(obfuscator.filePathManager).to.be.undefined;
+      expect(projectWhiteListManager).to.be.undefined;
+    });
+
+    it('should init incremental cache when cachePath is passed', () => {
+      const config: IOptions = {
+        mNameObfuscation: {
+          mEnable: true,
+          mRenameProperties: true,
+          mReservedProperties: [],
+        },
+        mCompact: true,
+        mEnableSourceMap: true,
+        mRemoveComments: true
+      };
+      const cachePath = 'test/ut/utils/obfuscation';
+      obfuscator.init(config, cachePath);
+      expect(obfuscator.fileContentManager).to.not.be.undefined;
+      expect(obfuscator.filePathManager).to.not.be.undefined;
+      expect(projectWhiteListManager).to.not.be.undefined;
+    });
+
+    it('should set is incremental flag if is incremental', () => {
+      const config: IOptions = {
+        mNameObfuscation: {
+          mEnable: true,
+          mRenameProperties: true,
+          mReservedProperties: [],
+        },
+        mCompact: true,
+        mEnableSourceMap: true,
+        mRemoveComments: true
+      };
+      const cachePath = 'test/ut/utils/obfuscation';
+      const filePathsCache = path.join(cachePath, SOURCE_FILE_PATHS);
+      let content = 'hello';
+      FileUtils.writeFile(filePathsCache, content);
+      obfuscator.init(config, cachePath);
+      expect(obfuscator.isIncremental).to.be.true;
+      FileUtils.deleteFile(filePathsCache);
     });
   });
 

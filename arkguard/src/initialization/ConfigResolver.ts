@@ -978,6 +978,12 @@ export function readNameCache(nameCachePath: string, printObfLogger: Function): 
   }
 }
 
+// Clear name caches, used when we need to reobfuscate all files
+export function clearNameCache(): void {
+  PropCollections.historyMangledTable?.clear();
+  nameCacheMap?.clear();
+}
+
 /**
  * collect the reserved or excluded paths containing wildcards
  */

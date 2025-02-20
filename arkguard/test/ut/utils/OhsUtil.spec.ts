@@ -23,11 +23,20 @@ import {
   getInterfaceProperties,
   getClassProperties,
   getEnumProperties,
-  getObjectProperties
+  getObjectProperties,
+  getViewPUClassProperties
 } from '../../../src/utils/OhsUtil';
+import {
+  UnobfuscationCollections
+} from '../../../src/utils/CommonCollections';
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import * as ts from 'typescript';
+import {
+  projectWhiteListManager,
+  initProjectWhiteListManager,
+  clearProjectWhiteListManager
+} from '../../../src/utils/ProjectCollections';
 
 describe('unit test for OhsUtil.ts', function () {
   describe('test for isViewPUBasedClass function', function () {
@@ -126,11 +135,19 @@ describe('unit test for OhsUtil.ts', function () {
   describe('test for getIndexedAccessTypeProperties function', function () {
     beforeEach(() => {
       stringPropsSet.clear();
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, false);
+      projectWhiteListManager?.setCurrentCollector('demo.ts');
+    });
+
+    afterEach(()=>{
+      clearProjectWhiteListManager();
     });
 
     it('should not add items to propertySet if indexedAccessType is undefined', () => {
       getIndexedAccessTypeProperties(undefined);
       expect(stringPropsSet.has('value')).to.be.false;
+      expect(projectWhiteListManager?.fileWhiteListInfo.fileKeepInfo.stringProperties.has('value')).to.be.false;
     });
 
     it('should add to propertySet if indexedAccessType.indexType is literalType and set string value', () => {
@@ -143,6 +160,7 @@ describe('unit test for OhsUtil.ts', function () {
       )
       getIndexedAccessTypeProperties(indexedAccessType);
       expect(stringPropsSet.has("U")).to.be.true;
+      expect(projectWhiteListManager?.fileWhiteListInfo.fileKeepInfo.stringProperties.has("U")).to.be.true;
     });
 
     it('should add to propertySet if indexedAccessType.indexType is unionType and set string value', () => {
@@ -159,6 +177,8 @@ describe('unit test for OhsUtil.ts', function () {
       getIndexedAccessTypeProperties(indexedAccessType);
       expect(stringPropsSet.has("U")).to.be.true;
       expect(stringPropsSet.has('1')).to.be.false;
+      expect(projectWhiteListManager?.fileWhiteListInfo.fileKeepInfo.stringProperties.has("U")).to.be.true;
+      expect(projectWhiteListManager?.fileWhiteListInfo.fileKeepInfo.stringProperties.has('1')).to.be.false;
     });
 
     it('should not add items to propertySet if indexedAccessType.literalType is set numberic value', () => {
@@ -171,6 +191,7 @@ describe('unit test for OhsUtil.ts', function () {
       )
       getIndexedAccessTypeProperties(indexedAccessType)
       expect(stringPropsSet.has('1')).to.be.false;
+      expect(projectWhiteListManager?.fileWhiteListInfo.fileKeepInfo.stringProperties.has('1')).to.be.false;
     });
   })
 
@@ -293,6 +314,30 @@ describe('unit test for OhsUtil.ts', function () {
         getObjectProperties(objNode, propertySet);
         expect(propertySet.has('key')).to.be.true;
         expect(propertySet.has('objKey')).to.be.true;
+      });
+    })
+
+    describe('test for getViewPUClassProperties function', function () {
+      it('should collectReservedStruct', () => {
+        const fileContent = `
+              class A {
+              ["name1"] = "aa";
+              "name2" = 2;
+              name3 = 3;
+              }
+            `;
+        let cachePath = 'test/ut/utils/obfuscation';
+        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true);
+        UnobfuscationCollections.reservedStruct.clear();
+        initProjectWhiteListManager(cachePath, false, false);
+        projectWhiteListManager?.setCurrentCollector('demo.ts');
+        getViewPUClassProperties(sourceFile.statements[0] as ts.ClassDeclaration);
+        expect(UnobfuscationCollections.reservedStruct.has("name1")).to.be.true;
+        expect(UnobfuscationCollections.reservedStruct.has("name2")).to.be.true;
+        expect(UnobfuscationCollections.reservedStruct.has("name3")).to.be.true;
+        expect(projectWhiteListManager!.fileWhiteListInfo.fileKeepInfo.structProperties.has("name1")).to.be.true;
+        expect(projectWhiteListManager!.fileWhiteListInfo.fileKeepInfo.structProperties.has("name2")).to.be.true;
+        expect(projectWhiteListManager!.fileWhiteListInfo.fileKeepInfo.structProperties.has("name3")).to.be.true;
       });
     })
   })

@@ -414,7 +414,7 @@ namespace secharmony {
             continue;
           }
 
-          if (ApiExtractor.mConstructorPropertySet?.has(tmpName)) {
+          if (ApiExtractor.mConstructorPropertySet.has(tmpName)) {
             continue;
           }
 
@@ -493,7 +493,7 @@ namespace secharmony {
             continue;
           }
 
-          if (ApiExtractor.mConstructorPropertySet?.has(mangled)) {
+          if (ApiExtractor.mConstructorPropertySet.has(mangled)) {
             mangled = '';
           }
 

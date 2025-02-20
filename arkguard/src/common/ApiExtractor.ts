@@ -84,6 +84,7 @@ import { scanProjectConfig } from './ApiReader';
 import { enumPropsSet } from '../utils/OhsUtil';
 import { FileUtils } from '../utils/FileUtils';
 import { supportedParsingExtension } from './type';
+import { addToSet, FileWhiteList, projectWhiteListManager } from '../utils/ProjectCollections';
 
 export namespace ApiExtractor {
   interface KeywordInfo {
@@ -103,7 +104,7 @@ export namespace ApiExtractor {
   let mCurrentExportNameSet: Set<string> = new Set<string>();
   export let mPropertySet: Set<string> = new Set<string>();
   export let mExportNames: Set<string> = new Set<string>();
-  export let mConstructorPropertySet: Set<string> = undefined;
+  export let mConstructorPropertySet: Set<string> = new Set<string>();
   export let mEnumMemberSet: Set<string> = new Set<string>();
   export let mSystemExportSet: Set<string> = new Set<string>();
   /**
@@ -259,7 +260,8 @@ export namespace ApiExtractor {
         if (!isIdentifier(param.name) || findRet === undefined) {
           return;
         }
-        mConstructorPropertySet?.add(param.name.getText());
+        mConstructorPropertySet.add(param.name.getText());
+        projectWhiteListManager?.fileWhiteListInfo?.fileReservedInfo.propertyParams.add(param.name.getText());
       };
 
       astNode?.parameters?.forEach((param) => {
@@ -612,6 +614,7 @@ export namespace ApiExtractor {
   function addEnumElement(currentPropsSet: Set<string>): void {
     currentPropsSet.forEach((element: string) => {
       enumPropsSet.add(element);
+      projectWhiteListManager?.fileWhiteListInfo?.fileKeepInfo.enumProperties.add(element);
     });
   }
   /**
@@ -625,8 +628,41 @@ export namespace ApiExtractor {
       return;
     }
 
+    projectWhiteListManager?.setCurrentCollector(fileName);
+
     const sourceFile: SourceFile = createSourceFile(fileName, fs.readFileSync(fileName).toString(), ScriptTarget.ES2015, true);
     mCurrentExportedPropertySet.clear();
+
+    collectWhiteListByApiType(sourceFile, apiType, fileName);
+
+    // collect origin source file white lists
+    const fileWhiteLists: FileWhiteList | undefined = projectWhiteListManager?.fileWhiteListInfo;
+    if ((apiType === ApiType.PROJECT || apiType === ApiType.CONSTRUCTOR_PROPERTY) && fileWhiteLists) {
+      if (scanProjectConfig.mPropertyObfuscation) {
+        addToSet(fileWhiteLists.fileKeepInfo.exported.propertyNames, mCurrentExportedPropertySet);
+        if (!scanProjectConfig.mKeepStringProperty) {
+          fileWhiteLists.fileKeepInfo.stringProperties.clear();
+        }
+      } else {
+        fileWhiteLists.fileKeepInfo.structProperties.clear();
+        fileWhiteLists.fileKeepInfo.stringProperties.clear();
+        fileWhiteLists.fileKeepInfo.enumProperties.clear();
+      }
+      if (scanProjectConfig.mExportObfuscation) {
+        addToSet(fileWhiteLists.fileKeepInfo.exported.globalNames, mCurrentExportNameSet);
+      }
+    }
+
+    // collect export names.
+    mCurrentExportNameSet.forEach(item => mExportNames.add(item));
+    mCurrentExportNameSet.clear();
+    // collect export names and properties.
+    mCurrentExportedPropertySet.forEach(item => mPropertySet.add(item));
+    mCurrentExportedPropertySet.clear();
+    exportOriginalNameSet.clear();
+  };
+
+  function collectWhiteListByApiType(sourceFile: SourceFile, apiType: ApiType, fileName: string): void {
     // get export name list
     switch (apiType) {
       case ApiType.COMPONENT:
@@ -663,15 +699,7 @@ export namespace ApiExtractor {
       default:
         break;
     }
-
-    // collect export names.
-    mCurrentExportNameSet.forEach(item => mExportNames.add(item));
-    mCurrentExportNameSet.clear();
-    // collect export names and properties.
-    mCurrentExportedPropertySet.forEach(item => mPropertySet.add(item));
-    mCurrentExportedPropertySet.clear();
-    exportOriginalNameSet.clear();
-  };
+  }
 
   function handleWhiteListWhenExportObfs(fileName: string, collectedExportNamesAndProperties: Set<string>): Set<string> {
     // If mExportObfuscation is not enabled, collect the export names and their properties into the whitelist.
@@ -949,6 +977,7 @@ export namespace ApiExtractor {
   function collectEnumMember(node: Node): void {
     if (isEnumMember(node) && isIdentifier(node.name)) {
       mEnumMemberSet.add(node.name.text);
+      projectWhiteListManager?.fileWhiteListInfo?.fileReservedInfo.enumProperties.add(node.name.text);
     }
   }
 

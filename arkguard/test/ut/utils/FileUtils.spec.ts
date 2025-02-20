@@ -15,7 +15,9 @@
 
 import {describe, it} from 'mocha';
 import {FileUtils} from '../../../src/utils/FileUtils';
-import {assert} from 'chai';
+import {assert, expect} from 'chai';
+import * as fs from 'fs';
+import path from 'path';
 
 const renameFileNameModule = require('../../../src/transformers/rename/RenameFileNameTransformer');
 
@@ -201,5 +203,15 @@ describe('Tester Cases for <FileUtils>.', function () {
     assert.strictEqual(reservedNames[13], '..');
     assert.strictEqual(reservedNames[14], '..');
     assert.strictEqual(reservedNames[15], 'test.ts.ts');
+  });
+
+  it('Tester: test API deleteFolderRecursive', function () {
+    FileUtils.createDirectory('test/ut/utils/testData');
+    FileUtils.createDirectory('test/ut/utils/testData/test1');
+    let testPath: string =path.join(__dirname,'testData/test1/deleteFolderRecursive');
+    FileUtils.writeFile(testPath,'test');
+    expect(fs.existsSync(testPath)).to.be.true;
+    FileUtils.deleteFolderRecursive('test/ut/utils/testData');
+    expect(fs.existsSync(testPath)).to.be.false;
   });
 });
