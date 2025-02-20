@@ -13,39 +13,39 @@
  * limitations under the License.
  */
 
-interface C extends /* @@ label */] /* @@ label1 */{}
+interface C extends ] {}
 
-interface C extends A /* @@ label2 */B /* @@ label3 */{}
+interface C extends A B {}
 
-interface C extends /* @@ label4 */{}
+interface C extends {}
 
-class A implements /* @@ label5 */{}
+class A implements {}
 
-class A implements I/* @@ label6 */; /* @@ label7 */{}
+class A implements I; {}
 
-interface I /* @@ label8 */implements A {}
+interface I implements A {}
 
 interface I {
-    /* @@ label9 */override f(): void {}
+    override f(): void {}
 // This should be the last test to show the absent of the '}'.
 
 
-/* @@@ label Error SyntaxError: Unexpected token, expected ','.  */
-/* @@@ label Error SyntaxError: Identifier expected  */
-/* @@@ label Error TypeError: Interface expected here.  */
-/* @@@ label1 Error SyntaxError: Identifier expected  */
-/* @@@ label1 Error TypeError: Interface expected here.  */
+/* @@? 16:21 Error SyntaxError: Unexpected token, expected ','. */
+/* @@? 16:21 Error SyntaxError: Identifier expected. */
+/* @@? 16:21 Error TypeError: Interface expected here. */
+/* @@? 16:23 Error TypeError: Interface expected here. */
+/* @@? 16:23 Error SyntaxError: Identifier expected. */
 /* @@? 18:1 Error TypeError: Variable 'C' has already been declared. */
-/* @@@ label2 Error SyntaxError: Unexpected token, expected ','.  */
-/* @@@ label3 Error SyntaxError: Identifier expected  */
+/* @@? 18:23 Error SyntaxError: Unexpected token, expected ','. */
+/* @@? 18:25 Error SyntaxError: Identifier expected. */
 /* @@? 20:1 Error TypeError: Variable 'C' has already been declared. */
-/* @@@ label4 Error SyntaxError: Identifier expected  */
-/* @@@ label5 Error SyntaxError: Implements clause can not be empty  */
+/* @@? 20:21 Error SyntaxError: Identifier expected. */
+/* @@? 22:20 Error SyntaxError: Implements clause can not be empty. */
 /* @@? 24:7 Error TypeError: Variable 'A' has already been declared. */
-/* @@@ label6 Error SyntaxError: Unexpected token, expected ','.  */
-/* @@@ label6 Error SyntaxError: Unexpected token ',', expected '{'.  */
-/* @@@ label7 Error SyntaxError: Unexpected token '{'.  */
-/* @@@ label8 Error SyntaxError: Interface declaration cannot have 'implements' clause.  */
+/* @@? 24:21 Error SyntaxError: Unexpected token, expected ','. */
+/* @@? 24:21 Error SyntaxError: Expected '{', got ','. */
+/* @@? 24:23 Error SyntaxError: Unexpected token '{'. */
+/* @@? 26:13 Error SyntaxError: Interface declaration cannot have 'implements' clause. */
 /* @@? 28:1 Error TypeError: Variable 'I' has already been declared. */
-/* @@@ label9 Error SyntaxError: 'override' modifier cannot appear in interfaces  */
+/* @@? 29:5 Error SyntaxError: 'override' modifier cannot appear in interfaces. */
 /* @@? 52:1 Error SyntaxError: Unexpected token, expected '}'. */

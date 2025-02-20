@@ -19,8 +19,4 @@ enum foo (
 }
 
 
-/* @@? 16:10 Error SyntaxError: Unexpected token '(', expected '{'.  */
-/* @@? 1:1 Node {
-    "type": "Program"
-}  */
-/* @@? 16:10 Error SyntaxError: Unexpected token '(', expected '{'.  */
+/* @@? 16:10 Error SyntaxError: Expected '{', got '('. */

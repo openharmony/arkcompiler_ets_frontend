@@ -17,9 +17,9 @@ for (let i = 0; i < count; ++i /* @@ label */{
     result = result + p[i]!.awaitResolution() * a[i];
 }
 
-/* @@@ label Error SyntaxError: Unexpected token '{', expected ')'.  */
-/* @@? 16:21 Error TypeError: Function name "count" used in the wrong context */
 /* @@? 16:17 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
+/* @@? 16:21 Error TypeError: Function name "count" used in the wrong context */
+/* @@@ label Error SyntaxError: Expected ')', got '{'. */
 /* @@? 17:5 Error TypeError: Unresolved reference result */
 /* @@? 17:14 Error TypeError: Unresolved reference result */
 /* @@? 17:23 Error TypeError: Unresolved reference p */

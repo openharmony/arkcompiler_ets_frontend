@@ -20,18 +20,18 @@ class Banana {
 
 }
 
+/* @@? 17:17 Error TypeError: Only abstract or native methods can't have body. */
 /* @@? 17:18 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 17:18 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 17:18 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 17:18 Error SyntaxError: Unexpected token 'this'. */
 /* @@? 17:22 Error SyntaxError: Unexpected token ':'. */
-/* @@? 17:29 Error SyntaxError: Field type annotation expected */
+/* @@? 17:29 Error SyntaxError: Field type annotation expected. */
 /* @@? 17:29 Error SyntaxError: Unexpected token ','. */
 /* @@? 17:38 Error SyntaxError: Unexpected token ')'. */
 /* @@? 17:39 Error SyntaxError: Unexpected token ':'. */
-/* @@? 17:45 Error SyntaxError: Field type annotation expected */
+/* @@? 17:45 Error SyntaxError: Field type annotation expected. */
 /* @@? 17:45 Error SyntaxError: Unexpected token '{'. */
 /* @@? 18:9 Error SyntaxError: Unexpected token 'return'. */
 /* @@? 18:16 Error SyntaxError: Unexpected token '6'. */
 /* @@? 21:1 Error SyntaxError: Unexpected token '}'. */
-/* @@? 17:17 Error TypeError: Only abstract or native methods can't have body. */

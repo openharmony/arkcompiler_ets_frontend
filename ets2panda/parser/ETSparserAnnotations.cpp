@@ -35,7 +35,7 @@ ir::Statement *ETSParser::ParseTopLevelAnnotation(ir::ModifierFlags memberModifi
         if (result != nullptr) {
             ApplyAnnotationsToNode(result, std::move(annotations), savePos);
         } else {
-            LogSyntaxError("Annotations cannot be applied here!");
+            LogError(diagnostic::ANNOTATION_NOT_ALLOWED);
         }
     }
 
@@ -121,7 +121,7 @@ ArenaVector<ir::AstNode *> ETSParser::ParseAnnotationProperties(ir::ModifierFlag
         }
         // check no modifiers
         while (IsMemberAccessModifiers(Lexer()->GetToken().Type())) {
-            LogSyntaxError("Annotation property can not have access modifiers", Lexer()->GetToken().Start());
+            LogError(diagnostic::ANNOTATION_PROPERTY_ACCESS_MODIFIERS, {}, Lexer()->GetToken().Start());
             Lexer()->NextToken();
         }
 
@@ -173,7 +173,7 @@ ir::AstNode *ETSParser::ParseAnnotationProperty(ir::Identifier *fieldName, ir::M
     // check no methods
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        LogSyntaxError("Annotation can not have method as property", Lexer()->GetToken().Start());
+        LogError(diagnostic::ANNOTATION_METHOD_AS_PROP, {}, Lexer()->GetToken().Start());
     }
 
     ir::TypeNode *typeAnnotation = nullptr;
@@ -203,12 +203,11 @@ ir::AstNode *ETSParser::ParseAnnotationProperty(ir::Identifier *fieldName, ir::M
 
     if (initializer == nullptr && (memberModifiers & ir::ModifierFlags::ANNOTATION_USAGE) != 0 &&
         !fieldName->IsErrorPlaceHolder()) {
-        LogSyntaxError(std::string("Invalid argument passed to '").append(fieldName->Name().Utf8()).append("'"),
-                       Lexer()->GetToken().Start());
+        LogError(diagnostic::INVALID_ARGUMENT_PASSED, {fieldName->Name().Mutf8()}, Lexer()->GetToken().Start());
     }
 
     if (initializer != nullptr && !ValidAnnotationValue(initializer)) {
-        LogSyntaxError("Invalid value for annotation field, expected a constant literal.", savePos);
+        LogError(diagnostic::INVALID_VAL_ANNOTATION_FIELD, {}, savePos);
     }
 
     memberModifiers |= ir::ModifierFlags::PUBLIC;
@@ -226,11 +225,11 @@ ArenaVector<ir::AnnotationUsage *> ETSParser::ParseAnnotations(bool isTopLevelSt
     while (hasMoreAnnotations) {
         if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_INTERFACE) {
             if (!annotations.empty()) {
-                LogSyntaxError("Annotations cannot be applied to an annotation declaration.");
+                LogError(diagnostic::ANNOTATION_WRONG_DEC);
             }
 
             if (!isTopLevelSt) {
-                LogSyntaxError("Annotations can only be declared at the top level.");
+                LogError(diagnostic::ANNOTATION_ONLY_TOP_LEVEL);
             }
 
             // For now we don't support use Annotation before AnnotationDecl,
@@ -273,12 +272,12 @@ void ETSParser::ApplyAnnotationsToNode(ir::AstNode *node, ArenaVector<ir::Annota
     }
 
     if ((options & TypeAnnotationParsingOptions::ANNOTATION_NOT_ALLOW) != 0) {
-        LogSyntaxError("Annotations are not allowed on this type of declaration.", pos);
+        LogError(diagnostic::ANNOTATION_WRONG_DEC, {}, pos);
         return;
     }
 
     if (node->IsAbstract() || (node->IsClassDeclaration() && node->AsClassDeclaration()->Definition()->IsAbstract())) {
-        LogSyntaxError("Annotations are not allowed on an abstract class or methods.", pos);
+        LogError(diagnostic::ANNOTATION_ABSTRACT, {}, pos);
         return;
     }
 
@@ -366,7 +365,7 @@ void ETSParser::ApplyAnnotationsToSpecificNodeType(ir::AstNode *node, ArenaVecto
             node->AsTSTypeParameter()->SetAnnotations(std::move(annotations));
             break;
         default:
-            LogSyntaxError("Annotations are not allowed on this type of declaration.", pos);
+            LogError(diagnostic::ANNOTATION_WRONG_DEC, {}, pos);
     }
 }
 
@@ -400,7 +399,7 @@ ir::AnnotationUsage *ETSParser::ParseAnnotationUsage()
             const auto savePos = Lexer()->GetToken().Start();
             auto *initializer = ParseExpression();
             if (initializer != nullptr && !ValidAnnotationValue(initializer)) {
-                LogSyntaxError("Invalid value for annotation field, expected a constant literal.", savePos);
+                LogError(diagnostic::INVALID_VAL_ANNOTATION_FIELD, {}, savePos);
             }
 
             auto *singleParam = AllocNode<ir::ClassProperty>(singleParamName, initializer, nullptr,

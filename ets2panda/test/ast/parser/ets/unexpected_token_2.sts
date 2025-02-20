@@ -36,6 +36,6 @@ function labeledTest01(): int {
     return result;
 }
 
-/* @@@ label Error SyntaxError: Unexpected token, expected an identifier.  */
-/* @@@ label1 Error SyntaxError: Unexpected token 'label1'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected an identifier. */
+/* @@@ label1 Error SyntaxError: Unexpected token 'label1'. */
 /* @@@ label1 Error TypeError: Unresolved reference label1 */

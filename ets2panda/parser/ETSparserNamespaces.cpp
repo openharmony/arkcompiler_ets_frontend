@@ -19,6 +19,7 @@
 #include "ir/ets/etsModule.h"
 #include "utils/arena_containers.h"
 #include "util/errorRecovery.h"
+#include "generated/diagnostic.h"
 
 namespace ark::es2panda::parser {
 
@@ -55,7 +56,7 @@ ir::ETSModule *ETSParser::ParseNamespaceStatement(ir::ModifierFlags memberModifi
 ir::ETSModule *ETSParser::ParseNamespace(ir::ModifierFlags flags)
 {
     if ((GetContext().Status() & ParserStatus::IN_NAMESPACE) == 0) {
-        LogSyntaxError("Namespace is allowed only at the top level or inside a namespace.");
+        LogError(diagnostic::NAMESPACE_ONLY_TOP_OR_IN_NAMESPACE);
     }
     auto start = Lexer()->GetToken().Start();
     ir::ETSModule *ns = ParseNamespaceImp(flags);
@@ -89,7 +90,7 @@ ir::ETSModule *ETSParser::ParseNamespaceImp(ir::ModifierFlags flags)
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         util::ErrorRecursionGuard infiniteLoopBlocker(Lexer());
         if (Lexer()->GetToken().Type() == lexer::TokenType::EOS) {
-            LogSyntaxError("Unexpected token, expected '}'");
+            LogError(diagnostic::UNEXPECTED_TOKEN);
             break;
         }
         if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_SEMI_COLON)) {

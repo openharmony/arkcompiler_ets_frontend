@@ -20,5 +20,5 @@ function foo()
         /* @@ label */public method() : void;
     }
 }
-/* @@@ label Error SyntaxError: Local class declaration members can not have access modifies  */
+/* @@@ label Error SyntaxError: Local class or interface declaration members can not have access modifies.  */
 /* @@? 20:36 Error TypeError: Only abstract or native methods can't have body. */

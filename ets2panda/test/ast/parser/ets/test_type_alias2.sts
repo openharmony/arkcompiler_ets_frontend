@@ -15,4 +15,4 @@
 
 type bar /* @@ label */number;
 
-/* @@@ label Error SyntaxError: Unexpected token 'number', expected '='.  */
+/* @@@ label Error SyntaxError: Expected '=', got 'identification literal'. */

@@ -19,17 +19,14 @@ try {} catch (fgf) {} aaaaaaa /* @@ label5 */{}
 
 try /* @@ label6 */[] /* @@ label7 */finally {}
 
-/* @@@ label Error SyntaxError: Missing catch or finally clause.  */
-/* @@@ label1 Error SyntaxError: Unexpected token '{'.  */
-/* @@@ label2 Error SyntaxError: Missing catch or finally clause.  */
-/* @@@ label3 Error SyntaxError: Unexpected token '{'.  */
-/* @@@ label4 Error SyntaxError: Unexpected token 'finally'.  */
-/* @@@ label4 Error SyntaxError: Unexpected token 'finally'. */
-/* @@@ label5 Error SyntaxError: Unexpected token '{'.  */
-/* @@@ label6 Error SyntaxError: Unexpected token '[', expected '{'.  */
-/* @@@ label6 Error SyntaxError: Unexpected token '[', expected '{'.  */
-/* @@@ label7 Error SyntaxError: Unexpected token 'finally'.  */
-/* @@@ label7 Error SyntaxError: Unexpected token 'finally'.  */
-/* @@@ label7 Error SyntaxError: Unexpected token 'finally'.  */
-/* @@? 36:1 Error SyntaxError: Unexpected token 'eos', expected '}'.  */
-/* @@? 36:1 Error SyntaxError: Missing catch or finally clause.  */
+/* @@? 16:22 Error SyntaxError: Missing catch or finally clause. */
+/* @@? 16:46 Error SyntaxError: Unexpected token '{'. */
+/* @@? 17:23 Error SyntaxError: Missing catch or finally clause. */
+/* @@? 17:51 Error SyntaxError: Unexpected token '{'. */
+/* @@? 17:69 Error SyntaxError: Unexpected token 'finally'. */
+/* @@? 18:46 Error SyntaxError: Unexpected token '{'. */
+/* @@? 20:20 Error SyntaxError: Expected '{', got '['. */
+/* @@? 20:20 Error SyntaxError: Expected '{', got '['. */
+/* @@? 20:38 Error SyntaxError: Unexpected token 'finally'. */
+/* @@? 33:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 33:1 Error SyntaxError: Missing catch or finally clause. */

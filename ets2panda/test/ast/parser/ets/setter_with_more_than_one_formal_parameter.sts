@@ -17,5 +17,5 @@
     set value(a: int, b: int, c : int)/* @@ label */;
  }
 
- /* @@@ label Error SyntaxError: Setter must have exactly one formal parameter */
+ /* @@@ label Error SyntaxError: Setter must have exactly one formal parameter. */
 /* @@? 1:3 Error TypeError: Class 'Set' is already defined with different type. */

@@ -26,11 +26,11 @@ function main() {
     let a2 = new A(...nums);
 }
 
-/* @@@ label Error SyntaxError: Rest parameter must be the last formal parameter.  */
-/* @@@ label1 Error SyntaxError: Unexpected token ')'.  */
-/* @@@ label2 Error SyntaxError: Unexpected token '{'.  */
-/* @@@ label3 Error SyntaxError: Unexpected token 'this'.  */
-/* @@@ label4 Error SyntaxError: Unexpected token '.'.  */
-/* @@@ label5 Error SyntaxError: Unexpected token '}'.  */
-/* @@? 19:44 Error TypeError: Variable 'fld' has already been declared. */
 /* @@? 18:16 Error TypeError: Only abstract or native methods can't have body. */
+/* @@? 18:45 Error SyntaxError: Rest parameter must be the last formal parameter. */
+/* @@? 18:68 Error SyntaxError: Unexpected token ')'. */
+/* @@? 18:85 Error SyntaxError: Unexpected token '{'. */
+/* @@? 19:24 Error SyntaxError: Unexpected token 'this'. */
+/* @@? 19:43 Error SyntaxError: Unexpected token '.'. */
+/* @@? 19:44 Error TypeError: Variable 'fld' has already been declared. */
+/* @@? 21:16 Error SyntaxError: Unexpected token '}'. */

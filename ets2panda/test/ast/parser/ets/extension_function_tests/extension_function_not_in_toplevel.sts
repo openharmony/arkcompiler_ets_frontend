@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,15 +27,13 @@ function main() {
     fruit.price();
 }
 
-/* @@? 20:5 Error SyntaxError: Nested functions are not allowed */
+/* @@? 20:5 Error SyntaxError: Nested functions are not allowed. */
 /* @@? 20:20 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 20:20 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 20:20 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 20:20 Error SyntaxError: Expected token '{', got 'this' */
-/* @@? 20:24 Error SyntaxError: Unexpected token ':'. */
-/* @@? 20:24 Error SyntaxError: Unexpected token ':'. */
-/* @@? 20:31 Error SyntaxError: Unexpected token ')'. */
-/* @@? 20:31 Error SyntaxError: Unexpected token ')'. */
+/* @@? 20:20 Error SyntaxError: Expected '{', got 'this'. */
 /* @@? 20:20 Error TypeError: Cannot reference 'this' in this context. */
+/* @@? 20:24 Error SyntaxError: Unexpected token ':'. */
 /* @@? 20:26 Error TypeError: Class name "Fruit" used in the wrong context */
+/* @@? 20:31 Error SyntaxError: Unexpected token ')'. */
 /* @@? 27:11 Error TypeError: Property 'price' does not exist on type 'Fruit' */

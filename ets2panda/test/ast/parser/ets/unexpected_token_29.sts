@@ -19,9 +19,9 @@ function main(): void {
     }
 /* @@ label2 */}
 
-/* @@@ label Error SyntaxError: Unexpected token, expected ';'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token, expected ':'.  */
-/* @@@ label2 Error SyntaxError: Unexpected token '}', expected ')'.  */
-/* @@@ label2 Error SyntaxError: Unexpected token '}'.  */
 /* @@? 17:25 Error TypeError: Bad operand type, the types of the operands must be numeric type. */
+/* @@? 17:51 Error SyntaxError: Unexpected token, expected ';'. */
 /* @@? 17:53 Error TypeError: need to specify target type for class composite */
+/* @@? 18:31 Error SyntaxError: Unexpected token, expected ':'. */
+/* @@? 20:16 Error SyntaxError: Expected ')', got '}'. */
+/* @@? 20:16 Error SyntaxError: Unexpected token '}'. */

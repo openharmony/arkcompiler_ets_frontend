@@ -21,4 +21,4 @@ function main() {
     let a : A = new A();
 }
 
-/* @@@ label Error SyntaxError: Unexpected token at  */
+/* @@@ label Error SyntaxError: Unexpected token '&'.  */

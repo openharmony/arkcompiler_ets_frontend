@@ -15,4 +15,4 @@
 
 let a: (c: int, b: int) => char rethrows/* @@ label */;
 
-/* @@@ label Error SyntaxError: Only 'throws' can be used with function types  */
+/* @@@ label Error SyntaxError: Only 'throws' can be used with function types.  */

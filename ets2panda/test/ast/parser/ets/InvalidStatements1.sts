@@ -13,63 +13,63 @@
  * limitations under the License.
  */
 
-export type /* @@ label */function f(): void {
+export type function f(): void {
 }
 
-export type /* @@ label1 */let x: number = 7
+export type let x: number = 7
 
 label1:
-/* @@ label2 */let x = 77
+let x = 77
 
 class A {
-    /* @@ label3 */let x: number = 5;
+    let x: number = 5;
 }
 
 function f() {
-    /* @@ label4 */struct A {
-        /* @@ label5 */let x:number;
+    struct A {
+        let x:number;
     }
-    /* @@ label6 */function s(): void {}
+    function s(): void {}
 }
 
 try
-    /* @@ label7 */let x: number = 89
+    let x: number = 89
 } catch(a: Exception) {
 }
 
-/* @@ label8 */try /* @@ label9 */x: /* @@ label10 */number;
+try x: number;
 
-/* @@ label11 */try
-    /* @@ label12 */let x: number;
+try
+    let x: number;
 catch
-finally /* @@ label13 */{}
+finally {}
 
 class A {
-    /* @@ label14 */let x: number = 5;
+    let x: number = 5;
 }
 
 throw
-/* @@ label15 */"abc"
+"abc"
 // there were more errors
-/* @@@ label Error SyntaxError: Can only type export class or interface!  */
-/* @@@ label1 Error SyntaxError: Can only type export class or interface!  */
-/* @@@ label2 Error SyntaxError: Label must be followed by a loop statement  */
-/* @@@ label3 Error SyntaxError: Unexpected token 'let'.  */
-/* @@@ label4 Error SyntaxError: Illegal start of STRUCT expression  */
-/* @@@ label5 Error SyntaxError: Unexpected token 'let'.  */
-/* @@@ label6 Error SyntaxError: Nested functions are not allowed  */
-/* @@@ label7 Error SyntaxError: Unexpected token 'let', expected '{'.  */
-/* @@@ label9 Error SyntaxError: Unexpected token 'x', expected '{'.  */
-/* @@@ label10 Error SyntaxError: Label must be followed by a loop statement  */
-/* @@@ label12 Error SyntaxError: Unexpected token 'let', expected '{'.  */
-/* @@@ label13 Error SyntaxError: Unexpected token '{'.  */
-/* @@@ label14 Error SyntaxError: Unexpected token 'let'.  */
-/* @@@ label15 Error SyntaxError: Illegal newline after throw  */
-/* @@? 76:1 Error SyntaxError: Unexpected token 'eos', expected '}'.  */
-/* @@@ label11 Error SyntaxError: A try statement should contain either finally clause or at least one catch clause.  */
-/* @@? 76:1 Error SyntaxError: Unexpected token 'eos', expected '}'.  */
-/* @@@ label8 Error SyntaxError: A try statement should contain either finally clause or at least one catch clause.  */
-/* @@@ label Error SyntaxError: Can only type export class or interface!  */
-/* @@@ label1 Error SyntaxError: Can only type export class or interface!  */
-/* @@? 22:20 Error TypeError: Variable 'x' has already been declared. */
+/* @@? 16:13 Error SyntaxError: Can only type export class or interface. */
+/* @@? 16:13 Error SyntaxError: Can only type export class or interface! */
+/* @@? 19:13 Error SyntaxError: Can only type export class or interface. */
+/* @@? 19:13 Error SyntaxError: Can only type export class or interface! */
+/* @@? 22:1 Error SyntaxError: Label must be followed by a loop statement. */
+/* @@? 22:5 Error TypeError: Variable 'x' has already been declared. */
+/* @@? 25:5 Error SyntaxError: Unexpected token 'let'. */
 /* @@? 28:1 Error TypeError: Function f is already declared. */
+/* @@? 29:5 Error SyntaxError: Illegal start of STRUCT expression. */
+/* @@? 30:9 Error SyntaxError: Unexpected token 'let'. */
+/* @@? 32:5 Error SyntaxError: Nested functions are not allowed. */
+/* @@? 36:5 Error SyntaxError: Expected '{', got 'let'. */
+/* @@? 40:1 Error SyntaxError: A try statement should contain either finally clause or at least one catch clause. */
+/* @@? 40:5 Error SyntaxError: Expected '{', got 'identification literal'. */
+/* @@? 40:8 Error SyntaxError: Label must be followed by a loop statement. */
+/* @@? 42:1 Error SyntaxError: A try statement should contain either finally clause or at least one catch clause. */
+/* @@? 43:5 Error SyntaxError: Expected '{', got 'let'. */
+/* @@? 45:9 Error SyntaxError: Unexpected token '{'. */
+/* @@? 48:5 Error SyntaxError: Unexpected token 'let'. */
+/* @@? 52:1 Error SyntaxError: Illegal newline after throw. */
+/* @@? 76:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 76:1 Error SyntaxError: Expected '}', got 'eos'. */

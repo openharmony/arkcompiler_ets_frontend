@@ -27,4 +27,4 @@ finally
 
 }
 
-/* @@@ label Error SyntaxError: Unexpected token ')' in catch parameter. */
+/* @@@ label Error SyntaxError: Unexpected token ')'. */

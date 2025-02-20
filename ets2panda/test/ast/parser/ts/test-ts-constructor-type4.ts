@@ -15,4 +15,4 @@
 
 
 var ctor1: abstract /* @@ label */(a: number, b: string) => number;
-/* @@@ label Error SyntaxError: Unexpected token '('.  */
+/* @@@ label Error SyntaxError: Unexpected token '('. */

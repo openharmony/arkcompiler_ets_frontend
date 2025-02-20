@@ -19,12 +19,8 @@
 @MyAnno("123"/* @@ label */, "1"/* @@ label1 */)
 class A{}
 
-/* @@@ label Error SyntaxError: Unexpected token ',', expected ')'.  */
-/* @@@ label Error SyntaxError: Unexpected token ','.  */
-/* @@@ label Error SyntaxError: Unexpected token ','.  */
-/* @@@ label Error SyntaxError: Annotations are not allowed on this type of declaration.  */
-/* @@@ label Error SyntaxError: Unexpected token ','.  */
-/* @@@ label Error SyntaxError: Unexpected token ','.  */
-/* @@@ label1 Error SyntaxError: Unexpected token ')'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token ')'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token ')'.  */
+/* @@@ label Error SyntaxError: Expected ')', got ','. */
+/* @@@ label Error SyntaxError: Unexpected token ','. */
+/* @@@ label Error SyntaxError: Annotations are not allowed on this type of declaration. */
+/* @@@ label Error SyntaxError: Unexpected token ','. */
+/* @@@ label1 Error SyntaxError: Unexpected token ')'. */
