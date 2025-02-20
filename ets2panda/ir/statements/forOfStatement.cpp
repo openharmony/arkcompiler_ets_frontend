@@ -74,8 +74,8 @@ void ForOfStatement::Dump(ir::AstDumper *dumper) const
 
 void ForOfStatement::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(left_ != nullptr);
-    ASSERT(right_ != nullptr);
+    ES2PANDA_ASSERT(left_ != nullptr);
+    ES2PANDA_ASSERT(right_ != nullptr);
     dumper->Add("for ");
     if (isAwait_) {
         dumper->Add("await ");
@@ -174,7 +174,7 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
     checker->ValidateSignatureAccessibility(sourceType, nullptr, signature, position,
                                             "Iterator method is not visible here.");
 
-    ASSERT(signature->Function() != nullptr);
+    ES2PANDA_ASSERT(signature->Function() != nullptr);
 
     if (signature->Function()->IsThrowing() || signature->Function()->IsRethrowing()) {
         checker->CheckThrowingStatements(this);

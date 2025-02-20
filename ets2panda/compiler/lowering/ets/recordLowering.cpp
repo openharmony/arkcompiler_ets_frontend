@@ -177,7 +177,7 @@ ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *exp
     // Access type arguments
     [[maybe_unused]] size_t constexpr NUM_ARGUMENTS = 2;
     auto typeArguments = expr->PreferredType()->AsETSObjectType()->TypeArguments();
-    ASSERT(typeArguments.size() == NUM_ARGUMENTS);
+    ES2PANDA_ASSERT(typeArguments.size() == NUM_ARGUMENTS);
 
     // check keys correctness
     KeySetType keySet;
@@ -236,7 +236,7 @@ ir::Expression *RecordLowering::CreateBlockExpression(ir::ObjectExpression *expr
     // Build statements from properties
 
     for (const auto &property : properties) {
-        ASSERT(property->IsProperty());
+        ES2PANDA_ASSERT(property->IsProperty());
         auto p = property->AsProperty();
         statements.push_back(
             CreateStatement("@@I1.set(@@E2, @@E3)", ident->Clone(ctx->allocator, nullptr), p->Key(), p->Value(), ctx));

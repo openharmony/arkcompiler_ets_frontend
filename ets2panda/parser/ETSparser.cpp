@@ -327,7 +327,7 @@ parser::Program *ETSParser::ParseSource(const SourceFile &sourceFile)
 ir::Statement *ETSParser::ParseIdentKeyword()
 {
     const auto token = Lexer()->GetToken();
-    ASSERT(token.Type() == lexer::TokenType::LITERAL_IDENT);
+    ES2PANDA_ASSERT(token.Type() == lexer::TokenType::LITERAL_IDENT);
     switch (token.KeywordType()) {
         case lexer::TokenType::KEYW_STRUCT: {
             return ParseTypeDeclaration(false);
@@ -627,7 +627,7 @@ ir::Statement *ETSParser::ParseTypeDeclaration(bool allowStatic)
 
 ir::TSTypeAliasDeclaration *ETSParser::ParseTypeAliasDeclaration()
 {
-    ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE);
+    ES2PANDA_ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE);
 
     lexer::SourcePosition typeStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat type keyword
@@ -723,7 +723,7 @@ std::string ETSParser::PrimitiveTypeToName(ir::PrimitiveType type)
 
 std::string ETSParser::GetNameForETSUnionType(const ir::TypeNode *typeAnnotation) const
 {
-    ASSERT(typeAnnotation->IsETSUnionType());
+    ES2PANDA_ASSERT(typeAnnotation->IsETSUnionType());
     std::string newstr;
     for (size_t i = 0; i < typeAnnotation->AsETSUnionType()->Types().size(); i++) {
         auto type = typeAnnotation->AsETSUnionType()->Types()[i];
@@ -963,9 +963,9 @@ ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::Modifi
     if (!InAmbientContext() && (GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0) {
         LogError(diagnostic::EXPORT_IN_NAMESPACE);
     }
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
-           Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE ||
-           Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
+                    Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE ||
+                    Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
     ArenaVector<ir::AstNode *> specifiers(Allocator()->Adapter());
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
@@ -1048,7 +1048,7 @@ ir::ImportSource *ETSParser::ParseSourceFromClause(bool requireFrom)
         return nullptr;  // Error processing.
     }
 
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_STRING);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_STRING);
     auto importPath = Lexer()->GetToken().Ident();
     auto resolvedImportPath =
         importPathManager_->ResolvePath(GetProgram()->AbsoluteName(), importPath, Lexer()->GetToken().Start());
@@ -1382,7 +1382,7 @@ ir::Expression *ETSParser::ParseFunctionParameterAnnotations()
 
 ir::Expression *ETSParser::ParseFunctionReceiver()
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS);
     Lexer()->NextToken();  // eat 'this';
     if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
         LogError(diagnostic::FUN_PARAM_THIS_MISSING_TYPE);
@@ -1581,7 +1581,7 @@ ir::Statement *ETSParser::ParseImportDeclaration([[maybe_unused]] StatementParsi
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_STRING) {
         ir::AstNode *astNode = ParseImportSpecifiers(&specifiers);
         if (astNode != nullptr) {
-            ASSERT(astNode->IsTSImportEqualsDeclaration());
+            ES2PANDA_ASSERT(astNode->IsTSImportEqualsDeclaration());
             astNode->SetRange({startLoc, Lexer()->GetToken().End()});
             ConsumeSemicolon(astNode->AsTSImportEqualsDeclaration());
             return astNode->AsTSImportEqualsDeclaration();
@@ -1845,7 +1845,7 @@ void ETSParser::ParseTrailingBlock(ir::CallExpression *callExpr)
 
 void ETSParser::CheckDeclare()
 {
-    ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE);
+    ES2PANDA_ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE);
 
     if (InAmbientContext()) {
         LogError(diagnostic::DECALRE_IN_AMBIENT_CONTEXT);
@@ -1881,7 +1881,7 @@ ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous
 {
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
 
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_FUNCTION);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_FUNCTION);
     Lexer()->NextToken();
     auto newStatus = ParserStatus::NEED_RETURN_TYPE | ParserStatus::ALLOW_SUPER;
 
@@ -1929,8 +1929,8 @@ ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous
 
 ir::FunctionDeclaration *ETSParser::ParseAccessorWithReceiver(ir::ModifierFlags modifiers)
 {
-    ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_GET ||
-           Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_SET);
+    ES2PANDA_ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_GET ||
+                    Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_SET);
 
     bool isGetter = Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_GET;
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();

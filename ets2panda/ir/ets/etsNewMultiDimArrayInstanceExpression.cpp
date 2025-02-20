@@ -54,7 +54,7 @@ void ETSNewMultiDimArrayInstanceExpression::Dump(ir::AstDumper *dumper) const
 void ETSNewMultiDimArrayInstanceExpression::Dump(ir::SrcDumper *dumper) const
 {
     dumper->Add("new ");
-    ASSERT(typeReference_);
+    ES2PANDA_ASSERT(typeReference_);
     typeReference_->Dump(dumper);
     for (auto dim : dimensions_) {
         dumper->Add("[");

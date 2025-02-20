@@ -36,7 +36,7 @@ checker::Type *ETSAnalyzer::Check(ir::CatchClause *st) const
     checker::Type *exceptionType = checker->GlobalTypeError();
 
     if (st->Param() != nullptr) {
-        ASSERT(st->Param()->IsIdentifier());
+        ES2PANDA_ASSERT(st->Param()->IsIdentifier());
 
         ir::Identifier *paramIdent = st->Param()->AsIdentifier();
         if (!paramIdent->IsErrorPlaceHolder()) {
@@ -50,7 +50,7 @@ checker::Type *ETSAnalyzer::Check(ir::CatchClause *st) const
         }
         paramIdent->SetTsType(exceptionType);
     } else {
-        ASSERT(checker->IsAnyError());
+        ES2PANDA_ASSERT(checker->IsAnyError());
     }
 
     st->Body()->Check(checker);
@@ -81,7 +81,7 @@ checker::Type *ETSAnalyzer::Check(ir::ClassProperty *st) const
 
     ETSChecker *checker = GetETSChecker();
 
-    ASSERT(st->Id() != nullptr);
+    ES2PANDA_ASSERT(st->Id() != nullptr);
     if (st->Id()->IsErrorPlaceHolder() || st->Id()->Variable() == nullptr) {
         st->Id()->SetTsType(checker->GlobalTypeError());
         return st->SetTsType(checker->GlobalTypeError());
@@ -142,7 +142,7 @@ static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinitio
             node->SetTsType(checker->GlobalTypeError());
         }
         if (scriptFunc->IsGetter() || scriptFunc->IsSetter()) {
-            ASSERT(checker->IsAnyError());
+            ES2PANDA_ASSERT(checker->IsAnyError());
             return;
         }
     }
@@ -211,7 +211,7 @@ checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
         return ReturnTypeForStatement(node);
     }
 
-    ASSERT(!(scriptFunc->IsGetter() && scriptFunc->IsSetter()));
+    ES2PANDA_ASSERT(!(scriptFunc->IsGetter() && scriptFunc->IsSetter()));
     if (scriptFunc->IsGetter() || scriptFunc->IsSetter()) {
         auto status = scriptFunc->IsGetter() ? CheckerStatus::IN_GETTER : CheckerStatus::IN_SETTER;
         checker->AddStatus(status);
@@ -430,8 +430,8 @@ checker::Type *ETSAnalyzer::Check(ir::ETSLaunchExpression *expr) const
 template <typename T, typename = typename std::enable_if_t<std::is_base_of_v<ir::Expression, T>>>
 static bool CheckArrayElementType(ETSChecker *checker, T *newArrayInstanceExpr)
 {
-    ASSERT(checker != nullptr);
-    ASSERT(newArrayInstanceExpr != nullptr);
+    ES2PANDA_ASSERT(checker != nullptr);
+    ES2PANDA_ASSERT(newArrayInstanceExpr != nullptr);
 
     checker::Type *elementType = newArrayInstanceExpr->TypeReference()->GetType(checker);
     if (elementType->IsETSPrimitiveType()) {
@@ -544,7 +544,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
         }
 
         if (calleeType->IsETSDynamicType()) {
-            ASSERT(signature->Function()->IsDynamic());
+            ES2PANDA_ASSERT(signature->Function()->IsDynamic());
             auto lang = calleeType->AsETSDynamicType()->Language();
             expr->SetSignature(
                 checker->ResolveDynamicCallExpression(expr->GetTypeRef(), signature->Params(), lang, true));
@@ -810,7 +810,7 @@ static bool CheckElement(ir::ArrayExpression *expr, ETSChecker *checker, std::ve
 
 void ETSAnalyzer::GetUnionPreferredType(ir::ArrayExpression *expr) const
 {
-    ASSERT(expr->preferredType_->IsETSUnionType());
+    ES2PANDA_ASSERT(expr->preferredType_->IsETSUnionType());
     checker::Type *preferredType = nullptr;
     for (auto &type : expr->preferredType_->AsETSUnionType()->ConstituentTypes()) {
         if (type->IsETSArrayType()) {
@@ -1196,7 +1196,7 @@ checker::Type *ETSAnalyzer::Check(ir::BlockExpression *st) const
     }
 
     auto lastStmt = st->Statements().back();
-    ASSERT(lastStmt->IsExpressionStatement());
+    ES2PANDA_ASSERT(lastStmt->IsExpressionStatement());
     st->SetTsType(lastStmt->AsExpressionStatement()->GetExpression()->TsType());
     return st->TsType();
 }
@@ -1344,7 +1344,7 @@ static checker::SavedCheckerContext ReconstructOwnerClassContext(ETSChecker *che
     if (owner == nullptr) {
         return SavedCheckerContext(checker, CheckerStatus::NO_OPTS, nullptr);
     }
-    ASSERT(!owner->HasObjectFlag(ETSObjectFlags::ENUM));
+    ES2PANDA_ASSERT(!owner->HasObjectFlag(ETSObjectFlags::ENUM));
     CheckerStatus const status =
         (owner->HasObjectFlag(ETSObjectFlags::CLASS) ? CheckerStatus::IN_CLASS : CheckerStatus::IN_INTERFACE) |
         (owner->HasObjectFlag(ETSObjectFlags::ABSTRACT) ? CheckerStatus::IN_ABSTRACT : CheckerStatus::NO_OPTS) |
@@ -1403,7 +1403,7 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
     if (expr->TsType() != nullptr) {
         return expr->TsType();
     }
-    ASSERT(!expr->IsOptional());
+    ES2PANDA_ASSERT(!expr->IsOptional());
 
     auto *oldCallee = expr->Callee();
     checker::Type *calleeType = checker->GetApparentType(expr->Callee()->Check(checker));
@@ -1616,7 +1616,7 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
     if (expr->TsType() != nullptr) {
         return expr->TsType();
     }
-    ASSERT(!expr->IsOptional());
+    ES2PANDA_ASSERT(!expr->IsOptional());
     ETSChecker *checker = GetETSChecker();
     auto *baseType = checker->GetNonConstantType(checker->GetApparentType(expr->Object()->Check(checker)));
     //  Note: don't use possible smart cast to null-like types.
@@ -1659,11 +1659,11 @@ checker::Type *ETSAnalyzer::CheckDynamic(ir::ObjectExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
     for (ir::Expression *propExpr : expr->Properties()) {
-        ASSERT(propExpr->IsProperty());
+        ES2PANDA_ASSERT(propExpr->IsProperty());
         ir::Property *prop = propExpr->AsProperty();
         ir::Expression *value = prop->Value();
         value->Check(checker);
-        ASSERT(value->TsType());
+        ES2PANDA_ASSERT(value->TsType());
     }
 
     expr->SetTsType(expr->PreferredType());
@@ -1849,7 +1849,7 @@ checker::Type *ETSAnalyzer::Check(ir::SequenceExpression *expr) const
     for (auto *it : expr->Sequence()) {
         it->Check(checker);
     }
-    ASSERT(!expr->Sequence().empty());
+    ES2PANDA_ASSERT(!expr->Sequence().empty());
     expr->SetTsType(expr->Sequence().back()->TsType());
     return expr->TsType();
 }
@@ -1920,7 +1920,7 @@ checker::Type *ETSAnalyzer::Check(ir::ThisExpression *expr) const
     */
     auto *variable = checker->AsETSChecker()->Scope()->Find(varbinder::VarBinder::MANDATORY_PARAM_THIS).variable;
     if (checker->HasStatus(checker::CheckerStatus::IN_EXTENSION_METHOD)) {
-        ASSERT(variable != nullptr);
+        ES2PANDA_ASSERT(variable != nullptr);
         expr->SetTsType(variable->TsType());
     } else {
         expr->SetTsType(checker->CheckThisOrSuperAccess(expr, checker->Context().ContainingClass(), "this"));
@@ -2085,7 +2085,7 @@ checker::Type *ETSAnalyzer::Check(ir::UpdateExpression *expr) const
             checker->ValidateUnaryOperatorOperand(propVar);
         }
     } else {
-        ASSERT(checker->IsAnyError());
+        ES2PANDA_ASSERT(checker->IsAnyError());
         expr->Argument()->SetTsType(checker->GlobalTypeError());
         return expr->SetTsType(checker->GlobalTypeError());
     }
@@ -2632,7 +2632,8 @@ bool ETSAnalyzer::CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::S
 
 checker::Type *ETSAnalyzer::GetFunctionReturnType(ir::ReturnStatement *st, ir::ScriptFunction *containingFunc) const
 {
-    ASSERT(containingFunc->ReturnTypeAnnotation() != nullptr || containingFunc->Signature()->ReturnType() != nullptr);
+    ES2PANDA_ASSERT(containingFunc->ReturnTypeAnnotation() != nullptr ||
+                    containingFunc->Signature()->ReturnType() != nullptr);
 
     ETSChecker *checker = GetETSChecker();
     checker::Type *funcReturnType = nullptr;
@@ -2667,11 +2668,11 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
     ETSChecker *checker = GetETSChecker();
 
     ir::AstNode *ancestor = util::Helpers::FindAncestorGivenByType(st, ir::AstNodeType::SCRIPT_FUNCTION);
-    ASSERT(ancestor && ancestor->IsScriptFunction());
+    ES2PANDA_ASSERT(ancestor && ancestor->IsScriptFunction());
 
     auto *containingFunc = ancestor->AsScriptFunction();
     if (containingFunc->Signature() == nullptr) {
-        ASSERT(checker->IsAnyError());
+        ES2PANDA_ASSERT(checker->IsAnyError());
         return ReturnTypeForStatement(st);
     }
 
@@ -2807,7 +2808,7 @@ checker::Type *ETSAnalyzer::Check(ir::VariableDeclarator *st) const
     }
 
     ETSChecker *checker = GetETSChecker();
-    ASSERT(st->Id()->IsIdentifier());
+    ES2PANDA_ASSERT(st->Id()->IsIdentifier());
     auto *const ident = st->Id()->AsIdentifier();
     ir::ModifierFlags flags = ir::ModifierFlags::NONE;
 
@@ -2824,7 +2825,7 @@ checker::Type *ETSAnalyzer::Check(ir::VariableDeclarator *st) const
 
     // Processing possible parser errors
     if (ident->Variable() == nullptr) {
-        ASSERT(checker->IsAnyError());
+        ES2PANDA_ASSERT(checker->IsAnyError());
         ident->SetTsType(checker->GlobalTypeError());
         return st->SetTsType(variableType);
     }
@@ -2959,13 +2960,13 @@ checker::Type *ETSAnalyzer::Check(ir::TSEnumDeclaration *st) const
     ETSChecker *checker = GetETSChecker();
     varbinder::Variable *enumVar = st->Key()->Variable();
     if (enumVar == nullptr) {
-        ASSERT(checker->IsAnyError());
+        ES2PANDA_ASSERT(checker->IsAnyError());
         return st->SetTsType(checker->GlobalTypeError());
     }
 
     if (enumVar->TsType() == nullptr) {
         if (st->BoxedClass() == nullptr) {
-            ASSERT(checker->IsAnyError());
+            ES2PANDA_ASSERT(checker->IsAnyError());
             enumVar->SetTsType(checker->GlobalTypeError());
             return st->SetTsType(checker->GlobalTypeError());
         }
@@ -2995,7 +2996,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const
 
     ETSChecker *checker = GetETSChecker();
     auto *stmtType = checker->BuildBasicInterfaceProperties(st);
-    ASSERT(stmtType != nullptr);
+    ES2PANDA_ASSERT(stmtType != nullptr);
 
     if (stmtType->IsTypeError()) {
         return st->SetTsType(stmtType);
@@ -3120,7 +3121,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
 
 checker::Type *ETSAnalyzer::ReturnTypeForStatement([[maybe_unused]] const ir::Statement *const st) const
 {
-    ASSERT(st->IsStatement());
+    ES2PANDA_ASSERT(st->IsStatement());
     return nullptr;
 }
 

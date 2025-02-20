@@ -226,7 +226,7 @@ static ir::Expression *ConstructOpAssignmentResult(public_lib::Context *ctx, ir:
     auto *checker = ctx->checker->AsETSChecker();
 
     const auto opEqual = assignment->OperatorType();
-    ASSERT(opEqual != lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    ES2PANDA_ASSERT(opEqual != lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
 
     auto *const left = assignment->Left();
     auto *const right = assignment->Right();

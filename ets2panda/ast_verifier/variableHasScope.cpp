@@ -50,7 +50,7 @@ CheckResult VariableHasScope::operator()(const ir::AstNode *ast)
 
 bool VariableHasScope::ScopeEncloseVariable(const varbinder::LocalVariable *var)
 {
-    ASSERT(var);
+    ES2PANDA_ASSERT(var);
 
     const auto scope = var->GetScope();
     if (scope == nullptr || var->Declaration() == nullptr) {

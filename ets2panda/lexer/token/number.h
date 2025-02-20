@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_LEXER_TOKEN_NUMBER_H
 #define ES2PANDA_LEXER_TOKEN_NUMBER_H
 
+#include "util/diagnosticEngine.h"
 #include "util/ustring.h"
 #include "util/enumbitops.h"
 
@@ -111,7 +112,7 @@ public:
 
     int32_t GetInt() const
     {
-        ASSERT(IsInt());
+        ES2PANDA_ASSERT(IsInt());
         return std::get<int32_t>(num_);
     }
 
@@ -120,7 +121,7 @@ public:
         return std::visit(overloaded {[](int64_t value) { return value; },
                                       [](int32_t value) { return static_cast<int64_t>(value); },
                                       []([[maybe_unused]] auto value) {
-                                          ASSERT(false);
+                                          ES2PANDA_ASSERT(false);
                                           return static_cast<int64_t>(0);
                                       }},
                           num_);
@@ -128,7 +129,7 @@ public:
 
     float GetFloat() const
     {
-        ASSERT(IsFloat());
+        ES2PANDA_ASSERT(IsFloat());
         return std::get<float>(num_);
     }
 

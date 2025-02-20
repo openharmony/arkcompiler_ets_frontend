@@ -236,7 +236,7 @@ checker::Type *CheckAssignmentPattern(Expression *it, checker::TSChecker *checke
     auto *assignmentPattern = it->AsAssignmentPattern();
     if (assignmentPattern->Left()->IsIdentifier()) {
         const ir::Identifier *ident = assignmentPattern->Left()->AsIdentifier();
-        ASSERT(ident->Variable());
+        ES2PANDA_ASSERT(ident->Variable());
         varbinder::Variable *bindingVar = ident->Variable();
         checker::Type *initializerType = checker->GetBaseTypeOfLiteralType(assignmentPattern->Right()->Check(checker));
         bindingVar->SetTsType(initializerType);
@@ -248,7 +248,7 @@ checker::Type *CheckAssignmentPattern(Expression *it, checker::TSChecker *checke
         destructuringContext.Start();
         elementType = destructuringContext.InferredType();
     } else {
-        ASSERT(assignmentPattern->Left()->IsObjectPattern());
+        ES2PANDA_ASSERT(assignmentPattern->Left()->IsObjectPattern());
         auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
         auto destructuringContext = checker::ObjectDestructuringContext(
             {checker, assignmentPattern->Left()->AsObjectPattern(), false, true, nullptr, assignmentPattern->Right()});
@@ -297,7 +297,7 @@ checker::Type *CheckElementPattern(Expression *it, checker::Type *elementType, c
         }
         case ir::AstNodeType::IDENTIFIER: {
             const ir::Identifier *ident = it->AsIdentifier();
-            ASSERT(ident->Variable());
+            ES2PANDA_ASSERT(ident->Variable());
             elementType = checker->GlobalAnyType();
             ident->Variable()->SetTsType(elementType);
             memberFlag = checker::ElementFlags::REQUIRED;

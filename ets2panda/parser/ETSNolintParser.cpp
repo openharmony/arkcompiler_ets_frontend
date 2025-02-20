@@ -240,7 +240,7 @@ std::set<ETSWarnings> ETSNolintParser::ParseETSNolintArgs()
             warningsCollection.insert(MapETSNolintArg(warningName));
             warningName.clear();
         } else {
-            ASSERT(cp <= std::numeric_limits<unsigned char>::max());
+            ES2PANDA_ASSERT(cp <= std::numeric_limits<unsigned char>::max());
             warningName += cp;
         }
         if (cp == lexer::LEX_CHAR_RIGHT_PAREN) {

@@ -97,7 +97,7 @@ void TSChecker::CheckReferenceExpression(ir::Expression *expr, const char *inval
     if (expr->IsIdentifier()) {
         const util::StringView &name = expr->AsIdentifier()->Name();
         auto result = Scope()->Find(name);
-        ASSERT(result.variable);
+        ES2PANDA_ASSERT(result.variable);
 
         if (result.variable->HasFlag(varbinder::VariableFlags::ENUM_LITERAL)) {
             ThrowTypeError({"Cannot assign to '", name, "' because it is not a variable."}, expr->Start());
@@ -225,7 +225,7 @@ bool TSChecker::IsVariableUsedInConditionBody(ir::AstNode *parent, varbinder::Va
         varbinder::Variable *resultVar = nullptr;
         if (childNode->IsIdentifier()) {
             auto result = Scope()->Find(childNode->AsIdentifier()->Name());
-            ASSERT(result.variable);
+            ES2PANDA_ASSERT(result.variable);
             resultVar = result.variable;
         }
 
@@ -249,7 +249,7 @@ bool TSChecker::FindVariableInBinaryExpressionChain(ir::AstNode *parent, varbind
     parent->Iterate([this, searchVar, &found](ir::AstNode *childNode) -> void {
         if (childNode->IsIdentifier()) {
             auto result = Scope()->Find(childNode->AsIdentifier()->Name());
-            ASSERT(result.variable);
+            ES2PANDA_ASSERT(result.variable);
             if (result.variable == searchVar) {
                 found = true;
                 return;
@@ -345,10 +345,10 @@ void TSChecker::ElaborateElementwise(Type *targetType, ir::Expression *sourceNod
 
 void TSChecker::InferSimpleVariableDeclaratorType(ir::VariableDeclarator *declarator)
 {
-    ASSERT(declarator->Id()->IsIdentifier());
+    ES2PANDA_ASSERT(declarator->Id()->IsIdentifier());
 
     varbinder::Variable *var = declarator->Id()->AsIdentifier()->Variable();
-    ASSERT(var);
+    ES2PANDA_ASSERT(var);
 
     if (declarator->Id()->AsIdentifier()->TypeAnnotation() != nullptr) {
         var->SetTsType(declarator->Id()->AsIdentifier()->TypeAnnotation()->GetType(this));
@@ -368,7 +368,7 @@ void TSChecker::GetTypeVar(varbinder::Decl *decl)
 {
     ir::AstNode *declarator =
         util::Helpers::FindAncestorGivenByType(decl->Node(), ir::AstNodeType::VARIABLE_DECLARATOR);
-    ASSERT(declarator);
+    ES2PANDA_ASSERT(declarator);
 
     if (declarator->AsVariableDeclarator()->Id()->IsIdentifier()) {
         InferSimpleVariableDeclaratorType(declarator->AsVariableDeclarator());
@@ -385,7 +385,7 @@ void TSChecker::GetTypeParam(varbinder::Variable *var, varbinder::Decl *decl)
     if (declaration->IsIdentifier()) {
         auto *ident = declaration->AsIdentifier();
         if (ident->TypeAnnotation() != nullptr) {
-            ASSERT(ident->Variable() == var);
+            ES2PANDA_ASSERT(ident->Variable() == var);
             var->SetTsType(ident->TypeAnnotation()->GetType(this));
             return;
         }
@@ -397,7 +397,7 @@ void TSChecker::GetTypeParam(varbinder::Variable *var, varbinder::Decl *decl)
         ir::Identifier *ident = declaration->AsAssignmentPattern()->Left()->AsIdentifier();
 
         if (ident->TypeAnnotation() != nullptr) {
-            ASSERT(ident->Variable() == var);
+            ES2PANDA_ASSERT(ident->Variable() == var);
             var->SetTsType(ident->TypeAnnotation()->GetType(this));
             return;
         }
@@ -410,7 +410,7 @@ void TSChecker::GetTypeParam(varbinder::Variable *var, varbinder::Decl *decl)
 
 void TSChecker::GetTypeEnum(varbinder::Variable *var, varbinder::Decl *decl)
 {
-    ASSERT(var->IsEnumVariable());
+    ES2PANDA_ASSERT(var->IsEnumVariable());
     varbinder::EnumVariable *enumVar = var->AsEnumVariable();
 
     if (std::holds_alternative<bool>(enumVar->Value())) {
@@ -521,7 +521,7 @@ Type *TSChecker::GetTypeFromTypeAliasReference(ir::TSTypeReference *node, varbin
         return GlobalErrorType();
     }
 
-    ASSERT(var->Declaration()->Node() && var->Declaration()->Node()->IsTSTypeAliasDeclaration());
+    ES2PANDA_ASSERT(var->Declaration()->Node() && var->Declaration()->Node()->IsTSTypeAliasDeclaration());
     ir::TSTypeAliasDeclaration *declaration = var->Declaration()->Node()->AsTSTypeAliasDeclaration();
     resolvedType = declaration->TypeAnnotation()->GetType(this);
     var->SetTsType(resolvedType);
@@ -531,7 +531,7 @@ Type *TSChecker::GetTypeFromTypeAliasReference(ir::TSTypeReference *node, varbin
 
 Type *TSChecker::GetTypeReferenceType(ir::TSTypeReference *node, varbinder::Variable *var)
 {
-    ASSERT(var->Declaration());
+    ES2PANDA_ASSERT(var->Declaration());
     varbinder::Decl *decl = var->Declaration();
 
     if (decl->IsInterfaceDecl()) {

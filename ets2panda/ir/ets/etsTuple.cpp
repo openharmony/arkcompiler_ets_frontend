@@ -160,7 +160,7 @@ checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
         spreadElementType = spreadType_->TsType();
     }
 
-    ASSERT(spreadElementType == nullptr || !spreadElementType->IsTypeError() || checker->IsAnyError());
+    ES2PANDA_ASSERT(spreadElementType == nullptr || !spreadElementType->IsTypeError() || checker->IsAnyError());
 
     checker::Type *tupleType = checker->Allocator()->New<checker::ETSTupleType>(
         typeList, CalculateLUBForTuple(checker, typeList, &spreadElementType), spreadElementType);

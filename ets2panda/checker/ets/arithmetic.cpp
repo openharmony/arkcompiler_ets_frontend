@@ -88,8 +88,8 @@ static inline void RepairTypeErrorWithDefault(Type **type, Type *dflt)
 
 static Type *EffectiveTypeOfNumericOp(ETSChecker *checker, Type *left, Type *right)
 {
-    ASSERT(left->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
-           right->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
+    ES2PANDA_ASSERT(left->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
+                    right->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
 
     if (left->IsDoubleType() || right->IsDoubleType()) {
         return checker->GlobalDoubleType();
@@ -138,7 +138,7 @@ static std::pair<Type *, bool> BinaryCoerceToPrimitives(ETSChecker *checker, Typ
 
 Type *ETSChecker::NegateNumericType(Type *type, ir::Expression *node)
 {
-    ASSERT(type->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
+    ES2PANDA_ASSERT(type->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
 
     TypeFlag typeKind = ETSType(type);
     Type *result = nullptr;
@@ -183,7 +183,7 @@ Type *ETSChecker::NegateNumericType(Type *type, ir::Expression *node)
 
 Type *ETSChecker::BitwiseNegateNumericType(Type *type, ir::Expression *node)
 {
-    ASSERT(type->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_INTEGRAL));
+    ES2PANDA_ASSERT(type->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_INTEGRAL));
 
     TypeFlag typeKind = ETSType(type);
 
@@ -231,8 +231,8 @@ Type *ETSChecker::BitwiseNegateNumericType(Type *type, ir::Expression *node)
 
 Type *ETSChecker::HandleRelationOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType)
 {
-    ASSERT(left->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
-           right->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
+    ES2PANDA_ASSERT(left->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
+                    right->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
 
     if (left->IsDoubleType() || right->IsDoubleType()) {
         return PerformRelationOperationOnTypes<DoubleType>(left, right, operationType);
@@ -1132,8 +1132,8 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
 
 Type *ETSChecker::HandleArithmeticOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType)
 {
-    ASSERT(left->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
-           right->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
+    ES2PANDA_ASSERT(left->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
+                    right->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
 
     if (left->IsDoubleType() || right->IsDoubleType()) {
         return PerformArithmeticOperationOnTypes<DoubleType>(left, right, operationType);
@@ -1152,8 +1152,8 @@ Type *ETSChecker::HandleArithmeticOperationOnTypes(Type *left, Type *right, lexe
 
 Type *ETSChecker::HandleBitwiseOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType)
 {
-    ASSERT(left->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
-           right->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
+    ES2PANDA_ASSERT(left->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
+                    right->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
 
     if (left->IsDoubleType() || right->IsDoubleType()) {
         return HandleBitWiseArithmetic<DoubleType, LongType>(left, right, operationType);

@@ -76,7 +76,7 @@ void ETSTypeReference::Dump(ir::SrcDumper *dumper) const
     for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }
-    ASSERT(part_ != nullptr);
+    ES2PANDA_ASSERT(part_ != nullptr);
     part_->Dump(dumper);
 }
 

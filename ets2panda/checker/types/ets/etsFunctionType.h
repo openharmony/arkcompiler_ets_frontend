@@ -38,7 +38,7 @@ public:
 
     [[nodiscard]] Signature *CallSignature() const
     {
-        ASSERT(!callSignatures_.empty());
+        ES2PANDA_ASSERT(!callSignatures_.empty());
         return callSignatures_[0U];
     }
 
@@ -64,7 +64,7 @@ public:
 
     [[nodiscard]] Type *FunctionalInterface() const noexcept
     {
-        ASSERT(HasFunctionalInterface());
+        ES2PANDA_ASSERT(HasFunctionalInterface());
         return funcInterface_;
     }
 

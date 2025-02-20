@@ -252,14 +252,14 @@ ObjectExpression::CheckPatternIsShorthand(CheckPatternIsShorthandArgs *args)
         switch (args->prop->Value()->Type()) {
             case ir::AstNodeType::IDENTIFIER: {
                 const ir::Identifier *ident = args->prop->Value()->AsIdentifier();
-                ASSERT(ident->Variable());
+                ES2PANDA_ASSERT(ident->Variable());
                 args->bindingVar = ident->Variable();
                 break;
             }
             case ir::AstNodeType::ASSIGNMENT_PATTERN: {
                 auto *assignmentPattern = args->prop->Value()->AsAssignmentPattern();
                 args->patternParamType = assignmentPattern->Right()->Check(args->checker);
-                ASSERT(assignmentPattern->Left()->AsIdentifier()->Variable());
+                ES2PANDA_ASSERT(assignmentPattern->Left()->AsIdentifier()->Variable());
                 args->bindingVar = assignmentPattern->Left()->AsIdentifier()->Variable();
                 args->isOptional = true;
                 break;
@@ -304,7 +304,7 @@ checker::Type *ObjectExpression::CheckPattern(checker::TSChecker *checker)
 
     for (auto it = properties_.rbegin(); it != properties_.rend(); it++) {
         if ((*it)->IsRestElement()) {
-            ASSERT((*it)->AsRestElement()->Argument()->IsIdentifier());
+            ES2PANDA_ASSERT((*it)->AsRestElement()->Argument()->IsIdentifier());
             util::StringView indexInfoName("x");
             auto *newIndexInfo =
                 checker->Allocator()->New<checker::IndexInfo>(checker->GlobalAnyType(), indexInfoName, false);
@@ -312,7 +312,7 @@ checker::Type *ObjectExpression::CheckPattern(checker::TSChecker *checker)
             continue;
         }
 
-        ASSERT((*it)->IsProperty());
+        ES2PANDA_ASSERT((*it)->IsProperty());
         auto *prop = (*it)->AsProperty();
 
         if (prop->IsComputed()) {
@@ -377,7 +377,7 @@ bool ObjectExpression::CheckAssignmentPattern(Property *prop, varbinder::Variabl
         return true;
     }
 
-    ASSERT(assignmentPattern->Left()->IsObjectPattern());
+    ES2PANDA_ASSERT(assignmentPattern->Left()->IsObjectPattern());
     auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
     auto destructuringContext = checker::ObjectDestructuringContext(
         {checker, assignmentPattern->Left()->AsObjectPattern(), false, true, nullptr, assignmentPattern->Right()});

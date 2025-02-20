@@ -32,7 +32,7 @@ public:
     explicit OpaqueTypeNode(checker::Type *const type, ArenaAllocator *const allocator)
         : TypeNode(AstNodeType::OPAQUE_TYPE_NODE, allocator)
     {
-        ASSERT(type != nullptr);
+        ES2PANDA_ASSERT(type != nullptr);
         SetTsType(type);
     }
 

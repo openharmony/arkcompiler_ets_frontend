@@ -49,8 +49,8 @@ void BinaryExpression::Dump(ir::AstDumper *dumper) const
 
 void BinaryExpression::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(left_ != nullptr);
-    ASSERT(right_ != nullptr);
+    ES2PANDA_ASSERT(left_ != nullptr);
+    ES2PANDA_ASSERT(right_ != nullptr);
     dumper->Add("((");
     left_->Dump(dumper);
     dumper->Add(") ");

@@ -150,9 +150,9 @@ ir::Expression *ExpandBracketsPhase::CreateNewMultiDimArrayInstanceExpression(
 bool ExpandBracketsPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     auto *const parser = ctx->parser->AsETSParser();
-    ASSERT(parser != nullptr);
+    ES2PANDA_ASSERT(parser != nullptr);
     auto *const checker = ctx->checker->AsETSChecker();
-    ASSERT(checker != nullptr);
+    ES2PANDA_ASSERT(checker != nullptr);
 
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style

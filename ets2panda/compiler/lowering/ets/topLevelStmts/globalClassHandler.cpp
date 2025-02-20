@@ -103,7 +103,7 @@ void GlobalClassHandler::MergeNamespace(ArenaVector<ir::ETSModule *> &namespaces
             if (!res->second->Annotations().empty() && !ns->Annotations().empty()) {
                 parser->LogError(diagnostic::NAMESPACE_ANNOTATION_CONFLICT, {ns->Ident()->Name().Mutf8()}, ns->Start());
             } else if (!ns->Annotations().empty()) {
-                ASSERT(res->second->Annotations().empty());
+                ES2PANDA_ASSERT(res->second->Annotations().empty());
                 res->second->SetAnnotations(std::move(ns->Annotations()));
             }
             for (auto *statement : ns->Statements()) {
@@ -191,7 +191,7 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
 
     parser::Program *const globalProgram = programs.front();
     // NOTE(vpukhov): a clash inside program list is possible
-    ASSERT(globalProgram->IsPackage() || programs.size() == 1);
+    ES2PANDA_ASSERT(globalProgram->IsPackage() || programs.size() == 1);
 
     ArenaVector<GlobalStmts> statements(allocator_->Adapter());
     ArenaVector<ir::ETSModule *> namespaces(allocator_->Adapter());
@@ -253,12 +253,12 @@ ir::MethodDefinition *GlobalClassHandler::CreateGlobalMethod(const std::string_v
 
 void GlobalClassHandler::AddInitCallFromStaticBlock(ir::ClassDefinition *globalClass, ir::MethodDefinition *initMethod)
 {
-    ASSERT(initMethod != nullptr);
+    ES2PANDA_ASSERT(initMethod != nullptr);
 
     auto &globalBody = globalClass->Body();
     auto maybeStaticBlock = std::find_if(globalBody.begin(), globalBody.end(),
                                          [](ir::AstNode *node) { return node->IsClassStaticBlock(); });
-    ASSERT(maybeStaticBlock != globalBody.end());
+    ES2PANDA_ASSERT(maybeStaticBlock != globalBody.end());
 
     auto *staticBlock = (*maybeStaticBlock)->AsClassStaticBlock();
     auto *callee = RefIdent(initMethod->Id()->Name());

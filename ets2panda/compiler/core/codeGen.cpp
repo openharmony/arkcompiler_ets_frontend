@@ -138,7 +138,7 @@ std::uint32_t CodeGen::FormalParametersCount() const noexcept
         return 0U;
     }
 
-    ASSERT(rootNode_->IsScriptFunction());
+    ES2PANDA_ASSERT(rootNode_->IsScriptFunction());
 
     return rootNode_->AsScriptFunction()->FormalParamsLength();
 }

@@ -129,11 +129,11 @@ std::pair<const ir::Identifier *, ir::TypeNode *> ETSChecker::GetTargetIdentifie
 {
     if (ident->Parent()->IsClassProperty()) {
         const auto *const classProp = ident->Parent()->AsClassProperty();
-        ASSERT(classProp->Value() && classProp->Value() == ident);
+        ES2PANDA_ASSERT(classProp->Value() && classProp->Value() == ident);
         return std::make_pair(classProp->Key()->AsIdentifier(), classProp->TypeAnnotation());
     }
     const auto *const variableDecl = ident->Parent()->AsVariableDeclarator();
-    ASSERT(variableDecl->Init() && variableDecl->Init() == ident);
+    ES2PANDA_ASSERT(variableDecl->Init() && variableDecl->Init() == ident);
     return std::make_pair(variableDecl->Id()->AsIdentifier(), variableDecl->Id()->AsIdentifier()->TypeAnnotation());
 }
 
@@ -390,7 +390,7 @@ std::tuple<bool, bool> ETSChecker::IsResolvedAndValue(const ir::Expression *expr
 
 Type *ETSChecker::HandleBooleanLogicalOperatorsExtended(Type *leftType, Type *rightType, ir::BinaryExpression *expr)
 {
-    ASSERT(leftType->IsConditionalExprType() && rightType->IsConditionalExprType());
+    ES2PANDA_ASSERT(leftType->IsConditionalExprType() && rightType->IsConditionalExprType());
 
     auto [resolveLeft, leftValue] = IsResolvedAndValue(expr->Left(), leftType);
     auto [resolveRight, rightValue] = IsResolvedAndValue(expr->Right(), rightType);
@@ -429,7 +429,7 @@ Type *ETSChecker::HandleBooleanLogicalOperatorsExtended(Type *leftType, Type *ri
 Type *ETSChecker::HandleBooleanLogicalOperators(Type *leftType, Type *rightType, lexer::TokenType tokenType)
 {
     using UType = typename ETSBooleanType::UType;
-    ASSERT(leftType->IsETSBooleanType() && rightType->IsETSBooleanType());
+    ES2PANDA_ASSERT(leftType->IsETSBooleanType() && rightType->IsETSBooleanType());
 
     if (!leftType->HasTypeFlag(checker::TypeFlag::CONSTANT) || !rightType->HasTypeFlag(checker::TypeFlag::CONSTANT)) {
         return GlobalETSBooleanType();
@@ -542,7 +542,7 @@ checker::Type *ETSChecker::CheckArrayElements(ir::ArrayExpression *init)
 
 void ETSChecker::InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::ArrowFunctionExpression *init)
 {
-    ASSERT(localTypeAnnotation != nullptr);
+    ES2PANDA_ASSERT(localTypeAnnotation != nullptr);
 
     if (localTypeAnnotation->IsETSTypeReference()) {
         bool isAnnotationTypeAlias = true;
@@ -763,7 +763,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
         }
         CheckAssignForDeclare(ident, typeAnnotation, init, flags, this);
     } else {
-        ASSERT(IsAnyError());
+        ES2PANDA_ASSERT(IsAnyError());
     }
 
     checker::Type *initType = nullptr;
@@ -780,7 +780,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
             initType = init->Check(this);
         }
     } else {
-        ASSERT(IsAnyError());
+        ES2PANDA_ASSERT(IsAnyError());
     }
 
     // initType should not be nullptr. If an error occurs during check, set it to GlobalTypeError().
@@ -1034,7 +1034,7 @@ std::optional<SmartCastTuple> CheckerContext::ResolveSmartCastTypes()
         return std::nullopt;
     }
 
-    ASSERT(testCondition_.testedType != nullptr);
+    ES2PANDA_ASSERT(testCondition_.testedType != nullptr);
     // NOTE: functional types are not supported now
     if (!testCondition_.testedType->IsETSReferenceType() ||
         testCondition_.testedType->HasTypeFlag(TypeFlag::FUNCTION)) {
@@ -1100,7 +1100,7 @@ bool ETSChecker::CheckVoidAnnotation(const ir::ETSPrimitiveType *typeAnnotation)
 }
 void ETSChecker::ApplySmartCast(varbinder::Variable const *const variable, checker::Type *const smartType) noexcept
 {
-    ASSERT(variable != nullptr);
+    ES2PANDA_ASSERT(variable != nullptr);
     if (smartType != nullptr) {
         auto *variableType = variable->TsType();
 
@@ -1213,8 +1213,8 @@ static void CollectAliasParametersForBoxing(Type *expandedAliasType, std::set<Ty
 
 Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypeParameterInstantiation *const typeParams)
 {
-    ASSERT(name->IsIdentifier() && name->AsIdentifier()->Variable() &&
-           name->AsIdentifier()->Variable()->Declaration()->IsTypeAliasDecl());
+    ES2PANDA_ASSERT(name->IsIdentifier() && name->AsIdentifier()->Variable() &&
+                    name->AsIdentifier()->Variable()->Declaration()->IsTypeAliasDecl());
 
     auto *const typeAliasNode =
         name->AsIdentifier()->Variable()->Declaration()->AsTypeAliasDecl()->Node()->AsTSTypeAliasDeclaration();
@@ -1409,11 +1409,11 @@ Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)
         return name->Check(this);
     }
 
-    ASSERT(name->IsIdentifier());
+    ES2PANDA_ASSERT(name->IsIdentifier());
 
     auto *const var = name->AsIdentifier()->Variable();
     if (var == nullptr) {
-        ASSERT(IsAnyError());
+        ES2PANDA_ASSERT(IsAnyError());
         return name->SetTsType(GlobalTypeError());
     }
 
@@ -1457,7 +1457,7 @@ void ETSChecker::ConcatConstantString(util::UString &target, Type *type)
 {
     switch (ETSType(type)) {
         case TypeFlag::ETS_OBJECT: {
-            ASSERT(type->IsETSStringType());
+            ES2PANDA_ASSERT(type->IsETSStringType());
             target.Append(type->AsETSStringType()->GetValue());
             break;
         }
@@ -1502,7 +1502,7 @@ void ETSChecker::ConcatConstantString(util::UString &target, Type *type)
 
 Type *ETSChecker::HandleStringConcatenation(Type *leftType, Type *rightType)
 {
-    ASSERT(leftType->IsETSStringType() || rightType->IsETSStringType());
+    ES2PANDA_ASSERT(leftType->IsETSStringType() || rightType->IsETSStringType());
 
     if (!leftType->HasTypeFlag(checker::TypeFlag::CONSTANT) || !rightType->HasTypeFlag(checker::TypeFlag::CONSTANT) ||
         leftType->IsETSBigIntType() || rightType->IsETSBigIntType()) {
@@ -1608,7 +1608,7 @@ ir::AstNode *ETSChecker::FindAncestorGivenByType(ir::AstNode *node, ir::AstNodeT
 
 util::StringView ETSChecker::GetContainingObjectNameFromSignature(Signature *signature)
 {
-    ASSERT(signature->Function());
+    ES2PANDA_ASSERT(signature->Function());
     auto *iter = signature->Function()->Parent();
 
     while (iter != nullptr) {
@@ -1629,7 +1629,7 @@ util::StringView ETSChecker::GetContainingObjectNameFromSignature(Signature *sig
 
 std::optional<const ir::AstNode *> ETSChecker::FindJumpTarget(ir::AstNode *node)
 {
-    ASSERT(node->IsBreakStatement() || node->IsContinueStatement());
+    ES2PANDA_ASSERT(node->IsBreakStatement() || node->IsContinueStatement());
 
     bool const isContinue = node->IsContinueStatement();
 
@@ -2081,7 +2081,7 @@ ETSObjectType *ETSChecker::GetRelevantArgumentedTypeFromChild(ETSObjectType *con
         return relevantType;
     }
 
-    ASSERT(child->SuperType() != nullptr);
+    ES2PANDA_ASSERT(child->SuperType() != nullptr);
 
     return GetRelevantArgumentedTypeFromChild(child->SuperType(), target);
 }
@@ -2089,7 +2089,7 @@ ETSObjectType *ETSChecker::GetRelevantArgumentedTypeFromChild(ETSObjectType *con
 void ETSChecker::EmplaceSubstituted(Substitution *substitution, ETSTypeParameter *tparam, Type *typeArg)
 {
     // *only* reference type may be substituted, no exceptions
-    ASSERT(typeArg->IsETSReferenceType());
+    ES2PANDA_ASSERT(typeArg->IsETSReferenceType());
     substitution->emplace(tparam, typeArg);
 }
 
@@ -2267,7 +2267,7 @@ void ETSChecker::InferTypesForLambda(ir::ScriptFunction *lambda, ir::ETSFunction
             auto *const typeAnnotation =
                 calleeType->Params()[i]->AsETSParameterExpression()->TypeAnnotation()->Clone(Allocator(), nullptr);
             if (maybeSubstitutedFunctionSig != nullptr) {
-                ASSERT(maybeSubstitutedFunctionSig->Params().size() == calleeType->Params().size());
+                ES2PANDA_ASSERT(maybeSubstitutedFunctionSig->Params().size() == calleeType->Params().size());
                 typeAnnotation->SetTsType(maybeSubstitutedFunctionSig->Params()[i]->TsType());
             }
             lambdaParam->SetTsTypeAnnotation(typeAnnotation);
@@ -2577,7 +2577,7 @@ Type *ETSChecker::TryGettingFunctionTypeFromInvokeFunction(Type *type)
     if (type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
         auto const propInvoke = type->AsETSObjectType()->GetProperty(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME,
                                                                      PropertySearchFlags::SEARCH_INSTANCE_METHOD);
-        ASSERT(propInvoke != nullptr);
+        ES2PANDA_ASSERT(propInvoke != nullptr);
         return propInvoke->TsType();
     }
 
@@ -2586,8 +2586,8 @@ Type *ETSChecker::TryGettingFunctionTypeFromInvokeFunction(Type *type)
 
 bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, const Type *resolvedType)
 {
-    ASSERT(ident->Parent()->IsCallExpression());
-    ASSERT(ident->Parent()->AsCallExpression()->Callee() == ident);
+    ES2PANDA_ASSERT(ident->Parent()->IsCallExpression());
+    ES2PANDA_ASSERT(ident->Parent()->AsCallExpression()->Callee() == ident);
 
     if (!resolvedType->IsETSObjectType()) {
         return false;

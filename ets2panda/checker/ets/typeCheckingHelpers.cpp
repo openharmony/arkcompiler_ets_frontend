@@ -120,7 +120,7 @@ Type *ETSChecker::RemoveNullType(Type *const type)
         return GetGlobalTypesHolder()->GlobalETSNeverType();
     }
 
-    ASSERT(type->IsETSUnionType());
+    ES2PANDA_ASSERT(type->IsETSUnionType());
     ArenaVector<Type *> copiedTypes(Allocator()->Adapter());
 
     for (auto *constituentType : type->AsETSUnionType()->ConstituentTypes()) {
@@ -148,7 +148,7 @@ Type *ETSChecker::RemoveUndefinedType(Type *const type)
         return GetGlobalTypesHolder()->GlobalETSNeverType();
     }
 
-    ASSERT(type->IsETSUnionType());
+    ES2PANDA_ASSERT(type->IsETSUnionType());
     ArenaVector<Type *> copiedTypes(Allocator()->Adapter());
 
     for (auto *constituentType : type->AsETSUnionType()->ConstituentTypes()) {
@@ -176,7 +176,7 @@ std::pair<Type *, Type *> ETSChecker::RemoveNullishTypes(Type *type)
         return {type, GetGlobalTypesHolder()->GlobalETSNeverType()};
     }
 
-    ASSERT(type->IsETSUnionType());
+    ES2PANDA_ASSERT(type->IsETSUnionType());
     ArenaVector<Type *> nullishTypes(Allocator()->Adapter());
     ArenaVector<Type *> notNullishTypes(Allocator()->Adapter());
 
@@ -332,7 +332,7 @@ bool Type::IsETSPrimitiveType() const
         TypeFlag::ETS_NUMERIC | TypeFlag::CHAR | TypeFlag::ETS_BOOLEAN | TypeFlag::ETS_ENUM;
 
     // Do not modify
-    ASSERT(!HasTypeFlag(ETS_PRIMITIVE) == IsSaneETSReferenceType(this));
+    ES2PANDA_ASSERT(!HasTypeFlag(ETS_PRIMITIVE) == IsSaneETSReferenceType(this));
     return HasTypeFlag(ETS_PRIMITIVE);
 }
 
@@ -423,7 +423,7 @@ void ETSChecker::IterateInVariableContext(varbinder::Variable *const var)
     while (iter != nullptr) {
         if (iter->IsMethodDefinition()) {
             auto *methodDef = iter->AsMethodDefinition();
-            ASSERT(methodDef->TsType());
+            ES2PANDA_ASSERT(methodDef->TsType());
             Context().SetContainingSignature(methodDef->Function()->Signature());
         } else if (iter->IsClassDefinition()) {
             auto *classDef = iter->AsClassDefinition();
@@ -436,7 +436,7 @@ void ETSChecker::IterateInVariableContext(varbinder::Variable *const var)
                 containingClass = classDef->TsType()->AsETSObjectType();
             }
 
-            ASSERT(classDef->TsType());
+            ES2PANDA_ASSERT(classDef->TsType());
             if (!containingClass->IsTypeError()) {
                 Context().SetContainingClass(containingClass->AsETSObjectType());
             }
@@ -495,7 +495,7 @@ Type *ETSChecker::GetTypeFromVariableDeclaration(varbinder::Variable *const var)
             break;
 
         default:
-            ASSERT(IsAnyError());
+            ES2PANDA_ASSERT(IsAnyError());
             break;
     }
 
@@ -730,7 +730,7 @@ Type *ETSChecker::GetTypeFromEnumReference([[maybe_unused]] varbinder::Variable 
 
 Type *ETSChecker::GetTypeFromTypeParameterReference(varbinder::LocalVariable *var, const lexer::SourcePosition &pos)
 {
-    ASSERT(var->Declaration()->Node()->IsTSTypeParameter());
+    ES2PANDA_ASSERT(var->Declaration()->Node()->IsTSTypeParameter());
     if ((var->Declaration()->Node()->AsTSTypeParameter()->Parent()->Parent()->IsClassDefinition() ||
          var->Declaration()->Node()->AsTSTypeParameter()->Parent()->Parent()->IsTSInterfaceDeclaration()) &&
         HasStatus(CheckerStatus::IN_STATIC_CONTEXT)) {
@@ -1170,7 +1170,7 @@ void ETSChecker::CheckUnboxedTypesAssignable(TypeRelation *relation, Type *sourc
 
 void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *source, Type *target)
 {
-    ASSERT(relation != nullptr);
+    ES2PANDA_ASSERT(relation != nullptr);
     checker::SavedTypeRelationFlagsContext savedTypeRelationFlagCtx(
         relation, (relation->ApplyWidening() ? TypeRelationFlag::WIDENING : TypeRelationFlag::NONE) |
                       (relation->ApplyNarrowing() ? TypeRelationFlag::NARROWING : TypeRelationFlag::NONE) |
@@ -1181,7 +1181,7 @@ void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *so
     if (boxedSourceType == nullptr) {
         return;
     }
-    ASSERT(target != nullptr);
+    ES2PANDA_ASSERT(target != nullptr);
     // Do not box primitive in case of cast to dynamic types
     if (target->IsETSDynamicType()) {
         return;
@@ -1219,12 +1219,12 @@ void ETSChecker::CheckUnboxedSourceTypeWithWideningAssignable(TypeRelation *rela
 
 static ir::AstNode *DerefETSTypeReference(ir::AstNode *node)
 {
-    ASSERT(node->IsETSTypeReference());
+    ES2PANDA_ASSERT(node->IsETSTypeReference());
     do {
         auto *name = node->AsETSTypeReference()->Part()->Name();
-        ASSERT(name->IsIdentifier());
+        ES2PANDA_ASSERT(name->IsIdentifier());
         auto *var = name->AsIdentifier()->Variable();
-        ASSERT(var != nullptr);
+        ES2PANDA_ASSERT(var != nullptr);
         auto *declNode = var->Declaration()->Node();
         if (!declNode->IsTSTypeAliasDeclaration()) {
             return declNode;
@@ -1236,7 +1236,7 @@ static ir::AstNode *DerefETSTypeReference(ir::AstNode *node)
 
 bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction *lambda, TypeRelationFlag flags)
 {
-    ASSERT(param->IsETSParameterExpression());
+    ES2PANDA_ASSERT(param->IsETSParameterExpression());
     ir::AstNode *typeAnn = param->AsETSParameterExpression()->TypeAnnotation();
     if (typeAnn->IsETSTypeReference()) {
         typeAnn = DerefETSTypeReference(typeAnn);
@@ -1294,7 +1294,7 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
 
     //  process `single` type as usual.
     if (!typeAnnotation->IsETSUnionType()) {
-        ASSERT(!parameterType->IsETSUnionType());
+        ES2PANDA_ASSERT(!parameterType->IsETSUnionType());
         return CheckLambdaInfer(typeAnnotation, arrowFuncExpr, parameterType) && checkInvocable(flags);
     }
 
@@ -1306,8 +1306,8 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
     }
     auto *const lambdaReturnTypeAnnotation = lambda->ReturnTypeAnnotation();
 
-    ASSERT(parameterType->AsETSUnionType()->ConstituentTypes().size() ==
-           typeAnnotation->AsETSUnionType()->Types().size());
+    ES2PANDA_ASSERT(parameterType->AsETSUnionType()->ConstituentTypes().size() ==
+                    typeAnnotation->AsETSUnionType()->Types().size());
     const auto typeAnnsOfUnion = typeAnnotation->AsETSUnionType()->Types();
     const auto typeParamOfUnion = parameterType->AsETSUnionType()->ConstituentTypes();
     for (size_t ix = 0; ix < typeAnnsOfUnion.size(); ++ix) {

@@ -25,8 +25,8 @@ public:
     explicit ETSWildcardType(ir::ETSTypeReference *typeReference, ModifierFlags flags, ArenaAllocator *const allocator)
         : TypeNode(AstNodeType::ETS_WILDCARD_TYPE, flags, allocator), typeReference_(typeReference)
     {
-        ASSERT(flags == ModifierFlags::IN || flags == ModifierFlags::OUT);
-        ASSERT(typeReference != nullptr || flags == ModifierFlags::OUT);
+        ES2PANDA_ASSERT(flags == ModifierFlags::IN || flags == ModifierFlags::OUT);
+        ES2PANDA_ASSERT(typeReference != nullptr || flags == ModifierFlags::OUT);
     }
 
     ir::ETSTypeReference *TypeReference()

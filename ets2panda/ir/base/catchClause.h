@@ -62,7 +62,7 @@ public:
 
     void SetScope(varbinder::CatchScope *scope)
     {
-        ASSERT(scope_ == nullptr);
+        ES2PANDA_ASSERT(scope_ == nullptr);
         scope_ = scope;
     }
 

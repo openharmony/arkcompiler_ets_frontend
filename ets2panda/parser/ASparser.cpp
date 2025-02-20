@@ -88,7 +88,7 @@ std::unique_ptr<lexer::Lexer> ASParser::InitLexer(const SourceFile &sourceFile)
 
 ir::Decorator *ASParser::ParseDecorator()
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT);
 
     lexer::SourcePosition start = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat '@'
@@ -114,7 +114,7 @@ void ASParser::AddDecorators(ir::AstNode *node, ArenaVector<ir::Decorator *> &de
 
 ir::TSTypeAliasDeclaration *ASParser::ParseTypeAliasDeclaration()
 {
-    ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE);
+    ES2PANDA_ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE);
     lexer::SourcePosition typeStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat type keyword
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
@@ -167,7 +167,7 @@ void ASParser::ParseOptionalFunctionParameter(ir::AnnotatedExpression *returnNod
             ThrowSyntaxError("A rest parameter cannot be optional");
         }
 
-        ASSERT(returnNode->IsIdentifier());
+        ES2PANDA_ASSERT(returnNode->IsIdentifier());
         returnNode->AsIdentifier()->SetOptional(true);
 
         isOptional = true;
@@ -523,7 +523,7 @@ ir::TypeNode *ASParser::ParseParenthesizedOrFunctionType(bool throwError)
 {
     lexer::SourcePosition typeStart = Lexer()->GetToken().Start();
     const auto startPos = Lexer()->Save();
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     Lexer()->NextToken();  // eat '('
 
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::NO_OPTS;
@@ -671,7 +671,7 @@ ir::TypeNode *ASParser::ParseTypeAnnotationTokensBitwiseOr(ir::TypeNode *type, b
             if (type->IsTSFunctionType()) {
                 type->AsTSFunctionType()->SetNullable(isNullable);
             } else {
-                ASSERT(type->IsNamedType());
+                ES2PANDA_ASSERT(type->IsNamedType());
                 type->AsNamedType()->SetNullable(isNullable);
             }
         }
@@ -1417,7 +1417,7 @@ ir::Expression *ASParser::ParseArrowFunctionNoParameter(lexer::SourcePosition st
 ir::Expression *ASParser::ParseCoverParenthesizedExpressionAndArrowParameterList(
     [[maybe_unused]] ExpressionParseFlags flags)  // CC-OFF(G.FMT.06-CPP) project code style
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     lexer::SourcePosition start = Lexer()->GetToken().Start();
     Lexer()->NextToken();
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
@@ -1671,7 +1671,7 @@ ir::Statement *ASParser::ParseNamedExportDeclaration(const lexer::SourcePosition
 
 ir::AstNode *ASParser::ParseImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers)
 {
-    ASSERT(specifiers->empty());
+    ES2PANDA_ASSERT(specifiers->empty());
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
         ParseImportDefaultSpecifier(specifiers);

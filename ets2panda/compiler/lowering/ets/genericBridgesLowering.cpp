@@ -245,7 +245,7 @@ ir::ClassDefinition *GenericBridgesPhase::ProcessClassDefinition(ir::ClassDefini
 
     auto const &typeArguments = superType->TypeArguments();
     auto const parameterNumber = typeParameters.size();
-    ASSERT(parameterNumber == typeArguments.size());
+    ES2PANDA_ASSERT(parameterNumber == typeArguments.size());
 
     auto *checker = context_->checker->AsETSChecker();
     Substitutions substitutions {};

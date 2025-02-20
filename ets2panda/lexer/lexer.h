@@ -128,6 +128,7 @@ public:
     Token &GetToken();
     const Token &GetToken() const;
     size_t Line() const;
+    const parser::Program *GetProgram() const;
 
     bool TryEatTokenType(lexer::TokenType type)
     {
@@ -237,6 +238,11 @@ public:
     }
 
     util::StringView SourceView(size_t begin, size_t end) const;
+
+    std::pair<const parser::Program *, lexer::SourcePosition> GetPositionForDiagnostic() const
+    {
+        return {GetProgram(), GetToken().Start()};
+    }
 
 protected:
     void NextToken(Keywords *kws);

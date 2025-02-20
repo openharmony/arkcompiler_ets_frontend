@@ -97,14 +97,14 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
         if (defaultType != nullptr && !defaultType->IsTypeError()) {
             typeArgTypes.emplace_back(defaultType);
         } else {
-            ASSERT(checker_->IsAnyError());
+            ES2PANDA_ASSERT(checker_->IsAnyError());
             typeArgTypes.emplace_back(checker_->GlobalETSObjectType());
         }
     }
 
     auto pos = (typeArgs == nullptr) ? lexer::SourcePosition() : typeArgs->Range().start;
     InstantiateType(type, std::move(typeArgTypes), pos);
-    ASSERT(result_->IsETSObjectType());
+    ES2PANDA_ASSERT(result_->IsETSObjectType());
     result_->AsETSObjectType()->AddObjectFlag(ETSObjectFlags::NO_OPTS);
 }
 
@@ -126,7 +126,7 @@ static void CheckInstantiationConstraints(ETSChecker *checker, ArenaVector<Type 
             continue;
         }
         // NOTE(vpukhov): #19701 void refactoring
-        ASSERT(typeArg->IsETSReferenceType() || typeArg->IsETSVoidType());
+        ES2PANDA_ASSERT(typeArg->IsETSReferenceType() || typeArg->IsETSVoidType());
         auto constraint = typeParam->GetConstraintType()->Substitute(relation, substitution);
         if (!relation->IsAssignableTo(typeArg, constraint)) {
             checker->LogTypeError(  // NOTE(vpukhov): refine message

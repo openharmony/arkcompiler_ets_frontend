@@ -58,13 +58,13 @@ public:
     /* CC-OFFNXT(G.PRE.02) name part */                                                     \
     className *As##className()                                                              \
     {                                                                                       \
-        ASSERT(Is##className());                                                            \
+        ES2PANDA_ASSERT(Is##className());                                                   \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
         return reinterpret_cast<className *>(this); /* CC-OFF(G.PRE.02) name part */        \
     }                                                                                       \
     const className *As##className() const                                                  \
     {                                                                                       \
-        ASSERT(Is##className());                                                            \
+        ES2PANDA_ASSERT(Is##className());                                                   \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
         return reinterpret_cast<const className *>(this);                                   \
     }
@@ -161,13 +161,13 @@ public:
 
     void BindVReg(compiler::VReg vreg)
     {
-        ASSERT(!LexicalBound());
+        ES2PANDA_ASSERT(!LexicalBound());
         vreg_ = vreg;
     }
 
     void BindLexEnvSlot(uint32_t slot)
     {
-        ASSERT(!LexicalBound());
+        ES2PANDA_ASSERT(!LexicalBound());
         AddFlag(VariableFlags::LEXICAL_BOUND);
         vreg_.SetIndex(slot);
     }
@@ -184,7 +184,7 @@ public:
 
     uint32_t LexIdx() const
     {
-        ASSERT(LexicalBound());
+        ES2PANDA_ASSERT(LexicalBound());
         return vreg_.GetIndex();
     }
 

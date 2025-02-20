@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -51,7 +51,7 @@ std::string_view ObjectIteratorLowering::Name() const
 void ObjectIteratorLowering::TransferForOfLoopBody(ir::Statement *const forBody, ir::BlockStatement *const whileBody,
                                                    bool const needCleaning) const noexcept
 {
-    ASSERT(forBody != nullptr && whileBody != nullptr);
+    ES2PANDA_ASSERT(forBody != nullptr && whileBody != nullptr);
     auto &whileStatements = whileBody->Statements();
 
     //  Currently while loop body consists of 2 statements: 'x = it.value!' and 'it = ci.next()'
@@ -143,11 +143,11 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(parser::ETSParser *
 bool ObjectIteratorLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     auto *const parser = ctx->parser->AsETSParser();
-    ASSERT(parser != nullptr);
+    ES2PANDA_ASSERT(parser != nullptr);
     auto *const checker = ctx->checker->AsETSChecker();
-    ASSERT(checker != nullptr);
+    ES2PANDA_ASSERT(checker != nullptr);
     auto *const varbinder = ctx->checker->VarBinder()->AsETSBinder();
-    ASSERT(varbinder != nullptr);
+    ES2PANDA_ASSERT(varbinder != nullptr);
 
     auto hasIterator = [](checker::Type const *const exprType) -> bool {
         return exprType != nullptr &&

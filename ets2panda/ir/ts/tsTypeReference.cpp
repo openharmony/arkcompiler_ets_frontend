@@ -120,7 +120,7 @@ checker::Type *TSTypeReference::GetType([[maybe_unused]] checker::TSChecker *che
         return checker->GlobalAnyType();
     }
 
-    ASSERT(typeName_->IsIdentifier());
+    ES2PANDA_ASSERT(typeName_->IsIdentifier());
     varbinder::Variable *var = typeName_->AsIdentifier()->Variable();
 
     if (var == nullptr) {

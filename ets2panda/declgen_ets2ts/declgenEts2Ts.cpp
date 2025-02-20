@@ -300,7 +300,7 @@ void TSDeclGen::GenObjectType(const checker::ETSObjectType *objectType)
     if (objectType->HasObjectFlag(checker::ETSObjectFlags::FUNCTIONAL)) {
         const auto *invoke = objectType->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(
             checker::FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
-        ASSERT(invoke && invoke->TsType() && invoke->TsType()->IsETSFunctionType());
+        ES2PANDA_ASSERT(invoke && invoke->TsType() && invoke->TsType()->IsETSFunctionType());
         GenType(invoke->TsType());
         return;
     }
@@ -466,7 +466,7 @@ void TSDeclGen::GenEnumDeclaration(const ir::TSEnumDeclaration *enumDecl)
     OutDts("export declare enum ", enumName, " {");
     OutEndlDts();
 
-    ASSERT(enumDecl->TsType()->IsETSIntEnumType());
+    ES2PANDA_ASSERT(enumDecl->TsType()->IsETSIntEnumType());
     GenEnumType(enumDecl->TsType()->AsETSIntEnumType());
 
     OutDts("}");
@@ -539,7 +539,7 @@ void TSDeclGen::HandleClassDeclarationTypeInfo(const ir::ClassDefinition *classD
     const auto &interfaces = classDef->TsType()->AsETSObjectType()->Interfaces();
     if (!interfaces.empty()) {
         OutDts(" implements ");
-        ASSERT(classDef->TsType()->IsETSObjectType());
+        ES2PANDA_ASSERT(classDef->TsType()->IsETSObjectType());
         GenSeparated(interfaces, [this](checker::ETSObjectType *interface) { GenType(interface); });
     }
 

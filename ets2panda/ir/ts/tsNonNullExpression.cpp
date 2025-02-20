@@ -41,7 +41,7 @@ void TSNonNullExpression::Dump(ir::AstDumper *dumper) const
 
 void TSNonNullExpression::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(expr_ != nullptr);
+    ES2PANDA_ASSERT(expr_ != nullptr);
     expr_->Dump(dumper);
     dumper->Add("!");
 }

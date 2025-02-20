@@ -67,7 +67,7 @@ void ETSTypeReferencePart::Dump(ir::AstDumper *dumper) const
 
 void ETSTypeReferencePart::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(name_ != nullptr);
+    ES2PANDA_ASSERT(name_ != nullptr);
     name_->Dump(dumper);
     if (typeParams_ != nullptr) {
         typeParams_->Dump(dumper);
@@ -157,7 +157,7 @@ checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
         if (TsType() == nullptr) {
             checker::Type *baseType = checker->GetReferencedTypeBase(name_);
 
-            ASSERT(baseType != nullptr);
+            ES2PANDA_ASSERT(baseType != nullptr);
             if (baseType->IsETSObjectType()) {
                 checker::InstantiationContext ctx(checker, baseType->AsETSObjectType(), typeParams_, Start());
                 SetTsType(ctx.Result());

@@ -92,7 +92,7 @@ CheckResult IdentifierHasVariable::operator()(const ir::AstNode *ast)
 {
     if (ast->IsScriptFunction() && ast->AsScriptFunction()->IsExternal()) {
         // Identifiers in external functions' definitions are not resolved, so skip it
-        ASSERT(!ast->AsScriptFunction()->IsExternalOverload());
+        ES2PANDA_ASSERT(!ast->AsScriptFunction()->IsExternalOverload());
         return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
     }
     if (!ast->IsIdentifier()) {

@@ -160,6 +160,8 @@ const char *DiagnosticTypeToString(DiagnosticType type)
             return "Declgen ets2ts error";
         case DiagnosticType::DECLGEN_ETS2TS_WARNING:
             return "Declgen ets2ts warning";
+        case DiagnosticType::COMPILER_BUG:
+            return "Compiler bug";
         default:
             UNREACHABLE();
     }

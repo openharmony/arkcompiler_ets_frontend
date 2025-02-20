@@ -632,7 +632,8 @@ ir::AstNode *ParserImpl::ParseClassElement(const ArenaVector<ir::AstNode *> &pro
 
     context_.Status() &= ~ParserStatus::ALLOW_THIS_TYPE;
 
-    if (desc.isPrivateIdent) {
+    // if Id() is nullptr, ParseClassKey has logged an error
+    if (desc.isPrivateIdent && property != nullptr && property->Id() != nullptr) {
         AddPrivateElement(property);
     }
 
@@ -977,7 +978,7 @@ ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus)
 
 ir::SpreadElement *ParserImpl::ParseSpreadElement(ExpressionParseFlags flags)
 {
-    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD);
+    ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD);
     lexer::SourcePosition startLocation = lexer_->GetToken().Start();
     bool inPattern = (flags & ExpressionParseFlags::MUST_BE_PATTERN) != 0;
     lexer_->NextToken();
@@ -1004,7 +1005,7 @@ ir::SpreadElement *ParserImpl::ParseSpreadElement(ExpressionParseFlags flags)
 
 void ParserImpl::CheckRestrictedBinding()
 {
-    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
+    ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
     CheckRestrictedBinding(lexer_->GetToken().KeywordType());
 }
 
@@ -1338,6 +1339,11 @@ void ParserImpl::LogGenericError(std::string_view errorMessage)
 ScriptExtension ParserImpl::Extension() const
 {
     return program_->Extension();
+}
+
+std::pair<const parser::Program *, lexer::SourcePosition> ParserImpl::GetPositionForDiagnostic() const
+{
+    return {GetProgram(), Lexer()->GetToken().Start()};
 }
 
 bool ParserImpl::CheckModuleAsModifier()

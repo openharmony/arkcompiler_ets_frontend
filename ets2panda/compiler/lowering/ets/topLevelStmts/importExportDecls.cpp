@@ -61,7 +61,7 @@ GlobalClassHandler::ModuleDependencies ImportExportDecls::HandleGlobalStmts(Aren
             const bool isType = exportedTypes_.find(exportName) != exportedTypes_.end();
             util::StringView originalName = varbinder_->FindNameInAliasMap(program->SourceFilePath(), exportName);
 
-            ASSERT(!originalName.Empty());
+            ES2PANDA_ASSERT(!originalName.Empty());
             auto result = fieldMap_.find(originalName);
             if (result == fieldMap_.end() && !isType && importedSpecifiersForExportCheck_.count(originalName) == 0) {
                 parser_->DiagnosticEngine().LogSyntaxError(

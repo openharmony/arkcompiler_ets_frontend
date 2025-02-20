@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -72,8 +72,8 @@ bool StringComparisonLowering::IsStringComparison(ir::AstNode *node)
 
 void StringComparisonLowering::ProcessBinaryExpression(ir::BinaryExpression *expr, public_lib::Context *ctx)
 {
-    ASSERT(expr->IsBinaryExpression());
-    ASSERT(expr->Left()->TsType()->IsETSStringType() && expr->Right()->TsType()->IsETSStringType());
+    ES2PANDA_ASSERT(expr->IsBinaryExpression());
+    ES2PANDA_ASSERT(expr->Left()->TsType()->IsETSStringType() && expr->Right()->TsType()->IsETSStringType());
 
     // reset types is any, will re-run checker to set them once again properly
     expr->SetTsType(nullptr);

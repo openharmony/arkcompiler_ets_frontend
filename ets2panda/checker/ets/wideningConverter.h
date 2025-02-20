@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -114,7 +114,7 @@ private:
         }
 
         if (!Relation()->OnlyCheckWidening()) {
-            ASSERT(Relation()->GetNode());
+            ES2PANDA_ASSERT(Relation()->GetNode());
             switch (ETSChecker::ETSChecker::ETSType(Source())) {
                 case TypeFlag::BYTE: {
                     Relation()->GetNode()->SetTsType(Checker()->GlobalByteType());
@@ -204,7 +204,7 @@ private:
         SType value = reinterpret_cast<SourceType *>(Source())->GetValue();
 
         if (!Relation()->OnlyCheckWidening()) {
-            ASSERT(Relation()->GetNode());
+            ES2PANDA_ASSERT(Relation()->GetNode());
             Relation()->GetNode()->SetTsType(Checker()->Allocator()->New<TargetType>(static_cast<TType>(value)));
         }
     }

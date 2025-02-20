@@ -50,9 +50,9 @@ void ETSNewArrayInstanceExpression::Dump(ir::AstDumper *dumper) const
 void ETSNewArrayInstanceExpression::Dump(ir::SrcDumper *dumper) const
 {
     dumper->Add("new ");
-    ASSERT(typeReference_);
+    ES2PANDA_ASSERT(typeReference_);
     typeReference_->Dump(dumper);
-    ASSERT(dimension_);
+    ES2PANDA_ASSERT(dimension_);
     dumper->Add("[");
     dimension_->Dump(dumper);
     dumper->Add("]");

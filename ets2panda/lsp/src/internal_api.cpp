@@ -62,7 +62,7 @@ __attribute__((unused)) char *StdStringToCString(ArenaAllocator *allocator, cons
     // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-simplify-subscript-expr)
     char *res = reinterpret_cast<char *>(allocator->Alloc(str.length() + 1));
     [[maybe_unused]] auto err = memcpy_s(res, str.length() + 1, str.c_str(), str.length() + 1);
-    ASSERT(err == EOK);
+    ES2PANDA_ASSERT(err == EOK);
     return res;
     // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-simplify-subscript-expr)
 }
@@ -293,7 +293,7 @@ ir::AstNode *GetOriginalNode(ir::AstNode *astNode)
 
 checker::VerifiedType GetTypeOfSymbolAtLocation(checker::ETSChecker *checker, ir::AstNode *astNode)
 {
-    ASSERT(astNode);
+    ES2PANDA_ASSERT(astNode);
     auto originalNode = GetOriginalNode(astNode);
     return originalNode->Check(checker);
 }
@@ -528,7 +528,7 @@ void GetReferenceLocationAtPositionImpl(FileNodeInfo fileNodeInfo, es2panda_Cont
 // convert from es2panda error type to LSP severity
 DiagnosticSeverity GetSeverity(util::DiagnosticType errorType)
 {
-    ASSERT(errorType != util::DiagnosticType::INVALID);
+    ES2PANDA_ASSERT(errorType != util::DiagnosticType::INVALID);
     if (errorType == util::DiagnosticType::WARNING) {
         return DiagnosticSeverity::Warning;
     }
@@ -572,7 +572,7 @@ Diagnostic CreateDiagnosticForError(es2panda_Context *context, const util::Diagn
 
 size_t GetTokenPosOfNode(const ir::AstNode *astNode)
 {
-    ASSERT(astNode);
+    ES2PANDA_ASSERT(astNode);
 
     return astNode->Start().index;
 }

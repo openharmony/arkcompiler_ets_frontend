@@ -18,6 +18,15 @@
 #include "util/diagnostic.h"
 #include "util/options.h"
 
+#include <csignal>
+
+namespace ark::es2panda {
+std::pair<const parser::Program *, lexer::SourcePosition> GetPositionForDiagnostic()
+{
+    return {nullptr, lexer::SourcePosition {}};
+}
+}  // namespace ark::es2panda
+
 namespace ark::es2panda::util {
 
 void CLIDiagnosticPrinter::Print(const DiagnosticBase &diagnostic) const
@@ -67,6 +76,22 @@ void DiagnosticEngine::FlushDiagnostic()
     }
 }
 
+static void SigSegvHandler([[maybe_unused]] int sig)
+{
+    if (g_diagnosticEngine != nullptr) {
+        g_diagnosticEngine->FlushDiagnostic();
+    }
+    std::cerr << "PLEASE submit a bug report to https://gitee.com/openharmony/arkcompiler_ets_frontend/issues"
+              << std::endl;
+    ark::PrintStack(ark::GetStacktrace(), std::cerr);
+    std::abort();  // CC-OFF(G.STD.16-CPP) fatal error
+}
+
+void DiagnosticEngine::InitializeSignalHandlers()
+{
+    std::signal(SIGSEGV, SigSegvHandler);
+}
+
 bool DiagnosticEngine::IsAnyError() const noexcept
 {
     for (size_t i = DiagnosticType::BEGIN; i < DiagnosticType::COUNT; ++i) {
@@ -96,6 +121,7 @@ bool DiagnosticEngine::IsError(DiagnosticType type) const
         case DiagnosticType::SEMANTIC:
         case DiagnosticType::PLUGIN:
         case DiagnosticType::DECLGEN_ETS2TS_ERROR:
+        case DiagnosticType::COMPILER_BUG:
             return true;
         case DiagnosticType::WARNING:
         case DiagnosticType::DECLGEN_ETS2TS_WARNING:

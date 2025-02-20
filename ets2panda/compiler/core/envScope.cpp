@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -58,7 +58,7 @@ void LoopEnvScope::CopyBindings(PandaGen *pg, varbinder::VariableScope *scope, v
     pg_->NewLexEnv(scope_->Node(), scope->LexicalSlots());
     pg_->StoreAccumulator(scope_->Node(), lexEnv_);
 
-    ASSERT(scope->NeedLexEnv());
+    ES2PANDA_ASSERT(scope->NeedLexEnv());
 
     for (const auto &[_, variable] : scope_->OrderedBindings(pg_->Allocator())) {
         (void)_;

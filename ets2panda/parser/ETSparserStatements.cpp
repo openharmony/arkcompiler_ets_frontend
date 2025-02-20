@@ -284,7 +284,7 @@ ir::Statement *ETSParser::ParseDebuggerStatement()
 
 ir::Statement *ETSParser::ParseFunctionStatement(const StatementParsingFlags flags)
 {
-    ASSERT((flags & StatementParsingFlags::GLOBAL) == 0);
+    ES2PANDA_ASSERT((flags & StatementParsingFlags::GLOBAL) == 0);
     LogError(diagnostic::NESTED_FUNCTIONS_NOT_ALLOWED);
     ParserImpl::ParseFunctionStatement(flags);  // Try to parse function body but skip result.
     return AllocBrokenStatement();

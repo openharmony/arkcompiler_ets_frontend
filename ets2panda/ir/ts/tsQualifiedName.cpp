@@ -24,7 +24,7 @@ namespace ark::es2panda::ir {
 TSQualifiedName::TSQualifiedName(Expression *left, Identifier *right, ArenaAllocator *allocator)
     : Expression(AstNodeType::TS_QUALIFIED_NAME), left_(left), right_(right), allocator_(allocator)
 {
-    ASSERT(left_ != nullptr && right_ != nullptr);
+    ES2PANDA_ASSERT(left_ != nullptr && right_ != nullptr);
 }
 
 TSQualifiedName::TSQualifiedName([[maybe_unused]] Tag const tag, TSQualifiedName const &other,

@@ -53,7 +53,7 @@ void SwitchStatement::Dump(ir::AstDumper *dumper) const
 
 void SwitchStatement::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(discriminant_);
+    ES2PANDA_ASSERT(discriminant_);
     dumper->Add("switch (");
     discriminant_->Dump(dumper);
     dumper->Add(") {");

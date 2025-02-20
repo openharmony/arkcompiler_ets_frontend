@@ -87,7 +87,7 @@ void LocalClassConstructionPhase::CreateClassPropertiesForCapturedVariables(
     size_t idx = 0;
     ArenaVector<ir::AstNode *> properties(ctx->allocator->Adapter());
     for (auto var : capturedVars) {
-        ASSERT(classDef->Scope()->Type() == varbinder::ScopeType::CLASS);
+        ES2PANDA_ASSERT(classDef->Scope()->Type() == varbinder::ScopeType::CLASS);
         auto *property = CreateCapturedField(checker, var, reinterpret_cast<varbinder::ClassScope *>(classDef->Scope()),
                                              idx, classDef->Start());
         LOG(DEBUG, ES2PANDA) << "  - Creating property (" << property->Id()->Name()
@@ -132,7 +132,7 @@ void LocalClassConstructionPhase::ModifyConstructorParameters(
         auto &sigParams = signature->Params();
         signature->GetSignatureInfo()->minArgCount += capturedVars.size();
 
-        ASSERT(signature == constructor->Signature());
+        ES2PANDA_ASSERT(signature == constructor->Signature());
         for (auto var : capturedVars) {
             auto *newParam = CreateParam(checker, constructor->Scope()->ParamScope(), var->Name(), var->TsType());
             newParam->SetParent(constructor);
@@ -144,7 +144,7 @@ void LocalClassConstructionPhase::ModifyConstructorParameters(
             paramScopeParams.pop_back();
 
             parameters.insert(parameters.begin(), newParam);
-            ASSERT(newParam->Variable()->Type() == varbinder::VariableType::LOCAL);
+            ES2PANDA_ASSERT(newParam->Variable()->Type() == varbinder::VariableType::LOCAL);
             sigParams.insert(sigParams.begin(), newParam->Ident()->Variable()->AsLocalVariable());
             parameterMap[var] = newParam->Ident()->Variable()->AsLocalVariable();
         }
@@ -247,7 +247,7 @@ bool LocalClassConstructionPhase::PerformForModule(public_lib::Context *ctx, par
                                                                           ir::ETSNewClassInstanceExpression *newExpr) {
         LOG(DEBUG, ES2PANDA) << "Instantiating local class: " << classDef->Ident()->Name();
         auto capturedVarsIt = capturedVarsMap.find(classDef);
-        ASSERT(capturedVarsIt != capturedVarsMap.cend());
+        ES2PANDA_ASSERT(capturedVarsIt != capturedVarsMap.cend());
         auto &capturedVars = capturedVarsIt->second;
         for (auto *var : capturedVars) {
             LOG(DEBUG, ES2PANDA) << "  - Extending constructor argument with captured variable: " << var->Name();

@@ -109,7 +109,7 @@ static T *CloneNodeIfNotNullptr(T *node, ArenaAllocator *allocator)
 
 Type *ETSChecker::CreatePartialType(Type *const typeToBePartial)
 {
-    ASSERT(typeToBePartial->IsETSReferenceType());
+    ES2PANDA_ASSERT(typeToBePartial->IsETSReferenceType());
 
     if (typeToBePartial->IsETSTypeParameter()) {
         return CreatePartialTypeParameter(typeToBePartial->AsETSTypeParameter());
@@ -195,7 +195,7 @@ Type *ETSChecker::HandlePartialInterface(ir::TSInterfaceDeclaration *interfaceDe
     }
 
     auto *partialType = CreatePartialTypeInterfaceDecl(interfaceDecl, typeToBePartial, partialInterDecl);
-    ASSERT(partialType != nullptr);
+    ES2PANDA_ASSERT(partialType != nullptr);
     NamedTypeStackElement ntse(this, partialType);
 
     return partialType;
@@ -227,7 +227,7 @@ ir::ClassProperty *ETSChecker::CreateNullishPropertyFromAccessorInInterface(
         accessor->Parent()->Check(this);
     }
 
-    ASSERT(accessor->TsType() != nullptr);
+    ES2PANDA_ASSERT(accessor->TsType() != nullptr);
     auto callSign = accessor->TsType()->AsETSFunctionType()->CallSignatures()[0];
 
     auto tsType = accessor->Function()->IsGetter() ? callSign->ReturnType() : callSign->Params()[0]->TsType();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -49,7 +49,8 @@ static void HoistFunction(PandaGen *pg, varbinder::Variable *var, const varbinde
         return;
     }
 
-    ASSERT(scope->IsFunctionScope() || scope->IsCatchScope() || scope->IsLocalScope() || scope->IsModuleScope());
+    ES2PANDA_ASSERT(scope->IsFunctionScope() || scope->IsCatchScope() || scope->IsLocalScope() ||
+                    scope->IsModuleScope());
     varbinder::ConstScopeFindResult result(decl->Name(), scope, 0, var);
 
     pg->DefineFunction(decl->Node(), scriptFunction, internalName);
@@ -71,7 +72,7 @@ void Hoisting::Hoist(PandaGen *pg)
         if (decl->IsVarDecl()) {
             HoistVar(pg, var, decl->AsVarDecl());
         } else {
-            ASSERT(decl->IsFunctionDecl());
+            ES2PANDA_ASSERT(decl->IsFunctionDecl());
             HoistFunction(pg, var, decl->AsFunctionDecl());
         }
     }

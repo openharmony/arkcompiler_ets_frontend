@@ -530,7 +530,7 @@ void ETSChecker::EmitDynamicModuleClassInitCall()
     auto &body = globalClass->Body();
     auto it = std::find_if(body.begin(), body.end(), [](ir::AstNode *node) { return node->IsClassStaticBlock(); });
 
-    ASSERT(it != body.end());
+    ES2PANDA_ASSERT(it != body.end());
 
     auto *staticBlock = (*it)->AsClassStaticBlock();
     auto *cctorBody = staticBlock->Function()->Body()->AsBlockStatement();

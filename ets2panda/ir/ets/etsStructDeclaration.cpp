@@ -41,7 +41,7 @@ checker::Type *ETSStructDeclaration::Check([[maybe_unused]] checker::TSChecker *
 
 checker::VerifiedType ETSStructDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    ASSERT(checker->IsAnyError());
+    ES2PANDA_ASSERT(checker->IsAnyError());
     return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

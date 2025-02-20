@@ -79,7 +79,7 @@ public:
     {
 #ifndef NDEBUG
         for (auto const &t : typeArgs) {
-            ASSERT(t->IsETSReferenceType());
+            ES2PANDA_ASSERT(t->IsETSReferenceType());
         }
 #endif
         typeArguments_ = std::move(typeArgs);
@@ -266,9 +266,9 @@ public:
 
     ETSFunctionType *GetFunctionalInterfaceInvokeType() const
     {
-        ASSERT(HasObjectFlag(ETSObjectFlags::FUNCTIONAL));
+        ES2PANDA_ASSERT(HasObjectFlag(ETSObjectFlags::FUNCTIONAL));
         auto *invoke = GetOwnProperty<PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
-        ASSERT(invoke && invoke->TsType() && invoke->TsType()->IsETSFunctionType());
+        ES2PANDA_ASSERT(invoke && invoke->TsType() && invoke->TsType()->IsETSFunctionType());
         return invoke->TsType()->AsETSFunctionType();
     }
 
@@ -284,7 +284,7 @@ public:
 
     ETSEnumType *GetUnboxedEnumType() const
     {
-        ASSERT(HasObjectFlag(ETSObjectFlags::BOXED_ENUM));
+        ES2PANDA_ASSERT(HasObjectFlag(ETSObjectFlags::BOXED_ENUM));
         return GetDeclNode()->AsClassDefinition()->OrigEnumDecl()->TsType()->AsETSEnumType();
     }
 

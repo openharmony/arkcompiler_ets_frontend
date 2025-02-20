@@ -98,7 +98,7 @@ __attribute__((unused)) char *StringViewToCString(ArenaAllocator *allocator, uti
     }
     char *res = reinterpret_cast<char *>(allocator->Alloc(utf8.size() + 1));
     [[maybe_unused]] auto err = memmove_s(res, utf8.size() + 1, utf8.cbegin(), utf8.size());
-    ASSERT(err == EOK);
+    ES2PANDA_ASSERT(err == EOK);
     res[utf8.size()] = '\0';
     return res;
     // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-simplify-subscript-expr)
@@ -113,7 +113,7 @@ char *StringViewToCString(ArenaAllocator *allocator, std::string_view const utf8
     }
     char *res = reinterpret_cast<char *>(allocator->Alloc(utf8.size() + 1));
     [[maybe_unused]] auto err = memmove_s(res, utf8.size() + 1, utf8.cbegin(), utf8.size());
-    ASSERT(err == EOK);
+    ES2PANDA_ASSERT(err == EOK);
     res[utf8.size()] = '\0';
     return res;
     // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-simplify-subscript-expr)
@@ -124,7 +124,7 @@ __attribute__((unused)) char *StdStringToCString(ArenaAllocator *allocator, std:
     // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-simplify-subscript-expr)
     char *res = reinterpret_cast<char *>(allocator->Alloc(str.length() + 1));
     [[maybe_unused]] auto err = memcpy_s(res, str.length() + 1, str.c_str(), str.length() + 1);
-    ASSERT(err == EOK);
+    ES2PANDA_ASSERT(err == EOK);
     return res;
     // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-simplify-subscript-expr)
 }
@@ -190,7 +190,7 @@ __attribute__((unused)) char const *ArenaStrdup(ArenaAllocator *allocator, char 
     size_t len = strlen(src);
     char *res = reinterpret_cast<char *>(allocator->Alloc(len + 1));
     [[maybe_unused]] auto err = memmove_s(res, len + 1, src, len);
-    ASSERT(err == EOK);
+    ES2PANDA_ASSERT(err == EOK);
 
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     res[len] = '\0';
@@ -366,7 +366,7 @@ __attribute__((unused)) static Context *Bind(Context *ctx)
         return ctx;
     }
 
-    ASSERT(ctx->state == ES2PANDA_STATE_PARSED);
+    ES2PANDA_ASSERT(ctx->state == ES2PANDA_STATE_PARSED);
 
     try {
         do {
@@ -396,7 +396,7 @@ __attribute__((unused)) static Context *Check(Context *ctx)
         return ctx;
     }
 
-    ASSERT(ctx->state >= ES2PANDA_STATE_PARSED && ctx->state < ES2PANDA_STATE_CHECKED);
+    ES2PANDA_ASSERT(ctx->state >= ES2PANDA_STATE_PARSED && ctx->state < ES2PANDA_STATE_CHECKED);
 
     auto handleError = [ctx](const util::DiagnosticBase &e) {
         std::stringstream ss;
@@ -435,7 +435,7 @@ __attribute__((unused)) static Context *Lower(Context *ctx)
         return ctx;
     }
 
-    ASSERT(ctx->state == ES2PANDA_STATE_CHECKED);
+    ES2PANDA_ASSERT(ctx->state == ES2PANDA_STATE_CHECKED);
 
     try {
         while (ctx->currentPhase < ctx->phases.size()) {
@@ -464,7 +464,7 @@ __attribute__((unused)) static Context *GenerateAsm(Context *ctx)
         return ctx;
     }
 
-    ASSERT(ctx->state == ES2PANDA_STATE_LOWERED);
+    ES2PANDA_ASSERT(ctx->state == ES2PANDA_STATE_LOWERED);
 
     auto *emitter = ctx->emitter;
     try {
@@ -483,7 +483,7 @@ __attribute__((unused)) static Context *GenerateAsm(Context *ctx)
         ctx->queue->Consume();
         ctx->queue->Wait(
             [emitter](compiler::CompileJob *job) { emitter->AddProgramElement(job->GetProgramElement()); });
-        ASSERT(ctx->program == nullptr);
+        ES2PANDA_ASSERT(ctx->program == nullptr);
         ctx->program = emitter->Finalize(ctx->config->options->IsDumpDebugInfo(), compiler::Signatures::ETS_GLOBAL);
 
         ctx->state = ES2PANDA_STATE_ASM_GENERATED;
@@ -507,10 +507,10 @@ __attribute__((unused)) Context *GenerateBin(Context *ctx)
         return ctx;
     }
 
-    ASSERT(ctx->state == ES2PANDA_STATE_ASM_GENERATED);
+    ES2PANDA_ASSERT(ctx->state == ES2PANDA_STATE_ASM_GENERATED);
 
     try {
-        ASSERT(ctx->program != nullptr);
+        ES2PANDA_ASSERT(ctx->program != nullptr);
         util::GenerateProgram(ctx->program, *ctx->config->options,
                               [ctx](const std::string &str) { ctx->errorMessage = str; });
 

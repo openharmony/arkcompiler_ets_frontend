@@ -80,12 +80,12 @@ ir::TypeNode *ClassReferenceToTypeNode(std::string_view name, checker::ETSChecke
 
 ir::TypeNode *ReferenceToTypeNode(std::string_view typeSignature, checker::ETSChecker *checker)
 {
-    ASSERT(checker);
-    ASSERT(!typeSignature.empty());
+    ES2PANDA_ASSERT(checker);
+    ES2PANDA_ASSERT(!typeSignature.empty());
     switch (typeSignature[0]) {
         case 'L': {
             // Variable is a reference.
-            ASSERT(typeSignature.back() == ';');
+            ES2PANDA_ASSERT(typeSignature.back() == ';');
             // Required to remove "std/core/" prefix, otherwise type name won't be parsed.
             auto startPos = typeSignature.find_last_of('/');
             if (startPos == std::string_view::npos) {
@@ -118,8 +118,8 @@ ir::TypeNode *ReferenceToTypeNode(std::string_view typeSignature, checker::ETSCh
 
 ir::TypeNode *ToTypeNode(std::string_view typeSignature, checker::ETSChecker *checker)
 {
-    ASSERT(checker);
-    ASSERT(!typeSignature.empty());
+    ES2PANDA_ASSERT(checker);
+    ES2PANDA_ASSERT(!typeSignature.empty());
 
     if (typeSignature[0] == 'L' || typeSignature[0] == '[') {
         return ReferenceToTypeNode(typeSignature, checker);
@@ -146,7 +146,7 @@ ir::TypeNode *PandaTypeToTypeNode(const panda_file::File &pf, panda_file::Type p
                                   panda_file::File::EntityId classId, checker::ETSChecker *checker)
 {
     if (pandaType.IsReference()) {
-        ASSERT(classId.IsValid());
+        ES2PANDA_ASSERT(classId.IsValid());
         std::string_view refSignature = utf::Mutf8AsCString(pf.GetStringData(classId).data);
         return ReferenceToTypeNode(refSignature, checker);
     }
@@ -155,7 +155,7 @@ ir::TypeNode *PandaTypeToTypeNode(const panda_file::File &pf, panda_file::Type p
 
 static checker::Type *PrimitiveToCheckerType(panda_file::Type::TypeId typeId, checker::GlobalTypesHolder *globalTypes)
 {
-    ASSERT(globalTypes);
+    ES2PANDA_ASSERT(globalTypes);
     switch (typeId) {
         case panda_file::Type::TypeId::VOID:
             return globalTypes->GlobalETSVoidType();
@@ -192,13 +192,13 @@ static std::optional<std::string> ReferenceToName(std::string_view typeSignature
 {
     static constexpr const size_t ARRAY_RANK_SYMBOLS = 2;
 
-    ASSERT(globalTypes);
-    ASSERT(!typeSignature.empty());
+    ES2PANDA_ASSERT(globalTypes);
+    ES2PANDA_ASSERT(!typeSignature.empty());
 
     switch (typeSignature[0]) {
         case 'L': {
             // Variable is a reference.
-            ASSERT(typeSignature.back() == ';');
+            ES2PANDA_ASSERT(typeSignature.back() == ';');
             // Required to remove "std/core/" prefix, otherwise type name won't be parsed.
             auto startPos = typeSignature.find_last_of('/');
             if (startPos == std::string_view::npos) {
@@ -233,8 +233,8 @@ static std::optional<std::string> ReferenceToName(std::string_view typeSignature
 
 std::optional<std::string> ToTypeName(std::string_view typeSignature, checker::GlobalTypesHolder *globalTypes)
 {
-    ASSERT(globalTypes);
-    ASSERT(!typeSignature.empty());
+    ES2PANDA_ASSERT(globalTypes);
+    ES2PANDA_ASSERT(!typeSignature.empty());
 
     if (typeSignature[0] == 'L' || typeSignature[0] == '[') {
         return ReferenceToName(typeSignature, globalTypes);
@@ -243,7 +243,7 @@ std::optional<std::string> ToTypeName(std::string_view typeSignature, checker::G
     pandasm::Type type = pandasm::Type::FromDescriptor(typeSignature);
 
     auto *checkerType = PrimitiveToCheckerType(type.GetId(), globalTypes);
-    ASSERT(checkerType);
+    ES2PANDA_ASSERT(checkerType);
     return checkerType->ToString();
 }
 
@@ -261,7 +261,7 @@ panda_file::Type::TypeId GetTypeId(std::string_view typeSignature)
 
 ir::BlockStatement *GetEnclosingBlock(ir::Identifier *ident)
 {
-    ASSERT(ident);
+    ES2PANDA_ASSERT(ident);
 
     ir::AstNode *iter = ident;
 
@@ -269,7 +269,7 @@ ir::BlockStatement *GetEnclosingBlock(ir::Identifier *ident)
         iter = iter->Parent();
     }
 
-    ASSERT(iter);
+    ES2PANDA_ASSERT(iter);
     return iter->AsBlockStatement();
 }
 
@@ -295,18 +295,18 @@ SafeStateScope::~SafeStateScope()
     (void)binderScope_;
     (void)binderProgram_;
     (void)recordTable_;
-    ASSERT(checkerScope_ == checker_->Scope());
-    ASSERT(binderTopScope_ == varBinder_->TopScope());
-    ASSERT(binderVarScope_ == varBinder_->VarScope());
-    ASSERT(binderScope_ == varBinder_->GetScope());
-    ASSERT(binderProgram_ == varBinder_->Program());
-    ASSERT(recordTable_ == varBinder_->GetRecordTable());
+    ES2PANDA_ASSERT(checkerScope_ == checker_->Scope());
+    ES2PANDA_ASSERT(binderTopScope_ == varBinder_->TopScope());
+    ES2PANDA_ASSERT(binderVarScope_ == varBinder_->VarScope());
+    ES2PANDA_ASSERT(binderScope_ == varBinder_->GetScope());
+    ES2PANDA_ASSERT(binderProgram_ == varBinder_->Program());
+    ES2PANDA_ASSERT(recordTable_ == varBinder_->GetRecordTable());
 }
 
 void AddExternalProgram(parser::Program *program, parser::Program *extProgram, std::string_view moduleName)
 {
-    ASSERT(program);
-    ASSERT(extProgram);
+    ES2PANDA_ASSERT(program);
+    ES2PANDA_ASSERT(extProgram);
 
     auto &extSources = program->ExternalSources();
     if (extSources.count(moduleName) == 0) {
@@ -341,7 +341,7 @@ std::pair<std::string_view, std::string_view> SplitRecordName(std::string_view r
 ir::ClassProperty *CreateClassProperty(checker::ETSChecker *checker, std::string_view name, ir::TypeNode *type,
                                        ir::ModifierFlags modifiers)
 {
-    ASSERT(type);
+    ES2PANDA_ASSERT(type);
 
     auto *fieldIdent = checker->AllocNode<ir::Identifier>(name, checker->Allocator());
     auto *field =

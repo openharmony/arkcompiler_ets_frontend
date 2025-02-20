@@ -132,7 +132,7 @@ static TypeRank GetTypeRank(ir::Literal *const literal)
 
 static bool TestLiteralIsNotZero(ir::Literal *literal)
 {
-    ASSERT(literal->IsCharLiteral() || literal->IsNumberLiteral());
+    ES2PANDA_ASSERT(literal->IsCharLiteral() || literal->IsNumberLiteral());
     if (literal->IsCharLiteral()) {
         return literal->AsCharLiteral()->Char() != 0;
     }

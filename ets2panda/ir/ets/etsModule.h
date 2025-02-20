@@ -87,7 +87,7 @@ public:
 
     void SetNamespaceChainLastNode() noexcept
     {
-        ASSERT(IsNamespace());
+        ES2PANDA_ASSERT(IsNamespace());
         flag_ |= ModuleFlag::NAMESPACE_CHAIN_LAST_NODE;
     }
 

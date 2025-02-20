@@ -34,7 +34,7 @@ public:
     explicit SpreadElement(AstNodeType const nodeType, ArenaAllocator *const allocator, Expression *const argument)
         : AnnotatedExpression(nodeType), decorators_(allocator->Adapter()), argument_(argument)
     {
-        ASSERT(argument_ != nullptr);
+        ES2PANDA_ASSERT(argument_ != nullptr);
     }
 
     explicit SpreadElement(Tag tag, SpreadElement const &other, ArenaAllocator *allocator);

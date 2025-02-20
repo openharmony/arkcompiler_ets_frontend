@@ -106,20 +106,20 @@ public:
 
     const util::StringView &BigInt() const
     {
-        ASSERT(type_ == TokenType::LITERAL_NUMBER && (flags_ & TokenFlags::NUMBER_BIGINT));
+        ES2PANDA_ASSERT(type_ == TokenType::LITERAL_NUMBER && (flags_ & TokenFlags::NUMBER_BIGINT));
         return src_;
     }
 
     Number GetNumber() const
     {
-        ASSERT(type_ == TokenType::LITERAL_NUMBER && !(flags_ & TokenFlags::NUMBER_BIGINT));
+        ES2PANDA_ASSERT(type_ == TokenType::LITERAL_NUMBER && !(flags_ & TokenFlags::NUMBER_BIGINT));
         return number_;
     }
 
     const util::StringView &String() const
     {
-        ASSERT(type_ == TokenType::LITERAL_STRING || type_ == TokenType::LITERAL_NUMBER ||
-               type_ == TokenType::LITERAL_CHAR);
+        ES2PANDA_ASSERT(type_ == TokenType::LITERAL_STRING || type_ == TokenType::LITERAL_NUMBER ||
+                        type_ == TokenType::LITERAL_CHAR);
         return src_;
     }
 

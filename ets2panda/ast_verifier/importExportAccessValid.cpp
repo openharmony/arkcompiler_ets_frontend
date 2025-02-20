@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -80,7 +80,8 @@ bool ImportExportAccessValid::InvariantImportExportMethod(const std::unordered_s
     auto *signature = callExpr->AsCallExpression()->Signature();
     if (signature == nullptr || signature->Owner() == nullptr) {
         // NOTE(vpukhov): Add a synthetic owner for dynamic signatures
-        ASSERT(callExpr->AsCallExpression()->Callee()->TsType()->HasTypeFlag(checker::TypeFlag::ETS_DYNAMIC_FLAG));
+        ES2PANDA_ASSERT(
+            callExpr->AsCallExpression()->Callee()->TsType()->HasTypeFlag(checker::TypeFlag::ETS_DYNAMIC_FLAG));
         return true;
     }
 

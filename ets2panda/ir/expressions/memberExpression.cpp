@@ -65,8 +65,8 @@ void MemberExpression::Dump(ir::AstDumper *dumper) const
 
 void MemberExpression::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(object_ != nullptr);
-    ASSERT(property_ != nullptr);
+    ES2PANDA_ASSERT(object_ != nullptr);
+    ES2PANDA_ASSERT(property_ != nullptr);
 
     object_->Dump(dumper);
     if (IsOptional()) {
@@ -154,7 +154,7 @@ static varbinder::LocalVariable *GetEnumMethodVariable(checker::ETSEnumType cons
     varbinder::LocalVariable *methodVar = nullptr;
 
     const auto *const boxedClass = enumInterface->GetDecl()->BoxedClass();
-    ASSERT(boxedClass->TsType()->IsETSObjectType());
+    ES2PANDA_ASSERT(boxedClass->TsType()->IsETSObjectType());
     const auto *const obj = boxedClass->TsType()->AsETSObjectType();
 
     std::string_view methodName = propName.Utf8();
@@ -214,7 +214,7 @@ std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::Resolve
             auto extensionMethodType = checker->GetTypeOfVariable(resolveRes[0]->Variable());
             auto *resolvedType = extensionMethodType;
             if (classMethodType->IsETSFunctionType()) {
-                ASSERT(extensionMethodType->IsETSFunctionType());
+                ES2PANDA_ASSERT(extensionMethodType->IsETSFunctionType());
                 resolvedType = checker->CreateETSExtensionFuncHelperType(classMethodType->AsETSFunctionType(),
                                                                          extensionMethodType->AsETSFunctionType());
             }
@@ -263,7 +263,7 @@ checker::Type *MemberExpression::CheckUnionMember(checker::ETSChecker *checker, 
 // type the same as the right child type. Further work will be done in lowering.
 checker::Type *MemberExpression::GetExtensionAccessorReturnType(checker::ETSChecker *checker)
 {
-    ASSERT(checker->IsExtensionETSFunctionType(TsType()));
+    ES2PANDA_ASSERT(checker->IsExtensionETSFunctionType(TsType()));
 
     bool isExtensionSetter =
         Parent()->IsAssignmentExpression() && (Parent()->AsAssignmentExpression()->Left() == this) &&
@@ -399,7 +399,7 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
     checker->ValidateSignatureAccessibility(objType_, nullptr, signature, Start(),
                                             "Index access method is not visible here.");
 
-    ASSERT(signature->Function() != nullptr);
+    ES2PANDA_ASSERT(signature->Function() != nullptr);
 
     if (signature->Function()->IsThrowing() || signature->Function()->IsRethrowing()) {
         checker->CheckThrowingStatements(this);
@@ -416,7 +416,7 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
 
 checker::Type *MemberExpression::CheckTupleAccessMethod(checker::ETSChecker *checker, checker::Type *baseType)
 {
-    ASSERT(baseType->IsETSTupleType());
+    ES2PANDA_ASSERT(baseType->IsETSTupleType());
 
     auto idxIfAny = checker->GetTupleElementAccessValue(Property()->TsType(), Property()->Start());
     if (!idxIfAny.has_value()) {

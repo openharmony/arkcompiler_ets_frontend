@@ -88,7 +88,7 @@ public:
 
     void SetEvalMode(std::string_view evalModeStr)
     {
-        ASSERT(eval_mode::FromString(evalModeStr) != eval_mode::INVALID);
+        ES2PANDA_ASSERT(eval_mode::FromString(evalModeStr) != eval_mode::INVALID);
         gen::Options::SetEvalMode(std::string(evalModeStr));
         evalMode_ = eval_mode::FromString(evalModeStr);
     }

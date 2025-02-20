@@ -53,7 +53,7 @@ void ConditionalExpression::Dump(ir::AstDumper *dumper) const
 
 void ConditionalExpression::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(test_ != nullptr);
+    ES2PANDA_ASSERT(test_ != nullptr);
     dumper->Add("(");
     test_->Dump(dumper);
     dumper->Add(" ? ");

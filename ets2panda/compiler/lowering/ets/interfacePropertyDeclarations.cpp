@@ -164,7 +164,7 @@ static ir::Expression *UpdateInterfacePropertys(checker::ETSChecker *const check
     ArenaVector<ir::AstNode *> newPropertyList(checker->Allocator()->Adapter());
 
     auto scope = NearestScope(interface);
-    ASSERT(scope->IsClassScope());
+    ES2PANDA_ASSERT(scope->IsClassScope());
 
     for (const auto &prop : propertyList) {
         if (!prop->IsClassProperty()) {
@@ -181,7 +181,7 @@ static ir::Expression *UpdateInterfacePropertys(checker::ETSChecker *const check
 
         if (methodScope->AddDecl(checker->Allocator(), decl, ScriptExtension::STS) == nullptr) {
             auto prevDecl = methodScope->FindDecl(name);
-            ASSERT(prevDecl->IsFunctionDecl());
+            ES2PANDA_ASSERT(prevDecl->IsFunctionDecl());
             prevDecl->Node()->AsMethodDefinition()->AddOverload(getter);
 
             if (!prop->AsClassProperty()->IsReadonly()) {

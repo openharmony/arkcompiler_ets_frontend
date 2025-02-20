@@ -283,7 +283,7 @@ public:
 
     bool IsDevirtualizedSignature(const checker::Signature *signature)
     {
-        ASSERT(!signature->HasSignatureFlag(checker::SignatureFlags::STATIC));
+        ES2PANDA_ASSERT(!signature->HasSignatureFlag(checker::SignatureFlags::STATIC));
         return signature->HasSignatureFlag(checker::SignatureFlags::FINAL | checker::SignatureFlags::PRIVATE |
                                            checker::SignatureFlags::CONSTRUCTOR);
     }
@@ -333,8 +333,8 @@ public:
     void CallVirtual(const ir::AstNode *const node, const checker::Signature *signature, const VReg athis,
                      const ArenaVector<ir::Expression *> &arguments)
     {
-        ASSERT(!signature->HasSignatureFlag(checker::SignatureFlags::STATIC));
-        ASSERT(!signature->Owner()->GetDeclNode()->IsFinal() || signature->IsFinal());
+        ES2PANDA_ASSERT(!signature->HasSignatureFlag(checker::SignatureFlags::STATIC));
+        ES2PANDA_ASSERT(!signature->Owner()->GetDeclNode()->IsFinal() || signature->IsFinal());
         if (IsDevirtualizedSignature(signature)) {
             CallArgStart<CallShort, Call, CallRange>(node, signature, athis, arguments);
         } else {
@@ -539,8 +539,8 @@ private:
 
 // NOLINTBEGIN(cppcoreguidelines-macro-usage, readability-container-size-empty)
 #define COMPILE_ARG(idx)                                                                                       \
-    ASSERT((idx) < arguments.size());                                                                          \
-    ASSERT((idx) < signature->Params().size() || signature->RestVar() != nullptr);                             \
+    ES2PANDA_ASSERT((idx) < arguments.size());                                                                 \
+    ES2PANDA_ASSERT((idx) < signature->Params().size() || signature->RestVar() != nullptr);                    \
     auto *param##idx = (idx) < signature->Params().size() ? signature->Params()[(idx)] : signature->RestVar(); \
     auto *paramType##idx = param##idx->TsType();                                                               \
     auto ttctx##idx = TargetTypeContext(this, paramType##idx);                                                 \
@@ -594,7 +594,7 @@ private:
     void CallImpl(const ir::AstNode *node, checker::Signature const *signature,
                   const ArenaVector<ir::Expression *> &arguments)
     {
-        ASSERT(signature != nullptr);
+        ES2PANDA_ASSERT(signature != nullptr);
         RegScope rs(this);
 
         switch (arguments.size()) {
@@ -642,15 +642,15 @@ private:
     }
 #undef COMPILE_ARG
 
-#define COMPILE_ARG(idx, shift)                                                              \
-    ASSERT((idx) < arguments.size());                                                        \
-    ASSERT((idx) + (shift) < signature->Params().size() || signature->RestVar() != nullptr); \
-    auto *paramType##idx = (idx) + (shift) < signature->Params().size()                      \
-                               ? signature->Params()[(idx) + (shift)]->TsType()              \
-                               : signature->RestVar()->TsType();                             \
-    auto ttctx##idx = TargetTypeContext(this, paramType##idx);                               \
-    VReg arg##idx = AllocReg();                                                              \
-    arguments[idx]->Compile(this);                                                           \
+#define COMPILE_ARG(idx, shift)                                                                       \
+    ES2PANDA_ASSERT((idx) < arguments.size());                                                        \
+    ES2PANDA_ASSERT((idx) + (shift) < signature->Params().size() || signature->RestVar() != nullptr); \
+    auto *paramType##idx = (idx) + (shift) < signature->Params().size()                               \
+                               ? signature->Params()[(idx) + (shift)]->TsType()                       \
+                               : signature->RestVar()->TsType();                                      \
+    auto ttctx##idx = TargetTypeContext(this, paramType##idx);                                        \
+    VReg arg##idx = AllocReg();                                                                       \
+    arguments[idx]->Compile(this);                                                                    \
     ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx)
 
     template <typename Short, typename General, typename Range>

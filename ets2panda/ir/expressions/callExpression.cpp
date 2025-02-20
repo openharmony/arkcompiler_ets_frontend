@@ -70,7 +70,7 @@ void CallExpression::Dump(ir::AstDumper *dumper) const
 
 void CallExpression::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(callee_);
+    ES2PANDA_ASSERT(callee_);
     callee_->Dump(dumper);
     if (IsOptional()) {
         dumper->Add("?.");

@@ -42,7 +42,7 @@ inline constexpr char const IDENTIFIER_FORMAT_NODE = 'I';
 
 ParserImpl::NodeFormatType ETSParser::GetFormatPlaceholderType()
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT);
     Lexer()->NextToken();
 
     bool isArray = false;
@@ -51,7 +51,7 @@ ParserImpl::NodeFormatType ETSParser::GetFormatPlaceholderType()
         Lexer()->NextToken();
     }
 
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
     char const *const identData = Lexer()->GetToken().Ident().Bytes();
 
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cert-err34-c)

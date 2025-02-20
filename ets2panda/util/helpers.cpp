@@ -153,7 +153,7 @@ util::StringView Helpers::ToStringView(ArenaAllocator *allocator, double number)
 
 util::StringView Helpers::ToStringView(ArenaAllocator *allocator, uint32_t number)
 {
-    ASSERT(number <= static_cast<uint32_t>(std::numeric_limits<int32_t>::max()));
+    ES2PANDA_ASSERT(number <= static_cast<uint32_t>(std::numeric_limits<int32_t>::max()));
     return ToStringView(allocator, static_cast<int32_t>(number));
 }
 
@@ -304,7 +304,7 @@ const ir::ScriptFunction *Helpers::GetContainingConstructor(const ir::ClassPrope
 {
     for (const auto *parent = node->Parent(); parent != nullptr; parent = parent->Parent()) {
         if (parent->IsClassDefinition()) {
-            ASSERT(parent->AsClassDefinition()->Ctor() != nullptr);
+            ES2PANDA_ASSERT(parent->AsClassDefinition()->Ctor() != nullptr);
             return parent->AsClassDefinition()->Ctor()->Function();
         }
     }
@@ -325,10 +325,10 @@ const ir::ScriptFunction *Helpers::GetContainingFunction(const ir::AstNode *node
 
 const ir::ClassDefinition *Helpers::GetClassDefiniton(const ir::ScriptFunction *node)
 {
-    ASSERT(node->IsConstructor());
-    ASSERT(node->Parent()->IsFunctionExpression());
-    ASSERT(node->Parent()->Parent()->IsMethodDefinition());
-    ASSERT(node->Parent()->Parent()->Parent()->IsClassDefinition());
+    ES2PANDA_ASSERT(node->IsConstructor());
+    ES2PANDA_ASSERT(node->Parent()->IsFunctionExpression());
+    ES2PANDA_ASSERT(node->Parent()->Parent()->IsMethodDefinition());
+    ES2PANDA_ASSERT(node->Parent()->Parent()->Parent()->IsClassDefinition());
 
     return node->Parent()->Parent()->Parent()->AsClassDefinition();
 }
@@ -518,7 +518,7 @@ static util::StringView FunctionNameFromParent(const ir::AstNode *parent, ArenaA
 
             if (methodDef->Key()->IsIdentifier()) {
                 auto *ident = methodDef->Id();
-                ASSERT(ident != nullptr);
+                ES2PANDA_ASSERT(ident != nullptr);
 
                 if (!ident->IsPrivateIdent()) {
                     return ident->Name();
@@ -729,7 +729,7 @@ bool Helpers::IsStdLib(const parser::Program *program)
 checker::Type *Helpers::CheckReturnTypeOfCheck([[maybe_unused]] const ir::AstNode *const node,
                                                checker::Type *const type)
 {
-    ASSERT(type != nullptr || !node->IsExpression());
+    ES2PANDA_ASSERT(type != nullptr || !node->IsExpression());
     return type;
 }
 

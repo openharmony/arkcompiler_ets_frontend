@@ -116,7 +116,7 @@ ir::TypeNode *ArrowFunctionExpression::CreateReturnNodeFromType(checker::ETSChec
     /*
     Construct a synthetic Node with the correct ts_type_.
     */
-    ASSERT(returnType != nullptr);
+    ES2PANDA_ASSERT(returnType != nullptr);
     auto *ident = checker->AllocNode<ir::Identifier>(util::StringView(""), checker->Allocator());
     auto *const part = checker->AllocNode<ir::ETSTypeReferencePart>(ident, checker->Allocator());
     auto *returnNode = checker->AllocNode<ir::ETSTypeReference>(part, checker->Allocator());

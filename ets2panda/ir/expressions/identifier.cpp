@@ -55,7 +55,7 @@ Identifier::Identifier(util::StringView const name, TypeNode *const typeAnnotati
 
 void Identifier::SetName(const util::StringView &newName) noexcept
 {
-    ASSERT(newName != ERROR_LITERAL);
+    ES2PANDA_ASSERT(newName != ERROR_LITERAL);
     name_ = newName;
 }
 

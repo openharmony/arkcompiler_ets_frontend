@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -77,7 +77,7 @@ static ir::AstNode *LowerOptionalExpr(GetSource const &getSource, SetSource cons
 static ir::AstNode *LowerExpression(public_lib::Context *ctx, ir::MemberExpression *const expr,
                                     ir::ChainExpression *chain)
 {
-    ASSERT(expr->IsOptional());
+    ES2PANDA_ASSERT(expr->IsOptional());
     expr->ClearOptional();
     return LowerOptionalExpr<ir::MemberExpression>([](auto *e) { return e->Object(); },
                                                    [](auto *e, auto *obj) { e->SetObject(obj); }, ctx, expr, chain);
@@ -86,7 +86,7 @@ static ir::AstNode *LowerExpression(public_lib::Context *ctx, ir::MemberExpressi
 static ir::AstNode *LowerExpression(public_lib::Context *ctx, ir::CallExpression *const expr,
                                     ir::ChainExpression *chain)
 {
-    ASSERT(expr->IsOptional());
+    ES2PANDA_ASSERT(expr->IsOptional());
     expr->ClearOptional();
     return LowerOptionalExpr<ir::CallExpression>([](auto *e) { return e->Callee(); },
                                                  [](auto *e, auto *callee) { e->SetCallee(callee); }, ctx, expr, chain);

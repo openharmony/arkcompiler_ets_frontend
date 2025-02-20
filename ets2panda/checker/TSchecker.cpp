@@ -39,7 +39,7 @@ bool TSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, c
         return false;
     }
 
-    ASSERT(Program()->Ast()->IsProgram());
+    ES2PANDA_ASSERT(Program()->Ast()->IsProgram());
     Program()->Ast()->Check(this);
 
     return false;

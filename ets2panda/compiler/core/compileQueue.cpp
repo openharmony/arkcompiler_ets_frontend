@@ -49,7 +49,7 @@ CompileQueue::~CompileQueue()
 
 void CompileQueue::Schedule(public_lib::Context *context)
 {
-    ASSERT(jobsCount_ == 0);
+    ES2PANDA_ASSERT(jobsCount_ == 0);
     std::unique_lock<std::mutex> lock(m_);
     const auto &functions = context->parserProgram->VarBinder()->Functions();
     jobs_ = new CompileJob[functions.size()]();

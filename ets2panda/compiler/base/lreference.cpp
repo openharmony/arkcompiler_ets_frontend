@@ -50,7 +50,7 @@ LReference::LReferenceBase LReference::CreateBase(CodeGen *cg, const ir::AstNode
             return {cg, node, ReferenceKind::MEMBER, {}, false};
         }
         case ir::AstNodeType::VARIABLE_DECLARATION: {
-            ASSERT(node->AsVariableDeclaration()->Declarators().size() == 1);
+            ES2PANDA_ASSERT(node->AsVariableDeclaration()->Declarators().size() == 1);
             return CreateBase(cg, node->AsVariableDeclaration()->Declarators()[0]->Id(), true);
         }
         case ir::AstNodeType::VARIABLE_DECLARATOR: {
@@ -197,7 +197,7 @@ ETSLReference::ETSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind
         TargetTypeContext pttctx(etsg_, memberExpr->Property()->TsType());
         memberExpr->Property()->Compile(etsg_);
         etsg_->ApplyConversion(memberExpr->Property());
-        ASSERT(etsg_->GetAccumulatorType()->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL));
+        ES2PANDA_ASSERT(etsg_->GetAccumulatorType()->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL));
         propReg_ = etsg_->AllocReg();
         etsg_->StoreAccumulator(node, propReg_);
     }
@@ -273,7 +273,7 @@ void ETSLReference::GetValue() const
             break;
         }
         default: {
-            ASSERT(Node()->IsIdentifier());
+            ES2PANDA_ASSERT(Node()->IsIdentifier());
             auto const *const ident = Node()->AsIdentifier();
             auto const *const variable = Variable();
             etsg_->LoadVar(ident, variable);

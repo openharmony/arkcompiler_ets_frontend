@@ -57,8 +57,8 @@ std::pair<ir::VariableDeclaration *, ir::ReturnStatement *> BreakLastStatement(c
 {
     static constexpr std::string_view GENERATED_VAR_SUFFIX = "_generated_var";
 
-    ASSERT(checker);
-    ASSERT(lastStatement);
+    ES2PANDA_ASSERT(checker);
+    ES2PANDA_ASSERT(lastStatement);
     auto *allocator = checker->Allocator();
 
     auto returnVariableNameView = [methodName, allocator]() {
@@ -94,8 +94,8 @@ ScopedDebugInfoPlugin::ScopedDebugInfoPlugin(parser::Program *globalProgram, che
       proxyProgramsCache_(checker->Allocator()),
       entityDeclarator_(*this)
 {
-    ASSERT(globalProgram_);
-    ASSERT(checker_);
+    ES2PANDA_ASSERT(globalProgram_);
+    ES2PANDA_ASSERT(checker_);
 
     auto isContextValid = debugInfoStorage_.FillEvaluateContext(context_);
     if (!isContextValid) {
@@ -115,7 +115,7 @@ void ScopedDebugInfoPlugin::PreCheck()
 
 void ScopedDebugInfoPlugin::PostCheck()
 {
-    ASSERT(prologueEpilogueMap_.empty());
+    ES2PANDA_ASSERT(prologueEpilogueMap_.empty());
 
     [[maybe_unused]] auto inserted = InsertReturnStatement();
     LOG(DEBUG, ES2PANDA) << "Evaluation method will return: " << std::boolalpha << inserted << std::noboolalpha;
@@ -152,7 +152,7 @@ bool ScopedDebugInfoPlugin::InsertReturnStatement()
     auto &statementsList = evalMethodStatements->Statements();
     // Omit the emplaced `DebuggerAPI.setLocal<>` calls and find the original last statement.
     auto lastStatementIter = std::find(statementsList.rbegin(), statementsList.rend(), lastStatement);
-    ASSERT(lastStatementIter != statementsList.rend());
+    ES2PANDA_ASSERT(lastStatementIter != statementsList.rend());
 
     // Break the last user's statement into variable declaration and return statement.
     auto *scope = compiler::NearestScope(lastStatement);
@@ -210,7 +210,7 @@ void ScopedDebugInfoPlugin::AddPrologueEpilogue(ir::BlockStatement *block)
 
 varbinder::Variable *ScopedDebugInfoPlugin::FindIdentifier(ir::Identifier *ident)
 {
-    ASSERT(ident);
+    ES2PANDA_ASSERT(ident);
 
     helpers::SafeStateScope s(checker_, GetETSBinder());
 
@@ -245,7 +245,7 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindClass(ir::Identifier *ident)
 
     // NOTE: support "import * as X".
 
-    ASSERT(ident);
+    ES2PANDA_ASSERT(ident);
     LOG(DEBUG, ES2PANDA) << "ScopedDebugInfoPlugin: FindClass " << ident->Name();
 
     auto *importerProgram = GetETSBinder()->Program();
@@ -295,7 +295,7 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindGlobalFunction(ir::Identifier *i
 {
     // Correct overload resolution requires us to create all reachable functions with the given name,
     // so that Checker later could choose the correct one.
-    ASSERT(ident);
+    ES2PANDA_ASSERT(ident);
     LOG(DEBUG, ES2PANDA) << "ScopedDebugInfoPlugin: FindGlobalFunction " << ident->Name();
 
     auto *allocator = Allocator();
@@ -330,7 +330,7 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindGlobalFunction(ir::Identifier *i
                 return deserializer->CreateIrGlobalMethods(fromImported, program, declSourcePath, declName);
             });
         if (importedVar != nullptr) {
-            ASSERT(var == nullptr || var == importedVar);
+            ES2PANDA_ASSERT(var == nullptr || var == importedVar);
             var = importedVar;
         }
     }
@@ -349,7 +349,7 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindGlobalFunction(ir::Identifier *i
 
 varbinder::Variable *ScopedDebugInfoPlugin::FindGlobalVariable(ir::Identifier *ident)
 {
-    ASSERT(ident);
+    ES2PANDA_ASSERT(ident);
     LOG(DEBUG, ES2PANDA) << "ScopedDebugInfoPlugin: FindGlobalVariable " << ident->Name();
 
     auto *importerProgram = GetETSBinder()->Program();
@@ -377,7 +377,7 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindGlobalVariable(ir::Identifier *i
 
 varbinder::Variable *ScopedDebugInfoPlugin::FindLocalVariable(ir::Identifier *ident)
 {
-    ASSERT(ident);
+    ES2PANDA_ASSERT(ident);
     // Search local variables only in evaluation method.
     if (helpers::GetEnclosingBlock(ident) != context_.methodStatements) {
         return nullptr;
@@ -420,14 +420,14 @@ parser::Program *ScopedDebugInfoPlugin::CreateEmptyProgram(std::string_view sour
 parser::Program *ScopedDebugInfoPlugin::GetProgram(util::StringView fileName)
 {
     auto *program = proxyProgramsCache_.GetProgram(fileName);
-    ASSERT(program);
+    ES2PANDA_ASSERT(program);
     return program;
 }
 
 parser::Program *ScopedDebugInfoPlugin::GetEvaluatedExpressionProgram()
 {
     auto *program = GetETSBinder()->GetContext()->parserProgram;
-    ASSERT(program);
+    ES2PANDA_ASSERT(program);
     return program;
 }
 

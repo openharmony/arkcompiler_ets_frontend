@@ -56,8 +56,8 @@ public:
           baseOverloadMethod_(nullptr),
           asyncPairMethod_(nullptr)
     {
-        ASSERT(key_ != nullptr);
-        ASSERT(value != nullptr);
+        ES2PANDA_ASSERT(key_ != nullptr);
+        ES2PANDA_ASSERT(value != nullptr);
     }
 
     // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
@@ -116,7 +116,7 @@ public:
 
     void AddOverload(MethodDefinition *const overload)
     {
-        ASSERT(overload != nullptr);
+        ES2PANDA_ASSERT(overload != nullptr);
         overloads_.emplace_back(overload);
         overload->SetBaseOverloadMethod(this);
     }

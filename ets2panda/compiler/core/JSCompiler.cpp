@@ -42,7 +42,7 @@ void JSCompiler::Compile(const ir::CatchClause *st) const
         lref.SetValue();
     }
 
-    ASSERT(st->Scope() == st->Body()->Scope());
+    ES2PANDA_ASSERT(st->Scope() == st->Body()->Scope());
     st->Body()->Compile(pg);
 }
 
@@ -169,7 +169,7 @@ static std::tuple<int32_t, compiler::LiteralBuffer> CreateClassStaticProperties(
             continue;
         }
 
-        ASSERT(prop->IsMethodDefinition());
+        ES2PANDA_ASSERT(prop->IsMethodDefinition());
         const ir::MethodDefinition *propMethod = prop->AsMethodDefinition();
 
         if (!util::Helpers::IsConstantPropertyKey(propMethod->Key(), propMethod->IsComputed()) ||
@@ -237,7 +237,7 @@ static void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VRe
             continue;
         }
 
-        ASSERT(it->IsClassProperty());
+        ES2PANDA_ASSERT(it->IsClassProperty());
         const ir::ClassProperty *prop = it->AsClassProperty();
 
         if (!prop->IsStatic()) {
@@ -247,7 +247,7 @@ static void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VRe
         compiler::VReg keyReg {};
 
         if (prop->IsComputed()) {
-            ASSERT(iter != staticComputedFieldKeys.end());
+            ES2PANDA_ASSERT(iter != staticComputedFieldKeys.end());
             keyReg = *iter++;
         } else if (!prop->IsPrivateElement()) {
             keyReg = pg->LoadPropertyKey(prop->Key(), false);
@@ -351,7 +351,7 @@ static void CompileMissingProperties(compiler::PandaGen *pg, const util::BitSet 
             continue;
         }
 
-        ASSERT(properties[i]->IsClassProperty());
+        ES2PANDA_ASSERT(properties[i]->IsClassProperty());
         const ir::ClassProperty *prop = properties[i]->AsClassProperty();
 
         if (!prop->IsComputed()) {
@@ -408,7 +408,7 @@ void JSCompiler::Compile(const ir::ClassDefinition *node) const
     }
 
     auto res = pg->Scope()->Find(node->InternalName());
-    ASSERT(res.variable);
+    ES2PANDA_ASSERT(res.variable);
 
     if (res.variable->AsLocalVariable()->LexicalBound()) {
         pg->StoreLexicalVar(node, res.lexLevel, res.variable->AsLocalVariable()->LexIdx());
@@ -497,9 +497,9 @@ static void CompileLogical(compiler::PandaGen *pg, const ir::BinaryExpression *e
     compiler::RegScope rs(pg);
     compiler::VReg lhs = pg->AllocReg();
 
-    ASSERT(expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_AND ||
-           expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_OR ||
-           expr->OperatorType() == lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING);
+    ES2PANDA_ASSERT(expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_AND ||
+                    expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_OR ||
+                    expr->OperatorType() == lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING);
 
     auto *skipRight = pg->AllocLabel();
     auto *endLabel = pg->AllocLabel();
@@ -824,7 +824,7 @@ static compiler::Literal CreateLiteral(const ir::Property *prop, util::BitSet *c
     }
 
     if (prop->Kind() != ir::PropertyKind::INIT) {
-        ASSERT(prop->IsAccessor());
+        ES2PANDA_ASSERT(prop->IsAccessor());
         return compiler::Literal::AccessorLiteral();
     }
 
@@ -1087,7 +1087,7 @@ void JSCompiler::Compile(const ir::ThisExpression *expr) const
     PandaGen *pg = GetPandaGen();
     auto res = pg->Scope()->Find(varbinder::VarBinder::MANDATORY_PARAM_THIS);
 
-    ASSERT(res.variable && res.variable->IsLocalVariable());
+    ES2PANDA_ASSERT(res.variable && res.variable->IsLocalVariable());
     pg->LoadAccFromLexEnv(expr, res);
 
     const ir::ScriptFunction *func = util::Helpers::GetContainingConstructor(expr);
@@ -1206,7 +1206,7 @@ void JSCompiler::Compile(const ir::YieldExpression *expr) const
     }
 
     if (expr->HasDelegate()) {
-        ASSERT(expr->Argument());
+        ES2PANDA_ASSERT(expr->Argument());
         pg->FuncBuilder()->YieldStar(expr);
     } else {
         pg->FuncBuilder()->Yield(expr);
@@ -1437,7 +1437,7 @@ void JSCompiler::Compile(const ir::ForUpdateStatement *st) const
     compiler::LocalRegScope declRegScope(pg, st->Scope()->DeclScope()->InitScope());
 
     if (st->Init() != nullptr) {
-        ASSERT(st->Init()->IsVariableDeclaration() || st->Init()->IsExpression());
+        ES2PANDA_ASSERT(st->Init()->IsVariableDeclaration() || st->Init()->IsExpression());
         st->Init()->Compile(pg);
     }
 
@@ -1577,8 +1577,8 @@ void JSCompiler::Compile(const ir::ThrowStatement *st) const
 
 static void CompileTryCatch(compiler::PandaGen *pg, const ir::TryStatement *st)
 {
-    ASSERT(st->CatchClauses().size() == 1);
-    ASSERT(st->CatchClauses().front() && !st->FinallyBlock());
+    ES2PANDA_ASSERT(st->CatchClauses().size() == 1);
+    ES2PANDA_ASSERT(st->CatchClauses().front() && !st->FinallyBlock());
 
     compiler::TryContext tryCtx(pg, st);
     const auto &labelSet = tryCtx.LabelSet();
@@ -1621,8 +1621,8 @@ static void CompileFinally(compiler::PandaGen *pg, compiler::TryContext *tryCtx,
 
 static void CompileTryCatchFinally(compiler::PandaGen *pg, const ir::TryStatement *st)
 {
-    ASSERT(st->CatchClauses().size() == 1);
-    ASSERT(st->CatchClauses().front() && st->FinallyBlock());
+    ES2PANDA_ASSERT(st->CatchClauses().size() == 1);
+    ES2PANDA_ASSERT(st->CatchClauses().front() && st->FinallyBlock());
 
     compiler::TryContext tryCtx(pg, st);
     const auto &labelSet = tryCtx.LabelSet();
@@ -1649,7 +1649,7 @@ static void CompileTryCatchFinally(compiler::PandaGen *pg, const ir::TryStatemen
 
 static void CompileTryFinally(compiler::PandaGen *pg, const ir::TryStatement *st)
 {
-    ASSERT(st->CatchClauses().empty() && st->FinallyBlock());
+    ES2PANDA_ASSERT(st->CatchClauses().empty() && st->FinallyBlock());
 
     compiler::TryContext tryCtx(pg, st);
     const auto &labelSet = tryCtx.LabelSet();

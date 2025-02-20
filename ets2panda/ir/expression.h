@@ -43,13 +43,13 @@ public:
 
     [[nodiscard]] const Literal *AsLiteral() const
     {
-        ASSERT(IsLiteral());
+        ES2PANDA_ASSERT(IsLiteral());
         return reinterpret_cast<const Literal *>(this);
     }
 
     [[nodiscard]] Literal *AsLiteral()
     {
-        ASSERT(IsLiteral());
+        ES2PANDA_ASSERT(IsLiteral());
         return reinterpret_cast<Literal *>(this);
     }
 
@@ -75,25 +75,25 @@ public:
 
     [[nodiscard]] TypeNode *AsTypeNode()
     {
-        ASSERT(IsTypeNode());
+        ES2PANDA_ASSERT(IsTypeNode());
         return reinterpret_cast<TypeNode *>(this);
     }
 
     [[nodiscard]] const TypeNode *AsTypeNode() const
     {
-        ASSERT(IsTypeNode());
+        ES2PANDA_ASSERT(IsTypeNode());
         return reinterpret_cast<const TypeNode *>(this);
     }
 
     [[nodiscard]] AnnotatedExpression *AsAnnotatedExpression()
     {
-        ASSERT(IsAnnotatedExpression());
+        ES2PANDA_ASSERT(IsAnnotatedExpression());
         return reinterpret_cast<AnnotatedExpression *>(this);
     }
 
     [[nodiscard]] const AnnotatedExpression *AsAnnotatedExpression() const
     {
-        ASSERT(IsAnnotatedExpression());
+        ES2PANDA_ASSERT(IsAnnotatedExpression());
         return reinterpret_cast<const AnnotatedExpression *>(this);
     }
 

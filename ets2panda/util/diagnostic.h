@@ -51,9 +51,11 @@ enum DiagnosticType {
     PLUGIN,
     DECLGEN_ETS2TS_ERROR,
     DECLGEN_ETS2TS_WARNING,
+    COMPILER_BUG,
     COUNT,
-    INVALID
+    INVALID = COUNT
 };
+
 const char *DiagnosticTypeToString(DiagnosticType type);
 
 class DiagnosticBase {

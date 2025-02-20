@@ -808,7 +808,7 @@ ir::ModifierFlags ETSParser::ParseInterfaceMethodModifiers()
 
 ir::ClassProperty *ETSParser::ParseInterfaceField()
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
     auto *name = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
     name->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();

@@ -22,15 +22,15 @@ namespace ark::es2panda::varbinder {
 
 void ETSBinder::IdentifierAnalysis()
 {
-    ASSERT(Program()->Ast());
-    ASSERT(GetScope() == TopScope());
-    ASSERT(VarScope() == TopScope());
+    ES2PANDA_ASSERT(Program()->Ast());
+    ES2PANDA_ASSERT(GetScope() == TopScope());
+    ES2PANDA_ASSERT(VarScope() == TopScope());
 
     recordTable_->SetProgram(Program());
     globalRecordTable_.SetClassDefinition(Program()->GlobalClass());
     BuildProgram();
 
-    ASSERT(globalRecordTable_.ClassDefinition() == Program()->GlobalClass());
+    ES2PANDA_ASSERT(globalRecordTable_.ClassDefinition() == Program()->GlobalClass());
 }
 
 void ETSBinder::LookupTypeArgumentReferences(ir::ETSTypeReference *typeRef)
@@ -236,7 +236,7 @@ void ETSBinder::LookupIdentReference(ir::Identifier *ident)
     const auto &name = ident->Name();
     auto res = GetScope()->Find(name, ResolveBindingOptions::ALL);
     if (res.level != 0) {
-        ASSERT(res.variable != nullptr);
+        ES2PANDA_ASSERT(res.variable != nullptr);
 
         auto *outerFunction = GetScope()->EnclosingVariableScope()->Node();
 
@@ -264,7 +264,7 @@ void ETSBinder::BuildClassProperty(const ir::ClassProperty *prop)
 void ETSBinder::BuildETSTypeReference(ir::ETSTypeReference *typeRef)
 {
     auto *baseName = typeRef->BaseName();
-    ASSERT(baseName->IsReference(Extension()));
+    ES2PANDA_ASSERT(baseName->IsReference(Extension()));
 
     // We allow to resolve following types in pure dynamic mode:
     // import * as I from "@dynamic"
@@ -305,7 +305,7 @@ void ETSBinder::InitializeInterfaceIdent(ir::TSInterfaceDeclaration *decl)
 {
     auto res = GetScope()->Find(decl->Id()->Name());
 
-    ASSERT(res.variable && res.variable->Declaration()->IsInterfaceDecl());
+    ES2PANDA_ASSERT(res.variable && res.variable->Declaration()->IsInterfaceDecl());
     res.variable->AddFlag(VariableFlags::INITIALIZED);
     decl->Id()->SetVariable(res.variable);
 }
@@ -514,13 +514,13 @@ void ETSBinder::AddFunctionThisParam(ir::ScriptFunction *func)
 
 void ETSBinder::AddDynamicImport(ir::ETSImportDeclaration *import)
 {
-    ASSERT(import->Language().IsDynamic());
+    ES2PANDA_ASSERT(import->Language().IsDynamic());
     dynamicImports_.push_back(import);
 }
 
 void ETSBinder::BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containingClassName, bool isExternal)
 {
-    ASSERT(!containingClassName.Empty());
+    ES2PANDA_ASSERT(!containingClassName.Empty());
     func->Scope()->BindName(containingClassName);
 
     if (!func->IsAsyncFunc() && !isExternal) {
@@ -539,7 +539,7 @@ void ETSBinder::AddDynamicSpecifiersToTopBindings(ir::AstNode *const specifier,
         return specifier->AsImportSpecifier()->Local()->Name();
     }();
 
-    ASSERT(GetScope()->Find(name, ResolveBindingOptions::DECLARATION).variable != nullptr);
+    ES2PANDA_ASSERT(GetScope()->Find(name, ResolveBindingOptions::DECLARATION).variable != nullptr);
     auto specDecl = GetScope()->Find(name, ResolveBindingOptions::DECLARATION);
     dynamicImportVars_.emplace(specDecl.variable, DynamicImportData {import, specifier, specDecl.variable});
 
@@ -622,7 +622,7 @@ void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
             ImportGlobalProperties(classDef);
             continue;
         }
-        ASSERT(bindingName.Utf8().find(compiler::Signatures::ETS_GLOBAL) == std::string::npos);
+        ES2PANDA_ASSERT(bindingName.Utf8().find(compiler::Signatures::ETS_GLOBAL) == std::string::npos);
 
         if (!importGlobalScope->IsForeignBinding(bindingName) && !var->Declaration()->Node()->IsDefaultExported() &&
             (var->AsLocalVariable()->Declaration()->Node()->IsExported() ||
@@ -1087,7 +1087,7 @@ void ETSBinder::BuildFunctionName(const ir::ScriptFunction *func) const
     auto *funcScope = func->Scope();
 
     std::stringstream ss;
-    ASSERT(func->IsArrow() || !funcScope->Name().Empty());
+    ES2PANDA_ASSERT(func->IsArrow() || !funcScope->Name().Empty());
     ss << (func->IsExternalOverload() ? funcScope->InternalName() : funcScope->Name())
        << compiler::Signatures::METHOD_SEPARATOR;
 
@@ -1136,9 +1136,9 @@ void ETSBinder::BuildProgram()
     const auto etsGlobal = std::find_if(stmts.begin(), stmts.end(), [](const ir::Statement *stmt) {
         if (stmt->IsClassDeclaration() &&
             !stmt->AsClassDeclaration()->Definition()->Ident()->Name().Is(compiler::Signatures::ETS_GLOBAL)) {
-            ASSERT(stmt->AsClassDeclaration()->Definition()->Ident()->Name().Utf8().find(
-                       // CC-OFFNXT(G.FMT.06-CPP,G.FMT.05-CPP) project code style
-                       compiler::Signatures::ETS_GLOBAL) == std::string::npos);
+            ES2PANDA_ASSERT(stmt->AsClassDeclaration()->Definition()->Ident()->Name().Utf8().find(
+                                // CC-OFFNXT(G.FMT.06-CPP,G.FMT.05-CPP) project code style
+                                compiler::Signatures::ETS_GLOBAL) == std::string::npos);
         }
         return stmt->IsClassDeclaration() &&
                stmt->AsClassDeclaration()->Definition()->Ident()->Name().Is(compiler::Signatures::ETS_GLOBAL);
@@ -1337,10 +1337,10 @@ void ETSBinder::ImportGlobalProperties(const ir::ClassDefinition *const classDef
             continue;
         }
 
-        ASSERT(classElement->IsStatic());
+        ES2PANDA_ASSERT(classElement->IsStatic());
         const auto &name = classElement->Id()->Name();
         auto *const var = scopeCtx.GetScope()->FindLocal(name, ResolveBindingOptions::ALL);
-        ASSERT(var != nullptr);
+        ES2PANDA_ASSERT(var != nullptr);
 
         if (ImportGlobalPropertiesForNotDefaultedExports(var, name, classElement)) {
             return;

@@ -424,7 +424,7 @@ void ETSEmitter::GenInterfaceRecord(const ir::TSInterfaceDeclaration *interfaceD
 
     for (auto *it : baseType->Interfaces()) {
         auto *declNode = it->GetDeclNode();
-        ASSERT(declNode->IsTSInterfaceDeclaration());
+        ES2PANDA_ASSERT(declNode->IsTSInterfaceDeclaration());
         std::string name = declNode->AsTSInterfaceDeclaration()->InternalName().Mutf8();
         interfaceRecord.metadata->SetAttributeValue(Signatures::IMPLEMENTS_ATTRIBUTE, name);
     }
@@ -517,7 +517,7 @@ void ETSEmitter::GenClassRecord(const ir::ClassDefinition *classDef, bool extern
         }
 
         auto *declNode = it->GetDeclNode();
-        // NOTE: itrubachev. replace it with ASSERT(decl_node->IsTSInterfaceDeclaration())
+        // NOTE: itrubachev. replace it with ES2PANDA_ASSERT(decl_node->IsTSInterfaceDeclaration())
         // after adding proper creation of lambda object in ETSFunctionType::AssignmentSource
         if (!declNode->IsTSInterfaceDeclaration()) {
             continue;
@@ -919,9 +919,9 @@ ir::MethodDefinition *ETSEmitter::FindAsyncImpl(ir::ScriptFunction *asyncFunc)
 {
     std::string implName = checker::ETSChecker::GetAsyncImplName(asyncFunc->Id()->Name());
     ir::AstNode *ownerNode = asyncFunc->Signature()->Owner()->GetDeclNode();
-    ASSERT(ownerNode != nullptr && ownerNode->IsClassDefinition());
+    ES2PANDA_ASSERT(ownerNode != nullptr && ownerNode->IsClassDefinition());
     const ir::ClassDefinition *classDef = ownerNode->AsClassDefinition();
-    ASSERT(classDef != nullptr);
+    ES2PANDA_ASSERT(classDef != nullptr);
 
     auto it = std::find_if(classDef->Body().rbegin(), classDef->Body().rend(), [&implName](ir::AstNode *node) {
         return node->IsMethodDefinition() && node->AsMethodDefinition()->Id()->Name().Utf8() == implName;
@@ -948,7 +948,7 @@ pandasm::AnnotationData ETSEmitter::GenAnnotationAsync(ir::ScriptFunction *scrip
 {
     GenAnnotationRecord(Signatures::ETS_COROUTINE_ASYNC);
     const ir::MethodDefinition *impl = FindAsyncImpl(scriptFunc);
-    ASSERT(impl != nullptr);
+    ES2PANDA_ASSERT(impl != nullptr);
     pandasm::AnnotationData ann(Signatures::ETS_COROUTINE_ASYNC);
     pandasm::AnnotationElement value(
         Signatures::ANNOTATION_KEY_VALUE,

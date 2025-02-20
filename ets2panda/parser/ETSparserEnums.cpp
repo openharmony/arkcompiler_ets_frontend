@@ -125,7 +125,7 @@ using namespace std::literals::string_literals;
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Statement *ETSParser::ParseEnumDeclaration(bool isConst, bool isStatic)
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_ENUM);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_ENUM);
 
     lexer::SourcePosition enumStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat enum keyword

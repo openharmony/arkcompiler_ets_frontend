@@ -65,7 +65,7 @@ bool ETSChecker::IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typ
         return true;
     }
     // NOTE(vpukhov): #19701 void refactoring
-    ASSERT(IsReferenceType(typeArgument) || typeArgument->IsETSVoidType());
+    ES2PANDA_ASSERT(IsReferenceType(typeArgument) || typeArgument->IsETSVoidType());
     auto *constraint = typeParam->GetConstraintType()->Substitute(Relation(), substitution);
     bool retVal = false;
     // NOTE(vpukhov): #19701 void refactoring
@@ -267,8 +267,8 @@ bool ETSChecker::EnhanceSubstitutionForObject(const ArenaVector<Type *> &typePar
                 ->AsETSFunctionType()
                 ->CallSignatures();
         auto &argumentSignatures = argumentType->AsETSFunctionType()->CallSignatures();
-        ASSERT(argumentSignatures.size() == 1);
-        ASSERT(parameterSignatures.size() == 1);
+        ES2PANDA_ASSERT(argumentSignatures.size() == 1);
+        ES2PANDA_ASSERT(parameterSignatures.size() == 1);
         auto *argumentSignature = argumentSignatures[0];
         auto *parameterSignature = parameterSignatures[0];
         // NOTE(gogabr): handle rest parameter for argumentSignature
@@ -300,11 +300,11 @@ bool ETSChecker::EnhanceSubstitutionForArray(const ArenaVector<Type *> &typePara
 bool ETSChecker::EnhanceSubstitutionForFunction(const ArenaVector<Type *> &typeParams, ETSFunctionType *const paramType,
                                                 Type *const argumentType, Substitution *const substitution)
 {
-    ASSERT(paramType->IsETSArrowType());
+    ES2PANDA_ASSERT(paramType->IsETSArrowType());
     bool res = true;
 
     if (argumentType->IsETSFunctionType()) {
-        ASSERT(argumentType->IsETSArrowType());
+        ES2PANDA_ASSERT(argumentType->IsETSArrowType());
 
         auto *argumentSignature = argumentType->AsETSFunctionType()->CallSignatures()[0];
         auto *parameterSignature = paramType->CallSignatures()[0];
@@ -396,7 +396,7 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
         }
 
         if (argTypeInferenceRequired[index]) {
-            ASSERT(argument->IsArrowFunctionExpression());
+            ES2PANDA_ASSERT(argument->IsArrowFunctionExpression());
             auto *const arrowFuncExpr = argument->AsArrowFunctionExpression();
             ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
             if (CheckLambdaAssignable(substitutedSig->Function()->Params()[index], lambda, flags)) {
@@ -802,7 +802,7 @@ void ETSChecker::SearchAmongMostSpecificTypes(
     auto [pos, argumentsSize, paramCount, idx, sig] = info;
     if (lookForClassType && argumentsSize == ULONG_MAX) {
         [[maybe_unused]] const bool equalParamSize = sig->Params().size() == paramCount;
-        ASSERT(equalParamSize);
+        ES2PANDA_ASSERT(equalParamSize);
     }
     Type *sigType = sig->Params().at(idx)->TsType();
     const bool isClassType =
@@ -869,7 +869,7 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
                                                    const std::vector<bool> &argTypeInferenceRequired,
                                                    const lexer::SourcePosition &pos, size_t argumentsSize)
 {
-    ASSERT(signatures.empty() == false);
+    ES2PANDA_ASSERT(signatures.empty() == false);
 
     if (signatures.size() == 1) {
         return signatures.front();
@@ -1037,7 +1037,7 @@ void ETSChecker::CheckObjectLiteralArguments(Signature *signature, ArenaVector<i
 
         Type *tp;
         if (index >= signature->Params().size()) {
-            ASSERT(signature->RestVar());
+            ES2PANDA_ASSERT(signature->RestVar());
             tp = signature->RestVar()->TsType();
         } else {
             tp = signature->Params()[index]->TsType();
@@ -1184,12 +1184,12 @@ Type *ETSChecker::ComposeReturnType(ir::ScriptFunction *func)
 static bool AddParameterToSignatureInfo(ETSChecker *checker, SignatureInfo *signatureInfo,
                                         ir::ETSParameterExpression *parameter)
 {
-    ASSERT(!parameter->IsRestParameter());
+    ES2PANDA_ASSERT(!parameter->IsRestParameter());
     auto *const paramIdent = parameter->Ident();
 
     varbinder::Variable *const paramVar = paramIdent->Variable();
     if (paramVar == nullptr) {
-        ASSERT(checker->IsAnyError());
+        ES2PANDA_ASSERT(checker->IsAnyError());
         parameter->SetTsType(paramIdent->SetTsType(checker->GlobalTypeError()));
         return false;
     }
@@ -1241,7 +1241,7 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ScriptFunction *func)
     for (auto *const it : func->Params()) {
         //  Check possibly invalid parameter
         if (!it->IsETSParameterExpression()) {
-            ASSERT(IsAnyError());
+            ES2PANDA_ASSERT(IsAnyError());
             return nullptr;
         }
         auto *const param = it->AsETSParameterExpression();
@@ -1253,7 +1253,7 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ScriptFunction *func)
             }
 
             if (restIdent->Variable() == nullptr) {
-                ASSERT(IsAnyError());
+                ES2PANDA_ASSERT(IsAnyError());
                 return nullptr;
             }
 
@@ -1261,13 +1261,13 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ScriptFunction *func)
 
             auto *const restParamTypeAnnotation = param->TypeAnnotation();
             if (restParamTypeAnnotation == nullptr) {
-                ASSERT(IsAnyError());
+                ES2PANDA_ASSERT(IsAnyError());
                 return nullptr;
             }
 
             signatureInfo->restVar->SetTsType(restParamTypeAnnotation->GetType(this));
             if (!signatureInfo->restVar->TsType()->IsETSArrayType()) {
-                ASSERT(IsAnyError());
+                ES2PANDA_ASSERT(IsAnyError());
                 return nullptr;
             }
             auto arrayType = signatureInfo->restVar->TsType()->AsETSArrayType();
@@ -1390,7 +1390,7 @@ void ETSChecker::BuildFunctionSignature(ir::ScriptFunction *func, bool isConstru
 
 checker::ETSFunctionType *ETSChecker::BuildNamedFunctionType(ir::ScriptFunction *func)
 {
-    ASSERT(!func->IsArrow());
+    ES2PANDA_ASSERT(!func->IsArrow());
     auto *nameVar = func->Id()->Variable();
     auto *funcType = CreateETSFunctionType(func, func->Signature(), nameVar->Name());
     funcType->SetVariable(nameVar);
@@ -1492,7 +1492,7 @@ bool ETSChecker::CheckThrowMarkers(Signature *source, Signature *target)
 OverrideErrorCode ETSChecker::CheckOverride(Signature *signature, Signature *other)
 {
     if (other->HasSignatureFlag(SignatureFlags::STATIC)) {
-        ASSERT(signature->HasSignatureFlag(SignatureFlags::STATIC));
+        ES2PANDA_ASSERT(signature->HasSignatureFlag(SignatureFlags::STATIC));
         return OverrideErrorCode::NO_ERROR;
     }
 
@@ -1690,7 +1690,7 @@ Signature *ETSChecker::GetSignatureFromMethodDefinition(const ir::MethodDefiniti
     if (methodDef->TsType()->IsTypeError()) {
         return nullptr;
     }
-    ASSERT(methodDef->TsType() && methodDef->TsType()->IsETSFunctionType());
+    ES2PANDA_ASSERT3(methodDef->TsType() && methodDef->TsType()->IsETSFunctionType(), nullptr, methodDef->Start());
     for (auto *it : methodDef->TsType()->AsETSFunctionType()->CallSignatures()) {
         if (it->Function() == methodDef->Function()) {
             return it;
@@ -1722,7 +1722,7 @@ void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, const ir:
     const auto *declNode = callee->GetDeclNode();
     auto *containingClass = Context().ContainingClass();
     bool isContainingSignatureInherited = containingClass->IsSignatureInherited(signature);
-    ASSERT(declNode && (declNode->IsClassDefinition() || declNode->IsTSInterfaceDeclaration()));
+    ES2PANDA_ASSERT(declNode && (declNode->IsClassDefinition() || declNode->IsTSInterfaceDeclaration()));
 
     if (declNode->IsTSInterfaceDeclaration()) {
         const auto *enclosingFunc =
@@ -1840,7 +1840,7 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
     // is parametrized or not to use a proper subtyping check. To be replaced with IsETSPrimitiveType after #19701.
     auto const hasPrimitiveReturnType = [](Signature *s) {
         bool origIsRef = s->Function()->Signature()->ReturnType()->IsETSReferenceType();
-        ASSERT(origIsRef == s->ReturnType()->IsETSReferenceType());
+        ES2PANDA_ASSERT3(origIsRef == s->ReturnType()->IsETSReferenceType(), nullptr, s->Function()->Start());
         return !origIsRef;
     };
     // - If R1 is a primitive type then R2 is identical to R1.
@@ -1850,7 +1850,7 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
 
     // - If R1 is a reference type then R1, adapted to the type parameters of d2 (link to generic methods), is a
     //   subtype of R2.
-    ASSERT(IsReferenceType(r1));
+    ES2PANDA_ASSERT(IsReferenceType(r1));
     return Relation()->IsSupertypeOf(r2, r1);
 }
 
@@ -1864,7 +1864,7 @@ std::string ETSChecker::GetAsyncImplName(const util::StringView &name)
 std::string ETSChecker::GetAsyncImplName(ir::MethodDefinition *asyncMethod)
 {
     ir::Identifier *asyncName = asyncMethod->Function()->Id();
-    ASSERT(asyncName != nullptr);
+    ES2PANDA_ASSERT3(asyncName != nullptr, nullptr, asyncMethod->Start());
     return GetAsyncImplName(asyncName->Name());
 }
 
@@ -1971,7 +1971,7 @@ ir::MethodDefinition *ETSChecker::CreateAsyncProxy(ir::MethodDefinition *asyncMe
     varbinder::FunctionScope *implFuncScope = implMethod->Function()->Scope();
     for (auto *decl : asyncFunc->Scope()->Decls()) {
         auto res = asyncFunc->Scope()->Bindings().find(decl->Name());
-        ASSERT(res != asyncFunc->Scope()->Bindings().end());
+        ES2PANDA_ASSERT(res != asyncFunc->Scope()->Bindings().end());
         auto *const var = std::get<1>(*res);
         var->SetScope(implFuncScope);
         implFuncScope->Decls().push_back(decl);
@@ -2117,7 +2117,7 @@ using SFunctionData = ir::ScriptFunction::ScriptFunctionData;
 void ETSChecker::TransformTraillingLambda(ir::CallExpression *callExpr, Signature *sig)
 {
     auto *trailingBlock = callExpr->TrailingBlock();
-    ASSERT(trailingBlock != nullptr);
+    ES2PANDA_ASSERT(trailingBlock != nullptr);
 
     auto *funcParamScope = varbinder::LexicalScope<varbinder::FunctionParamScope>(VarBinder()).GetScope();
     auto paramCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(VarBinder(), funcParamScope, false);
@@ -2222,7 +2222,7 @@ ETSObjectType *ETSChecker::GetCachedFunctionalInterface(ir::ETSFunctionType *typ
 void ETSChecker::CacheFunctionalInterface(ir::ETSFunctionType *type, ETSObjectType *ifaceType)
 {
     auto hash = GetHashFromFunctionType(type);
-    ASSERT(functionalInterfaceCache_.find(hash) == functionalInterfaceCache_.cend());
+    ES2PANDA_ASSERT(functionalInterfaceCache_.find(hash) == functionalInterfaceCache_.cend());
     functionalInterfaceCache_.emplace(hash, ifaceType);
 }
 

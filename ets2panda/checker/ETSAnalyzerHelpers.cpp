@@ -102,7 +102,7 @@ static void ReplaceThisInExtensionMethod(checker::ETSChecker *checker, ir::Scrip
     //  Skip processing of possibly invalid extension method
     if (extensionFunc->Params().empty() ||
         !extensionFunc->Params()[0]->AsETSParameterExpression()->Ident()->IsReceiver()) {
-        ASSERT(checker->IsAnyError());
+        ES2PANDA_ASSERT(checker->IsAnyError());
         return;
     }
 
@@ -278,7 +278,7 @@ void ComposeAsyncImplMethod(ETSChecker *checker, ir::MethodDefinition *node)
 void CheckPredefinedMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scriptFunc)
 {
     if (scriptFunc->Signature() == nullptr) {
-        ASSERT(checker->IsAnyError());
+        ES2PANDA_ASSERT(checker->IsAnyError());
         return;
     }
 
@@ -388,7 +388,7 @@ checker::Type *InitAnonymousLambdaCallee(checker::ETSChecker *checker, ir::Expre
 
 static void SwitchMethodCallToFunctionCall(checker::ETSChecker *checker, ir::CallExpression *expr, Signature *signature)
 {
-    ASSERT(expr->Callee()->IsMemberExpression());
+    ES2PANDA_ASSERT(expr->Callee()->IsMemberExpression());
     auto *memberExpr = expr->Callee()->AsMemberExpression();
     if (expr->Arguments().empty() || expr->Arguments()[0] != memberExpr->Object()) {
         expr->Arguments().insert(expr->Arguments().begin(), memberExpr->Object());
@@ -438,7 +438,7 @@ checker::Signature *ResolveCallExtensionFunction(checker::Type *functionType, ch
 checker::Signature *ResolveCallForClassMethod(checker::ETSExtensionFuncHelperType *type, checker::ETSChecker *checker,
                                               ir::CallExpression *expr, const TypeRelationFlag reportFlag)
 {
-    ASSERT(expr->Callee()->IsMemberExpression());
+    ES2PANDA_ASSERT(expr->Callee()->IsMemberExpression());
 
     auto signature = checker->ResolveCallExpressionAndTrailingLambda(type->ClassMethodType()->CallSignatures(), expr,
                                                                      expr->Start(), reportFlag);
@@ -514,7 +514,7 @@ checker::Signature *GetMostSpecificSigFromExtensionFuncAndClassMethod(checker::E
 checker::Signature *ResolveCallForETSExtensionFuncHelperType(checker::ETSExtensionFuncHelperType *type,
                                                              checker::ETSChecker *checker, ir::CallExpression *expr)
 {
-    ASSERT(expr->Callee()->IsMemberExpression());
+    ES2PANDA_ASSERT(expr->Callee()->IsMemberExpression());
     auto *calleeObj = expr->Callee()->AsMemberExpression()->Object();
     bool isCalleeObjETSGlobal =
         calleeObj->IsIdentifier() && calleeObj->AsIdentifier()->Name() == compiler::Signatures::ETS_GLOBAL;
@@ -585,7 +585,7 @@ ArenaVector<checker::Signature *> &ChooseSignatures(ETSChecker *checker, checker
             calleeType->AsETSObjectType()->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(
                 FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
         if (variable == nullptr || variable->TsType() == nullptr || !variable->TsType()->IsETSFunctionType()) {
-            ASSERT(checker->IsAnyError());
+            ES2PANDA_ASSERT(checker->IsAnyError());
             return unionSignatures;
         }
         return variable->TsType()->AsETSFunctionType()->CallSignatures();
@@ -613,7 +613,7 @@ checker::ETSObjectType *ChooseCalleeObj(ETSChecker *checker, ir::CallExpression 
         return checker->Context().ContainingClass();
     }
 
-    ASSERT(callee->IsMemberExpression());
+    ES2PANDA_ASSERT(callee->IsMemberExpression());
     return callee->AsMemberExpression()->ObjType();
 }
 
@@ -962,7 +962,7 @@ Type *InstantiateBoxedPrimitiveType(ETSChecker *const checker, ir::Expression *c
         auto node = checker->Relation()->GetNode();
         checker->Relation()->SetNode(param);
         paramType = checker->MaybeBoxInRelation(paramType);
-        ASSERT(paramType && paramType->IsETSReferenceType());
+        ES2PANDA_ASSERT(paramType && paramType->IsETSReferenceType());
         checker->Relation()->SetNode(node);
     }
     return paramType;

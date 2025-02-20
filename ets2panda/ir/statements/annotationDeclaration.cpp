@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -54,7 +54,7 @@ void AnnotationDeclaration::Dump(ir::AstDumper *dumper) const
 }
 void AnnotationDeclaration::Dump(ir::SrcDumper *dumper) const
 {  // re-understand
-    ASSERT(expr_ != nullptr);
+    ES2PANDA_ASSERT(expr_ != nullptr);
     dumper->Add("@interface ");
     expr_->Dump(dumper);
     dumper->Add(" {");

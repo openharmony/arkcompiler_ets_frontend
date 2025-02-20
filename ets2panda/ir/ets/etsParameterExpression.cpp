@@ -26,14 +26,14 @@ ETSParameterExpression::ETSParameterExpression(AnnotatedExpression *const identO
                                                ArenaAllocator *const allocator)
     : AnnotationAllowed<Expression>(AstNodeType::ETS_PARAMETER_EXPRESSION, allocator), initializer_(initializer)
 {
-    ASSERT(identOrSpread != nullptr);
+    ES2PANDA_ASSERT(identOrSpread != nullptr);
     identOrSpread->SetParent(this);
 
     if (identOrSpread->IsIdentifier()) {
         ident_ = identOrSpread->AsIdentifier();
     } else if (identOrSpread->IsRestElement()) {
         spread_ = identOrSpread->AsRestElement();
-        ASSERT(spread_->Argument()->IsIdentifier());
+        ES2PANDA_ASSERT(spread_->Argument()->IsIdentifier());
         ident_ = spread_->Argument()->AsIdentifier();
         ident_->SetParent(spread_);
         initializer_ = nullptr;  // Just in case!
@@ -189,7 +189,7 @@ void ETSParameterExpression::Dump(ir::SrcDumper *const dumper) const
         spread_->Dump(dumper);
     } else {
         if (ident_ != nullptr) {
-            ASSERT(ident_->IsAnnotatedExpression());
+            ES2PANDA_ASSERT(ident_->IsAnnotatedExpression());
             ident_->Dump(dumper);
             if (initializer_ != nullptr && initializer_->IsUndefinedLiteral()) {
                 dumper->Add("?");
