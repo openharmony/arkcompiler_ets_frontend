@@ -92,7 +92,6 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
         console.error('obfuscation config file is not found and no given config.');
         return false;
     }
-    UnobfuscationCollections.printKeptName = config.mUnobfuscationOption?.mPrintKeptNames;
 
     handleReservedConfig(config, 'mNameObfuscation', 'mReservedProperties', 'mUniversalReservedProperties');
     handleReservedConfig(config, 'mNameObfuscation', 'mReservedToplevelNames', 'mUniversalReservedToplevelNames');

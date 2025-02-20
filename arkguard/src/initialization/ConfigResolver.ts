@@ -241,7 +241,6 @@ export class ObConfigResolver {
       enableObfuscation = enableObfuscation && !dependencyConfigs.options.disableObfuscation;
     }
     const mergedConfigs: MergedConfig = this.getMergedConfigs(selfConfig, dependencyConfigs);
-    UnobfuscationCollections.printKeptName = mergedConfigs.options.printKeptNames;
     this.handleReservedArray(mergedConfigs);
 
     let needKeepSystemApi =
@@ -306,14 +305,17 @@ export class ObConfigResolver {
   }
 
   private handleReservedArray(mergedConfigs: MergedConfig): void {
+    const shouldPrintKeptNames = mergedConfigs.options.printKeptNames;
     if (mergedConfigs.options.enablePropertyObfuscation && mergedConfigs.reservedPropertyNames) {
-      const propertyReservedInfo: ReservedNameInfo = separateUniversalReservedItem(mergedConfigs.reservedPropertyNames);
+      const propertyReservedInfo: ReservedNameInfo =
+        separateUniversalReservedItem(mergedConfigs.reservedPropertyNames, shouldPrintKeptNames);
       mergedConfigs.universalReservedPropertyNames = propertyReservedInfo.universalReservedArray;
       mergedConfigs.reservedPropertyNames = propertyReservedInfo.specificReservedArray;
     }
 
     if (mergedConfigs.options.enableToplevelObfuscation && mergedConfigs.reservedGlobalNames) {
-      const globalReservedInfo: ReservedNameInfo = separateUniversalReservedItem(mergedConfigs.reservedGlobalNames);
+      const globalReservedInfo: ReservedNameInfo =
+        separateUniversalReservedItem(mergedConfigs.reservedGlobalNames, shouldPrintKeptNames);
       mergedConfigs.universalReservedGlobalNames = globalReservedInfo.universalReservedArray;
       mergedConfigs.reservedGlobalNames = globalReservedInfo.specificReservedArray;
     }

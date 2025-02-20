@@ -500,7 +500,6 @@ export declare function findElement<T>(arr: T[], callback: (item: T) => boolean)
       expect(UnobfuscationCollections.reservedSdkApiForProp.size).to.equal(0);
       expect(UnobfuscationCollections.reservedStruct.size).to.equal(0);
       expect(UnobfuscationCollections.reservedExportName.size).to.equal(0);
-      expect(UnobfuscationCollections.printKeptName).to.be.false;
       expect(LocalVariableCollections.reservedConfig.size).to.equal(0);
     });
   });
