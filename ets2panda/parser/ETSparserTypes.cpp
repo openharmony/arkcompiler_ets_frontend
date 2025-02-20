@@ -516,6 +516,20 @@ ir::TypeNode *ETSParser::ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingO
     return typeAnnotation;
 }
 
+bool ETSParser::ParseReadonlyInTypeAnnotation()
+{
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
+        Lexer()->NextToken();  // eat '<'
+        Lexer()->NextToken();  // eat 'identifier'
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_GREATER_THAN) {
+            Lexer()->NextToken();  // eat '>'
+            return true;
+        }
+    }
+
+    return false;
+}
+
 ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *options)
 {
     ir::TypeNode *typeAnnotation = nullptr;
@@ -525,7 +539,11 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
         Lexer()->NextToken();  // eat 'readonly'
         typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
         if (!typeAnnotation->IsTSArrayType() && !typeAnnotation->IsETSTuple()) {
-            LogError(diagnostic::READONLY_ONLY_ON_ARRAY_OR_TUPLE);
+            if (!ParseReadonlyInTypeAnnotation()) {
+                LogError(diagnostic::READONLY_ONLY_ON_ARRAY_OR_TUPLE);
+            } else {
+                LogError(diagnostic::READONLY_TYPE_EXPECTED);
+            }
         }
         typeAnnotation->SetStart(startPos);
         typeAnnotation->AddModifier(ir::ModifierFlags::READONLY_PARAMETER);

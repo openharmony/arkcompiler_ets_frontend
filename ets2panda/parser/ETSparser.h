@@ -369,6 +369,7 @@ private:
                                lexer::LexerPosition savedPos);
     ir::TypeNode *ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseTypeAnnotation(TypeAnnotationParsingOptions *options) override;
+    bool ParseReadonlyInTypeAnnotation();
     ir::TypeNode *ParseMultilineString();
     ir::TSTypeAliasDeclaration *ParseTypeAliasDeclaration() override;
 
