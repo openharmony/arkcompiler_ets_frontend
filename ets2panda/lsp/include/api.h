@@ -27,6 +27,7 @@
 #include <vector>
 #include "public/es2panda_lib.h"
 #include "cancellation_token.h"
+#include "find_references.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -332,6 +333,9 @@ typedef struct LSPAPI {
                                                             const std::vector<std::string> &autoGenerateFolders,
                                                             ark::es2panda::lsp::CancellationToken cancellationToken);
     DocumentHighlightsReferences (*getDocumentHighlights)(char const *fileName, size_t position);
+    FileRefMap (*findReferences)(ark::es2panda::lsp::CancellationToken *tkn,
+                                 const std::vector<ark::es2panda::SourceFile> &srcFiles,
+                                 const ark::es2panda::SourceFile &srcFile, size_t position);
 } LSPAPI;
 
 LSPAPI const *GetImpl();
