@@ -111,7 +111,7 @@ function do_checkout() {
 
 GIT_URL=https://gitee.com/openharmony-sig/arkcompiler_ets_frontend.git
 DEST="${DEST:-koala-sig}"
-do_checkout "${GIT_URL}" panda_rev_5 "${DEST}"
+do_checkout "${GIT_URL}" panda_rev_5-static "${DEST}"
 
 cd "${DEST}" || exit 1
 

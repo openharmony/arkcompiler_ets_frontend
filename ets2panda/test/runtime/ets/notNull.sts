@@ -119,6 +119,7 @@ function testNPE() : void {
 
 class A {
     public static c : Char | null = c'C';
+    public d : Char | null = c'D'
 }
 
 class B {
@@ -148,9 +149,9 @@ function testFieldAccess() : void {
 
     assertEQ( a, a_orig ,  "a should be the object referenced by a_orig")
 
-    let c = b.a!.c!;
+    let d = b.a!.d!;
 
-    assertEQ( c, c'C' ,  "c should be 'C'")
+    assertEQ( d, c'D' ,  "d should be 'D'")
 }
 
 function testFieldAccess2() : void {

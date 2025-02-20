@@ -991,6 +991,7 @@ void InitScopesPhaseETS::VisitETSParameterExpression(ir::ETSParameterExpression 
     if (auto *const var = std::get<1>(VarBinder()->AddParamDecl(paramExpr)); var != nullptr) {
         paramExpr->Ident()->SetVariable(var);
         var->SetScope(VarBinder()->GetScope());
+        var->AddFlag(varbinder::VariableFlags::INITIALIZED);
         Iterate(paramExpr);
     } else {
         paramExpr->SetTsType(paramExpr->Ident()->SetTsType(Context()->checker->AsETSChecker()->GlobalTypeError()));

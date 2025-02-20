@@ -100,7 +100,7 @@ export class Matrix33 {
     constructor(arr: Float32Array) { this.arr = arr }
     private arr: Float32Array | null = null;
 
-    static rotate(degrees: float32, pivotX?: float32, pivotY?: float32): Matrix33 {
+    rotate(degrees: float32, pivotX?: float32, pivotY?: float32): Matrix33 {
         let rads = degrees * Math.PI / 180
         let cos = Math.cos(rads)
         let sin = Math.sin(rads)
