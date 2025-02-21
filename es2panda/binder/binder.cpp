@@ -961,9 +961,14 @@ void Binder::AddMandatoryParam(const std::string_view &name)
     ASSERT(scope_->IsFunctionVariableScope());
 
     auto *decl = Allocator()->New<ParameterDecl>(name);
+    CHECK_NOT_NULL(decl);
     auto *param = Allocator()->New<LocalVariable>(decl, VariableFlags::VAR);
+    CHECK_NOT_NULL(param);
 
-    auto &funcParams = scope_->AsFunctionVariableScope()->ParamScope()->Params();
+    auto *paramScope = scope_->AsFunctionVariableScope()->ParamScope();
+    CHECK_NOT_NULL(paramScope);
+
+    auto &funcParams = paramScope->Params();
     funcParams.insert(funcParams.begin(), param);
     scope_->AsFunctionVariableScope()->ParamScope()->Bindings().insert({decl->Name(), param});
     scope_->AsFunctionVariableScope()->Bindings().insert({decl->Name(), param});
