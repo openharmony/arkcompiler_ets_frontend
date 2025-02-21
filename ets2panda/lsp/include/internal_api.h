@@ -72,6 +72,9 @@ FileDiagnostic CreateDiagnosticForNode(es2panda_AstNode *node, Diagnostic diagno
 std::string GetCurrentTokenValueImpl(es2panda_Context *context, size_t position);
 void GetRangeOfEnclosingComment(es2panda_Context *context, size_t pos, CommentRange *result);
 Diagnostic CreateDiagnosticForError(es2panda_Context *context, const util::DiagnosticBase &error);
+Diagnostic CreateDiagnosticWithoutFile(const util::DiagnosticBase &error);
+void GetGlobalDiagnostics(es2panda_Context *context, DiagnosticReferences &compilerOptionsDiagnostics);
+void GetOptionDiagnostics(es2panda_Context *context, DiagnosticReferences &compilerOptionsDiagnostics);
 size_t GetTokenPosOfNode(const ir::AstNode *astNode);
 ir::AstNode *GetDefinitionAtPositionImpl(es2panda_Context *context, size_t pos);
 DocumentHighlights GetDocumentHighlightsImpl(es2panda_Context *context, size_t position);

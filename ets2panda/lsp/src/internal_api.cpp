@@ -533,7 +533,7 @@ DiagnosticSeverity GetSeverity(util::DiagnosticType errorType)
         return DiagnosticSeverity::Warning;
     }
     if (errorType == util::DiagnosticType::SYNTAX || errorType == util::DiagnosticType::SEMANTIC ||
-        errorType == util::DiagnosticType::FATAL) {
+        errorType == util::DiagnosticType::FATAL || errorType == util::DiagnosticType::ARKTS_CONFIG_ERROR) {
         return DiagnosticSeverity::Error;
     }
     throw std::runtime_error("Unknown error type!");
@@ -568,6 +568,40 @@ Diagnostic CreateDiagnosticForError(es2panda_Context *context, const util::Diagn
     auto tags = std::vector<DiagnosticTag>();
     auto relatedInformation = std::vector<DiagnosticRelatedInformation>();
     return Diagnostic(range, tags, relatedInformation, severity, code, message, codeDescription, source);
+}
+
+Diagnostic CreateDiagnosticWithoutFile(const util::DiagnosticBase &error)
+{
+    auto range = Range(Position(), Position());
+    auto severity = GetSeverity(error.Type());
+    auto code = 1;
+    std::string message = error.Message();
+    auto codeDescription = CodeDescription("test code description");
+    auto tags = std::vector<DiagnosticTag>();
+    auto relatedInformation = std::vector<DiagnosticRelatedInformation>();
+    return Diagnostic(range, tags, relatedInformation, severity, code, message, codeDescription, "");
+}
+
+void GetGlobalDiagnostics(es2panda_Context *context, DiagnosticReferences &compilerOptionsDiagnostics)
+{
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    const auto &diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(util::DiagnosticType::FATAL);
+    for (const auto &diagnostic : diagnostics) {
+        if (diagnostic->File().empty()) {
+            compilerOptionsDiagnostics.diagnostic.push_back(CreateDiagnosticWithoutFile(*diagnostic));
+        } else {
+            compilerOptionsDiagnostics.diagnostic.push_back(CreateDiagnosticForError(context, *diagnostic));
+        }
+    }
+}
+
+void GetOptionDiagnostics(es2panda_Context *context, DiagnosticReferences &compilerOptionsDiagnostics)
+{
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    const auto &diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(util::DiagnosticType::ARKTS_CONFIG_ERROR);
+    for (const auto &diagnostic : diagnostics) {
+        compilerOptionsDiagnostics.diagnostic.push_back(CreateDiagnosticWithoutFile(*diagnostic));
+    }
 }
 
 size_t GetTokenPosOfNode(const ir::AstNode *astNode)

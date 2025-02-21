@@ -334,6 +334,8 @@ typedef struct LSPAPI {
     TextSpan (*getSpanOfEnclosingComment)(char const *fileName, size_t pos, bool onlyMultiLine);
     DiagnosticReferences (*getSemanticDiagnostics)(char const *fileName);
     DiagnosticReferences (*getSyntacticDiagnostics)(char const *fileName);
+    DiagnosticReferences (*getCompilerOptionsDiagnostics)(char const *fileName,
+                                                          ark::es2panda::lsp::CancellationToken cancellationToken);
     ReferenceLocationList (*getReferenceLocationAtPosition)(char const *fileName, size_t pos,
                                                             const std::vector<std::string> &autoGenerateFolders,
                                                             ark::es2panda::lsp::CancellationToken cancellationToken);
