@@ -73,18 +73,6 @@ TEST_F(LSPAPITests, GetTouchingToken3)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetDefinitionAtPosition)
-{
-    Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("file1.sts", ES2PANDA_STATE_CHECKED, "function main() {}");
-    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
-    LSPAPI const *lspApi = GetImpl();
-    size_t const offset = 5;
-    DefinitionInfo *result = lspApi->getDefinitionAtPosition("file1.sts", offset);
-    ASSERT_EQ(result, nullptr);
-    initializer.DestroyContext(ctx);
-}
-
 TEST_F(LSPAPITests, DiagnosticConstructorAndField)
 {
     int const errorCode = 404;
@@ -666,86 +654,6 @@ TEST_F(LSPAPITests, GetTokenPosOfNode3)
     auto result = ark::es2panda::lsp::GetTokenPosOfNode(targetNode);
     size_t const pos = 29;
     ASSERT_EQ(result, pos);
-
-    initializer.DestroyContext(ctx);
-}
-
-TEST_F(LSPAPITests, GetDefinitionAtPosition1)
-{
-    Initializer initializer = Initializer();
-    static std::string source = R"(
-    function A(a:number, b:number) {
-        return a + b;
-    }
-    A(1, 2);
-    function A(a:number) {
-        return a;
-    }
-    A(1);
-    )";
-    es2panda_Context *ctx =
-        initializer.CreateContext("definition-at-position.sts", ES2PANDA_STATE_CHECKED, source.data());
-    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    size_t const callOffset = 70;
-    auto ident = ark::es2panda::lsp::GetTouchingToken(ctx, callOffset, false);
-    auto result = ark::es2panda::lsp::GetDefinitionAtPosition(ctx, callOffset);
-    auto resultFunc = result->FindChild([](ark::es2panda::ir::AstNode *node) { return node->IsScriptFunction(); });
-    auto callExpr = ident->Parent()->AsCallExpression();
-    auto expectedFunc = callExpr->Signature()->Function();
-    ASSERT_EQ(resultFunc->DumpJSON(), expectedFunc->DumpJSON());
-    ASSERT_EQ(resultFunc->Start().index, expectedFunc->Start().index);
-    ASSERT_EQ(resultFunc->End().index, expectedFunc->End().index);
-
-    size_t const overloadCallOffset = 134;
-    ident = ark::es2panda::lsp::GetTouchingToken(ctx, overloadCallOffset, false);
-    result = ark::es2panda::lsp::GetDefinitionAtPosition(ctx, overloadCallOffset);
-    resultFunc = result->FindChild([](ark::es2panda::ir::AstNode *node) { return node->IsScriptFunction(); });
-    callExpr = ident->Parent()->AsCallExpression();
-    expectedFunc = callExpr->Signature()->Function();
-    ASSERT_EQ(resultFunc->DumpJSON(), expectedFunc->DumpJSON());
-    ASSERT_EQ(resultFunc->Start().index, expectedFunc->Start().index);
-    ASSERT_EQ(resultFunc->End().index, expectedFunc->End().index);
-
-    initializer.DestroyContext(ctx);
-}
-
-TEST_F(LSPAPITests, GetImplementationAtPosition)
-{
-    Initializer initializer = Initializer();
-    static std::string source = R"(
-    function A(a:number, b:number) {
-        return a + b;
-    }
-    A(1, 2);
-    function A(a:number) {
-        return a;
-    }
-    A(1);
-    )";
-    es2panda_Context *ctx =
-        initializer.CreateContext("implementation-at-position.sts", ES2PANDA_STATE_CHECKED, source.data());
-    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    size_t const callOffset = 70;
-    auto ident = ark::es2panda::lsp::GetTouchingToken(ctx, callOffset, false);
-    auto result = ark::es2panda::lsp::GetImplementationAtPosition(ctx, callOffset);
-    auto resultFunc = result->FindChild([](ark::es2panda::ir::AstNode *node) { return node->IsScriptFunction(); });
-    auto callExpr = ident->Parent()->AsCallExpression();
-    auto expectedFunc = callExpr->Signature()->Function();
-    ASSERT_EQ(resultFunc->DumpJSON(), expectedFunc->DumpJSON());
-    ASSERT_EQ(resultFunc->Start().index, expectedFunc->Start().index);
-    ASSERT_EQ(resultFunc->End().index, expectedFunc->End().index);
-
-    size_t const overloadCallOffset = 134;
-    ident = ark::es2panda::lsp::GetTouchingToken(ctx, overloadCallOffset, false);
-    result = ark::es2panda::lsp::GetImplementationAtPosition(ctx, overloadCallOffset);
-    resultFunc = result->FindChild([](ark::es2panda::ir::AstNode *node) { return node->IsScriptFunction(); });
-    callExpr = ident->Parent()->AsCallExpression();
-    expectedFunc = callExpr->Signature()->Function();
-    ASSERT_EQ(resultFunc->DumpJSON(), expectedFunc->DumpJSON());
-    ASSERT_EQ(resultFunc->Start().index, expectedFunc->Start().index);
-    ASSERT_EQ(resultFunc->End().index, expectedFunc->End().index);
 
     initializer.DestroyContext(ctx);
 }

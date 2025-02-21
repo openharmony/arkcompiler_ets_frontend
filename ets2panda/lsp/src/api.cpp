@@ -15,6 +15,7 @@
 
 #include "api.h"
 #include <cstddef>
+#include <string>
 #include <vector>
 #include "internal_api.h"
 #include "references.h"
@@ -26,10 +27,28 @@
 
 namespace ark::es2panda::lsp {
 
-extern "C" DefinitionInfo *GetDefinitionAtPosition([[maybe_unused]] char const *fileName,
-                                                   [[maybe_unused]] size_t position)
+extern "C" DefinitionInfo GetDefinitionAtPosition(char const *fileName, size_t position)
 {
-    return nullptr;
+    Initializer initializer = Initializer();
+    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
+    auto declNode = GetDefinitionAtPositionImpl(context, position);
+    auto node = declNode;
+    DefinitionInfo result {};
+    while (node != nullptr) {
+        if (node->IsETSModule()) {
+            auto name = std::string(node->AsETSModule()->Program()->SourceFilePath());
+            result = {name, declNode->Start().index, declNode->End().index - declNode->Start().index};
+            break;
+        }
+        node = node->Parent();
+    }
+    initializer.DestroyContext(context);
+    return result;
+}
+
+extern "C" DefinitionInfo GetImplementationAtPosition(char const *fileName, size_t position)
+{
+    return GetDefinitionAtPosition(fileName, position);
 }
 
 extern "C" References GetFileReferences(char const *fileName)
@@ -202,12 +221,19 @@ extern "C" FileRefMap FindReferencesWrapper(ark::es2panda::lsp::CancellationToke
     return FindReferences(tkn, srcFiles, srcFile, position);
 }
 
-LSPAPI g_lspImpl = {GetDefinitionAtPosition,   GetFileReferences,
-                    GetReferencesAtPosition,   GetPrecedingToken,
-                    GetCurrentTokenValue,      GetQuickInfoAtPosition,
-                    GetSpanOfEnclosingComment, GetSemanticDiagnostics,
-                    GetSyntacticDiagnostics,   GetReferenceLocationAtPosition,
-                    GetDocumentHighlights,     FindReferencesWrapper};
+LSPAPI g_lspImpl = {GetDefinitionAtPosition,
+                    GetImplementationAtPosition,
+                    GetFileReferences,
+                    GetReferencesAtPosition,
+                    GetPrecedingToken,
+                    GetCurrentTokenValue,
+                    GetQuickInfoAtPosition,
+                    GetSpanOfEnclosingComment,
+                    GetSemanticDiagnostics,
+                    GetSyntacticDiagnostics,
+                    GetReferenceLocationAtPosition,
+                    GetDocumentHighlights,
+                    FindReferencesWrapper};
 }  // namespace ark::es2panda::lsp
 
 LSPAPI const *GetImpl()

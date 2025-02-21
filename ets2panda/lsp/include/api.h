@@ -34,7 +34,11 @@ extern "C" {
 #endif
 
 typedef struct DefinitionInfo {
-    char *fileName;
+    DefinitionInfo() = default;
+    DefinitionInfo(std::string f, size_t s, size_t l) : fileName(f), start(s), length(l) {}
+    std::string fileName;
+    size_t start;
+    size_t length;
 } DefinitionInfo;
 
 typedef struct ReferenceInfo {
@@ -320,7 +324,8 @@ public:
 };
 
 typedef struct LSPAPI {
-    DefinitionInfo *(*getDefinitionAtPosition)(char const *fileName, size_t position);
+    DefinitionInfo (*getDefinitionAtPosition)(char const *fileName, size_t position);
+    DefinitionInfo (*getImplementationAtPosition)(char const *fileName, size_t position);
     References (*getFileReferences)(char const *fileName);
     References (*getReferencesAtPosition)(char const *fileName, size_t position);
     es2panda_AstNode *(*getPrecedingToken)(es2panda_Context *context, const size_t pos);

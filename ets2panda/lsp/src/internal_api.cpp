@@ -13,16 +13,19 @@
  * limitations under the License.
  */
 
+#include <cstddef>
 #include <string>
 #include <vector>
 #include "api.h"
 #include "internal_api.h"
 #include "checker/types/type.h"
+#include "compiler/lowering/util.h"
 #include "ir/astNode.h"
 #include "lexer/token/sourceLocation.h"
 #include "macros.h"
+#include "public/es2panda_lib.h"
 #include "public/public.h"
-#include "compiler/lowering/util.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::lsp {
 
@@ -62,16 +65,6 @@ ir::AstNode *GetTouchingToken(es2panda_Context *context, size_t pos, bool flagFi
         found = nestedFound;
     }
     return found;
-}
-
-__attribute__((unused)) char *StdStringToCString(ArenaAllocator *allocator, const std::string &str)
-{
-    // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-simplify-subscript-expr)
-    char *res = reinterpret_cast<char *>(allocator->Alloc(str.length() + 1));
-    [[maybe_unused]] auto err = memcpy_s(res, str.length() + 1, str.c_str(), str.length() + 1);
-    ES2PANDA_ASSERT(err == EOK);
-    return res;
-    // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-simplify-subscript-expr)
 }
 
 Position TransSourcePositionToPosition(lexer::SourcePosition sourcePos)
@@ -584,18 +577,13 @@ size_t GetTokenPosOfNode(const ir::AstNode *astNode)
     return astNode->Start().index;
 }
 
-ir::AstNode *GetDefinitionAtPosition(es2panda_Context *context, size_t pos)
+ir::AstNode *GetDefinitionAtPositionImpl(es2panda_Context *context, size_t pos)
 {
     auto node = GetTouchingToken(context, pos, false);
     if (node == nullptr || !node->IsIdentifier()) {
         return nullptr;
     }
     return compiler::DeclarationFromIdentifier(node->AsIdentifier());
-}
-
-ir::AstNode *GetImplementationAtPosition(es2panda_Context *context, size_t pos)
-{
-    return GetDefinitionAtPosition(context, pos);
 }
 
 ArenaVector<ir::AstNode *> RemoveRefDuplicates(const ArenaVector<ir::AstNode *> &nodes, ArenaAllocator *allocator)
