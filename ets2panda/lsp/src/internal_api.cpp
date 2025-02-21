@@ -29,8 +29,15 @@ namespace ark::es2panda::lsp {
 Initializer::Initializer()
 {
     impl_ = es2panda_GetImpl(ES2PANDA_LIB_VERSION);
-    auto buidDir = std::string(BUILD_FOLDER) + "/bin/";
-    std::array<const char *, 1> argv = {buidDir.c_str()};
+    std::string buildDir;
+#ifdef BUILD_FOLDER
+    buildDir = std::string(BUILD_FOLDER) + util::PATH_DELIMITER + "bin" + util::PATH_DELIMITER;
+#endif
+    const char *path = std::getenv("BUILD_FOLDER");
+    if (path != nullptr) {
+        buildDir = std::string(path);
+    }
+    std::array<const char *, 1> argv = {buildDir.c_str()};
     cfg_ = impl_->CreateConfig(argv.size(), argv.data());
     allocator_ = new ark::ArenaAllocator(ark::SpaceType::SPACE_TYPE_COMPILER);
 }
