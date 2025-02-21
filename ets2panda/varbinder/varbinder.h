@@ -146,6 +146,12 @@ public:
         return Extension() == ScriptExtension::STS;
     }
 
+    const ETSBinder *AsETSBinder() const
+    {
+        ASSERT(Extension() == ScriptExtension::STS);
+        return reinterpret_cast<const ETSBinder *>(this);
+    }
+
     ETSBinder *AsETSBinder()
     {
         ES2PANDA_ASSERT(Extension() == ScriptExtension::STS);

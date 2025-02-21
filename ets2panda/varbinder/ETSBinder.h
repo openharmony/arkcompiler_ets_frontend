@@ -42,7 +42,7 @@ class ETSNewClassInstanceExpression;
 }  // namespace ark::es2panda::ir
 
 namespace ark::es2panda::varbinder {
-using AliasesByExportedNames = ArenaMap<util::StringView, util::StringView>;
+using AliasesByExportedNames = ArenaMap<util::StringView, std::pair<util::StringView, ir::AstNode const *>>;
 using ModulesToExportedNamesWithAliases = ArenaMap<util::StringView, AliasesByExportedNames>;
 
 struct DynamicImportData {
@@ -167,7 +167,7 @@ public:
                                           const ir::ETSImportDeclaration *import,
                                           const ArenaVector<parser::Program *> &recordRes,
                                           std::vector<ir::ETSImportDeclaration *> viewedReExport);
-    void ValidateImportVariable(varbinder::Variable *const var, const ir::ETSImportDeclaration *const import,
+    void ValidateImportVariable(const ir::AstNode *var, const ir::ETSImportDeclaration *const import,
                                 const util::StringView &imported, const ir::StringLiteral *const importPath);
     Variable *FindImportSpecifiersVariable(const util::StringView &imported,
                                            const varbinder::Scope::VariableMap &globalBindings,
@@ -243,7 +243,7 @@ public:
     void ResolveReferencesForScopeWithContext(ir::AstNode *node, Scope *scope);
 
     bool AddSelectiveExportAlias(util::StringView const &path, util::StringView const &key,
-                                 util::StringView const &value);
+                                 util::StringView const &value, ir::AstNode const *decl);
 
     [[nodiscard]] const ModulesToExportedNamesWithAliases &GetSelectiveExportAliasMultimap() const noexcept
     {
@@ -251,6 +251,7 @@ public:
     }
 
     util::StringView FindNameInAliasMap(const util::StringView &pathAsKey, const util::StringView &aliasName);
+    const ir::AstNode *FindNodeInAliasMap(const util::StringView &pathAsKey, const util::StringView &aliasName);
 
     util::StringView FindLocalNameForImport(const ir::ImportSpecifier *const importSpecifier,
                                             util::StringView &imported, const ir::StringLiteral *const importPath);

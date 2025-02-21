@@ -183,14 +183,14 @@ void ETSBinder::ResolveReferencesForScopeWithContext(ir::AstNode *node, Scope *s
 }
 
 bool ETSBinder::AddSelectiveExportAlias(util::StringView const &path, util::StringView const &key,
-                                        util::StringView const &value)
+                                        util::StringView const &value, ir::AstNode const *decl)
 {
     if (auto foundMap = selectiveExportAliasMultimap_.find(path); foundMap != selectiveExportAliasMultimap_.end()) {
-        return foundMap->second.insert({key, value}).second;
+        return foundMap->second.insert({key, std::make_pair(value, decl)}).second;
     }
 
-    ArenaMap<util::StringView, util::StringView> map(Allocator()->Adapter());
-    bool insertResult = map.insert({key, value}).second;
+    ArenaMap<util::StringView, std::pair<util::StringView, ir::AstNode const *>> map(Allocator()->Adapter());
+    bool insertResult = map.insert({key, std::make_pair(value, decl)}).second;
     selectiveExportAliasMultimap_.insert({path, map});
     return insertResult;
 }
@@ -200,11 +200,23 @@ util::StringView ETSBinder::FindNameInAliasMap(const util::StringView &pathAsKey
     if (auto relatedMap = selectiveExportAliasMultimap_.find(pathAsKey);
         relatedMap != selectiveExportAliasMultimap_.end()) {
         if (auto item = relatedMap->second.find(aliasName); item != relatedMap->second.end()) {
-            return item->second;
+            return item->second.first;
         }
     }
 
     return "";
+}
+
+const ir::AstNode *ETSBinder::FindNodeInAliasMap(const util::StringView &pathAsKey, const util::StringView &aliasName)
+{
+    if (auto relatedMap = selectiveExportAliasMultimap_.find(pathAsKey);
+        relatedMap != selectiveExportAliasMultimap_.end()) {
+        if (auto item = relatedMap->second.find(aliasName); item != relatedMap->second.end()) {
+            return item->second.second;
+        }
+    }
+
+    return nullptr;
 }
 
 util::StringView ETSBinder::FindLocalNameForImport(const ir::ImportSpecifier *const importSpecifier,
@@ -770,17 +782,16 @@ ir::ETSImportDeclaration *ETSBinder::FindImportDeclInReExports(const ir::ETSImpo
     return implDecl;
 }
 
-void ETSBinder::ValidateImportVariable(varbinder::Variable *const var, const ir::ETSImportDeclaration *const import,
+void ETSBinder::ValidateImportVariable(const ir::AstNode *node, const ir::ETSImportDeclaration *const import,
                                        const util::StringView &imported, const ir::StringLiteral *const importPath)
 {
-    if (var->Declaration()->Node()->IsDefaultExported()) {
+    if (node->IsDefaultExported()) {
         ThrowError(importPath->Start(), "Use the default import syntax to import a default exported element");
-    } else if (import->IsTypeKind() && !var->Declaration()->Node()->IsExportedType()) {
+    } else if (import->IsTypeKind() && !node->IsExportedType()) {
         ThrowError(importPath->Start(),
                    "Cannot import '" + imported.Mutf8() + "', imported type imports only exported types.");
-    } else if (!var->Declaration()->Node()->IsExported() && !var->Declaration()->Node()->IsExportedType() &&
-               !var->Declaration()->Node()->IsDefaultExported()) {
-        ThrowError(importPath->Start(), "Imported element not exported '" + var->Declaration()->Name().Mutf8() + "'");
+    } else if (!node->IsExported() && !node->IsExportedType() && !node->IsDefaultExported()) {
+        ThrowError(importPath->Start(), "Imported element not exported '" + imported.Mutf8() + "'");
     }
 }
 
@@ -874,7 +885,9 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
         return false;
     }
 
-    ValidateImportVariable(var, import, imported, importPath);
+    auto *node = FindNodeInAliasMap(import->ResolvedSource()->Str(), imported);
+
+    ValidateImportVariable(node != nullptr ? node : var->Declaration()->Node(), import, imported, importPath);
 
     auto varInGlobalClassScope = Program()->GlobalClassScope()->FindLocal(localName, ResolveBindingOptions::ALL);
     auto previouslyImportedVariable = TopScope()->FindLocal(localName, ResolveBindingOptions::ALL);
@@ -901,21 +914,57 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
     return true;
 }
 
-varbinder::Variable *ETSBinder::FindStaticBinding(const ArenaVector<parser::Program *> &recordRes,
-                                                  const ir::StringLiteral *const importPath)
+static Variable *FindInStatic(parser::Program *program)
 {
     auto predicateFunc = [](const auto &item) { return item.second->Declaration()->Node()->IsDefaultExported(); };
-    const auto &staticMethodBindings = recordRes.front()->GlobalClassScope()->StaticMethodScope()->Bindings();
+    const auto &staticMethodBindings = program->GlobalClassScope()->StaticMethodScope()->Bindings();
     auto result = std::find_if(staticMethodBindings.begin(), staticMethodBindings.end(), predicateFunc);
     if (result == staticMethodBindings.end()) {
-        const auto &staticFieldBindings = recordRes.front()->GlobalClassScope()->StaticFieldScope()->Bindings();
+        const auto &staticFieldBindings = program->GlobalClassScope()->StaticFieldScope()->Bindings();
         result = std::find_if(staticFieldBindings.begin(), staticFieldBindings.end(), predicateFunc);
         if (result == staticFieldBindings.end()) {
-            ThrowError(importPath->Start(), "Cannot find default imported element in the target");
-            return nullptr;
+            const auto &staticDeclBindings = program->GlobalClassScope()->StaticDeclScope()->Bindings();
+            result = std::find_if(staticDeclBindings.begin(), staticDeclBindings.end(), predicateFunc);
+            if (result == staticDeclBindings.end()) {
+                return nullptr;
+            }
         }
     }
     return result->second;
+}
+
+static Variable *FindInInstance(parser::Program *program)
+{
+    auto predicateFunc = [](const auto &item) { return item.second->Declaration()->Node()->IsDefaultExported(); };
+    const auto &instanceMethodBindings = program->GlobalClassScope()->InstanceMethodScope()->Bindings();
+    auto result = std::find_if(instanceMethodBindings.begin(), instanceMethodBindings.end(), predicateFunc);
+    if (result == instanceMethodBindings.end()) {
+        const auto &instanceFieldBindings = program->GlobalClassScope()->InstanceFieldScope()->Bindings();
+        result = std::find_if(instanceFieldBindings.begin(), instanceFieldBindings.end(), predicateFunc);
+        if (result == instanceFieldBindings.end()) {
+            const auto &instanceDeclBindings = program->GlobalClassScope()->InstanceDeclScope()->Bindings();
+            result = std::find_if(instanceDeclBindings.begin(), instanceDeclBindings.end(), predicateFunc);
+            if (result == instanceDeclBindings.end()) {
+                return nullptr;
+            }
+        }
+    }
+    return result->second;
+}
+
+varbinder::Variable *ETSBinder::FindStaticBinding(const ArenaVector<parser::Program *> &recordRes,
+                                                  const ir::StringLiteral *const importPath)
+{
+    auto result = FindInInstance(recordRes.front());
+    if (result != nullptr) {
+        return result;
+    }
+    result = FindInStatic(recordRes.front());
+    if (result != nullptr) {
+        return result;
+    }
+    ThrowError(importPath->Start(), "Cannot find default imported element in the target");
+    return nullptr;
 }
 
 ArenaVector<parser::Program *> ETSBinder::GetExternalProgram(const util::StringView &sourceName,
@@ -966,19 +1015,26 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
                                                   import) ||
         AddImportSpecifiersToTopBindings(specifier, globalBindings, import, record, std::move(viewedReExport))) {
     } else if (specifier->IsImportDefaultSpecifier()) {
-        auto predicateFunc = [](const auto &item) { return item.second->Declaration()->Node()->IsDefaultExported(); };
-
-        auto item = std::find_if(globalBindings.begin(), globalBindings.end(), predicateFunc);
-        if (item == globalBindings.end()) {
-            if (auto var = FindStaticBinding(record, importPath); var != nullptr) {
-                specifier->AsImportDefaultSpecifier()->Local()->SetVariable(var);
-                InsertForeignBinding(specifier, import, specifier->AsImportDefaultSpecifier()->Local()->Name(), var);
+        auto predicateFunc1 = [](const auto &item) { return item.second.second->IsDefaultExported(); };
+        auto selectMap = importProgram->VarBinder()->AsETSBinder()->GetSelectiveExportAliasMultimap();
+        auto selectMap2 = selectMap.find(import->ResolvedSource()->Str());
+        if (selectMap2 != selectMap.end()) {
+            auto item1 = std::find_if(selectMap2->second.begin(), selectMap2->second.end(), predicateFunc1);
+            if (item1 != selectMap2->second.end()) {
+                auto item2 = globalBindings.find(item1->first);
+                ASSERT(item2 != globalBindings.end());
+                specifier->AsImportDefaultSpecifier()->Local()->SetVariable(item2->second);
+                InsertForeignBinding(specifier, import, specifier->AsImportDefaultSpecifier()->Local()->Name(),
+                                     item2->second);
+                return;
             }
-            return;
         }
 
-        specifier->AsImportDefaultSpecifier()->Local()->SetVariable(item->second);
-        InsertForeignBinding(specifier, import, specifier->AsImportDefaultSpecifier()->Local()->Name(), item->second);
+        if (auto var = FindStaticBinding(record, importPath); var != nullptr) {
+            specifier->AsImportDefaultSpecifier()->Local()->SetVariable(var);
+            InsertForeignBinding(specifier, import, specifier->AsImportDefaultSpecifier()->Local()->Name(), var);
+            return;
+        }
     }
 }
 
