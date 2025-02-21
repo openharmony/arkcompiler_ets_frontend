@@ -17,7 +17,6 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
-#include <map>
 #include <string>
 #include <utility>
 
@@ -30,8 +29,12 @@
 #include "internal_api.h"
 
 namespace {
+
 ark::es2panda::ir::AstNode *GetIdentifier(ark::es2panda::ir::AstNode *node)
 {
+    if (node == nullptr) {
+        return nullptr;
+    }
     if (!node->IsIdentifier()) {
         return node->FindChild([](ark::es2panda::ir::AstNode *child) { return child->IsIdentifier(); });
     }
@@ -40,7 +43,7 @@ ark::es2panda::ir::AstNode *GetIdentifier(ark::es2panda::ir::AstNode *node)
 
 std::string GetIdentifierName(ark::es2panda::ir::AstNode *node)
 {
-    auto id = GetIdentifier(node);
+    auto id = ::GetIdentifier(node);
     if (id == nullptr) {
         return "";
     }
@@ -49,30 +52,29 @@ std::string GetIdentifierName(ark::es2panda::ir::AstNode *node)
 
 ark::es2panda::ir::AstNode *GetOwner(ark::es2panda::ir::AstNode *node)
 {
-    auto id = GetIdentifier(node);
+    auto id = ::GetIdentifier(node);
     if (id == nullptr) {
         return nullptr;
     }
-    return ark::es2panda::compiler::DeclarationFromIdentifier(id->AsIdentifier());
+    return GetIdentifier(ark::es2panda::compiler::DeclarationFromIdentifier(id->AsIdentifier()));
 }
 
 // NOTE(muhammet): This may be wrong/inconsistent (slow for sure) for comparison, have to investigate
 // The Type of the Node and identifier name are not enough they don't account for edge cases like
 // functions with the same name and signature in different namespaces
-using OwnerId = std::string;
-OwnerId GetOwnerId(ark::es2panda::ir::AstNode *node, ark::es2panda::parser::Program *program)
+using LocationId = std::string;
+LocationId GetLocationId(ark::es2panda::ir::AstNode *node, ark::es2panda::parser::Program *program)
 {
-    auto owner = GetOwner(node);
-    if (owner == nullptr) {
+    if (node == nullptr) {
         return "";
     }
     // Find which file the node belongs to
     std::string absPath;
-    if (program->Ast() == owner->GetTopStatement()) {
+    if (program->Ast() == node->GetTopStatement()) {
         absPath = std::string {program->AbsoluteName()};
     }
     auto externals = program->DirectExternalSources();
-    auto top = owner->GetTopStatement();
+    auto top = node->GetTopStatement();
     for (const auto &entry : externals) {
         for (const auto &p : entry.second) {
             auto programAbsPath = std::string {p->AbsoluteName()};
@@ -84,20 +86,13 @@ OwnerId GetOwnerId(ark::es2panda::ir::AstNode *node, ark::es2panda::parser::Prog
         }
     }
     // Should uniquely identify a token using it's sourceFile path, start and end positions
-    auto id = absPath + ":" + std::to_string(owner->Start().index) + ":" + std::to_string(owner->Start().line) + ":" +
-              std::to_string(owner->End().index) + ":" + std::to_string(owner->End().line);
+    auto id = absPath + ":" + std::to_string(node->Start().index) + ":" + std::to_string(node->Start().line) + ":" +
+              std::to_string(node->End().index) + ":" + std::to_string(node->End().line);
     return id;
 }
 
-// Used because '<' is defined automatically for pair {Index, Line}
-using Pos = std::pair<size_t, size_t>;
-using PosList = std::set<Pos>;
-ark::es2panda::lexer::SourcePosition ToSourcePos(Pos pos)
-{
-    return ark::es2panda::lexer::SourcePosition {pos.first, pos.second};
-}
-
-FileRefMap FindReferences(const ark::es2panda::SourceFile &srcFile, OwnerId tokenId, std::string tokenName)
+std::set<ark::es2panda::lsp::ReferencedNode> FindReferences(const ark::es2panda::SourceFile &srcFile,
+                                                            LocationId tokenLocationId, std::string tokenName)
 {
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
     auto filePath = std::string {srcFile.filePath};
@@ -105,48 +100,40 @@ FileRefMap FindReferences(const ark::es2panda::SourceFile &srcFile, OwnerId toke
     auto context = initializer.CreateContext(filePath.c_str(), ES2PANDA_STATE_CHECKED, fileContent.c_str());
 
     // Clear before searching each file
-    PosList posList;
-    ark::es2panda::parser::Program *origin = nullptr;
-    auto cb = [&posList, &tokenId, &tokenName, &origin](ark::es2panda::ir::AstNode *node) {
-        auto nodeId = GetIdentifier(node);
-        if (nodeId == nullptr) {
+    std::set<ark::es2panda::lsp::ReferencedNode> res;
+    ark::es2panda::parser::Program *pprogram = nullptr;
+    auto cb = [&tokenName, &pprogram, &filePath, &tokenLocationId, &res](ark::es2panda::ir::AstNode *node) {
+        if (!node->IsIdentifier()) {
             return false;
         }
-        auto nodeName = GetIdentifierName(nodeId);
+        auto nodeName = ::GetIdentifierName(node);
         if (nodeName != tokenName) {
             return false;
         }
-        auto ownerId = GetOwnerId(node, origin);
-        if (ownerId == tokenId) {
-            posList.insert({nodeId->Start().index, nodeId->Start().line});
+        auto owner = GetOwner(node);
+        auto nodeOwnerLocationId = GetLocationId(owner, pprogram);
+        auto nodeLocationId = GetLocationId(node, pprogram);
+        bool isDefinition = nodeLocationId == nodeOwnerLocationId;
+        if (nodeOwnerLocationId == tokenLocationId) {
+            res.insert(ark::es2panda::lsp::ReferencedNode {filePath, node->Start().index, node->End().index,
+                                                           node->Start().line, isDefinition});
         }
         return false;
     };
 
     // Search an ast
-    auto search = [&posList, &cb](ark::es2panda::parser::Program *program) -> PositionList {
+    auto search = [&cb](ark::es2panda::parser::Program *program) -> void {
         if (program == nullptr) {
-            return {};
+            return;
         }
-        posList.clear();
         auto ast = program->Ast();
         ast->FindChild(cb);
-        PositionList res;
-        for (auto pos : posList) {
-            res.push_back(ToSourcePos(pos));
-        }
-        return res;
     };
 
     // Search the file
-    FileRefMap res;
     auto pctx = reinterpret_cast<ark::es2panda::public_lib::Context *>(context);
-    auto pprogram = pctx->parserProgram;
-    {
-        origin = pprogram;
-        auto list = search(pprogram);
-        res[std::string {pprogram->SourceFile().GetPath()}] = list;
-    }
+    pprogram = pctx->parserProgram;
+    search(pprogram);
 
     initializer.DestroyContext(context);
     return res;
@@ -154,11 +141,11 @@ FileRefMap FindReferences(const ark::es2panda::SourceFile &srcFile, OwnerId toke
 }  // namespace
 
 namespace ark::es2panda::lsp {
-FileRefMap FindReferences(CancellationToken *tkn, const std::vector<ark::es2panda::SourceFile> &srcFiles,
-                          const ark::es2panda::SourceFile &srcFile, size_t position)
+std::set<ReferencedNode> FindReferences(CancellationToken *tkn, const std::vector<ark::es2panda::SourceFile> &srcFiles,
+                                        const ark::es2panda::SourceFile &srcFile, size_t position)
 {
     std::string tokenName;
-    OwnerId tokenId;
+    LocationId tokenLocationId;
     // Part 1: Determine the type of token function/variable
     {
         ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
@@ -167,17 +154,18 @@ FileRefMap FindReferences(CancellationToken *tkn, const std::vector<ark::es2pand
         auto context = initializer.CreateContext(filePath.c_str(), ES2PANDA_STATE_CHECKED, fileContent.c_str());
 
         auto touchingToken = GetTouchingToken(context, position, false);
-        tokenName = GetIdentifierName(touchingToken);
-        tokenId =
-            ::GetOwnerId(touchingToken, reinterpret_cast<ark::es2panda::public_lib::Context *>(context)->parserProgram);
+        tokenName = ::GetIdentifierName(touchingToken);
+        auto owner = GetOwner(touchingToken);
+        tokenLocationId =
+            ::GetLocationId(owner, reinterpret_cast<ark::es2panda::public_lib::Context *>(context)->parserProgram);
         initializer.DestroyContext(context);
     }
 
-    if (tokenId.empty()) {
+    if (tokenLocationId.empty()) {
         return {};
     }
 
-    std::map<std::string, PositionList> res;
+    std::set<ReferencedNode> res;
     // NOTE(muhammet): The process is very wasteful, it creates a new context for each file even if they're dependent on
     // one another
     for (auto fl : srcFiles) {
@@ -186,8 +174,8 @@ FileRefMap FindReferences(CancellationToken *tkn, const std::vector<ark::es2pand
         if (tkn->IsCancellationRequested()) {
             return res;
         }
-        auto posMap = ::FindReferences(fl, tokenId, tokenName);
-        for (const auto &entry : posMap) {
+        auto refList = ::FindReferences(fl, tokenLocationId, tokenName);
+        for (const auto &entry : refList) {
             res.insert(entry);
         }
     }

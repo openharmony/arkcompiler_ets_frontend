@@ -246,11 +246,16 @@ DocumentHighlightsReferences GetDocumentHighlights(char const *fileName, size_t 
     return result;
 }
 
-FileRefMap FindReferencesWrapper(ark::es2panda::lsp::CancellationToken *tkn,
-                                 const std::vector<ark::es2panda::SourceFile> &srcFiles,
-                                 const ark::es2panda::SourceFile &srcFile, size_t position)
+std::vector<ark::es2panda::lsp::ReferencedNode> FindReferencesWrapper(
+    ark::es2panda::lsp::CancellationToken *tkn, const std::vector<ark::es2panda::SourceFile> &srcFiles,
+    const ark::es2panda::SourceFile &srcFile, size_t position)
 {
-    return FindReferences(tkn, srcFiles, srcFile, position);
+    auto tmp = FindReferences(tkn, srcFiles, srcFile, position);
+    std::vector<ark::es2panda::lsp::ReferencedNode> res(tmp.size());
+    for (const auto &entry : tmp) {
+        res.emplace_back(entry);
+    }
+    return res;
 }
 
 std::vector<TextSpan> GetBraceMatchingAtPositionWrapper(char const *fileName, size_t position)
@@ -260,6 +265,29 @@ std::vector<TextSpan> GetBraceMatchingAtPositionWrapper(char const *fileName, si
     auto result = GetBraceMatchingAtPosition(context, position);
     initializer.DestroyContext(context);
     return result;
+}
+
+std::vector<ark::es2panda::lsp::RenameLocation> FindRenameLocationsWrapper(
+    const std::vector<ark::es2panda::SourceFile> &srcFiles, const ark::es2panda::SourceFile &srcFile, size_t position)
+{
+    auto tmp = FindRenameLocations(srcFiles, srcFile, position);
+    std::vector<ark::es2panda::lsp::RenameLocation> res(tmp.size());
+    for (const auto &entry : tmp) {
+        res.emplace_back(entry);
+    }
+    return res;
+}
+
+std::vector<ark::es2panda::lsp::RenameLocation> FindRenameLocationsWithCancellationWrapper(
+    ark::es2panda::lsp::CancellationToken *tkn, const std::vector<ark::es2panda::SourceFile> &srcFiles,
+    const ark::es2panda::SourceFile &srcFile, size_t position)
+{
+    auto tmp = FindRenameLocations(tkn, srcFiles, srcFile, position);
+    std::vector<ark::es2panda::lsp::RenameLocation> res(tmp.size());
+    for (const auto &entry : tmp) {
+        res.emplace_back(entry);
+    }
+    return res;
 }
 
 DiagnosticReferences GetSuggestionDiagnostics(const char *fileName)
@@ -314,6 +342,8 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetCompilerOptionsDiagnostics,
                     GetReferenceLocationAtPosition,
                     GetDocumentHighlights,
+                    FindRenameLocationsWrapper,
+                    FindRenameLocationsWithCancellationWrapper,
                     FindReferencesWrapper,
                     GetSuggestionDiagnostics,
                     GetCompletionsAtPosition,
