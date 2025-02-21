@@ -18,42 +18,37 @@
 
 #include <string>
 #include <vector>
+#include <optional>
+#include "checker/checker.h"
 
 namespace ark::es2panda::lsp {
 
-enum class ScriptElementKind {
-    UNKNOWN,
-    WARNING,
-    KEYWORD,
-    SCRIPT_ELEMENT,
-    MODULE_ELEMENT,
-    CLASS_ELEMENT,
-    LOCAL_CLASS_ELEMENT,
-    INTERFACE_ELEMENT,
-    TYPE_ELEMENT,
-    ENUM_ELEMENT,
-    ENUM_MEMBER_ELEMENT,
-    VARIABLE_ELEMENT,
-    LOCAL_VARIABLE_ELEMENT,
-    FUNCTION_ELEMENT,
-    LOCAL_FUNCTION_ELEMENT,
-    MEMBER_FUNCTION_ELEMENT,
-    MEMBER_GET_ACCESSOR_ELEMENT,
-    MEMBER_SET_ACCESSOR_ELEMENT,
-    MEMBER_VARIABLE_ELEMENT,
-    CONSTRUCTOR_IMPLEMENTATION_ELEMENT,
-    CALL_SIGNATURE_ELEMENT,
-    INDEX_SIGNATURE_ELEMENT,
-    CONSTRUCT_SIGNATURE_ELEMENT,
-    PARAMETER_ELEMENT,
-    TYPE_PARAMETER_ELEMENT,
-    PRIMITIVE_TYPE,
-    LABEL,
-    ALIAS,
-    CONST_ELEMENT,
-    LET_ELEMENT,
-    DIRECTORY,
-    EXTERNAL_MODULE_NAME
+enum class CompletionEntryKind {
+    TEXT = 1,
+    METHOD = 2,
+    FUNCTION = 3,
+    CONSTRUCTOR = 4,
+    FIELD = 5,
+    VARIABLE = 6,
+    CLASS = 7,
+    INTERFACE = 8,
+    MODULE = 9,
+    PROPERTY = 10,
+    UNIT = 11,
+    VALUE = 12,
+    ENUM = 13,
+    KEYWORD = 14,
+    SNIPPET = 15,
+    COLOR = 16,
+    FILE = 17,
+    REFERENCE = 18,
+    FOLDER = 19,
+    ENUM_MEMBER = 20,
+    CONSTANT = 21,
+    STRUCT = 22,
+    EVENT = 23,
+    OPERATOR = 24,
+    TYPE_PARAMETER = 25
 };
 
 namespace sort_text {
@@ -68,9 +63,31 @@ constexpr std::string_view CLASS_MEMBER_SNIPPETS = "17";
 }  // namespace sort_text
 
 struct CompletionEntry {
-    std::string name;
-    ScriptElementKind kind;
-    std::string_view sortText;
+private:
+    std::string name_;
+    CompletionEntryKind kind_;
+    std::string sortText_;
+    // This is what the Client uses
+    std::optional<std::string> insertText_;
+
+public:
+    explicit CompletionEntry(std::string name = "", CompletionEntryKind kind = CompletionEntryKind::TEXT,
+                             std::string sortText = "", std::optional<std::string> insertText = std::nullopt)
+        : name_(std::move(name)), kind_(kind), sortText_(std::move(sortText)), insertText_(std::move(insertText))
+    {
+    }
+    std::optional<std::string> GetInsertText()
+    {
+        return insertText_;
+    }
+    CompletionEntryKind GetCompletionKind()
+    {
+        return kind_;
+    }
+    std::string GetName()
+    {
+        return name_;
+    }
 };
 
 enum class CompletionDataKind { DATA, KEYWORDS };
@@ -78,6 +95,25 @@ enum class CompletionDataKind { DATA, KEYWORDS };
 struct Request {
     CompletionDataKind kind;
     std::vector<CompletionEntry> keywordCompletions;
+};
+
+struct LabelDetails {
+private:
+    std::optional<std::string> detail_;
+    std::optional<std::string> description_;
+};
+
+struct CompletionInfo {
+private:
+    std::vector<CompletionEntry> entries_;
+
+public:
+    explicit CompletionInfo(std::vector<CompletionEntry> entries = {}) : entries_(std::move(entries)) {}
+
+    std::vector<CompletionEntry> GetEntries()
+    {
+        return entries_;
+    }
 };
 
 std::vector<CompletionEntry> AllKeywordsCompletions();

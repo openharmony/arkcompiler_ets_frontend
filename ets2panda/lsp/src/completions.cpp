@@ -31,8 +31,9 @@ std::vector<CompletionEntry> AllKeywordsCompletions()
     std::vector<CompletionEntry> keywords;
     for (int i = static_cast<int>(lexer::TokenType::FIRST_KEYW); i <= static_cast<int>(lexer::TokenType::KEYW_YIELD);
          i++) {
-        keywords.push_back({TokenToString(static_cast<lexer::TokenType>(i)), ScriptElementKind::KEYWORD,
-                            sort_text::GLOBALS_OR_KEYWORDS});
+        keywords.emplace_back(lsp::CompletionEntry(TokenToString(static_cast<lexer::TokenType>(i)),
+                                                   CompletionEntryKind::KEYWORD,
+                                                   std::string(sort_text::GLOBALS_OR_KEYWORDS)));
     }
     return keywords;
 }
@@ -42,8 +43,8 @@ std::vector<CompletionEntry> GetKeywordCompletions(const std::string &input)
     std::vector<CompletionEntry> allKeywords = AllKeywordsCompletions();
     std::vector<CompletionEntry> completions;
 
-    for (const auto &entry : allKeywords) {
-        if (entry.name.find(ToLowerCase(input)) == 0) {
+    for (auto entry : allKeywords) {
+        if (entry.GetName().find(ToLowerCase(input)) == 0) {
             completions.push_back(entry);
         }
     }

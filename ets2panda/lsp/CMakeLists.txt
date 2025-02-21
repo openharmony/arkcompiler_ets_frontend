@@ -21,6 +21,7 @@ set(ES2PANDA_LSP_SRC
   ./src/references.cpp
   ./src/get_adjusted_location.cpp
   ./src/find_references.cpp
+  ./src/string_completions.cpp
 )
 
 panda_add_library(${LSP_LIB} SHARED ${ES2PANDA_LSP_SRC})
