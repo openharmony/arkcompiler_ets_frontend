@@ -109,7 +109,7 @@ function do_checkout() {
     popd >/dev/null 2>&1 || exit 1
 }
 
-GIT_URL=https://gitee.com/openharmony-sig/arkcompiler_ets_frontend.git
+GIT_URL=https://gitee.com/rri_opensource/koala_projects.git
 DEST="${DEST:-koala-sig}"
 do_checkout "${GIT_URL}" panda_rev_5-static "${DEST}"
 
