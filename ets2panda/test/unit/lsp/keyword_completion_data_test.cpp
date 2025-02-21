@@ -26,8 +26,8 @@ TEST_F(LSPAPITests, GetKeywordCompletionsStartWithA)
                                          "assert",   "asserts", "async",  "await"};
 
     std::vector<std::string> actual;
-    for (const auto &entry : result.keywordCompletions) {
-        actual.push_back(entry.name);
+    for (auto entry : result.keywordCompletions) {
+        actual.push_back(entry.GetName());
     }
 
     ASSERT_EQ(actual, expected);
@@ -40,8 +40,8 @@ TEST_F(LSPAPITests, GetKeywordCompletionsStartWithAs)
     ark::es2panda::lsp::Request result = ark::es2panda::lsp::KeywordCompletionData(input);
 
     std::vector<std::string> actual;
-    for (const auto &entry : result.keywordCompletions) {
-        actual.push_back(entry.name);
+    for (auto entry : result.keywordCompletions) {
+        actual.push_back(entry.GetName());
     }
 
     ASSERT_EQ(actual, expected);
@@ -54,8 +54,8 @@ TEST_F(LSPAPITests, GetKeywordCompletionsStartWithAs2)
     std::vector<std::string> expected = {"assert", "asserts"};
 
     std::vector<std::string> actual;
-    for (const auto &entry : result.keywordCompletions) {
-        actual.push_back(entry.name);
+    for (auto entry : result.keywordCompletions) {
+        actual.push_back(entry.GetName());
     }
 
     ASSERT_EQ(actual, expected);
@@ -68,8 +68,8 @@ TEST_F(LSPAPITests, GetKeywordCompletionsStartWithRe)
     std::vector<std::string> expected = {"readonly", "rethrows", "return", "require"};
 
     std::vector<std::string> actual;
-    for (const auto &entry : result.keywordCompletions) {
-        actual.push_back(entry.name);
+    for (auto entry : result.keywordCompletions) {
+        actual.push_back(entry.GetName());
     }
 
     ASSERT_EQ(actual, expected);
@@ -82,8 +82,8 @@ TEST_F(LSPAPITests, GetKeywordCompletionsStartWithRet)
     std::vector<std::string> expected = {"rethrows", "return"};
 
     std::vector<std::string> actual;
-    for (const auto &entry : result.keywordCompletions) {
-        actual.push_back(entry.name);
+    for (auto entry : result.keywordCompletions) {
+        actual.push_back(entry.GetName());
     }
 
     ASSERT_EQ(actual, expected);
@@ -98,8 +98,8 @@ TEST_F(LSPAPITests, GetKeywordCompletionsStartWithI)
                                          "interface",  "is",     "isize",  "internal"};
 
     std::vector<std::string> actual;
-    for (const auto &entry : result.keywordCompletions) {
-        actual.push_back(entry.name);
+    for (auto entry : result.keywordCompletions) {
+        actual.push_back(entry.GetName());
     }
 
     ASSERT_EQ(actual, expected);
@@ -112,8 +112,8 @@ TEST_F(LSPAPITests, GetKeywordCompletionsStartWithInt)
     std::vector<std::string> expected = {"int", "interface", "internal"};
 
     std::vector<std::string> actual;
-    for (const auto &entry : result.keywordCompletions) {
-        actual.push_back(entry.name);
+    for (auto entry : result.keywordCompletions) {
+        actual.push_back(entry.GetName());
     }
 
     ASSERT_EQ(actual, expected);
@@ -125,8 +125,8 @@ TEST_F(LSPAPITests, GetKeywordCompletionsSensitiveStartWithT)
     std::vector<std::string> expected = {"target", "this", "throw", "throws", "true", "try", "type", "typeof"};
 
     std::vector<std::string> actual;
-    for (const auto &entry : result.keywordCompletions) {
-        actual.push_back(entry.name);
+    for (auto entry : result.keywordCompletions) {
+        actual.push_back(entry.GetName());
     }
 
     ASSERT_EQ(actual, expected);
@@ -138,8 +138,8 @@ TEST_F(LSPAPITests, GetKeywordCompletionsSensitiveStartWithTy)
     std::vector<std::string> expected = {"type", "typeof"};
 
     std::vector<std::string> actual;
-    for (const auto &entry : result.keywordCompletions) {
-        actual.push_back(entry.name);
+    for (auto entry : result.keywordCompletions) {
+        actual.push_back(entry.GetName());
     }
 
     ASSERT_EQ(actual, expected);

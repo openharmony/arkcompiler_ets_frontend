@@ -44,3 +44,7 @@ ets2panda_add_gtest(lsp_api_get_adjusted_location_test CPP_SOURCES
 ets2panda_add_gtest(lsp_api_test_find_references CPP_SOURCES
     find_references_test.cpp
 )
+
+ets2panda_add_gtest(lsp_api_slc_tests CPP_SOURCES
+    string_completions_test.cpp
+)
