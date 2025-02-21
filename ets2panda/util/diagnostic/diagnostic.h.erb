@@ -58,6 +58,7 @@ private:
     const uint32_t id_;
     const std::string_view message_;
 };
+
 % Diagnostic::diagnostics.each do |desc|
     constexpr static DiagnosticKind <%= desc.name %> {util::DiagnosticType::<%= desc.type.upcase %>, <%= desc.id %>, "<%= desc.message %>"};
 % end

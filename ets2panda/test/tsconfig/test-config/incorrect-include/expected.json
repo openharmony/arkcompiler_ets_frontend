@@ -1,5 +1,5 @@
 {
     "returncode": 1,
-    "stdout": "Fatal error: Invalid ArkTsConfig path: incorrect-include/arktsconfig.json\n",
-    "stderr": "ArkTsConfig error: 'include' must be an array\n"
+    "stdout": "Fatal error: Invalid ArkTsConfig path: incorrect-include/arktsconfig.json\nArkTS config error: The 'include' must have array type\n",
+    "stderr": ""
 }

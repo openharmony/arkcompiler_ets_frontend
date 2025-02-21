@@ -162,6 +162,8 @@ const char *DiagnosticTypeToString(DiagnosticType type)
             return "Declgen ets2ts warning";
         case DiagnosticType::COMPILER_BUG:
             return "Compiler bug";
+        case DiagnosticType::ARKTS_CONFIG_ERROR:
+            return "ArkTS config error";
         default:
             UNREACHABLE();
     }

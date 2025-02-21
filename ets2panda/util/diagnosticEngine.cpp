@@ -122,6 +122,7 @@ bool DiagnosticEngine::IsError(DiagnosticType type) const
         case DiagnosticType::PLUGIN:
         case DiagnosticType::DECLGEN_ETS2TS_ERROR:
         case DiagnosticType::COMPILER_BUG:
+        case DiagnosticType::ARKTS_CONFIG_ERROR:
             return true;
         case DiagnosticType::WARNING:
         case DiagnosticType::DECLGEN_ETS2TS_WARNING:

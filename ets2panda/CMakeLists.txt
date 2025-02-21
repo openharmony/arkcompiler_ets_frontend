@@ -126,11 +126,13 @@ panda_gen(
         ${DIAGNOSTIC_DIR}/fatal.yaml
         ${CMAKE_CURRENT_SOURCE_DIR}/declgen_ets2ts/declgen_ets2ts_error.yaml
         ${CMAKE_CURRENT_SOURCE_DIR}/declgen_ets2ts/declgen_ets2ts_warning.yaml
+        ${DIAGNOSTIC_DIR}/arktsconfig_error.yaml
     TARGET_NAME es2panda_diagnostic_gen
     TEMPLATES diagnostic.h.erb
     SOURCE ${DIAGNOSTIC_DIR}
     DESTINATION ${GENERATED_DIR}
     API
+        ${DIAGNOSTIC_DIR}/diagnostic.rb
         ${DIAGNOSTIC_DIR}/diagnostic.rb
         ${DIAGNOSTIC_DIR}/diagnostic.rb
         ${DIAGNOSTIC_DIR}/diagnostic.rb
