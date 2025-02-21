@@ -23,7 +23,7 @@
                 }
               }
             },
-            "kind": "method",
+            "kind": "get",
             "accessibility": "public",
             "static": false,
             "optional": false,
@@ -257,7 +257,7 @@
                     }
                   }
                 },
-                "kind": "method",
+                "kind": "set",
                 "accessibility": "public",
                 "static": false,
                 "optional": false,
@@ -545,7 +545,7 @@
                 }
               }
             },
-            "kind": "method",
+            "kind": "set",
             "accessibility": "public",
             "static": false,
             "optional": false,

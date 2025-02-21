@@ -132,8 +132,9 @@ static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const c
     funcExpr->SetRange(func->Range());
     func->AddFlag(ir::ScriptFunctionFlags::METHOD);
 
-    auto *method = checker->AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, methodIdent, funcExpr,
-                                                            flags, checker->Allocator(), false);
+    auto *method = checker->AllocNode<ir::MethodDefinition>(isSetter ? ir::MethodDefinitionKind::SET
+                                                                     : ir::MethodDefinitionKind::GET,
+                                                            methodIdent, funcExpr, flags, checker->Allocator(), false);
 
     method->Id()->SetMutator();
     method->SetRange(field->Range());
