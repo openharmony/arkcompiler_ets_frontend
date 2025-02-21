@@ -18,6 +18,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as child_process from 'child_process';
 
+// @ts-ignore
 import { arkts, arktsGlobal } from 'libarkts/arkoala-arkts/libarkts/build/src/es2panda';
 
 import {
@@ -35,7 +36,7 @@ import {
   PluginDriver,
   PluginHook
 } from '../plugins/plugins_driver';
-import { 
+import {
   Logger,
   LogData,
   LogDataFactory
