@@ -24,6 +24,7 @@ ets2panda_add_gtest(lsp_api_test CPP_SOURCES
     get_span_of_enclosing_comment_test.cpp
     user_preferences.cpp
     keyword_completion_data_test.cpp
+    lsp_rename_test.cpp
 )
 
 ets2panda_add_gtest(lsp_quick_info_api_test CPP_SOURCES
