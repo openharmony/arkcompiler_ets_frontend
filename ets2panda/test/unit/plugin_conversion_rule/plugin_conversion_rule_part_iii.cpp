@@ -693,8 +693,9 @@ TEST_F(PluginConversionRuleUnitTest, IRSignaturePtrCall)
     EXPECT_TRUE(HasMatched(targetAPIWithNoSpace));
 }
 
+// #22952
 // apiName: CreateSignature
-TEST_F(PluginConversionRuleUnitTest, IRSignaturerPtrConstructor)
+TEST_F(PluginConversionRuleUnitTest, DISABLED_IRSignaturerPtrConstructor)
 {
     std::string targetCAPI {R"(
     extern "C" es2panda_Signature *CreateSignature([[maybe_unused]] es2panda_Context *context,

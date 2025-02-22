@@ -74,16 +74,6 @@ void ETSChecker::CheckObjectLiteralKeys(const ArenaVector<ir::Expression *> &pro
     }
 }
 
-static void SetupFunctionalInterface(ETSObjectType *type)
-{
-    type->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
-    auto *invoke = type->GetOwnProperty<PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
-    auto *invokeType = invoke->TsType()->AsETSFunctionType();
-    ES2PANDA_ASSERT(invokeType->IsETSArrowType());
-    auto *signature = invokeType->CallSignatures()[0];
-    signature->AddSignatureFlag(SignatureFlags::FUNCTIONAL_INTERFACE_SIGNATURE);
-}
-
 static void SetupBuiltinMember(varbinder::Variable *var)
 {
     auto *type = var->TsType();
@@ -163,7 +153,85 @@ static constexpr std::string_view BUILTINS_TO_INIT[] = {
     compiler::Signatures::BUILTIN_RETHROWING_FUNCTION15_CLASS,
     compiler::Signatures::BUILTIN_RETHROWING_FUNCTION16_CLASS,
     compiler::Signatures::BUILTIN_RETHROWING_FUNCTIONN_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA0_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA1_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA2_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA3_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA4_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA5_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA6_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA7_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA8_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA9_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA10_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA11_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA12_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA13_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA14_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA15_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDA16_CLASS,
+    compiler::Signatures::BUILTIN_LAMBDAN_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_LAMBDA0_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_LAMBDA1_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_LAMBDA2_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_LAMBDA3_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_LAMBDA4_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_LAMBDA5_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_LAMBDA6_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_LAMBDA7_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_LAMBDA8_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_LAMBDA9_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_LAMBDA10_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_LAMBDA11_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_LAMBDA12_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_LAMBDA13_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_LAMBDA14_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_LAMBDA15_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_LAMBDA16_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_LAMBDAN_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_LAMBDA0_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_LAMBDA1_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_LAMBDA2_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_LAMBDA3_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_LAMBDA4_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_LAMBDA5_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_LAMBDA6_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_LAMBDA7_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_LAMBDA8_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_LAMBDA9_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_LAMBDA10_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_LAMBDA11_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_LAMBDA12_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_LAMBDA13_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_LAMBDA14_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_LAMBDA15_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_LAMBDA16_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_LAMBDAN_CLASS,
 };
+
+static GlobalTypesHolder::ThrowMarker ToThrowMarker(SignatureFlags sf)
+{
+    if (sf & SignatureFlags::THROWS) {
+        return GlobalTypesHolder::ThrowMarker::THROWS;
+    }
+    if (sf & SignatureFlags::RETHROWS) {
+        return GlobalTypesHolder::ThrowMarker::RETHROWS;
+    }
+    return GlobalTypesHolder::ThrowMarker::NONE;
+}
+
+static void IntializeFunctionInterfaces(GlobalTypesHolder *typeHolder)
+{
+    auto const getItf = [typeHolder](size_t arity, GlobalTypesHolder::ThrowMarker marker) {
+        return typeHolder->GlobalFunctionBuiltinType(arity, marker)->AsETSObjectType();
+    };
+
+    for (size_t arity = 0; arity < typeHolder->VariadicFunctionTypeThreshold(); arity++) {
+        getItf(arity, GlobalTypesHolder::ThrowMarker::THROWS)->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
+        getItf(arity, GlobalTypesHolder::ThrowMarker::RETHROWS)->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
+        getItf(arity, GlobalTypesHolder::ThrowMarker::NONE)->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
+    }
+}
 
 void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
 {
@@ -179,35 +247,7 @@ void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
         InitBuiltin(this, sig);
     }
 
-    for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTION0_CLASS), nargs = 0;
-         id <= static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTIONN_CLASS); id++, nargs++) {
-        auto *type = GetGlobalTypesHolder()
-                         ->GlobalFunctionBuiltinType(nargs, ir::ScriptFunctionFlags::THROWS)
-                         ->AsETSObjectType();
-        SetupFunctionalInterface(type);
-    }
-
-    for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTION0_CLASS), nargs = 0;
-         id <= static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTIONN_CLASS); id++, nargs++) {
-        auto *type = GetGlobalTypesHolder()
-                         ->GlobalFunctionBuiltinType(nargs, ir::ScriptFunctionFlags::RETHROWS)
-                         ->AsETSObjectType();
-        SetupFunctionalInterface(type);
-        // note(gergocs): type->Interfaces().front() should be the same as the type in throwing functions
-        // and adding the functional flag to the interface should be deleted
-        type->Interfaces().front()->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
-    }
-
-    for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS), nargs = 0;
-         id <= static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS); id++, nargs++) {
-        auto *type =
-            GetGlobalTypesHolder()->GlobalFunctionBuiltinType(nargs, ir::ScriptFunctionFlags::NONE)->AsETSObjectType();
-        SetupFunctionalInterface(type);
-        // note(gergocs): type->Interfaces().front() should be the same as the type in rethrowing functions
-        // and adding the functional flag to the interface should be deleted
-        type->Interfaces().front()->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
-        type->Interfaces().front()->Interfaces().front()->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
-    }
+    IntializeFunctionInterfaces(GetGlobalTypesHolder());
 
     for (const auto &[name, var] : varMap) {
         (void)name;
@@ -492,9 +532,14 @@ ETSObjectType *ETSChecker::GlobalBuiltinJSValueType() const
     return AsETSObjectType(&GlobalTypesHolder::GlobalJSValueBuiltinType);
 }
 
-ETSObjectType *ETSChecker::GlobalBuiltinFunctionType(size_t nargs, ir::ScriptFunctionFlags flags) const
+ETSObjectType *ETSChecker::GlobalBuiltinFunctionType(size_t nargs, SignatureFlags flags) const
 {
-    return AsETSObjectType(&GlobalTypesHolder::GlobalFunctionBuiltinType, nargs, flags);
+    return AsETSObjectType(&GlobalTypesHolder::GlobalFunctionBuiltinType, nargs, ToThrowMarker(flags));
+}
+
+ETSObjectType *ETSChecker::GlobalBuiltinLambdaType(size_t nargs, SignatureFlags flags) const
+{
+    return AsETSObjectType(&GlobalTypesHolder::GlobalLambdaBuiltinType, nargs, ToThrowMarker(flags));
 }
 
 size_t ETSChecker::GlobalBuiltinFunctionTypeVariadicThreshold() const

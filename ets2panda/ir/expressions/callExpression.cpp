@@ -40,6 +40,13 @@ void CallExpression::TransformChildren(const NodeTransformer &cb, std::string_vi
             it = transformedNode->AsExpression();
         }
     }
+
+    if (trailingBlock_ != nullptr) {
+        if (auto *transformedNode = cb(trailingBlock_); trailingBlock_ != transformedNode) {
+            trailingBlock_->SetTransformedNode(transformationName, transformedNode);
+            trailingBlock_ = transformedNode->AsBlockStatement();
+        }
+    }
 }
 
 void CallExpression::Iterate(const NodeTraverser &cb) const
@@ -66,6 +73,7 @@ void CallExpression::Dump(ir::AstDumper *dumper) const
                  {"arguments", arguments_},
                  {"optional", IsOptional()},
                  {"typeParameters", AstDumper::Optional(typeParams_)}});
+    // #22953: trailing block is not handled
 }
 
 void CallExpression::Dump(ir::SrcDumper *dumper) const
@@ -109,11 +117,6 @@ void CallExpression::Compile(compiler::ETSGen *etsg) const
 checker::Type *CallExpression::Check(checker::TSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
-}
-
-bool CallExpression::IsETSConstructorCall() const
-{
-    return callee_->IsThisExpression() || callee_->IsSuperExpression();
 }
 
 checker::VerifiedType CallExpression::Check(checker::ETSChecker *checker)

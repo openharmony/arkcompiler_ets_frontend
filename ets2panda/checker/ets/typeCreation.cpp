@@ -126,11 +126,11 @@ namespace {
     signatureInfo->params.insert(signatureInfo->params.end(), params);
     signatureInfo->minArgCount = signatureInfo->params.size();
 
-    auto *const signature = checker->CreateSignature(signatureInfo, returnType, name);
-    signature->SetFunction(globalFunction);
+    auto *const signature = checker->CreateSignature(signatureInfo, returnType, globalFunction);
+    signature->SetInternalName(name);
     signature->AddSignatureFlag(checker::SignatureFlags::PROXY);
 
-    return checker->CreateETSFunctionType(signature, name);
+    return checker->CreateETSMethodType(name, {{signature}, checker->Allocator()->Adapter()});
 }
 
 [[nodiscard]] checker::Signature *MakeGlobalSignature(checker::ETSChecker *const checker,
@@ -139,16 +139,10 @@ namespace {
 {
     auto *const signatureInfo = checker->CreateSignatureInfo();
     signatureInfo->params.reserve(function->Params().size());
-    for (const auto *const item : function->Params()) {
-        auto const *const param = item->AsETSParameterExpression();
-        auto *const var = param->Variable()->AsLocalVariable();
-        if (!param->IsDefault()) {
-            ++signatureInfo->minArgCount;
-        } else {
-            var->AddFlag(varbinder::VariableFlags::OPTIONAL);
-        }
-        signatureInfo->params.emplace_back(var);
+    for (const auto *const param : function->Params()) {
+        signatureInfo->params.push_back(param->AsETSParameterExpression()->Variable()->AsLocalVariable());
     }
+    signatureInfo->minArgCount = signatureInfo->params.size();
 
     auto *const signature = checker->CreateSignature(signatureInfo, returnType, function);
     signature->AddSignatureFlag(checker::SignatureFlags::PUBLIC | checker::SignatureFlags::STATIC);
@@ -271,7 +265,7 @@ EnumType *ETSChecker::CreateEnumTypeFromEnumDeclaration(ir::TSEnumDeclaration co
             enumLiteralType->SetToStringMethod(toStringMethod);
             enumLiteralType->SetValuesMethod(valuesMethod);
         } else {
-            ES2PANDA_ASSERT(IsAnyError());
+            ASSERT(IsAnyError());
         }
     }
     return enumType;
@@ -313,39 +307,83 @@ ETSTypeAliasType *ETSChecker::CreateETSTypeAliasType(util::StringView name, cons
     return Allocator()->New<ETSTypeAliasType>(this, name, declNode, isRecursive);
 }
 
-ETSFunctionType *ETSChecker::CreateETSFunctionType(Signature *signature)
+ETSFunctionType *ETSChecker::CreateETSArrowType(Signature *signature)
 {
-    return Allocator()->New<ETSFunctionType>(this, signature->Function()->Id()->Name(), signature);
+    return Allocator()->New<ETSFunctionType>(this, signature);
 }
 
-ETSFunctionType *ETSChecker::CreateETSFunctionType(Signature *signature, util::StringView const &name)
+ETSFunctionType *ETSChecker::CreateETSMethodType(util::StringView name, ArenaVector<Signature *> &&signatures)
 {
-    return Allocator()->New<ETSFunctionType>(this, name, signature);
+    return Allocator()->New<ETSFunctionType>(this, name, std::move(signatures));
 }
 
-ETSFunctionType *ETSChecker::CreateETSFunctionType(ir::ScriptFunction *func, Signature *signature,
-                                                   util::StringView const &name)
+ETSFunctionType *ETSChecker::CreateETSDynamicArrowType(Signature *signature, Language lang)
 {
-    if (func->IsDynamic()) {
-        return Allocator()->New<ETSDynamicFunctionType>(this, name, signature, func->Language());
-    }
-
-    return Allocator()->New<ETSFunctionType>(this, name, signature);
+    return Allocator()->New<ETSDynamicFunctionType>(this, signature, lang);
 }
 
-ETSFunctionType *ETSChecker::CreateETSFunctionType(util::StringView const &name)
+ETSFunctionType *ETSChecker::CreateETSDynamicMethodType(util::StringView name, ArenaVector<Signature *> &&signatures,
+                                                        Language lang)
 {
-    return Allocator()->New<ETSFunctionType>(name, Allocator());
+    return Allocator()->New<ETSDynamicFunctionType>(this, name, std::move(signatures), lang);
+}
+
+static SignatureFlags ConvertToSignatureFlags(ir::ModifierFlags inModifiers, ir::ScriptFunctionFlags inFunctionFlags)
+{
+    SignatureFlags outFlags = SignatureFlags::NO_OPTS;
+
+    const auto convertModifier = [&outFlags, inModifiers](ir::ModifierFlags astFlag, SignatureFlags sigFlag) {
+        if (inModifiers & astFlag) {
+            outFlags |= sigFlag;
+        }
+    };
+    const auto convertFlag = [&outFlags, inFunctionFlags](ir::ScriptFunctionFlags funcFlag, SignatureFlags sigFlag) {
+        if (inFunctionFlags & funcFlag) {
+            outFlags |= sigFlag;
+        }
+    };
+
+    convertFlag(ir::ScriptFunctionFlags::THROWS, SignatureFlags::THROWS);
+    convertFlag(ir::ScriptFunctionFlags::RETHROWS, SignatureFlags::RETHROWS);
+    convertFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD, SignatureFlags::EXTENSION_FUNCTION);
+
+    convertFlag(ir::ScriptFunctionFlags::CONSTRUCTOR, SignatureFlags::CONSTRUCTOR);
+    convertFlag(ir::ScriptFunctionFlags::SETTER, SignatureFlags::SETTER);
+    convertFlag(ir::ScriptFunctionFlags::GETTER, SignatureFlags::GETTER);
+
+    convertModifier(ir::ModifierFlags::ABSTRACT, SignatureFlags::ABSTRACT);
+    convertModifier(ir::ModifierFlags::PROTECTED, SignatureFlags::PROTECTED);
+    convertModifier(ir::ModifierFlags::FINAL, SignatureFlags::FINAL);
+    convertModifier(ir::ModifierFlags::STATIC, SignatureFlags::STATIC);
+    convertModifier(ir::ModifierFlags::PUBLIC, SignatureFlags::PUBLIC);
+    convertModifier(ir::ModifierFlags::PRIVATE, SignatureFlags::PRIVATE);
+    convertModifier(ir::ModifierFlags::INTERNAL, SignatureFlags::INTERNAL);
+
+    return outFlags;
 }
 
 Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *returnType, ir::ScriptFunction *func)
 {
-    return Allocator()->New<Signature>(info, returnType, func);
+    if (info == nullptr) {  // #23134
+        ASSERT(IsAnyError());
+        return nullptr;
+    }
+    auto signature = Allocator()->New<Signature>(info, returnType, func);
+    signature->AddSignatureFlag(ConvertToSignatureFlags(func->Modifiers(), func->Flags()));
+    return signature;
 }
 
-Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *returnType, util::StringView internalName)
+Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *returnType, ir::ScriptFunctionFlags sff)
 {
-    return Allocator()->New<Signature>(info, returnType, internalName);
+    if (info == nullptr) {  // #23134
+        ASSERT(IsAnyError());
+        return nullptr;
+    }
+    auto signature = Allocator()->New<Signature>(info, returnType, nullptr);
+    signature->AddSignatureFlag(ConvertToSignatureFlags(ir::ModifierFlags::NONE, sff));
+    // synthetic arrow type signature flags
+    signature->AddSignatureFlag(SignatureFlags::ABSTRACT | SignatureFlags::CALL | SignatureFlags::PUBLIC);
+    return signature;
 }
 
 SignatureInfo *ETSChecker::CreateSignatureInfo()
@@ -527,68 +565,11 @@ Signature *ETSChecker::CreateBuiltinArraySignature(ETSArrayType *arrayType, size
     }
 
     auto [internalName, info] = CreateBuiltinArraySignatureInfo(arrayType, dim);
-    auto *signature = CreateSignature(info, GlobalVoidType(), internalName);
+    auto *signature = CreateSignature(info, GlobalVoidType(), ir::ScriptFunctionFlags::NONE);
+    signature->SetInternalName(internalName);
     globalArraySignatures_.insert({arrayType, signature});
 
     return signature;
-}
-
-void ETSChecker::AddThisReturnTypeFlagForInterfaceInvoke(ETSObjectType *interface)
-{
-    auto &callSigsOfInvoke0 =
-        interface->AsETSObjectType()
-            ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME)
-            ->TsType()
-            ->AsETSFunctionType()
-            ->CallSignatures();
-    for (auto sig : callSigsOfInvoke0) {
-        sig->AddSignatureFlag(SignatureFlags::EXTENSION_FUNCTION_RETURN_THIS);
-    }
-}
-
-ETSObjectType *ETSChecker::FunctionTypeToFunctionalInterfaceType(Signature *signature)
-{
-    ir::ScriptFunctionFlags flags = ir::ScriptFunctionFlags::NONE;
-    if (signature->Function() != nullptr) {
-        flags = signature->Function()->Flags();
-    } else {
-        if (signature->Throws()) {
-            flags |= ir::ScriptFunctionFlags::THROWS;
-        } else if (signature->Rethrows()) {
-            flags |= ir::ScriptFunctionFlags::RETHROWS;
-        }
-    }
-
-    auto *retType = signature->ReturnType();
-    if (signature->RestVar() != nullptr) {
-        auto *functionN =
-            GlobalBuiltinFunctionType(GlobalBuiltinFunctionTypeVariadicThreshold(), flags)->AsETSObjectType();
-        auto *substitution = NewSubstitution();
-        substitution->emplace(functionN->TypeArguments()[0]->AsETSTypeParameter(), MaybeBoxType(retType));
-        return functionN->Substitute(Relation(), substitution, signature->Function()->IsExtensionMethod());
-    }
-
-    // Note: FunctionN is not supported yet
-    if (signature->Params().size() >= GetGlobalTypesHolder()->VariadicFunctionTypeThreshold()) {
-        return nullptr;
-    }
-
-    auto *funcIface = GlobalBuiltinFunctionType(signature->Params().size(), flags)->AsETSObjectType();
-    auto *substitution = NewSubstitution();
-
-    for (size_t i = 0; i < signature->Params().size(); i++) {
-        substitution->emplace(funcIface->TypeArguments()[i]->AsETSTypeParameter(),
-                              MaybeBoxType(signature->Params()[i]->TsType()));
-    }
-    substitution->emplace(funcIface->TypeArguments()[signature->Params().size()]->AsETSTypeParameter(),
-                          MaybeBoxType(signature->ReturnType()));
-
-    auto *interFaceType =
-        funcIface->Substitute(Relation(), substitution, true, signature->Function()->IsExtensionMethod());
-    if (signature->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION_RETURN_THIS)) {
-        AddThisReturnTypeFlagForInterfaceInvoke(interFaceType);
-    }
-    return interFaceType;
 }
 
 ETSObjectType *ETSChecker::CreatePromiseOf(Type *type)
@@ -600,82 +581,6 @@ ETSObjectType *ETSChecker::CreatePromiseOf(Type *type)
     EmplaceSubstituted(substitution, promiseType->TypeArguments()[0]->AsETSTypeParameter()->GetOriginal(), type);
 
     return promiseType->Substitute(Relation(), substitution);
-}
-
-SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ETSFunctionType *typeNode)
-{
-    auto *signatureInfo = CreateSignatureInfo();
-
-    if (auto const *const typeParams = typeNode->TypeParams(); typeParams != nullptr) {
-        auto [typeParamTypes, ok] = CreateUnconstrainedTypeParameters(typeParams);
-        signatureInfo->typeParams = std::move(typeParamTypes);
-        if (ok) {
-            AssignTypeParameterConstraints(typeParams);
-        }
-    }
-
-    for (auto *const it : typeNode->Params()) {
-        auto *const param = it->AsETSParameterExpression();
-        auto *const ident = param->Ident();
-        auto *const variable = param->Variable()->AsLocalVariable();
-        auto *const typeAnnotation = param->TypeAnnotation();
-        ES2PANDA_ASSERT(variable != nullptr);
-
-        if (LIKELY(!param->IsRestParameter())) {
-            if (ident->TsType() == nullptr && typeAnnotation == nullptr) {
-                LogTypeError({"The type of parameter '", param->Name(), "' cannot be inferred."}, param->Start());
-                variable->SetTsType(GlobalTypeError());
-                ident->SetTsType(GlobalTypeError());
-            } else if (typeAnnotation != nullptr) {
-                variable->SetTsType(typeAnnotation->GetType(this));
-                ident->SetTsType(variable->TsType());  // just in case!
-            } else {
-                variable->SetTsType(ident->TsType());
-            }
-            if (!param->IsDefault()) {
-                ++signatureInfo->minArgCount;
-            } else {
-                variable->AddFlag(varbinder::VariableFlags::OPTIONAL);
-            }
-            signatureInfo->params.emplace_back(variable);
-        } else {
-            ES2PANDA_ASSERT(typeAnnotation != nullptr);
-            variable->SetTsType(typeAnnotation->GetType(this));
-            ident->SetTsType(variable->TsType());
-            signatureInfo->restVar = variable;
-
-            auto arrayType = signatureInfo->restVar->TsType()->AsETSArrayType();
-            CreateBuiltinArraySignature(arrayType, arrayType->Rank());
-        }
-    }
-
-    return signatureInfo;
-}
-
-Type *ETSChecker::ComposeReturnType(ir::ETSFunctionType *typeNode)
-{
-    auto *const returnTypeAnnotation = typeNode->ReturnType();
-    checker::Type *returnType = GlobalVoidType();
-
-    if (UNLIKELY(returnTypeAnnotation == nullptr)) {
-        if ((typeNode->Flags() & ir::ScriptFunctionFlags::ASYNC) !=
-            std::underlying_type_t<ir::ScriptFunctionFlags>(0U)) {
-            auto implicitPromiseVoid = [this]() {
-                const auto &promiseGlobal = GlobalBuiltinPromiseType()->AsETSObjectType();
-                auto substitution = NewSubstitution();
-                ETSChecker::EmplaceSubstituted(substitution, promiseGlobal->TypeArguments()[0]->AsETSTypeParameter(),
-                                               GlobalVoidType());
-                return promiseGlobal->Substitute(Relation(), substitution);
-            };
-
-            returnType = implicitPromiseVoid();
-        }
-    } else {
-        returnType = returnTypeAnnotation->GetType(this);
-        returnTypeAnnotation->SetTsType(returnType);
-    }
-
-    return returnType;
 }
 
 }  // namespace ark::es2panda::checker

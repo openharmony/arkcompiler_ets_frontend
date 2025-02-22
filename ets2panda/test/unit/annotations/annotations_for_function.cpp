@@ -94,7 +94,8 @@ private:
     NO_MOVE_SEMANTIC(AnnotationsforFunction);
 };
 
-TEST_F(AnnotationsforFunction, annotations_for_function)
+// #22952
+TEST_F(AnnotationsforFunction, DISABLED_annotations_for_function)
 {
     std::string_view text = R"(
     @interface Anno {

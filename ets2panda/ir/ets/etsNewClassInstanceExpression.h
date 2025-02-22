@@ -58,6 +58,11 @@ public:
         return typeReference_;
     }
 
+    [[nodiscard]] ArenaVector<ir::Expression *> &GetArguments() noexcept
+    {
+        return arguments_;
+    }
+
     [[nodiscard]] const ArenaVector<ir::Expression *> &GetArguments() const noexcept
     {
         return arguments_;

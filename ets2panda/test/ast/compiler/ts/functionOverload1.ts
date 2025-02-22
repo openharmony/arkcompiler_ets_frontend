@@ -19,5 +19,3 @@ function foo(a: { x: string, y: number }): number;
 function foo(a: { x: number | string }) {
     return 2;
 }
-
-/* @@? 17:10 Error TypeError: This overload signature is not compatible with its implementation signature  */

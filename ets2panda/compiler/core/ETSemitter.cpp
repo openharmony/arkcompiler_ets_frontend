@@ -934,11 +934,11 @@ ir::MethodDefinition *ETSEmitter::FindAsyncImpl(ir::ScriptFunction *asyncFunc)
     auto *checker = static_cast<checker::ETSChecker *>(Context()->checker);
     checker::TypeRelation *typeRel = checker->Relation();
     checker::SavedTypeRelationFlagsContext savedFlagsCtx(typeRel, checker::TypeRelationFlag::NO_RETURN_TYPE_CHECK);
-    method->Function()->Signature()->Compatible(typeRel, asyncFunc->Signature());
+    method->Function()->Signature()->IsSubtypeOf(typeRel, asyncFunc->Signature());
     auto overloadIt = method->Overloads().begin();
     while (overloadIt != method->Overloads().end() && !typeRel->IsTrue()) {
         method = *overloadIt;
-        method->Function()->Signature()->Compatible(typeRel, asyncFunc->Signature());
+        method->Function()->Signature()->IsSubtypeOf(typeRel, asyncFunc->Signature());
         ++overloadIt;
     }
     return typeRel->IsTrue() ? method : nullptr;

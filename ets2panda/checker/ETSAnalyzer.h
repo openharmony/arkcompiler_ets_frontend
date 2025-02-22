@@ -49,8 +49,8 @@ private:
     ETSChecker *GetETSChecker() const;
     void CheckInstantatedClass(ir::ETSNewClassInstanceExpression *expr, ETSObjectType *&calleeObj) const;
     void CheckMethodModifiers(ir::MethodDefinition *node) const;
-    checker::Signature *ResolveSignature(ETSChecker *checker, ir::CallExpression *expr, checker::Type *calleeType,
-                                         bool isFunctionalInterface, bool isUnionTypeWithFunctionalInterface) const;
+    checker::Signature *ResolveSignature(ETSChecker *checker, ir::CallExpression *expr,
+                                         checker::Type *calleeType) const;
     checker::Type *GetReturnType(ir::CallExpression *expr, checker::Type *calleeType) const;
     checker::Type *GetFunctionReturnType(ir::ReturnStatement *st, ir::ScriptFunction *containingFunc) const;
     checker::Type *GetCallExpressionReturnType(ir::CallExpression *expr, checker::Type *calleeType) const;

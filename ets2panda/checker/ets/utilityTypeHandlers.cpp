@@ -843,7 +843,7 @@ ir::MethodDefinition *ETSChecker::CreateNonStaticClassInitializer(varbinder::Cla
                                                        id->Clone(Allocator(), classScope->Node()), funcExpr,
                                                        ir::ModifierFlags::NONE, Allocator(), false);
 
-    auto *const funcType = CreateETSFunctionType(signature, id->Name());
+    auto *const funcType = CreateETSMethodType(id->Name(), {{signature}, Allocator()->Adapter()});
     ctor->SetTsType(funcType);
 
     return ctor;

@@ -48,8 +48,7 @@ public:
     ~CheckerTest() override = default;
     static void SetUpTestCase()
     {
-        constexpr auto COMPILER_SIZE = ark::operator""_MB(256ULL);
-        ark::mem::MemConfig::Initialize(0, 0, COMPILER_SIZE, 0, 0, 0);
+        ark::mem::MemConfig::Initialize(0, 0, ark::es2panda::COMPILER_SIZE, 0, 0, 0);
         ark::PoolManager::Initialize();
     }
 

@@ -147,8 +147,7 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
 {
     auto const &position = right_->Start();
 
-    checker::PropertySearchFlags searchFlag =
-        checker::PropertySearchFlags::SEARCH_METHOD | checker::PropertySearchFlags::IS_FUNCTIONAL;
+    checker::PropertySearchFlags searchFlag = checker::PropertySearchFlags::SEARCH_METHOD;
     searchFlag |= checker::PropertySearchFlags::SEARCH_IN_BASE | checker::PropertySearchFlags::SEARCH_IN_INTERFACES;
     // NOTE: maybe we need to exclude static methods: search_flag &= ~(checker::PropertySearchFlags::SEARCH_STATIC)
 

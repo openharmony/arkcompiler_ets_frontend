@@ -36,5 +36,5 @@ function main(): void {
   instance.cb(1, 2);
 }
 
-/* @@? 36:3 Error TypeError: Expected 1 arguments, got 2. */
-/* @@? 36:3 Error TypeError: No matching call signature for invoke0(int, int) */
+/* @@? 36:3 Error TypeError: Expected 1 arguments, got 2.  */
+/* @@? 36:3 Error TypeError: No matching call signature for (int, int)  */

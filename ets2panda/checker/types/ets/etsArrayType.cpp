@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -98,17 +98,12 @@ void ETSArrayType::AssignmentTarget(TypeRelation *relation, Type *source)
 
 void ETSArrayType::Cast(TypeRelation *const relation, Type *const target)
 {
+    if (relation->IsSupertypeOf(this, target)) {
+        relation->RemoveFlags(TypeRelationFlag::UNCHECKED_CAST);
+        return;
+    }
+
     if (target->HasTypeFlag(TypeFlag::ETS_ARRAY)) {
-        conversion::Identity(relation, this, target->AsETSArrayType());
-        if (relation->IsTrue()) {
-            return;
-        }
-
-        conversion::WideningReference(relation, this, target->AsETSArrayType());
-        if (relation->IsTrue()) {
-            return;
-        }
-
         conversion::NarrowingReference(relation, this, target->AsETSArrayType());
         if (relation->IsTrue()) {
             return;
@@ -119,34 +114,25 @@ void ETSArrayType::Cast(TypeRelation *const relation, Type *const target)
             relation->Result(true);
             return;
         }
-
-        conversion::Forbidden(relation);
+        relation->Result(relation->InCastingContext());
         return;
     }
 
-    if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-        conversion::WideningReference(relation, this, target->AsETSObjectType());
-        if (relation->IsTrue()) {
-            return;
-        }
-
-        conversion::Forbidden(relation);
-        return;
-    }
-
-    conversion::Forbidden(relation);
+    relation->Result(relation->InCastingContext());
 }
 
 void ETSArrayType::IsSupertypeOf(TypeRelation *const relation, Type *source)
 {
-    relation->Result(false);
-    // 3.8.3 Subtyping among Array Types
     if (source->IsETSArrayType()) {
-        auto *const sourceElemType = this->AsETSArrayType()->ElementType();
-        auto *const targetElemType = source->AsETSArrayType()->ElementType();
-        if (targetElemType->IsETSReferenceType() && sourceElemType->IsETSReferenceType()) {
-            sourceElemType->IsSupertypeOf(relation, targetElemType);
-        }
+        relation->IsSupertypeOf(this->AsETSArrayType()->ElementType(), source->AsETSArrayType()->ElementType());
+    }
+}
+
+void ETSArrayType::IsSubtypeOf(TypeRelation *const relation, Type *target)
+{
+    if (target->IsETSObjectType() && target->AsETSObjectType()->IsGlobalETSObjectType()) {
+        relation->Result(true);
+        return;
     }
 }
 

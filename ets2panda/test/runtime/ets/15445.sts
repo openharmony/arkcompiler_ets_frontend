@@ -15,10 +15,10 @@
 
 class A {
     public static foo<A1>(fn: Function1<A1, void>, arg: A1): void {
-        fn(arg)
+        fn.invoke0(arg)
     }
     public static foo<A1, A2>(fn: Function2<A1, A2, void>, arg1: A1, arg2: A2): void {
-        fn(arg1, arg2)
+        fn.invoke0(arg1, arg2)
     }
 }
 

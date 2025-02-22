@@ -649,35 +649,7 @@
                       "type": "Identifier",
                       "name": "p",
                       "typeAnnotation": {
-                        "type": "ETSUnionType",
-                        "types": [
-                          {
-                            "type": "ETSPrimitiveType",
-                            "loc": {
-                              "start": {
-                                "line": 26,
-                                "column": 22
-                              },
-                              "end": {
-                                "line": 26,
-                                "column": 28
-                              }
-                            }
-                          },
-                          {
-                            "type": "ETSUndefinedType",
-                            "loc": {
-                              "start": {
-                                "line": 26,
-                                "column": 19
-                              },
-                              "end": {
-                                "line": 26,
-                                "column": 20
-                              }
-                            }
-                          }
-                        ],
+                        "type": "ETSPrimitiveType",
                         "loc": {
                           "start": {
                             "line": 26,
@@ -777,130 +749,7 @@
                 }
               }
             },
-            "overloads": [
-              {
-                "type": "MethodDefinition",
-                "key": {
-                  "type": "Identifier",
-                  "name": "optional_foo",
-                  "decorators": [],
-                  "loc": {
-                    "start": {
-                      "line": 26,
-                      "column": 5
-                    },
-                    "end": {
-                      "line": 26,
-                      "column": 17
-                    }
-                  }
-                },
-                "kind": "method",
-                "accessibility": "public",
-                "static": false,
-                "optional": false,
-                "computed": false,
-                "value": {
-                  "type": "FunctionExpression",
-                  "function": {
-                    "type": "ScriptFunction",
-                    "id": {
-                      "type": "Identifier",
-                      "name": "optional_foo",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 26,
-                          "column": 5
-                        },
-                        "end": {
-                          "line": 26,
-                          "column": 17
-                        }
-                      }
-                    },
-                    "generator": false,
-                    "async": false,
-                    "expression": false,
-                    "params": [],
-                    "returnType": {
-                      "type": "ETSTypeReference",
-                      "part": {
-                        "type": "ETSTypeReferencePart",
-                        "name": {
-                          "type": "Identifier",
-                          "name": "string",
-                          "decorators": [],
-                          "loc": {
-                            "start": {
-                              "line": 26,
-                              "column": 31
-                            },
-                            "end": {
-                              "line": 26,
-                              "column": 37
-                            }
-                          }
-                        },
-                        "loc": {
-                          "start": {
-                            "line": 26,
-                            "column": 31
-                          },
-                          "end": {
-                            "line": 26,
-                            "column": 38
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 26,
-                          "column": 31
-                        },
-                        "end": {
-                          "line": 26,
-                          "column": 38
-                        }
-                      }
-                    },
-                    "declare": true,
-                    "loc": {
-                      "start": {
-                        "line": 868,
-                        "column": 1
-                      },
-                      "end": {
-                        "line": 868,
-                        "column": 1
-                      }
-                    }
-                  },
-                  "loc": {
-                    "start": {
-                      "line": 1,
-                      "column": 1
-                    },
-                    "end": {
-                      "line": 1,
-                      "column": 1
-                    }
-                  }
-                },
-                "overloads": [],
-                "decorators": [],
-                "loc": {
-                  "start": {
-                    "line": 26,
-                    "column": 5
-                  },
-                  "end": {
-                    "line": 1,
-                    "column": 1
-                  }
-                }
-              }
-            ],
+            "overloads": [],
             "decorators": [],
             "loc": {
               "start": {
@@ -1544,38 +1393,13 @@
                       "type": "Identifier",
                       "name": "p",
                       "typeAnnotation": {
-                        "type": "ETSUnionType",
-                        "types": [
-                          {
-                            "type": "ETSTypeReference",
-                            "part": {
-                              "type": "ETSTypeReferencePart",
-                              "name": {
-                                "type": "Identifier",
-                                "name": "A",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 17,
-                                    "column": 42
-                                  },
-                                  "end": {
-                                    "line": 17,
-                                    "column": 43
-                                  }
-                                }
-                              },
-                              "loc": {
-                                "start": {
-                                  "line": 17,
-                                  "column": 42
-                                },
-                                "end": {
-                                  "line": 17,
-                                  "column": 44
-                                }
-                              }
-                            },
+                        "type": "ETSTypeReference",
+                        "part": {
+                          "type": "ETSTypeReferencePart",
+                          "name": {
+                            "type": "Identifier",
+                            "name": "A",
+                            "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 17,
@@ -1583,24 +1407,21 @@
                               },
                               "end": {
                                 "line": 17,
-                                "column": 44
+                                "column": 43
                               }
                             }
                           },
-                          {
-                            "type": "ETSUndefinedType",
-                            "loc": {
-                              "start": {
-                                "line": 17,
-                                "column": 39
-                              },
-                              "end": {
-                                "line": 17,
-                                "column": 40
-                              }
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 42
+                            },
+                            "end": {
+                              "line": 17,
+                              "column": 44
                             }
                           }
-                        ],
+                        },
                         "loc": {
                           "start": {
                             "line": 17,
@@ -1672,102 +1493,7 @@
                 }
               }
             },
-            "overloads": [
-              {
-                "type": "MethodDefinition",
-                "key": {
-                  "type": "Identifier",
-                  "name": "optional_foo",
-                  "decorators": [],
-                  "loc": {
-                    "start": {
-                      "line": 17,
-                      "column": 25
-                    },
-                    "end": {
-                      "line": 17,
-                      "column": 37
-                    }
-                  }
-                },
-                "kind": "method",
-                "accessibility": "public",
-                "static": true,
-                "optional": false,
-                "computed": false,
-                "value": {
-                  "type": "FunctionExpression",
-                  "function": {
-                    "type": "ScriptFunction",
-                    "id": {
-                      "type": "Identifier",
-                      "name": "optional_foo",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 17,
-                          "column": 25
-                        },
-                        "end": {
-                          "line": 17,
-                          "column": 37
-                        }
-                      }
-                    },
-                    "generator": false,
-                    "async": false,
-                    "expression": false,
-                    "params": [],
-                    "returnType": {
-                      "type": "ETSPrimitiveType",
-                      "loc": {
-                        "start": {
-                          "line": 17,
-                          "column": 46
-                        },
-                        "end": {
-                          "line": 17,
-                          "column": 50
-                        }
-                      }
-                    },
-                    "declare": true,
-                    "loc": {
-                      "start": {
-                        "line": 659,
-                        "column": 1
-                      },
-                      "end": {
-                        "line": 659,
-                        "column": 1
-                      }
-                    }
-                  },
-                  "loc": {
-                    "start": {
-                      "line": 1,
-                      "column": 1
-                    },
-                    "end": {
-                      "line": 1,
-                      "column": 1
-                    }
-                  }
-                },
-                "overloads": [],
-                "decorators": [],
-                "loc": {
-                  "start": {
-                    "line": 17,
-                    "column": 8
-                  },
-                  "end": {
-                    "line": 1,
-                    "column": 1
-                  }
-                }
-              }
-            ],
+            "overloads": [],
             "decorators": [],
             "loc": {
               "start": {

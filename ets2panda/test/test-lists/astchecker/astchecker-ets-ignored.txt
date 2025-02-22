@@ -76,3 +76,51 @@ ast/parser/ets/forOfType.sts
 # and such case cannot be checked in astchecker
 ast/parser/ets/import_tests/export_and_import_class.sts
 ast/parser/ets/import_tests/export_and_import_top_level.sts
+
+# Issue: #22951
+ast/compiler/ets/extension_accessor_tests/getterAsFunctionCall.sts
+ast/compiler/ets/extension_accessor_tests/getterAsMethodCall.sts
+ast/compiler/ets/extension_accessor_tests/setterAsFunctionCall.sts
+ast/compiler/ets/extension_accessor_tests/setterAsMethodCall.sts
+ast/compiler/ets/lambda_with_receiver_tests/ExtensionFunctypeUncompatible.sts
+ast/compiler/ets/lambda_with_receiver_tests/extensionFuncTypeAsParamsNameDuplicated.sts
+ast/compiler/ets/lambda_with_receiver_tests/extensionFuncTypeAsParamsNameDuplicated2.sts
+
+# Issue: #22951
+ast/parser/ets/this_type_lambda_definition_parameter_invalid.sts
+ast/parser/ets/this_type_lambda_definition_return_invalid.sts
+
+# Issue: #23078
+ast/compiler/ets/readonlyType_5.sts
+
+# Issue: #23068
+ast/parser/ets/InferTypeParamFromParam2.sts
+
+# Issue: #23079
+ast/parser/ets/cast_expressions10.sts
+ast/parser/ets/cast_expressions7.sts
+ast/parser/ets/cast_expressions8.sts
+ast/parser/ets/cast_expressions9.sts
+
+# Issue: #23080
+ast/parser/ets/default_parameter3.sts
+ast/parser/ets/default_parameters_multi_error.sts
+ast/parser/ets/rest_parameter_03.sts
+
+# Issue: #23074
+# inccorect context of method usage
+ast/compiler/ets/FunctionType1.sts
+ast/compiler/ets/FunctionType6.sts
+ast/compiler/ets/FunctionType7.sts
+ast/compiler/ets/FunctionType8.sts
+ast/compiler/ets/FunctionType9.sts
+# should report return type mismatch
+ast/parser/ets/lambda-type-inference-neg2.sts
+# after the fix the test fails to detect another type error
+ast/parser/ets/unexpected_token_51.sts
+
+# Issue: #23134
+# Can't insert "/* TypeError: Postcondition check failed for DefaultParametersLowering */" test directive
+ast/parser/ets/InvalidExpressions.sts
+# falls to post-checker lowerings after type errors are detected!
+ast/parser/ets/lambdaWithWrongOptionalParameter.sts

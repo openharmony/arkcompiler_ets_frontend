@@ -83,7 +83,7 @@ static ir::FunctionSignature GenerateGetterOrSetterSignature(checker::ETSChecker
         InitScopesPhaseETS::RunExternalNode(paramIdent, varbinder);
 
         auto *const paramExpression =
-            checker->AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr, checker->Allocator());
+            checker->AllocNode<ir::ETSParameterExpression>(paramIdent, false, checker->Allocator());
         paramExpression->SetRange(paramIdent->Range());
         auto *const paramVar = std::get<2>(paramScope->AddParamDecl(checker->Allocator(), paramExpression));
 

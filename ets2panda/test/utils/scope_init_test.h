@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,8 +40,7 @@ public:
 
     static void SetUpTestCase()
     {
-        constexpr auto COMPILER_SIZE = ark::operator""_MB(256ULL);
-        ark::mem::MemConfig::Initialize(0, 0, COMPILER_SIZE, 0, 0, 0);
+        ark::mem::MemConfig::Initialize(0, 0, ark::es2panda::COMPILER_SIZE, 0, 0, 0);
         ark::PoolManager::Initialize();
     }
 

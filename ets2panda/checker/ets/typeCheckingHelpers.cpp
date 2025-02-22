@@ -90,7 +90,9 @@ Type *ETSChecker::GetNonNullishType(Type *type)
     if (type->IsETSTypeParameter()) {
         return Allocator()->New<ETSNonNullishType>(type->AsETSTypeParameter());
     }
-
+    if (type->IsETSPartialTypeParameter()) {
+        return type->AsETSPartialTypeParameter()->GetUnderlying();
+    }
     if (type->IsETSNullType() || type->IsETSUndefinedType()) {
         return GetGlobalTypesHolder()->GlobalETSNeverType();
     }
@@ -302,7 +304,13 @@ bool Type::PossiblyETSValueTypedExceptNullish() const
 
 bool Type::IsETSArrowType() const
 {
-    return IsETSFunctionType() && AsETSFunctionType()->CallSignatures().size() == 1;
+    // Arrow types (in form `(p: A) => B`) will be isolated from Methods
+    return IsETSFunctionType() && !IsETSMethodType();
+}
+
+bool Type::IsETSMethodType() const
+{
+    return HasTypeFlag(TypeFlag::ETS_METHOD);
 }
 
 [[maybe_unused]] static bool IsSaneETSReferenceType(Type const *type)
@@ -562,40 +570,34 @@ Type *ETSChecker::GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *
         return nullptr;
     }
 
-    varbinder::Variable *baseProp = nullptr;
     switch (auto node = prop->Declaration()->Node(); node->Type()) {
-        case ir::AstNodeType::CLASS_PROPERTY:
-            baseProp = node->AsClassProperty()->Id()->Variable();
-            break;
+        case ir::AstNodeType::CLASS_PROPERTY: {
+            auto baseProp = node->AsClassProperty()->Id()->Variable();
+            if (baseProp == prop) {
+                return nullptr;
+            }
+            return GuaranteedTypeForUncheckedCast(GetTypeOfVariable(baseProp), GetTypeOfVariable(prop));
+        }
         case ir::AstNodeType::METHOD_DEFINITION:
-            baseProp = node->AsMethodDefinition()->Id()->Variable();
-            break;
-            // NOTE(vpukhov): should not be a case of unchecked access
         case ir::AstNodeType::CLASS_DEFINITION:
-            baseProp = node->AsClassDefinition()->Ident()->Variable();
-            break;
+            return GetTypeOfVariable(prop);
         default:
             UNREACHABLE();
     }
-
-    if (baseProp == prop) {
-        return nullptr;
-    }
-    return GuaranteedTypeForUncheckedCast(GetTypeOfVariable(baseProp), GetTypeOfVariable(prop));
 }
 
 // Determine if substituted method cast requires cast from erased type
 Type *ETSChecker::GuaranteedTypeForUncheckedCallReturn(Signature *sig)
 {
-    if (sig->HasSignatureFlag(checker::SignatureFlags::THIS_RETURN_TYPE) ||
-        sig->HasSignatureFlag(checker::SignatureFlags::EXTENSION_FUNCTION_RETURN_THIS)) {
+    ASSERT(sig->HasFunction());
+    if (sig->HasSignatureFlag(SignatureFlags::THIS_RETURN_TYPE)) {
         return sig->ReturnType();
     }
     auto *const baseSig = sig->Function() != nullptr ? sig->Function()->Signature() : nullptr;
     if (baseSig == nullptr || baseSig == sig) {
         return nullptr;
     }
-    return GuaranteedTypeForUncheckedCast(baseSig->ReturnType(), sig->ReturnType());
+    return GuaranteedTypeForUncheckedCast(MaybeBoxType(baseSig->ReturnType()), MaybeBoxType(sig->ReturnType()));
 }
 
 bool ETSChecker::IsAllowedTypeAliasRecursion(const ir::TSTypeAliasDeclaration *typeAliasNode,
@@ -1234,10 +1236,11 @@ static ir::AstNode *DerefETSTypeReference(ir::AstNode *node)
     return node;
 }
 
-bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction *lambda, TypeRelationFlag flags)
+// #22952: optional arrow leftovers
+bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction *lambda)
 {
-    ES2PANDA_ASSERT(param->IsETSParameterExpression());
-    ir::AstNode *typeAnn = param->AsETSParameterExpression()->TypeAnnotation();
+    ASSERT(param->IsETSParameterExpression());
+    ir::AstNode *typeAnn = param->AsETSParameterExpression()->Ident()->TypeAnnotation();
     if (typeAnn->IsETSTypeReference()) {
         typeAnn = DerefETSTypeReference(typeAnn);
     }
@@ -1250,12 +1253,7 @@ bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction
     }
 
     ir::ETSFunctionType *calleeType = typeAnn->AsETSFunctionType();
-    if ((flags & TypeRelationFlag::IN_ASSIGNMENT_CONTEXT) !=
-        static_cast<std::underlying_type_t<TypeRelationFlag>>(0U)) {
-        return lambda->Params().size() <= calleeType->Params().size();
-    }
-
-    return lambda->Params().size() == calleeType->Params().size();
+    return lambda->Params().size() <= calleeType->Params().size();
 }
 
 bool ETSChecker::CheckLambdaInfer(ir::AstNode *typeAnnotation, ir::ArrowFunctionExpression *const arrowFuncExpr,
@@ -1271,10 +1269,7 @@ bool ETSChecker::CheckLambdaInfer(ir::AstNode *typeAnnotation, ir::ArrowFunction
 
     ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
     auto calleeType = typeAnnotation->AsETSFunctionType();
-    // Lambda function will only have exactly one signature.
-    auto functionSignature =
-        TryGettingFunctionTypeFromInvokeFunction(subParameterType)->AsETSFunctionType()->CallSignatures()[0];
-    InferTypesForLambda(lambda, calleeType, functionSignature);
+    InferTypesForLambda(lambda, calleeType, subParameterType->AsETSFunctionType()->ArrowSignature());
 
     return true;
 }
@@ -1294,15 +1289,20 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
 
     //  process `single` type as usual.
     if (!typeAnnotation->IsETSUnionType()) {
-        ES2PANDA_ASSERT(!parameterType->IsETSUnionType());
-        return CheckLambdaInfer(typeAnnotation, arrowFuncExpr, parameterType) && checkInvocable(flags);
+        auto param = typeAnnotation->Parent()->Parent()->AsETSParameterExpression();
+        // #22952: infer optional parameter heuristics
+        auto nonNullishParam = param->IsOptional() ? GetNonNullishType(parameterType) : parameterType;
+        if (!nonNullishParam->IsETSFunctionType()) {
+            return true;
+        }
+        return CheckLambdaInfer(typeAnnotation, arrowFuncExpr, nonNullishParam) && checkInvocable(flags);
     }
 
     // Preserve actual lambda types
     ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
     ArenaVector<ir::TypeNode *> lambdaParamTypes {Allocator()->Adapter()};
     for (auto *const lambdaParam : lambda->Params()) {
-        lambdaParamTypes.emplace_back(lambdaParam->AsETSParameterExpression()->TypeAnnotation());
+        lambdaParamTypes.emplace_back(lambdaParam->AsETSParameterExpression()->Ident()->TypeAnnotation());
     }
     auto *const lambdaReturnTypeAnnotation = lambda->ReturnTypeAnnotation();
 
@@ -1320,7 +1320,7 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
         //  Restore inferring lambda types:
         for (std::size_t i = 0U; i < lambda->Params().size(); ++i) {
             if (lambdaParamTypes[i] == nullptr) {
-                lambda->Params()[i]->AsETSParameterExpression()->SetTsTypeAnnotation(nullptr);
+                lambda->Params()[i]->AsETSParameterExpression()->Ident()->SetTsTypeAnnotation(nullptr);
             }
         }
         if (lambdaReturnTypeAnnotation == nullptr) {
@@ -1336,16 +1336,15 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
 {
     bool invocable = true;
     auto const argumentCount = arguments.size();
-    auto const parameterCount = signature->Params().size();
-    auto const count = std::min(parameterCount, argumentCount);
+    auto const commonArity = std::min(signature->ArgCount(), argumentCount);
 
-    for (size_t index = 0U; index < count; ++index) {
+    for (size_t index = 0U; index < commonArity; ++index) {
         auto const &argument = arguments[index];
         if (!argument->IsArrowFunctionExpression()) {
             continue;
         }
 
-        if (index == arguments.size() - 1 && (flags & TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA) != 0) {
+        if (index == argumentCount - 1 && (flags & TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA) != 0) {
             continue;
         }
 
@@ -1355,15 +1354,15 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
             continue;
         }
 
-        ir::AstNode *typeAnn = signature->Function()->Params()[index]->AsETSParameterExpression()->TypeAnnotation();
+        auto const *const param = signature->Function()->Params()[index]->AsETSParameterExpression()->Ident();
+        ir::AstNode *typeAnn = param->TypeAnnotation();
         Type *const parameterType = signature->Params()[index]->TsType();
 
         bool const rc = CheckLambdaTypeAnnotation(typeAnn, arrowFuncExpr, parameterType, flags);
         if (!rc && (flags & TypeRelationFlag::NO_THROW) == 0) {
             Type *const argumentType = arrowFuncExpr->Check(this);
-            const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(parameterType);
             LogTypeError(
-                {"Type '", argumentType, "' is not compatible with type '", targetType, "' at index ", index + 1},
+                {"Type '", argumentType, "' is not compatible with type '", parameterType, "' at index ", index + 1},
                 arrowFuncExpr->Start());
             return false;
         }
@@ -1374,6 +1373,7 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
     return invocable;
 }
 
+// #22951 requires complete refactoring
 bool ETSChecker::IsExtensionETSFunctionType(checker::Type *type)
 {
     if (type == nullptr || (!type->IsETSFunctionType() && !type->IsETSObjectType())) {
@@ -1384,23 +1384,31 @@ bool ETSChecker::IsExtensionETSFunctionType(checker::Type *type)
         return type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::EXTENSION_FUNCTION);
     }
 
+    if (type->IsETSArrowType()) {
+        return type->AsETSFunctionType()->ArrowSignature()->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION);
+    }
+
     for (auto *signature : type->AsETSFunctionType()->CallSignatures()) {
-        if (signature->Function() != nullptr && signature->Function()->IsExtensionMethod()) {
+        if (signature->HasFunction() && signature->Function()->IsExtensionMethod()) {
             return true;
         }
     }
-
     return false;
 }
 
+// #22951 requires complete refactoring
 bool ETSChecker::IsExtensionAccessorFunctionType(checker::Type *type)
 {
     if (type == nullptr || !type->IsETSFunctionType()) {
         return false;
     }
+    if (type->IsETSArrowType()) {
+        return type->AsETSFunctionType()->ArrowSignature()->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION) &&
+               type->AsETSFunctionType()->ArrowSignature()->HasSignatureFlag(SignatureFlags::GETTER_OR_SETTER);
+    }
 
     for (auto *signature : type->AsETSFunctionType()->CallSignatures()) {
-        if (signature->Function()->IsExtensionAccessor()) {
+        if (signature->HasFunction() && signature->Function()->IsExtensionAccessor()) {
             return true;
         }
     }

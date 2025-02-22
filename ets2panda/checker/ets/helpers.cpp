@@ -500,11 +500,8 @@ void ETSChecker::ResolveReturnStatement(checker::Type *funcReturnType, checker::
             containingFunc->Signature()->SetReturnType(funcReturnType);
             containingFunc->Signature()->AddSignatureFlag(checker::SignatureFlags::INFERRED_RETURN_TYPE);
         } else if (!Relation()->IsAssignableTo(argumentType, funcReturnType)) {
-            const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(funcReturnType);
-            const Type *sourceType = TryGettingFunctionTypeFromInvokeFunction(argumentType);
-
-            LogTypeError({"Function cannot have different primitive return types, require '", targetType, "', found '",
-                          sourceType, "'"},
+            LogTypeError({"Function cannot have different primitive return types, require '", funcReturnType,
+                          "', found '", argumentType, "'"},
                          st->Argument()->Start());
         }
     } else {
@@ -713,37 +710,6 @@ static void CheckAssignForDeclare(ir::Identifier *ident, ir::TypeNode *typeAnnot
     }
 }
 
-//  Extracted from 'CheckVariableDeclaration(...)' to reduce its size
-//  #18866 (DZ) temporary solution. We still cannot use function type here :(. Need to be refactored.
-static checker::Type *CreateAnnotationType(ETSChecker *checker, checker::Type *initType) noexcept
-{
-    auto *annotationType =  // initType;
-        !initType->AsETSFunctionType()->HasFunctionalInterface()
-            ? checker->FunctionTypeToFunctionalInterfaceType(initType->AsETSFunctionType()->CallSignature())
-            : initType->AsETSFunctionType()->FunctionalInterface();
-
-    if (auto &sigs =
-            annotationType
-                // CC-OFFNXT(G.FMT.02) project code style
-                ->AsETSObjectType()
-                // CC-OFFNXT(G.FMT.02) project code style
-                ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME)
-                ->TsType()
-                ->AsETSFunctionType()
-                ->CallSignatures();
-        !sigs.empty()) {
-        auto *originalSignature = initType->AsETSFunctionType()->CallSignature();
-        sigs[0]->MinArgCount(originalSignature->MinArgCount());
-        for (std::size_t i = originalSignature->MinArgCount(); i < originalSignature->Function()->Params().size();
-             ++i) {
-            sigs[0]->Function()->Params()[i]->AsETSParameterExpression()->SetInitializer(
-                originalSignature->Function()->Params()[i]->AsETSParameterExpression()->Initializer());
-        }
-    }
-
-    return annotationType;
-}
-
 // CC-OFFNXT(huge_method,huge_cca_cyclomatic_complexity,huge_cyclomatic_complexity,G.FUN.01-CPP) solid logic
 checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *typeAnnotation,
                                                     ir::Expression *init, ir::ModifierFlags const flags)
@@ -789,13 +755,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     }
 
     if (typeAnnotation == nullptr && initType->IsETSFunctionType()) {
-        if (!init->IsArrowFunctionExpression() && !initType->IsETSArrowType()) {
-            LogTypeError("Ambiguous function initialization because of multiple overloads", init->Start());
-            bindingVar->SetTsType(GlobalTypeError());
-            return bindingVar->TsType();
-        }
-
-        annotationType = CreateAnnotationType(this, initType);
+        annotationType = initType->AsETSFunctionType();
         bindingVar->SetTsType(annotationType);
     }
 
@@ -845,7 +805,7 @@ checker::Type *ETSChecker::ResolveSmartType(checker::Type *sourceType, checker::
 
     //  For the Function source or target types leave the target type as is
     //  until we will be able to create the functional interface type from the source.
-    if (targetType->HasTypeFlag(TypeFlag::FUNCTION) || sourceType->HasTypeFlag(TypeFlag::FUNCTION)) {
+    if (targetType->IsETSArrowType() || sourceType->IsETSArrowType()) {
         return targetType;
     }
 
@@ -965,8 +925,19 @@ std::pair<Type *, Type *> ETSChecker::CheckTestObjectCondition(ETSObjectType *te
         return {GetGlobalTypesHolder()->GlobalNeverType(), actualType};
     }
 
-    // NOTE: other cases (for example with functional types) will be implemented later on
     return {testedType, actualType};
+}
+
+// Simple and conservative implementation unless smartcasts are not rewritten completely
+static std::pair<Type *, Type *> ComputeConditionalSubtypes(TypeRelation *relation, Type *condition, Type *actual)
+{
+    if (relation->IsSupertypeOf(condition, actual)) {
+        if (relation->IsIdenticalTo(condition, actual)) {
+            return {condition, relation->GetChecker()->GetGlobalTypesHolder()->GlobalETSNeverType()};
+        }
+        return {actual, actual};
+    }
+    return {condition, actual};
 }
 
 static constexpr std::size_t const VARIABLE_POSITION = 0UL;
@@ -1034,10 +1005,8 @@ std::optional<SmartCastTuple> CheckerContext::ResolveSmartCastTypes()
         return std::nullopt;
     }
 
-    ES2PANDA_ASSERT(testCondition_.testedType != nullptr);
-    // NOTE: functional types are not supported now
-    if (!testCondition_.testedType->IsETSReferenceType() ||
-        testCondition_.testedType->HasTypeFlag(TypeFlag::FUNCTION)) {
+    ASSERT(testCondition_.testedType != nullptr);
+    if (!testCondition_.testedType->IsETSReferenceType()) {
         return std::nullopt;
     }
 
@@ -1057,21 +1026,16 @@ std::optional<SmartCastTuple> CheckerContext::ResolveSmartCastTypes()
         // In case of testing for 'null' and/or 'undefined' remove corresponding null-like types.
         std::tie(consequentType, alternateType) =
             checker->CheckTestNullishCondition(testCondition_.testedType, smartType, testCondition_.strict);
-    } else {
-        if (testCondition_.testedType->IsETSObjectType()) {
-            auto *const testedType = testCondition_.testedType->AsETSObjectType();
-            std::tie(consequentType, alternateType) =
-                checker->CheckTestObjectCondition(testedType, smartType, testCondition_.strict);
-        } else if (testCondition_.testedType->IsETSArrayType()) {
-            auto *const testedType = testCondition_.testedType->AsETSArrayType();
-            std::tie(consequentType, alternateType) = checker->CheckTestObjectCondition(testedType, smartType);
-        } else if (testCondition_.testedType->IsETSUnionType()) {
-            //  NOTE: now we don't support 'instanceof' operation for union types?
-            UNREACHABLE();
-        } else {
-            // NOTE: it seems that no more cases are possible here! :)
-            UNREACHABLE();
-        }
+    } else if (testCondition_.testedType->IsETSObjectType()) {
+        auto *const testedType = testCondition_.testedType->AsETSObjectType();
+        std::tie(consequentType, alternateType) =
+            checker->CheckTestObjectCondition(testedType, smartType, testCondition_.strict);
+    } else if (testCondition_.testedType->IsETSArrayType()) {
+        auto *const testedType = testCondition_.testedType->AsETSArrayType();
+        std::tie(consequentType, alternateType) = checker->CheckTestObjectCondition(testedType, smartType);
+    } else if (testCondition_.strict) {
+        std::tie(consequentType, alternateType) =
+            ComputeConditionalSubtypes(checker->Relation(), testCondition_.testedType, smartType);
     }
 
     return !testCondition_.negate
@@ -1179,6 +1143,7 @@ void ETSChecker::SetArrayPreferredTypeForNestedMemberExpressions(ir::MemberExpre
     }
 }
 
+// 22955: type alias should be instantiated with Substitute
 static void CollectAliasParametersForBoxing(Type *expandedAliasType, std::set<Type *> &parametersNeedToBeBoxed,
                                             bool needToBeBoxed)
 {
@@ -1208,6 +1173,14 @@ static void CollectAliasParametersForBoxing(Type *expandedAliasType, std::set<Ty
         for (auto type : unionType->ConstituentTypes()) {
             CollectAliasParametersForBoxing(type, parametersNeedToBeBoxed, needToBeBoxed);
         }
+    } else if (expandedAliasType->IsETSFunctionType()) {
+        auto functionType = expandedAliasType->AsETSFunctionType();
+        needToBeBoxed = true;
+        for (auto param : functionType->ArrowSignature()->Params()) {
+            CollectAliasParametersForBoxing(param->TsType(), parametersNeedToBeBoxed, needToBeBoxed);
+        }
+        CollectAliasParametersForBoxing(functionType->ArrowSignature()->ReturnType(), parametersNeedToBeBoxed,
+                                        needToBeBoxed);
     }
 }
 
@@ -1241,14 +1214,14 @@ Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypePa
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     Type *const aliasType = GetReferencedTypeBase(name);
-    auto *aliasSub = NewSubstitution();
+    auto *substitution = NewSubstitution();
     if (typeAliasNode->TypeParams()->Params().size() != typeParams->Params().size()) {
         LogTypeError("Wrong number of type parameters for generic type alias", typeParams->Start());
         return GlobalTypeError();
     }
 
     std::set<Type *> parametersNeedToBeBoxed;
-    auto expandedAliasType = aliasType->Substitute(Relation(), aliasSub);
+    auto expandedAliasType = aliasType->Substitute(Relation(), substitution);
     CollectAliasParametersForBoxing(expandedAliasType, parametersNeedToBeBoxed, false);
 
     for (std::size_t idx = 0; idx < typeAliasNode->TypeParams()->Params().size(); ++idx) {
@@ -1264,13 +1237,13 @@ Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypePa
                 paramType = boxedType;
             }
         }
-        aliasSub->insert({typeAliasType->AsETSTypeParameter(), paramType});  // #21835: type argument is not boxed
+        substitution->insert({typeAliasType->AsETSTypeParameter(), paramType});  // #21835: type argument is not boxed
     }
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     ValidateGenericTypeAliasForClonedNode(typeAliasNode->AsTSTypeAliasDeclaration(), typeParams);
 
-    return aliasType->Substitute(Relation(), aliasSub);
+    return aliasType->Substitute(Relation(), substitution);
 }
 
 std::vector<util::StringView> ETSChecker::GetNameForSynteticObjectType(const util::StringView &source)
@@ -1531,7 +1504,7 @@ checker::ETSFunctionType *ETSChecker::FindFunctionInVectorGivenByName(util::Stri
 bool ETSChecker::IsFunctionContainsSignature(checker::ETSFunctionType *funcType, Signature *signature)
 {
     for (auto *it : funcType->CallSignatures()) {
-        Relation()->IsCompatibleTo(it, signature);
+        Relation()->SignatureIsSupertypeOf(it, signature);
         if (Relation()->IsTrue()) {
             return true;
         }
@@ -1544,7 +1517,7 @@ bool ETSChecker::CheckFunctionContainsClashingSignature(const checker::ETSFuncti
 {
     for (auto *it : funcType->CallSignatures()) {
         SavedTypeRelationFlagsContext strfCtx(Relation(), TypeRelationFlag::NONE);
-        Relation()->IsCompatibleTo(it, signature);
+        Relation()->SignatureIsSupertypeOf(it, signature);
         if (Relation()->IsTrue() && it->Function()->Id()->Name() == signature->Function()->Id()->Name()) {
             std::stringstream ss;
             it->ToString(ss, nullptr, true);
@@ -1931,15 +1904,11 @@ bool ETSChecker::IsSameDeclarationType(varbinder::LocalVariable *target, varbind
     return target->Declaration()->Type() == compare->Declaration()->Type();
 }
 
-bool ETSChecker::CheckRethrowingParams(const ir::AstNode *ancestorFunction, const ir::AstNode *node)
+bool ETSChecker::CheckRethrowingParams([[maybe_unused]] const ir::AstNode *ancestorFunction,
+                                       [[maybe_unused]] const ir::AstNode *node)
 {
-    auto const &name = node->AsCallExpression()->Callee()->AsIdentifier()->Name();
-    for (const auto param : ancestorFunction->AsScriptFunction()->Signature()->Function()->Params()) {
-        if (name.Is(param->AsETSParameterExpression()->Name().Utf8())) {
-            return true;
-        }
-    }
-    return false;
+    // #22954: the previous implementation compared different identifiers by string
+    return true;
 }
 
 void ETSChecker::CheckThrowingStatements(ir::AstNode *node)
@@ -2246,6 +2215,7 @@ std::vector<bool> ETSChecker::FindTypeInferenceArguments(const ArenaVector<ir::E
     return argTypeInferenceRequired;
 }
 
+// #22952: optional arrow leftovers
 bool ETSChecker::CheckLambdaAssignableUnion(ir::AstNode *typeAnn, ir::ScriptFunction *lambda)
 {
     for (auto *type : typeAnn->AsETSUnionType()->Types()) {
@@ -2260,12 +2230,11 @@ bool ETSChecker::CheckLambdaAssignableUnion(ir::AstNode *typeAnn, ir::ScriptFunc
 void ETSChecker::InferTypesForLambda(ir::ScriptFunction *lambda, ir::ETSFunctionType *calleeType,
                                      Signature *maybeSubstitutedFunctionSig)
 {
-    auto const number = std::min(calleeType->Params().size(), lambda->Params().size());
-    for (size_t i = 0U; i < number; ++i) {
-        if (auto *const lambdaParam = lambda->Params()[i]->AsETSParameterExpression();
-            lambdaParam->TypeAnnotation() == nullptr) {
-            auto *const typeAnnotation =
-                calleeType->Params()[i]->AsETSParameterExpression()->TypeAnnotation()->Clone(Allocator(), nullptr);
+    for (size_t i = 0; i < lambda->Params().size(); ++i) {
+        const auto *const calleeParam = calleeType->Params()[i]->AsETSParameterExpression()->Ident();
+        auto *const lambdaParam = lambda->Params().at(i)->AsETSParameterExpression()->Ident();
+        if (lambdaParam->TypeAnnotation() == nullptr) {
+            auto *const typeAnnotation = calleeParam->TypeAnnotation()->Clone(Allocator(), lambdaParam);
             if (maybeSubstitutedFunctionSig != nullptr) {
                 ES2PANDA_ASSERT(maybeSubstitutedFunctionSig->Params().size() == calleeType->Params().size());
                 typeAnnotation->SetTsType(maybeSubstitutedFunctionSig->Params()[i]->TsType());
@@ -2385,7 +2354,7 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
         paramIdent->SetTsType(field->TsType());
     }
 
-    auto *paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr, Allocator());
+    auto *paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent, false, Allocator());
     paramExpression->SetRange(paramIdent->Range());
     auto *const paramVar = std::get<2>(paramScope->AddParamDecl(Allocator(), paramExpression));
     paramExpression->SetVariable(paramVar);
@@ -2570,18 +2539,6 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
             setter->TsType()->AsETSFunctionType()->CallSignatures()[0]);
         getter->AddOverload(setter);
     }
-}
-
-Type *ETSChecker::TryGettingFunctionTypeFromInvokeFunction(Type *type)
-{
-    if (type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-        auto const propInvoke = type->AsETSObjectType()->GetProperty(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME,
-                                                                     PropertySearchFlags::SEARCH_INSTANCE_METHOD);
-        ES2PANDA_ASSERT(propInvoke != nullptr);
-        return propInvoke->TsType();
-    }
-
-    return type;
 }
 
 bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, const Type *resolvedType)

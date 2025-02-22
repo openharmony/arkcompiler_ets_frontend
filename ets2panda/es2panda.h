@@ -32,6 +32,8 @@ using EvalMode = util::gen::eval_mode::Enum;
 using ScriptExtension = util::gen::extension::Enum;
 
 constexpr std::string_view ES2PANDA_VERSION = "0.1";
+constexpr auto COMPILER_SIZE = sizeof(size_t) <= 4 ? 2_GB : 32_GB;
+
 namespace util {
 class Options;
 class DiagnosticEngine;

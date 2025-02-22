@@ -12,8 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 class A<T extends A/* @@ label */<A<T>>>{}
 class C extends A/* @@ label1 */<A/* @@ label2 */<C>>{}
+/* A<C> does not satisfy the constraint due to invariance of T */
 
 /* @@@ label Error TypeError: Type A<T> is not assignable to constraint type A<A<A<T>>>  */
 /* @@@ label2 Error TypeError: Type C is not assignable to constraint type A<A<C>>  */

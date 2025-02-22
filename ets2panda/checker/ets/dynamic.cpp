@@ -91,7 +91,7 @@ ir::ETSParameterExpression *ETSChecker::AddParam(util::StringView name, ir::Type
         type->SetParent(paramIdent);
     }
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    return AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr, Allocator());
+    return AllocNode<ir::ETSParameterExpression>(paramIdent, false, Allocator());
 }
 
 template <typename T>

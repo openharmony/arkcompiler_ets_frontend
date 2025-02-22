@@ -199,8 +199,6 @@ __attribute__((unused)) char const *ArenaStrdup(ArenaAllocator *allocator, char 
 
 extern "C" es2panda_Config *CreateConfig(int args, char const *const *argv)
 {
-    constexpr auto COMPILER_SIZE = 256_MB;
-
     mem::MemConfig::Initialize(0, 0, COMPILER_SIZE, 0, 0, 0);
     PoolManager::Initialize(PoolType::MMAP);
     auto diagnosticEngine = new util::DiagnosticEngine();

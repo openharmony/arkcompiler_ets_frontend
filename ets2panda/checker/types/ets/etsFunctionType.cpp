@@ -13,48 +13,122 @@
  * limitations under the License.
  */
 
-#include "etsFunctionType.h"
-#include "checker/types/typeRelation.h"
 #include "checker/ETSchecker.h"
-#include "ir/base/scriptFunction.h"
+#include "checker/types/globalTypesHolder.h"
 
 namespace ark::es2panda::checker {
-//  Use this constructor in the internal class methods ONLY!
-ETSFunctionType::ETSFunctionType(ETSChecker *checker, util::StringView const &name,
+
+ETSFunctionType::ETSFunctionType([[maybe_unused]] ETSChecker *checker, util::StringView name,
                                  ArenaVector<Signature *> &&signatures)
+    : Type(TypeFlag::FUNCTION | TypeFlag::ETS_METHOD), callSignatures_(std::move(signatures)), name_(name)
+{
+    auto flag = TypeFlag::NONE;
+    for (auto *sig : callSignatures_) {
+        flag |= sig->HasSignatureFlag(SignatureFlags::GETTER) ? TypeFlag::GETTER : TypeFlag::NONE;
+        flag |= sig->HasSignatureFlag(SignatureFlags::SETTER) ? TypeFlag::SETTER : TypeFlag::NONE;
+    }
+    AddTypeFlag(flag);
+}
+
+ETSFunctionType::ETSFunctionType(ETSChecker *checker, Signature *signature)
     : Type(TypeFlag::FUNCTION),
-      callSignatures_(std::move(signatures)),
-      name_(name),
-      funcInterface_(checker->FunctionTypeToFunctionalInterfaceType(callSignatures_[0]))
+      callSignatures_({{signature->ToArrowSignature(checker)}, checker->Allocator()->Adapter()}),
+      name_(""),
+      assemblerName_(checker->GlobalBuiltinFunctionType(signature->MinArgCount(), signature->GetThrowFlags())
+                         ->AsETSObjectType()
+                         ->AssemblerName())
 {
 }
 
-ETSFunctionType::ETSFunctionType(ETSChecker *checker, util::StringView const &name, Signature *const signature)
-    : Type(TypeFlag::FUNCTION),
-      callSignatures_(checker->Allocator()->Adapter()),
-      name_(name),
-      funcInterface_(checker->FunctionTypeToFunctionalInterfaceType(signature))
+// #22951: proper this type implementation
+static void HackThisParameterInExtensionFunctionInvoke(ETSObjectType *interface)
 {
-    callSignatures_.push_back(signature);
+    auto &callSigsOfInvoke0 =
+        interface->AsETSObjectType()
+            ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME)
+            ->TsType()
+            ->AsETSFunctionType()
+            ->CallSignatures();
+    for (auto sig : callSigsOfInvoke0) {
+        sig->AddSignatureFlag(SignatureFlags::THIS_RETURN_TYPE);
+    }
 }
 
-ETSFunctionType::ETSFunctionType(util::StringView const &name, ArenaAllocator *allocator)
-    : Type(TypeFlag::FUNCTION), callSignatures_(allocator->Adapter()), name_(name), funcInterface_(nullptr)
+static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker, Signature *signature, size_t arity)
 {
+    // #22951: remove flags that affect ETSObjectType::Substitute
+    bool isExtensionHack = signature->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION);
+
+    if (signature->RestVar() != nullptr) {
+        auto *functionN = checker
+                              ->GlobalBuiltinFunctionType(checker->GlobalBuiltinFunctionTypeVariadicThreshold(),
+                                                          signature->GetThrowFlags())
+                              ->AsETSObjectType();
+        auto *substitution = checker->NewSubstitution();
+        substitution->emplace(functionN->TypeArguments()[0]->AsETSTypeParameter(),
+                              checker->MaybeBoxType(signature->ReturnType()));
+        return functionN->Substitute(checker->Relation(), substitution, true, isExtensionHack);
+    }
+
+    ASSERT(arity >= signature->MinArgCount() && arity <= signature->ArgCount());
+
+    // Note: FunctionN is not supported yet
+    if (arity >= checker->GetGlobalTypesHolder()->VariadicFunctionTypeThreshold()) {
+        return nullptr;
+    }
+
+    auto *funcIface = checker->GlobalBuiltinFunctionType(arity, signature->GetThrowFlags())->AsETSObjectType();
+    auto *substitution = checker->NewSubstitution();
+
+    for (size_t i = 0; i < arity; i++) {
+        substitution->emplace(funcIface->TypeArguments()[i]->AsETSTypeParameter(),
+                              checker->MaybeBoxType(signature->Params()[i]->TsType()));
+    }
+    substitution->emplace(funcIface->TypeArguments()[arity]->AsETSTypeParameter(),
+                          checker->MaybeBoxType(signature->ReturnType()));
+    auto result = funcIface->Substitute(checker->Relation(), substitution, true, isExtensionHack);
+
+    if (signature->HasSignatureFlag(SignatureFlags::THIS_RETURN_TYPE)) {
+        HackThisParameterInExtensionFunctionInvoke(result);
+    }
+    return result;
 }
 
-ETSFunctionType::ETSFunctionType(ETSChecker *checker, util::StringView const &name, Signature *signature,
-                                 ETSObjectType *interface)
-    : Type(TypeFlag::FUNCTION), callSignatures_(checker->Allocator()->Adapter()), name_(name), funcInterface_(interface)
+ETSObjectType *ETSFunctionType::ArrowToFunctionalInterface(ETSChecker *checker)
 {
-    callSignatures_.emplace_back(signature);
+    auto &cached = arrowToFuncInterface_;
+    if (LIKELY(cached != nullptr)) {
+        return cached;
+    }
+    return cached = FunctionTypeToFunctionalInterfaceType(checker, ArrowSignature(), ArrowSignature()->MinArgCount());
+}
+
+ETSObjectType *ETSFunctionType::ArrowToFunctionalInterfaceDesiredArity(ETSChecker *checker, size_t arity)
+{
+    if (LIKELY(arity == ArrowSignature()->MinArgCount())) {
+        return ArrowToFunctionalInterface(checker);
+    }
+    return FunctionTypeToFunctionalInterfaceType(checker, ArrowSignature(), arity);
+}
+
+ETSFunctionType *ETSFunctionType::MethodToArrow(ETSChecker *checker)
+{
+    auto &cached = invokeToArrowSignature_;
+    if (LIKELY(cached != nullptr)) {
+        return cached;
+    }
+
+    ASSERT(!IsETSArrowType() && CallSignatures().size() == 1);
+    return cached = checker->CreateETSArrowType(CallSignatures()[0]);
 }
 
 void ETSFunctionType::AddCallSignature(Signature *signature)
 {
-    if (signature->Function()->IsGetter() && !signature->Function()->IsExtensionMethod()) {
+    ASSERT(!IsETSArrowType());
+
+    if (signature->Function()->IsGetter()) {
         AddTypeFlag(TypeFlag::GETTER);
-    } else if (signature->Function()->IsSetter() && !signature->Function()->IsExtensionMethod()) {
+    } else if (signature->Function()->IsSetter()) {
         AddTypeFlag(TypeFlag::SETTER);
     }
     callSignatures_.push_back(signature);
@@ -63,217 +137,147 @@ void ETSFunctionType::AddCallSignature(Signature *signature)
 void ETSFunctionType::ToString(std::stringstream &ss, bool precise) const
 {
     callSignatures_[0]->ToString(ss, nullptr, false, precise);
-    for (std::size_t i = 1U; i < callSignatures_.size(); ++i) {
-        ss << " & ";
-        callSignatures_[i]->ToString(ss, nullptr, false, precise);
-    }
 }
 
-void ETSFunctionType::Identical(TypeRelation *relation, Type *other)
+// Method types do not participate in most type relations
+static inline void AssertNoMethodsInFunctionRelation([[maybe_unused]] Type *left, [[maybe_unused]] Type *right)
 {
-    relation->Result(false);
-    if (other->IsETSFunctionType()) {
-        if (callSignatures_.size() == 1U && CallSignature()->IsTypeAnnotation()) {
-            AssignmentTarget(relation, other);
-        } else {
-            CallSignature()->Compatible(relation, other->AsETSFunctionType()->CallSignature());
-        }
-    }
-}
-
-bool ETSFunctionType::AssignmentSource(TypeRelation *relation, Type *target)
-{
-    if (target->IsETSDynamicType()) {
-        ES2PANDA_ASSERT(relation->GetNode() != nullptr);
-        if (relation->GetNode()->IsArrowFunctionExpression()) {
-            ES2PANDA_ASSERT(callSignatures_.size() == 1 && callSignatures_[0]->HasSignatureFlag(SignatureFlags::CALL));
-            return relation->Result(true);
-        }
-        return relation->Result(false);
-    }
-
-    return relation->Result(target->IsETSObjectType() &&
-                            target == relation->GetChecker()->AsETSChecker()->GlobalETSObjectType());
+    ES2PANDA_ASSERT(!left->IsETSMethodType());
+    ES2PANDA_ASSERT(!right->IsETSMethodType());
 }
 
 static Signature *EnhanceSignatureSubstitution(TypeRelation *relation, Signature *super, Signature *sub)
 {
     auto checker = relation->GetChecker()->AsETSChecker();
     auto *substitution = checker->NewSubstitution();
-    auto const &typeParameters = sub->GetSignatureInfo()->typeParams;
 
-    auto const enhance = [checker, substitution, &typeParameters](Type *param, Type *arg) -> bool {
-        return checker->EnhanceSubstitutionForType(typeParameters, param, arg, substitution);
+    auto const enhance = [checker, sub, substitution](Type *param, Type *arg) {
+        return checker->EnhanceSubstitutionForType(sub->GetSignatureInfo()->typeParams, param, arg, substitution);
     };
-
-    std::size_t const paramCount =
-        relation->InAssignmentContext() ? std::min(sub->Params().size(), super->Params().size()) : super->MinArgCount();
-
-    for (std::size_t i = 0U; i < paramCount; ++i) {
-        if (!enhance(sub->Params()[i]->TsType(), super->Params()[i]->TsType())) {
+    for (size_t ix = 0; ix < super->MinArgCount(); ix++) {
+        if (!enhance(sub->GetSignatureInfo()->params[ix]->TsType(), super->GetSignatureInfo()->params[ix]->TsType())) {
             return nullptr;
         }
     }
-
-    if (super->HasRestParameter() && sub->HasRestParameter()) {
+    if (super->RestVar() != nullptr) {
         if (!enhance(sub->RestVar()->TsType(), super->RestVar()->TsType())) {
             return nullptr;
         }
     }
-
     return sub->Substitute(relation, substitution);
 }
 
-static bool CheckThrowing(Signature *super, Signature *sub) noexcept
+static uint8_t SignatureThrowKindToOrder(Signature *sig)
 {
-    if (!(super->Throws() || (super->Function() != nullptr && super->Function()->IsThrowing()))) {
-        if (!(super->Rethrows() || (super->Function() != nullptr && super->Function()->IsRethrowing()))) {
-            if (sub->Throwing() ||
-                (sub->Function() != nullptr && (sub->Function()->IsThrowing() || sub->Function()->IsRethrowing()))) {
-                return false;
-            }
-        } else {
-            if (sub->Throws() || (sub->Function() != nullptr && sub->Function()->IsThrowing())) {
-                return false;
-            }
-        }
-    }
-    return true;
+    return sig->HasSignatureFlag(SignatureFlags::THROWS)     ? 0U
+           : sig->HasSignatureFlag(SignatureFlags::RETHROWS) ? 1U
+                                                             : 2U;
 }
 
-static bool CheckGeneralProperties(TypeRelation *relation, Signature *super, Signature *sub) noexcept
+static bool SignatureIsSupertypeOf(TypeRelation *relation, Signature *super, Signature *sub)
 {
-    if (relation->InAssignmentContext()) {
-        if (super->MinArgCount() < sub->MinArgCount()) {
-            return false;
-        }
-    } else {
-        if (super->MinArgCount() != sub->MinArgCount()) {
-            return false;
-        }
-    }
-
-    if (!CheckThrowing(super, sub)) {
+    if (super->MinArgCount() < sub->MinArgCount()) {
         return false;
     }
-
-    if (super->HasRestParameter() && !sub->HasRestParameter()) {
+    if ((super->RestVar() != nullptr && sub->RestVar() == nullptr) ||
+        (super->RestVar() == nullptr && sub->RestVar() != nullptr)) {
         return false;
     }
-
-    if ((super->Flags() & SignatureFlags::GETTER_OR_SETTER) != (sub->Flags() & SignatureFlags::GETTER_OR_SETTER)) {
-        return false;
-    }
-
-    return true;
-}
-
-static bool IsCompatibleSignature(TypeRelation *relation, Signature *super, Signature *sub)
-{
-    if (!CheckGeneralProperties(relation, super, sub)) {
-        return false;
-    }
-
-    if (!sub->TypeParams().empty()) {
+    if (!sub->GetSignatureInfo()->typeParams.empty()) {
         sub = EnhanceSignatureSubstitution(relation, super, sub);
         if (sub == nullptr) {
             return false;
         }
     }
-
-    std::size_t i = 0U;
-    std::size_t const paramCount =
-        relation->InAssignmentContext() ? std::min(sub->Params().size(), super->Params().size()) : super->MinArgCount();
-    for (; i != paramCount; ++i) {
-        if (!relation->IsSupertypeOf(sub->Params()[i]->TsType(), super->Params()[i]->TsType()) &&
-            !relation->IsAssignableTo(super->Params()[i]->TsType(), sub->Params()[i]->TsType())) {
+    for (size_t idx = 0; idx != sub->MinArgCount(); idx++) {
+        if (!relation->IsSupertypeOf(sub->Params()[idx]->TsType(), super->Params()[idx]->TsType())) {
             return false;
         }
     }
-
-    if (relation->InAssignmentContext() && i < super->Params().size() && sub->HasRestParameter()) {
-        auto *const restType = sub->RestVar()->TsType()->AsETSArrayType()->ElementType();
-        for (; i != super->Params().size(); ++i) {
-            if (!relation->IsSupertypeOf(restType, super->Params()[i]->TsType()) &&
-                !relation->IsAssignableTo(super->Params()[i]->TsType(), restType)) {
-                return false;
-            }
-        }
-    }
-
-    if (super->HasRestParameter() && !relation->IsSupertypeOf(sub->RestVar()->TsType(), super->RestVar()->TsType()) &&
-        !relation->IsAssignableTo(super->RestVar()->TsType(), sub->RestVar()->TsType())) {
+    if (super->RestVar() != nullptr && !relation->IsSupertypeOf(sub->RestVar()->TsType(), super->RestVar()->TsType())) {
         return false;
     }
-
-    if (!relation->IsSupertypeOf(super->ReturnType(), sub->ReturnType()) &&
-        !relation->IsAssignableTo(sub->ReturnType(), super->ReturnType())) {
+    if (!relation->IsSupertypeOf(super->ReturnType(), sub->ReturnType())) {
         return false;
     }
-
-    return true;
+    return SignatureThrowKindToOrder(super) <= SignatureThrowKindToOrder(sub);
 }
 
-static ETSFunctionType *CoerceToFunctionType(Type *type) noexcept
+static ETSFunctionType *CoerceToArrowType(TypeRelation *relation, Type *type)
 {
     if (type->IsETSFunctionType()) {
         return type->AsETSFunctionType();
     }
     if (type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-        return type->AsETSObjectType()->GetFunctionalInterfaceInvokeType();
+        auto checker = relation->GetChecker()->AsETSChecker();
+        return type->AsETSObjectType()->GetFunctionalInterfaceInvokeType()->MethodToArrow(checker);
     }
     return nullptr;
 }
 
-void ETSFunctionType::IsSupertypeOf(TypeRelation *relation, Type *source)
+void ETSFunctionType::Identical(TypeRelation *relation, Type *other)
 {
-    relation->Result(false);
+    AssertNoMethodsInFunctionRelation(this, other);
 
-    ETSFunctionType *const sourceFnType = CoerceToFunctionType(source);
-    if (sourceFnType == nullptr) {
+    ETSFunctionType *const otherFnType = CoerceToArrowType(relation, other);
+    if (otherFnType == nullptr) {
+        relation->Result(false);
         return;
     }
 
-    ES2PANDA_ASSERT(IsETSArrowType() && sourceFnType->IsETSArrowType());
+    relation->Result(SignatureIsSupertypeOf(relation, this->ArrowSignature(), otherFnType->ArrowSignature()) &&
+                     SignatureIsSupertypeOf(relation, otherFnType->ArrowSignature(), this->ArrowSignature()));
+}
 
-    Signature *const targetSig = CallSignature();
-    Signature *sourceSig = sourceFnType->CallSignature();
+bool ETSFunctionType::AssignmentSource(TypeRelation *relation, Type *target)
+{
+    AssertNoMethodsInFunctionRelation(this, target);
 
-    SavedTypeRelationFlagsContext savedFlagsCtx(relation, relation->GetTypeRelationFlags() |
-                                                              TypeRelationFlag::ONLY_CHECK_BOXING_UNBOXING);
+    // this should be defined by the dynamic type itself
+    if (target->IsETSDynamicType()) {
+        ASSERT(relation->GetNode() != nullptr);
+        if (relation->GetNode()->IsArrowFunctionExpression()) {
+            ASSERT(callSignatures_.size() == 1 && ArrowSignature()->HasSignatureFlag(SignatureFlags::CALL));
+            return relation->Result(true);
+        }
+        return relation->Result(false);
+    }
 
-    relation->Result(IsCompatibleSignature(relation, targetSig, sourceSig));
+    return relation->IsSupertypeOf(target, this);
+}
+
+void ETSFunctionType::IsSupertypeOf(TypeRelation *relation, Type *source)
+{
+    AssertNoMethodsInFunctionRelation(this, source);
+
+    ETSFunctionType *const sourceFnType = CoerceToArrowType(relation, source);
+    if (sourceFnType == nullptr) {
+        relation->Result(false);
+        return;
+    }
+
+    relation->Result(SignatureIsSupertypeOf(relation, this->ArrowSignature(), sourceFnType->ArrowSignature()));
 }
 
 void ETSFunctionType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
-    relation->Result(false);
+    AssertNoMethodsInFunctionRelation(this, source);
 
-    ETSFunctionType *const sourceFnType = CoerceToFunctionType(source);
-    if (sourceFnType == nullptr) {
-        return;
-    }
-
-    ES2PANDA_ASSERT(IsETSArrowType() && CallSignature()->IsTypeAnnotation());
-
-    // As the source function a class method can be used which can be overloaded - loop required
-    for (auto signature : sourceFnType->CallSignatures()) {
-        if (IsCompatibleSignature(relation, CallSignature(), signature)) {
-            relation->Result(true);
-            return;
-        }
-    }
+    relation->IsSupertypeOf(this, source);
 }
 
-ETSFunctionType *ETSFunctionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation,
-                                              GlobalTypesHolder *globalTypes)
+Type *ETSFunctionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
+    auto checker = relation->GetChecker()->AsETSChecker();
+    if (IsETSArrowType()) {
+        return allocator->New<ETSFunctionType>(checker, ArrowSignature());
+    }
+
     auto signatures = ArenaVector<Signature *>(allocator->Adapter());
     for (auto *const signature : callSignatures_) {
         signatures.emplace_back(signature->Copy(allocator, relation, globalTypes));
     }
-
-    return allocator->New<ETSFunctionType>(relation->GetChecker()->AsETSChecker(), name_, std::move(signatures));
+    return allocator->New<ETSFunctionType>(checker, name_, std::move(signatures));
 }
 
 ETSFunctionType *ETSFunctionType::Substitute(TypeRelation *relation, const Substitution *substitution)
@@ -292,6 +296,9 @@ ETSFunctionType *ETSFunctionType::Substitute(TypeRelation *relation, const Subst
         }
 
         if (anyChange) {
+            if (IsETSArrowType()) {
+                return allocator->New<ETSFunctionType>(checker, signatures[0]);
+            }
             return allocator->New<ETSFunctionType>(checker, name_, std::move(signatures));
         }
     }
@@ -299,74 +306,62 @@ ETSFunctionType *ETSFunctionType::Substitute(TypeRelation *relation, const Subst
     return this;
 }
 
-checker::RelationResult ETSFunctionType::CastFunctionParams(TypeRelation *relation,
-                                                            Signature *targetInvokeSig) const noexcept
-{
-    auto *ourSig = callSignatures_[0];
-    auto &ourParams = ourSig->Params();
-    auto &theirParams = targetInvokeSig->Params();
-    if (ourParams.size() != theirParams.size()) {
-        return RelationResult::FALSE;
-    }
-    for (size_t i = 0; i < theirParams.size(); i++) {
-        relation->Result(RelationResult::FALSE);
-        auto savedBoxFlags = relation->GetNode()->GetBoxingUnboxingFlags();
-        relation->IsCastableTo(ourParams[i]->TsType(), theirParams[i]->TsType());
-        relation->GetNode()->SetBoxingUnboxingFlags(savedBoxFlags);
-        if (!relation->IsTrue()) {
-            return RelationResult::FALSE;
-        }
-    }
-    return RelationResult::TRUE;
-}
-
 void ETSFunctionType::Cast(TypeRelation *relation, Type *target)
 {
-    relation->Result(false);
+    AssertNoMethodsInFunctionRelation(this, target);
 
-    if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-        auto *targetType = target->AsETSObjectType();
-        if (targetType->IsGlobalETSObjectType()) {
-            relation->Result(true);
-            return;
-        }
-        auto *savedNode = relation->GetNode();
-        if (targetType->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-            auto *targetInvokeVar = targetType->GetProperty(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME,
-                                                            PropertySearchFlags::SEARCH_INSTANCE_METHOD);
-            if (targetInvokeVar == nullptr || !targetInvokeVar->TsType()->IsETSFunctionType()) {
-                return;
-            }
-            auto *targetInvokeSig = targetInvokeVar->TsType()->AsETSFunctionType()->CallSignatures()[0];
-            relation->Result(CastFunctionParams(relation, targetInvokeSig));
-            auto *targetReturnType = targetInvokeSig->ReturnType();
-            auto savedBoxFlags = relation->GetNode()->GetBoxingUnboxingFlags();
-            relation->IsCastableTo(callSignatures_[0]->ReturnType(), targetReturnType);
-            relation->GetNode()->SetBoxingUnboxingFlags(savedBoxFlags);
-        }
-        if (relation->IsTrue()) {
-            relation->SetNode(savedNode);
-            return;
-        }
-    } else if (target->IsETSFunctionType()) {
-        Identical(relation, target);
+    if (target->IsETSObjectType() && target->AsETSObjectType()->IsGlobalETSObjectType()) {
+        relation->Result(true);
+        return;
     }
 }
 
-void ETSFunctionType::CastTarget(TypeRelation *const relation, Type *source)
+void ETSFunctionType::CastTarget(TypeRelation *relation, Type *source)
 {
-    Cast(relation, relation->GetChecker()->AsETSChecker()->GetNonNullishType(source));
-}
+    AssertNoMethodsInFunctionRelation(this, source);
 
-ETSFunctionType *ETSFunctionType::BoxPrimitives(ETSChecker *checker) const
-{
-    auto *allocator = checker->Allocator();
-
-    auto signatures = ArenaVector<Signature *>(allocator->Adapter());
-    for (auto *const signature : callSignatures_) {
-        signatures.emplace_back(signature->BoxPrimitives(checker));
+    if (relation->IsSupertypeOf(this, source)) {
+        relation->RemoveFlags(TypeRelationFlag::UNCHECKED_CAST);
+        return;
     }
 
-    return allocator->New<ETSFunctionType>(checker, name_, std::move(signatures));
+    relation->Result(relation->InCastingContext());
 }
+
+void ETSFunctionType::IsSubtypeOf(TypeRelation *relation, Type *target)
+{
+    AssertNoMethodsInFunctionRelation(this, target);
+
+    // fastpath
+    if (target->IsETSObjectType() && target->AsETSObjectType()->IsGlobalETSObjectType()) {
+        relation->Result(true);
+        return;
+    }
+
+    // fastpath, as IsSupertypeOf has already failed
+    if (target->IsETSFunctionType()) {
+        return;
+    }
+
+    ETSChecker *checker = relation->GetChecker()->AsETSChecker();
+    relation->IsSupertypeOf(target, ArrowToFunctionalInterface(checker));
+}
+
+void ETSFunctionType::ToAssemblerType([[maybe_unused]] std::stringstream &ss) const
+{
+    ss << assemblerName_;
+}
+
+// #22952: some function types are still in AST
+static std::string FunctionAssemblyTypeFromArity(uint32_t arity)
+{
+    return "std.core.Function" + std::to_string(arity);
+}
+
+void ETSFunctionType::ToDebugInfoType([[maybe_unused]] std::stringstream &ss) const
+{
+    ASSERT(IsETSArrowType());
+    ss << FunctionAssemblyTypeFromArity(ArrowSignature()->MinArgCount());
+}
+
 }  // namespace ark::es2panda::checker

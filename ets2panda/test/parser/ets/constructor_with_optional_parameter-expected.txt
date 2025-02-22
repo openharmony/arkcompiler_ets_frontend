@@ -219,24 +219,24 @@
                             "type": "ETSUndefinedType",
                             "loc": {
                               "start": {
-                                "line": 17,
-                                "column": 21
+                                "line": 1,
+                                "column": 1
                               },
                               "end": {
-                                "line": 17,
-                                "column": 22
+                                "line": 1,
+                                "column": 1
                               }
                             }
                           }
                         ],
                         "loc": {
                           "start": {
-                            "line": 17,
-                            "column": 24
+                            "line": 1,
+                            "column": 1
                           },
                           "end": {
-                            "line": 17,
-                            "column": 34
+                            "line": 1,
+                            "column": 1
                           }
                         }
                       },
@@ -254,12 +254,12 @@
                     },
                     "loc": {
                       "start": {
-                        "line": 17,
-                        "column": 17
+                        "line": 1,
+                        "column": 1
                       },
                       "end": {
-                        "line": 17,
-                        "column": 34
+                        "line": 1,
+                        "column": 1
                       }
                     }
                   }

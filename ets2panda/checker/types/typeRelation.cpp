@@ -72,16 +72,30 @@ bool TypeRelation::IsIdenticalTo(Type *source, Type *target)
     return IsTrue();
 }
 
-bool TypeRelation::IsCompatibleTo(Signature *source, Signature *target)
+bool TypeRelation::SignatureIsIdenticalTo(Signature *source, Signature *target)
 {
     if (source == target) {
         return Result(true);
     }
 
-    result_ = RelationResult::FALSE;
-    target->Compatible(this, source);
+    Result(false);
+    if (target->IsSubtypeOf(this, source), IsTrue()) {
+        if (source->IsSubtypeOf(this, target), IsTrue()) {
+            return Result(true);
+        }
+    }
+    return Result(false);
+}
 
-    return result_ == RelationResult::TRUE;
+bool TypeRelation::SignatureIsSupertypeOf(Signature *super, Signature *sub)
+{
+    if (super == sub) {
+        return Result(true);
+    }
+
+    Result(false);
+    sub->IsSubtypeOf(this, super);
+    return IsTrue();
 }
 
 bool TypeRelation::IsIdenticalTo(IndexInfo *source, IndexInfo *target)
@@ -100,6 +114,10 @@ bool TypeRelation::IsIdenticalTo(IndexInfo *source, IndexInfo *target)
 // NOTE: applyNarrowing -> flag
 bool TypeRelation::IsAssignableTo(Type *source, Type *target)
 {
+    if (source == target) {
+        return Result(true);
+    }
+
     result_ = CacheLookup(source, target, checker_->AssignableResults(), RelationType::ASSIGNABLE);
     if (result_ == RelationResult::CACHE_MISS) {
         // NOTE: we support assigning T to Readonly<T>, but do not support assigning Readonly<T> to T
@@ -214,6 +232,10 @@ bool TypeRelation::IsLegalBoxedPrimitiveConversion(Type *target, Type *source)
 
 bool TypeRelation::IsSupertypeOf(Type *super, Type *sub)
 {
+    if (super == sub) {
+        return Result(true);
+    }
+
     result_ = CacheLookup(super, sub, checker_->SupertypeResults(), RelationType::SUPERTYPE);
     if (result_ == RelationResult::CACHE_MISS) {
         if (IsIdenticalTo(super, sub)) {

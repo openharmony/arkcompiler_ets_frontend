@@ -147,7 +147,7 @@ void TSDeclGen::GenType(const checker::Type *checkerType)
         OutDts("number");
         return;
     }
-    if (checkerType->HasTypeFlag(checker::TypeFlag::FUNCTION)) {
+    if (checkerType->IsETSFunctionType()) {
         GenFunctionType(checkerType->AsETSFunctionType());
         return;
     }
@@ -214,18 +214,22 @@ void TSDeclGen::GenFunctionType(const checker::ETSFunctionType *etsFunctionType,
     const bool isSetter = methodDef != nullptr ? methodDef->Kind() == ir::MethodDefinitionKind::SET : false;
     // CC-OFFNXT(G.FMT.14-CPP) project code style
     const auto *sig = [this, methodDef, etsFunctionType]() -> const checker::Signature * {
+        if (etsFunctionType->IsETSArrowType()) {
+            return etsFunctionType->ArrowSignature();
+        }
         if (methodDef != nullptr) {
             return methodDef->Function()->Signature();
         }
-        if (!etsFunctionType->IsETSArrowType()) {
+        if (etsFunctionType->CallSignatures().size() != 1) {
             const auto loc = methodDef != nullptr ? methodDef->Start() : lexer::SourcePosition();
             LogError(diagnostic::NOT_OVERLOAD_SUPPORT, {}, loc);
         }
         return etsFunctionType->CallSignatures()[0];
     }();
 
-    const auto *func = sig->Function();
-    GenTypeParameters(func->TypeParams());
+    if (sig->HasFunction()) {
+        GenTypeParameters(sig->Function()->TypeParams());
+    }
     OutDts("(");
 
     GenSeparated(sig->Params(), [this](varbinder::LocalVariable *param) {

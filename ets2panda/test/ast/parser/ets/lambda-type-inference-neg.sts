@@ -25,5 +25,5 @@ function main(): void {
 }
 
 
-/* @@@ label Error TypeError: Function foo is already declared.  */
+/* @@@ label Error TypeError: Function foo with this assembly signature already declared.  */
 /* @@@ label1 Error TypeError: Reference to foo is ambiguous  */

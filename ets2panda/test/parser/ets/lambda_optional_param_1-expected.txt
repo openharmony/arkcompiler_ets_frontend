@@ -134,38 +134,13 @@
                               "type": "Identifier",
                               "name": "y",
                               "typeAnnotation": {
-                                "type": "ETSUnionType",
-                                "types": [
-                                  {
-                                    "type": "ETSTypeReference",
-                                    "part": {
-                                      "type": "ETSTypeReferencePart",
-                                      "name": {
-                                        "type": "Identifier",
-                                        "name": "number",
-                                        "decorators": [],
-                                        "loc": {
-                                          "start": {
-                                            "line": 17,
-                                            "column": 35
-                                          },
-                                          "end": {
-                                            "line": 17,
-                                            "column": 41
-                                          }
-                                        }
-                                      },
-                                      "loc": {
-                                        "start": {
-                                          "line": 17,
-                                          "column": 35
-                                        },
-                                        "end": {
-                                          "line": 17,
-                                          "column": 42
-                                        }
-                                      }
-                                    },
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "number",
+                                    "decorators": [],
                                     "loc": {
                                       "start": {
                                         "line": 17,
@@ -173,24 +148,21 @@
                                       },
                                       "end": {
                                         "line": 17,
-                                        "column": 42
+                                        "column": 41
                                       }
                                     }
                                   },
-                                  {
-                                    "type": "ETSUndefinedType",
-                                    "loc": {
-                                      "start": {
-                                        "line": 17,
-                                        "column": 33
-                                      },
-                                      "end": {
-                                        "line": 17,
-                                        "column": 34
-                                      }
+                                  "loc": {
+                                    "start": {
+                                      "line": 17,
+                                      "column": 35
+                                    },
+                                    "end": {
+                                      "line": 17,
+                                      "column": 42
                                     }
                                   }
-                                ],
+                                },
                                 "loc": {
                                   "start": {
                                     "line": 17,
@@ -211,20 +183,6 @@
                                 "end": {
                                   "line": 17,
                                   "column": 42
-                                }
-                              }
-                            },
-                            "initializer": {
-                              "type": "UndefinedLiteral",
-                              "value": "undefined",
-                              "loc": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 1
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 1
                                 }
                               }
                             },

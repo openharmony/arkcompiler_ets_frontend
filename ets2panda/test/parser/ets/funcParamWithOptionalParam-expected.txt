@@ -65,35 +65,7 @@
                               "type": "Identifier",
                               "name": "value",
                               "typeAnnotation": {
-                                "type": "ETSUnionType",
-                                "types": [
-                                  {
-                                    "type": "ETSPrimitiveType",
-                                    "loc": {
-                                      "start": {
-                                        "line": 17,
-                                        "column": 23
-                                      },
-                                      "end": {
-                                        "line": 17,
-                                        "column": 26
-                                      }
-                                    }
-                                  },
-                                  {
-                                    "type": "ETSUndefinedType",
-                                    "loc": {
-                                      "start": {
-                                        "line": 17,
-                                        "column": 20
-                                      },
-                                      "end": {
-                                        "line": 17,
-                                        "column": 21
-                                      }
-                                    }
-                                  }
-                                ],
+                                "type": "ETSPrimitiveType",
                                 "loc": {
                                   "start": {
                                     "line": 17,
@@ -114,20 +86,6 @@
                                 "end": {
                                   "line": 17,
                                   "column": 26
-                                }
-                              }
-                            },
-                            "initializer": {
-                              "type": "UndefinedLiteral",
-                              "value": "undefined",
-                              "loc": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 1
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 1
                                 }
                               }
                             },

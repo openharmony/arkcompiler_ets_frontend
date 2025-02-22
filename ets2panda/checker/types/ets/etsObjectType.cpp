@@ -164,18 +164,22 @@ static void UpdateDeclarationForGetterSetter(varbinder::LocalVariable *res, cons
 varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(const util::StringView &name,
                                                                               PropertySearchFlags flags) const
 {
-    varbinder::LocalVariable *res = allocator_->New<varbinder::LocalVariable>(varbinder::VariableFlags::SYNTHETIC |
-                                                                              varbinder::VariableFlags::METHOD);
-    ETSFunctionType *funcType = CreateETSFunctionType(name);
+    std::vector<Signature *> signatures;
+    varbinder::LocalVariable *functionalInterface = CollectSignaturesForSyntheticType(signatures, name, flags);
+    // #22952: the called function *always* returns nullptr
+    ASSERT(functionalInterface == nullptr);
+    (void)functionalInterface;
 
-    varbinder::LocalVariable *functionalInterface = CollectSignaturesForSyntheticType(funcType, name, flags);
-
-    if (functionalInterface != nullptr) {
-        return functionalInterface;
+    if (signatures.empty()) {
+        return nullptr;
     }
 
-    if (funcType->CallSignatures().empty()) {
-        return nullptr;
+    varbinder::LocalVariable *res = allocator_->New<varbinder::LocalVariable>(varbinder::VariableFlags::SYNTHETIC |
+                                                                              varbinder::VariableFlags::METHOD);
+
+    ETSFunctionType *funcType = CreateMethodTypeForProp(name);
+    for (auto &s : signatures) {
+        funcType->AddCallSignature(s);
     }
 
     res->SetTsType(funcType);
@@ -186,16 +190,17 @@ varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(co
     return res;
 }
 
-ETSFunctionType *ETSObjectType::CreateETSFunctionType(const util::StringView &name) const
+ETSFunctionType *ETSObjectType::CreateMethodTypeForProp(const util::StringView &name) const
 {
-    return allocator_->New<ETSFunctionType>(name, allocator_);
+    ASSERT(GetRelation() != nullptr);
+    return GetRelation()->GetChecker()->AsETSChecker()->CreateETSMethodType(name, {{}, Allocator()->Adapter()});
 }
 
-varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFunctionType *funcType,
+varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(std::vector<Signature *> &signatures,
                                                                            const util::StringView &name,
                                                                            PropertySearchFlags flags) const
 {
-    auto const addSignature = [funcType, flags](varbinder::LocalVariable *found) -> void {
+    auto const addSignature = [&signatures, flags](varbinder::LocalVariable *found) -> void {
         for (auto *it : found->TsType()->AsETSFunctionType()->CallSignatures()) {
             if (((flags & PropertySearchFlags::IGNORE_ABSTRACT) != 0) &&
                 it->HasSignatureFlag(SignatureFlags::ABSTRACT)) {
@@ -203,7 +208,7 @@ varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFu
             }
             // Issue: #18720
             // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
-            funcType->AddCallSignature(it);
+            signatures.push_back(&*it);
         }
     };
 
@@ -224,7 +229,7 @@ varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFu
     }
 
     if (superType_ != nullptr && ((flags & PropertySearchFlags::SEARCH_IN_BASE) != 0)) {
-        return superType_->CollectSignaturesForSyntheticType(funcType, name, flags);
+        return superType_->CollectSignaturesForSyntheticType(signatures, name, flags);
     }
 
     return nullptr;
@@ -310,7 +315,9 @@ std::vector<const varbinder::LocalVariable *> ETSObjectType::ForeignProperties()
         ownProps.insert(prop->Name());
     }
 
-    auto allProps = CollectAllProperties();
+    std::map<util::StringView, const varbinder::LocalVariable *> allProps {};
+    Iterate([&allProps](const varbinder::LocalVariable *var) { allProps.emplace(var->Name(), var); });
+
     for (const auto &[name, var] : allProps) {
         if (ownProps.find(name) == ownProps.end()) {
             foreignProps.push_back(var);
@@ -320,22 +327,8 @@ std::vector<const varbinder::LocalVariable *> ETSObjectType::ForeignProperties()
     return foreignProps;
 }
 
-ArenaMap<util::StringView, const varbinder::LocalVariable *> ETSObjectType::CollectAllProperties() const
-{
-    ArenaMap<util::StringView, const varbinder::LocalVariable *> propMap(allocator_->Adapter());
-    EnsurePropertiesInstantiated();
-    Iterate([&propMap](const varbinder::LocalVariable *var) { propMap.emplace(var->Name(), var); });
-
-    return propMap;
-}
-
 void ETSObjectType::ToString(std::stringstream &ss, bool precise) const
 {
-    if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-        GetFunctionalInterfaceInvokeType()->ToString(ss, precise);
-        return;
-    }
-
     if (IsPartial()) {
         ss << "Partial" << compiler::Signatures::GENERIC_BEGIN;
         baseType_->ToString(ss, precise);
@@ -393,6 +386,7 @@ void ETSObjectType::SubstitutePartialTypes(TypeRelation *relation, Type *other)
             }
         }
     }
+    relation->Result(false);  // this function spoils the relation
 }
 
 void ETSObjectType::IdenticalUptoTypeArguments(TypeRelation *relation, Type *other)
@@ -477,7 +471,8 @@ bool ETSObjectType::CheckIdenticalFlags(ETSObjectType *other) const
 
 bool ETSObjectType::AssignmentSource(TypeRelation *const relation, [[maybe_unused]] Type *const target)
 {
-    return relation->Result(false);
+    // NOTE: do not modify, to be implied by the relation
+    return relation->IsSupertypeOf(target, this);
 }
 
 bool ETSObjectType::IsBoxedPrimitive() const
@@ -491,22 +486,16 @@ bool ETSObjectType::IsBoxedPrimitive() const
 
 void ETSObjectType::AssignmentTarget(TypeRelation *const relation, Type *source)
 {
-    if (source->HasTypeFlag(TypeFlag::READONLY)) {
-        relation->Result(false);
-        return;
-    }
-
-    if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL) && source->IsETSFunctionType()) {
-        EnsurePropertiesInstantiated();
-        auto found = properties_[static_cast<size_t>(PropertyType::INSTANCE_METHOD)].find(
-            FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
-        ES2PANDA_ASSERT(found != properties_[static_cast<size_t>(PropertyType::INSTANCE_METHOD)].end());
-        source = source->AsETSFunctionType()->BoxPrimitives(relation->GetChecker()->AsETSChecker());
-        relation->IsAssignableTo(source, found->second->TsType());
-        return;
-    }
-
+    // NOTE: do not modify, to be implied by the relation
     relation->IsSupertypeOf(this, source);
+}
+
+ETSFunctionType *ETSObjectType::GetFunctionalInterfaceInvokeType() const
+{
+    ASSERT(HasObjectFlag(ETSObjectFlags::FUNCTIONAL));
+    auto *invoke = GetOwnProperty<PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
+    ASSERT(invoke && invoke->TsType() && invoke->TsType()->IsETSFunctionType());
+    return invoke->TsType()->AsETSFunctionType();
 }
 
 bool ETSObjectType::CastWideningNarrowing(TypeRelation *const relation, Type *const target, TypeFlag unboxFlags,
@@ -682,91 +671,74 @@ void ETSObjectType::Cast(TypeRelation *const relation, Type *const target)
     conversion::Forbidden(relation);
 }
 
-bool ETSObjectType::DefaultObjectTypeChecks(const ETSChecker *const etsChecker, TypeRelation *const relation,
-                                            Type *const source)
-{
-    relation->Result(false);
-
-    // 3.8.3 Subtyping among Array Types
-    auto const *const base = GetConstOriginalBaseType();
-    if (base == etsChecker->GlobalETSObjectType() && source->IsETSArrayType()) {
-        relation->Result(true);
-        return true;
-    }
-
-    if (!source->IsETSObjectType() ||
-        !source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS | ETSObjectFlags::INTERFACE)) {
-        return true;
-    }
-
-    // All classes and interfaces are subtypes of Object
-    if (base == etsChecker->GlobalETSObjectType()) {
-        relation->Result(true);
-        return true;
-    }
-
-    IdenticalUptoTypeArguments(relation, source);
-    if (relation->IsTrue() && HasTypeFlag(TypeFlag::GENERIC) && !relation->IgnoreTypeParameters()) {
-        IsGenericSupertypeOf(relation, source);
-    }
-    return relation->IsTrue();
-}
-
 void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
 {
     relation->Result(false);
-    auto *const etsChecker = relation->GetChecker()->AsETSChecker();
+    auto const checker = relation->GetChecker()->AsETSChecker();
 
+    if (source->HasTypeFlag(TypeFlag::READONLY)) {
+        relation->Result(false);
+        return;
+    }
     if (IsPartial()) {
-        if (!source->IsETSObjectType() || !source->AsETSObjectType()->IsPartial()) {
+        source->IsETSObjectType() && source->AsETSObjectType()->IsPartial() &&
+            relation->IsSupertypeOf(GetBaseType(), source->AsETSObjectType()->GetBaseType());
+        return;
+    }
+    if (!source->IsETSObjectType()) {
+        return;
+    }
+
+    auto const sourceObj = source->AsETSObjectType();
+    // #23072 - superType_ of the current object is not intialized in recursive generics
+    if (GetConstOriginalBaseType() == checker->GlobalETSObjectType()) {  // Fastpath, all objects are subtypes of Object
+        relation->Result(true);
+        return;
+    }
+    if (sourceObj->HasObjectFlag(ETSObjectFlags::CLASS | ETSObjectFlags::INTERFACE)) {
+        IdenticalUptoTypeArguments(relation, sourceObj);
+        if (relation->IsTrue() && HasTypeFlag(TypeFlag::GENERIC) && !relation->IgnoreTypeParameters()) {
+            IsGenericSupertypeOf(relation, sourceObj);
+        }
+        if (relation->IsTrue()) {
             return;
         }
-        relation->IsSupertypeOf(GetBaseType(), source->AsETSObjectType()->GetBaseType());
-        return;
     }
-
-    if (DefaultObjectTypeChecks(etsChecker, relation, source)) {
-        return;
-    }
-
     //  #16485: special case for generic bridges processing.
     //          We need only to check if the type is immediate supertype of processing class.
-    auto const &checkerContext = relation->GetChecker()->Context();
-    if ((checkerContext.Status() & CheckerStatus::IN_BRIDGE_TEST) != 0U && relation->IsBridgeCheck()) {
-        if (source->Variable() == checkerContext.ContainingClass()->SuperType()->Variable()) {
+    if ((checker->Context().Status() & CheckerStatus::IN_BRIDGE_TEST) != 0U && relation->IsBridgeCheck()) {
+        if (sourceObj->Variable() == checker->Context().ContainingClass()->SuperType()->Variable()) {
             return;
-        }
-    }
-
-    ETSObjectType *sourceObj = source->AsETSObjectType();
-    if (auto *sourceSuper = sourceObj->SuperType(); sourceSuper != nullptr) {
-        if (relation->IsSupertypeOf(this, sourceSuper)) {
-            return;
-        }
-    }
-
-    if (HasObjectFlag(ETSObjectFlags::INTERFACE)) {
-        for (auto *itf : sourceObj->Interfaces()) {
-            if (relation->IsSupertypeOf(this, itf)) {
-                return;
-            }
         }
     }
 }
 
-void ETSObjectType::IsGenericSupertypeOf(TypeRelation *relation, Type *source)
+void ETSObjectType::IsSubtypeOf(TypeRelation *relation, Type *target)
+{
+    if (auto super = SuperType(); super != nullptr) {
+        if (relation->IsSupertypeOf(target, super)) {
+            return;
+        }
+    }
+    for (auto super : Interfaces()) {
+        if (relation->IsSupertypeOf(target, super)) {
+            return;
+        }
+    }
+}
+
+void ETSObjectType::IsGenericSupertypeOf(TypeRelation *relation, ETSObjectType *source)
 {
     ES2PANDA_ASSERT(HasTypeFlag(TypeFlag::GENERIC));
 
-    auto *sourceType = source->AsETSObjectType();
-    auto const &sourceTypeArguments = sourceType->TypeArguments();
+    auto const &sourceTypeArguments = source->TypeArguments();
     auto const typeArgumentsNumber = typeArguments_.size();
     if (typeArgumentsNumber > sourceTypeArguments.size()) {
         relation->Result(false);
         return;
     }
 
-    ES2PANDA_ASSERT(declNode_ == sourceType->GetDeclNode());
+    ASSERT(declNode_ == source->GetDeclNode());
 
     auto *typeParamsDecl = GetTypeParams();
     ES2PANDA_ASSERT(typeParamsDecl != nullptr || typeArguments_.empty());
@@ -992,34 +964,6 @@ void ETSObjectType::SetCopiedTypeProperties(TypeRelation *const relation, ETSObj
 
     copiedType->SetTypeArguments(std::move(newTypeArgs));
     copiedType->relation_ = relation;
-
-    if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL) && IsPropertiesInstantiated()) {
-        auto thisFunctionType =
-            GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME)->TsType();
-        if (thisFunctionType == nullptr || !thisFunctionType->IsETSFunctionType()) {
-            return;
-        }
-        auto copyFunctionType =
-            copiedType->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME)
-                ->TsType();
-        if (copyFunctionType == nullptr || !copyFunctionType->IsETSFunctionType()) {
-            return;
-        }
-        auto const &thisSignatures = thisFunctionType->AsETSFunctionType()->CallSignatures();
-        auto const &copySignatures = copyFunctionType->AsETSFunctionType()->CallSignatures();
-        auto const numberSignatures = std::min(thisSignatures.size(), copySignatures.size());
-        for (std::size_t i = 0U; i < numberSignatures; ++i) {
-            copySignatures[i]->MinArgCount(thisSignatures[i]->MinArgCount());
-            for (std::size_t j = thisSignatures[i]->MinArgCount(); j < thisSignatures[i]->Function()->Params().size();
-                 ++j) {
-                copySignatures[i]->Function()->Params()[j]->AsETSParameterExpression()->SetInitializer(
-                    thisSignatures[i]->Function()->Params()[j]->AsETSParameterExpression()->Initializer());
-            }
-            if (thisSignatures[i]->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION_RETURN_THIS)) {
-                copySignatures[i]->AddSignatureFlag(SignatureFlags::EXTENSION_FUNCTION_RETURN_THIS);
-            }
-        }
-    }
 }
 
 void ETSObjectType::UpdateTypeProperty(checker::ETSChecker *checker, varbinder::LocalVariable *const prop,
@@ -1055,6 +999,7 @@ void ETSObjectType::UpdateTypeProperties(checker::ETSChecker *checker, PropertyP
     }
 }
 
+// #22951: remove isExtensionFunctionType flag
 ETSObjectType *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *substitution, bool cache,
                                          bool isExtensionFunctionType)
 {

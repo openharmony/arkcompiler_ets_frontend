@@ -22,7 +22,6 @@
 #include "compiler/lowering/ets/stringConstantsLowering.h"
 #include "compiler/lowering/ets/constantExpressionLowering.h"
 #include "compiler/lowering/ets/constStringToCharLowering.h"
-#include "compiler/lowering/ets/defaultParameterLowering.h"
 #include "compiler/lowering/ets/expandBrackets.h"
 #include "compiler/lowering/ets/recordLowering.h"
 #include "compiler/lowering/ets/topLevelStmts/topLevelStmts.h"
@@ -30,6 +29,9 @@
 #include "compiler/lowering/ets/boxingForLocals.h"
 #include "compiler/lowering/ets/capturedVariables.h"
 #include "compiler/lowering/ets/lambdaLowering.h"
+#include "compiler/lowering/ets/defaultParametersLowering.h"
+#include "compiler/lowering/ets/defaultParametersInConstructorLowering.h"
+#include "compiler/lowering/ets/optionalArgumentsLowering.h"
 #include "compiler/lowering/ets/spreadLowering.h"
 #include "compiler/lowering/ets/extensionAccessorLowering.h"
 #include "compiler/lowering/ets/interfacePropertyDeclarations.h"
@@ -86,7 +88,9 @@ static OptionalLowering g_optionalLowering;
 static ExpandBracketsPhase g_expandBracketsPhase;
 static PromiseVoidInferencePhase g_promiseVoidInferencePhase;
 static RecordLowering g_recordLowering;
-static DefaultParameterLowering g_defaultParameterLowering;
+static DefaultParametersLowering g_defaultParametersLowering;
+static DefaultParametersInConstructorLowering g_defaultParametersInConstructorLowering;
+static OptionalArgumentsLowering g_optionalArgumentsLowering;
 static TopLevelStatements g_topLevelStatements;
 static LocalClassConstructionPhase g_localClassLowering;
 static StringComparisonLowering g_stringComparisonLowering;
@@ -115,12 +119,13 @@ std::vector<Phase *> GetETSPhaseList()
         &g_stringConstantsLowering,
         &g_packageImplicitImport,
         &g_topLevelStatements,
-        &g_defaultParameterLowering,
+        &g_expressionLambdaConstructionPhase,
+        &g_defaultParametersInConstructorLowering,
+        &g_defaultParametersLowering,
         &g_ambientLowering,
         &g_initScopesPhaseEts,
         &g_optionalLowering,
         &g_promiseVoidInferencePhase,
-        &g_expressionLambdaConstructionPhase,
         &g_interfacePropDeclPhase,
         &g_constantExpressionLowering,
         &g_enumLoweringPhase,
@@ -151,6 +156,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_stringComparisonLowering,
         &g_partialExportClassGen,
         &g_genericBridgesLowering,
+        &g_optionalArgumentsLowering, // #22952 could be moved to earlier phase
         &g_pluginsAfterLowerings,  // pluginsAfterLowerings has to come at the very end, nothing should go after it
     };
     // clang-format on

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -111,9 +111,7 @@ class ASTDumperTest : public testing::TestWithParam<TestParams> {
 public:
     ASTDumperTest()
     {
-        constexpr auto COMPILER_SIZE = 268435456;
-
-        ark::mem::MemConfig::Initialize(0, 0, COMPILER_SIZE, 0, 0, 0);
+        ark::mem::MemConfig::Initialize(0, 0, ark::es2panda::COMPILER_SIZE, 0, 0, 0);
         ark::PoolManager::Initialize(ark::PoolType::MMAP);
     }
 

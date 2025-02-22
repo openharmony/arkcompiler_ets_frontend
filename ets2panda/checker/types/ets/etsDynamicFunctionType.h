@@ -23,15 +23,15 @@ namespace ark::es2panda::checker {
 
 class ETSDynamicFunctionType : public ETSFunctionType {
 public:
-    explicit ETSDynamicFunctionType(ETSChecker *checker, util::StringView const &name, Signature *signature,
-                                    Language const lang)
-        : ETSFunctionType(checker, name, signature), lang_(lang)
+    explicit ETSDynamicFunctionType(ETSChecker *checker, util::StringView name, ArenaVector<Signature *> &&signatures,
+                                    Language lang)
+        : ETSFunctionType(checker, name, std::move(signatures)), lang_(lang)
     {
         AddTypeFlag(TypeFlag::ETS_DYNAMIC_FUNCTION_TYPE);
     }
 
-    explicit ETSDynamicFunctionType(util::StringView const &name, ArenaAllocator *allocator, Language const lang)
-        : ETSFunctionType(name, allocator), lang_(lang)
+    explicit ETSDynamicFunctionType(ETSChecker *checker, Signature *signature, Language lang)
+        : ETSFunctionType(checker, signature), lang_(lang)
     {
         AddTypeFlag(TypeFlag::ETS_DYNAMIC_FUNCTION_TYPE);
     }

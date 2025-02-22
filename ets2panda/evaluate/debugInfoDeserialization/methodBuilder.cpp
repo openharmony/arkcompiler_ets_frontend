@@ -122,7 +122,7 @@ void MethodBuilder::CollectParametersAndReturnType()
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto *paramIdent = checker_->AllocNode<ir::Identifier>(paramName.View(), parameters[idx], allocator);
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *param = checker_->AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr, allocator);
+        auto *param = checker_->AllocNode<ir::ETSParameterExpression>(paramIdent, false, allocator);
         params_.push_back(param);
     }
 

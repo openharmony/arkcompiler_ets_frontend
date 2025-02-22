@@ -20,5 +20,3 @@ function foo(a: bigint, b: boolean): [number, string];
 function foo(a: string | number | bigint, b: boolean | string): [number, string] {
     return [1, "foo"];
 }
-
-/* @@? 17:10 Error TypeError: This overload signature is not compatible with its implementation signature  */
