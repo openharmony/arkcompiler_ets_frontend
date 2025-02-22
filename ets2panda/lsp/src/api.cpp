@@ -164,6 +164,33 @@ extern "C" DiagnosticReferences GetSyntacticDiagnostics(char const *fileName)
     return result;
 }
 
+extern "C" DiagnosticReferences GetCompilerOptionsDiagnostics(char const *fileName, CancellationToken cancellationToken)
+{
+    Initializer initializer = Initializer();
+    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
+
+    DiagnosticReferences result {};
+    if (cancellationToken.IsCancellationRequested()) {
+        return result;
+    }
+    GetOptionDiagnostics(context, result);
+
+    auto options = reinterpret_cast<public_lib::Context *>(context)->config->options;
+    auto compilationList = FindProjectSources(options->ArkTSConfig());
+    initializer.DestroyContext(context);
+
+    for (auto const &file : compilationList) {
+        if (cancellationToken.IsCancellationRequested()) {
+            return result;
+        }
+        auto fileContext = initializer.CreateContext(file.first.c_str(), ES2PANDA_STATE_CHECKED);
+        GetGlobalDiagnostics(fileContext, result);
+        initializer.DestroyContext(fileContext);
+    }
+
+    return result;
+}
+
 extern "C" ReferenceLocationList GetReferenceLocationAtPosition(char const *fileName, size_t pos,
                                                                 const std::vector<std::string> &autoGenerateFolders,
                                                                 CancellationToken cancellationToken)
@@ -231,6 +258,7 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetSpanOfEnclosingComment,
                     GetSemanticDiagnostics,
                     GetSyntacticDiagnostics,
+                    GetCompilerOptionsDiagnostics,
                     GetReferenceLocationAtPosition,
                     GetDocumentHighlights,
                     FindReferencesWrapper};
