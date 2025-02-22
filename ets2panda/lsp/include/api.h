@@ -323,6 +323,18 @@ public:
     }
 };
 
+typedef struct FileDiagnostic {
+    es2panda_AstNode *node;
+    Diagnostic diagnostic;
+
+    FileDiagnostic(es2panda_AstNode *n, const Diagnostic &diag, Position start, Position end)
+        : node(n),
+          diagnostic(Diagnostic(Range(start, end), diag.tags_, diag.relatedInformation_, diag.severity_, diag.code_,
+                                diag.message_, diag.codeDescription_, diag.source_, diag.data_))
+    {
+    }
+} FileDiagnostic;
+
 typedef struct LSPAPI {
     DefinitionInfo (*getDefinitionAtPosition)(char const *fileName, size_t position);
     DefinitionInfo (*getImplementationAtPosition)(char const *fileName, size_t position);
@@ -343,21 +355,10 @@ typedef struct LSPAPI {
     FileRefMap (*findReferences)(ark::es2panda::lsp::CancellationToken *tkn,
                                  const std::vector<ark::es2panda::SourceFile> &srcFiles,
                                  const ark::es2panda::SourceFile &srcFile, size_t position);
+    std::vector<FileDiagnostic> (*getSuggestionDiagnostics)(es2panda_Context *context);
 } LSPAPI;
 
 LSPAPI const *GetImpl();
-
-typedef struct FileDiagnostic {
-    es2panda_AstNode *node;
-    Diagnostic diagnostic;
-
-    FileDiagnostic(es2panda_AstNode *n, const Diagnostic &diag, Position start, Position end)
-        : node(n),
-          diagnostic(Diagnostic(Range(start, end), diag.tags_, diag.relatedInformation_, diag.severity_, diag.code_,
-                                diag.message_, diag.codeDescription_, diag.source_, diag.data_))
-    {
-    }
-} FileDiagnostic;
 
 // NOLINTEND
 
