@@ -1657,6 +1657,9 @@ export class TypeScriptLinter {
       }
       this.handleRestrictedValues(tsIdentifier, tsIdentSym);
     }
+    if (this.options.arkts2 && this.tsTypeChecker.isArgumentsSymbol(tsIdentSym)) {
+      this.incrementCounters(node, FaultID.ArgumentsObject);
+    }
   }
 
   // hard-coded alternative to TypeScriptLinter.advancedClassChecks

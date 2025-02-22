@@ -231,3 +231,4 @@ cookBookTag[184] = 'Optional methods are not supported (arkts-optional-methods)'
 cookBookTag[185] = 'syntax for import type is disabled (arkts-import-types)';
 cookBookTag[186] = '"new" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)';
 cookBookTag[193] = '"void" operator is not supported (arkts-no-void-operator)';
+cookBookTag[207] = 'Special arguments object inside functions are not supported (arkts-no-arguments-obj)';

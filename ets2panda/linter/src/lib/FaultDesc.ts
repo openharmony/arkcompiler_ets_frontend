@@ -135,3 +135,4 @@ faultDesc[FaultID.ImportType] = 'Import type syntax';
 faultDesc[FaultID.DynamicCtorCall] = 'Dynamic constructor call';
 faultDesc[FaultID.VoidOperator] = 'Void operator';
 faultDesc[FaultID.RegularExpressionLiteral] = 'Regex literals';
+faultDesc[FaultID.ArgumentsObject] = 'Special arguments object inside functions';
