@@ -585,13 +585,9 @@ void ClassDefinition::AddFieldTypeForTypeReference(const TSTypeReference *typeRe
 
     // ts enum type
     const ir::AstNode *declNode = GetDeclNodeFromIdentifier(typeName->AsIdentifier());
-    if (declNode != nullptr) {
-        // If the result of "declNode->Original()" is nullptr, it means the declNode is original and not transformed.
-        auto originalNode = (declNode->Original() != nullptr) ? declNode->Original() : declNode;
-        if (originalNode->Type() == ir::AstNodeType::TS_ENUM_DECLARATION) {
-            fieldType |= FieldType::STRING | FieldType::NUMBER;
-            return;
-        }
+    if (declNode != nullptr && declNode->IsTSEnumDeclaration()) {
+        fieldType |= FieldType::STRING | FieldType::NUMBER;
+        return;
     }
 
     // sendable class and sendable fuction
@@ -604,14 +600,7 @@ const ir::AstNode *ClassDefinition::GetDeclNodeFromIdentifier(const ir::Identifi
         return nullptr;
     }
 
-    std::vector<binder::Variable *> variables;
-    variables.reserve(identifier->TSVariables().size() + 1U);
-    variables.emplace_back(identifier->Variable());
     for (const auto &v : identifier->TSVariables()) {
-        variables.emplace_back(v);
-    }
-
-    for (const auto &v : variables) {
         if (v == nullptr || v->Declaration() == nullptr || v->Declaration()->Node() == nullptr) {
             continue;
         }
@@ -619,6 +608,14 @@ const ir::AstNode *ClassDefinition::GetDeclNodeFromIdentifier(const ir::Identifi
         auto res = v->Declaration()->Node();
         return res;
     }
+
+    // In general, the declaration node of a type node could alaways be found in ts ast.
+    // The following branch, finding declaration node in js ast, is added for some unexpected corner cases.
+    if (identifier->Variable() && identifier->Variable()->Declaration() &&
+        identifier->Variable()->Declaration()->Node()) {
+        return identifier->Variable()->Declaration()->Node()->Original();
+    }
+    
     return nullptr;
 }
 
