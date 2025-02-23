@@ -206,6 +206,15 @@ ThrowableDiagnostic::ThrowableDiagnostic(DiagnosticType type, DiagnosticMessageP
 {
 }
 
+ThrowableDiagnostic::ThrowableDiagnostic(const DiagnosticType type, const diagnostic::DiagnosticKind &diagnosticKind,
+                                         const util::DiagnosticMessageParams &diagnosticParams,
+                                         const std::string_view file, const lexer::SourceLocation &loc)
+    : DiagnosticBase(file, loc.line, loc.col),
+      type_(type),
+      message_(Format(diagnosticKind.Message(), FormatParams(diagnosticParams)))
+{
+}
+
 Diagnostic::Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
                        const util::DiagnosticMessageParams &diagnosticParams, std::string_view file, size_t line,
                        size_t offset)

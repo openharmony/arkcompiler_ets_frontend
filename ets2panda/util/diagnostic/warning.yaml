@@ -12,6 +12,34 @@
 # limitations under the License.
 
 warning:
-- name: TBD2
+- name: SUGGEST_FINAL_MODIFIER_FOR_CLASS
   id: 1
-  message: .
+  message: "Suggest 'final' modifier for class."
+
+- name: SUGGEST_FINAL_MODIFIER_FOR_METHOD
+  id: 2
+  message: "Suggest 'final' modifier for method."
+
+- name: PROHIBIT_TOP_LEVEL_STATEMENTS
+  id: 3
+  message: "Prohibit top-level statements."
+
+- name: BOOST_EQUALITY_STATEMENT
+  id: 4
+  message: "Boost Equality Statement. Change sides of binary expression."
+
+- name: REPLACE_ASYNC_FUNCTION_WITH_COROUTINE
+  id: 5
+  message: "Replace asynchronous function with coroutine."
+
+- name: REPLACE_LAMBDA_FUNCTION_WITH_REGULAR_FUNCTION
+  id: 6
+  message: "Replace the lambda function with a regular function."
+
+- name: IMPLICIT_BOXING_TO
+  id: 7
+  message: "Implicit Boxing to {}{}."
+
+- name : IMPLICIT_UNBOXING_TO
+  id: 8
+  message: "Implicit Unboxing to {}{}."
