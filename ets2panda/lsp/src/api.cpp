@@ -24,6 +24,7 @@
 #include "public/public.h"
 #include "util/options.h"
 #include "quick_info.h"
+#include "suggestion_diagnostics.h"
 
 namespace ark::es2panda::lsp {
 
@@ -248,6 +249,13 @@ extern "C" FileRefMap FindReferencesWrapper(ark::es2panda::lsp::CancellationToke
     return FindReferences(tkn, srcFiles, srcFile, position);
 }
 
+extern "C" std::vector<FileDiagnostic> GetSuggestionDiagnostics(es2panda_Context *context)
+{
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    auto ast = ctx->parserProgram->Ast();
+    return ark::es2panda::lsp::GetSuggestionDiagnosticsImpl(ast);
+}
+
 LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetImplementationAtPosition,
                     GetFileReferences,
@@ -261,7 +269,8 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetCompilerOptionsDiagnostics,
                     GetReferenceLocationAtPosition,
                     GetDocumentHighlights,
-                    FindReferencesWrapper};
+                    FindReferencesWrapper,
+                    GetSuggestionDiagnostics};
 }  // namespace ark::es2panda::lsp
 
 LSPAPI const *GetImpl()

@@ -23,6 +23,7 @@ set(ES2PANDA_LSP_SRC
   ./src/find_references.cpp
   ./src/string_completions.cpp
   ./src/rename.cpp
+  ./src/suggestion_diagnostics.cpp
 )
 
 panda_add_library(${LSP_LIB} SHARED ${ES2PANDA_LSP_SRC})
