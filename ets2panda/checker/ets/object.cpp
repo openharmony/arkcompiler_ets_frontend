@@ -2198,9 +2198,12 @@ void ETSChecker::TransformProperties(ETSObjectType *classType)
         GenerateGetterSetterPropertyAndMethod(originalProp, classType);
     }
 
-    for (auto it = classDef->Body().begin(); it != classDef->Body().end(); ++it) {
+    auto it = classDef->Body().begin();
+    while (it != classDef->Body().end()) {
         if ((*it)->IsClassProperty() && ((*it)->Modifiers() & ir::ModifierFlags::GETTER_SETTER) != 0U) {
-            classDef->Body().erase(it);
+            it = classDef->Body().erase(it);
+        } else {
+            ++it;
         }
     }
 }
