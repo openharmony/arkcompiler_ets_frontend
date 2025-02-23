@@ -20,13 +20,15 @@
 const int DEFAULT_THROTTLE = 20;
 const int NO_THROTTLE = 0;
 
-TEST_F(LSPAPITests, CancellationTokenHostNull)
+class LspCancellationTokenTests : public LSPAPITests {};
+
+TEST_F(LspCancellationTokenTests, CancellationTokenHostNull)
 {
     ark::es2panda::lsp::CancellationToken cancellationToken(DEFAULT_THROTTLE, nullptr);
     ASSERT_EQ(false, cancellationToken.IsCancellationRequested());
 }
 
-TEST_F(LSPAPITests, CancellationTokenHostNotNull)
+TEST_F(LspCancellationTokenTests, CancellationTokenHostNotNull)
 {
     class LanguageHost : public ark::es2panda::lsp::HostCancellationToken {
     public:
@@ -42,7 +44,7 @@ TEST_F(LSPAPITests, CancellationTokenHostNotNull)
     ASSERT_EQ(true, cancellationToken.IsCancellationRequested());
 }
 
-TEST_F(LSPAPITests, CancellationTokenThrottledCancellationCheck)
+TEST_F(LspCancellationTokenTests, CancellationTokenThrottledCancellationCheck)
 {
     class LanguageHost : public ark::es2panda::lsp::HostCancellationToken {
     public:
@@ -59,7 +61,7 @@ TEST_F(LSPAPITests, CancellationTokenThrottledCancellationCheck)
     ASSERT_EQ(false, cancellationToken.ThrottledCancellationCheck());
 }
 
-TEST_F(LSPAPITests, CancellationTokenThrottledCancellationCheck2)
+TEST_F(LspCancellationTokenTests, CancellationTokenThrottledCancellationCheck2)
 {
     class LanguageHost : public ark::es2panda::lsp::HostCancellationToken {
     public:

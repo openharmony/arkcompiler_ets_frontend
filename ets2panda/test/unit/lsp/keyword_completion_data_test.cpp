@@ -17,7 +17,9 @@
 #include <gtest/gtest.h>
 #include "lsp_api_test.h"
 
-TEST_F(LSPAPITests, GetKeywordCompletionsStartWithA)
+class LspKeywordCompletionTests : public LSPAPITests {};
+
+TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithA)
 {
     std::string input = "a";
     ark::es2panda::lsp::Request result = ark::es2panda::lsp::KeywordCompletionData(input);
@@ -32,7 +34,7 @@ TEST_F(LSPAPITests, GetKeywordCompletionsStartWithA)
 
     ASSERT_EQ(actual, expected);
 }
-TEST_F(LSPAPITests, GetKeywordCompletionsStartWithAs)
+TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithAs)
 {
     std::string input = "as";
 
@@ -46,7 +48,7 @@ TEST_F(LSPAPITests, GetKeywordCompletionsStartWithAs)
 
     ASSERT_EQ(actual, expected);
 }
-TEST_F(LSPAPITests, GetKeywordCompletionsStartWithAs2)
+TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithAs2)
 {
     std::string input = "asse";
     ark::es2panda::lsp::Request result = ark::es2panda::lsp::KeywordCompletionData(input);
@@ -60,7 +62,7 @@ TEST_F(LSPAPITests, GetKeywordCompletionsStartWithAs2)
 
     ASSERT_EQ(actual, expected);
 }
-TEST_F(LSPAPITests, GetKeywordCompletionsStartWithRe)
+TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithRe)
 {
     std::string input = "re";
     ark::es2panda::lsp::Request result = ark::es2panda::lsp::KeywordCompletionData(input);
@@ -74,7 +76,7 @@ TEST_F(LSPAPITests, GetKeywordCompletionsStartWithRe)
 
     ASSERT_EQ(actual, expected);
 }
-TEST_F(LSPAPITests, GetKeywordCompletionsStartWithRet)
+TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithRet)
 {
     std::string input = "ret";
     ark::es2panda::lsp::Request result = ark::es2panda::lsp::KeywordCompletionData(input);
@@ -88,7 +90,7 @@ TEST_F(LSPAPITests, GetKeywordCompletionsStartWithRet)
 
     ASSERT_EQ(actual, expected);
 }
-TEST_F(LSPAPITests, GetKeywordCompletionsStartWithI)
+TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithI)
 {
     std::string input = "i";
     ark::es2panda::lsp::Request result = ark::es2panda::lsp::KeywordCompletionData(input);
@@ -104,7 +106,7 @@ TEST_F(LSPAPITests, GetKeywordCompletionsStartWithI)
 
     ASSERT_EQ(actual, expected);
 }
-TEST_F(LSPAPITests, GetKeywordCompletionsStartWithInt)
+TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithInt)
 {
     std::string input = "int";
     ark::es2panda::lsp::Request result = ark::es2panda::lsp::KeywordCompletionData(input);
@@ -118,7 +120,7 @@ TEST_F(LSPAPITests, GetKeywordCompletionsStartWithInt)
 
     ASSERT_EQ(actual, expected);
 }
-TEST_F(LSPAPITests, GetKeywordCompletionsSensitiveStartWithT)
+TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsSensitiveStartWithT)
 {
     std::string input = "T";
     ark::es2panda::lsp::Request result = ark::es2panda::lsp::KeywordCompletionData(input);
@@ -131,7 +133,7 @@ TEST_F(LSPAPITests, GetKeywordCompletionsSensitiveStartWithT)
 
     ASSERT_EQ(actual, expected);
 }
-TEST_F(LSPAPITests, GetKeywordCompletionsSensitiveStartWithTy)
+TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsSensitiveStartWithTy)
 {
     std::string input = "TY";
     ark::es2panda::lsp::Request result = ark::es2panda::lsp::KeywordCompletionData(input);
@@ -144,7 +146,7 @@ TEST_F(LSPAPITests, GetKeywordCompletionsSensitiveStartWithTy)
 
     ASSERT_EQ(actual, expected);
 }
-TEST_F(LSPAPITests, GetKeywordCompletionsInvalid)
+TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsInvalid)
 {
     std::string input = "xyzabc";
     ark::es2panda::lsp::Request result = ark::es2panda::lsp::KeywordCompletionData(input);
