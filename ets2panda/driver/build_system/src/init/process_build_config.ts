@@ -23,7 +23,7 @@ import {
 } from '../utils';
 import { PluginDriver } from '../plugins/plugins_driver';
 import { PANDA_SDK_PATH_FROM_SDK } from '../pre_define';
-import { 
+import {
   LogData,
   LogDataFactory,
   Logger
@@ -46,14 +46,14 @@ export function processBuildConfig(projectConfig: Record<string, BuildConfigType
 }
 
 function initPlatformSpecificConfig(buildConfig: Record<string, BuildConfigType>): void {
-  const arkPlatformPath: string = path.resolve(buildConfig.pandaSdkPath as string);
+  const pandaSdkPath: string = path.resolve(buildConfig.pandaSdkPath as string);
   const logger: Logger = Logger.getInstance();
   if (isWindows()) {
-    buildConfig.abcLinkerPath = path.join(arkPlatformPath, 'windows_host_tools', 'bin', 'ark_link.exe');
+    buildConfig.abcLinkerPath = path.join(pandaSdkPath, 'bin', 'ark_link.exe');
   }
 
   if (isMac() || isLinux()) {
-    buildConfig.abcLinkerPath = path.join(arkPlatformPath, 'linux_host_tools', 'bin', 'ark_link');
+    buildConfig.abcLinkerPath = path.join(pandaSdkPath, 'bin', 'ark_link');
   }
 
   if (!fs.existsSync(buildConfig.abcLinkerPath as string)) {
@@ -68,15 +68,12 @@ function initPlatformSpecificConfig(buildConfig: Record<string, BuildConfigType>
 }
 
 export function initBuildEnv(buildConfig: Record<string, BuildConfigType>): void {
-  const arkPlatformPath: string = path.resolve(buildConfig.pandaSdkPath as string);
+  const pandaSdkPath: string = path.resolve(buildConfig.pandaSdkPath as string);
   const currentPath: string | undefined = process.env.PATH;
   const logger: Logger = Logger.getInstance();
 
-  let tsWrapperPath: string = path.resolve(arkPlatformPath, 'linux_host_tools', 'lib');
-  if (isWindows()) {
-    tsWrapperPath = path.resolve(arkPlatformPath, 'windows_host_tools', 'lib');
-  }
+  let pandaLibPath: string = path.resolve(pandaSdkPath, 'lib');
 
-  process.env.PATH = `${currentPath}${path.delimiter}${tsWrapperPath}`;
+  process.env.PATH = `${currentPath}${path.delimiter}${pandaLibPath}`;
   logger.printInfo(`Updated PATH: ${process.env.PATH}`);
 }
