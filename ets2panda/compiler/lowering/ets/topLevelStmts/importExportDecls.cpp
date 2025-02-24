@@ -94,40 +94,63 @@ void ImportExportDecls::PopulateAliasMap(const ir::ExportNamedDeclaration *decl,
     }
 }
 
+void ImportExportDecls::AddExportFlags(ir::AstNode *node, util::StringView originalFieldName,
+                                       lexer::SourcePosition startLoc, bool exportedWithAlias)
+{
+    if ((node->Modifiers() & ir::ModifierFlags::EXPORTED) != 0) {
+        // Note (oeotvos) Needs to be discussed, whether we would like to allow exporting the same program
+        // element using its original name and also an alias, like: export {test_func, test_func as foo}.
+        parser_->DiagnosticEngine().LogSyntaxError(
+            varbinder_->Program(), "Cannot export '" + originalFieldName.Mutf8() + "', it was already exported",
+            startLoc);
+    }
+    if (originalFieldName == exportDefaultName_) {
+        node->AddModifier(ir::ModifierFlags::DEFAULT_EXPORT);
+    } else {
+        node->AddModifier(ir::ModifierFlags::EXPORT);
+    }
+    if (exportedWithAlias) {
+        node->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
+    }
+}
+
 void ImportExportDecls::HandleSelectiveExportWithAlias(util::StringView originalFieldName, util::StringView exportName,
                                                        lexer::SourcePosition startLoc)
 {
+    bool exportedWithAlias = exportName != originalFieldName;
+
     auto fieldItem = fieldMap_.find(originalFieldName);
+    ir::VariableDeclarator *variableDeclarator = nullptr;
     if (fieldItem != fieldMap_.end()) {
         ir::AstNode *field = fieldItem->second;
-        if ((field->Modifiers() & ir::ModifierFlags::EXPORTED) != 0) {
-            // Note (oeotvos) Needs to be discussed, whether we would like to allow exporting the same program
-            // element using its original name and also an alias, like: export {test_func, test_func as foo}.
-            parser_->DiagnosticEngine().LogSyntaxError(
-                varbinder_->Program(), "Cannot export '" + originalFieldName.Mutf8() + "', it was already exported",
-                startLoc);
+        if (field->IsVariableDeclaration()) {
+            variableDeclarator = field->AsVariableDeclaration()->GetDeclaratorByName(originalFieldName);
+            ASSERT(variableDeclarator != nullptr);
         }
-        if (originalFieldName == exportDefaultName_) {
-            field->AddModifier(ir::ModifierFlags::DEFAULT_EXPORT);
+
+        if (variableDeclarator != nullptr) {
+            AddExportFlags(variableDeclarator, originalFieldName, startLoc, exportedWithAlias);
         } else {
-            field->AddModifier(ir::ModifierFlags::EXPORT);
+            AddExportFlags(field, originalFieldName, startLoc, exportedWithAlias);
         }
     }
 
-    if (exportName != originalFieldName) {
+    if (exportedWithAlias) {
         if (auto declItem = fieldMap_.find(exportName); declItem != fieldMap_.end()) {
             // Checking for the alias might be unnecessary, because explicit exports cannot
             // have an alias yet.
-            if (((declItem->second->Modifiers() & ir::ModifierFlags::EXPORTED) != 0) &&
-                !declItem->second->HasExportAlias()) {
+            bool alreadyExported = ((declItem->second->Modifiers() & ir::ModifierFlags::EXPORTED) != 0) &&
+                                   !declItem->second->HasExportAlias();
+            if (!alreadyExported && declItem->second->IsVariableDeclaration()) {
+                auto declarator = declItem->second->AsVariableDeclaration()->GetDeclaratorByName(exportName);
+                alreadyExported |=
+                    ((declarator->Modifiers() & ir::ModifierFlags::EXPORTED) != 0) && !declarator->HasExportAlias();
+            }
+            if (alreadyExported) {
                 parser_->DiagnosticEngine().LogSyntaxError(
                     varbinder_->Program(),
                     "The given name '" + exportName.Mutf8() + "' is already used in another export", startLoc);
             }
-        }
-
-        if (fieldItem != fieldMap_.end()) {
-            fieldItem->second->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
         }
     }
 }
