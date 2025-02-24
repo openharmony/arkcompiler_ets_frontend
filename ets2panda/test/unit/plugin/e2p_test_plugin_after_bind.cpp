@@ -46,7 +46,7 @@ void e2p_test_plugin_after_bind_AfterParse([[maybe_unused]] es2panda_Context *ct
 
 void e2p_test_plugin_after_bind_AfterBind(es2panda_Context *ctx)
 {
-    es2panda_AstNode *ast = impl->ProgramAst(impl->ContextProgram(ctx));
+    es2panda_AstNode *ast = impl->ProgramAst(ctx, impl->ContextProgram(ctx));
     impl->AstNodeForEach(ast, HasScope, ctx);
 }
 

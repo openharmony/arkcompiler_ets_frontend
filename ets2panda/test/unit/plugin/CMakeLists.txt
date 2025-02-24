@@ -61,6 +61,7 @@ set(PLUGIN_TESTS
     "plugin_proceed_to_state_find_method_decl compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_find_identifier_decl compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_find_import_ident_decl import.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_test_import_external_sources import.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_rebind compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
 )
 

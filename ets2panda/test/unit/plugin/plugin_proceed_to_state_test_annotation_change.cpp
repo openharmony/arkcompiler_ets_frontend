@@ -109,7 +109,7 @@ int main(int argc, char **argv)
 
     impl->ProceedToState(context, ES2PANDA_STATE_PARSED);
 
-    auto *ast = impl->ProgramAst(impl->ContextProgram(context));
+    auto *ast = impl->ProgramAst(context, impl->ContextProgram(context));
     impl->AstNodeIterateConst(context, ast, CollectDeclarations);
 
     if (!ChangeAnnotationName(context)) {

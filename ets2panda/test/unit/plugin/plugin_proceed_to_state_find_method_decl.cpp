@@ -125,7 +125,7 @@ static bool CheckMethodDecl(es2panda_Context *context, es2panda_AstNode *ident)
 
 static bool FindMethodDecl(es2panda_Context *context)
 {
-    auto Ast = impl->ProgramAst(impl->ContextProgram(context));
+    auto Ast = impl->ProgramAst(context, impl->ContextProgram(context));
     ctx = context;
     impl->AstNodeIterateConst(context, Ast, FindMemberExpr);
     impl->AstNodeIterateConst(context, Ast, FindCallExpr);

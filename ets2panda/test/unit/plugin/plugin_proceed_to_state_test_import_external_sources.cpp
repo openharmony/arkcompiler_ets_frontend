@@ -26,60 +26,27 @@
 
 static es2panda_Impl *impl = nullptr;
 
-static std::vector<es2panda_AstNode *> *idents = nullptr;
-static es2panda_AstNode *mainScriptFunc = nullptr;
-static es2panda_Context *ctx = nullptr;
-
-es2panda_AstNode *parNode;
-es2panda_Context *newCtx;
-
-static void FindIdentifier(es2panda_AstNode *ast)
+static bool CheckExternalSources(es2panda_Context *context)
 {
-    if (!impl->IsIdentifier(ast)) {
-        impl->AstNodeIterateConst(ctx, ast, FindIdentifier);
-        return;
-    }
-    idents->push_back(ast);
-    impl->AstNodeIterateConst(ctx, ast, FindIdentifier);
-}
-
-static void FindMainDef(es2panda_AstNode *ast)
-{
-    if (!impl->IsMethodDefinition(ast)) {
-        impl->AstNodeIterateConst(ctx, ast, FindMainDef);
-        return;
-    }
-    auto scriptFunc = impl->MethodDefinitionFunction(ctx, ast);
-    if (scriptFunc == nullptr ||
-        std::string("main") != impl->IdentifierName(ctx, impl->ScriptFunctionId(ctx, scriptFunc))) {
-        impl->AstNodeIterateConst(ctx, ast, FindMainDef);
-        return;
-    }
-    mainScriptFunc = scriptFunc;
-}
-
-static bool FindIdentifierDecl(es2panda_Context *context)
-{
-    auto Ast = impl->ProgramAst(context, impl->ContextProgram(context));
-    ctx = context;
-    impl->AstNodeIterateConst(context, Ast, FindMainDef);
-    if (mainScriptFunc == nullptr) {
-        std::cerr << "CANT FIND MAIN FUNCTION" << std::endl;
+    auto pgm = impl->ContextProgram(context);
+    size_t n = 0;
+    auto externalSources = impl->ProgramExternalSources(context, pgm, &n);
+    if (externalSources == nullptr) {
         return false;
     }
-    impl->AstNodeIterateConst(context, mainScriptFunc, FindIdentifier);
-    for (auto ident : *idents) {
-        if (ident == nullptr) {
-            std::cerr << "FIND NULL IDENTIFIER" << std::endl;
-            return false;
-        }
-        auto *def = impl->DeclarationFromIdentifier(context, ident);
-        if (def == nullptr || impl->IsImportSpecifier(def)) {
-            std::cerr << "CANT FIND REAL DECLARATION FROM IMPORT IDENTIFIER" << std::endl;
-            return false;
+    bool findImport = false;
+    for (size_t i = 0; i < n; i++) {
+        size_t j = 0;
+        auto extPrograms = impl->ExternalSourcePrograms(externalSources[i], &j);
+        for (size_t k = 0; k < j; k++) {
+            if (impl->ProgramIsStdLibConst(context, extPrograms[k])) {
+                continue;
+            }
+            findImport |= std::string(impl->ProgramFileNameConst(context, extPrograms[k])) == "export" &&
+                          impl->ProgramKindConst(context, extPrograms[k]) == Es2pandaScriptKind::SCRIPT_KIND_SCRIPT;
         }
     }
-    return true;
+    return findImport;
 }
 
 int main(int argc, char **argv)
@@ -109,11 +76,7 @@ int main(int argc, char **argv)
     impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
     CheckForErrors("CHECKED", context);
 
-    idents = new std::vector<es2panda_AstNode *>();
-    auto testResult = FindIdentifierDecl(context);
-    delete idents;
-    idents = nullptr;
-    if (!testResult) {
+    if (!CheckExternalSources(context)) {
         return TEST_ERROR_CODE;
     }
 

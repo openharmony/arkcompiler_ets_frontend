@@ -46,7 +46,7 @@ public:
     template <typename Ast>
     Ast *GetAstFromContext(const es2panda_Impl *impl, es2panda_Context *ctx)
     {
-        auto ast = reinterpret_cast<Ast *>(impl->ProgramAst(impl->ContextProgram(ctx)));
+        auto ast = reinterpret_cast<Ast *>(impl->ProgramAst(ctx, impl->ContextProgram(ctx)));
         return ast;
     }
 

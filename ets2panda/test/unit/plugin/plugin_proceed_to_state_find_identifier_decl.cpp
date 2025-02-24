@@ -89,7 +89,7 @@ static void FindMainDef(es2panda_AstNode *ast)
 
 static bool FindIdentifierDecl(es2panda_Context *context)
 {
-    auto Ast = impl->ProgramAst(impl->ContextProgram(context));
+    auto Ast = impl->ProgramAst(context, impl->ContextProgram(context));
     ctx = context;
     impl->AstNodeIterateConst(context, Ast, FindMainDef);
     if (mainScriptFunc == nullptr) {

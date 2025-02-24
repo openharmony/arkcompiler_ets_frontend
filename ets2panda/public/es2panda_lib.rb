@@ -338,7 +338,6 @@ module Es2pandaLibApi
 
       set_const_modifier(@lib_args, const)
       set_const_modifier(@idl_args, const)
-      set_const_modifier(@return_args, const)
     end
 
     def check_allowed_type(arg)
@@ -539,8 +538,8 @@ module Es2pandaLibApi
       @usage = usage
       tmp_arg = Arg.new({ 'name' => "#{usage}Type", 'type' => @raw_type }, base_namespace)
 
-      @return_args = tmp_arg.return_args if tmp_arg.lib_args.length != 1
-      @idl_return_args = tmp_arg.idl_return_args if tmp_arg.lib_args.length != 1
+      @return_args = tmp_arg.return_args
+      @idl_return_args = tmp_arg.idl_return_args
       unless tmp_arg.lib_args.nil? || tmp_arg.lib_args[0].nil? || tmp_arg.lib_args[0]['type'].nil?
         @lib_type = tmp_arg.lib_args[0]['type']
         @idl_type = tmp_arg.idl_args[0]['type']
@@ -681,6 +680,7 @@ module Es2pandaLibApi
       res = false
       Es2pandaLibApi.no_usings_replace_info['using types']&.each do |using|
         res ||= Es2pandaLibApi.check_fit(new_type, using)
+        res ||= Es2pandaLibApi.check_fit(_type, using)
       end
       !res
     end
@@ -1031,7 +1031,10 @@ module Es2pandaLibApi
 
   def no_usings_replace_info
     { 'using types' => [
-      { 'name' => 'function', 'namespace' => 'std' }
+      { 'name' => 'function', 'namespace' => 'std' },
+      { 'name' => 'ExternalSource', 'namespace' => 'parser' },
+      { 'name' => 'DirectExternalSource', 'namespace' => 'parser' },
+      { 'name' => 'ETSNolintsCollectionMap', 'namespace' => 'parser' }
     ] }
   end
 
@@ -1201,6 +1204,7 @@ module Es2pandaLibApi
       ETSParser
       ASTVerifier
       CheckMessage
+      Program
     ]
   end
 

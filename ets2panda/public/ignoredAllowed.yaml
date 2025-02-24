@@ -34,6 +34,7 @@ ignored_list:
       - name: Checker
       - name: ETSChecker
       - name: ETSParser
+      - name: Program
       - name: NumberLiteral
       - name: VerifiedType
 
@@ -188,6 +189,12 @@ ignored_list:
   - type:
       name: K
   - name: '[N]'
+  - type:
+      name: SourceFile
+      namespace: ark::es2panda
+  - type:
+      name: ETSWarnings
+      namespace: parser
 
   # Methods and constructors which contains templates with names listed below will not be generated
   template_names:

@@ -44,7 +44,7 @@ static void FindBinaryExpression(es2panda_AstNode *ast)
 
 static bool TestAstNodeCheck(es2panda_Context *context)
 {
-    auto Ast = impl->ProgramAst(impl->ContextProgram(context));
+    auto Ast = impl->ProgramAst(context, impl->ContextProgram(context));
     std::cout << impl->AstNodeDumpJSONConst(context, Ast) << std::endl;
     ctx = context;
     impl->AstNodeIterateConst(context, Ast, FindBinaryExpression);

@@ -382,15 +382,15 @@ TEST_F(PluginConversionRuleUnitTest, RecordTableConstructor)
 {
     std::string targetCAPI {R"(
     extern "C" es2panda_RecordTable *CreateRecordTable([[maybe_unused]] es2panda_Context *context,
-[[maybe_unused]] Es2pandaRecordTableFlags flags)
+    [[maybe_unused]] es2panda_Program *program, [[maybe_unused]] Es2pandaRecordTableFlags flags)
     {
         auto *allocatorE2p = reinterpret_cast<Context *>(context)->allocator;
-        auto *programE2p = reinterpret_cast<Context *>(context)->parserProgram;
+        auto *programE2p =  reinterpret_cast<parser::Program *>(program);
         auto flagsE2p = E2pToIrRecordTableFlags(flags);
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
         return reinterpret_cast<es2panda_RecordTable *>
-    (ctxAllocator->New<varbinder::RecordTable>(allocatorE2p, programE2p, flagsE2p));
+        (ctxAllocator->New<varbinder::RecordTable>(allocatorE2p, programE2p, flagsE2p));
     }
     )"};
 

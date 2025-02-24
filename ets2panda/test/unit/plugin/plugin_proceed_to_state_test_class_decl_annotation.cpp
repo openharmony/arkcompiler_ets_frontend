@@ -50,7 +50,7 @@ void FindClassDef(es2panda_AstNode *ast)
 
 bool TestClassAnnotation(es2panda_Context *context)
 {
-    auto *ast = impl->ProgramAst(impl->ContextProgram(context));
+    auto *ast = impl->ProgramAst(context, impl->ContextProgram(context));
     impl->AstNodeIterateConst(context, ast, FindClassDef);
     if (classDef == nullptr) {
         std::cerr << "CLASS DEF NOT FOUND" << std::endl;
@@ -63,6 +63,9 @@ bool TestClassAnnotation(es2panda_Context *context)
         std::cerr << "ANNOTATION NOT FOUND" << n << std::endl;
         return false;
     }
+
+    impl->ClassDefinitionSetAnnotations(context, classDef, nullptr, 0);
+
     return true;
 }
 
