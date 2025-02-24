@@ -1711,6 +1711,9 @@ void ETSChecker::CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> 
 
 std::string ETSChecker::GetStringFromIdentifierValue(checker::Type *caseType) const
 {
+    if (caseType->IsETSStringType()) {
+        return std::string(caseType->AsETSStringType()->GetValue());
+    }
     const auto identifierTypeKind = ETSChecker::TypeKind(caseType);
     switch (identifierTypeKind) {
         case TypeFlag::BYTE: {
@@ -1751,6 +1754,11 @@ bool IsConstantMemberOrIdentifierExpression(ir::Expression *expression)
                               (var->Declaration()->IsReadonlyDecl() && var->HasFlag(varbinder::VariableFlags::STATIC)));
 }
 
+static bool IsValidSwitchType(checker::Type *caseType)
+{
+    return caseType->HasTypeFlag(checker::TypeFlag::VALID_SWITCH_TYPE) || caseType->IsETSStringType();
+}
+
 void ETSChecker::CheckItemCasesConstant(ArenaVector<ir::SwitchCaseStatement *> const &cases)
 {
     for (auto &it : cases) {
@@ -1772,11 +1780,9 @@ void ETSChecker::CheckItemCasesConstant(ArenaVector<ir::SwitchCaseStatement *> c
                 continue;
             }
 
-            if (!caseType->HasTypeFlag(checker::TypeFlag::VALID_SWITCH_TYPE)) {
+            if (!IsValidSwitchType(caseType)) {
                 LogTypeError("Unexpected type " + caseType->ToString(), it->Start());
-                continue;
             }
-            continue;
         }
     }
 }
@@ -1877,7 +1883,7 @@ void ETSChecker::CheckIdentifierSwitchCase(ir::Expression *currentCase, ir::Expr
 
     checker::Type *caseType = currentCase->TsType();
 
-    if (!caseType->HasTypeFlag(checker::TypeFlag::VALID_SWITCH_TYPE)) {
+    if (!IsValidSwitchType(caseType)) {
         return;
     }
 
