@@ -22,8 +22,10 @@ import {
 } from './init/process_build_config';
 import { BuildMode } from './build/build_mode';
 import { BUILD_TYPE_BUILD } from './pre_define';
+import { Logger } from './logger';
 
 export function build(projectConfig: Record<string, BuildConfigType>): void {
+  Logger.getInstance(projectConfig);
   let buildConfig: Record<string, BuildConfigType> = processBuildConfig(projectConfig);
 
   if (projectConfig.buildType === BUILD_TYPE_BUILD) {
@@ -37,6 +39,7 @@ function main(): void {
 
   const buildConfigPath: string = path.resolve(process.argv[2]);
   const projectConfig: Record<string, BuildConfigType> = JSON.parse(fs.readFileSync(buildConfigPath, 'utf-8'));
+
   build(projectConfig);
 }
 

@@ -23,6 +23,12 @@ import {
 } from '../utils';
 import { PluginDriver } from '../plugins/plugins_driver';
 import { PANDA_SDK_PATH_FROM_SDK } from '../pre_define';
+import { 
+  LogData,
+  LogDataFactory,
+  Logger
+} from '../logger';
+import { ErrorCode } from '../error_code';
 
 export type BuildConfigType = string | string[] | object;
 
@@ -41,6 +47,7 @@ export function processBuildConfig(projectConfig: Record<string, BuildConfigType
 
 function initPlatformSpecificConfig(buildConfig: Record<string, BuildConfigType>): void {
   const arkPlatformPath: string = path.resolve(buildConfig.pandaSdkPath as string);
+  const logger: Logger = Logger.getInstance();
   if (isWindows()) {
     buildConfig.abcLinkerPath = path.join(arkPlatformPath, 'windows_host_tools', 'bin', 'ark_link.exe');
   }
@@ -50,13 +57,20 @@ function initPlatformSpecificConfig(buildConfig: Record<string, BuildConfigType>
   }
 
   if (!fs.existsSync(buildConfig.abcLinkerPath as string)) {
-    console.error(`ERROR: ark_link not found in path: ${buildConfig.abcLinkerPath}`);
+    const logData: LogData = LogDataFactory.newInstance(
+      ErrorCode.BUILDSYSTEM_ARK_LINK_NOT_FOUND_FAIL,
+      'Ark_link not found in path.',
+      '',
+      buildConfig.abcLinkerPath.toString()
+    );
+    logger.printError(logData);
   }
 }
 
 export function initBuildEnv(buildConfig: Record<string, BuildConfigType>): void {
   const arkPlatformPath: string = path.resolve(buildConfig.pandaSdkPath as string);
   const currentPath: string | undefined = process.env.PATH;
+  const logger: Logger = Logger.getInstance();
 
   let tsWrapperPath: string = path.resolve(arkPlatformPath, 'linux_host_tools', 'lib');
   if (isWindows()) {
@@ -64,5 +78,5 @@ export function initBuildEnv(buildConfig: Record<string, BuildConfigType>): void
   }
 
   process.env.PATH = `${currentPath}${path.delimiter}${tsWrapperPath}`;
-  console.log('Updated PATH:', process.env.PATH);
+  logger.printInfo(`Updated PATH: ${process.env.PATH}`);
 }
