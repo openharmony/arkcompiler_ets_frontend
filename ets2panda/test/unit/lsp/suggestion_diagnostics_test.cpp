@@ -22,7 +22,9 @@
 
 using ark::es2panda::lsp::Initializer;
 
-TEST_F(LSPAPITests, canBeConvertedToAsync)
+class LspSuggestionTests : public LSPAPITests {};
+
+TEST_F(LspSuggestionTests, canBeConvertedToAsync)
 {
     const char *source = "function add(x: number, y: number): number\n {return x + y;};";
     Initializer initializer = Initializer();
@@ -35,7 +37,7 @@ TEST_F(LSPAPITests, canBeConvertedToAsync)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, isFixablePromiseArgument)
+TEST_F(LspSuggestionTests, isFixablePromiseArgument)
 {
     const char *source =
         "function add(x: number, y: number): number\n {return x + y;}"
@@ -50,7 +52,7 @@ TEST_F(LSPAPITests, isFixablePromiseArgument)
     EXPECT_TRUE(ark::es2panda::lsp::IsFixablePromiseArgument(node, visitedNestedConvertibleFunctions));
     initializer.DestroyContext(ctx);
 }
-TEST_F(LSPAPITests, hasSupportedNumberOfArguments)
+TEST_F(LspSuggestionTests, hasSupportedNumberOfArguments)
 {
     const char *source =
         "function fetchData():Promise<string>{\n"
@@ -68,7 +70,7 @@ TEST_F(LSPAPITests, hasSupportedNumberOfArguments)
     EXPECT_TRUE(ark::es2panda::lsp::HasSupportedNumberOfArguments(callExprs.at(0)));
     initializer.DestroyContext(ctx);
 }
-TEST_F(LSPAPITests, hasSupportedNumberOfArguments2)
+TEST_F(LspSuggestionTests, hasSupportedNumberOfArguments2)
 {
     const char *source =
         "function fetchData():Promise<string>{\n"
@@ -87,7 +89,7 @@ TEST_F(LSPAPITests, hasSupportedNumberOfArguments2)
     EXPECT_TRUE(ark::es2panda::lsp::HasSupportedNumberOfArguments(callExprs.at(0)));
     initializer.DestroyContext(ctx);
 }
-TEST_F(LSPAPITests, hasSupportedNumberOfArguments3)
+TEST_F(LspSuggestionTests, hasSupportedNumberOfArguments3)
 {
     const char *source =
         "function fetchData():Promise<string>{\nreturn Promise.resolve(\"Success\");\n}"
@@ -105,7 +107,7 @@ TEST_F(LSPAPITests, hasSupportedNumberOfArguments3)
     EXPECT_TRUE(ark::es2panda::lsp::HasSupportedNumberOfArguments(callExprs.at(0)));
     initializer.DestroyContext(ctx);
 }
-TEST_F(LSPAPITests, hasSupportedNumberOfArguments4)
+TEST_F(LspSuggestionTests, hasSupportedNumberOfArguments4)
 {
     const char *source =
         "function fetchData(name:string):Promise<string>{\n"
@@ -124,7 +126,7 @@ TEST_F(LSPAPITests, hasSupportedNumberOfArguments4)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetSuggestionDiagnostics)
+TEST_F(LspSuggestionTests, GetSuggestionDiagnostics)
 {
     const char *source =
         "function fetchData(){\nreturn Promise.resolve(\"h\")\n;}\nfunction processData()"
@@ -148,7 +150,7 @@ TEST_F(LSPAPITests, GetSuggestionDiagnostics)
     initializer.DestroyContext(context);
 }
 
-TEST_F(LSPAPITests, isPromiseHandler)
+TEST_F(LspSuggestionTests, isPromiseHandler)
 {
     const char *source =
         "function fetchData(name:string):Promise<string>{\n"
@@ -167,7 +169,7 @@ TEST_F(LSPAPITests, isPromiseHandler)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, isPromiseHandler2)
+TEST_F(LspSuggestionTests, isPromiseHandler2)
 {
     const char *source =
         "function fetchData():Promise<string>{\n"
@@ -186,7 +188,7 @@ TEST_F(LSPAPITests, isPromiseHandler2)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, isPromiseHandler3)
+TEST_F(LspSuggestionTests, isPromiseHandler3)
 {
     const char *source =
         "function fetchData():Promise<string>{\n"
@@ -205,7 +207,7 @@ TEST_F(LSPAPITests, isPromiseHandler3)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, isPromiseHandler4)
+TEST_F(LspSuggestionTests, isPromiseHandler4)
 {
     const char *source =
         "function fetchData(name: string,name2:string):Promise<string>{\n"
@@ -224,7 +226,7 @@ TEST_F(LSPAPITests, isPromiseHandler4)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, isFixablePromiseHandler)
+TEST_F(LspSuggestionTests, isFixablePromiseHandler)
 {
     const char *source =
         "function fetchData():Promise<string>{\nreturn Promise.resolve(\"Success\");\n}"
@@ -237,7 +239,7 @@ TEST_F(LSPAPITests, isFixablePromiseHandler)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, isFixablePromiseHandler2)
+TEST_F(LspSuggestionTests, isFixablePromiseHandler2)
 {
     const char *source =
         "function fetchData(name:string):Promise<string>{\nreturn Promise.resolve(\"Success\");\n}"
@@ -250,7 +252,7 @@ TEST_F(LSPAPITests, isFixablePromiseHandler2)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, isFixablePromiseHandler3)
+TEST_F(LspSuggestionTests, isFixablePromiseHandler3)
 {
     const char *source =
         "function fetchData():Promise<string>{\n"
@@ -264,7 +266,7 @@ TEST_F(LSPAPITests, isFixablePromiseHandler3)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, isFixablePromiseHandler4)
+TEST_F(LspSuggestionTests, isFixablePromiseHandler4)
 {
     const char *source =
         "function fetchData(name: string,name2:string):Promise<string>{\n"
@@ -278,7 +280,7 @@ TEST_F(LSPAPITests, isFixablePromiseHandler4)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, isReturnStatementWithFixablePromiseHandler)
+TEST_F(LspSuggestionTests, isReturnStatementWithFixablePromiseHandler)
 {
     const char *source =
         "function fetchData(){\nreturn Promise.resolve(\"h\")\n;}\nfunction processData()"
@@ -291,7 +293,7 @@ TEST_F(LSPAPITests, isReturnStatementWithFixablePromiseHandler)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, isReturnStatementWithFixablePromiseHandler2)
+TEST_F(LspSuggestionTests, isReturnStatementWithFixablePromiseHandler2)
 {
     const char *source =
         "function fetchData(){\nreturn Promise.resolve(\"h\")\n;}\n"
@@ -304,7 +306,7 @@ TEST_F(LSPAPITests, isReturnStatementWithFixablePromiseHandler2)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, isReturnStatementWithFixablePromiseHandler3)
+TEST_F(LspSuggestionTests, isReturnStatementWithFixablePromiseHandler3)
 {
     const char *source =
         "function fetchData(){\nreturn Promise.reject(\"h\")\n;}\nfunction processData(){\n"
@@ -317,7 +319,7 @@ TEST_F(LSPAPITests, isReturnStatementWithFixablePromiseHandler3)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, hasReturnStatementWithPromiseHandler)
+TEST_F(LspSuggestionTests, hasReturnStatementWithPromiseHandler)
 {
     const char *source =
         "function fetchData(){\nreturn Promise.reject(\"h\")\n;}\nfunction processData()"
@@ -330,7 +332,7 @@ TEST_F(LSPAPITests, hasReturnStatementWithPromiseHandler)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, hasReturnStatementWithPromiseHandler2)
+TEST_F(LspSuggestionTests, hasReturnStatementWithPromiseHandler2)
 {
     const char *source =
         "function fetchData(){\nreturn Promise.resolve(\"h\")\n;}\nfunction processData(){\n"
@@ -343,7 +345,7 @@ TEST_F(LSPAPITests, hasReturnStatementWithPromiseHandler2)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, isConvertibleFunction)
+TEST_F(LspSuggestionTests, isConvertibleFunction)
 {
     const char *source =
         "function fetchData(){\nreturn Promise.resolve(\"h\")\n;}\nfunction processData()"
@@ -356,7 +358,7 @@ TEST_F(LSPAPITests, isConvertibleFunction)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, isFixablePromiseArgument2)
+TEST_F(LspSuggestionTests, isFixablePromiseArgument2)
 {
     const char *source = "function myFun(x: string): string\n {return x;}\nconsole.log(\"add(1+2)\");";
     Initializer initializer = Initializer();

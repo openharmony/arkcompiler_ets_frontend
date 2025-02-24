@@ -561,6 +561,17 @@ TEST_F(LSPAPITests, GetTypeOfSymbolAtLocation2)
     initializer.DestroyContext(ctx);
 }
 
+TEST_F(LSPAPITests, GetCurrentTokenValue)
+{
+    std::vector<std::string> files = {"current_token.sts"};
+    std::vector<std::string> texts = {"ab"};
+    auto filePaths = CreateTempFile(files, texts);
+    LSPAPI const *lspApi = GetImpl();
+    size_t offset = 2;
+    std::string result = lspApi->getCurrentTokenValue(filePaths[0].c_str(), offset);
+    ASSERT_EQ(result, "ab");
+}
+
 TEST_F(LSPAPITests, GetCurrentTokenValue1)
 {
     Initializer initializer = Initializer();

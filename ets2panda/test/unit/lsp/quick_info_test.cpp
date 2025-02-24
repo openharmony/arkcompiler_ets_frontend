@@ -20,7 +20,9 @@
 
 using ark::es2panda::lsp::Initializer;
 
-TEST_F(LSPAPITests, GetQuickInfoAtPosition1)
+class LspQuickInfoTests : public LSPAPITests {};
+
+TEST_F(LspQuickInfoTests, GetQuickInfoAtPosition1)
 {
     std::vector<std::string> files = {"quick_info3.sts"};
     std::vector<std::string> texts = {R"(enum MyStrings { A = 'hello' };)"};
@@ -56,7 +58,7 @@ TEST_F(LSPAPITests, GetQuickInfoAtPosition1)
     ASSERT_EQ(quickInfo, expectedQuickInfo);
 }
 
-TEST_F(LSPAPITests, GetQuickInfoAtPosition2)
+TEST_F(LspQuickInfoTests, GetQuickInfoAtPosition2)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext("quick-info-test.sts", ES2PANDA_STATE_CHECKED,
@@ -85,7 +87,7 @@ TEST_F(LSPAPITests, GetQuickInfoAtPosition2)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetQuickInfoAtPosition3)
+TEST_F(LspQuickInfoTests, GetQuickInfoAtPosition3)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
@@ -118,7 +120,7 @@ TEST_F(LSPAPITests, GetQuickInfoAtPosition3)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, getPropertySymbolFromContextualType1)
+TEST_F(LspQuickInfoTests, getPropertySymbolFromContextualType1)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
@@ -141,7 +143,7 @@ TEST_F(LSPAPITests, getPropertySymbolFromContextualType1)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, getPropertySymbolFromContextualType2)
+TEST_F(LspQuickInfoTests, getPropertySymbolFromContextualType2)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext("contextual-type-test.sts", ES2PANDA_STATE_CHECKED,
@@ -161,7 +163,7 @@ TEST_F(LSPAPITests, getPropertySymbolFromContextualType2)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetNodeAtLocationForQuickInfo1)
+TEST_F(LspQuickInfoTests, GetNodeAtLocationForQuickInfo1)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
@@ -179,7 +181,7 @@ TEST_F(LSPAPITests, GetNodeAtLocationForQuickInfo1)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetNodeAtLocationForQuickInfo2)
+TEST_F(LspQuickInfoTests, GetNodeAtLocationForQuickInfo2)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
@@ -205,7 +207,7 @@ TEST_F(LSPAPITests, GetNodeAtLocationForQuickInfo2)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetNodeAtLocationForQuickInfo3)
+TEST_F(LspQuickInfoTests, GetNodeAtLocationForQuickInfo3)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
@@ -229,7 +231,7 @@ TEST_F(LSPAPITests, GetNodeAtLocationForQuickInfo3)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetNodeAtLocationForQuickInfo4)
+TEST_F(LspQuickInfoTests, GetNodeAtLocationForQuickInfo4)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
@@ -246,7 +248,7 @@ TEST_F(LSPAPITests, GetNodeAtLocationForQuickInfo4)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetNodeAtLocationForQuickInfo5)
+TEST_F(LspQuickInfoTests, GetNodeAtLocationForQuickInfo5)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext(
@@ -270,7 +272,7 @@ TEST_F(LSPAPITests, GetNodeAtLocationForQuickInfo5)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, CreateDisplayForEnumMemberWithNumberLiteral)
+TEST_F(LspQuickInfoTests, CreateDisplayForEnumMemberWithNumberLiteral)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext("enum-member-test.sts", ES2PANDA_STATE_CHECKED,
@@ -295,7 +297,7 @@ TEST_F(LSPAPITests, CreateDisplayForEnumMemberWithNumberLiteral)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, CreateDisplayForEnumMemberWithStringLiteral)
+TEST_F(LspQuickInfoTests, CreateDisplayForEnumMemberWithStringLiteral)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext("enum-member-string-test.sts", ES2PANDA_STATE_CHECKED,
@@ -322,7 +324,7 @@ TEST_F(LSPAPITests, CreateDisplayForEnumMemberWithStringLiteral)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, CreateDisplayForEnum)
+TEST_F(LspQuickInfoTests, CreateDisplayForEnum)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
@@ -343,7 +345,7 @@ TEST_F(LSPAPITests, CreateDisplayForEnum)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, CreateDisplayForClass1)
+TEST_F(LspQuickInfoTests, CreateDisplayForClass1)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
@@ -371,7 +373,7 @@ TEST_F(LSPAPITests, CreateDisplayForClass1)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, CreateDisplayForUnionTypeAlias)
+TEST_F(LspQuickInfoTests, CreateDisplayForUnionTypeAlias)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext("union-type-alias-test.sts", ES2PANDA_STATE_CHECKED,
@@ -396,7 +398,7 @@ TEST_F(LSPAPITests, CreateDisplayForUnionTypeAlias)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, CreateDisplayForTypeAlias)
+TEST_F(LspQuickInfoTests, CreateDisplayForTypeAlias)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
@@ -421,7 +423,7 @@ TEST_F(LSPAPITests, CreateDisplayForTypeAlias)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, CreateDisplayForInterface)
+TEST_F(LspQuickInfoTests, CreateDisplayForInterface)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext(
@@ -446,7 +448,7 @@ TEST_F(LSPAPITests, CreateDisplayForInterface)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, CreateDisplayForTypeAliasTypeParameter)
+TEST_F(LspQuickInfoTests, CreateDisplayForTypeAliasTypeParameter)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
@@ -474,7 +476,7 @@ TEST_F(LSPAPITests, CreateDisplayForTypeAliasTypeParameter)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, CreateDisplayForClassDeclarationTypeParameter)
+TEST_F(LspQuickInfoTests, CreateDisplayForClassDeclarationTypeParameter)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext("class-type-param-test.sts", ES2PANDA_STATE_CHECKED,
@@ -500,7 +502,7 @@ TEST_F(LSPAPITests, CreateDisplayForClassDeclarationTypeParameter)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, CreateDisplayForMethodDefinition)
+TEST_F(LspQuickInfoTests, CreateDisplayForMethodDefinition)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext("method-definition-test.sts", ES2PANDA_STATE_CHECKED,
@@ -535,7 +537,7 @@ TEST_F(LSPAPITests, CreateDisplayForMethodDefinition)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, CreateDisplayForScriptFunctionTypeParameter)
+TEST_F(LspQuickInfoTests, CreateDisplayForScriptFunctionTypeParameter)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext("function-type-param-test.sts", ES2PANDA_STATE_CHECKED,
@@ -573,7 +575,7 @@ TEST_F(LSPAPITests, CreateDisplayForScriptFunctionTypeParameter)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, CreateDisplayForClassProperty1)
+TEST_F(LspQuickInfoTests, CreateDisplayForClassProperty1)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
@@ -601,7 +603,7 @@ TEST_F(LSPAPITests, CreateDisplayForClassProperty1)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, CreateDisplayForClassProperty2)
+TEST_F(LspQuickInfoTests, CreateDisplayForClassProperty2)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext("class-property-test.sts", ES2PANDA_STATE_CHECKED,
@@ -628,7 +630,7 @@ TEST_F(LSPAPITests, CreateDisplayForClassProperty2)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, CreateDisplayForParameterExpression)
+TEST_F(LspQuickInfoTests, CreateDisplayForParameterExpression)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext("parameter-expression-test.sts", ES2PANDA_STATE_CHECKED,

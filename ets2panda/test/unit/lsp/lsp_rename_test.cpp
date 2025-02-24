@@ -25,7 +25,9 @@
 
 using ark::es2panda::lsp::Initializer;
 
-TEST_F(LSPAPITests, RenameInfoCreateTriggerSpanForNodeNumberLiteral)
+class LspRenameInfoTests : public LSPAPITests {};
+
+TEST_F(LspRenameInfoTests, RenameInfoCreateTriggerSpanForNodeNumberLiteral)
 {
     Initializer initializer = Initializer();
 
@@ -47,7 +49,7 @@ TEST_F(LSPAPITests, RenameInfoCreateTriggerSpanForNodeNumberLiteral)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, RenameInfoCreateTriggerSpanForNodeStringLiteral)
+TEST_F(LspRenameInfoTests, RenameInfoCreateTriggerSpanForNodeStringLiteral)
 {
     Initializer initializer = Initializer();
 
@@ -69,7 +71,7 @@ TEST_F(LSPAPITests, RenameInfoCreateTriggerSpanForNodeStringLiteral)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, RenameInfoCreateTriggerSpanForNodeEmptyStringLiteral)
+TEST_F(LspRenameInfoTests, RenameInfoCreateTriggerSpanForNodeEmptyStringLiteral)
 {
     Initializer initializer = Initializer();
 
@@ -91,14 +93,14 @@ TEST_F(LSPAPITests, RenameInfoCreateTriggerSpanForNodeEmptyStringLiteral)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, RenameInfoNodeReturnTrueIfNodeIsNull)
+TEST_F(LspRenameInfoTests, RenameInfoNodeReturnTrueIfNodeIsNull)
 {
     ark::es2panda::ir::AstNode *nullNode = nullptr;
     bool result = ark::es2panda::lsp::NodeIsMissing(nullNode);
     EXPECT_TRUE(result);
 }
 
-TEST_F(LSPAPITests, RenameInfoNodeReturnTrueIfStartEqualEnd)
+TEST_F(LspRenameInfoTests, RenameInfoNodeReturnTrueIfStartEqualEnd)
 {
     Initializer initializer = Initializer();
 
@@ -119,7 +121,7 @@ TEST_F(LSPAPITests, RenameInfoNodeReturnTrueIfStartEqualEnd)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, RenameInfoNodeReturnFalseIfStartNotEqualEnd)
+TEST_F(LspRenameInfoTests, RenameInfoNodeReturnFalseIfStartNotEqualEnd)
 {
     Initializer initializer = Initializer();
 
@@ -140,7 +142,7 @@ TEST_F(LSPAPITests, RenameInfoNodeReturnFalseIfStartNotEqualEnd)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, RenameInfoNodeGetSourceTextOfNodeFromSourceFile)
+TEST_F(LspRenameInfoTests, RenameInfoNodeGetSourceTextOfNodeFromSourceFile)
 {
     Initializer initializer = Initializer();
 
@@ -165,7 +167,7 @@ TEST_F(LSPAPITests, RenameInfoNodeGetSourceTextOfNodeFromSourceFile)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, RenameInfoNodeGetSourceTextOfNodeFromSourceFileNullPtr)
+TEST_F(LspRenameInfoTests, RenameInfoNodeGetSourceTextOfNodeFromSourceFileNullPtr)
 {
     auto sourceView = ark::es2panda::util::StringView("function A(a:number, b:number) {\n  return a + b;\n}\nA(1, 2);");
     ark::es2panda::ir::AstNode *ast = nullptr;
@@ -173,7 +175,7 @@ TEST_F(LSPAPITests, RenameInfoNodeGetSourceTextOfNodeFromSourceFileNullPtr)
     ASSERT_NE(result, "A");
 }
 
-TEST_F(LSPAPITests, RenameInfoNodeIsAncestorType)
+TEST_F(LspRenameInfoTests, RenameInfoNodeIsAncestorType)
 {
     ASSERT_EQ(ark::es2panda::lsp::IsValidAncestorType(ark::es2panda::ir::AstNodeType::TS_ANY_KEYWORD), true);
     ASSERT_EQ(ark::es2panda::lsp::IsValidAncestorType(ark::es2panda::ir::AstNodeType::TS_UNKNOWN_KEYWORD), true);
@@ -187,7 +189,7 @@ TEST_F(LSPAPITests, RenameInfoNodeIsAncestorType)
     ASSERT_EQ(ark::es2panda::lsp::IsValidAncestorType(ark::es2panda::ir::AstNodeType::TS_NEVER_KEYWORD), true);
 }
 
-TEST_F(LSPAPITests, RenameInfoNodeIsNotAncestorType)
+TEST_F(LspRenameInfoTests, RenameInfoNodeIsNotAncestorType)
 {
     ASSERT_NE(ark::es2panda::lsp::IsValidAncestorType(ark::es2panda::ir::AstNodeType::TS_ARRAY_TYPE), true);
     ASSERT_NE(ark::es2panda::lsp::IsValidAncestorType(ark::es2panda::ir::AstNodeType::TS_FUNCTION_TYPE), true);
@@ -197,7 +199,7 @@ TEST_F(LSPAPITests, RenameInfoNodeIsNotAncestorType)
     ASSERT_NE(ark::es2panda::lsp::IsValidAncestorType(invalidType), true);
 }
 
-TEST_F(LSPAPITests, RenameInfoNodeIsQuoteOrBacktick)
+TEST_F(LspRenameInfoTests, RenameInfoNodeIsQuoteOrBacktick)
 {
     int charCode = ark::es2panda::lexer::LEX_CHAR_DOUBLE_QUOTE;
     ASSERT_TRUE(ark::es2panda::lsp::IsQuoteOrBacktick(charCode));
@@ -206,7 +208,7 @@ TEST_F(LSPAPITests, RenameInfoNodeIsQuoteOrBacktick)
     ASSERT_FALSE(ark::es2panda::lsp::IsQuoteOrBacktick(charCode));
 }
 
-TEST_F(LSPAPITests, RenameInfoIsStringOrNumericLiteralLike)
+TEST_F(LspRenameInfoTests, RenameInfoIsStringOrNumericLiteralLike)
 {
     Initializer initializer = Initializer();
 
@@ -223,13 +225,13 @@ TEST_F(LSPAPITests, RenameInfoIsStringOrNumericLiteralLike)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, RenameInfoStripQuotes)
+TEST_F(LspRenameInfoTests, RenameInfoStripQuotes)
 {
     std::string hello = "'hello'";
     ASSERT_EQ(ark::es2panda::lsp::StripQuotes(hello), "hello");
 }
 
-TEST_F(LSPAPITests, RenameInfoGetNodeKindForRenameInfo)
+TEST_F(LspRenameInfoTests, RenameInfoGetNodeKindForRenameInfo)
 {
     Initializer initializer = Initializer();
 
@@ -242,7 +244,7 @@ TEST_F(LSPAPITests, RenameInfoGetNodeKindForRenameInfo)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, RenameInfoGetTextOfNode)
+TEST_F(LspRenameInfoTests, RenameInfoGetTextOfNode)
 {
     Initializer initializer = Initializer();
 
@@ -275,7 +277,7 @@ TEST_F(LSPAPITests, RenameInfoGetTextOfNode)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, RenameInfoGetRenameInfoError)
+TEST_F(LspRenameInfoTests, RenameInfoGetRenameInfoError)
 {
     ark::es2panda::lsp::RenameInfoFailure renameFailureFromFunction =
         ark::es2panda::lsp::GetRenameInfoError("errorMessage");
@@ -284,7 +286,7 @@ TEST_F(LSPAPITests, RenameInfoGetRenameInfoError)
     ASSERT_EQ(renameFailure.GetCanRenameFailure(), renameFailureFromFunction.GetCanRenameFailure());
 }
 
-TEST_F(LSPAPITests, RenameInfoGetRenameInfoSuccess)
+TEST_F(LspRenameInfoTests, RenameInfoGetRenameInfoSuccess)
 {
     Initializer initializer = Initializer();
 
@@ -309,7 +311,7 @@ TEST_F(LSPAPITests, RenameInfoGetRenameInfoSuccess)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, RenameInfoTryGetImportFromModuleSpecifier)
+TEST_F(LspRenameInfoTests, RenameInfoTryGetImportFromModuleSpecifier)
 {
     Initializer initializer = Initializer();
 
@@ -338,7 +340,7 @@ TEST_F(LSPAPITests, RenameInfoTryGetImportFromModuleSpecifier)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, RenameInfoGetRenameInfoForModuleCaseModule1)
+TEST_F(LspRenameInfoTests, RenameInfoGetRenameInfoForModuleCaseModule1)
 {
     Initializer initializer = Initializer();
 
@@ -365,7 +367,7 @@ TEST_F(LSPAPITests, RenameInfoGetRenameInfoForModuleCaseModule1)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, RenameInfoGetRenameInfoForModuleCaseModule2)
+TEST_F(LspRenameInfoTests, RenameInfoGetRenameInfoForModuleCaseModule2)
 {
     Initializer initializer = Initializer();
 
@@ -392,7 +394,7 @@ TEST_F(LSPAPITests, RenameInfoGetRenameInfoForModuleCaseModule2)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, RenameInfoGetRenameInfoForModuleCaseDirectory)
+TEST_F(LspRenameInfoTests, RenameInfoGetRenameInfoForModuleCaseDirectory)
 {
     Initializer initializer = Initializer();
 
@@ -419,7 +421,7 @@ TEST_F(LSPAPITests, RenameInfoGetRenameInfoForModuleCaseDirectory)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, RenameInfoGetRenameInfoForNode1)
+TEST_F(LspRenameInfoTests, RenameInfoGetRenameInfoForNode1)
 {
     Initializer initializer = Initializer();
 
@@ -446,7 +448,7 @@ TEST_F(LSPAPITests, RenameInfoGetRenameInfoForNode1)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, RenameInfoNodeIsEligibleForRenameStringLiteral)
+TEST_F(LspRenameInfoTests, RenameInfoNodeIsEligibleForRenameStringLiteral)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext("trigger-span-string-literal.sts", ES2PANDA_STATE_CHECKED,
@@ -463,7 +465,7 @@ TEST_F(LSPAPITests, RenameInfoNodeIsEligibleForRenameStringLiteral)
     initializer.DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, RenameInfoNodeIsEligibleForRenameNumberLiteralEnumMember)
+TEST_F(LspRenameInfoTests, RenameInfoNodeIsEligibleForRenameNumberLiteralEnumMember)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext("trigger-span-literal.sts", ES2PANDA_STATE_CHECKED,

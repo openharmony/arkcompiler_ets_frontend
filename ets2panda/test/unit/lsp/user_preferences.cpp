@@ -17,7 +17,9 @@
 #include "lsp/include/user_preferences.h"
 #include "lsp_api_test.h"
 
-TEST_F(LSPAPITests, UserPreferencesDefaultConstructor)
+class LspUserPrefTests : public LSPAPITests {};
+
+TEST_F(LspUserPrefTests, UserPreferencesDefaultConstructor)
 {
     using ark::es2panda::lsp::UserPreferences;
     UserPreferences defaultPref;
@@ -52,7 +54,7 @@ TEST_F(LSPAPITests, UserPreferencesDefaultConstructor)
     ASSERT_EQ(defaultPref.GetAllowRenameOfImportPath(), false);
 }
 
-TEST_F(LSPAPITests, UserPreferencesQuotePreferenceSetter)
+TEST_F(LspUserPrefTests, UserPreferencesQuotePreferenceSetter)
 {
     using ark::es2panda::lsp::UserPreferences;
     UserPreferences userpreferences;
@@ -67,7 +69,7 @@ TEST_F(LSPAPITests, UserPreferencesQuotePreferenceSetter)
     ASSERT_EQ(userpreferences.GetQuotePreference(), UserPreferences::QuotePreference::AUTO);
 }
 
-TEST_F(LSPAPITests, UserPreferencesIncludePackageJsonAutoImportsSetter)
+TEST_F(LspUserPrefTests, UserPreferencesIncludePackageJsonAutoImportsSetter)
 {
     using ark::es2panda::lsp::UserPreferences;
     UserPreferences userpreferences;
@@ -82,7 +84,7 @@ TEST_F(LSPAPITests, UserPreferencesIncludePackageJsonAutoImportsSetter)
     ASSERT_EQ(userpreferences.GetIncludePackageJsonAutoImports(), UserPreferences::IncludePackageJsonAutoImports::AUTO);
 }
 
-TEST_F(LSPAPITests, UserPreferencesIncludeInlayParameterNameHintsSetter)
+TEST_F(LspUserPrefTests, UserPreferencesIncludeInlayParameterNameHintsSetter)
 {
     using ark::es2panda::lsp::UserPreferences;
     UserPreferences userpref;
@@ -94,7 +96,7 @@ TEST_F(LSPAPITests, UserPreferencesIncludeInlayParameterNameHintsSetter)
     ASSERT_EQ(userpref.GetIncludeInlayParameterNameHints(), UserPreferences::IncludeInlayParameterNameHints::LITERALS);
 }
 
-TEST_F(LSPAPITests, UserPreferencesImportModuleSpecifierPreferenceSetter)
+TEST_F(LspUserPrefTests, UserPreferencesImportModuleSpecifierPreferenceSetter)
 {
     using ark::es2panda::lsp::UserPreferences;
     UserPreferences usp;
@@ -113,7 +115,7 @@ TEST_F(LSPAPITests, UserPreferencesImportModuleSpecifierPreferenceSetter)
     EXPECT_EQ(usp.GetImportModuleSpecifierPreference(), UserPreferences::ImportModuleSpecifierPreference::NON_RELATIVE);
 }
 
-TEST_F(LSPAPITests, UserPreferencesImportModuleSpecifierEndingSetter)
+TEST_F(LspUserPrefTests, UserPreferencesImportModuleSpecifierEndingSetter)
 {
     using ark::es2panda::lsp::UserPreferences;
     UserPreferences userpreferences;
@@ -131,7 +133,7 @@ TEST_F(LSPAPITests, UserPreferencesImportModuleSpecifierEndingSetter)
     ASSERT_EQ(userpreferences.GetImportModuleSpecifierEnding(), UserPreferences::ImportModuleSpecifierEnding::INDEX);
 }
 
-TEST_F(LSPAPITests, UserPreferencesAutoImportFileExcludePatternsSetter)
+TEST_F(LspUserPrefTests, UserPreferencesAutoImportFileExcludePatternsSetter)
 {
     using ark::es2panda::lsp::UserPreferences;
     UserPreferences userpreferences;
@@ -141,7 +143,7 @@ TEST_F(LSPAPITests, UserPreferencesAutoImportFileExcludePatternsSetter)
     ASSERT_EQ(userpreferences.GetAutoImportFileExcludePatterns(), testPattern);
 }
 
-TEST_F(LSPAPITests, UserPreferencesBooleanSetters)
+TEST_F(LspUserPrefTests, UserPreferencesBooleanSetters)
 {
     using ark::es2panda::lsp::UserPreferences;
     UserPreferences userpreferences;
@@ -213,7 +215,7 @@ TEST_F(LSPAPITests, UserPreferencesBooleanSetters)
     ASSERT_FALSE(userpreferences.GetAllowTextChangesInNewFiles());
 }
 
-TEST_F(LSPAPITests, UserPreferencesBooleanSetters2)
+TEST_F(LspUserPrefTests, UserPreferencesBooleanSetters2)
 {
     using ark::es2panda::lsp::UserPreferences;
     UserPreferences userpreferences;
@@ -279,7 +281,7 @@ TEST_F(LSPAPITests, UserPreferencesBooleanSetters2)
     ASSERT_FALSE(userpreferences.GetAllowRenameOfImportPath());
 }
 
-TEST_F(LSPAPITests, UserPreferencesGetDefaultUserPreferences)
+TEST_F(LspUserPrefTests, UserPreferencesGetDefaultUserPreferences)
 {
     using ark::es2panda::lsp::UserPreferences;
     UserPreferences defaultPrefs = UserPreferences::GetDefaultUserPreferences();
@@ -314,7 +316,7 @@ TEST_F(LSPAPITests, UserPreferencesGetDefaultUserPreferences)
     ASSERT_FALSE(defaultPrefs.GetAllowRenameOfImportPath());
 }
 
-TEST_F(LSPAPITests, UserPreferencesGetUserPreferences)
+TEST_F(LspUserPrefTests, UserPreferencesGetUserPreferences)
 {
     using ark::es2panda::lsp::UserPreferences;
     UserPreferences userpreferences;

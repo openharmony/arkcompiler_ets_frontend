@@ -174,7 +174,9 @@ vector<string> fileContents = {
         console.log(myfoo.name)
     )"};
 
-TEST_F(LSPAPITests, FindReferencesMethodDefinition1)
+class LspFindRefTests : public LSPAPITests {};
+
+TEST_F(LspFindRefTests, FindReferencesMethodDefinition1)
 {
     // Create the files
     auto filePaths = CreateTempFile(fileNames, fileContents);
@@ -192,7 +194,7 @@ TEST_F(LSPAPITests, FindReferencesMethodDefinition1)
     }
 }
 
-TEST_F(LSPAPITests, FindReferencesMethodDefinition2)
+TEST_F(LspFindRefTests, FindReferencesMethodDefinition2)
 {
     // Create the files
     auto filePaths = CreateTempFile(fileNames, fileContents);
@@ -210,7 +212,7 @@ TEST_F(LSPAPITests, FindReferencesMethodDefinition2)
     }
 }
 
-TEST_F(LSPAPITests, FindReferencesImportSpecifier)
+TEST_F(LspFindRefTests, FindReferencesImportSpecifier)
 {
     // Create the files
     auto filePaths = CreateTempFile(fileNames, fileContents);
@@ -228,7 +230,7 @@ TEST_F(LSPAPITests, FindReferencesImportSpecifier)
     }
 }
 
-TEST_F(LSPAPITests, FindReferencesCallExpression1)
+TEST_F(LspFindRefTests, FindReferencesCallExpression1)
 {
     // Create the files
     auto filePaths = CreateTempFile(fileNames, fileContents);
@@ -247,7 +249,7 @@ TEST_F(LSPAPITests, FindReferencesCallExpression1)
     }
 }
 
-TEST_F(LSPAPITests, FindReferencesCallExpression2)
+TEST_F(LspFindRefTests, FindReferencesCallExpression2)
 {
     // Create the files
     auto filePaths = CreateTempFile(fileNames, fileContents);
@@ -266,7 +268,7 @@ TEST_F(LSPAPITests, FindReferencesCallExpression2)
     }
 }
 
-TEST_F(LSPAPITests, FindReferencesVariableDefinition)
+TEST_F(LspFindRefTests, FindReferencesVariableDefinition)
 {
     // Create the files
     auto filePaths = CreateTempFile(fileNames, fileContents);
@@ -284,7 +286,7 @@ TEST_F(LSPAPITests, FindReferencesVariableDefinition)
     }
 }
 
-TEST_F(LSPAPITests, FindReferencesInstanceCreation)
+TEST_F(LspFindRefTests, FindReferencesInstanceCreation)
 {
     // Create the files
     auto filePaths = CreateTempFile(fileNames, fileContents);
@@ -302,7 +304,7 @@ TEST_F(LSPAPITests, FindReferencesInstanceCreation)
     }
 }
 
-TEST_F(LSPAPITests, FindReferencesMemberAccess)
+TEST_F(LspFindRefTests, FindReferencesMemberAccess)
 {
     // Create the files
     auto filePaths = CreateTempFile(fileNames, fileContents);

@@ -18,7 +18,9 @@
 #include <string>
 #include "lsp_api_test.h"
 
-TEST_F(LSPAPITests, GetDefinitionAtPosition1)
+class LspGetDefTests : public LSPAPITests {};
+
+TEST_F(LspGetDefTests, GetDefinitionAtPosition1)
 {
     std::vector<std::string> files = {"getDefinitionAtPosition1.sts", "getDefinitionAtPosition2.sts"};
     std::vector<std::string> texts = {R"(export function A(a:number, b:number): number {
@@ -41,7 +43,7 @@ A(1, 2);)"};
     ASSERT_EQ(result.length, expectedLength);
 }
 
-TEST_F(LSPAPITests, GetDefinitionAtPosition2)
+TEST_F(LspGetDefTests, GetDefinitionAtPosition2)
 {
     std::vector<std::string> files = {"getDefinitionAtPosition3.sts"};
     std::vector<std::string> texts = {R"(
@@ -77,7 +79,7 @@ TEST_F(LSPAPITests, GetDefinitionAtPosition2)
     ASSERT_EQ(result1.length, expectedLength1);
 }
 
-TEST_F(LSPAPITests, GetDefinitionAtPosition3)
+TEST_F(LspGetDefTests, GetDefinitionAtPosition3)
 {
     std::vector<std::string> files = {"getDefinitionAtPosition4.sts", "getDefinitionAtPosition5.sts"};
     std::vector<std::string> texts = {R"(export function A(a:number, b:number): number {
@@ -100,7 +102,7 @@ All.A(1, 2);)"};
     ASSERT_EQ(result.length, expectedLength);
 }
 
-TEST_F(LSPAPITests, GetDefinitionAtPosition4)
+TEST_F(LspGetDefTests, GetDefinitionAtPosition4)
 {
     std::vector<std::string> files = {"getDefinitionAtPosition6.sts", "getDefinitionAtPosition7.sts"};
     std::vector<std::string> texts = {R"(export class A {
@@ -125,7 +127,7 @@ a.Foo(1, 2);)"};
     ASSERT_EQ(result.length, expectedLength);
 }
 
-TEST_F(LSPAPITests, GetDefinitionAtPosition5)
+TEST_F(LspGetDefTests, GetDefinitionAtPosition5)
 {
     std::vector<std::string> files = {"getDefinitionAtPosition8.sts", "getDefinitionAtPosition9.sts"};
     std::vector<std::string> texts = {R"(export enum A {
@@ -148,7 +150,7 @@ All.A.a;)"};
     ASSERT_EQ(result.length, expectedLength);
 }
 
-TEST_F(LSPAPITests, GetDefinitionAtPosition6)
+TEST_F(LspGetDefTests, GetDefinitionAtPosition6)
 {
     std::vector<std::string> files = {"getDefinitionAtPosition10.sts", "getDefinitionAtPosition11.sts"};
     std::vector<std::string> texts = {R"(export class A {
@@ -174,7 +176,7 @@ a.Foo(1, 2);)"};
     ASSERT_EQ(result.length, expectedLength);
 }
 
-TEST_F(LSPAPITests, GetDefinitionAtPosition7)
+TEST_F(LspGetDefTests, GetDefinitionAtPosition7)
 {
     std::vector<std::string> files = {"getDefinitionAtPosition12.sts", "getDefinitionAtPosition13.sts"};
     std::vector<std::string> texts = {R"(export let a = 1;)",
@@ -195,7 +197,7 @@ let b = a;)"};
     ASSERT_EQ(result.length, expectedLength);
 }
 
-TEST_F(LSPAPITests, GetDefinitionAtPosition8)
+TEST_F(LspGetDefTests, GetDefinitionAtPosition8)
 {
     std::vector<std::string> files = {"getDefinitionAtPosition14.sts", "getDefinitionAtPosition15.sts"};
     std::vector<std::string> texts = {R"(export interface I {})",

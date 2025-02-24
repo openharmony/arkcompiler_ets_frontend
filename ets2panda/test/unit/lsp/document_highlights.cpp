@@ -15,7 +15,9 @@
 
 #include "lsp_api_test.h"
 
-TEST_F(LSPAPITests, getDocumentHighlights1)
+class LspDocumentHighlights : public LSPAPITests {};
+
+TEST_F(LspDocumentHighlights, getDocumentHighlights1)
 {
     std::vector<std::string> files = {"getDocumentHighlights1.sts"};
     std::vector<std::string> texts = {R"delimiter(
@@ -49,7 +51,7 @@ let ccc = bbb + aaa + 234;
     ASSERT_EQ(result.documentHighlights_[0].highlightSpans_[secondIndex].kind_, HighlightSpanKind::REFERENCE);
 }
 
-TEST_F(LSPAPITests, getDocumentHighlights2)
+TEST_F(LspDocumentHighlights, getDocumentHighlights2)
 {
     std::vector<std::string> files = {"getDocumentHighlights2.sts"};
     std::vector<std::string> texts = {R"delimiter(
@@ -100,7 +102,7 @@ function f1(aaa: number) {
     ASSERT_EQ(secondResult.documentHighlights_[0].highlightSpans_[1].kind_, HighlightSpanKind::REFERENCE);
 }
 
-TEST_F(LSPAPITests, getDocumentHighlights3)
+TEST_F(LspDocumentHighlights, getDocumentHighlights3)
 {
     std::vector<std::string> files = {"getDocumentHighlights3.sts"};
     std::vector<std::string> texts = {R"delimiter(
@@ -142,7 +144,7 @@ function f2() {
     ASSERT_EQ(result.documentHighlights_[0].highlightSpans_[secondIndex].kind_, HighlightSpanKind::REFERENCE);
 }
 
-TEST_F(LSPAPITests, getDocumentHighlights4)
+TEST_F(LspDocumentHighlights, getDocumentHighlights4)
 {
     std::vector<std::string> files = {"getDocumentHighlights3.sts"};
     std::vector<std::string> texts = {R"delimiter(
@@ -189,7 +191,7 @@ function f2() {
     ASSERT_EQ(result.documentHighlights_[0].highlightSpans_[thirdIndex].kind_, HighlightSpanKind::REFERENCE);
 }
 
-TEST_F(LSPAPITests, getDocumentHighlights5)
+TEST_F(LspDocumentHighlights, getDocumentHighlights5)
 {
     std::vector<std::string> files = {"getDocumentHighlights5.sts"};
     std::vector<std::string> texts = {R"delimiter(
@@ -231,7 +233,7 @@ class Bar {
     ASSERT_EQ(result.documentHighlights_[0].highlightSpans_[secondIndex].kind_, HighlightSpanKind::REFERENCE);
 }
 
-TEST_F(LSPAPITests, getDocumentHighlights6)
+TEST_F(LspDocumentHighlights, getDocumentHighlights6)
 {
     std::vector<std::string> files = {"getDocumentHighlights6.sts"};
     std::vector<std::string> texts = {R"delimiter(
@@ -265,7 +267,7 @@ class ListNode<T> {
     ASSERT_EQ(result.documentHighlights_[0].highlightSpans_[1].kind_, HighlightSpanKind::REFERENCE);
 }
 
-TEST_F(LSPAPITests, getDocumentHighlights7)
+TEST_F(LspDocumentHighlights, getDocumentHighlights7)
 {
     std::vector<std::string> files = {"getDocumentHighlights7.sts"};
     std::vector<std::string> texts = {R"delimiter(

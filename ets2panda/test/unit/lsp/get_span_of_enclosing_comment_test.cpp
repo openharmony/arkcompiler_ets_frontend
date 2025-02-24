@@ -17,18 +17,9 @@
 #include <string>
 #include <vector>
 
-TEST_F(LSPAPITests, GetCurrentTokenValue)
-{
-    std::vector<std::string> files = {"current_token.sts"};
-    std::vector<std::string> texts = {"ab"};
-    auto filePaths = CreateTempFile(files, texts);
-    LSPAPI const *lspApi = GetImpl();
-    size_t offset = 2;
-    std::string result = lspApi->getCurrentTokenValue(filePaths[0].c_str(), offset);
-    ASSERT_EQ(result, "ab");
-}
+class LspGetSpanTests : public LSPAPITests {};
 
-TEST_F(LSPAPITests, getSpanOfEnclosingComment1)
+TEST_F(LspGetSpanTests, getSpanOfEnclosingComment1)
 {
     std::vector<std::string> files = {"file1.sts"};
     std::vector<std::string> texts = {"function A(a:number, b:number) {\n  return a + b;  // add\n}\nA(1, 2);"};
@@ -45,7 +36,7 @@ TEST_F(LSPAPITests, getSpanOfEnclosingComment1)
     ASSERT_EQ(result1.length, length);
 }
 
-TEST_F(LSPAPITests, getSpanOfEnclosingComment2)
+TEST_F(LspGetSpanTests, getSpanOfEnclosingComment2)
 {
     std::vector<std::string> files = {"file2.sts"};
     std::vector<std::string> texts = {"function A(a:number, b:number) {\n  return a + b;  // add\n}\nA(1, 2);"};
@@ -64,7 +55,7 @@ TEST_F(LSPAPITests, getSpanOfEnclosingComment2)
     ASSERT_EQ(result1.length, length1);
 }
 
-TEST_F(LSPAPITests, getSpanOfEnclosingComment3)
+TEST_F(LspGetSpanTests, getSpanOfEnclosingComment3)
 {
     std::vector<std::string> files = {"file3.sts"};
     std::vector<std::string> texts = {"function A(a:number, b:number) {\n  return a + b;  /* add */\n}\nA(1, 2);"};
