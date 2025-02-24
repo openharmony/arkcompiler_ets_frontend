@@ -158,7 +158,7 @@ static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinitio
             }
         }
 
-        if (node->Function()->HasBody() && !node->TsType()->IsTypeError()) {
+        if (node->Function()->HasBody() && !node->TsType()->IsTypeError() && !node->Function()->IsExternal()) {
             ComposeAsyncImplMethod(checker, node);
         }
     }
@@ -1332,20 +1332,27 @@ checker::Type *ETSAnalyzer::GetCallExpressionReturnType(ir::CallExpression *expr
         checker->CreateBuiltinArraySignature(arrayType, arrayType->Rank());
     }
 
-    if (signature->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE) &&
-        !(signature->HasSignatureFlag(checker::SignatureFlags::CONSTRUCTOR))) {
-        auto owner = const_cast<ETSObjectType *>(util::Helpers::GetContainingObjectType(signature->Function()));
-        SavedCheckerContext savedCtx(ReconstructOwnerClassContext(checker, owner));
-        signature->OwnerVar()->Declaration()->Node()->Check(checker);
-        if (signature->Function()->HasBody()) {
-            checker::ScopeContext scopeCtx(checker, signature->Function()->Body()->Scope());
-            checker->CollectReturnStatements(signature->Function());
-        }
-        return signature->ReturnType();
-        // NOTE(vpukhov): #14902 substituted signature is not updated
+    if (!signature->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE) ||
+        (signature->HasSignatureFlag(checker::SignatureFlags::CONSTRUCTOR))) {
+        return returnType;
     }
 
-    return returnType;
+    auto owner = const_cast<ETSObjectType *>(util::Helpers::GetContainingObjectType(signature->Function()));
+    SavedCheckerContext savedCtx(ReconstructOwnerClassContext(checker, owner));
+    signature->OwnerVar()->Declaration()->Node()->Check(checker);
+
+    if (!signature->Function()->HasBody()) {
+        return signature->ReturnType();
+    }
+
+    if (signature->Function()->IsExternal()) {
+        checker->VarBinder()->AsETSBinder()->ResolveReferencesForScopeWithContext(signature->Function()->Body(),
+                                                                                  signature->Function()->Scope());
+    }
+    checker::ScopeContext scopeCtx(checker, signature->Function()->Body()->Scope());
+    checker->CollectReturnStatements(signature->Function());
+    return signature->ReturnType();
+    // NOTE(vpukhov): #14902 substituted signature is not updated
 }
 
 checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
