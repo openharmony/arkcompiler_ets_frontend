@@ -26,9 +26,10 @@
 #include "quick_info.h"
 #include "suggestion_diagnostics.h"
 
+extern "C" {
 namespace ark::es2panda::lsp {
 
-extern "C" DefinitionInfo GetDefinitionAtPosition(char const *fileName, size_t position)
+DefinitionInfo GetDefinitionAtPosition(char const *fileName, size_t position)
 {
     Initializer initializer = Initializer();
     auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
@@ -47,12 +48,12 @@ extern "C" DefinitionInfo GetDefinitionAtPosition(char const *fileName, size_t p
     return result;
 }
 
-extern "C" DefinitionInfo GetImplementationAtPosition(char const *fileName, size_t position)
+DefinitionInfo GetImplementationAtPosition(char const *fileName, size_t position)
 {
     return GetDefinitionAtPosition(fileName, position);
 }
 
-extern "C" References GetFileReferences(char const *fileName)
+References GetFileReferences(char const *fileName)
 {
     Initializer initializer = Initializer();
     auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
@@ -70,7 +71,7 @@ extern "C" References GetFileReferences(char const *fileName)
     return result;
 }
 
-extern "C" References GetReferencesAtPosition(char const *fileName, size_t position)
+References GetReferencesAtPosition(char const *fileName, size_t position)
 {
     Initializer initializer = Initializer();
     auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
@@ -100,14 +101,14 @@ extern "C" References GetReferencesAtPosition(char const *fileName, size_t posit
     return result;
 }
 
-extern "C" es2panda_AstNode *GetPrecedingToken(es2panda_Context *context, const size_t pos)
+es2panda_AstNode *GetPrecedingToken(es2panda_Context *context, const size_t pos)
 {
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
     auto ast = ctx->parserProgram->Ast();
     return reinterpret_cast<es2panda_AstNode *>(FindPrecedingToken(pos, ast, ctx->allocator));
 }
 
-extern "C" std::string GetCurrentTokenValue(char const *fileName, size_t position)
+std::string GetCurrentTokenValue(char const *fileName, size_t position)
 {
     Initializer initializer = Initializer();
     auto ctx = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
@@ -116,7 +117,7 @@ extern "C" std::string GetCurrentTokenValue(char const *fileName, size_t positio
     return result;
 }
 
-extern "C" QuickInfo GetQuickInfoAtPosition(const char *fileName, size_t position)
+QuickInfo GetQuickInfoAtPosition(const char *fileName, size_t position)
 {
     Initializer initializer = Initializer();
     auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
@@ -125,7 +126,7 @@ extern "C" QuickInfo GetQuickInfoAtPosition(const char *fileName, size_t positio
     return res;
 }
 
-extern "C" TextSpan GetSpanOfEnclosingComment(char const *fileName, size_t pos, bool onlyMultiLine)
+TextSpan GetSpanOfEnclosingComment(char const *fileName, size_t pos, bool onlyMultiLine)
 {
     Initializer initializer = Initializer();
     auto ctx = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
@@ -137,7 +138,7 @@ extern "C" TextSpan GetSpanOfEnclosingComment(char const *fileName, size_t pos, 
                : TextSpan(0, 0);
 }
 
-extern "C" DiagnosticReferences GetSemanticDiagnostics(char const *fileName)
+DiagnosticReferences GetSemanticDiagnostics(char const *fileName)
 {
     Initializer initializer = Initializer();
     auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
@@ -151,7 +152,7 @@ extern "C" DiagnosticReferences GetSemanticDiagnostics(char const *fileName)
     return result;
 }
 
-extern "C" DiagnosticReferences GetSyntacticDiagnostics(char const *fileName)
+DiagnosticReferences GetSyntacticDiagnostics(char const *fileName)
 {
     Initializer initializer = Initializer();
     auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
@@ -165,7 +166,7 @@ extern "C" DiagnosticReferences GetSyntacticDiagnostics(char const *fileName)
     return result;
 }
 
-extern "C" DiagnosticReferences GetCompilerOptionsDiagnostics(char const *fileName, CancellationToken cancellationToken)
+DiagnosticReferences GetCompilerOptionsDiagnostics(char const *fileName, CancellationToken cancellationToken)
 {
     Initializer initializer = Initializer();
     auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
@@ -192,9 +193,9 @@ extern "C" DiagnosticReferences GetCompilerOptionsDiagnostics(char const *fileNa
     return result;
 }
 
-extern "C" ReferenceLocationList GetReferenceLocationAtPosition(char const *fileName, size_t pos,
-                                                                const std::vector<std::string> &autoGenerateFolders,
-                                                                CancellationToken cancellationToken)
+ReferenceLocationList GetReferenceLocationAtPosition(char const *fileName, size_t pos,
+                                                     const std::vector<std::string> &autoGenerateFolders,
+                                                     CancellationToken cancellationToken)
 {
     Initializer initializer = Initializer();
     auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
@@ -232,7 +233,7 @@ extern "C" ReferenceLocationList GetReferenceLocationAtPosition(char const *file
     return list;
 }
 
-extern "C" DocumentHighlightsReferences GetDocumentHighlights(char const *fileName, size_t position)
+DocumentHighlightsReferences GetDocumentHighlights(char const *fileName, size_t position)
 {
     Initializer initializer = Initializer();
     auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
@@ -242,9 +243,9 @@ extern "C" DocumentHighlightsReferences GetDocumentHighlights(char const *fileNa
     return result;
 }
 
-extern "C" FileRefMap FindReferencesWrapper(ark::es2panda::lsp::CancellationToken *tkn,
-                                            const std::vector<ark::es2panda::SourceFile> &srcFiles,
-                                            const ark::es2panda::SourceFile &srcFile, size_t position)
+FileRefMap FindReferencesWrapper(ark::es2panda::lsp::CancellationToken *tkn,
+                                 const std::vector<ark::es2panda::SourceFile> &srcFiles,
+                                 const ark::es2panda::SourceFile &srcFile, size_t position)
 {
     return FindReferences(tkn, srcFiles, srcFile, position);
 }
@@ -276,4 +277,5 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
 LSPAPI const *GetImpl()
 {
     return &ark::es2panda::lsp::g_lspImpl;
+}
 }
