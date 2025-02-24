@@ -61,7 +61,8 @@ public:
         ark::es2panda::util::DiagnosticEngine *diagnosticEngine =
             reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx)->diagnosticEngine;
         auto config = ark::es2panda::ArkTsConfig {filePaths[1], *diagnosticEngine};
-        config.Parse();
+        std::unordered_set<std::string> parsedConfigPath;
+        config.Parse(parsedConfigPath);
         ark::es2panda::lsp::GetOptionDiagnostics(ctx, diagnostics);
         initializer.DestroyContext(ctx);
 

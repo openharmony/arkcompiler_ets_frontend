@@ -16,6 +16,7 @@
 #include "importPathManager.h"
 #include "es2panda.h"
 #include <libpandabase/os/filesystem.h>
+#include "util/arktsconfig.h"
 #include "util/diagnostic.h"
 #include "util/diagnosticEngine.h"
 
@@ -50,7 +51,10 @@ util::StringView ImportPathManager::ResolvePath(const StringView &currentModuleP
         diagnosticEngine_.LogFatalError(program_, "Import path cannot be empty", srcPos);
         return importPath;
     }
-
+    auto entriesMap = arktsConfig_->Entries();
+    if (auto it = entriesMap.find(importPath.Mutf8()); it != entriesMap.end()) {
+        return UString(it->second, allocator_).View();
+    }
     if (IsRelativePath(importPath)) {
         const size_t pos = currentModulePath.Mutf8().find_last_of("/\\");
         ES2PANDA_ASSERT(pos != std::string::npos);
@@ -383,6 +387,13 @@ util::StringView ImportPathManager::FormModuleName(const util::Path &path, const
         auto relativePath = FormRelativeModuleName(filePath.substr(unitPath.size()));
         return FormUnitName(unitName) + (relativePath.empty() ? "" : ("." + relativePath));
     };
+
+    for (auto const &[unitName, unitPath] : arktsConfig_->Entries()) {
+        if (unitPath == filePath) {
+            return util::UString(unitName, allocator_).View();
+        }
+    }
+
     if (auto res = tryFormModuleName(arktsConfig_->Package(), arktsConfig_->BaseUrl() + pathDelimiter_.data()); res) {
         return util::UString(res.value(), allocator_).View();
     }
@@ -410,7 +421,7 @@ util::StringView ImportPathManager::FormModuleName(const util::Path &path, const
     }
 
     diagnosticEngine_.LogFatalError(
-        program_, util::DiagnosticMessageParams {"Unresolved module name", util::StringView(filePath)}, srcPos);
+        program_, util::DiagnosticMessageParams {"Unresolved module name ", util::StringView(filePath)}, srcPos);
     return "";
 }
 

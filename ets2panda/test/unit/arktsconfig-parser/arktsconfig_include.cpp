@@ -66,7 +66,8 @@ TEST_P(ArkTsConfigInclude, CheckInclude)
     auto param = GetParam();
     ark::es2panda::util::DiagnosticEngine de;
     auto config = ark::es2panda::ArkTsConfig {*param.path, de};
-    ASSERT_EQ(config.Parse(), param.expected);
+    std::unordered_set<std::string> parsedSet;
+    ASSERT_EQ(config.Parse(parsedSet), param.expected);
 }
 
 INSTANTIATE_TEST_SUITE_P(ArkTsConfigIncludeSuite, ArkTsConfigInclude,

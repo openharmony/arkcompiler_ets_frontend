@@ -20,6 +20,7 @@
 #include "generated/signatures.h"
 
 #include <fstream>
+#include <memory>
 #include <regex>
 #include <sstream>
 #include <system_error>
@@ -158,7 +159,8 @@ static std::string ResolveConfigLocation(const std::string &relPath, const std::
 }
 
 std::optional<ArkTsConfig> ArkTsConfig::ParseExtends(const std::string &configPath, const std::string &extends,
-                                                     const std::string &configDir)
+                                                     const std::string &configDir,
+                                                     std::unordered_set<std::string> &parsedConfigPath)
 {
     auto basePath = ResolveConfigLocation(extends, configDir);
     if (!Check(!basePath.empty(), diagnostic::UNRESOLVABLE_CONFIG_PATH, {extends})) {
@@ -170,7 +172,7 @@ std::optional<ArkTsConfig> ArkTsConfig::ParseExtends(const std::string &configPa
     }
 
     auto base = ArkTsConfig(basePath, diagnosticEngine_);
-    if (!Check(base.Parse(), diagnostic::WRONG_BASE_CONFIG, {extends})) {
+    if (!Check(base.Parse(parsedConfigPath), diagnostic::WRONG_BASE_CONFIG, {extends})) {
         return {};
     }
 
@@ -203,7 +205,7 @@ bool ArkTsConfig::ParsePaths(const JsonObject::JsonObjPointer *options, PathsMap
         }
 
         auto values = paths->get()->GetValue<JsonObject::ArrayT>(key);
-        if (!Check(values, diagnostic::INVALID_VALUE, {"path", key})) {
+        if (!Check(values != nullptr, diagnostic::INVALID_VALUE, {"path", key})) {
             return false;
         }
 
@@ -221,7 +223,7 @@ bool ArkTsConfig::ParsePaths(const JsonObject::JsonObjPointer *options, PathsMap
 }
 
 bool ArkTsConfig::ParseDynamicPaths(const JsonObject::JsonObjPointer *options,
-                                    std::unordered_map<std::string, DynamicImportData> &dynamicPathsMap)
+                                    std::map<std::string, DynamicImportData, CompareByLength> &dynamicPathsMap)
 {
     static const std::string LANGUAGE = "language";  // CC-OFF(G.NAM.03-CPP) project code style
     static const std::string HAS_DECL = "hasDecl";   // CC-OFF(G.NAM.03-CPP) project code style
@@ -289,6 +291,19 @@ bool ArkTsConfig::ParseCollection(const JsonObject *config, Collection &out, con
     return true;
 }
 
+void ArkTsConfig::ResolveConfigDependencies(std::unordered_map<std::string, std::shared_ptr<ArkTsConfig>> &dependencies,
+                                            std::vector<std::string> &dependencyPaths,
+                                            std::unordered_set<std::string> &parsedConfigPath)
+{
+    for (auto dependency : dependencyPaths) {
+        auto config = std::make_shared<ArkTsConfig>(std::string_view(dependency), diagnosticEngine_);
+        if (!Check(config->Parse(parsedConfigPath), diagnostic::EMPTY_LIST, {dependency})) {
+            continue;
+        }
+        dependencies.emplace(config->Package(), std::move(config));
+    }
+}
+
 std::optional<std::string> ArkTsConfig::ReadConfig(const std::string &path)
 {
     std::ifstream inputStream(path);
@@ -307,9 +322,72 @@ static std::string ValueOrEmptyString(const JsonObject::JsonObjPointer *json, co
     return (res != nullptr) ? *res : "";
 }
 
-// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP, G.FUD.05) solid logic
-bool ArkTsConfig::Parse()
+static void ResolvePathInDependenciesImpl(ArkTsConfig *arktsConfig,
+                                          std::map<std::string, std::vector<std::string>, CompareByLength> &paths,
+                                          std::unordered_map<std::string, std::string> &entries)
 {
+    for (const auto &dependencyPath : arktsConfig->Paths()) {
+        paths.emplace(dependencyPath.first, dependencyPath.second);
+    }
+    if (!arktsConfig->Entry().empty()) {
+        entries.emplace(arktsConfig->Package(), arktsConfig->Entry());
+    }
+    for (const auto &config : arktsConfig->Dependencies()) {
+        ResolvePathInDependenciesImpl(config.second.get(), paths, entries);
+    }
+}
+
+void ArkTsConfig::ResolveAllDependenciesInArkTsConfig()
+{
+    ResolvePathInDependenciesImpl(this, paths_, entries_);
+}
+
+bool ArkTsConfig::ParseCompilerOptions(std::string &arktsConfigDir, std::unordered_set<std::string> &parsedConfigPath,
+                                       const JsonObject *arktsConfig)
+{
+    auto compilerOptions = arktsConfig->GetValue<JsonObject::JsonObjPointer>(COMPILER_OPTIONS);
+    // Parse "package"
+    package_ = ValueOrEmptyString(compilerOptions, PACKAGE);
+
+    // Parse "baseUrl", "outDir", "rootDir"
+    baseUrl_ = MakeAbsolute(ValueOrEmptyString(compilerOptions, BASE_URL), arktsConfigDir);
+    outDir_ = MakeAbsolute(ValueOrEmptyString(compilerOptions, OUT_DIR), arktsConfigDir);
+    rootDir_ = MakeAbsolute(ValueOrEmptyString(compilerOptions, ROOT_DIR), arktsConfigDir);
+
+    // Parse "entry"
+    if (compilerOptions->get()->HasKey(ENTRY)) {
+        entry_ = MakeAbsolute(ValueOrEmptyString(compilerOptions, ENTRY), baseUrl_);
+    }
+
+    // Parse "dependencies"
+    auto concatPath = [this](const auto &val) { return MakeAbsolute(val, baseUrl_); };
+    std::vector<std::string> dependencyPaths;
+    if (compilerOptions->get()->HasKey(DEPENDENCIES)) {
+        ParseCollection(compilerOptions->get(), dependencyPaths, DEPENDENCIES, concatPath);
+    }
+    if (!dependencyPaths.empty()) {
+        ResolveConfigDependencies(dependencies_, dependencyPaths, parsedConfigPath);
+    }
+    // Parse "paths"
+    if (!ParsePaths(compilerOptions, paths_, baseUrl_)) {
+        return false;
+    }
+    // Parse "dynamicPaths"
+    if (!ParseDynamicPaths(compilerOptions, dynamicPaths_)) {
+        return false;
+    }
+    return true;
+}
+
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP, G.FUD.05) solid logic
+bool ArkTsConfig::Parse(std::unordered_set<std::string> &parsedConfigPath)
+{
+    // For circurlar dependencies, just skip parsing
+    if (parsedConfigPath.find(configPath_) != parsedConfigPath.end()) {
+        return true;
+    }
+    parsedConfigPath.emplace(configPath_);
+
     ES2PANDA_ASSERT(!isParsed_);
     isParsed_ = true;
     auto arktsConfigDir = ParentPath(ark::os::GetAbsolutePath(configPath_));
@@ -333,7 +411,7 @@ bool ArkTsConfig::Parse()
         if (!Check(extends != nullptr, diagnostic::INVALID_JSON_TYPE, {EXTENDS, "string"})) {
             return false;
         }
-        const auto &base = ParseExtends(configPath_, *extends, arktsConfigDir);
+        const auto &base = ParseExtends(configPath_, *extends, arktsConfigDir, parsedConfigPath);
         if (!base.has_value()) {
             return false;
         }
@@ -342,24 +420,9 @@ bool ArkTsConfig::Parse()
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
 
     // Parse "compilerOptions"
-    if (arktsConfig->HasKey(COMPILER_OPTIONS)) {
-        auto compilerOptions = arktsConfig->GetValue<JsonObject::JsonObjPointer>(COMPILER_OPTIONS);
-        // Parse "package"
-        package_ = ValueOrEmptyString(compilerOptions, PACKAGE);
-
-        // Parse "baseUrl", "outDir", "rootDir"
-        baseUrl_ = MakeAbsolute(ValueOrEmptyString(compilerOptions, BASE_URL), arktsConfigDir);
-        outDir_ = MakeAbsolute(ValueOrEmptyString(compilerOptions, OUT_DIR), arktsConfigDir);
-        rootDir_ = MakeAbsolute(ValueOrEmptyString(compilerOptions, ROOT_DIR), arktsConfigDir);
-
-        // Parse "paths"
-        if (!ParsePaths(compilerOptions, paths_, baseUrl_)) {
-            return false;
-        }
-        // Parse "dynamicPaths"
-        if (!ParseDynamicPaths(compilerOptions, dynamicPaths_)) {
-            return false;
-        }
+    if (arktsConfig->HasKey(COMPILER_OPTIONS) &&
+        !ParseCompilerOptions(arktsConfigDir, parsedConfigPath, arktsConfig.get())) {
+        return false;
     }
 
     // Parse "files"
