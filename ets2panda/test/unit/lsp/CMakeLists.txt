@@ -71,3 +71,6 @@ ets2panda_add_gtest(lsp_api_gilap_test CPP_SOURCES
 ets2panda_add_gtest(lsp_api_lco_test CPP_SOURCES
     line_column_offset_test.cpp
 )
+ets2panda_add_gtest(lsp_api_test_auto_completion CPP_SOURCES
+    get_auto_completion_test.cpp
+)

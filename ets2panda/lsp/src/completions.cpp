@@ -20,8 +20,13 @@
 #include "public/public.h"
 #include <algorithm>
 #include <regex>
+#include <cstddef>
+#include <optional>
+#include <string>
 #include "generated/tokenType.h"
-
+#include <cstdio>
+#include "public/es2panda_lib.h"
+#include "lexer/token/letters.h"
 namespace ark::es2panda::lsp {
 
 std::string ToLowerCase(const std::string &str)
@@ -393,24 +398,52 @@ std::vector<CompletionEntry> GetGlobalCompletions(es2panda_Context *context, siz
     if (precedingToken == nullptr) {
         return {};
     }
-    auto currentScope = compiler::NearestScope(precedingToken);
-    auto scopePath = ArenaVector<varbinder::Scope *>(allocator->Adapter());
-    while (currentScope != nullptr) {
-        scopePath.push_back(currentScope);
-        currentScope = currentScope->Parent();
-    }
+    auto scopePath = BuildScopePath(compiler::NearestScope(precedingToken), allocator);
     auto prefix = GetCurrentTokenValueImpl(context, position);
     auto decls = GetDeclByScopePath(scopePath, position, allocator);
     std::vector<CompletionEntry> completions;
     auto keywordCompletions = GetKeywordCompletions(prefix);
     completions.insert(completions.end(), keywordCompletions.begin(), keywordCompletions.end());
+
     for (auto decl : decls) {
         auto entry = InitEntry(decl);
-        if (entry.GetName().find(prefix) == 0) {
-            completions.push_back(entry);
+        if (entry.GetName().find(prefix) != 0) {
+            continue;
         }
+        entry = ProcessAutoImportForEntry(entry);
+        completions.push_back(entry);
     }
     return completions;
+}
+
+ArenaVector<varbinder::Scope *> BuildScopePath(varbinder::Scope *startScope, ArenaAllocator *allocator)
+{
+    ArenaVector<varbinder::Scope *> scopePath(allocator->Adapter());
+    for (auto scope = startScope; scope != nullptr; scope = scope->Parent()) {
+        scopePath.push_back(scope);
+    }
+    return scopePath;
+}
+
+CompletionEntry ProcessAutoImportForEntry(CompletionEntry &entry)
+{
+    auto dataOpt = entry.GetCompletionEntryData();
+    if (!dataOpt.has_value()) {
+        return entry;
+    }
+
+    auto config = GetArkTsConfigFromFile(dataOpt->GetFileName());
+    if (config == nullptr) {
+        return entry;
+    }
+
+    auto autoImportData = GetAutoImportCompletionEntry(&dataOpt.value(), config, entry.GetName());
+    if (!autoImportData.has_value()) {
+        return entry;
+    }
+
+    return CompletionEntry(entry.GetName(), entry.GetCompletionKind(), entry.GetSortText(), entry.GetInsertText(),
+                           autoImportData);
 }
 
 std::vector<CompletionEntry> GetCompletionsAtPositionImpl(es2panda_Context *context, size_t pos)
@@ -440,4 +473,70 @@ std::vector<CompletionEntry> GetCompletionsAtPositionImpl(es2panda_Context *cont
     return GetGlobalCompletions(context, pos);
 }
 
+std::optional<CompletionEntryData> GetAutoImportCompletionEntry(ark::es2panda::lsp::CompletionEntryData *data,
+                                                                const std::shared_ptr<ArkTsConfig> &config,
+                                                                const std::string &name)
+{
+    const char *fileName = data->GetFileName();
+    if (fileName == nullptr || std::strlen(fileName) == 0) {
+        return std::nullopt;
+    }
+    if (config == nullptr) {
+        return std::nullopt;
+    }
+    return CompletionEntryDataToOriginInfo(data, config, name);
+}
+
+std::optional<CompletionEntryData> CompletionEntryDataToOriginInfo(ark::es2panda::lsp::CompletionEntryData *data,
+                                                                   const std::shared_ptr<ArkTsConfig> &config,
+                                                                   const std::string &name)
+{
+    if (IsCompletionEntryDataResolved(data, config) == true) {
+        return CompletionEntryData(data->GetFileName(), data->GetNamedExport(), data->GetImportDeclaration(), name,
+                                   ResolutionStatus::RESOLVED);
+    }
+    if (IsCompletionEntryDataResolved(data, config) == false) {
+        return CompletionEntryData(data->GetFileName(), data->GetNamedExport(), data->GetImportDeclaration(), name,
+                                   ResolutionStatus::UNRESOLVED);
+    }
+    return std::nullopt;
+}
+
+bool StartsWith(const std::string &str, const std::string &prefix)
+{
+    return str.size() >= prefix.size() && str.compare(0, prefix.size(), prefix) == 0;
+}
+
+std::optional<bool> IsCompletionEntryDataResolved(ark::es2panda::lsp::CompletionEntryData *data,
+                                                  const std::shared_ptr<ArkTsConfig> &config)
+{
+    auto importDecl = data->GetImportDeclaration();
+    if (importDecl.length() == 0) {
+        return std::nullopt;
+    }
+    if (StartsWith(importDecl, "./") || StartsWith(importDecl, "../")) {
+        return true;
+    }
+
+    const char slash = static_cast<char>(lexer::LEX_CHAR_SLASH);
+    const int pos = importDecl.find(slash);
+    const std::string importSub = importDecl.substr(0, pos);
+    auto configPaths = config->Paths();
+    if (configPaths.count(importSub) != 0) {
+        return false;
+    }
+
+    return std::nullopt;
+}
+
+std::shared_ptr<ArkTsConfig> GetArkTsConfigFromFile(const char *fileName)
+{
+    Initializer initializer = Initializer();
+
+    auto ctx = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
+    auto config = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx)->config->options->ArkTSConfig();
+    initializer.DestroyContext(ctx);
+
+    return config;
+}
 }  // namespace ark::es2panda::lsp
