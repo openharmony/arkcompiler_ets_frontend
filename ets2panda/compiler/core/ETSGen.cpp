@@ -2217,6 +2217,14 @@ template <typename CondCompare, bool BEFORE_LOGICAL_NOT, bool USE_FALSE_LABEL>
 void ETSGen::ResolveConditionalResult(const ir::AstNode *node, [[maybe_unused]] Label *ifFalse)
 {
     auto type = GetAccumulatorType();
+#ifdef PANDA_WITH_ETS
+    if (type->IsETSReferenceType()) {
+        VReg valReg = AllocReg();
+        StoreAccumulator(node, valReg);
+        EmitEtsIstrue(node, valReg);
+        return;
+    }
+#endif  // PANDA_WITH_ETS
     if (type->IsETSBooleanType()) {
         return;
     }
