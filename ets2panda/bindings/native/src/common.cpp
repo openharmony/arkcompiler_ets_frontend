@@ -17,7 +17,9 @@
 #include <string>
 #include "public/es2panda_lib.h"
 
-std::string getString(KStringPtr ptr)
+// NOLINTBEGIN
+
+std::string GetString(KStringPtr ptr)
 {
     return ptr.data();
 }
@@ -64,3 +66,5 @@ KNativePointer impl_DestroyContext(KNativePointer contextPtr)
     return nullptr;
 }
 TS_INTEROP_1(DestroyContext, KNativePointer, KNativePointer)
+
+// NOLINTEND

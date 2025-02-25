@@ -45,7 +45,7 @@ KInt impl_GenerateTsDeclarationsFromContext(KNativePointer contextPtr, KStringPt
     auto context = reinterpret_cast<es2panda_Context *>(contextPtr);
     return static_cast<KInt>(
         es2panda_GetImpl(ES2PANDA_LIB_VERSION)
-            ->GenerateTsDeclarationsFromContext(context, outputDeclEts.data(), outputEts.data(), exportAll));
+            ->GenerateTsDeclarationsFromContext(context, outputDeclEts.data(), outputEts.data(), exportAll != 0));
 }
 TS_INTEROP_4(GenerateTsDeclarationsFromContext, KInt, KNativePointer, KStringPtr, KStringPtr, KBoolean)
 

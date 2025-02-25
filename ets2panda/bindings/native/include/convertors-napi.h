@@ -28,6 +28,7 @@
 #endif
 #include "panda_types.h"
 
+// NOLINTBEGIN
 template <class T>
 struct InteropTypeConverter {
     using InteropType = T;
@@ -88,7 +89,7 @@ struct InteropTypeConverter<KInteropBuffer> {
         napi_value result;
         napi_status status = napi_create_external_arraybuffer(
             env, value.data, value.length,
-            []([[maybe_unused]] napi_env env, [[maybe_unused]] void *finalize_data, void *finalize_hint) {
+            []([[maybe_unused]] napi_env env_, [[maybe_unused]] void *finalize_data, void *finalize_hint) {
                 KInteropBuffer *buffer = reinterpret_cast<KInteropBuffer *>(finalize_hint);
                 buffer->dispose(buffer->resourceId);
                 delete buffer;
@@ -118,7 +119,7 @@ struct InteropTypeConverter<KStringPtr> {
         if (status != 0)
             return result;
         result.resize(length);
-        status = napi_get_value_string_utf8(env, value, result.data(), length + 1, nullptr);
+        napi_get_value_string_utf8(env, value, result.data(), length + 1, nullptr);
         return result;
     }
     static InteropType convertTo(napi_env env, const KStringPtr &value)
@@ -1511,5 +1512,7 @@ napi_value getKoalaNapiCallbackDispatcher(napi_env env);
 
 #define TS_INTEROP_CALL_VOID_INTS32(venv, id, argc, args) TS_INTEROP_CALL_VOID(venv, id, (argc) * sizeof(int32_t), args)
 #define TS_INTEROP_CALL_INT_INTS32(venv, id, argc, args) TS_INTEROP_CALL_INT(venv, id, (argc) * sizeof(int32_t), args)
+
+// NOLINTEND
 
 #endif  // CONVERTORS_NAPI_H_

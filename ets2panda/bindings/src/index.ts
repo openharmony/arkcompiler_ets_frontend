@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-export { global } from "./global";
+export { Lsp } from "./public";
 export { Config, Context } from "./types";
 export { unpackString } from "./private"

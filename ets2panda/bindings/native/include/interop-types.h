@@ -16,7 +16,9 @@
 #ifndef INTEROP_TYPES_H_
 #define INTEROP_TYPES_H_
 
-#include <stdint.h>
+#include <cstdint>
+
+// NOLINTBEGIN
 
 typedef enum InteropTag {
     INTEROP_TAG_UNDEFINED = 101,
@@ -135,5 +137,7 @@ typedef struct InteropBuffer {
     InteropNativePointer data;
     InteropInt64 length;
 } InteropBuffer;
+
+// NOLINTEND
 
 #endif  // INTEROP_TYPES_H_

@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { KNativePointer as KPtr, KInt, KBoolean, KNativePointer, KDouble } from "./InteropTypes"
+import { KNativePointer as KPtr, KInt, KBoolean, KNativePointer, KDouble, KUInt } from "./InteropTypes"
 import { Es2pandaNativeModule as GeneratedEs2pandaNativeModule } from "./generated/Es2pandaNativeModule"
 import { loadNativeModuleLibrary, registerNativeModuleLibraryName } from "./loadLibraries"
 import { throwError } from "./utils"
@@ -537,9 +537,101 @@ export class Es2pandaNativeModule {
     throw new Error("Not implemented")
   }
 
-  _getSyntacticDiagnostics(filename: String): KPtr {
+  _getSemanticDiagnostics(filename: String): KPtr {
     throw new Error("Not implemented")
   }
+
+  _getDiags(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getDiagMsg(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getDiagSource(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getDefinitionAtPosition(filename: String, position: KInt): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getFileNameFromDef(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getStartFromDef(ptr: KPtr): KInt {
+    throw new Error("Not implemented")
+  }
+
+  _getLengthFromDef(ptr: KPtr): KInt {
+    throw new Error("Not implemented")
+  }
+
+  _getDiagRange(ptr: KPtr): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getRangeEnd(ptr: KPtr): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getRangeStart(ptr: KPtr): KPtr {
+    throw new Error("Not implemented")
+  }
+  _getPosLine(ptr: KPtr): KUInt {
+    throw new Error("Not implemented")
+  }
+
+  _getPosChar(ptr: KPtr): KUInt {
+    throw new Error("Not implemented")
+  }
+
+  _getDiagSeverity(ptr: KPtr): KUInt {
+    throw new Error("Not implemented")
+  }
+
+  _getDiagCode(ptr: KPtr): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getDiagCodeDescription(ptr: KPtr): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getCodeDescriptionHref(ptr: KPtr): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getDiagTags(ptr: KPtr): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getDiagData(ptr: KPtr): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getDiagRelatedInfo(ptr: KPtr): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getRelatedInfoMsg(ptr: KPtr): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getRelatedInfoLoc(ptr: KPtr): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getLocUri(ptr: KPtr): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getLocRange(ptr: KPtr): KPtr {
+    throw new Error("Not implemented")
+  }
+
 }
 
 export function initEs2panda(): Es2pandaNativeModule {
@@ -547,7 +639,6 @@ export function initEs2panda(): Es2pandaNativeModule {
   if (libPath == undefined) {
     throwError("Cannot find env variable $BINDINGS_PATH")
   }
-  // registerNativeModuleLibraryName("NativeModule", "/home/nojpg/projects/panda/runtime_core/static_core/build/lib/bindings/ts_bindings.node")
   registerNativeModuleLibraryName("NativeModule", libPath + "/ts_bindings.node")
   const instance = new Es2pandaNativeModule()
   loadNativeModuleLibrary("NativeModule", instance)
@@ -559,7 +650,6 @@ export function initGeneratedEs2panda(): GeneratedEs2pandaNativeModule {
   if (libPath == undefined) {
     throwError("Cannot find env variable $BINDINGS_PATH")
   }
-  // registerNativeModuleLibraryName("NativeModule", "/home/nojpg/projects/panda/runtime_core/static_core/build/lib/bindings/ts_bindings.node")
   registerNativeModuleLibraryName("NativeModule", libPath + "/ts_bindings.node")
   const instance = new GeneratedEs2pandaNativeModule()
   loadNativeModuleLibrary("NativeModule", instance)

@@ -24,7 +24,7 @@ function(panda_add_node_library TARGET)
 
     if(NOT DEFINED ARG_LIBRARY_OUTPUT_DIRECTORY)
         # Set default value
-        set(ARG_LIBRARY_OUTPUT_DIRECTORY ${PANDA_BINARY_ROOT}/lib/bindings)
+        set(ARG_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/bindings)
     endif()
 
     panda_add_library(${TARGET} SHARED ${ARG_SOURCES})
@@ -41,7 +41,7 @@ function(panda_add_node_library TARGET)
                 OUTPUT_NAME "${TARGET}"
                 SUFFIX ${ARG_OUTPUT_SUFFIX}
 
-                # Set output direcory
+                # Set output directory
                 LIBRARY_OUTPUT_DIRECTORY ${ARG_LIBRARY_OUTPUT_DIRECTORY}
         )
     endif()
@@ -69,14 +69,13 @@ set(BINDINGS_NAPI_SRC
   ./src/common.cpp
   ./src/common-interop.cpp
   ./src/convertors-napi.cpp
-  ./src/interop-logging.cpp
   ./src/callback-resource.cpp
   ./src/generated/bridges.cpp
   ./src/lsp.cpp
 )
 
-  # PUBLIC arkbase es2panda-lib es2panda-public
-  # PRIVATE arkbytecodeopt
+# PUBLIC arkbase es2panda-lib es2panda-public
+# PRIVATE arkbytecodeopt
 set(ES2PANDA_LIBS
   es2panda-lib
   es2panda-public
@@ -90,14 +89,9 @@ set(TS_INTEROP_MODULE
   "-DTS_NAPI"
 )
 
-if(PANDA_TARGET_LINUX)
-  list(APPEND ${TS_INTEROP_MODULE} "-DTS_LINUX")
-endif()
-
 if(PANDA_TARGET_WINDOWS)
   set(NODE_API_LIB libnode_api.a)
   set(NODE_WIN_API_LIB_PATH ${NODE_THIRD_PARTY_SOURCES_DIR}/node-${NODE_VERSION}-${DISTRO}/lib/${NODE_API_LIB})
-  list(APPEND TS_INTEROP_MODULE "-DTS_WINDOWS")
   list(APPEND ES2PANDA_LIBS ${NODE_WIN_API_LIB_PATH})
   list(APPEND BINDINGS_NAPI_SRC ./src/win-dynamic-node.cpp)
 endif()

@@ -16,23 +16,25 @@
 #include <common.h>
 #include "public/es2panda_lib.h"
 
+// NOLINTBEGIN
+
 // CC-OFFNXT(G.FUN.01-CPP) solid logic
-KNativePointer impl_CreateMemberExpression(KNativePointer context, KNativePointer object_arg, KNativePointer property,
-                                           KInt kind, KBoolean computed, KBoolean optional_arg)
+KNativePointer impl_CreateMemberExpression(KNativePointer context, KNativePointer objectArg, KNativePointer property,
+                                           KInt kind, KBoolean computed, KBoolean optionalArg)
 {
-    const auto _context = reinterpret_cast<es2panda_Context *>(context);
-    const auto _object_arg = reinterpret_cast<es2panda_AstNode *>(object_arg);
-    const auto _property = reinterpret_cast<es2panda_AstNode *>(property);
-    const auto _kind = static_cast<Es2pandaMemberExpressionKind>(kind);
-    const auto _computed = static_cast<KBoolean>(computed);
-    const auto _optional_arg = static_cast<KBoolean>(optional_arg);
+    const auto ctx = reinterpret_cast<es2panda_Context *>(context);
+    const auto objArg = reinterpret_cast<es2panda_AstNode *>(objectArg);
+    const auto prop = reinterpret_cast<es2panda_AstNode *>(property);
+    const auto expressionKind = static_cast<Es2pandaMemberExpressionKind>(kind);
+    const auto isComputed = static_cast<KBoolean>(computed);
+    const auto optArg = static_cast<KBoolean>(optionalArg);
     const auto result = es2panda_GetImpl(ES2PANDA_LIB_VERSION)
-                            ->CreateMemberExpression(_context, _object_arg, _property, _kind, _computed, _optional_arg);
+                            ->CreateMemberExpression(ctx, objArg, prop, expressionKind, isComputed, optArg);
     return result;
 }
 // CC-OFFNXT(G.FUN.01-CPP) solid logic
 TS_INTEROP_6(CreateMemberExpression, KNativePointer, KNativePointer, KNativePointer, KNativePointer, KInt, KBoolean,
-             KBoolean);
+             KBoolean)
 
 // CC-OFFNXT(G.FUN.01-CPP) solid logic
 KNativePointer impl_UpdateMemberExpression(KNativePointer context, KNativePointer original, KNativePointer object_arg,
@@ -52,7 +54,7 @@ KNativePointer impl_UpdateMemberExpression(KNativePointer context, KNativePointe
 }
 // CC-OFFNXT(G.FUN.01-CPP) solid logic
 TS_INTEROP_7(UpdateMemberExpression, KNativePointer, KNativePointer, KNativePointer, KNativePointer, KNativePointer,
-             KInt, KBoolean, KBoolean);
+             KInt, KBoolean, KBoolean)
 
 KNativePointer impl_MemberExpressionObject(KNativePointer context, KNativePointer receiver)
 {
@@ -61,7 +63,7 @@ KNativePointer impl_MemberExpressionObject(KNativePointer context, KNativePointe
     const auto result = es2panda_GetImpl(ES2PANDA_LIB_VERSION)->MemberExpressionObject(_context, _receiver);
     return result;
 }
-TS_INTEROP_2(MemberExpressionObject, KNativePointer, KNativePointer, KNativePointer);
+TS_INTEROP_2(MemberExpressionObject, KNativePointer, KNativePointer, KNativePointer)
 
 KNativePointer impl_MemberExpressionProperty(KNativePointer context, KNativePointer receiver)
 {
@@ -70,7 +72,7 @@ KNativePointer impl_MemberExpressionProperty(KNativePointer context, KNativePoin
     const auto result = es2panda_GetImpl(ES2PANDA_LIB_VERSION)->MemberExpressionProperty(_context, _receiver);
     return result;
 }
-TS_INTEROP_2(MemberExpressionProperty, KNativePointer, KNativePointer, KNativePointer);
+TS_INTEROP_2(MemberExpressionProperty, KNativePointer, KNativePointer, KNativePointer)
 
 KInt impl_MemberExpressionKindConst(KNativePointer context, KNativePointer receiver)
 {
@@ -79,4 +81,6 @@ KInt impl_MemberExpressionKindConst(KNativePointer context, KNativePointer recei
     const auto result = es2panda_GetImpl(ES2PANDA_LIB_VERSION)->MemberExpressionKindConst(_context, _receiver);
     return result;
 }
-TS_INTEROP_2(MemberExpressionKindConst, KInt, KNativePointer, KNativePointer);
+TS_INTEROP_2(MemberExpressionKindConst, KInt, KNativePointer, KNativePointer)
+
+// NOLINTEND
