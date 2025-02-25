@@ -675,11 +675,6 @@ Signature *ETSChecker::FindMostSpecificSignature(const ArenaVector<Signature *> 
             continue;
         }
         if (mostSpecificSignature->Owner() == sig->Owner()) {
-            // NOTE: audovichenko. Remove this 'if' when #12443 gets resolved
-            if (mostSpecificSignature->Function() == sig->Function()) {
-                // The same signature
-                continue;
-            }
             return nullptr;
         }
     }
