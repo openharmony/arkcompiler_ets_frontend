@@ -20,6 +20,6 @@ function main() {
     let n: null = fnull();
     let u: undefined = fundefined();
 
-    assertEQ(n as null | undefined, u as null | undefined)
-    assertTrue(n as null | undefined !== u as null | undefined)
+    assertTrue(n as null | undefined == u as null | undefined)
+    assertNE(n as null | undefined, u as null | undefined)
 }
