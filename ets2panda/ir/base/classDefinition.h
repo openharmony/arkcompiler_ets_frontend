@@ -18,11 +18,11 @@
 
 #include "varbinder/scope.h"
 #include "varbinder/variable.h"
+#include "ir/srcDump.h"
 #include "ir/annotationAllowed.h"
 #include "ir/astNode.h"
 #include "ir/expressions/identifier.h"
 #include "ir/jsDocAllowed.h"
-#include "ir/srcDump.h"
 #include "ir/statements/annotationUsage.h"
 #include "ir/statements/classDeclaration.h"
 #include "util/language.h"
@@ -498,6 +498,8 @@ private:
     // This method is needed by OHOS CI code checker
     void DumpBody(ir::SrcDumper *dumper) const;
     void DumpGlobalClass(ir::SrcDumper *dumper) const;
+    void DumpPrefix(ir::SrcDumper *dumper) const;
+    bool RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const;
 
     friend class SizeOfNodeTest;
     varbinder::LocalScope *scope_ {nullptr};

@@ -166,6 +166,18 @@ options:
     description: Paths to evaluation mode (.abc) files, must be accessible
     delimiter: ":"
 
+- name: generate-decl
+  description: Input static file and generate static declaration files
+  sub_options:
+  - name: enabled
+    type: bool
+    default: false
+    description: Whether to enable static declaration file generation
+  - name: path
+    type: std::string
+    default: ""
+    description: Output path for generated static declaration files
+
 - name: thread
   type: int
   default: 0

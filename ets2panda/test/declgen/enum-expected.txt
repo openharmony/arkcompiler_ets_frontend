@@ -1,0 +1,79 @@
+/**
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+export declare final class Direction extends BaseEnum<int> {
+  
+  
+  public constructor(ordinal: int, value: int);
+  
+  public static readonly Up: Direction;
+  
+  public static readonly Down: Direction;
+  
+  public static readonly Left: Direction;
+  
+  public static readonly Right: Direction;
+  
+  
+  
+  
+  
+  public getName(): String;
+  
+  public static getValueOf(name: String): Direction;
+  
+  public static fromValue(value: int): Direction;
+  
+  public valueOf(): int;
+  
+  public toString(): String;
+  
+  public static values(): FixedArray<Direction>;
+  
+  public getOrdinal(): int;
+  
+  
+}
+
+export declare final class Message extends BaseEnum<String> {
+  
+  
+  public constructor(ordinal: int, value: String);
+  
+  public static readonly Success: Message;
+  
+  public static readonly Failure: Message;
+  
+  public static readonly Pending: Message;
+  
+  
+  
+  
+  public getName(): String;
+  
+  public static getValueOf(name: String): Message;
+  
+  public static fromValue(value: String): Message;
+  
+  public valueOf(): String;
+  
+  public toString(): String;
+  
+  public static values(): FixedArray<Message>;
+  
+  public getOrdinal(): int;
+  
+  
+}

@@ -223,6 +223,7 @@ struct CAPI_EXPORT es2panda_Impl {
                                              const char *outputEts, bool exportAll);
     void (*InsertETSImportDeclarationAndParse)(es2panda_Context *context, es2panda_Program *program,
                                                es2panda_AstNode *importDeclaration);
+    int (*GenerateStaticDeclarationsFromContext)(es2panda_Context *context, const char *outputPath);
 
 // CC-OFFNXT(G.INC.08) project code style
 #include "generated/es2panda_lib/es2panda_lib_decl.inc"

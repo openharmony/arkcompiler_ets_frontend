@@ -70,11 +70,38 @@ void TSEnumDeclaration::Dump(ir::AstDumper *dumper) const
                  {"declare", IsDeclare()}});
 }
 
+bool TSEnumDeclaration::RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const
+{
+    if (!dumper->IsDeclgen()) {
+        return false;
+    }
+
+    if (dumper->IsIndirectDepPhase()) {
+        return false;
+    }
+
+    if (key_->Parent()->IsDefaultExported() || key_->Parent()->IsExported()) {
+        return false;
+    }
+
+    auto name = key_->AsIdentifier()->Name().Mutf8();
+    dumper->AddNode(name, this);
+    return true;
+}
+
 void TSEnumDeclaration::Dump(ir::SrcDumper *dumper) const
 {
     ES2PANDA_ASSERT(isConst_ == false);
     ES2PANDA_ASSERT(key_ != nullptr);
-    if (IsDeclare()) {
+    if (RegisterUnexportedForDeclGen(dumper)) {
+        return;
+    }
+    if (key_->Parent()->IsExported() && dumper->IsDeclgen()) {
+        dumper->Add("export ");
+    } else if (key_->Parent()->IsDefaultExported() && dumper->IsDeclgen()) {
+        dumper->Add("export default ");
+    }
+    if (IsDeclare() || dumper->IsDeclgen()) {
         dumper->Add("declare ");
     }
     dumper->Add("enum ");

@@ -27,6 +27,7 @@
 #include "checker/ETSAnalyzer.h"
 #include "checker/ETSchecker.h"
 #include "compiler/core/compileQueue.h"
+#include "compiler/core/compilerImpl.h"
 #include "compiler/core/ETSCompiler.h"
 #include "compiler/core/ETSemitter.h"
 #include "compiler/core/ETSGen.h"
@@ -921,6 +922,19 @@ extern "C" __attribute__((unused)) int GenerateTsDeclarationsFromContext(es2pand
                                                                                                                   : 1;
 }
 
+// Will be removed after binary import support is fully implemented.
+extern "C" __attribute__((unused)) int GenerateStaticDeclarationsFromContext(es2panda_Context *ctx,
+                                                                             const char *outputPath)
+{
+    auto *ctxImpl = reinterpret_cast<Context *>(ctx);
+    if (ctxImpl->state != ES2PANDA_STATE_CHECKED) {
+        return 1;
+    }
+    compiler::HandleGenerateDecl(*ctxImpl->parserProgram, *ctxImpl->diagnosticEngine, outputPath);
+
+    return ctxImpl->diagnosticEngine->IsAnyError() ? 1 : 0;
+}
+
 extern "C" void InsertETSImportDeclarationAndParse(es2panda_Context *context, es2panda_Program *program,
                                                    es2panda_AstNode *importDeclaration)
 {
@@ -992,6 +1006,7 @@ es2panda_Impl g_impl = {
     AllDeclarationsByNameFromProgram,
     GenerateTsDeclarationsFromContext,
     InsertETSImportDeclarationAndParse,
+    GenerateStaticDeclarationsFromContext,
 
 #include "generated/es2panda_lib/es2panda_lib_list.inc"
 

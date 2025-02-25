@@ -46,6 +46,7 @@
 #include "checker/ASchecker.h"
 #include "checker/JSchecker.h"
 #include "public/public.h"
+#include "util/diagnosticEngine.h"
 
 namespace ark::es2panda::compiler {
 
@@ -105,6 +106,22 @@ static bool CheckOptionsBeforePhase(const util::Options &options, const parser::
     return options.GetExitBeforePhase() == name;
 }
 
+void HandleGenerateDecl(const parser::Program &program, util::DiagnosticEngine &diagnosticEngine,
+                        const std::string &outputPath)
+{
+    std::ofstream outFile(outputPath);
+    if (!outFile.is_open()) {
+        diagnosticEngine.LogFatalError(diagnostic::OPEN_FAILED, util::DiagnosticMessageParams {outputPath},
+                                       lexer::SourcePosition());
+        return;
+    }
+    std::string result = program.Ast()->DumpDecl();
+    result.erase(0, result.find_first_not_of('\n'));
+
+    outFile << result;
+    outFile.close();
+}
+
 static bool CheckOptionsAfterPhase(const util::Options &options, const parser::Program &program,
                                    const std::string &name)
 {
@@ -147,6 +164,16 @@ static bool RunVerifierAndPhases(public_lib::Context &context, parser::Program &
         // Stop lowerings processing after Checker phase if any error happened.
         if (phase->Name() == compiler::CheckerPhase::NAME && context.diagnosticEngine->IsAnyError()) {
             return false;
+        }
+
+        if (options.IsGenerateDeclEnabled() && name == compiler::CheckerPhase::NAME) {
+            std::string path;
+            if (!options.WasSetGenerateDeclPath()) {
+                path = ark::os::RemoveExtension(util::BaseName(options.SourceFileName())).append(".d.ets");
+            } else {
+                path = options.GetGenerateDeclPath();
+            }
+            HandleGenerateDecl(program, *context.diagnosticEngine, path);
         }
     }
 

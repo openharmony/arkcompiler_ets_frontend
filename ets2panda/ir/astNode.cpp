@@ -231,6 +231,13 @@ std::string AstNode::DumpEtsSrc() const
     return dumper.Str();
 }
 
+std::string AstNode::DumpDecl() const
+{
+    ir::SrcDumper dumper {this, true};
+    dumper.Run();
+    return dumper.Str();
+}
+
 void AstNode::SetOriginalNode(AstNode *originalNode) noexcept
 {
     originalNode_ = originalNode;

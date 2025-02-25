@@ -52,6 +52,31 @@ void ETSReExportDeclaration::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ETSReExportDeclaration"}, {"ets_import_declarations", etsImportDeclarations_}});
 }
 
+void ETSReExportDeclaration::Dump([[maybe_unused]] ir::SrcDumper *dumper) const
+{
+    auto importDeclaration = GetETSImportDeclarations();
+    const auto &specifiers = importDeclaration->Specifiers();
+    dumper->Add("export ");
+    if (specifiers.size() == 1 &&
+        (specifiers[0]->IsImportNamespaceSpecifier() || specifiers[0]->IsImportDefaultSpecifier())) {
+        specifiers[0]->Dump(dumper);
+    } else {
+        dumper->Add("{ ");
+        for (auto specifier : specifiers) {
+            specifier->Dump(dumper);
+            if (specifier != specifiers.back()) {
+                dumper->Add(", ");
+            }
+        }
+        dumper->Add(" }");
+    }
+
+    dumper->Add(" from ");
+    importDeclaration->Source()->Dump(dumper);
+    dumper->Add(";");
+    dumper->Endl();
+}
+
 checker::VerifiedType ETSReExportDeclaration::Check(checker::ETSChecker * /*checker*/)
 {
     return {this, nullptr};

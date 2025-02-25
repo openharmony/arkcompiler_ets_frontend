@@ -103,6 +103,10 @@ protected:
 
 private:
     void DumpPrefix(ir::SrcDumper *dumper) const;
+    void DumpModifiers(ir::SrcDumper *dumper) const;
+    bool RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const;
+    bool DumpNamespaceForDeclGen(ir::SrcDumper *dumper) const;
+    void DumpCheckerTypeForDeclGen(ir::SrcDumper *dumper) const;
 
     friend class SizeOfNodeTest;
     TypeNode *typeAnnotation_;

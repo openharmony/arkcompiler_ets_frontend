@@ -25,6 +25,9 @@ struct Program;
 namespace ark::es2panda::compiler {
 class CompileQueue;
 
+void HandleGenerateDecl(const parser::Program &program, util::DiagnosticEngine &diagnosticEngine,
+                        const std::string &outputPath);
+
 class CompilationUnit {
 public:
     explicit CompilationUnit(const SourceFile &i, const util::Options &o, uint32_t s, ScriptExtension e,

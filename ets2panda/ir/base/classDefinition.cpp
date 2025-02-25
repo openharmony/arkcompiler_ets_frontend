@@ -219,6 +219,54 @@ void ClassDefinition::DumpBody(ir::SrcDumper *dumper) const
     dumper->Add("}");
 }
 
+void ClassDefinition::DumpPrefix(ir::SrcDumper *dumper) const
+{
+    if (IsExported()) {
+        dumper->Add("export ");
+    } else if (IsDefaultExported()) {
+        dumper->Add("export default ");
+    }
+
+    if (IsDeclare() || dumper->IsDeclgen()) {
+        dumper->Add("declare ");
+    }
+
+    if (IsFinal()) {
+        dumper->Add("final ");
+    }
+
+    if (IsAbstract() && !IsNamespaceTransformed()) {
+        dumper->Add("abstract ");
+    }
+
+    if (parent_->IsETSStructDeclaration() || IsFromStruct()) {
+        dumper->Add("struct ");
+    } else if (IsNamespaceTransformed()) {
+        dumper->Add("namespace ");
+    } else {
+        dumper->Add("class ");
+    }
+}
+
+bool ClassDefinition::RegisterUnexportedForDeclGen(ir::SrcDumper *dumper) const
+{
+    if (!dumper->IsDeclgen()) {
+        return false;
+    }
+
+    if (dumper->IsIndirectDepPhase()) {
+        return false;
+    }
+
+    if (IsExported() || IsDefaultExported()) {
+        return false;
+    }
+
+    const auto className = ident_->Name().Mutf8();
+    dumper->AddNode(className, this);
+    return true;
+}
+
 void ClassDefinition::Dump(ir::SrcDumper *dumper) const
 {
     // NOTE: plugin API fails
@@ -231,32 +279,17 @@ void ClassDefinition::Dump(ir::SrcDumper *dumper) const
         return;
     }
 
+    ES2PANDA_ASSERT(ident_ != nullptr);
+
+    if (RegisterUnexportedForDeclGen(dumper)) {
+        return;
+    }
+
     for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }
-    ES2PANDA_ASSERT(ident_ != nullptr);
 
-    if (IsExtern()) {
-        dumper->Add("extern ");
-    }
-
-    if (IsExported()) {
-        dumper->Add("export ");
-    }
-
-    if (IsDeclare()) {
-        dumper->Add("declare ");
-    }
-
-    if (IsFinal()) {
-        dumper->Add("final ");
-    }
-
-    if (IsAbstract()) {
-        dumper->Add("abstract ");
-    }
-
-    dumper->Add(parent_->IsETSStructDeclaration() ? "struct " : "class ");
+    DumpPrefix(dumper);
     ident_->Dump(dumper);
 
     if (typeParams_ != nullptr) {
@@ -271,7 +304,6 @@ void ClassDefinition::Dump(ir::SrcDumper *dumper) const
     }
 
     DumpItems(dumper, " implements ", implements_);
-
     if (!IsDeclare() || !body_.empty()) {
         DumpBody(dumper);
     }
