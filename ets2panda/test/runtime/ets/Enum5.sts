@@ -25,23 +25,23 @@ function main(): void {
     assertEQ(value, "green")
     //cons.print(name + " = " + value + c'\n');
   } catch (e) {
-    assertTrue( (e as Object).toString().startsWith("No enum constant Color.Blue"))
+    assertTrue((e as Object).toString().startsWith("No enum constant Color.Blue"))
   }
 
   let x = Color.Red.valueOf();
-  assertEQ( x, "blue")
+  assertEQ(x, "blue")
 
   let blue = Color.Blue;
   let str = blue.getName();
   //cons.print("Color.Blue = '" + str + "'\n");
-  assertEQ( "Blue", str)
-  assertEQ( blue.valueOf(), blue.toString())
+  assertEQ("Blue", str)
+  assertEQ(blue.valueOf(), blue.toString())
 
   let values = Color.values();
-  assertEQ( values.length, 3)
-  assertEQ( values[1], Color.Red)
-  assertEQ( values[0], Color.Green)
-  assertEQ( values[2], Color.Blue)
+  assertEQ(values.length, 3)
+  assertEQ(values[1], Color.Red)
+  assertEQ(values[0], Color.Green)
+  assertEQ(values[2], Color.Blue)
 
   let red1: Color = Color.Red;
   let red2: Color = Color.Green;
@@ -54,7 +54,7 @@ function main(): void {
   try {
     red2 = Color.getValueOf("Red");
   } catch (e) {
-    assertTrue( (e as Object).toString().startsWith("No enum constant Color.Red"))
+    assertTrue((e as Object).toString().startsWith("No enum constant Color.Red"))
     //cons.print(e.toString() + "\n");
   }
 
@@ -86,28 +86,28 @@ function main(): void {
 
   try {
     let yellow: Color = Color.getValueOf("Yellow");
-    assertTrue( false)
+    assertTrue(false)
   } catch (e: Exception) {
-    assertTrue( (e as Object).toString().startsWith("No enum constant Color.Yellow"))
+    assertTrue((e as Object).toString().startsWith("No enum constant Color.Yellow"))
   } catch (e) {}
 
   ord = 0;
   let green: Color = ord as Color;
   //cons.print("Green = " + green as int + ", Color.Green = " + Color.Green as int + "\n")
-  assertEQ( green, Color.Green)
+  assertEQ(green, Color.Green)
 
   try {
     let x = 5 as Color;
-    assertTrue( false)
+    assertTrue(false)
   } catch (e: Exception) {
-    assertTrue( (e as Object).toString().startsWith("No enum constant in Color with ordinal value 5"))
+    assertTrue((e as Object).toString().startsWith("No enum constant in Color with ordinal value 5"))
   }
 
-  assertEQ( 2 as Color as int, 2)
-  assertEQ( Color.Blue as int as Color, Color.Blue)
-  assertEQ( (Color.Green as int + 1) as Color, (Color.Blue as int - 1) as Color)
+  assertEQ(2 as Color as int, 2)
+  assertEQ(Color.Blue as int as Color, Color.Blue)
+  assertEQ((Color.Green as int + 1) as Color, (Color.Blue as int - 1) as Color)
   try {
-    assertEQ( (Color.Green as int + 1) as Color, Color.getValueOf("Red"))
+    assertEQ((Color.Green as int + 1) as Color, Color.getValueOf("Red"))
   } catch (e) {
   }
 }

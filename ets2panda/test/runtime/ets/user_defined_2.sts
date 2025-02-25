@@ -17,5 +17,5 @@ let boolean : boolean = true;
 
 function main() {
     let boolean : boolean = false;
-    assertEQ( boolean, false)
+    assertEQ(boolean, false)
 }

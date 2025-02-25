@@ -23,10 +23,10 @@ let foo = (this: A): this => {
 }
 
 function main() {
-    assertEQ( (new A().foo()).data_, 2)
-    assertEQ( (foo(new A())).data_, 2)
-    assertEQ( (new A().foo().foo()).data_, 3)
-    assertEQ( (foo(new A().foo()).data_), 3)
+    assertEQ((new A().foo()).data_, 2)
+    assertEQ((foo(new A())).data_, 2)
+    assertEQ((new A().foo().foo()).data_, 3)
+    assertEQ((foo(new A().foo()).data_), 3)
     let a = new A();
     assertEQ(a.foo().data_, 2)
     assertEQ(foo(a).data_, 3)

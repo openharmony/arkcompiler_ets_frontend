@@ -24,6 +24,6 @@ class C {
 
 function main() {
     let c: C = new C()
-    assertEQ( c.met(0.0), "nR")
-    assertEQ( c.met(new Number()), "NR")
+    assertEQ(c.met(0.0), "nR")
+    assertEQ(c.met(new Number()), "NR")
 }

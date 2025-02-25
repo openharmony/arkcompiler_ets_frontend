@@ -40,11 +40,11 @@ class D extends A {
 }
 
 function call_static_invoke_method() {
-    assertEQ( A(), num )
-    assertEQ( B(), num )
-    assertEQ( C(param), param )
+    assertEQ(A(), num )
+    assertEQ(B(), num )
+    assertEQ(C(param), param )
     let d = D() {};
-    assertEQ( d, num )
+    assertEQ(d, num )
 }
 
 class Z {

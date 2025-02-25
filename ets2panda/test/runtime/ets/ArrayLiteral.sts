@@ -21,12 +21,12 @@ function main(): void {
     let e: float = 2.2;
     let f: double = 2.2222222222;
     let g: double[] = [a, b, c, d, e, f];
-    assertEQ( g[0], 2)
-    assertEQ( g[1], 20000)
-    assertEQ( g[2], 2000000)
-    assertEQ( g[3], 200000000000)
-    assertEQ( g[4], (2.2 as float))
-    assertEQ( g[5], 2.2222222222)
+    assertEQ(g[0], 2)
+    assertEQ(g[1], 20000)
+    assertEQ(g[2], 2000000)
+    assertEQ(g[3], 200000000000)
+    assertEQ(g[4], (2.2 as float))
+    assertEQ(g[5], 2.2222222222)
 
     const h: byte = 2;
     const i: short = 2;
@@ -35,12 +35,12 @@ function main(): void {
     const l: float = 2.0;
     const m: double = 2.0;
     const n: byte[] = [h, i, j, k, l, m];
-    assertEQ( n[0], 2)
-    assertEQ( n[1], 2)
-    assertEQ( n[2], 2)
-    assertEQ( n[3], 2)
-    assertEQ( n[4], 2)
-    assertEQ( n[5], 2)
+    assertEQ(n[0], 2)
+    assertEQ(n[1], 2)
+    assertEQ(n[2], 2)
+    assertEQ(n[3], 2)
+    assertEQ(n[4], 2)
+    assertEQ(n[5], 2)
 
     let o: Object[] = [1, 1.1, "testStr", new Int(2), d, k];
     assertEQ(o[0] as Int, 1)
@@ -51,7 +51,7 @@ function main(): void {
     assertEQ(o[5] as Long, 2)
 
     let p: long[] = [new Int(3), new Short(2 as short), new Long(4)];
-    assertEQ( p[0], 3)
-    assertEQ( p[1], 2)
-    assertEQ( p[2], 4)
+    assertEQ(p[0], 3)
+    assertEQ(p[1], 2)
+    assertEQ(p[2], 4)
 }

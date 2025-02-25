@@ -43,7 +43,7 @@ function main() {
     }
 
     try {
-        assertEQ( s as "c", "c")
+        assertEQ(s as "c", "c")
     } catch (error: ClassCastError) {
         caught_counter++;
     }
@@ -60,5 +60,5 @@ function main() {
         caught_counter++;
     }
 
-    assertEQ( caught_counter, 5)
+    assertEQ(caught_counter, 5)
 }

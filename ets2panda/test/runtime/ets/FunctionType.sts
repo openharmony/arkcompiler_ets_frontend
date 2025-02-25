@@ -42,5 +42,5 @@ function main(): void {
         cb = b.b;
     }
 
-    assertEQ( cb(21), 2)
+    assertEQ(cb(21), 2)
 }

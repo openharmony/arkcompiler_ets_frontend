@@ -31,6 +31,6 @@ function main(): int {
         }
         return sum
     }
-    assertEQ( (fp2(7, 11, 13), 31)
+    assertEQ((fp2(7, 11, 13), 31)
     return 0
 }

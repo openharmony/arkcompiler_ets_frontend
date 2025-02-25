@@ -35,9 +35,9 @@ function main() {
   } catch (e: ClassCastError) {
     caught = true;
   } catch (e) {
-    assertTrue( false)
+    assertTrue(false)
   }
-  assertTrue( caught)
+  assertTrue(caught)
 
   Is = clear_accumlator_type(Is); // workaround for:
   // Verifier warning 24: Impossible array check cast

@@ -28,40 +28,40 @@ function colorToInt(c: Color): int {
 
 function main(): void {
   let red: Color = Color.Red;
-  assertEQ( red, Color.Red)
-  assertEQ( colorToInt(red), 0)
+  assertEQ(red, Color.Red)
+  assertEQ(colorToInt(red), 0)
 
   let red2: Color = red;
-  assertEQ( red, red2)
-  assertEQ( Color.Red, red2)
+  assertEQ(red, red2)
+  assertEQ(Color.Red, red2)
 
   let red_int: int = red as int;
-  assertEQ( red_int, 0)
-  assertEQ( red_int, Color.Red as int)
+  assertEQ(red_int, 0)
+  assertEQ(red_int, Color.Red as int)
 
   let a: A = new A(red);
-  assertEQ( a.c, Color.Red)
+  assertEQ(a.c, Color.Red)
 
   switch(red) {
     case Color.Green:
-      assertTrue( false)
+      assertTrue(false)
       break;
     case Color.Red:
-      assertTrue( true)
+      assertTrue(true)
       break;
     default:
-      assertTrue( false)
+      assertTrue(false)
   }
 
   switch(Color.Blue) {
     case Color.Green:
     case Color.Red:
-      assertTrue( false)
+      assertTrue(false)
       break;
     case Color.Blue:
-      assertTrue( true)
+      assertTrue(true)
       break;
     default:
-      assertTrue( false)
+      assertTrue(false)
   }
 }

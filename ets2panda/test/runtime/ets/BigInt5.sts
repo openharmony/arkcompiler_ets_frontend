@@ -14,12 +14,12 @@
  */
 
 function test_unary_minus(): void {
-    assertEQ( new BigInt(10).negate(), (-10n))
-    assertEQ( new BigInt(1000).negate(), (-1000n))
-    assertEQ( new BigInt(-1).negate(), (1n))
-    assertEQ( new BigInt(-10).negate(), (10n))
-    assertEQ( new BigInt(-100).negate(), (100n))
-    assertEQ( new BigInt(0).negate(), (0n))
+    assertEQ(new BigInt(10).negate(), (-10n))
+    assertEQ(new BigInt(1000).negate(), (-1000n))
+    assertEQ(new BigInt(-1).negate(), (1n))
+    assertEQ(new BigInt(-10).negate(), (10n))
+    assertEQ(new BigInt(-100).negate(), (100n))
+    assertEQ(new BigInt(0).negate(), (0n))
 }
 
 function test_unary(): void {

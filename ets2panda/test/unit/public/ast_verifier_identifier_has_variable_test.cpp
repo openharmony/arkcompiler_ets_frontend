@@ -144,7 +144,7 @@ TEST_F(ASTVerifierTest, ParametersInArrowFunctionExpression)
         let b = 1;
         let f = (p: double) => b + p;
         function main () {
-            assert f(42) == 43
+            assertEQ(f(42), 43)
         }
     )";
 

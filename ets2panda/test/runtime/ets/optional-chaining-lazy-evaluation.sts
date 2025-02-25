@@ -27,13 +27,13 @@ function main(): void {
 
   let potentiallyNullObj: Int[] | null = foo1();
   let number: Int | undefined = potentiallyNullObj?.[x++] ?? 2;
-  assertEQ(number , 2)
-  assertEQ(x , 0) // 0 as x was not incremented
+  assertEQ(number, 2)
+  assertEQ(x, 0) // 0 as x was not incremented
 
   let obj: Int[] | null = foo2();
   number = obj?.[x++];
 
   let a : Int = 11;
-  assertEQ(number , a)
-  assertEQ(x , 1) // 1 as x was incremented
+  assertEQ(number, a)
+  assertEQ(x, 1) // 1 as x was incremented
 }

@@ -28,5 +28,5 @@ class B extends A {
 
 function main() {
     let a: A = new B()
-    assertEQ( a.met(), "b")
+    assertEQ(a.met(), "b")
 }

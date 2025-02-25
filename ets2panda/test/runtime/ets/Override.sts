@@ -35,19 +35,19 @@ class A implements I {
 
 function main(): void {
   let a = new A();
-  assertEQ( a.self().x, 42)
-  assertEQ( a.fn(), "")
-  assertEQ( a.fn2().length, 1)
-  assertEQ( a.fn3()[0], 0)
-  assertEQ( a.fn4()[0][0], 0)
-  assertEQ( a.fn5()[0], "")
+  assertEQ(a.self().x, 42)
+  assertEQ(a.fn(), "")
+  assertEQ(a.fn2().length, 1)
+  assertEQ(a.fn3()[0], 0)
+  assertEQ(a.fn4()[0][0], 0)
+  assertEQ(a.fn5()[0], "")
 
   // let i: I = a;
-  // assertTrue( i.self() instanceof A)
-  // assertEQ( (i.fn() as String), "")
-  // assertEQ( (i.fn2() as Object[])[0], new Object()
-  // assertEQ( (i.fn3() as int[])[0], 0)
-  // assertEQ( (i.fn4() as String[])[0], "")
+  // assertTrue(i.self() instanceof A)
+  // assertEQ((i.fn() as String), "")
+  // assertEQ((i.fn2() as Object[])[0], new Object()
+  // assertEQ((i.fn3() as int[])[0], 0)
+  // assertEQ((i.fn4() as String[])[0], "")
 }
 
 

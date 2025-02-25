@@ -23,5 +23,5 @@ function main(): void {
     } catch (e: TypeError) {
         catched = true
     }
-    assertTrue( catched)
+    assertTrue(catched)
 }
