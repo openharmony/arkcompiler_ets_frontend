@@ -260,14 +260,16 @@ std::vector<TextSpan> GetBraceMatchingAtPositionWrapper(char const *fileName, si
     return result;
 }
 
-extern "C" std::vector<FileDiagnostic> GetSuggestionDiagnostics(es2panda_Context *context)
+std::vector<FileDiagnostic> GetSuggestionDiagnostics(char const *fileName)
 {
+    Initializer initializer = Initializer();
+    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
     auto ast = ctx->parserProgram->Ast();
     return ark::es2panda::lsp::GetSuggestionDiagnosticsImpl(ast);
 }
 
-extern "C" ark::es2panda::lsp::CompletionInfo GetCompletionsAtPosition(char const *fileName, size_t position)
+ark::es2panda::lsp::CompletionInfo GetCompletionsAtPosition(char const *fileName, size_t position)
 {
     Initializer initializer = Initializer();
     auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
@@ -295,7 +297,11 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetBraceMatchingAtPositionWrapper};
 }  // namespace ark::es2panda::lsp
 
+#ifdef _WIN32
+LSPAPI __declspec(dllexport) const *GetImpl()
+#else
 LSPAPI const *GetImpl()
+#endif
 {
     return &ark::es2panda::lsp::g_lspImpl;
 }
