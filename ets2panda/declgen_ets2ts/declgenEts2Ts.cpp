@@ -173,7 +173,7 @@ void TSDeclGen::GenSeparated(const T &container, const CB &cb, const char *separ
 void TSDeclGen::LogError(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &params = {},
                          const lexer::SourcePosition &pos = lexer::SourcePosition())
 {
-    diagnosticEngine_.LogDiagnostic(kind, params, program_, pos);
+    diagnosticEngine_.LogDiagnostic(kind, params, pos);
 }
 
 void TSDeclGen::LogWarning(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &params = {},

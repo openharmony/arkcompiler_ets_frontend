@@ -12,11 +12,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 10
+              "column": 10,
+              "program": "test-func-param.ts"
             },
             "end": {
               "line": 17,
-              "column": 15
+              "column": 15,
+              "program": "test-func-param.ts"
             }
           }
         },
@@ -32,11 +34,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 19
+                  "column": 19,
+                  "program": "test-func-param.ts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 25
+                  "column": 25,
+                  "program": "test-func-param.ts"
                 }
               }
             },
@@ -44,11 +48,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 16
+                "column": 16,
+                "program": "test-func-param.ts"
               },
               "end": {
                 "line": 17,
-                "column": 17
+                "column": 17,
+                "program": "test-func-param.ts"
               }
             }
           },
@@ -60,11 +66,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 30
+                  "column": 30,
+                  "program": "test-func-param.ts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 36
+                  "column": 36,
+                  "program": "test-func-param.ts"
                 }
               }
             },
@@ -72,11 +80,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 27
+                "column": 27,
+                "program": "test-func-param.ts"
               },
               "end": {
                 "line": 17,
-                "column": 28
+                "column": 28,
+                "program": "test-func-param.ts"
               }
             }
           }
@@ -87,33 +97,39 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 38
+              "column": 38,
+              "program": "test-func-param.ts"
             },
             "end": {
               "line": 17,
-              "column": 41
+              "column": 41,
+              "program": "test-func-param.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 17,
-            "column": 1
+            "column": 1,
+            "program": "test-func-param.ts"
           },
           "end": {
             "line": 17,
-            "column": 41
+            "column": 41,
+            "program": "test-func-param.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test-func-param.ts"
         },
         "end": {
           "line": 17,
-          "column": 41
+          "column": 41,
+          "program": "test-func-param.ts"
         }
       }
     },
@@ -128,11 +144,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 10
+              "column": 10,
+              "program": "test-func-param.ts"
             },
             "end": {
               "line": 18,
-              "column": 15
+              "column": 15,
+              "program": "test-func-param.ts"
             }
           }
         },
@@ -150,11 +168,13 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 19
+                    "column": 19,
+                    "program": "test-func-param.ts"
                   },
                   "end": {
                     "line": 18,
-                    "column": 26
+                    "column": 26,
+                    "program": "test-func-param.ts"
                   }
                 }
               },
@@ -162,11 +182,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 16
+                  "column": 16,
+                  "program": "test-func-param.ts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 17
+                  "column": 17,
+                  "program": "test-func-param.ts"
                 }
               }
             },
@@ -176,22 +198,26 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 29
+                  "column": 29,
+                  "program": "test-func-param.ts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 33
+                  "column": 33,
+                  "program": "test-func-param.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 18,
-                "column": 16
+                "column": 16,
+                "program": "test-func-param.ts"
               },
               "end": {
                 "line": 18,
-                "column": 33
+                "column": 33,
+                "program": "test-func-param.ts"
               }
             }
           },
@@ -207,22 +233,27 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 41
+                      "column": 41,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 18,
-                      "column": 47
+                      "column": 47,
+                      "program": "test-func-param.ts"
                     }
                   }
                 },
+                "annotations": [],
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 41
+                    "column": 41,
+                    "program": "test-func-param.ts"
                   },
                   "end": {
                     "line": 18,
-                    "column": 49
+                    "column": 49,
+                    "program": "test-func-param.ts"
                   }
                 }
               },
@@ -230,22 +261,26 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 38
+                  "column": 38,
+                  "program": "test-func-param.ts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 39
+                  "column": 39,
+                  "program": "test-func-param.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 18,
-                "column": 35
+                "column": 35,
+                "program": "test-func-param.ts"
               },
               "end": {
                 "line": 18,
-                "column": 39
+                "column": 39,
+                "program": "test-func-param.ts"
               }
             }
           }
@@ -256,33 +291,39 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 51
+              "column": 51,
+              "program": "test-func-param.ts"
             },
             "end": {
               "line": 18,
-              "column": 54
+              "column": 54,
+              "program": "test-func-param.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 18,
-            "column": 1
+            "column": 1,
+            "program": "test-func-param.ts"
           },
           "end": {
             "line": 18,
-            "column": 54
+            "column": 54,
+            "program": "test-func-param.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 18,
-          "column": 1
+          "column": 1,
+          "program": "test-func-param.ts"
         },
         "end": {
           "line": 18,
-          "column": 54
+          "column": 54,
+          "program": "test-func-param.ts"
         }
       }
     },
@@ -297,11 +338,13 @@
           "loc": {
             "start": {
               "line": 19,
-              "column": 10
+              "column": 10,
+              "program": "test-func-param.ts"
             },
             "end": {
               "line": 19,
-              "column": 15
+              "column": 15,
+              "program": "test-func-param.ts"
             }
           }
         },
@@ -318,11 +361,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 16
+                  "column": 16,
+                  "program": "test-func-param.ts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 17
+                  "column": 17,
+                  "program": "test-func-param.ts"
                 }
               }
             },
@@ -332,22 +377,26 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 20
+                  "column": 20,
+                  "program": "test-func-param.ts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 21
+                  "column": 21,
+                  "program": "test-func-param.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 19,
-                "column": 16
+                "column": 16,
+                "program": "test-func-param.ts"
               },
               "end": {
                 "line": 19,
-                "column": 21
+                "column": 21,
+                "program": "test-func-param.ts"
               }
             }
           },
@@ -361,11 +410,13 @@
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 24
+                    "column": 24,
+                    "program": "test-func-param.ts"
                   },
                   "end": {
                     "line": 19,
-                    "column": 25
+                    "column": 25,
+                    "program": "test-func-param.ts"
                   }
                 }
               },
@@ -376,11 +427,13 @@
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 27
+                    "column": 27,
+                    "program": "test-func-param.ts"
                   },
                   "end": {
                     "line": 19,
-                    "column": 28
+                    "column": 28,
+                    "program": "test-func-param.ts"
                   }
                 }
               }
@@ -388,11 +441,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 23
+                "column": 23,
+                "program": "test-func-param.ts"
               },
               "end": {
                 "line": 19,
-                "column": 29
+                "column": 29,
+                "program": "test-func-param.ts"
               }
             }
           },
@@ -404,11 +459,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 31
+                "column": 31,
+                "program": "test-func-param.ts"
               },
               "end": {
                 "line": 19,
-                "column": 32
+                "column": 32,
+                "program": "test-func-param.ts"
               }
             }
           }
@@ -419,33 +476,39 @@
           "loc": {
             "start": {
               "line": 19,
-              "column": 35
+              "column": 35,
+              "program": "test-func-param.ts"
             },
             "end": {
               "line": 19,
-              "column": 38
+              "column": 38,
+              "program": "test-func-param.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 19,
-            "column": 1
+            "column": 1,
+            "program": "test-func-param.ts"
           },
           "end": {
             "line": 19,
-            "column": 38
+            "column": 38,
+            "program": "test-func-param.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 19,
-          "column": 1
+          "column": 1,
+          "program": "test-func-param.ts"
         },
         "end": {
           "line": 19,
-          "column": 38
+          "column": 38,
+          "program": "test-func-param.ts"
         }
       }
     },
@@ -460,11 +523,13 @@
           "loc": {
             "start": {
               "line": 20,
-              "column": 10
+              "column": 10,
+              "program": "test-func-param.ts"
             },
             "end": {
               "line": 20,
-              "column": 15
+              "column": 15,
+              "program": "test-func-param.ts"
             }
           }
         },
@@ -480,22 +545,26 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 21
+                  "column": 21,
+                  "program": "test-func-param.ts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 27
+                  "column": 27,
+                  "program": "test-func-param.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 20,
-                "column": 16
+                "column": 16,
+                "program": "test-func-param.ts"
               },
               "end": {
                 "line": 20,
-                "column": 19
+                "column": 19,
+                "program": "test-func-param.ts"
               }
             }
           },
@@ -509,11 +578,13 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 30
+                    "column": 30,
+                    "program": "test-func-param.ts"
                   },
                   "end": {
                     "line": 20,
-                    "column": 31
+                    "column": 31,
+                    "program": "test-func-param.ts"
                   }
                 }
               },
@@ -524,11 +595,13 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 33
+                    "column": 33,
+                    "program": "test-func-param.ts"
                   },
                   "end": {
                     "line": 20,
-                    "column": 34
+                    "column": 34,
+                    "program": "test-func-param.ts"
                   }
                 }
               }
@@ -540,33 +613,40 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 37
+                    "column": 37,
+                    "program": "test-func-param.ts"
                   },
                   "end": {
                     "line": 20,
-                    "column": 43
+                    "column": 43,
+                    "program": "test-func-param.ts"
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 37
+                  "column": 37,
+                  "program": "test-func-param.ts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 45
+                  "column": 45,
+                  "program": "test-func-param.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 20,
-                "column": 29
+                "column": 29,
+                "program": "test-func-param.ts"
               },
               "end": {
                 "line": 20,
-                "column": 35
+                "column": 35,
+                "program": "test-func-param.ts"
               }
             }
           }
@@ -577,33 +657,39 @@
           "loc": {
             "start": {
               "line": 20,
-              "column": 47
+              "column": 47,
+              "program": "test-func-param.ts"
             },
             "end": {
               "line": 20,
-              "column": 50
+              "column": 50,
+              "program": "test-func-param.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 20,
-            "column": 1
+            "column": 1,
+            "program": "test-func-param.ts"
           },
           "end": {
             "line": 20,
-            "column": 50
+            "column": 50,
+            "program": "test-func-param.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "test-func-param.ts"
         },
         "end": {
           "line": 20,
-          "column": 50
+          "column": 50,
+          "program": "test-func-param.ts"
         }
       }
     },
@@ -618,11 +704,13 @@
           "loc": {
             "start": {
               "line": 21,
-              "column": 10
+              "column": 10,
+              "program": "test-func-param.ts"
             },
             "end": {
               "line": 21,
-              "column": 15
+              "column": 15,
+              "program": "test-func-param.ts"
             }
           }
         },
@@ -642,11 +730,13 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 17
+                      "column": 17,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 21,
-                      "column": 18
+                      "column": 18,
+                      "program": "test-func-param.ts"
                     }
                   }
                 },
@@ -657,11 +747,13 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 20
+                      "column": 20,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 21,
-                      "column": 21
+                      "column": 21,
+                      "program": "test-func-param.ts"
                     }
                   }
                 }
@@ -674,11 +766,13 @@
                     "loc": {
                       "start": {
                         "line": 21,
-                        "column": 25
+                        "column": 25,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 21,
-                        "column": 32
+                        "column": 32,
+                        "program": "test-func-param.ts"
                       }
                     }
                   },
@@ -687,11 +781,13 @@
                     "loc": {
                       "start": {
                         "line": 21,
-                        "column": 33
+                        "column": 33,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 21,
-                        "column": 40
+                        "column": 40,
+                        "program": "test-func-param.ts"
                       }
                     }
                   }
@@ -699,22 +795,26 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 24
+                    "column": 24,
+                    "program": "test-func-param.ts"
                   },
                   "end": {
                     "line": 21,
-                    "column": 40
+                    "column": 40,
+                    "program": "test-func-param.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 16
+                  "column": 16,
+                  "program": "test-func-param.ts"
                 },
                 "end": {
                   "line": 21,
-                  "column": 22
+                  "column": 22,
+                  "program": "test-func-param.ts"
                 }
               }
             },
@@ -727,11 +827,13 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 44
+                      "column": 44,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 21,
-                      "column": 45
+                      "column": 45,
+                      "program": "test-func-param.ts"
                     }
                   }
                 },
@@ -741,11 +843,13 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 47
+                      "column": 47,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 21,
-                      "column": 52
+                      "column": 52,
+                      "program": "test-func-param.ts"
                     }
                   }
                 }
@@ -753,22 +857,26 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 43
+                  "column": 43,
+                  "program": "test-func-param.ts"
                 },
                 "end": {
                   "line": 21,
-                  "column": 53
+                  "column": 53,
+                  "program": "test-func-param.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 21,
-                "column": 16
+                "column": 16,
+                "program": "test-func-param.ts"
               },
               "end": {
                 "line": 21,
-                "column": 53
+                "column": 53,
+                "program": "test-func-param.ts"
               }
             }
           }
@@ -779,33 +887,39 @@
           "loc": {
             "start": {
               "line": 21,
-              "column": 55
+              "column": 55,
+              "program": "test-func-param.ts"
             },
             "end": {
               "line": 21,
-              "column": 58
+              "column": 58,
+              "program": "test-func-param.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 21,
-            "column": 1
+            "column": 1,
+            "program": "test-func-param.ts"
           },
           "end": {
             "line": 21,
-            "column": 58
+            "column": 58,
+            "program": "test-func-param.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 21,
-          "column": 1
+          "column": 1,
+          "program": "test-func-param.ts"
         },
         "end": {
           "line": 21,
-          "column": 58
+          "column": 58,
+          "program": "test-func-param.ts"
         }
       }
     },
@@ -820,11 +934,13 @@
           "loc": {
             "start": {
               "line": 22,
-              "column": 10
+              "column": 10,
+              "program": "test-func-param.ts"
             },
             "end": {
               "line": 22,
-              "column": 15
+              "column": 15,
+              "program": "test-func-param.ts"
             }
           }
         },
@@ -849,11 +965,13 @@
                     "loc": {
                       "start": {
                         "line": 22,
-                        "column": 18
+                        "column": 18,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 22,
-                        "column": 19
+                        "column": 19,
+                        "program": "test-func-param.ts"
                       }
                     }
                   },
@@ -864,11 +982,13 @@
                     "loc": {
                       "start": {
                         "line": 22,
-                        "column": 18
+                        "column": 18,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 22,
-                        "column": 19
+                        "column": 19,
+                        "program": "test-func-param.ts"
                       }
                     }
                   },
@@ -876,11 +996,13 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 18
+                      "column": 18,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 22,
-                      "column": 19
+                      "column": 19,
+                      "program": "test-func-param.ts"
                     }
                   }
                 },
@@ -896,11 +1018,13 @@
                     "loc": {
                       "start": {
                         "line": 22,
-                        "column": 21
+                        "column": 21,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 22,
-                        "column": 22
+                        "column": 22,
+                        "program": "test-func-param.ts"
                       }
                     }
                   },
@@ -911,11 +1035,13 @@
                     "loc": {
                       "start": {
                         "line": 22,
-                        "column": 21
+                        "column": 21,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 22,
-                        "column": 22
+                        "column": 22,
+                        "program": "test-func-param.ts"
                       }
                     }
                   },
@@ -923,11 +1049,13 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 21
+                      "column": 21,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 22,
-                      "column": 22
+                      "column": 22,
+                      "program": "test-func-param.ts"
                     }
                   }
                 }
@@ -947,11 +1075,13 @@
                       "loc": {
                         "start": {
                           "line": 22,
-                          "column": 28
+                          "column": 28,
+                          "program": "test-func-param.ts"
                         },
                         "end": {
                           "line": 22,
-                          "column": 29
+                          "column": 29,
+                          "program": "test-func-param.ts"
                         }
                       }
                     },
@@ -960,22 +1090,26 @@
                       "loc": {
                         "start": {
                           "line": 22,
-                          "column": 31
+                          "column": 31,
+                          "program": "test-func-param.ts"
                         },
                         "end": {
                           "line": 22,
-                          "column": 37
+                          "column": 37,
+                          "program": "test-func-param.ts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 22,
-                        "column": 28
+                        "column": 28,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 22,
-                        "column": 38
+                        "column": 38,
+                        "program": "test-func-param.ts"
                       }
                     }
                   },
@@ -991,11 +1125,13 @@
                       "loc": {
                         "start": {
                           "line": 22,
-                          "column": 39
+                          "column": 39,
+                          "program": "test-func-param.ts"
                         },
                         "end": {
                           "line": 22,
-                          "column": 40
+                          "column": 40,
+                          "program": "test-func-param.ts"
                         }
                       }
                     },
@@ -1004,22 +1140,26 @@
                       "loc": {
                         "start": {
                           "line": 22,
-                          "column": 42
+                          "column": 42,
+                          "program": "test-func-param.ts"
                         },
                         "end": {
                           "line": 22,
-                          "column": 48
+                          "column": 48,
+                          "program": "test-func-param.ts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 22,
-                        "column": 39
+                        "column": 39,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 22,
-                        "column": 50
+                        "column": 50,
+                        "program": "test-func-param.ts"
                       }
                     }
                   }
@@ -1027,22 +1167,26 @@
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 26
+                    "column": 26,
+                    "program": "test-func-param.ts"
                   },
                   "end": {
                     "line": 22,
-                    "column": 50
+                    "column": 50,
+                    "program": "test-func-param.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 16
+                  "column": 16,
+                  "program": "test-func-param.ts"
                 },
                 "end": {
                   "line": 22,
-                  "column": 24
+                  "column": 24,
+                  "program": "test-func-param.ts"
                 }
               }
             },
@@ -1061,11 +1205,13 @@
                     "loc": {
                       "start": {
                         "line": 22,
-                        "column": 55
+                        "column": 55,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 22,
-                        "column": 56
+                        "column": 56,
+                        "program": "test-func-param.ts"
                       }
                     }
                   },
@@ -1075,11 +1221,13 @@
                     "loc": {
                       "start": {
                         "line": 22,
-                        "column": 58
+                        "column": 58,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 22,
-                        "column": 59
+                        "column": 59,
+                        "program": "test-func-param.ts"
                       }
                     }
                   },
@@ -1087,11 +1235,13 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 55
+                      "column": 55,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 22,
-                      "column": 59
+                      "column": 59,
+                      "program": "test-func-param.ts"
                     }
                   }
                 },
@@ -1107,11 +1257,13 @@
                     "loc": {
                       "start": {
                         "line": 22,
-                        "column": 61
+                        "column": 61,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 22,
-                        "column": 62
+                        "column": 62,
+                        "program": "test-func-param.ts"
                       }
                     }
                   },
@@ -1121,11 +1273,13 @@
                     "loc": {
                       "start": {
                         "line": 22,
-                        "column": 64
+                        "column": 64,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 22,
-                        "column": 65
+                        "column": 65,
+                        "program": "test-func-param.ts"
                       }
                     }
                   },
@@ -1133,11 +1287,13 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 61
+                      "column": 61,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 22,
-                      "column": 65
+                      "column": 65,
+                      "program": "test-func-param.ts"
                     }
                   }
                 }
@@ -1145,22 +1301,26 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 53
+                  "column": 53,
+                  "program": "test-func-param.ts"
                 },
                 "end": {
                   "line": 22,
-                  "column": 67
+                  "column": 67,
+                  "program": "test-func-param.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 22,
-                "column": 16
+                "column": 16,
+                "program": "test-func-param.ts"
               },
               "end": {
                 "line": 22,
-                "column": 67
+                "column": 67,
+                "program": "test-func-param.ts"
               }
             }
           }
@@ -1171,33 +1331,39 @@
           "loc": {
             "start": {
               "line": 22,
-              "column": 69
+              "column": 69,
+              "program": "test-func-param.ts"
             },
             "end": {
               "line": 22,
-              "column": 72
+              "column": 72,
+              "program": "test-func-param.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 22,
-            "column": 1
+            "column": 1,
+            "program": "test-func-param.ts"
           },
           "end": {
             "line": 22,
-            "column": 72
+            "column": 72,
+            "program": "test-func-param.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 22,
-          "column": 1
+          "column": 1,
+          "program": "test-func-param.ts"
         },
         "end": {
           "line": 22,
-          "column": 72
+          "column": 72,
+          "program": "test-func-param.ts"
         }
       }
     },
@@ -1212,11 +1378,13 @@
           "loc": {
             "start": {
               "line": 23,
-              "column": 18
+              "column": 18,
+              "program": "test-func-param.ts"
             },
             "end": {
               "line": 23,
-              "column": 23
+              "column": 23,
+              "program": "test-func-param.ts"
             }
           }
         },
@@ -1234,11 +1402,13 @@
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 25
+                    "column": 25,
+                    "program": "test-func-param.ts"
                   },
                   "end": {
                     "line": 23,
-                    "column": 26
+                    "column": 26,
+                    "program": "test-func-param.ts"
                   }
                 }
               },
@@ -1249,11 +1419,13 @@
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 28
+                    "column": 28,
+                    "program": "test-func-param.ts"
                   },
                   "end": {
                     "line": 23,
-                    "column": 29
+                    "column": 29,
+                    "program": "test-func-param.ts"
                   }
                 }
               }
@@ -1266,11 +1438,13 @@
                   "loc": {
                     "start": {
                       "line": 23,
-                      "column": 33
+                      "column": 33,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 23,
-                      "column": 40
+                      "column": 40,
+                      "program": "test-func-param.ts"
                     }
                   }
                 },
@@ -1279,11 +1453,13 @@
                   "loc": {
                     "start": {
                       "line": 23,
-                      "column": 41
+                      "column": 41,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 23,
-                      "column": 48
+                      "column": 48,
+                      "program": "test-func-param.ts"
                     }
                   }
                 }
@@ -1291,22 +1467,26 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 32
+                  "column": 32,
+                  "program": "test-func-param.ts"
                 },
                 "end": {
                   "line": 23,
-                  "column": 48
+                  "column": 48,
+                  "program": "test-func-param.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 23,
-                "column": 24
+                "column": 24,
+                "program": "test-func-param.ts"
               },
               "end": {
                 "line": 23,
-                "column": 30
+                "column": 30,
+                "program": "test-func-param.ts"
               }
             }
           }
@@ -1314,22 +1494,26 @@
         "loc": {
           "start": {
             "line": 23,
-            "column": 9
+            "column": 9,
+            "program": "test-func-param.ts"
           },
           "end": {
             "line": 24,
-            "column": 8
+            "column": 8,
+            "program": "test-func-param.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 23,
-          "column": 9
+          "column": 9,
+          "program": "test-func-param.ts"
         },
         "end": {
           "line": 24,
-          "column": 8
+          "column": 8,
+          "program": "test-func-param.ts"
         }
       }
     },
@@ -1344,11 +1528,13 @@
           "loc": {
             "start": {
               "line": 24,
-              "column": 18
+              "column": 18,
+              "program": "test-func-param.ts"
             },
             "end": {
               "line": 24,
-              "column": 23
+              "column": 23,
+              "program": "test-func-param.ts"
             }
           }
         },
@@ -1371,11 +1557,13 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 26
+                      "column": 26,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 24,
-                      "column": 27
+                      "column": 27,
+                      "program": "test-func-param.ts"
                     }
                   }
                 },
@@ -1386,11 +1574,13 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 26
+                      "column": 26,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 24,
-                      "column": 27
+                      "column": 27,
+                      "program": "test-func-param.ts"
                     }
                   }
                 },
@@ -1398,11 +1588,13 @@
                 "loc": {
                   "start": {
                     "line": 24,
-                    "column": 26
+                    "column": 26,
+                    "program": "test-func-param.ts"
                   },
                   "end": {
                     "line": 24,
-                    "column": 27
+                    "column": 27,
+                    "program": "test-func-param.ts"
                   }
                 }
               },
@@ -1418,11 +1610,13 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 29
+                      "column": 29,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 24,
-                      "column": 30
+                      "column": 30,
+                      "program": "test-func-param.ts"
                     }
                   }
                 },
@@ -1433,11 +1627,13 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 29
+                      "column": 29,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 24,
-                      "column": 30
+                      "column": 30,
+                      "program": "test-func-param.ts"
                     }
                   }
                 },
@@ -1445,11 +1641,13 @@
                 "loc": {
                   "start": {
                     "line": 24,
-                    "column": 29
+                    "column": 29,
+                    "program": "test-func-param.ts"
                   },
                   "end": {
                     "line": 24,
-                    "column": 30
+                    "column": 30,
+                    "program": "test-func-param.ts"
                   }
                 }
               }
@@ -1469,11 +1667,13 @@
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 36
+                        "column": 36,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 24,
-                        "column": 37
+                        "column": 37,
+                        "program": "test-func-param.ts"
                       }
                     }
                   },
@@ -1482,22 +1682,26 @@
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 39
+                        "column": 39,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 24,
-                        "column": 45
+                        "column": 45,
+                        "program": "test-func-param.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 36
+                      "column": 36,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 24,
-                      "column": 46
+                      "column": 46,
+                      "program": "test-func-param.ts"
                     }
                   }
                 },
@@ -1513,11 +1717,13 @@
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 47
+                        "column": 47,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 24,
-                        "column": 48
+                        "column": 48,
+                        "program": "test-func-param.ts"
                       }
                     }
                   },
@@ -1526,22 +1732,26 @@
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 50
+                        "column": 50,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 24,
-                        "column": 56
+                        "column": 56,
+                        "program": "test-func-param.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 47
+                      "column": 47,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 24,
-                      "column": 58
+                      "column": 58,
+                      "program": "test-func-param.ts"
                     }
                   }
                 }
@@ -1549,22 +1759,26 @@
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 34
+                  "column": 34,
+                  "program": "test-func-param.ts"
                 },
                 "end": {
                   "line": 24,
-                  "column": 58
+                  "column": 58,
+                  "program": "test-func-param.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 24,
-                "column": 24
+                "column": 24,
+                "program": "test-func-param.ts"
               },
               "end": {
                 "line": 24,
-                "column": 32
+                "column": 32,
+                "program": "test-func-param.ts"
               }
             }
           }
@@ -1572,22 +1786,26 @@
         "loc": {
           "start": {
             "line": 24,
-            "column": 9
+            "column": 9,
+            "program": "test-func-param.ts"
           },
           "end": {
             "line": 25,
-            "column": 8
+            "column": 8,
+            "program": "test-func-param.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 24,
-          "column": 9
+          "column": 9,
+          "program": "test-func-param.ts"
         },
         "end": {
           "line": 25,
-          "column": 8
+          "column": 8,
+          "program": "test-func-param.ts"
         }
       }
     },
@@ -1602,11 +1820,13 @@
           "loc": {
             "start": {
               "line": 25,
-              "column": 18
+              "column": 18,
+              "program": "test-func-param.ts"
             },
             "end": {
               "line": 25,
-              "column": 23
+              "column": 23,
+              "program": "test-func-param.ts"
             }
           }
         },
@@ -1624,11 +1844,13 @@
                 "loc": {
                   "start": {
                     "line": 25,
-                    "column": 25
+                    "column": 25,
+                    "program": "test-func-param.ts"
                   },
                   "end": {
                     "line": 25,
-                    "column": 26
+                    "column": 26,
+                    "program": "test-func-param.ts"
                   }
                 }
               },
@@ -1639,11 +1861,13 @@
                 "loc": {
                   "start": {
                     "line": 25,
-                    "column": 28
+                    "column": 28,
+                    "program": "test-func-param.ts"
                   },
                   "end": {
                     "line": 25,
-                    "column": 29
+                    "column": 29,
+                    "program": "test-func-param.ts"
                   }
                 }
               }
@@ -1656,11 +1880,13 @@
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 34
+                      "column": 34,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 25,
-                      "column": 41
+                      "column": 41,
+                      "program": "test-func-param.ts"
                     }
                   }
                 },
@@ -1669,11 +1895,13 @@
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 42
+                      "column": 42,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 25,
-                      "column": 49
+                      "column": 49,
+                      "program": "test-func-param.ts"
                     }
                   }
                 }
@@ -1681,11 +1909,13 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 33
+                  "column": 33,
+                  "program": "test-func-param.ts"
                 },
                 "end": {
                   "line": 25,
-                  "column": 49
+                  "column": 49,
+                  "program": "test-func-param.ts"
                 }
               }
             },
@@ -1693,11 +1923,13 @@
             "loc": {
               "start": {
                 "line": 25,
-                "column": 24
+                "column": 24,
+                "program": "test-func-param.ts"
               },
               "end": {
                 "line": 25,
-                "column": 30
+                "column": 30,
+                "program": "test-func-param.ts"
               }
             }
           }
@@ -1705,22 +1937,26 @@
         "loc": {
           "start": {
             "line": 25,
-            "column": 9
+            "column": 9,
+            "program": "test-func-param.ts"
           },
           "end": {
             "line": 26,
-            "column": 8
+            "column": 8,
+            "program": "test-func-param.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 25,
-          "column": 9
+          "column": 9,
+          "program": "test-func-param.ts"
         },
         "end": {
           "line": 26,
-          "column": 8
+          "column": 8,
+          "program": "test-func-param.ts"
         }
       }
     },
@@ -1735,11 +1971,13 @@
           "loc": {
             "start": {
               "line": 26,
-              "column": 18
+              "column": 18,
+              "program": "test-func-param.ts"
             },
             "end": {
               "line": 26,
-              "column": 24
+              "column": 24,
+              "program": "test-func-param.ts"
             }
           }
         },
@@ -1762,11 +2000,13 @@
                   "loc": {
                     "start": {
                       "line": 26,
-                      "column": 27
+                      "column": 27,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 26,
-                      "column": 28
+                      "column": 28,
+                      "program": "test-func-param.ts"
                     }
                   }
                 },
@@ -1777,11 +2017,13 @@
                   "loc": {
                     "start": {
                       "line": 26,
-                      "column": 27
+                      "column": 27,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 26,
-                      "column": 28
+                      "column": 28,
+                      "program": "test-func-param.ts"
                     }
                   }
                 },
@@ -1789,11 +2031,13 @@
                 "loc": {
                   "start": {
                     "line": 26,
-                    "column": 27
+                    "column": 27,
+                    "program": "test-func-param.ts"
                   },
                   "end": {
                     "line": 26,
-                    "column": 28
+                    "column": 28,
+                    "program": "test-func-param.ts"
                   }
                 }
               },
@@ -1809,11 +2053,13 @@
                   "loc": {
                     "start": {
                       "line": 26,
-                      "column": 30
+                      "column": 30,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 26,
-                      "column": 31
+                      "column": 31,
+                      "program": "test-func-param.ts"
                     }
                   }
                 },
@@ -1824,11 +2070,13 @@
                   "loc": {
                     "start": {
                       "line": 26,
-                      "column": 30
+                      "column": 30,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 26,
-                      "column": 31
+                      "column": 31,
+                      "program": "test-func-param.ts"
                     }
                   }
                 },
@@ -1836,11 +2084,13 @@
                 "loc": {
                   "start": {
                     "line": 26,
-                    "column": 30
+                    "column": 30,
+                    "program": "test-func-param.ts"
                   },
                   "end": {
                     "line": 26,
-                    "column": 31
+                    "column": 31,
+                    "program": "test-func-param.ts"
                   }
                 }
               }
@@ -1860,11 +2110,13 @@
                     "loc": {
                       "start": {
                         "line": 26,
-                        "column": 38
+                        "column": 38,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 26,
-                        "column": 39
+                        "column": 39,
+                        "program": "test-func-param.ts"
                       }
                     }
                   },
@@ -1873,22 +2125,26 @@
                     "loc": {
                       "start": {
                         "line": 26,
-                        "column": 41
+                        "column": 41,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 26,
-                        "column": 47
+                        "column": 47,
+                        "program": "test-func-param.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 26,
-                      "column": 38
+                      "column": 38,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 26,
-                      "column": 48
+                      "column": 48,
+                      "program": "test-func-param.ts"
                     }
                   }
                 },
@@ -1904,11 +2160,13 @@
                     "loc": {
                       "start": {
                         "line": 26,
-                        "column": 49
+                        "column": 49,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 26,
-                        "column": 50
+                        "column": 50,
+                        "program": "test-func-param.ts"
                       }
                     }
                   },
@@ -1917,22 +2175,26 @@
                     "loc": {
                       "start": {
                         "line": 26,
-                        "column": 52
+                        "column": 52,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 26,
-                        "column": 58
+                        "column": 58,
+                        "program": "test-func-param.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 26,
-                      "column": 49
+                      "column": 49,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 26,
-                      "column": 60
+                      "column": 60,
+                      "program": "test-func-param.ts"
                     }
                   }
                 }
@@ -1940,11 +2202,13 @@
               "loc": {
                 "start": {
                   "line": 26,
-                  "column": 36
+                  "column": 36,
+                  "program": "test-func-param.ts"
                 },
                 "end": {
                   "line": 26,
-                  "column": 60
+                  "column": 60,
+                  "program": "test-func-param.ts"
                 }
               }
             },
@@ -1952,11 +2216,13 @@
             "loc": {
               "start": {
                 "line": 26,
-                "column": 25
+                "column": 25,
+                "program": "test-func-param.ts"
               },
               "end": {
                 "line": 26,
-                "column": 33
+                "column": 33,
+                "program": "test-func-param.ts"
               }
             }
           }
@@ -1964,22 +2230,26 @@
         "loc": {
           "start": {
             "line": 26,
-            "column": 9
+            "column": 9,
+            "program": "test-func-param.ts"
           },
           "end": {
             "line": 28,
-            "column": 10
+            "column": 10,
+            "program": "test-func-param.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 26,
-          "column": 9
+          "column": 9,
+          "program": "test-func-param.ts"
         },
         "end": {
           "line": 28,
-          "column": 10
+          "column": 10,
+          "program": "test-func-param.ts"
         }
       }
     },
@@ -1999,11 +2269,13 @@
                   "loc": {
                     "start": {
                       "line": 29,
-                      "column": 9
+                      "column": 9,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 29,
-                      "column": 15
+                      "column": 15,
+                      "program": "test-func-param.ts"
                     }
                   }
                 },
@@ -2011,11 +2283,13 @@
                 "loc": {
                   "start": {
                     "line": 29,
-                    "column": 6
+                    "column": 6,
+                    "program": "test-func-param.ts"
                   },
                   "end": {
                     "line": 29,
-                    "column": 7
+                    "column": 7,
+                    "program": "test-func-param.ts"
                   }
                 }
               },
@@ -2034,11 +2308,13 @@
                       "loc": {
                         "start": {
                           "line": 29,
-                          "column": 19
+                          "column": 19,
+                          "program": "test-func-param.ts"
                         },
                         "end": {
                           "line": 29,
-                          "column": 20
+                          "column": 20,
+                          "program": "test-func-param.ts"
                         }
                       }
                     },
@@ -2049,11 +2325,13 @@
                       "loc": {
                         "start": {
                           "line": 29,
-                          "column": 19
+                          "column": 19,
+                          "program": "test-func-param.ts"
                         },
                         "end": {
                           "line": 29,
-                          "column": 20
+                          "column": 20,
+                          "program": "test-func-param.ts"
                         }
                       }
                     },
@@ -2061,11 +2339,13 @@
                     "loc": {
                       "start": {
                         "line": 29,
-                        "column": 19
+                        "column": 19,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 29,
-                        "column": 20
+                        "column": 20,
+                        "program": "test-func-param.ts"
                       }
                     }
                   },
@@ -2081,11 +2361,13 @@
                       "loc": {
                         "start": {
                           "line": 29,
-                          "column": 22
+                          "column": 22,
+                          "program": "test-func-param.ts"
                         },
                         "end": {
                           "line": 29,
-                          "column": 23
+                          "column": 23,
+                          "program": "test-func-param.ts"
                         }
                       }
                     },
@@ -2096,11 +2378,13 @@
                       "loc": {
                         "start": {
                           "line": 29,
-                          "column": 22
+                          "column": 22,
+                          "program": "test-func-param.ts"
                         },
                         "end": {
                           "line": 29,
-                          "column": 23
+                          "column": 23,
+                          "program": "test-func-param.ts"
                         }
                       }
                     },
@@ -2108,11 +2392,13 @@
                     "loc": {
                       "start": {
                         "line": 29,
-                        "column": 22
+                        "column": 22,
+                        "program": "test-func-param.ts"
                       },
                       "end": {
                         "line": 29,
-                        "column": 23
+                        "column": 23,
+                        "program": "test-func-param.ts"
                       }
                     }
                   }
@@ -2132,11 +2418,13 @@
                         "loc": {
                           "start": {
                             "line": 30,
-                            "column": 9
+                            "column": 9,
+                            "program": "test-func-param.ts"
                           },
                           "end": {
                             "line": 30,
-                            "column": 10
+                            "column": 10,
+                            "program": "test-func-param.ts"
                           }
                         }
                       },
@@ -2145,22 +2433,26 @@
                         "loc": {
                           "start": {
                             "line": 30,
-                            "column": 13
+                            "column": 13,
+                            "program": "test-func-param.ts"
                           },
                           "end": {
                             "line": 30,
-                            "column": 20
+                            "column": 20,
+                            "program": "test-func-param.ts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 30,
-                          "column": 9
+                          "column": 9,
+                          "program": "test-func-param.ts"
                         },
                         "end": {
                           "line": 30,
-                          "column": 21
+                          "column": 21,
+                          "program": "test-func-param.ts"
                         }
                       }
                     },
@@ -2176,11 +2468,13 @@
                         "loc": {
                           "start": {
                             "line": 31,
-                            "column": 9
+                            "column": 9,
+                            "program": "test-func-param.ts"
                           },
                           "end": {
                             "line": 31,
-                            "column": 10
+                            "column": 10,
+                            "program": "test-func-param.ts"
                           }
                         }
                       },
@@ -2189,22 +2483,26 @@
                         "loc": {
                           "start": {
                             "line": 31,
-                            "column": 13
+                            "column": 13,
+                            "program": "test-func-param.ts"
                           },
                           "end": {
                             "line": 31,
-                            "column": 16
+                            "column": 16,
+                            "program": "test-func-param.ts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 31,
-                          "column": 9
+                          "column": 9,
+                          "program": "test-func-param.ts"
                         },
                         "end": {
                           "line": 31,
-                          "column": 17
+                          "column": 17,
+                          "program": "test-func-param.ts"
                         }
                       }
                     }
@@ -2212,11 +2510,13 @@
                   "loc": {
                     "start": {
                       "line": 29,
-                      "column": 28
+                      "column": 28,
+                      "program": "test-func-param.ts"
                     },
                     "end": {
                       "line": 32,
-                      "column": 6
+                      "column": 6,
+                      "program": "test-func-param.ts"
                     }
                   }
                 },
@@ -2224,11 +2524,13 @@
                 "loc": {
                   "start": {
                     "line": 29,
-                    "column": 17
+                    "column": 17,
+                    "program": "test-func-param.ts"
                   },
                   "end": {
                     "line": 29,
-                    "column": 25
+                    "column": 25,
+                    "program": "test-func-param.ts"
                   }
                 }
               }
@@ -2238,22 +2540,26 @@
               "loc": {
                 "start": {
                   "line": 32,
-                  "column": 9
+                  "column": 9,
+                  "program": "test-func-param.ts"
                 },
                 "end": {
                   "line": 32,
-                  "column": 15
+                  "column": 15,
+                  "program": "test-func-param.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 29,
-                "column": 5
+                "column": 5,
+                "program": "test-func-param.ts"
               },
               "end": {
                 "line": 32,
-                "column": 16
+                "column": 16,
+                "program": "test-func-param.ts"
               }
             }
           }
@@ -2261,11 +2567,13 @@
         "loc": {
           "start": {
             "line": 28,
-            "column": 22
+            "column": 22,
+            "program": "test-func-param.ts"
           },
           "end": {
             "line": 33,
-            "column": 2
+            "column": 2,
+            "program": "test-func-param.ts"
           }
         }
       },
@@ -2276,11 +2584,13 @@
         "loc": {
           "start": {
             "line": 28,
-            "column": 11
+            "column": 11,
+            "program": "test-func-param.ts"
           },
           "end": {
             "line": 28,
-            "column": 21
+            "column": 21,
+            "program": "test-func-param.ts"
           }
         }
       },
@@ -2288,11 +2598,13 @@
       "loc": {
         "start": {
           "line": 28,
-          "column": 1
+          "column": 1,
+          "program": "test-func-param.ts"
         },
         "end": {
           "line": 33,
-          "column": 2
+          "column": 2,
+          "program": "test-func-param.ts"
         }
       }
     }
@@ -2300,11 +2612,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-func-param.ts"
     },
     "end": {
       "line": 33,
-      "column": 2
+      "column": 2,
+      "program": "test-func-param.ts"
     }
   }
 }

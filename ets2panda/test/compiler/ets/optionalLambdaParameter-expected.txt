@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "optionalLambdaParameter.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "optionalLambdaParameter.sts"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +79,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +120,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "optionalLambdaParameter.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "optionalLambdaParameter.sts"
               }
             }
           },
@@ -125,11 +139,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -149,11 +165,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -167,33 +185,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -202,11 +226,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "optionalLambdaParameter.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "optionalLambdaParameter.sts"
               }
             }
           },
@@ -219,11 +245,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "optionalLambdaParameter.sts"
                 },
                 "end": {
                   "line": 16,
-                  "column": 13
+                  "column": 13,
+                  "program": "optionalLambdaParameter.sts"
                 }
               }
             },
@@ -243,11 +271,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 10
+                      "column": 10,
+                      "program": "optionalLambdaParameter.sts"
                     },
                     "end": {
                       "line": 16,
-                      "column": 13
+                      "column": 13,
+                      "program": "optionalLambdaParameter.sts"
                     }
                   }
                 },
@@ -268,22 +298,26 @@
                           "loc": {
                             "start": {
                               "line": 16,
-                              "column": 27
+                              "column": 27,
+                              "program": "optionalLambdaParameter.sts"
                             },
                             "end": {
                               "line": 16,
-                              "column": 31
+                              "column": 31,
+                              "program": "optionalLambdaParameter.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 16,
-                            "column": 21
+                            "column": 21,
+                            "program": "optionalLambdaParameter.sts"
                           },
                           "end": {
                             "line": 16,
-                            "column": 31
+                            "column": 31,
+                            "program": "optionalLambdaParameter.sts"
                           }
                         }
                       },
@@ -291,22 +325,26 @@
                       "loc": {
                         "start": {
                           "line": 16,
-                          "column": 14
+                          "column": 14,
+                          "program": "optionalLambdaParameter.sts"
                         },
                         "end": {
                           "line": 16,
-                          "column": 31
+                          "column": 31,
+                          "program": "optionalLambdaParameter.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 16,
-                        "column": 14
+                        "column": 14,
+                        "program": "optionalLambdaParameter.sts"
                       },
                       "end": {
                         "line": 16,
-                        "column": 31
+                        "column": 31,
+                        "program": "optionalLambdaParameter.sts"
                       }
                     }
                   }
@@ -316,11 +354,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 34
+                      "column": 34,
+                      "program": "optionalLambdaParameter.sts"
                     },
                     "end": {
                       "line": 16,
-                      "column": 38
+                      "column": 38,
+                      "program": "optionalLambdaParameter.sts"
                     }
                   }
                 },
@@ -344,11 +384,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optionalLambdaParameter.sts"
                                     },
                                     "end": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optionalLambdaParameter.sts"
                                     }
                                   }
                                 },
@@ -359,22 +401,26 @@
                                   "loc": {
                                     "start": {
                                       "line": 17,
-                                      "column": 5
+                                      "column": 5,
+                                      "program": "optionalLambdaParameter.sts"
                                     },
                                     "end": {
                                       "line": 17,
-                                      "column": 9
+                                      "column": 9,
+                                      "program": "optionalLambdaParameter.sts"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 1,
-                                    "column": 3
+                                    "column": 3,
+                                    "program": "optionalLambdaParameter.sts"
                                   },
                                   "end": {
                                     "line": 1,
-                                    "column": 3
+                                    "column": 3,
+                                    "program": "optionalLambdaParameter.sts"
                                   }
                                 }
                               }
@@ -383,11 +429,13 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 5
+                                "column": 5,
+                                "program": "optionalLambdaParameter.sts"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 13
+                                "column": 13,
+                                "program": "optionalLambdaParameter.sts"
                               }
                             }
                           },
@@ -405,11 +453,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optionalLambdaParameter.sts"
                                     },
                                     "end": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optionalLambdaParameter.sts"
                                     }
                                   }
                                 },
@@ -419,22 +469,26 @@
                                   "loc": {
                                     "start": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optionalLambdaParameter.sts"
                                     },
                                     "end": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optionalLambdaParameter.sts"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 1,
-                                    "column": 3
+                                    "column": 3,
+                                    "program": "optionalLambdaParameter.sts"
                                   },
                                   "end": {
                                     "line": 1,
-                                    "column": 3
+                                    "column": 3,
+                                    "program": "optionalLambdaParameter.sts"
                                   }
                                 }
                               },
@@ -444,11 +498,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 1,
-                                    "column": 3
+                                    "column": 3,
+                                    "program": "optionalLambdaParameter.sts"
                                   },
                                   "end": {
                                     "line": 1,
-                                    "column": 3
+                                    "column": 3,
+                                    "program": "optionalLambdaParameter.sts"
                                   }
                                 }
                               },
@@ -461,11 +517,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 17,
-                                      "column": 5
+                                      "column": 5,
+                                      "program": "optionalLambdaParameter.sts"
                                     },
                                     "end": {
                                       "line": 17,
-                                      "column": 13
+                                      "column": 13,
+                                      "program": "optionalLambdaParameter.sts"
                                     }
                                   }
                                 },
@@ -474,33 +532,39 @@
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 5
+                                    "column": 5,
+                                    "program": "optionalLambdaParameter.sts"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 13
+                                    "column": 13,
+                                    "program": "optionalLambdaParameter.sts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 1,
-                                  "column": 3
+                                  "column": 3,
+                                  "program": "optionalLambdaParameter.sts"
                                 },
                                 "end": {
                                   "line": 1,
-                                  "column": 3
+                                  "column": 3,
+                                  "program": "optionalLambdaParameter.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 1,
-                                "column": 3
+                                "column": 3,
+                                "program": "optionalLambdaParameter.sts"
                               },
                               "end": {
                                 "line": 1,
-                                "column": 3
+                                "column": 3,
+                                "program": "optionalLambdaParameter.sts"
                               }
                             }
                           }
@@ -508,22 +572,26 @@
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 5
+                            "column": 5,
+                            "program": "optionalLambdaParameter.sts"
                           },
                           "end": {
                             "line": 17,
-                            "column": 13
+                            "column": 13,
+                            "program": "optionalLambdaParameter.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 5
+                          "column": 5,
+                          "program": "optionalLambdaParameter.sts"
                         },
                         "end": {
                           "line": 17,
-                          "column": 13
+                          "column": 13,
+                          "program": "optionalLambdaParameter.sts"
                         }
                       }
                     }
@@ -531,33 +599,39 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 39
+                      "column": 39,
+                      "program": "optionalLambdaParameter.sts"
                     },
                     "end": {
                       "line": 18,
-                      "column": 2
+                      "column": 2,
+                      "program": "optionalLambdaParameter.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 10
+                    "column": 10,
+                    "program": "optionalLambdaParameter.sts"
                   },
                   "end": {
                     "line": 18,
-                    "column": 2
+                    "column": 2,
+                    "program": "optionalLambdaParameter.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "optionalLambdaParameter.sts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 2
+                  "column": 2,
+                  "program": "optionalLambdaParameter.sts"
                 }
               }
             },
@@ -566,11 +640,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 1
+                "column": 1,
+                "program": "optionalLambdaParameter.sts"
               },
               "end": {
                 "line": 18,
-                "column": 2
+                "column": 2,
+                "program": "optionalLambdaParameter.sts"
               }
             }
           },
@@ -583,11 +659,13 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 10
+                  "column": 10,
+                  "program": "optionalLambdaParameter.sts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 13
+                  "column": 13,
+                  "program": "optionalLambdaParameter.sts"
                 }
               }
             },
@@ -607,11 +685,13 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 10
+                      "column": 10,
+                      "program": "optionalLambdaParameter.sts"
                     },
                     "end": {
                       "line": 20,
-                      "column": 13
+                      "column": 13,
+                      "program": "optionalLambdaParameter.sts"
                     }
                   }
                 },
@@ -633,11 +713,13 @@
                           "loc": {
                             "start": {
                               "line": 21,
-                              "column": 5
+                              "column": 5,
+                              "program": "optionalLambdaParameter.sts"
                             },
                             "end": {
                               "line": 21,
-                              "column": 8
+                              "column": 8,
+                              "program": "optionalLambdaParameter.sts"
                             }
                           }
                         },
@@ -646,22 +728,26 @@
                         "loc": {
                           "start": {
                             "line": 21,
-                            "column": 5
+                            "column": 5,
+                            "program": "optionalLambdaParameter.sts"
                           },
                           "end": {
                             "line": 21,
-                            "column": 10
+                            "column": 10,
+                            "program": "optionalLambdaParameter.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 5
+                          "column": 5,
+                          "program": "optionalLambdaParameter.sts"
                         },
                         "end": {
                           "line": 21,
-                          "column": 10
+                          "column": 10,
+                          "program": "optionalLambdaParameter.sts"
                         }
                       }
                     },
@@ -676,11 +762,13 @@
                           "loc": {
                             "start": {
                               "line": 27,
-                              "column": 5
+                              "column": 5,
+                              "program": "optionalLambdaParameter.sts"
                             },
                             "end": {
                               "line": 27,
-                              "column": 8
+                              "column": 8,
+                              "program": "optionalLambdaParameter.sts"
                             }
                           }
                         },
@@ -689,22 +777,26 @@
                         "loc": {
                           "start": {
                             "line": 27,
-                            "column": 5
+                            "column": 5,
+                            "program": "optionalLambdaParameter.sts"
                           },
                           "end": {
                             "line": 27,
-                            "column": 10
+                            "column": 10,
+                            "program": "optionalLambdaParameter.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 27,
-                          "column": 5
+                          "column": 5,
+                          "program": "optionalLambdaParameter.sts"
                         },
                         "end": {
                           "line": 27,
-                          "column": 10
+                          "column": 10,
+                          "program": "optionalLambdaParameter.sts"
                         }
                       }
                     }
@@ -712,33 +804,39 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 16
+                      "column": 16,
+                      "program": "optionalLambdaParameter.sts"
                     },
                     "end": {
                       "line": 28,
-                      "column": 2
+                      "column": 2,
+                      "program": "optionalLambdaParameter.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 10
+                    "column": 10,
+                    "program": "optionalLambdaParameter.sts"
                   },
                   "end": {
                     "line": 28,
-                    "column": 2
+                    "column": 2,
+                    "program": "optionalLambdaParameter.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 10
+                  "column": 10,
+                  "program": "optionalLambdaParameter.sts"
                 },
                 "end": {
                   "line": 28,
-                  "column": 2
+                  "column": 2,
+                  "program": "optionalLambdaParameter.sts"
                 }
               }
             },
@@ -747,11 +845,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 1
+                "column": 1,
+                "program": "optionalLambdaParameter.sts"
               },
               "end": {
                 "line": 28,
-                "column": 2
+                "column": 2,
+                "program": "optionalLambdaParameter.sts"
               }
             }
           }
@@ -759,22 +859,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "optionalLambdaParameter.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "optionalLambdaParameter.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "optionalLambdaParameter.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "optionalLambdaParameter.sts"
         }
       }
     }
@@ -782,11 +886,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "optionalLambdaParameter.sts"
     },
     "end": {
       "line": 29,
-      "column": 1
+      "column": 1,
+      "program": "optionalLambdaParameter.sts"
     }
   }
 }

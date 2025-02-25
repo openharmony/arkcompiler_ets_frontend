@@ -21,9 +21,9 @@
 #include <csignal>
 
 namespace ark::es2panda {
-std::pair<const parser::Program *, lexer::SourcePosition> GetPositionForDiagnostic()
+lexer::SourcePosition GetPositionForDiagnostic()
 {
-    return {nullptr, lexer::SourcePosition {}};
+    return lexer::SourcePosition {};
 }
 }  // namespace ark::es2panda
 

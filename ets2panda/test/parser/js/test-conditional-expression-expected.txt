@@ -12,11 +12,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 1
+              "column": 1,
+              "program": "test-conditional-expression.js"
             },
             "end": {
               "line": 17,
-              "column": 2
+              "column": 2,
+              "program": "test-conditional-expression.js"
             }
           }
         },
@@ -27,11 +29,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 5
+              "column": 5,
+              "program": "test-conditional-expression.js"
             },
             "end": {
               "line": 17,
-              "column": 6
+              "column": 6,
+              "program": "test-conditional-expression.js"
             }
           }
         },
@@ -42,33 +46,39 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 9
+              "column": 9,
+              "program": "test-conditional-expression.js"
             },
             "end": {
               "line": 17,
-              "column": 10
+              "column": 10,
+              "program": "test-conditional-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 17,
-            "column": 1
+            "column": 1,
+            "program": "test-conditional-expression.js"
           },
           "end": {
             "line": 17,
-            "column": 10
+            "column": 10,
+            "program": "test-conditional-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test-conditional-expression.js"
         },
         "end": {
           "line": 17,
-          "column": 10
+          "column": 10,
+          "program": "test-conditional-expression.js"
         }
       }
     },
@@ -86,11 +96,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 1
+                "column": 1,
+                "program": "test-conditional-expression.js"
               },
               "end": {
                 "line": 19,
-                "column": 2
+                "column": 2,
+                "program": "test-conditional-expression.js"
               }
             }
           },
@@ -100,22 +112,26 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 6
+                "column": 6,
+                "program": "test-conditional-expression.js"
               },
               "end": {
                 "line": 19,
-                "column": 7
+                "column": 7,
+                "program": "test-conditional-expression.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 19,
-              "column": 1
+              "column": 1,
+              "program": "test-conditional-expression.js"
             },
             "end": {
               "line": 19,
-              "column": 7
+              "column": 7,
+              "program": "test-conditional-expression.js"
             }
           }
         },
@@ -126,11 +142,13 @@
           "loc": {
             "start": {
               "line": 20,
-              "column": 5
+              "column": 5,
+              "program": "test-conditional-expression.js"
             },
             "end": {
               "line": 20,
-              "column": 6
+              "column": 6,
+              "program": "test-conditional-expression.js"
             }
           }
         },
@@ -140,33 +158,39 @@
           "loc": {
             "start": {
               "line": 21,
-              "column": 5
+              "column": 5,
+              "program": "test-conditional-expression.js"
             },
             "end": {
               "line": 21,
-              "column": 7
+              "column": 7,
+              "program": "test-conditional-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 19,
-            "column": 1
+            "column": 1,
+            "program": "test-conditional-expression.js"
           },
           "end": {
             "line": 21,
-            "column": 7
+            "column": 7,
+            "program": "test-conditional-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 19,
-          "column": 1
+          "column": 1,
+          "program": "test-conditional-expression.js"
         },
         "end": {
           "line": 21,
-          "column": 7
+          "column": 7,
+          "program": "test-conditional-expression.js"
         }
       }
     },
@@ -182,11 +206,13 @@
             "loc": {
               "start": {
                 "line": 23,
-                "column": 5
+                "column": 5,
+                "program": "test-conditional-expression.js"
               },
               "end": {
                 "line": 23,
-                "column": 8
+                "column": 8,
+                "program": "test-conditional-expression.js"
               }
             }
           },
@@ -202,11 +228,13 @@
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 12
+                    "column": 12,
+                    "program": "test-conditional-expression.js"
                   },
                   "end": {
                     "line": 23,
-                    "column": 13
+                    "column": 13,
+                    "program": "test-conditional-expression.js"
                   }
                 }
               },
@@ -216,22 +244,26 @@
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 17
+                    "column": 17,
+                    "program": "test-conditional-expression.js"
                   },
                   "end": {
                     "line": 23,
-                    "column": 18
+                    "column": 18,
+                    "program": "test-conditional-expression.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-conditional-expression.js"
                 },
                 "end": {
                   "line": 23,
-                  "column": 18
+                  "column": 18,
+                  "program": "test-conditional-expression.js"
                 }
               }
             },
@@ -242,11 +274,13 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 21
+                  "column": 21,
+                  "program": "test-conditional-expression.js"
                 },
                 "end": {
                   "line": 23,
-                  "column": 22
+                  "column": 22,
+                  "program": "test-conditional-expression.js"
                 }
               }
             },
@@ -256,33 +290,39 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 25
+                  "column": 25,
+                  "program": "test-conditional-expression.js"
                 },
                 "end": {
                   "line": 23,
-                  "column": 27
+                  "column": 27,
+                  "program": "test-conditional-expression.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 23,
-                "column": 11
+                "column": 11,
+                "program": "test-conditional-expression.js"
               },
               "end": {
                 "line": 23,
-                "column": 28
+                "column": 28,
+                "program": "test-conditional-expression.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 23,
-              "column": 5
+              "column": 5,
+              "program": "test-conditional-expression.js"
             },
             "end": {
               "line": 23,
-              "column": 28
+              "column": 28,
+              "program": "test-conditional-expression.js"
             }
           }
         }
@@ -291,11 +331,13 @@
       "loc": {
         "start": {
           "line": 23,
-          "column": 1
+          "column": 1,
+          "program": "test-conditional-expression.js"
         },
         "end": {
           "line": 23,
-          "column": 29
+          "column": 29,
+          "program": "test-conditional-expression.js"
         }
       }
     },
@@ -316,11 +358,13 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 1
+                  "column": 1,
+                  "program": "test-conditional-expression.js"
                 },
                 "end": {
                   "line": 25,
-                  "column": 2
+                  "column": 2,
+                  "program": "test-conditional-expression.js"
                 }
               }
             },
@@ -331,22 +375,26 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-conditional-expression.js"
                 },
                 "end": {
                   "line": 25,
-                  "column": 7
+                  "column": 7,
+                  "program": "test-conditional-expression.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 25,
-                "column": 1
+                "column": 1,
+                "program": "test-conditional-expression.js"
               },
               "end": {
                 "line": 25,
-                "column": 7
+                "column": 7,
+                "program": "test-conditional-expression.js"
               }
             }
           },
@@ -360,11 +408,13 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 11
+                  "column": 11,
+                  "program": "test-conditional-expression.js"
                 },
                 "end": {
                   "line": 25,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-conditional-expression.js"
                 }
               }
             },
@@ -375,33 +425,39 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 16
+                  "column": 16,
+                  "program": "test-conditional-expression.js"
                 },
                 "end": {
                   "line": 25,
-                  "column": 17
+                  "column": 17,
+                  "program": "test-conditional-expression.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 25,
-                "column": 11
+                "column": 11,
+                "program": "test-conditional-expression.js"
               },
               "end": {
                 "line": 25,
-                "column": 17
+                "column": 17,
+                "program": "test-conditional-expression.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 25,
-              "column": 1
+              "column": 1,
+              "program": "test-conditional-expression.js"
             },
             "end": {
               "line": 25,
-              "column": 17
+              "column": 17,
+              "program": "test-conditional-expression.js"
             }
           }
         },
@@ -412,11 +468,13 @@
           "loc": {
             "start": {
               "line": 25,
-              "column": 20
+              "column": 20,
+              "program": "test-conditional-expression.js"
             },
             "end": {
               "line": 25,
-              "column": 21
+              "column": 21,
+              "program": "test-conditional-expression.js"
             }
           }
         },
@@ -427,33 +485,39 @@
           "loc": {
             "start": {
               "line": 25,
-              "column": 24
+              "column": 24,
+              "program": "test-conditional-expression.js"
             },
             "end": {
               "line": 25,
-              "column": 25
+              "column": 25,
+              "program": "test-conditional-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 25,
-            "column": 1
+            "column": 1,
+            "program": "test-conditional-expression.js"
           },
           "end": {
             "line": 25,
-            "column": 25
+            "column": 25,
+            "program": "test-conditional-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 25,
-          "column": 1
+          "column": 1,
+          "program": "test-conditional-expression.js"
         },
         "end": {
           "line": 25,
-          "column": 25
+          "column": 25,
+          "program": "test-conditional-expression.js"
         }
       }
     }
@@ -461,11 +525,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-conditional-expression.js"
     },
     "end": {
       "line": 26,
-      "column": 1
+      "column": 1,
+      "program": "test-conditional-expression.js"
     }
   }
 }

@@ -13,11 +13,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "test-class-expression.js"
               },
               "end": {
                 "line": 17,
-                "column": 6
+                "column": 6,
+                "program": "test-class-expression.js"
               }
             }
           },
@@ -25,11 +27,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 5
+              "column": 5,
+              "program": "test-class-expression.js"
             },
             "end": {
               "line": 17,
-              "column": 6
+              "column": 6,
+              "program": "test-class-expression.js"
             }
           }
         }
@@ -38,11 +42,13 @@
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test-class-expression.js"
         },
         "end": {
           "line": 17,
-          "column": 7
+          "column": 7,
+          "program": "test-class-expression.js"
         }
       }
     },
@@ -58,11 +64,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 5
+                "column": 5,
+                "program": "test-class-expression.js"
               },
               "end": {
                 "line": 19,
-                "column": 9
+                "column": 9,
+                "program": "test-class-expression.js"
               }
             }
           },
@@ -76,11 +84,13 @@
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 18
+                    "column": 18,
+                    "program": "test-class-expression.js"
                   },
                   "end": {
                     "line": 19,
-                    "column": 19
+                    "column": 19,
+                    "program": "test-class-expression.js"
                   }
                 }
               },
@@ -94,12 +104,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 19,
+                      "column": 21,
+                      "program": "test-class-expression.js"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 19,
+                      "column": 21,
+                      "program": "test-class-expression.js"
                     }
                   }
                 },
@@ -121,34 +133,40 @@
                       "statements": [],
                       "loc": {
                         "start": {
-                          "line": 1,
-                          "column": 1
+                          "line": 19,
+                          "column": 21,
+                          "program": "test-class-expression.js"
                         },
                         "end": {
-                          "line": 1,
-                          "column": 1
+                          "line": 19,
+                          "column": 21,
+                          "program": "test-class-expression.js"
                         }
                       }
                     },
                     "loc": {
                       "start": {
-                        "line": 1,
-                        "column": 1
+                        "line": 19,
+                        "column": 21,
+                        "program": "test-class-expression.js"
                       },
                       "end": {
-                        "line": 1,
-                        "column": 1
+                        "line": 19,
+                        "column": 21,
+                        "program": "test-class-expression.js"
                       }
                     }
                   },
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 19,
+                      "column": 21,
+                      "program": "test-class-expression.js"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 19,
+                      "column": 21,
+                      "program": "test-class-expression.js"
                     }
                   }
                 },
@@ -156,12 +174,14 @@
                 "decorators": [],
                 "loc": {
                   "start": {
-                    "line": 27,
-                    "column": 2
+                    "line": 1,
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
-                    "line": 27,
-                    "column": 2
+                    "line": 1,
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
@@ -175,11 +195,13 @@
                     "loc": {
                       "start": {
                         "line": 20,
-                        "column": 3
+                        "column": 3,
+                        "program": "test-class-expression.js"
                       },
                       "end": {
                         "line": 20,
-                        "column": 9
+                        "column": 9,
+                        "program": "test-class-expression.js"
                       }
                     }
                   },
@@ -208,22 +230,26 @@
                               "loc": {
                                 "start": {
                                   "line": 21,
-                                  "column": 12
+                                  "column": 12,
+                                  "program": "test-class-expression.js"
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 13
+                                  "column": 13,
+                                  "program": "test-class-expression.js"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 5
+                                "column": 5,
+                                "program": "test-class-expression.js"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 14
+                                "column": 14,
+                                "program": "test-class-expression.js"
                               }
                             }
                           }
@@ -231,33 +257,39 @@
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 12
+                            "column": 12,
+                            "program": "test-class-expression.js"
                           },
                           "end": {
                             "line": 22,
-                            "column": 4
+                            "column": 4,
+                            "program": "test-class-expression.js"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 9
+                          "column": 9,
+                          "program": "test-class-expression.js"
                         },
                         "end": {
                           "line": 22,
-                          "column": 4
+                          "column": 4,
+                          "program": "test-class-expression.js"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 20,
-                        "column": 9
+                        "column": 9,
+                        "program": "test-class-expression.js"
                       },
                       "end": {
                         "line": 22,
-                        "column": 4
+                        "column": 4,
+                        "program": "test-class-expression.js"
                       }
                     }
                   },
@@ -266,11 +298,13 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 3
+                      "column": 3,
+                      "program": "test-class-expression.js"
                     },
                     "end": {
                       "line": 22,
-                      "column": 4
+                      "column": 4,
+                      "program": "test-class-expression.js"
                     }
                   }
                 },
@@ -283,11 +317,13 @@
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 10
+                        "column": 10,
+                        "program": "test-class-expression.js"
                       },
                       "end": {
                         "line": 24,
-                        "column": 22
+                        "column": 22,
+                        "program": "test-class-expression.js"
                       }
                     }
                   },
@@ -316,22 +352,26 @@
                               "loc": {
                                 "start": {
                                   "line": 25,
-                                  "column": 12
+                                  "column": 12,
+                                  "program": "test-class-expression.js"
                                 },
                                 "end": {
                                   "line": 25,
-                                  "column": 13
+                                  "column": 13,
+                                  "program": "test-class-expression.js"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 25,
-                                "column": 5
+                                "column": 5,
+                                "program": "test-class-expression.js"
                               },
                               "end": {
                                 "line": 25,
-                                "column": 14
+                                "column": 14,
+                                "program": "test-class-expression.js"
                               }
                             }
                           }
@@ -339,33 +379,39 @@
                         "loc": {
                           "start": {
                             "line": 24,
-                            "column": 25
+                            "column": 25,
+                            "program": "test-class-expression.js"
                           },
                           "end": {
                             "line": 26,
-                            "column": 4
+                            "column": 4,
+                            "program": "test-class-expression.js"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 24,
-                          "column": 22
+                          "column": 22,
+                          "program": "test-class-expression.js"
                         },
                         "end": {
                           "line": 26,
-                          "column": 4
+                          "column": 4,
+                          "program": "test-class-expression.js"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 22
+                        "column": 22,
+                        "program": "test-class-expression.js"
                       },
                       "end": {
                         "line": 26,
-                        "column": 4
+                        "column": 4,
+                        "program": "test-class-expression.js"
                       }
                     }
                   },
@@ -374,11 +420,13 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 3
+                      "column": 3,
+                      "program": "test-class-expression.js"
                     },
                     "end": {
                       "line": 26,
-                      "column": 4
+                      "column": 4,
+                      "program": "test-class-expression.js"
                     }
                   }
                 }
@@ -386,33 +434,39 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 20
+                  "column": 20,
+                  "program": "test-class-expression.js"
                 },
                 "end": {
                   "line": 27,
-                  "column": 2
+                  "column": 3,
+                  "program": "test-class-expression.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 19,
-                "column": 12
+                "column": 12,
+                "program": "test-class-expression.js"
               },
               "end": {
                 "line": 27,
-                "column": 2
+                "column": 3,
+                "program": "test-class-expression.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 19,
-              "column": 5
+              "column": 5,
+              "program": "test-class-expression.js"
             },
             "end": {
               "line": 27,
-              "column": 2
+              "column": 3,
+              "program": "test-class-expression.js"
             }
           }
         }
@@ -421,11 +475,13 @@
       "loc": {
         "start": {
           "line": 19,
-          "column": 1
+          "column": 1,
+          "program": "test-class-expression.js"
         },
         "end": {
           "line": 27,
-          "column": 3
+          "column": 3,
+          "program": "test-class-expression.js"
         }
       }
     },
@@ -441,11 +497,13 @@
             "loc": {
               "start": {
                 "line": 29,
-                "column": 5
+                "column": 5,
+                "program": "test-class-expression.js"
               },
               "end": {
                 "line": 29,
-                "column": 9
+                "column": 9,
+                "program": "test-class-expression.js"
               }
             }
           },
@@ -463,12 +521,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 29,
+                      "column": 19,
+                      "program": "test-class-expression.js"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 29,
+                      "column": 19,
+                      "program": "test-class-expression.js"
                     }
                   }
                 },
@@ -490,34 +550,40 @@
                       "statements": [],
                       "loc": {
                         "start": {
-                          "line": 1,
-                          "column": 1
+                          "line": 29,
+                          "column": 19,
+                          "program": "test-class-expression.js"
                         },
                         "end": {
-                          "line": 1,
-                          "column": 1
+                          "line": 29,
+                          "column": 19,
+                          "program": "test-class-expression.js"
                         }
                       }
                     },
                     "loc": {
                       "start": {
-                        "line": 1,
-                        "column": 1
+                        "line": 29,
+                        "column": 19,
+                        "program": "test-class-expression.js"
                       },
                       "end": {
-                        "line": 1,
-                        "column": 1
+                        "line": 29,
+                        "column": 19,
+                        "program": "test-class-expression.js"
                       }
                     }
                   },
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 29,
+                      "column": 19,
+                      "program": "test-class-expression.js"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 29,
+                      "column": 19,
+                      "program": "test-class-expression.js"
                     }
                   }
                 },
@@ -525,12 +591,14 @@
                 "decorators": [],
                 "loc": {
                   "start": {
-                    "line": 32,
-                    "column": 2
+                    "line": 1,
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
-                    "line": 32,
-                    "column": 2
+                    "line": 1,
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
@@ -544,11 +612,13 @@
                     "loc": {
                       "start": {
                         "line": 30,
-                        "column": 3
+                        "column": 3,
+                        "program": "test-class-expression.js"
                       },
                       "end": {
                         "line": 30,
-                        "column": 9
+                        "column": 9,
+                        "program": "test-class-expression.js"
                       }
                     }
                   },
@@ -571,33 +641,39 @@
                         "loc": {
                           "start": {
                             "line": 30,
-                            "column": 12
+                            "column": 12,
+                            "program": "test-class-expression.js"
                           },
                           "end": {
                             "line": 30,
-                            "column": 15
+                            "column": 15,
+                            "program": "test-class-expression.js"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 30,
-                          "column": 9
+                          "column": 9,
+                          "program": "test-class-expression.js"
                         },
                         "end": {
                           "line": 30,
-                          "column": 15
+                          "column": 15,
+                          "program": "test-class-expression.js"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 30,
-                        "column": 9
+                        "column": 9,
+                        "program": "test-class-expression.js"
                       },
                       "end": {
                         "line": 30,
-                        "column": 15
+                        "column": 15,
+                        "program": "test-class-expression.js"
                       }
                     }
                   },
@@ -606,11 +682,13 @@
                   "loc": {
                     "start": {
                       "line": 30,
-                      "column": 3
+                      "column": 3,
+                      "program": "test-class-expression.js"
                     },
                     "end": {
                       "line": 30,
-                      "column": 15
+                      "column": 15,
+                      "program": "test-class-expression.js"
                     }
                   }
                 },
@@ -623,11 +701,13 @@
                     "loc": {
                       "start": {
                         "line": 31,
-                        "column": 10
+                        "column": 10,
+                        "program": "test-class-expression.js"
                       },
                       "end": {
                         "line": 31,
-                        "column": 22
+                        "column": 22,
+                        "program": "test-class-expression.js"
                       }
                     }
                   },
@@ -650,33 +730,39 @@
                         "loc": {
                           "start": {
                             "line": 31,
-                            "column": 25
+                            "column": 25,
+                            "program": "test-class-expression.js"
                           },
                           "end": {
                             "line": 31,
-                            "column": 28
+                            "column": 28,
+                            "program": "test-class-expression.js"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 31,
-                          "column": 22
+                          "column": 22,
+                          "program": "test-class-expression.js"
                         },
                         "end": {
                           "line": 31,
-                          "column": 28
+                          "column": 28,
+                          "program": "test-class-expression.js"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 31,
-                        "column": 22
+                        "column": 22,
+                        "program": "test-class-expression.js"
                       },
                       "end": {
                         "line": 31,
-                        "column": 28
+                        "column": 28,
+                        "program": "test-class-expression.js"
                       }
                     }
                   },
@@ -685,11 +771,13 @@
                   "loc": {
                     "start": {
                       "line": 31,
-                      "column": 3
+                      "column": 3,
+                      "program": "test-class-expression.js"
                     },
                     "end": {
                       "line": 31,
-                      "column": 28
+                      "column": 28,
+                      "program": "test-class-expression.js"
                     }
                   }
                 }
@@ -697,33 +785,39 @@
               "loc": {
                 "start": {
                   "line": 29,
-                  "column": 18
+                  "column": 18,
+                  "program": "test-class-expression.js"
                 },
                 "end": {
-                  "line": 32,
-                  "column": 2
+                  "line": 33,
+                  "column": 1,
+                  "program": "test-class-expression.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 29,
-                "column": 12
+                "column": 12,
+                "program": "test-class-expression.js"
               },
               "end": {
-                "line": 32,
-                "column": 2
+                "line": 33,
+                "column": 1,
+                "program": "test-class-expression.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 29,
-              "column": 5
+              "column": 5,
+              "program": "test-class-expression.js"
             },
             "end": {
-              "line": 32,
-              "column": 2
+              "line": 33,
+              "column": 1,
+              "program": "test-class-expression.js"
             }
           }
         }
@@ -732,11 +826,13 @@
       "loc": {
         "start": {
           "line": 29,
-          "column": 1
+          "column": 1,
+          "program": "test-class-expression.js"
         },
         "end": {
-          "line": 32,
-          "column": 2
+          "line": 33,
+          "column": 1,
+          "program": "test-class-expression.js"
         }
       }
     }
@@ -744,11 +840,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-class-expression.js"
     },
     "end": {
       "line": 33,
-      "column": 1
+      "column": 1,
+      "program": "test-class-expression.js"
     }
   }
 }

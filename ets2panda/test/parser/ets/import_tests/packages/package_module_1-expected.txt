@@ -12,11 +12,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 9
+              "column": 9,
+              "program": "package_module_1.sts"
             },
             "end": {
               "line": 16,
-              "column": 21
+              "column": 21,
+              "program": "package_module_1.sts"
             }
           }
         },
@@ -27,33 +29,39 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 22
+              "column": 22,
+              "program": "package_module_1.sts"
             },
             "end": {
               "line": 16,
-              "column": 30
+              "column": 30,
+              "program": "package_module_1.sts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 16,
-            "column": 9
+            "column": 9,
+            "program": "package_module_1.sts"
           },
           "end": {
             "line": 16,
-            "column": 31
+            "column": 31,
+            "program": "package_module_1.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "package_module_1.sts"
         },
         "end": {
           "line": 16,
-          "column": 31
+          "column": 31,
+          "program": "package_module_1.sts"
         }
       }
     },
@@ -67,11 +75,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "package_module_1.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "package_module_1.sts"
             }
           }
         },
@@ -87,11 +97,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -111,11 +123,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -129,33 +143,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -164,11 +184,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "package_module_1.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "package_module_1.sts"
               }
             }
           },
@@ -181,11 +203,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 14
+                  "column": 14,
+                  "program": "package_module_1.sts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 17
+                  "column": 17,
+                  "program": "package_module_1.sts"
                 }
               }
             },
@@ -195,11 +219,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 28
+                  "column": 28,
+                  "program": "package_module_1.sts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 38
+                  "column": 38,
+                  "program": "package_module_1.sts"
                 }
               }
             },
@@ -214,11 +240,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 19
+                  "column": 19,
+                  "program": "package_module_1.sts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 25
+                  "column": 25,
+                  "program": "package_module_1.sts"
                 }
               }
             },
@@ -227,11 +255,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 14
+                "column": 14,
+                "program": "package_module_1.sts"
               },
               "end": {
                 "line": 18,
-                "column": 38
+                "column": 38,
+                "program": "package_module_1.sts"
               }
             }
           },
@@ -244,11 +274,13 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 17
+                  "column": 17,
+                  "program": "package_module_1.sts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 20
+                  "column": 20,
+                  "program": "package_module_1.sts"
                 }
               }
             },
@@ -268,11 +300,13 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 17
+                      "column": 17,
+                      "program": "package_module_1.sts"
                     },
                     "end": {
                       "line": 20,
-                      "column": 20
+                      "column": 20,
+                      "program": "package_module_1.sts"
                     }
                   }
                 },
@@ -290,11 +324,13 @@
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 24
+                            "column": 24,
+                            "program": "package_module_1.sts"
                           },
                           "end": {
                             "line": 20,
-                            "column": 30
+                            "column": 30,
+                            "program": "package_module_1.sts"
                           }
                         }
                       },
@@ -302,22 +338,26 @@
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 21
+                          "column": 21,
+                          "program": "package_module_1.sts"
                         },
                         "end": {
                           "line": 20,
-                          "column": 30
+                          "column": 30,
+                          "program": "package_module_1.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 20,
-                        "column": 21
+                        "column": 21,
+                        "program": "package_module_1.sts"
                       },
                       "end": {
                         "line": 20,
-                        "column": 30
+                        "column": 30,
+                        "program": "package_module_1.sts"
                       }
                     }
                   }
@@ -327,11 +367,13 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 33
+                      "column": 33,
+                      "program": "package_module_1.sts"
                     },
                     "end": {
                       "line": 20,
-                      "column": 39
+                      "column": 39,
+                      "program": "package_module_1.sts"
                     }
                   }
                 },
@@ -346,22 +388,26 @@
                         "loc": {
                           "start": {
                             "line": 21,
-                            "column": 12
+                            "column": 12,
+                            "program": "package_module_1.sts"
                           },
                           "end": {
                             "line": 21,
-                            "column": 13
+                            "column": 13,
+                            "program": "package_module_1.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 5
+                          "column": 5,
+                          "program": "package_module_1.sts"
                         },
                         "end": {
                           "line": 21,
-                          "column": 14
+                          "column": 14,
+                          "program": "package_module_1.sts"
                         }
                       }
                     }
@@ -369,33 +415,39 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 40
+                      "column": 40,
+                      "program": "package_module_1.sts"
                     },
                     "end": {
                       "line": 22,
-                      "column": 2
+                      "column": 2,
+                      "program": "package_module_1.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 17
+                    "column": 17,
+                    "program": "package_module_1.sts"
                   },
                   "end": {
                     "line": 22,
-                    "column": 2
+                    "column": 2,
+                    "program": "package_module_1.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 17
+                  "column": 17,
+                  "program": "package_module_1.sts"
                 },
                 "end": {
                   "line": 22,
-                  "column": 2
+                  "column": 2,
+                  "program": "package_module_1.sts"
                 }
               }
             },
@@ -409,11 +461,13 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 17
+                      "column": 17,
+                      "program": "package_module_1.sts"
                     },
                     "end": {
                       "line": 24,
-                      "column": 20
+                      "column": 20,
+                      "program": "package_module_1.sts"
                     }
                   }
                 },
@@ -433,11 +487,13 @@
                       "loc": {
                         "start": {
                           "line": 24,
-                          "column": 17
+                          "column": 17,
+                          "program": "package_module_1.sts"
                         },
                         "end": {
                           "line": 24,
-                          "column": 20
+                          "column": 20,
+                          "program": "package_module_1.sts"
                         }
                       }
                     },
@@ -455,11 +511,13 @@
                             "loc": {
                               "start": {
                                 "line": 24,
-                                "column": 24
+                                "column": 24,
+                                "program": "package_module_1.sts"
                               },
                               "end": {
                                 "line": 24,
-                                "column": 29
+                                "column": 29,
+                                "program": "package_module_1.sts"
                               }
                             }
                           },
@@ -467,22 +525,26 @@
                           "loc": {
                             "start": {
                               "line": 24,
-                              "column": 21
+                              "column": 21,
+                              "program": "package_module_1.sts"
                             },
                             "end": {
                               "line": 24,
-                              "column": 29
+                              "column": 29,
+                              "program": "package_module_1.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 24,
-                            "column": 21
+                            "column": 21,
+                            "program": "package_module_1.sts"
                           },
                           "end": {
                             "line": 24,
-                            "column": 29
+                            "column": 29,
+                            "program": "package_module_1.sts"
                           }
                         }
                       }
@@ -492,11 +554,13 @@
                       "loc": {
                         "start": {
                           "line": 24,
-                          "column": 32
+                          "column": 32,
+                          "program": "package_module_1.sts"
                         },
                         "end": {
                           "line": 24,
-                          "column": 37
+                          "column": 37,
+                          "program": "package_module_1.sts"
                         }
                       }
                     },
@@ -511,22 +575,26 @@
                             "loc": {
                               "start": {
                                 "line": 25,
-                                "column": 12
+                                "column": 12,
+                                "program": "package_module_1.sts"
                               },
                               "end": {
                                 "line": 25,
-                                "column": 13
+                                "column": 13,
+                                "program": "package_module_1.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 25,
-                              "column": 5
+                              "column": 5,
+                              "program": "package_module_1.sts"
                             },
                             "end": {
                               "line": 25,
-                              "column": 14
+                              "column": 14,
+                              "program": "package_module_1.sts"
                             }
                           }
                         }
@@ -534,33 +602,39 @@
                       "loc": {
                         "start": {
                           "line": 24,
-                          "column": 38
+                          "column": 38,
+                          "program": "package_module_1.sts"
                         },
                         "end": {
                           "line": 26,
-                          "column": 2
+                          "column": 2,
+                          "program": "package_module_1.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 17
+                        "column": 17,
+                        "program": "package_module_1.sts"
                       },
                       "end": {
                         "line": 26,
-                        "column": 2
+                        "column": 2,
+                        "program": "package_module_1.sts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 17
+                      "column": 17,
+                      "program": "package_module_1.sts"
                     },
                     "end": {
                       "line": 26,
-                      "column": 2
+                      "column": 2,
+                      "program": "package_module_1.sts"
                     }
                   }
                 },
@@ -569,11 +643,13 @@
                 "loc": {
                   "start": {
                     "line": 24,
-                    "column": 8
+                    "column": 8,
+                    "program": "package_module_1.sts"
                   },
                   "end": {
                     "line": 26,
-                    "column": 2
+                    "column": 2,
+                    "program": "package_module_1.sts"
                   }
                 }
               }
@@ -582,11 +658,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 8
+                "column": 8,
+                "program": "package_module_1.sts"
               },
               "end": {
                 "line": 22,
-                "column": 2
+                "column": 2,
+                "program": "package_module_1.sts"
               }
             }
           },
@@ -599,11 +677,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 14
+                  "column": 14,
+                  "program": "package_module_2.sts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 17
+                  "column": 17,
+                  "program": "package_module_2.sts"
                 }
               }
             },
@@ -613,11 +693,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 27
+                  "column": 27,
+                  "program": "package_module_2.sts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 33
+                  "column": 33,
+                  "program": "package_module_2.sts"
                 }
               }
             },
@@ -632,11 +714,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 19
+                  "column": 19,
+                  "program": "package_module_2.sts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 24
+                  "column": 24,
+                  "program": "package_module_2.sts"
                 }
               }
             },
@@ -645,11 +729,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 14
+                "column": 14,
+                "program": "package_module_2.sts"
               },
               "end": {
                 "line": 18,
-                "column": 33
+                "column": 33,
+                "program": "package_module_2.sts"
               }
             }
           }
@@ -657,22 +743,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "package_module_1.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "package_module_1.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "package_module_1.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "package_module_1.sts"
         }
       }
     }
@@ -680,11 +770,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "package_module_1.sts"
     },
     "end": {
       "line": 27,
-      "column": 1
+      "column": 1,
+      "program": "package_module_1.sts"
     }
   }
 }

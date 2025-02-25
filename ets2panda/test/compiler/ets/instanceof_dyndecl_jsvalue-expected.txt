@@ -9,11 +9,13 @@
         "loc": {
           "start": {
             "line": 20,
-            "column": 27
+            "column": 27,
+            "program": "instanceof_dyndecl_jsvalue.sts"
           },
           "end": {
             "line": 20,
-            "column": 68
+            "column": 68,
+            "program": "instanceof_dyndecl_jsvalue.sts"
           }
         }
       },
@@ -27,11 +29,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 10
+                "column": 10,
+                "program": "instanceof_dyndecl_jsvalue.sts"
               },
               "end": {
                 "line": 20,
-                "column": 19
+                "column": 19,
+                "program": "instanceof_dyndecl_jsvalue.sts"
               }
             }
           },
@@ -42,22 +46,26 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 10
+                "column": 10,
+                "program": "instanceof_dyndecl_jsvalue.sts"
               },
               "end": {
                 "line": 20,
-                "column": 19
+                "column": 19,
+                "program": "instanceof_dyndecl_jsvalue.sts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 20,
-              "column": 10
+              "column": 10,
+              "program": "instanceof_dyndecl_jsvalue.sts"
             },
             "end": {
               "line": 20,
-              "column": 19
+              "column": 19,
+              "program": "instanceof_dyndecl_jsvalue.sts"
             }
           }
         }
@@ -65,11 +73,13 @@
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "instanceof_dyndecl_jsvalue.sts"
         },
         "end": {
           "line": 20,
-          "column": 68
+          "column": 68,
+          "program": "instanceof_dyndecl_jsvalue.sts"
         }
       }
     },
@@ -83,11 +93,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "instanceof_dyndecl_jsvalue.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "instanceof_dyndecl_jsvalue.sts"
             }
           }
         },
@@ -103,11 +115,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -127,11 +141,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -145,33 +161,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -180,11 +202,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_dyndecl_jsvalue.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_dyndecl_jsvalue.sts"
               }
             }
           },
@@ -197,11 +221,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -221,11 +247,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -239,33 +267,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -274,11 +308,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_dyndecl_jsvalue.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_dyndecl_jsvalue.sts"
               }
             }
           },
@@ -291,11 +327,13 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 10
+                  "column": 10,
+                  "program": "instanceof_dyndecl_jsvalue.sts"
                 },
                 "end": {
                   "line": 22,
-                  "column": 21
+                  "column": 21,
+                  "program": "instanceof_dyndecl_jsvalue.sts"
                 }
               }
             },
@@ -315,11 +353,13 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 10
+                      "column": 10,
+                      "program": "instanceof_dyndecl_jsvalue.sts"
                     },
                     "end": {
                       "line": 22,
-                      "column": 21
+                      "column": 21,
+                      "program": "instanceof_dyndecl_jsvalue.sts"
                     }
                   }
                 },
@@ -343,33 +383,39 @@
                             "loc": {
                               "start": {
                                 "line": 22,
-                                "column": 25
+                                "column": 25,
+                                "program": "instanceof_dyndecl_jsvalue.sts"
                               },
                               "end": {
                                 "line": 22,
-                                "column": 34
+                                "column": 34,
+                                "program": "instanceof_dyndecl_jsvalue.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 22,
-                              "column": 25
+                              "column": 25,
+                              "program": "instanceof_dyndecl_jsvalue.sts"
                             },
                             "end": {
                               "line": 22,
-                              "column": 35
+                              "column": 35,
+                              "program": "instanceof_dyndecl_jsvalue.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 22,
-                            "column": 25
+                            "column": 25,
+                            "program": "instanceof_dyndecl_jsvalue.sts"
                           },
                           "end": {
                             "line": 22,
-                            "column": 35
+                            "column": 35,
+                            "program": "instanceof_dyndecl_jsvalue.sts"
                           }
                         }
                       },
@@ -377,22 +423,26 @@
                       "loc": {
                         "start": {
                           "line": 22,
-                          "column": 22
+                          "column": 22,
+                          "program": "instanceof_dyndecl_jsvalue.sts"
                         },
                         "end": {
                           "line": 22,
-                          "column": 35
+                          "column": 35,
+                          "program": "instanceof_dyndecl_jsvalue.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 22,
-                        "column": 22
+                        "column": 22,
+                        "program": "instanceof_dyndecl_jsvalue.sts"
                       },
                       "end": {
                         "line": 22,
-                        "column": 35
+                        "column": 35,
+                        "program": "instanceof_dyndecl_jsvalue.sts"
                       }
                     }
                   }
@@ -402,11 +452,13 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 37
+                      "column": 37,
+                      "program": "instanceof_dyndecl_jsvalue.sts"
                     },
                     "end": {
                       "line": 22,
-                      "column": 44
+                      "column": 44,
+                      "program": "instanceof_dyndecl_jsvalue.sts"
                     }
                   }
                 },
@@ -425,11 +477,13 @@
                           "loc": {
                             "start": {
                               "line": 23,
-                              "column": 12
+                              "column": 12,
+                              "program": "instanceof_dyndecl_jsvalue.sts"
                             },
                             "end": {
                               "line": 23,
-                              "column": 13
+                              "column": 13,
+                              "program": "instanceof_dyndecl_jsvalue.sts"
                             }
                           }
                         },
@@ -444,55 +498,65 @@
                               "loc": {
                                 "start": {
                                   "line": 23,
-                                  "column": 25
+                                  "column": 25,
+                                  "program": "instanceof_dyndecl_jsvalue.sts"
                                 },
                                 "end": {
                                   "line": 23,
-                                  "column": 32
+                                  "column": 32,
+                                  "program": "instanceof_dyndecl_jsvalue.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 23,
-                                "column": 25
+                                "column": 25,
+                                "program": "instanceof_dyndecl_jsvalue.sts"
                               },
                               "end": {
                                 "line": 23,
-                                "column": 33
+                                "column": 33,
+                                "program": "instanceof_dyndecl_jsvalue.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 23,
-                              "column": 25
+                              "column": 25,
+                              "program": "instanceof_dyndecl_jsvalue.sts"
                             },
                             "end": {
                               "line": 23,
-                              "column": 33
+                              "column": 33,
+                              "program": "instanceof_dyndecl_jsvalue.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 23,
-                            "column": 12
+                            "column": 12,
+                            "program": "instanceof_dyndecl_jsvalue.sts"
                           },
                           "end": {
                             "line": 23,
-                            "column": 33
+                            "column": 33,
+                            "program": "instanceof_dyndecl_jsvalue.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 23,
-                          "column": 5
+                          "column": 5,
+                          "program": "instanceof_dyndecl_jsvalue.sts"
                         },
                         "end": {
                           "line": 23,
-                          "column": 33
+                          "column": 33,
+                          "program": "instanceof_dyndecl_jsvalue.sts"
                         }
                       }
                     }
@@ -500,33 +564,39 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 45
+                      "column": 45,
+                      "program": "instanceof_dyndecl_jsvalue.sts"
                     },
                     "end": {
                       "line": 24,
-                      "column": 2
+                      "column": 2,
+                      "program": "instanceof_dyndecl_jsvalue.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 10
+                    "column": 10,
+                    "program": "instanceof_dyndecl_jsvalue.sts"
                   },
                   "end": {
                     "line": 24,
-                    "column": 2
+                    "column": 2,
+                    "program": "instanceof_dyndecl_jsvalue.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 10
+                  "column": 10,
+                  "program": "instanceof_dyndecl_jsvalue.sts"
                 },
                 "end": {
                   "line": 24,
-                  "column": 2
+                  "column": 2,
+                  "program": "instanceof_dyndecl_jsvalue.sts"
                 }
               }
             },
@@ -535,11 +605,13 @@
             "loc": {
               "start": {
                 "line": 22,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_dyndecl_jsvalue.sts"
               },
               "end": {
                 "line": 24,
-                "column": 2
+                "column": 2,
+                "program": "instanceof_dyndecl_jsvalue.sts"
               }
             }
           }
@@ -547,442 +619,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "instanceof_dyndecl_jsvalue.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "instanceof_dyndecl_jsvalue.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "instanceof_dyndecl_jsvalue.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
-        }
-      }
-    },
-    {
-      "type": "ClassDeclaration",
-      "definition": {
-        "id": {
-          "type": "Identifier",
-          "name": "$dynmodule",
-          "decorators": [],
-          "loc": {
-            "start": {
-              "line": 1,
-              "column": 1
-            },
-            "end": {
-              "line": 1,
-              "column": 1
-            }
-          }
-        },
-        "superClass": null,
-        "implements": [],
-        "body": [
-          {
-            "type": "ClassProperty",
-            "key": {
-              "type": "Identifier",
-              "name": "dynamic_import_tests_modules_instanceof0",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1
-                }
-              }
-            },
-            "accessibility": "public",
-            "static": true,
-            "readonly": true,
-            "declare": false,
-            "optional": false,
-            "computed": false,
-            "typeAnnotation": {
-              "type": "OpaqueType",
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1
-                }
-              }
-            },
-            "definite": false,
-            "decorators": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1
-              },
-              "end": {
-                "line": 1,
-                "column": 1
-              }
-            }
-          },
-          {
-            "type": "ClassStaticBlock",
-            "value": {
-              "type": "FunctionExpression",
-              "function": {
-                "type": "ScriptFunction",
-                "id": {
-                  "type": "Identifier",
-                  "name": "<cctor>",
-                  "decorators": [],
-                  "loc": {
-                    "start": {
-                      "line": 1,
-                      "column": 1
-                    },
-                    "end": {
-                      "line": 1,
-                      "column": 1
-                    }
-                  }
-                },
-                "generator": false,
-                "async": false,
-                "expression": true,
-                "params": [],
-                "body": {
-                  "type": "BlockStatement",
-                  "statements": [
-                    {
-                      "type": "ExpressionStatement",
-                      "expression": {
-                        "type": "AssignmentExpression",
-                        "operator": "=",
-                        "left": {
-                          "type": "MemberExpression",
-                          "object": {
-                            "type": "Identifier",
-                            "name": "$dynmodule",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 1
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 1
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "dynamic_import_tests_modules_instanceof0",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 1
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 1
-                              }
-                            }
-                          },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 1,
-                              "column": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 1
-                            }
-                          }
-                        },
-                        "right": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "MemberExpression",
-                            "object": {
-                              "type": "Identifier",
-                              "name": "JSRuntime",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 1
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 1
-                                }
-                              }
-                            },
-                            "property": {
-                              "type": "Identifier",
-                              "name": "loadModule",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 1
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 1
-                                }
-                              }
-                            },
-                            "computed": false,
-                            "optional": false,
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 1
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 1
-                              }
-                            }
-                          },
-                          "arguments": [
-                            {
-                              "type": "StringLiteral",
-                              "value": "/home/kaskov/Documents/panda/ets_frontend/ets2panda/test/parser/ets/dynamic_import_tests/modules/instanceof",
-                              "loc": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 1
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 1
-                                }
-                              }
-                            }
-                          ],
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 1,
-                              "column": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 1
-                            }
-                          }
-                        },
-                        "loc": {
-                          "start": {
-                            "line": 1,
-                            "column": 1
-                          },
-                          "end": {
-                            "line": 1,
-                            "column": 1
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 1,
-                          "column": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 1
-                        }
-                      }
-                    }
-                  ],
-                  "loc": {
-                    "start": {
-                      "line": 1,
-                      "column": 1
-                    },
-                    "end": {
-                      "line": 1,
-                      "column": 1
-                    }
-                  }
-                },
-                "loc": {
-                  "start": {
-                    "line": 1,
-                    "column": 1
-                  },
-                  "end": {
-                    "line": 1,
-                    "column": 1
-                  }
-                }
-              },
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1
-                }
-              }
-            },
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1
-              },
-              "end": {
-                "line": 1,
-                "column": 1
-              }
-            }
-          },
-          {
-            "type": "MethodDefinition",
-            "key": {
-              "type": "Identifier",
-              "name": "init",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1
-                }
-              }
-            },
-            "kind": "method",
-            "accessibility": "public",
-            "static": true,
-            "optional": false,
-            "computed": false,
-            "value": {
-              "type": "FunctionExpression",
-              "function": {
-                "type": "ScriptFunction",
-                "id": {
-                  "type": "Identifier",
-                  "name": "init",
-                  "decorators": [],
-                  "loc": {
-                    "start": {
-                      "line": 1,
-                      "column": 1
-                    },
-                    "end": {
-                      "line": 1,
-                      "column": 1
-                    }
-                  }
-                },
-                "generator": false,
-                "async": false,
-                "expression": false,
-                "params": [],
-                "returnType": {
-                  "type": "OpaqueType",
-                  "loc": {
-                    "start": {
-                      "line": 1,
-                      "column": 1
-                    },
-                    "end": {
-                      "line": 1,
-                      "column": 1
-                    }
-                  }
-                },
-                "body": {
-                  "type": "BlockStatement",
-                  "statements": [],
-                  "loc": {
-                    "start": {
-                      "line": 1,
-                      "column": 1
-                    },
-                    "end": {
-                      "line": 1,
-                      "column": 1
-                    }
-                  }
-                },
-                "loc": {
-                  "start": {
-                    "line": 1,
-                    "column": 1
-                  },
-                  "end": {
-                    "line": 1,
-                    "column": 1
-                  }
-                }
-              },
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1
-                }
-              }
-            },
-            "overloads": [],
-            "decorators": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1
-              },
-              "end": {
-                "line": 1,
-                "column": 1
-              }
-            }
-          }
-        ],
-        "loc": {
-          "start": {
-            "line": 1,
-            "column": 1
-          },
-          "end": {
-            "line": 1,
-            "column": 1
-          }
-        }
-      },
-      "loc": {
-        "start": {
-          "line": 1,
-          "column": 1
-        },
-        "end": {
-          "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "instanceof_dyndecl_jsvalue.sts"
         }
       }
     }
@@ -990,11 +646,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "instanceof_dyndecl_jsvalue.sts"
     },
     "end": {
       "line": 25,
-      "column": 1
+      "column": 1,
+      "program": "instanceof_dyndecl_jsvalue.sts"
     }
   }
 }

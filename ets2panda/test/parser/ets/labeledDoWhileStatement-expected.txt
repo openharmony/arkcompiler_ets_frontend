@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "labeledDoWhileStatement.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "labeledDoWhileStatement.sts"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +79,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +120,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "labeledDoWhileStatement.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "labeledDoWhileStatement.sts"
               }
             }
           },
@@ -125,11 +139,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -149,11 +165,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -167,33 +185,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -202,11 +226,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "labeledDoWhileStatement.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "labeledDoWhileStatement.sts"
               }
             }
           },
@@ -219,11 +245,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "labeledDoWhileStatement.sts"
                 },
                 "end": {
                   "line": 16,
-                  "column": 30
+                  "column": 30,
+                  "program": "labeledDoWhileStatement.sts"
                 }
               }
             },
@@ -243,11 +271,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 10
+                      "column": 10,
+                      "program": "labeledDoWhileStatement.sts"
                     },
                     "end": {
                       "line": 16,
-                      "column": 30
+                      "column": 30,
+                      "program": "labeledDoWhileStatement.sts"
                     }
                   }
                 },
@@ -260,11 +290,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 34
+                      "column": 34,
+                      "program": "labeledDoWhileStatement.sts"
                     },
                     "end": {
                       "line": 16,
-                      "column": 38
+                      "column": 38,
+                      "program": "labeledDoWhileStatement.sts"
                     }
                   }
                 },
@@ -283,11 +315,13 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 7
+                                "column": 7,
+                                "program": "labeledDoWhileStatement.sts"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 8
+                                "column": 8,
+                                "program": "labeledDoWhileStatement.sts"
                               }
                             }
                           },
@@ -297,22 +331,26 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 11
+                                "column": 11,
+                                "program": "labeledDoWhileStatement.sts"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 12
+                                "column": 12,
+                                "program": "labeledDoWhileStatement.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 7
+                              "column": 7,
+                              "program": "labeledDoWhileStatement.sts"
                             },
                             "end": {
                               "line": 17,
-                              "column": 12
+                              "column": 12,
+                              "program": "labeledDoWhileStatement.sts"
                             }
                           }
                         }
@@ -321,11 +359,13 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 3
+                          "column": 3,
+                          "program": "labeledDoWhileStatement.sts"
                         },
                         "end": {
                           "line": 17,
-                          "column": 13
+                          "column": 13,
+                          "program": "labeledDoWhileStatement.sts"
                         }
                       }
                     },
@@ -338,11 +378,13 @@
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 3
+                            "column": 3,
+                            "program": "labeledDoWhileStatement.sts"
                           },
                           "end": {
                             "line": 19,
-                            "column": 9
+                            "column": 9,
+                            "program": "labeledDoWhileStatement.sts"
                           }
                         }
                       },
@@ -363,11 +405,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 21,
-                                      "column": 5
+                                      "column": 5,
+                                      "program": "labeledDoWhileStatement.sts"
                                     },
                                     "end": {
                                       "line": 21,
-                                      "column": 6
+                                      "column": 6,
+                                      "program": "labeledDoWhileStatement.sts"
                                     }
                                   }
                                 },
@@ -377,33 +421,39 @@
                                   "loc": {
                                     "start": {
                                       "line": 21,
-                                      "column": 10
+                                      "column": 10,
+                                      "program": "labeledDoWhileStatement.sts"
                                     },
                                     "end": {
                                       "line": 21,
-                                      "column": 11
+                                      "column": 11,
+                                      "program": "labeledDoWhileStatement.sts"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 21,
-                                    "column": 5
+                                    "column": 5,
+                                    "program": "labeledDoWhileStatement.sts"
                                   },
                                   "end": {
                                     "line": 21,
-                                    "column": 11
+                                    "column": 11,
+                                    "program": "labeledDoWhileStatement.sts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 21,
-                                  "column": 5
+                                  "column": 5,
+                                  "program": "labeledDoWhileStatement.sts"
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 12
+                                  "column": 12,
+                                  "program": "labeledDoWhileStatement.sts"
                                 }
                               }
                             },
@@ -422,11 +472,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 22,
-                                        "column": 9
+                                        "column": 9,
+                                        "program": "labeledDoWhileStatement.sts"
                                       },
                                       "end": {
                                         "line": 22,
-                                        "column": 10
+                                        "column": 10,
+                                        "program": "labeledDoWhileStatement.sts"
                                       }
                                     }
                                   },
@@ -436,22 +488,26 @@
                                     "loc": {
                                       "start": {
                                         "line": 22,
-                                        "column": 13
+                                        "column": 13,
+                                        "program": "labeledDoWhileStatement.sts"
                                       },
                                       "end": {
                                         "line": 22,
-                                        "column": 14
+                                        "column": 14,
+                                        "program": "labeledDoWhileStatement.sts"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 22,
-                                      "column": 9
+                                      "column": 9,
+                                      "program": "labeledDoWhileStatement.sts"
                                     },
                                     "end": {
                                       "line": 22,
-                                      "column": 14
+                                      "column": 14,
+                                      "program": "labeledDoWhileStatement.sts"
                                     }
                                   }
                                 },
@@ -461,22 +517,26 @@
                                   "loc": {
                                     "start": {
                                       "line": 22,
-                                      "column": 18
+                                      "column": 18,
+                                      "program": "labeledDoWhileStatement.sts"
                                     },
                                     "end": {
                                       "line": 22,
-                                      "column": 19
+                                      "column": 19,
+                                      "program": "labeledDoWhileStatement.sts"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 22,
-                                    "column": 9
+                                    "column": 9,
+                                    "program": "labeledDoWhileStatement.sts"
                                   },
                                   "end": {
                                     "line": 22,
-                                    "column": 19
+                                    "column": 19,
+                                    "program": "labeledDoWhileStatement.sts"
                                   }
                                 }
                               },
@@ -492,22 +552,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 23,
-                                          "column": 16
+                                          "column": 16,
+                                          "program": "labeledDoWhileStatement.sts"
                                         },
                                         "end": {
                                           "line": 23,
-                                          "column": 22
+                                          "column": 22,
+                                          "program": "labeledDoWhileStatement.sts"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 23,
-                                        "column": 7
+                                        "column": 7,
+                                        "program": "labeledDoWhileStatement.sts"
                                       },
                                       "end": {
                                         "line": 23,
-                                        "column": 23
+                                        "column": 23,
+                                        "program": "labeledDoWhileStatement.sts"
                                       }
                                     }
                                   }
@@ -515,11 +579,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 22,
-                                    "column": 21
+                                    "column": 21,
+                                    "program": "labeledDoWhileStatement.sts"
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 6
+                                    "column": 6,
+                                    "program": "labeledDoWhileStatement.sts"
                                   }
                                 }
                               },
@@ -535,22 +601,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 25,
-                                          "column": 13
+                                          "column": 13,
+                                          "program": "labeledDoWhileStatement.sts"
                                         },
                                         "end": {
                                           "line": 25,
-                                          "column": 19
+                                          "column": 19,
+                                          "program": "labeledDoWhileStatement.sts"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 25,
-                                        "column": 7
+                                        "column": 7,
+                                        "program": "labeledDoWhileStatement.sts"
                                       },
                                       "end": {
                                         "line": 25,
-                                        "column": 20
+                                        "column": 20,
+                                        "program": "labeledDoWhileStatement.sts"
                                       }
                                     }
                                   }
@@ -558,22 +628,26 @@
                                 "loc": {
                                   "start": {
                                     "line": 24,
-                                    "column": 12
+                                    "column": 12,
+                                    "program": "labeledDoWhileStatement.sts"
                                   },
                                   "end": {
                                     "line": 26,
-                                    "column": 6
+                                    "column": 6,
+                                    "program": "labeledDoWhileStatement.sts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 22,
-                                  "column": 5
+                                  "column": 5,
+                                  "program": "labeledDoWhileStatement.sts"
                                 },
                                 "end": {
                                   "line": 26,
-                                  "column": 6
+                                  "column": 6,
+                                  "program": "labeledDoWhileStatement.sts"
                                 }
                               }
                             }
@@ -581,11 +655,13 @@
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 6
+                              "column": 6,
+                              "program": "labeledDoWhileStatement.sts"
                             },
                             "end": {
                               "line": 27,
-                              "column": 4
+                              "column": 4,
+                              "program": "labeledDoWhileStatement.sts"
                             }
                           }
                         },
@@ -599,11 +675,13 @@
                             "loc": {
                               "start": {
                                 "line": 27,
-                                "column": 12
+                                "column": 12,
+                                "program": "labeledDoWhileStatement.sts"
                               },
                               "end": {
                                 "line": 27,
-                                "column": 13
+                                "column": 13,
+                                "program": "labeledDoWhileStatement.sts"
                               }
                             }
                           },
@@ -613,44 +691,52 @@
                             "loc": {
                               "start": {
                                 "line": 27,
-                                "column": 16
+                                "column": 16,
+                                "program": "labeledDoWhileStatement.sts"
                               },
                               "end": {
                                 "line": 27,
-                                "column": 18
+                                "column": 18,
+                                "program": "labeledDoWhileStatement.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 27,
-                              "column": 12
+                              "column": 12,
+                              "program": "labeledDoWhileStatement.sts"
                             },
                             "end": {
                               "line": 27,
-                              "column": 18
+                              "column": 18,
+                              "program": "labeledDoWhileStatement.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 3
+                            "column": 3,
+                            "program": "labeledDoWhileStatement.sts"
                           },
                           "end": {
                             "line": 27,
-                            "column": 19
+                            "column": 19,
+                            "program": "labeledDoWhileStatement.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 3
+                          "column": 3,
+                          "program": "labeledDoWhileStatement.sts"
                         },
                         "end": {
                           "line": 27,
-                          "column": 19
+                          "column": 19,
+                          "program": "labeledDoWhileStatement.sts"
                         }
                       }
                     }
@@ -658,33 +744,39 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 39
+                      "column": 39,
+                      "program": "labeledDoWhileStatement.sts"
                     },
                     "end": {
                       "line": 28,
-                      "column": 2
+                      "column": 2,
+                      "program": "labeledDoWhileStatement.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 10
+                    "column": 10,
+                    "program": "labeledDoWhileStatement.sts"
                   },
                   "end": {
                     "line": 28,
-                    "column": 2
+                    "column": 2,
+                    "program": "labeledDoWhileStatement.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "labeledDoWhileStatement.sts"
                 },
                 "end": {
                   "line": 28,
-                  "column": 2
+                  "column": 2,
+                  "program": "labeledDoWhileStatement.sts"
                 }
               }
             },
@@ -693,11 +785,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 1
+                "column": 1,
+                "program": "labeledDoWhileStatement.sts"
               },
               "end": {
                 "line": 28,
-                "column": 2
+                "column": 2,
+                "program": "labeledDoWhileStatement.sts"
               }
             }
           }
@@ -705,22 +799,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "labeledDoWhileStatement.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "labeledDoWhileStatement.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "labeledDoWhileStatement.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "labeledDoWhileStatement.sts"
         }
       }
     }
@@ -728,11 +826,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "labeledDoWhileStatement.sts"
     },
     "end": {
       "line": 29,
-      "column": 1
+      "column": 1,
+      "program": "labeledDoWhileStatement.sts"
     }
   }
 }

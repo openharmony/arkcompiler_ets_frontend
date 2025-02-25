@@ -31,6 +31,7 @@ namespace {
                                                             ir::TypeNode *const typeAnnotation)
 {
     auto *const paramIdent = checker->AllocNode<ir::Identifier>(name, typeAnnotation, checker->Allocator());
+    paramIdent->SetRange(typeAnnotation->Range());
     auto *const param = checker->AllocNode<ir::ETSParameterExpression>(paramIdent, false, checker->Allocator());
 
     return param;
@@ -40,6 +41,7 @@ namespace {
                                                 ir::ETSParameterExpression *paramExpr)
 {
     auto *const refIdent = checker->AllocNode<ir::Identifier>(paramExpr->Ident()->Name(), checker->Allocator());
+    refIdent->SetRange(paramExpr->Ident()->Range());
     refIdent->SetVariable(paramExpr->Ident()->Variable());
     return refIdent;
 }
@@ -69,7 +71,7 @@ ir::MethodDefinition *MakeMethodDef(checker::ETSChecker *const checker, ir::Clas
 
 void EnumLoweringPhase::LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const
 {
-    context_->diagnosticEngine->LogSyntaxError(program_, errorMessage, pos);
+    context_->diagnosticEngine->LogSyntaxError(errorMessage, pos);
 }
 
 template <typename TypeNode>
@@ -346,6 +348,8 @@ void EnumLoweringPhase::CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclarat
     CreateEnumFromIntMethod(enumDecl, enumClass, boxedItemsArrayIdent, checker::ETSEnumType::BOXED_FROM_INT_METHOD_NAME,
                             GetEnumClassName(checker_, enumDecl).View());
 
+    SetDefaultPositionInUnfilledClassNodes(enumClassDecl, enumDecl);
+
     ProcessEnumClassDeclaration(enumDecl, flags, enumClassDecl);
 }
 
@@ -375,6 +379,8 @@ void EnumLoweringPhase::CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDecla
 
     CreateEnumFromIntMethod(enumDecl, enumClass, boxedItemsArrayIdent, checker::ETSEnumType::BOXED_FROM_INT_METHOD_NAME,
                             GetEnumClassName(checker_, enumDecl).View());
+
+    SetDefaultPositionInUnfilledClassNodes(enumClassDecl, enumDecl);
 
     ProcessEnumClassDeclaration(enumDecl, flags, enumClassDecl);
 }
@@ -481,9 +487,10 @@ ir::Identifier *EnumLoweringPhase::CreateEnumItemsArray(const ir::TSEnumDeclarat
                      [this, enumDecl](const ir::TSEnumMember *const member) {
                         auto *const enumTypeIdent =
                             checker_->AllocNode<ir::Identifier>(enumDecl->Key()->Name(), Allocator());
-
+                        enumTypeIdent->SetRange(enumDecl->Key()->Range());
                         auto *const enumMemberIdent = checker_->AllocNode<ir::Identifier>(
                             member->AsTSEnumMember()->Key()->AsIdentifier()->Name(), Allocator());
+                        enumMemberIdent->SetRange(member->AsTSEnumMember()->Key()->Range());
                         auto *const enumMemberExpr = checker_->AllocNode<ir::MemberExpression>(
                             enumTypeIdent, enumMemberIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
                         return enumMemberExpr;
@@ -502,9 +509,10 @@ ir::Identifier *EnumLoweringPhase::CreateBoxedEnumItemsArray(const ir::TSEnumDec
                      [this, enumDecl, &boxedClassName](const ir::TSEnumMember *const member) {
                         auto *const enumTypeIdent =
                             checker_->AllocNode<ir::Identifier>(enumDecl->Key()->Name(), Allocator());
-
+                        enumTypeIdent->SetRange(enumDecl->Key()->Range());
                         auto *const enumMemberIdent = checker_->AllocNode<ir::Identifier>(
                             member->AsTSEnumMember()->Key()->AsIdentifier()->Name(), Allocator());
+                        enumMemberIdent->SetRange(member->AsTSEnumMember()->Key()->Range());
                         auto *const enumMemberExpr = checker_->AllocNode<ir::MemberExpression>(
                             enumTypeIdent, enumMemberIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
 
@@ -866,6 +874,20 @@ void EnumLoweringPhase::CreateUnboxingMethod(ir::TSEnumDeclaration const *const 
     function->SetIdent(functionIdent);
 
     MakeMethodDef(checker_, enumClass, functionIdent, function);
+}
+
+void EnumLoweringPhase::SetDefaultPositionInUnfilledClassNodes(const ir::ClassDeclaration *enumClassDecl,
+                                                               ir::TSEnumDeclaration const *const enumDecl)
+{
+    // Range of "default" value is one point, because that code is not exist in initial source code
+    // but createad by enum at this point
+    const auto &defautlRange = lexer::SourceRange(enumDecl->Range().start, enumDecl->Range().start);
+    enumClassDecl->IterateRecursively([&defautlRange](ir::AstNode *ast) -> void {
+        // If SourcePostion is not set before, we set "default" which point to start of enum
+        if (ast->Range().start.Program() == nullptr) {
+            ast->SetRange(defautlRange);
+        }
+    });
 }
 
 ArenaAllocator *EnumLoweringPhase::Allocator()

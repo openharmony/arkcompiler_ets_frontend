@@ -9,11 +9,13 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 19
+            "column": 19,
+            "program": "generic_typealias_func_type.sts"
           },
           "end": {
             "line": 16,
-            "column": 54
+            "column": 54,
+            "program": "generic_typealias_func_type.sts"
           }
         }
       },
@@ -27,11 +29,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 9
+                "column": 9,
+                "program": "generic_typealias_func_type.sts"
               },
               "end": {
                 "line": 16,
-                "column": 12
+                "column": 12,
+                "program": "generic_typealias_func_type.sts"
               }
             }
           },
@@ -42,22 +46,26 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 9
+                "column": 9,
+                "program": "generic_typealias_func_type.sts"
               },
               "end": {
                 "line": 16,
-                "column": 12
+                "column": 12,
+                "program": "generic_typealias_func_type.sts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 16,
-              "column": 9
+              "column": 9,
+              "program": "generic_typealias_func_type.sts"
             },
             "end": {
               "line": 16,
-              "column": 12
+              "column": 12,
+              "program": "generic_typealias_func_type.sts"
             }
           }
         }
@@ -65,11 +73,13 @@
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "generic_typealias_func_type.sts"
         },
         "end": {
           "line": 16,
-          "column": 54
+          "column": 54,
+          "program": "generic_typealias_func_type.sts"
         }
       }
     },
@@ -83,11 +93,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "generic_typealias_func_type.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "generic_typealias_func_type.sts"
             }
           }
         },
@@ -103,11 +115,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -127,11 +141,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -145,33 +161,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -180,11 +202,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "generic_typealias_func_type.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "generic_typealias_func_type.sts"
               }
             }
           },
@@ -197,11 +221,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 10
+                  "column": 10,
+                  "program": "generic_typealias_func_type.sts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 14
+                  "column": 14,
+                  "program": "generic_typealias_func_type.sts"
                 }
               }
             },
@@ -221,11 +247,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 10
+                      "column": 10,
+                      "program": "generic_typealias_func_type.sts"
                     },
                     "end": {
                       "line": 18,
-                      "column": 14
+                      "column": 14,
+                      "program": "generic_typealias_func_type.sts"
                     }
                   }
                 },
@@ -247,11 +275,13 @@
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 5
+                              "column": 5,
+                              "program": "generic_typealias_func_type.sts"
                             },
                             "end": {
                               "line": 19,
-                              "column": 8
+                              "column": 8,
+                              "program": "generic_typealias_func_type.sts"
                             }
                           }
                         },
@@ -281,33 +311,39 @@
                                           "loc": {
                                             "start": {
                                               "line": 19,
-                                              "column": 14
+                                              "column": 14,
+                                              "program": "generic_typealias_func_type.sts"
                                             },
                                             "end": {
                                               "line": 19,
-                                              "column": 20
+                                              "column": 20,
+                                              "program": "generic_typealias_func_type.sts"
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 19,
-                                            "column": 14
+                                            "column": 14,
+                                            "program": "generic_typealias_func_type.sts"
                                           },
                                           "end": {
                                             "line": 19,
-                                            "column": 21
+                                            "column": 21,
+                                            "program": "generic_typealias_func_type.sts"
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
                                           "line": 19,
-                                          "column": 14
+                                          "column": 14,
+                                          "program": "generic_typealias_func_type.sts"
                                         },
                                         "end": {
                                           "line": 19,
-                                          "column": 21
+                                          "column": 21,
+                                          "program": "generic_typealias_func_type.sts"
                                         }
                                       }
                                     },
@@ -315,22 +351,26 @@
                                     "loc": {
                                       "start": {
                                         "line": 19,
-                                        "column": 10
+                                        "column": 10,
+                                        "program": "generic_typealias_func_type.sts"
                                       },
                                       "end": {
                                         "line": 19,
-                                        "column": 21
+                                        "column": 21,
+                                        "program": "generic_typealias_func_type.sts"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 19,
-                                      "column": 10
+                                      "column": 10,
+                                      "program": "generic_typealias_func_type.sts"
                                     },
                                     "end": {
                                       "line": 19,
-                                      "column": 21
+                                      "column": 21,
+                                      "program": "generic_typealias_func_type.sts"
                                     }
                                   }
                                 }
@@ -353,33 +393,39 @@
                                             "loc": {
                                               "start": {
                                                 "line": 19,
-                                                "column": 29
+                                                "column": 29,
+                                                "program": "generic_typealias_func_type.sts"
                                               },
                                               "end": {
                                                 "line": 19,
-                                                "column": 32
+                                                "column": 32,
+                                                "program": "generic_typealias_func_type.sts"
                                               }
                                             }
                                           },
                                           "loc": {
                                             "start": {
                                               "line": 19,
-                                              "column": 29
+                                              "column": 29,
+                                              "program": "generic_typealias_func_type.sts"
                                             },
                                             "end": {
                                               "line": 19,
-                                              "column": 33
+                                              "column": 33,
+                                              "program": "generic_typealias_func_type.sts"
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 19,
-                                            "column": 29
+                                            "column": 29,
+                                            "program": "generic_typealias_func_type.sts"
                                           },
                                           "end": {
                                             "line": 19,
-                                            "column": 33
+                                            "column": 33,
+                                            "program": "generic_typealias_func_type.sts"
                                           }
                                         }
                                       },
@@ -390,11 +436,13 @@
                                           "loc": {
                                             "start": {
                                               "line": 19,
-                                              "column": 33
+                                              "column": 33,
+                                              "program": "generic_typealias_func_type.sts"
                                             },
                                             "end": {
                                               "line": 19,
-                                              "column": 34
+                                              "column": 34,
+                                              "program": "generic_typealias_func_type.sts"
                                             }
                                           }
                                         }
@@ -402,22 +450,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 19,
-                                          "column": 25
+                                          "column": 25,
+                                          "program": "generic_typealias_func_type.sts"
                                         },
                                         "end": {
                                           "line": 19,
-                                          "column": 36
+                                          "column": 36,
+                                          "program": "generic_typealias_func_type.sts"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 1,
-                                        "column": 1
+                                        "column": 1,
+                                        "program": null
                                       },
                                       "end": {
                                         "line": 1,
-                                        "column": 1
+                                        "column": 1,
+                                        "program": null
                                       }
                                     }
                                   }
@@ -425,33 +477,39 @@
                                 "loc": {
                                   "start": {
                                     "line": 1,
-                                    "column": 1
+                                    "column": 1,
+                                    "program": null
                                   },
                                   "end": {
                                     "line": 1,
-                                    "column": 1
+                                    "column": 1,
+                                    "program": null
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 9
+                                  "column": 9,
+                                  "program": "generic_typealias_func_type.sts"
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 36
+                                  "column": 36,
+                                  "program": "generic_typealias_func_type.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 9
+                                "column": 9,
+                                "program": "generic_typealias_func_type.sts"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 36
+                                "column": 36,
+                                "program": "generic_typealias_func_type.sts"
                               }
                             }
                           }
@@ -460,22 +518,26 @@
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 5
+                            "column": 5,
+                            "program": "generic_typealias_func_type.sts"
                           },
                           "end": {
                             "line": 19,
-                            "column": 36
+                            "column": 36,
+                            "program": "generic_typealias_func_type.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 5
+                          "column": 5,
+                          "program": "generic_typealias_func_type.sts"
                         },
                         "end": {
                           "line": 19,
-                          "column": 37
+                          "column": 37,
+                          "program": "generic_typealias_func_type.sts"
                         }
                       }
                     }
@@ -483,33 +545,39 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 17
+                      "column": 17,
+                      "program": "generic_typealias_func_type.sts"
                     },
                     "end": {
                       "line": 20,
-                      "column": 2
+                      "column": 2,
+                      "program": "generic_typealias_func_type.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 10
+                    "column": 10,
+                    "program": "generic_typealias_func_type.sts"
                   },
                   "end": {
                     "line": 20,
-                    "column": 2
+                    "column": 2,
+                    "program": "generic_typealias_func_type.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 10
+                  "column": 10,
+                  "program": "generic_typealias_func_type.sts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 2
+                  "column": 2,
+                  "program": "generic_typealias_func_type.sts"
                 }
               }
             },
@@ -518,11 +586,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 1
+                "column": 1,
+                "program": "generic_typealias_func_type.sts"
               },
               "end": {
                 "line": 20,
-                "column": 2
+                "column": 2,
+                "program": "generic_typealias_func_type.sts"
               }
             }
           }
@@ -530,22 +600,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "generic_typealias_func_type.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "generic_typealias_func_type.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "generic_typealias_func_type.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "generic_typealias_func_type.sts"
         }
       }
     }
@@ -553,11 +627,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "generic_typealias_func_type.sts"
     },
     "end": {
       "line": 21,
-      "column": 1
+      "column": 1,
+      "program": "generic_typealias_func_type.sts"
     }
   }
 }

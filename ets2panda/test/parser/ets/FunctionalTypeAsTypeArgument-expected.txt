@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "FunctionalTypeAsTypeArgument.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "FunctionalTypeAsTypeArgument.sts"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +79,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +120,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "FunctionalTypeAsTypeArgument.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "FunctionalTypeAsTypeArgument.sts"
               }
             }
           },
@@ -125,11 +139,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -149,11 +165,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -167,33 +185,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -202,11 +226,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "FunctionalTypeAsTypeArgument.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "FunctionalTypeAsTypeArgument.sts"
               }
             }
           },
@@ -219,11 +245,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 7
+                  "column": 7,
+                  "program": "FunctionalTypeAsTypeArgument.sts"
                 },
                 "end": {
                   "line": 16,
-                  "column": 11
+                  "column": 11,
+                  "program": "FunctionalTypeAsTypeArgument.sts"
                 }
               }
             },
@@ -240,11 +268,13 @@
                     "loc": {
                       "start": {
                         "line": 16,
-                        "column": 18
+                        "column": 18,
+                        "program": "FunctionalTypeAsTypeArgument.sts"
                       },
                       "end": {
                         "line": 16,
-                        "column": 23
+                        "column": 23,
+                        "program": "FunctionalTypeAsTypeArgument.sts"
                       }
                     }
                   },
@@ -270,33 +300,39 @@
                                     "loc": {
                                       "start": {
                                         "line": 16,
-                                        "column": 31
+                                        "column": 31,
+                                        "program": "FunctionalTypeAsTypeArgument.sts"
                                       },
                                       "end": {
                                         "line": 16,
-                                        "column": 37
+                                        "column": 37,
+                                        "program": "FunctionalTypeAsTypeArgument.sts"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 16,
-                                      "column": 31
+                                      "column": 31,
+                                      "program": "FunctionalTypeAsTypeArgument.sts"
                                     },
                                     "end": {
                                       "line": 16,
-                                      "column": 38
+                                      "column": 38,
+                                      "program": "FunctionalTypeAsTypeArgument.sts"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 16,
-                                    "column": 31
+                                    "column": 31,
+                                    "program": "FunctionalTypeAsTypeArgument.sts"
                                   },
                                   "end": {
                                     "line": 16,
-                                    "column": 38
+                                    "column": 38,
+                                    "program": "FunctionalTypeAsTypeArgument.sts"
                                   }
                                 }
                               },
@@ -304,22 +340,26 @@
                               "loc": {
                                 "start": {
                                   "line": 16,
-                                  "column": 25
+                                  "column": 25,
+                                  "program": "FunctionalTypeAsTypeArgument.sts"
                                 },
                                 "end": {
                                   "line": 16,
-                                  "column": 38
+                                  "column": 38,
+                                  "program": "FunctionalTypeAsTypeArgument.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 16,
-                                "column": 25
+                                "column": 25,
+                                "program": "FunctionalTypeAsTypeArgument.sts"
                               },
                               "end": {
                                 "line": 16,
-                                "column": 38
+                                "column": 38,
+                                "program": "FunctionalTypeAsTypeArgument.sts"
                               }
                             }
                           }
@@ -329,22 +369,26 @@
                           "loc": {
                             "start": {
                               "line": 16,
-                              "column": 42
+                              "column": 42,
+                              "program": "FunctionalTypeAsTypeArgument.sts"
                             },
                             "end": {
                               "line": 16,
-                              "column": 46
+                              "column": 46,
+                              "program": "FunctionalTypeAsTypeArgument.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 16,
-                            "column": 24
+                            "column": 24,
+                            "program": "FunctionalTypeAsTypeArgument.sts"
                           },
                           "end": {
                             "line": 16,
-                            "column": 46
+                            "column": 46,
+                            "program": "FunctionalTypeAsTypeArgument.sts"
                           }
                         }
                       }
@@ -352,33 +396,39 @@
                     "loc": {
                       "start": {
                         "line": 16,
-                        "column": 23
+                        "column": 23,
+                        "program": "FunctionalTypeAsTypeArgument.sts"
                       },
                       "end": {
                         "line": 16,
-                        "column": 47
+                        "column": 47,
+                        "program": "FunctionalTypeAsTypeArgument.sts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 18
+                      "column": 18,
+                      "program": "FunctionalTypeAsTypeArgument.sts"
                     },
                     "end": {
                       "line": 16,
-                      "column": 48
+                      "column": 48,
+                      "program": "FunctionalTypeAsTypeArgument.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 18
+                    "column": 18,
+                    "program": "FunctionalTypeAsTypeArgument.sts"
                   },
                   "end": {
                     "line": 16,
-                    "column": 48
+                    "column": 48,
+                    "program": "FunctionalTypeAsTypeArgument.sts"
                   }
                 }
               },
@@ -386,11 +436,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 14
+                  "column": 14,
+                  "program": "FunctionalTypeAsTypeArgument.sts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 1
+                  "column": 1,
+                  "program": "FunctionalTypeAsTypeArgument.sts"
                 }
               }
             },
@@ -405,11 +457,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 7
+                "column": 7,
+                "program": "FunctionalTypeAsTypeArgument.sts"
               },
               "end": {
                 "line": 17,
-                "column": 1
+                "column": 1,
+                "program": "FunctionalTypeAsTypeArgument.sts"
               }
             }
           }
@@ -417,22 +471,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "FunctionalTypeAsTypeArgument.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "FunctionalTypeAsTypeArgument.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "FunctionalTypeAsTypeArgument.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "FunctionalTypeAsTypeArgument.sts"
         }
       }
     }
@@ -440,11 +498,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "FunctionalTypeAsTypeArgument.sts"
     },
     "end": {
       "line": 17,
-      "column": 1
+      "column": 1,
+      "program": "FunctionalTypeAsTypeArgument.sts"
     }
   }
 }

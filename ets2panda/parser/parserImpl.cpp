@@ -385,7 +385,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
         }
         default: {
             LogError(diagnostic::UNEXPECTED_TOKEN);
-            propName = AllocBrokenExpression();
+            propName = AllocBrokenExpression(Lexer()->GetToken().Loc());
         }
     }
 
@@ -678,7 +678,9 @@ ir::MethodDefinition *ParserImpl::BuildImplicitConstructor(ir::ClassDefinitionMo
     auto *ctor = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::CONSTRUCTOR, key, funcExpr,
                                                  ir::ModifierFlags::NONE, Allocator(), false);
 
-    ctor->SetRange({startLoc, lexer_->GetToken().End()});
+    const auto rangeImplicitContstuctor = lexer::SourceRange(startLoc, startLoc);
+    ctor->IterateRecursively(
+        [&rangeImplicitContstuctor](ir::AstNode *node) -> void { node->SetRange(rangeImplicitContstuctor); });
 
     return ctor;
 }
@@ -709,7 +711,7 @@ ir::Identifier *ParserImpl::ParseClassIdent(ir::ClassDefinitionModifiers modifie
 
     if (idRequired == ir::ClassDefinitionModifiers::DECLARATION_ID_REQUIRED) {
         LogError(diagnostic::UNEXPECTED_TOKEN_ID);
-        return AllocBrokenExpression();
+        return AllocBrokenExpression(Lexer()->GetToken().Loc());
     }
 
     return nullptr;
@@ -792,6 +794,7 @@ ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers mo
     auto savedCtx = SavedStatusContext<ParserStatus::IN_CLASS_BODY>(&context_);
 
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
+    const auto startOfInnerBody = lexer_->GetToken().End();
     lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
 
     ir::MethodDefinition *ctor = nullptr;
@@ -828,10 +831,10 @@ ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers mo
         }
     }
 
-    lexer::SourcePosition endLoc = lexer_->GetToken().End();
-    CreateImplicitConstructor(ctor, properties, modifiers, flags, endLoc);
+    CreateImplicitConstructor(ctor, properties, modifiers, flags, startOfInnerBody);
     ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE);
 
+    lexer::SourcePosition endLoc = lexer_->GetToken().End();
     return {ctor, std::move(properties), lexer::SourceRange {startLoc, endLoc}};
 }
 
@@ -899,7 +902,7 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
 ir::Expression *ParserImpl::CreateParameterThis([[maybe_unused]] ir::TypeNode *typeAnnotation)
 {
     LogError(diagnostic::UNEXPECTED_TOKEN_ID_FUN);
-    return AllocBrokenExpression();
+    return AllocBrokenExpression(Lexer()->GetToken().Loc());
 }
 
 std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParserImpl::ParseFunctionBody(
@@ -1228,7 +1231,7 @@ ir::Identifier *ParserImpl::ExpectIdentifier([[maybe_unused]] bool isReference, 
         }
         LogError(diagnostic::IDENTIFIER_EXPECTED_HERE, {TokenToString(tokenType)}, tokenStart);
         lexer_->NextToken();
-        return AllocBrokenExpression();
+        return AllocBrokenExpression(tokenStart);
     }
 
     auto *ident = AllocNode<ir::Identifier>(tokenName, Allocator());
@@ -1301,30 +1304,28 @@ void ParserImpl::LogExpectedToken(lexer::TokenType tokenType)
 
 void ParserImpl::LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos)
 {
-    diagnosticEngine_.LogSyntaxError(program_, errorMessage, pos);
+    diagnosticEngine_.LogSyntaxError(errorMessage, pos);
 }
 
 void ParserImpl::LogSyntaxError(std::string_view const errorMessage)
 {
-    diagnosticEngine_.LogSyntaxError(program_, errorMessage, lexer_->GetToken().Start());
+    diagnosticEngine_.LogSyntaxError(errorMessage, lexer_->GetToken().Start());
 }
 
 void ParserImpl::LogSyntaxError(const util::DiagnosticMessageParams &list)
 {
-    diagnosticEngine_.LogSyntaxError(program_, list, lexer_->GetToken().Start());
+    diagnosticEngine_.LogSyntaxError(list, lexer_->GetToken().Start());
 }
 
 void ParserImpl::LogSyntaxError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)
 {
-    diagnosticEngine_.LogSyntaxError(program_, list, pos);
+    diagnosticEngine_.LogSyntaxError(list, pos);
 }
 
 void ParserImpl::LogError(const diagnostic::DiagnosticKind &diagnostic,
                           const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &pos)
 {
-    auto loc = pos.ToLocation(program_);
-    diagnosticEngine_.LogDiagnostic(diagnostic, std::move(diagnosticParams), program_->SourceFilePath().Utf8(),
-                                    loc.line, loc.col);
+    diagnosticEngine_.LogDiagnostic(diagnostic, std::move(diagnosticParams), pos);
 }
 
 void ParserImpl::LogError(const diagnostic::DiagnosticKind &diagnostic,
@@ -1335,7 +1336,7 @@ void ParserImpl::LogError(const diagnostic::DiagnosticKind &diagnostic,
 
 void ParserImpl::LogGenericError(std::string_view errorMessage)
 {
-    diagnosticEngine_.LogFatalError(program_, errorMessage, lexer_->GetToken().Start());
+    diagnosticEngine_.LogFatalError(errorMessage, lexer_->GetToken().Start());
 }
 
 ScriptExtension ParserImpl::Extension() const
@@ -1343,9 +1344,9 @@ ScriptExtension ParserImpl::Extension() const
     return program_->Extension();
 }
 
-std::pair<const parser::Program *, lexer::SourcePosition> ParserImpl::GetPositionForDiagnostic() const
+lexer::SourcePosition ParserImpl::GetPositionForDiagnostic() const
 {
-    return {GetProgram(), Lexer()->GetToken().Start()};
+    return Lexer()->GetToken().Start();
 }
 
 bool ParserImpl::CheckModuleAsModifier()
@@ -1411,13 +1412,28 @@ bool ParserImpl::ParseList(std::optional<lexer::TokenType> termToken, lexer::Nex
     return success;
 }
 
-ir::Identifier *ParserImpl::AllocBrokenExpression()
+ir::Identifier *ParserImpl::AllocBrokenExpression(const lexer::SourcePosition &pos)
 {
-    return AllocNode<ir::Identifier>(Allocator());
+    return AllocBrokenExpression({pos, pos});
 }
 
-ir::TypeNode *ParserImpl::AllocBrokenType()
+ir::Identifier *ParserImpl::AllocBrokenExpression(const lexer::SourceRange &range)
 {
-    return AllocNode<ir::BrokenTypeNode>(Allocator());
+    auto *node = AllocNode<ir::Identifier>(Allocator());
+    node->SetRange(range);
+    return node;
 }
+
+ir::TypeNode *ParserImpl::AllocBrokenType(const lexer::SourcePosition &pos)
+{
+    return AllocBrokenType({pos, pos});
+}
+
+ir::TypeNode *ParserImpl::AllocBrokenType(const lexer::SourceRange &range)
+{
+    auto node = AllocNode<ir::BrokenTypeNode>(Allocator());
+    node->SetRange(range);
+    return node;
+}
+
 }  // namespace ark::es2panda::parser

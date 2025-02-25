@@ -104,7 +104,7 @@ public:
         GetContext().Status() |= status;
     }
 
-    std::pair<const parser::Program *, lexer::SourcePosition> GetPositionForDiagnostic() const;
+    lexer::SourcePosition GetPositionForDiagnostic() const;
 
 protected:
     virtual void ParseProgram(ScriptKind kind);
@@ -202,7 +202,8 @@ protected:
     void LogGenericError(std::string_view errorMessage);
     // Error handling
     ir::Statement *AllocEmptyStatement();
-    ir::Statement *AllocBrokenStatement();
+    ir::Statement *AllocBrokenStatement(const lexer::SourcePosition &pos);
+    ir::Statement *AllocBrokenStatement(const lexer::SourceRange &pos);
     bool IsBrokenStatement(ir::Statement *st);
 
     template <typename T, typename... Args>
@@ -214,8 +215,10 @@ protected:
         return ret;
     }
 
-    ir::Identifier *AllocBrokenExpression();
-    ir::TypeNode *AllocBrokenType();
+    ir::Identifier *AllocBrokenExpression(const lexer::SourcePosition &pos);
+    ir::Identifier *AllocBrokenExpression(const lexer::SourceRange &range);
+    ir::TypeNode *AllocBrokenType(const lexer::SourcePosition &pos);
+    ir::TypeNode *AllocBrokenType(const lexer::SourceRange &range);
 
     ArenaAllocator *Allocator() const
     {

@@ -22,4 +22,4 @@ let c = new C()
 /* @@@ label Error SyntaxError: Type import requires selective binding to define the required imported elements.  */
 /* @@@ label1 Error SyntaxError: Unexpected token, expected 'as'.  */
 /* @@? 16:49 Error TypeError: Class 'C' is already defined. */
-/* @@? 1:1 Error TypeError: Function main is already declared. */
+/* @@? export_type.sts:1:1 Error TypeError: Function main is already declared. */

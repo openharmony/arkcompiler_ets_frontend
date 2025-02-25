@@ -20,8 +20,7 @@
 namespace ark::es2panda::compiler {
 
 // #23080 code was moved to lowering for no reason
-static bool HasDefaultParameters(const ir::ScriptFunction *function, parser::Program *program,
-                                 util::DiagnosticEngine &diagnosticEngine)
+static bool HasDefaultParameters(const ir::ScriptFunction *function, util::DiagnosticEngine &diagnosticEngine)
 {
     bool hasDefaultParameter = false;
     bool hasRestParameter = false;
@@ -35,7 +34,7 @@ static bool HasDefaultParameters(const ir::ScriptFunction *function, parser::Pro
         }
 
         if (hasRestParameter) {
-            diagnosticEngine.LogSyntaxError(program, "Rest parameter should be the last one.", param->Start());
+            diagnosticEngine.LogSyntaxError("Rest parameter should be the last one.", param->Start());
         }
 
         if (param->IsOptional()) {
@@ -44,15 +43,13 @@ static bool HasDefaultParameters(const ir::ScriptFunction *function, parser::Pro
         }
 
         if (hasDefaultParameter) {
-            diagnosticEngine.LogSyntaxError(program, "Required parameter follows default parameter(s).",
-                                            param->Start());
+            diagnosticEngine.LogSyntaxError("Required parameter follows default parameter(s).", param->Start());
         }
     }
 
     if (hasDefaultParameter && hasRestParameter) {
         diagnosticEngine.LogSyntaxError(
-            program, "Both optional and rest parameters are not allowed in function's parameter list.",
-            function->Start());
+            "Both optional and rest parameters are not allowed in function's parameter list.", function->Start());
     }
 
     return hasDefaultParameter;
@@ -146,7 +143,7 @@ static ir::FunctionExpression *CreateFunctionExpression(ir::MethodDefinition *me
                                                         ArenaVector<ir::Expression *> funcDefinitionArgs,
                                                         ArenaVector<ir::Expression *> funcCallArgs)
 {
-    lexer::SourcePosition startLoc(method->Start().line, method->Start().index);
+    lexer::SourcePosition startLoc(method->Start());
     lexer::SourcePosition endLoc = startLoc;
     ir::FunctionSignature signature = CreateFunctionSignature(method, std::move(funcDefinitionArgs), ctx);
 
@@ -273,9 +270,9 @@ bool DefaultParametersInConstructorLowering::PerformForModule(public_lib::Contex
     util::DiagnosticEngine *logger = ctx->diagnosticEngine;
     std::vector<ir::MethodDefinition *> foundNodes {};
 
-    program->Ast()->IterateRecursively([&foundNodes, program, logger](ir::AstNode *ast) {
+    program->Ast()->IterateRecursively([&foundNodes, logger](ir::AstNode *ast) {
         if (ast->IsMethodDefinition() && ast->AsMethodDefinition()->IsConstructor()) {
-            if (HasDefaultParameters(ast->AsMethodDefinition()->Function(), program, *logger)) {
+            if (HasDefaultParameters(ast->AsMethodDefinition()->Function(), *logger)) {
                 // store all nodes (which is function definition with default/optional parameters)
                 // to specific list, to process them later, as for now we can't modify AST in the
                 // middle of walking through it

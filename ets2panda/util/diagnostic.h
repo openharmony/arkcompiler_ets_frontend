@@ -26,10 +26,6 @@ namespace ark::es2panda::diagnostic {
 class DiagnosticKind;
 }  // namespace ark::es2panda::diagnostic
 
-namespace ark::es2panda::parser {
-class Program;
-}  // namespace ark::es2panda::parser
-
 namespace ark::es2panda::checker {
 class Type;
 class Signature;
@@ -66,8 +62,8 @@ public:
     {
     }
 
-    DiagnosticBase(const parser::Program *program, const lexer::SourcePosition &poc);
-    DiagnosticBase(const parser::Program *program, const lexer::SourceLocation &loc);
+    explicit DiagnosticBase(const lexer::SourcePosition &poc);
+    explicit DiagnosticBase(const lexer::SourceLocation &loc);
 
     DEFAULT_COPY_SEMANTIC(DiagnosticBase);
     DEFAULT_MOVE_SEMANTIC(DiagnosticBase);
@@ -132,25 +128,20 @@ public:
         : DiagnosticBase(file, line, offset), type_(type), message_(message)
     {
     }
-    ThrowableDiagnostic(DiagnosticType type, const parser::Program *program, std::string_view message,
-                        const lexer::SourcePosition &poc)
-        : DiagnosticBase(program, poc), type_(type), message_(message)
+    ThrowableDiagnostic(DiagnosticType type, std::string_view message, const lexer::SourcePosition &poc)
+        : DiagnosticBase(poc), type_(type), message_(message)
     {
     }
-    ThrowableDiagnostic(DiagnosticType type, const parser::Program *program, std::string_view message,
-                        const lexer::SourceLocation &loc)
-        : DiagnosticBase(program, loc), type_(type), message_(message)
+    ThrowableDiagnostic(DiagnosticType type, std::string_view message, const lexer::SourceLocation &loc)
+        : DiagnosticBase(loc), type_(type), message_(message)
     {
     }
-    ThrowableDiagnostic(DiagnosticType type, const parser::Program *program, DiagnosticMessageParams params,
-                        const lexer::SourcePosition &poc);
-    ThrowableDiagnostic(DiagnosticType type, const parser::Program *program, DiagnosticMessageParams params,
-                        const lexer::SourceLocation &loc);
+    ThrowableDiagnostic(DiagnosticType type, DiagnosticMessageParams params, const lexer::SourcePosition &poc);
+    ThrowableDiagnostic(DiagnosticType type, DiagnosticMessageParams params, const lexer::SourceLocation &loc);
     ThrowableDiagnostic(DiagnosticType type, DiagnosticMessageParams params, std::string_view file = "",
                         size_t line = 0, size_t offset = 0);
     ThrowableDiagnostic(DiagnosticType type, const diagnostic::DiagnosticKind &diagnosticKind,
-                        const util::DiagnosticMessageParams &diagnosticParams, std::string_view file,
-                        const lexer::SourceLocation &loc);
+                        const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &poc);
 
     DEFAULT_COPY_SEMANTIC(ThrowableDiagnostic);
     DEFAULT_MOVE_SEMANTIC(ThrowableDiagnostic);
@@ -174,11 +165,9 @@ private:
 class Diagnostic : public DiagnosticBase {
 public:
     explicit Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
-                        const util::DiagnosticMessageParams &diagnosticParams, std::string_view file = "",
-                        size_t line = 0, size_t offset = 0);
+                        const util::DiagnosticMessageParams &diagnosticParams);
     explicit Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
-                        const util::DiagnosticMessageParams &diagnosticParams, const parser::Program *program,
-                        const lexer::SourcePosition &poc);
+                        const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &poc);
 
     NO_COPY_SEMANTIC(Diagnostic);
     DEFAULT_MOVE_SEMANTIC(Diagnostic);

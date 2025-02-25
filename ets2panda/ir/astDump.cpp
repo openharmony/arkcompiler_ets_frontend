@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -261,6 +261,13 @@ void AstDumper::SerializeSourcePosition(const lexer::SourcePosition &pos)
         ss_ << ',';
         SerializePropKey("column");
         SerializeNumber(loc.col);
+        ss_ << ',';
+        SerializePropKey("program");
+        if (loc.Program() != nullptr) {
+            SerializeString(loc.Program()->FileNameWithExtension().Utf8());
+        } else {
+            SerializeConstant(Property::Constant::PROP_NULL);
+        }
     });
 }
 

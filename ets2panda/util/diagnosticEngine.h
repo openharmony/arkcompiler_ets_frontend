@@ -25,7 +25,7 @@
 #include "lexer/token/sourceLocation.h"
 
 namespace ark::es2panda {
-std::pair<const parser::Program *, lexer::SourcePosition> GetPositionForDiagnostic();
+lexer::SourcePosition GetPositionForDiagnostic();
 }  // namespace ark::es2panda
 
 namespace ark::es2panda::util {
@@ -171,24 +171,23 @@ private:
 #ifndef NDEBUG
 // CC-OFFNXT(G.PRE.06) solid logic
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define ES2PANDA_ASSERT3(cond, program, position)                                            \
-    if (UNLIKELY(!(cond))) {                                                                 \
-        if (g_diagnosticEngine != nullptr) {                                                 \
-            g_diagnosticEngine->LogCompilerBug(program, std::string_view {#cond}, position); \
-            g_diagnosticEngine->FlushDiagnostic();                                           \
-        }                                                                                    \
-        ASSERT_FAIL(#cond);                                                                  \
+#define ES2PANDA_ASSERT3(cond, position)                                            \
+    if (UNLIKELY(!(cond))) {                                                        \
+        if (g_diagnosticEngine != nullptr) {                                        \
+            g_diagnosticEngine->LogCompilerBug(std::string_view {#cond}, position); \
+            g_diagnosticEngine->FlushDiagnostic();                                  \
+        }                                                                           \
+        ASSERT_FAIL(#cond);                                                         \
     }
 
 // CC-OFFNXT(G.PRE.06) solid logic
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define ES2PANDA_ASSERT(cond) \
-    ES2PANDA_ASSERT3(cond, GetPositionForDiagnostic().first, GetPositionForDiagnostic().second)
+#define ES2PANDA_ASSERT(cond) ES2PANDA_ASSERT3(cond, GetPositionForDiagnostic())
 
 #else  // NDEBUG
 // CC-OFFNXT(G.PRE.06) solid logic
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define ES2PANDA_ASSERT3(cond, program, position) static_cast<void>(0)
+#define ES2PANDA_ASSERT3(cond, position) static_cast<void>(0)
 // CC-OFFNXT(G.PRE.06) solid logic
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define ES2PANDA_ASSERT(cond) static_cast<void>(0)

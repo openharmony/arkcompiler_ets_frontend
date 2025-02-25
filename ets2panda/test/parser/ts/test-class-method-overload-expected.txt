@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 15
+              "column": 15,
+              "program": "test-class-method-overload.ts"
             },
             "end": {
               "line": 17,
-              "column": 21
+              "column": 21,
+              "program": "test-class-method-overload.ts"
             }
           }
         },
@@ -30,11 +32,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 5
+                "column": 5,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
                 "line": 18,
-                "column": 16
+                "column": 16,
+                "program": "test-class-method-overload.ts"
               }
             }
           },
@@ -59,11 +63,13 @@
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 20
+                        "column": 20,
+                        "program": "test-class-method-overload.ts"
                       },
                       "end": {
                         "line": 18,
-                        "column": 26
+                        "column": 26,
+                        "program": "test-class-method-overload.ts"
                       }
                     }
                   },
@@ -71,11 +77,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 17
+                      "column": 17,
+                      "program": "test-class-method-overload.ts"
                     },
                     "end": {
                       "line": 18,
-                      "column": 18
+                      "column": 18,
+                      "program": "test-class-method-overload.ts"
                     }
                   }
                 }
@@ -83,22 +91,26 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 16
+                  "column": 16,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 28
+                  "column": 28,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 18,
-                "column": 16
+                "column": 16,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
                 "line": 18,
-                "column": 28
+                "column": 28,
+                "program": "test-class-method-overload.ts"
               }
             }
           },
@@ -107,11 +119,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 5
+              "column": 5,
+              "program": "test-class-method-overload.ts"
             },
             "end": {
               "line": 18,
-              "column": 28
+              "column": 28,
+              "program": "test-class-method-overload.ts"
             }
           }
         },
@@ -125,11 +139,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -149,22 +165,26 @@
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 6
+                    "column": 6,
+                    "program": "test-class-method-overload.ts"
                   },
                   "end": {
                     "line": 19,
-                    "column": 9
+                    "column": 9,
+                    "program": "test-class-method-overload.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 9
+                  "column": 9,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -173,11 +193,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 5
+                "column": 5,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
                 "line": 19,
-                "column": 9
+                "column": 9,
+                "program": "test-class-method-overload.ts"
               }
             }
           },
@@ -190,11 +212,13 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -214,22 +238,26 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 6
+                    "column": 6,
+                    "program": "test-class-method-overload.ts"
                   },
                   "end": {
                     "line": 20,
-                    "column": 9
+                    "column": 9,
+                    "program": "test-class-method-overload.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 9
+                  "column": 9,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -238,11 +266,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 5
+                "column": 5,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
                 "line": 20,
-                "column": 9
+                "column": 9,
+                "program": "test-class-method-overload.ts"
               }
             }
           },
@@ -255,11 +285,13 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 21,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -279,22 +311,26 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 6
+                    "column": 6,
+                    "program": "test-class-method-overload.ts"
                   },
                   "end": {
                     "line": 21,
-                    "column": 9
+                    "column": 9,
+                    "program": "test-class-method-overload.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 21,
-                  "column": 9
+                  "column": 9,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -303,11 +339,13 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 5
+                "column": 5,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
                 "line": 21,
-                "column": 9
+                "column": 9,
+                "program": "test-class-method-overload.ts"
               }
             }
           }
@@ -315,22 +353,26 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 22
+            "column": 22,
+            "program": "test-class-method-overload.ts"
           },
           "end": {
-            "line": 22,
-            "column": 2
+            "line": 24,
+            "column": 6,
+            "program": "test-class-method-overload.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 9
+          "column": 9,
+          "program": "test-class-method-overload.ts"
         },
         "end": {
-          "line": 22,
-          "column": 2
+          "line": 24,
+          "column": 6,
+          "program": "test-class-method-overload.ts"
         }
       }
     },
@@ -344,11 +386,13 @@
           "loc": {
             "start": {
               "line": 24,
-              "column": 7
+              "column": 7,
+              "program": "test-class-method-overload.ts"
             },
             "end": {
               "line": 24,
-              "column": 13
+              "column": 13,
+              "program": "test-class-method-overload.ts"
             }
           }
         },
@@ -362,12 +406,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 24,
+                "column": 15,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 24,
+                "column": 15,
+                "program": "test-class-method-overload.ts"
               }
             }
           },
@@ -389,34 +435,40 @@
                 "statements": [],
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 24,
+                    "column": 15,
+                    "program": "test-class-method-overload.ts"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 24,
+                    "column": 15,
+                    "program": "test-class-method-overload.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 24,
+                  "column": 15,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 24,
+                  "column": 15,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 24,
+                "column": 15,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 24,
+                "column": 15,
+                "program": "test-class-method-overload.ts"
               }
             }
           },
@@ -424,12 +476,14 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 44,
-              "column": 2
+              "line": 1,
+              "column": 1,
+              "program": null
             },
             "end": {
-              "line": 44,
-              "column": 2
+              "line": 1,
+              "column": 1,
+              "program": null
             }
           }
         },
@@ -443,11 +497,13 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 25,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -461,11 +517,13 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 25,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -474,11 +532,13 @@
             "loc": {
               "start": {
                 "line": 25,
-                "column": 5
+                "column": 5,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
                 "line": 25,
-                "column": 6
+                "column": 6,
+                "program": "test-class-method-overload.ts"
               }
             }
           },
@@ -491,11 +551,13 @@
               "loc": {
                 "start": {
                   "line": 26,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 26,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -509,11 +571,13 @@
               "loc": {
                 "start": {
                   "line": 26,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 26,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -522,11 +586,13 @@
             "loc": {
               "start": {
                 "line": 26,
-                "column": 5
+                "column": 5,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
                 "line": 26,
-                "column": 6
+                "column": 6,
+                "program": "test-class-method-overload.ts"
               }
             }
           },
@@ -539,11 +605,13 @@
               "loc": {
                 "start": {
                   "line": 27,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 27,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -563,22 +631,26 @@
                 "loc": {
                   "start": {
                     "line": 27,
-                    "column": 6
+                    "column": 6,
+                    "program": "test-class-method-overload.ts"
                   },
                   "end": {
                     "line": 27,
-                    "column": 9
+                    "column": 9,
+                    "program": "test-class-method-overload.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 27,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 27,
-                  "column": 9
+                  "column": 9,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -587,11 +659,13 @@
             "loc": {
               "start": {
                 "line": 27,
-                "column": 5
+                "column": 5,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
                 "line": 27,
-                "column": 9
+                "column": 9,
+                "program": "test-class-method-overload.ts"
               }
             }
           },
@@ -603,11 +677,13 @@
               "loc": {
                 "start": {
                   "line": 28,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 28,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -632,11 +708,13 @@
                       "loc": {
                         "start": {
                           "line": 28,
-                          "column": 13
+                          "column": 13,
+                          "program": "test-class-method-overload.ts"
                         },
                         "end": {
                           "line": 28,
-                          "column": 19
+                          "column": 19,
+                          "program": "test-class-method-overload.ts"
                         }
                       }
                     },
@@ -645,11 +723,13 @@
                     "loc": {
                       "start": {
                         "line": 28,
-                        "column": 9
+                        "column": 9,
+                        "program": "test-class-method-overload.ts"
                       },
                       "end": {
                         "line": 28,
-                        "column": 10
+                        "column": 10,
+                        "program": "test-class-method-overload.ts"
                       }
                     }
                   }
@@ -657,22 +737,26 @@
                 "loc": {
                   "start": {
                     "line": 28,
-                    "column": 8
+                    "column": 8,
+                    "program": "test-class-method-overload.ts"
                   },
                   "end": {
                     "line": 28,
-                    "column": 21
+                    "column": 21,
+                    "program": "test-class-method-overload.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 28,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 28,
-                  "column": 21
+                  "column": 21,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -681,11 +765,13 @@
             "loc": {
               "start": {
                 "line": 28,
-                "column": 5
+                "column": 5,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
                 "line": 28,
-                "column": 21
+                "column": 21,
+                "program": "test-class-method-overload.ts"
               }
             }
           },
@@ -697,11 +783,13 @@
               "loc": {
                 "start": {
                   "line": 29,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 29,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -721,22 +809,26 @@
                 "loc": {
                   "start": {
                     "line": 29,
-                    "column": 8
+                    "column": 8,
+                    "program": "test-class-method-overload.ts"
                   },
                   "end": {
                     "line": 29,
-                    "column": 11
+                    "column": 11,
+                    "program": "test-class-method-overload.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 29,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 29,
-                  "column": 11
+                  "column": 11,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -745,11 +837,13 @@
             "loc": {
               "start": {
                 "line": 29,
-                "column": 5
+                "column": 5,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
                 "line": 29,
-                "column": 11
+                "column": 11,
+                "program": "test-class-method-overload.ts"
               }
             }
           },
@@ -762,11 +856,13 @@
               "loc": {
                 "start": {
                   "line": 30,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 30,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -786,22 +882,26 @@
                 "loc": {
                   "start": {
                     "line": 30,
-                    "column": 6
+                    "column": 6,
+                    "program": "test-class-method-overload.ts"
                   },
                   "end": {
                     "line": 30,
-                    "column": 9
+                    "column": 9,
+                    "program": "test-class-method-overload.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 30,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 30,
-                  "column": 9
+                  "column": 9,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -810,11 +910,13 @@
             "loc": {
               "start": {
                 "line": 30,
-                "column": 5
+                "column": 5,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
                 "line": 30,
-                "column": 9
+                "column": 9,
+                "program": "test-class-method-overload.ts"
               }
             }
           },
@@ -827,11 +929,13 @@
               "loc": {
                 "start": {
                   "line": 31,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 31,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -856,11 +960,13 @@
                       "loc": {
                         "start": {
                           "line": 31,
-                          "column": 11
+                          "column": 11,
+                          "program": "test-class-method-overload.ts"
                         },
                         "end": {
                           "line": 31,
-                          "column": 17
+                          "column": 17,
+                          "program": "test-class-method-overload.ts"
                         }
                       }
                     },
@@ -869,11 +975,13 @@
                     "loc": {
                       "start": {
                         "line": 31,
-                        "column": 7
+                        "column": 7,
+                        "program": "test-class-method-overload.ts"
                       },
                       "end": {
                         "line": 31,
-                        "column": 8
+                        "column": 8,
+                        "program": "test-class-method-overload.ts"
                       }
                     }
                   },
@@ -885,11 +993,13 @@
                       "loc": {
                         "start": {
                           "line": 31,
-                          "column": 23
+                          "column": 23,
+                          "program": "test-class-method-overload.ts"
                         },
                         "end": {
                           "line": 31,
-                          "column": 29
+                          "column": 29,
+                          "program": "test-class-method-overload.ts"
                         }
                       }
                     },
@@ -898,11 +1008,13 @@
                     "loc": {
                       "start": {
                         "line": 31,
-                        "column": 19
+                        "column": 19,
+                        "program": "test-class-method-overload.ts"
                       },
                       "end": {
                         "line": 31,
-                        "column": 20
+                        "column": 20,
+                        "program": "test-class-method-overload.ts"
                       }
                     }
                   }
@@ -922,11 +1034,13 @@
                             "loc": {
                               "start": {
                                 "line": 32,
-                                "column": 9
+                                "column": 9,
+                                "program": "test-class-method-overload.ts"
                               },
                               "end": {
                                 "line": 32,
-                                "column": 13
+                                "column": 13,
+                                "program": "test-class-method-overload.ts"
                               }
                             }
                           },
@@ -937,11 +1051,13 @@
                             "loc": {
                               "start": {
                                 "line": 32,
-                                "column": 14
+                                "column": 14,
+                                "program": "test-class-method-overload.ts"
                               },
                               "end": {
                                 "line": 32,
-                                "column": 15
+                                "column": 15,
+                                "program": "test-class-method-overload.ts"
                               }
                             }
                           },
@@ -950,11 +1066,13 @@
                           "loc": {
                             "start": {
                               "line": 32,
-                              "column": 9
+                              "column": 9,
+                              "program": "test-class-method-overload.ts"
                             },
                             "end": {
                               "line": 32,
-                              "column": 15
+                              "column": 15,
+                              "program": "test-class-method-overload.ts"
                             }
                           }
                         },
@@ -968,11 +1086,13 @@
                             "loc": {
                               "start": {
                                 "line": 32,
-                                "column": 18
+                                "column": 18,
+                                "program": "test-class-method-overload.ts"
                               },
                               "end": {
                                 "line": 32,
-                                "column": 19
+                                "column": 19,
+                                "program": "test-class-method-overload.ts"
                               }
                             }
                           },
@@ -982,44 +1102,52 @@
                             "loc": {
                               "start": {
                                 "line": 32,
-                                "column": 23
+                                "column": 23,
+                                "program": "test-class-method-overload.ts"
                               },
                               "end": {
                                 "line": 32,
-                                "column": 25
+                                "column": 25,
+                                "program": "test-class-method-overload.ts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 32,
-                              "column": 18
+                              "column": 18,
+                              "program": "test-class-method-overload.ts"
                             },
                             "end": {
                               "line": 32,
-                              "column": 25
+                              "column": 25,
+                              "program": "test-class-method-overload.ts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 32,
-                            "column": 9
+                            "column": 9,
+                            "program": "test-class-method-overload.ts"
                           },
                           "end": {
                             "line": 32,
-                            "column": 25
+                            "column": 25,
+                            "program": "test-class-method-overload.ts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 32,
-                          "column": 9
+                          "column": 9,
+                          "program": "test-class-method-overload.ts"
                         },
                         "end": {
                           "line": 32,
-                          "column": 26
+                          "column": 26,
+                          "program": "test-class-method-overload.ts"
                         }
                       }
                     },
@@ -1035,11 +1163,13 @@
                             "loc": {
                               "start": {
                                 "line": 33,
-                                "column": 9
+                                "column": 9,
+                                "program": "test-class-method-overload.ts"
                               },
                               "end": {
                                 "line": 33,
-                                "column": 13
+                                "column": 13,
+                                "program": "test-class-method-overload.ts"
                               }
                             }
                           },
@@ -1050,11 +1180,13 @@
                             "loc": {
                               "start": {
                                 "line": 33,
-                                "column": 14
+                                "column": 14,
+                                "program": "test-class-method-overload.ts"
                               },
                               "end": {
                                 "line": 33,
-                                "column": 15
+                                "column": 15,
+                                "program": "test-class-method-overload.ts"
                               }
                             }
                           },
@@ -1063,11 +1195,13 @@
                           "loc": {
                             "start": {
                               "line": 33,
-                              "column": 9
+                              "column": 9,
+                              "program": "test-class-method-overload.ts"
                             },
                             "end": {
                               "line": 33,
-                              "column": 15
+                              "column": 15,
+                              "program": "test-class-method-overload.ts"
                             }
                           }
                         },
@@ -1081,11 +1215,13 @@
                             "loc": {
                               "start": {
                                 "line": 33,
-                                "column": 18
+                                "column": 18,
+                                "program": "test-class-method-overload.ts"
                               },
                               "end": {
                                 "line": 33,
-                                "column": 19
+                                "column": 19,
+                                "program": "test-class-method-overload.ts"
                               }
                             }
                           },
@@ -1095,44 +1231,52 @@
                             "loc": {
                               "start": {
                                 "line": 33,
-                                "column": 23
+                                "column": 23,
+                                "program": "test-class-method-overload.ts"
                               },
                               "end": {
                                 "line": 33,
-                                "column": 24
+                                "column": 24,
+                                "program": "test-class-method-overload.ts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 33,
-                              "column": 18
+                              "column": 18,
+                              "program": "test-class-method-overload.ts"
                             },
                             "end": {
                               "line": 33,
-                              "column": 24
+                              "column": 24,
+                              "program": "test-class-method-overload.ts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 33,
-                            "column": 9
+                            "column": 9,
+                            "program": "test-class-method-overload.ts"
                           },
                           "end": {
                             "line": 33,
-                            "column": 24
+                            "column": 24,
+                            "program": "test-class-method-overload.ts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 33,
-                          "column": 9
+                          "column": 9,
+                          "program": "test-class-method-overload.ts"
                         },
                         "end": {
                           "line": 33,
-                          "column": 25
+                          "column": 25,
+                          "program": "test-class-method-overload.ts"
                         }
                       }
                     },
@@ -1147,11 +1291,13 @@
                             "loc": {
                               "start": {
                                 "line": 34,
-                                "column": 9
+                                "column": 9,
+                                "program": "test-class-method-overload.ts"
                               },
                               "end": {
                                 "line": 34,
-                                "column": 13
+                                "column": 13,
+                                "program": "test-class-method-overload.ts"
                               }
                             }
                           },
@@ -1162,11 +1308,13 @@
                             "loc": {
                               "start": {
                                 "line": 34,
-                                "column": 14
+                                "column": 14,
+                                "program": "test-class-method-overload.ts"
                               },
                               "end": {
                                 "line": 34,
-                                "column": 15
+                                "column": 15,
+                                "program": "test-class-method-overload.ts"
                               }
                             }
                           },
@@ -1175,11 +1323,13 @@
                           "loc": {
                             "start": {
                               "line": 34,
-                              "column": 9
+                              "column": 9,
+                              "program": "test-class-method-overload.ts"
                             },
                             "end": {
                               "line": 34,
-                              "column": 15
+                              "column": 15,
+                              "program": "test-class-method-overload.ts"
                             }
                           }
                         },
@@ -1188,22 +1338,26 @@
                         "loc": {
                           "start": {
                             "line": 34,
-                            "column": 9
+                            "column": 9,
+                            "program": "test-class-method-overload.ts"
                           },
                           "end": {
                             "line": 34,
-                            "column": 17
+                            "column": 17,
+                            "program": "test-class-method-overload.ts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 34,
-                          "column": 9
+                          "column": 9,
+                          "program": "test-class-method-overload.ts"
                         },
                         "end": {
                           "line": 34,
-                          "column": 18
+                          "column": 18,
+                          "program": "test-class-method-overload.ts"
                         }
                       }
                     }
@@ -1211,33 +1365,39 @@
                   "loc": {
                     "start": {
                       "line": 31,
-                      "column": 31
+                      "column": 31,
+                      "program": "test-class-method-overload.ts"
                     },
                     "end": {
                       "line": 35,
-                      "column": 6
+                      "column": 6,
+                      "program": "test-class-method-overload.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 31,
-                    "column": 6
+                    "column": 6,
+                    "program": "test-class-method-overload.ts"
                   },
                   "end": {
                     "line": 35,
-                    "column": 6
+                    "column": 6,
+                    "program": "test-class-method-overload.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 31,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 35,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -1246,11 +1406,13 @@
             "loc": {
               "start": {
                 "line": 31,
-                "column": 5
+                "column": 5,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
                 "line": 35,
-                "column": 6
+                "column": 6,
+                "program": "test-class-method-overload.ts"
               }
             }
           },
@@ -1262,11 +1424,13 @@
               "loc": {
                 "start": {
                   "line": 36,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 36,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -1286,22 +1450,26 @@
                 "loc": {
                   "start": {
                     "line": 36,
-                    "column": 8
+                    "column": 8,
+                    "program": "test-class-method-overload.ts"
                   },
                   "end": {
                     "line": 36,
-                    "column": 11
+                    "column": 11,
+                    "program": "test-class-method-overload.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 36,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 36,
-                  "column": 11
+                  "column": 11,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -1310,11 +1478,13 @@
             "loc": {
               "start": {
                 "line": 36,
-                "column": 5
+                "column": 5,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
                 "line": 36,
-                "column": 11
+                "column": 11,
+                "program": "test-class-method-overload.ts"
               }
             }
           },
@@ -1326,11 +1496,13 @@
               "loc": {
                 "start": {
                   "line": 37,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 37,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -1350,22 +1522,26 @@
                 "loc": {
                   "start": {
                     "line": 37,
-                    "column": 6
+                    "column": 6,
+                    "program": "test-class-method-overload.ts"
                   },
                   "end": {
                     "line": 37,
-                    "column": 9
+                    "column": 9,
+                    "program": "test-class-method-overload.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 37,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 37,
-                  "column": 9
+                  "column": 9,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -1374,11 +1550,13 @@
             "loc": {
               "start": {
                 "line": 37,
-                "column": 5
+                "column": 5,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
                 "line": 37,
-                "column": 9
+                "column": 9,
+                "program": "test-class-method-overload.ts"
               }
             }
           },
@@ -1390,11 +1568,13 @@
               "loc": {
                 "start": {
                   "line": 38,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 38,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -1414,22 +1594,26 @@
                 "loc": {
                   "start": {
                     "line": 38,
-                    "column": 6
+                    "column": 6,
+                    "program": "test-class-method-overload.ts"
                   },
                   "end": {
                     "line": 38,
-                    "column": 9
+                    "column": 9,
+                    "program": "test-class-method-overload.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 38,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 38,
-                  "column": 9
+                  "column": 9,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -1438,11 +1622,13 @@
             "loc": {
               "start": {
                 "line": 38,
-                "column": 5
+                "column": 5,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
                 "line": 38,
-                "column": 9
+                "column": 9,
+                "program": "test-class-method-overload.ts"
               }
             }
           },
@@ -1454,11 +1640,13 @@
               "loc": {
                 "start": {
                   "line": 39,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 39,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -1478,22 +1666,26 @@
                 "loc": {
                   "start": {
                     "line": 39,
-                    "column": 8
+                    "column": 8,
+                    "program": "test-class-method-overload.ts"
                   },
                   "end": {
                     "line": 39,
-                    "column": 11
+                    "column": 11,
+                    "program": "test-class-method-overload.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 39,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 39,
-                  "column": 11
+                  "column": 11,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -1502,11 +1694,13 @@
             "loc": {
               "start": {
                 "line": 39,
-                "column": 5
+                "column": 5,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
                 "line": 39,
-                "column": 11
+                "column": 11,
+                "program": "test-class-method-overload.ts"
               }
             }
           },
@@ -1518,11 +1712,13 @@
               "loc": {
                 "start": {
                   "line": 40,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 40,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -1545,33 +1741,39 @@
                   "loc": {
                     "start": {
                       "line": 40,
-                      "column": 9
+                      "column": 9,
+                      "program": "test-class-method-overload.ts"
                     },
                     "end": {
                       "line": 40,
-                      "column": 12
+                      "column": 12,
+                      "program": "test-class-method-overload.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 40,
-                    "column": 6
+                    "column": 6,
+                    "program": "test-class-method-overload.ts"
                   },
                   "end": {
                     "line": 40,
-                    "column": 12
+                    "column": 12,
+                    "program": "test-class-method-overload.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 40,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 40,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -1580,11 +1782,13 @@
             "loc": {
               "start": {
                 "line": 40,
-                "column": 5
+                "column": 5,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
                 "line": 40,
-                "column": 12
+                "column": 12,
+                "program": "test-class-method-overload.ts"
               }
             }
           },
@@ -1597,11 +1801,13 @@
               "loc": {
                 "start": {
                   "line": 41,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 41,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -1623,11 +1829,13 @@
                   "loc": {
                     "start": {
                       "line": 41,
-                      "column": 10
+                      "column": 10,
+                      "program": "test-class-method-overload.ts"
                     },
                     "end": {
                       "line": 41,
-                      "column": 14
+                      "column": 14,
+                      "program": "test-class-method-overload.ts"
                     }
                   }
                 },
@@ -1647,11 +1855,13 @@
                             "loc": {
                               "start": {
                                 "line": 42,
-                                "column": 9
+                                "column": 9,
+                                "program": "test-class-method-overload.ts"
                               },
                               "end": {
                                 "line": 42,
-                                "column": 13
+                                "column": 13,
+                                "program": "test-class-method-overload.ts"
                               }
                             }
                           },
@@ -1662,11 +1872,13 @@
                             "loc": {
                               "start": {
                                 "line": 42,
-                                "column": 14
+                                "column": 14,
+                                "program": "test-class-method-overload.ts"
                               },
                               "end": {
                                 "line": 42,
-                                "column": 15
+                                "column": 15,
+                                "program": "test-class-method-overload.ts"
                               }
                             }
                           },
@@ -1675,33 +1887,39 @@
                           "loc": {
                             "start": {
                               "line": 42,
-                              "column": 9
+                              "column": 9,
+                              "program": "test-class-method-overload.ts"
                             },
                             "end": {
                               "line": 42,
-                              "column": 15
+                              "column": 15,
+                              "program": "test-class-method-overload.ts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 42,
-                            "column": 9
+                            "column": 9,
+                            "program": "test-class-method-overload.ts"
                           },
                           "end": {
                             "line": 42,
-                            "column": 17
+                            "column": 17,
+                            "program": "test-class-method-overload.ts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 42,
-                          "column": 9
+                          "column": 9,
+                          "program": "test-class-method-overload.ts"
                         },
                         "end": {
                           "line": 42,
-                          "column": 18
+                          "column": 18,
+                          "program": "test-class-method-overload.ts"
                         }
                       }
                     }
@@ -1709,33 +1927,39 @@
                   "loc": {
                     "start": {
                       "line": 41,
-                      "column": 15
+                      "column": 15,
+                      "program": "test-class-method-overload.ts"
                     },
                     "end": {
                       "line": 43,
-                      "column": 6
+                      "column": 6,
+                      "program": "test-class-method-overload.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 41,
-                    "column": 6
+                    "column": 6,
+                    "program": "test-class-method-overload.ts"
                   },
                   "end": {
                     "line": 43,
-                    "column": 6
+                    "column": 6,
+                    "program": "test-class-method-overload.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 41,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 },
                 "end": {
                   "line": 43,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-method-overload.ts"
                 }
               }
             },
@@ -1744,11 +1968,13 @@
             "loc": {
               "start": {
                 "line": 41,
-                "column": 5
+                "column": 5,
+                "program": "test-class-method-overload.ts"
               },
               "end": {
                 "line": 43,
-                "column": 6
+                "column": 6,
+                "program": "test-class-method-overload.ts"
               }
             }
           }
@@ -1756,22 +1982,26 @@
         "loc": {
           "start": {
             "line": 24,
-            "column": 14
+            "column": 14,
+            "program": "test-class-method-overload.ts"
           },
           "end": {
-            "line": 44,
-            "column": 2
+            "line": 45,
+            "column": 1,
+            "program": "test-class-method-overload.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 24,
-          "column": 1
+          "column": 1,
+          "program": "test-class-method-overload.ts"
         },
         "end": {
-          "line": 44,
-          "column": 2
+          "line": 45,
+          "column": 1,
+          "program": "test-class-method-overload.ts"
         }
       }
     }
@@ -1779,11 +2009,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-class-method-overload.ts"
     },
     "end": {
       "line": 45,
-      "column": 1
+      "column": 1,
+      "program": "test-class-method-overload.ts"
     }
   }
 }

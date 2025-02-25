@@ -58,12 +58,11 @@ public:
     void ProcessProgramStatements(parser::Program *program, const ArenaVector<ir::Statement *> &statements,
                                   GlobalClassHandler::ModuleDependencies &moduleDependencies);
     void VerifyTypeExports(const ArenaVector<parser::Program *> &programs);
-    void VerifyType(ir::Statement *stmt, parser::Program *program, std::set<util::StringView> &exportedTypes,
+    void VerifyType(ir::Statement *stmt, std::set<util::StringView> &exportedTypes,
                     std::set<util::StringView> &exportedStatements,
                     std::map<util::StringView, ir::AstNode *> &typesMap);
     void HandleSimpleType(std::set<util::StringView> &exportedTypes, std::set<util::StringView> &exportedStatements,
-                          ir::Statement *stmt, util::StringView name, parser::Program *program,
-                          lexer::SourcePosition pos);
+                          ir::Statement *stmt, util::StringView name, lexer::SourcePosition pos);
 
     void VerifySingleExportDefault(const ArenaVector<parser::Program *> &programs);
     void AddExportFlags(ir::AstNode *node, util::StringView originalFieldName, lexer::SourcePosition startLoc,

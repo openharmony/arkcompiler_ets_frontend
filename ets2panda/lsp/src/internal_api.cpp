@@ -544,15 +544,15 @@ Diagnostic CreateDiagnosticForError(es2panda_Context *context, const util::Diagn
 {
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
     auto index = lexer::LineIndex(ctx->parserProgram->SourceCode());
-    auto offset = index.GetOffset(lexer::SourceLocation(error.Line(), error.Offset()));
+    auto offset = index.GetOffset(lexer::SourceLocation(error.Line(), error.Offset(), ctx->parserProgram));
     auto touchingToken = GetTouchingToken(context, offset, false);
     lexer::SourceRange sourceRange;
     lexer::SourceLocation sourceStartLocation;
     lexer::SourceLocation sourceEndLocation;
     std::string source;
     if (touchingToken == nullptr) {
-        sourceStartLocation = index.GetLocation(lexer::SourcePosition(error.Offset(), error.Line()));
-        sourceEndLocation = index.GetLocation(lexer::SourcePosition(error.Offset(), error.Line()));
+        sourceStartLocation = lexer::SourceLocation(error.Line(), error.Offset(), ctx->parserProgram);
+        sourceEndLocation = lexer::SourceLocation(error.Line(), error.Offset(), ctx->parserProgram);
         source = "";
     } else {
         sourceRange = touchingToken->Range();

@@ -12,11 +12,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 10
+              "column": 10,
+              "program": "test-ts-type-predicate1.ts"
             },
             "end": {
               "line": 17,
-              "column": 19
+              "column": 19,
+              "program": "test-ts-type-predicate1.ts"
             }
           }
         },
@@ -35,11 +37,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 24
+                      "column": 24,
+                      "program": "test-ts-type-predicate1.ts"
                     },
                     "end": {
                       "line": 17,
-                      "column": 30
+                      "column": 30,
+                      "program": "test-ts-type-predicate1.ts"
                     }
                   }
                 },
@@ -48,11 +52,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 33
+                      "column": 33,
+                      "program": "test-ts-type-predicate1.ts"
                     },
                     "end": {
                       "line": 17,
-                      "column": 39
+                      "column": 39,
+                      "program": "test-ts-type-predicate1.ts"
                     }
                   }
                 }
@@ -60,11 +66,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 24
+                  "column": 24,
+                  "program": "test-ts-type-predicate1.ts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 39
+                  "column": 39,
+                  "program": "test-ts-type-predicate1.ts"
                 }
               }
             },
@@ -72,11 +80,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 20
+                "column": 20,
+                "program": "test-ts-type-predicate1.ts"
               },
               "end": {
                 "line": 17,
-                "column": 22
+                "column": 22,
+                "program": "test-ts-type-predicate1.ts"
               }
             }
           }
@@ -90,11 +100,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 42
+                "column": 42,
+                "program": "test-ts-type-predicate1.ts"
               },
               "end": {
                 "line": 17,
-                "column": 49
+                "column": 49,
+                "program": "test-ts-type-predicate1.ts"
               }
             }
           },
@@ -113,22 +125,26 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 55
+                      "column": 55,
+                      "program": "test-ts-type-predicate1.ts"
                     },
                     "end": {
                       "line": 17,
-                      "column": 61
+                      "column": 61,
+                      "program": "test-ts-type-predicate1.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 55
+                    "column": 55,
+                    "program": "test-ts-type-predicate1.ts"
                   },
                   "end": {
                     "line": 17,
-                    "column": 63
+                    "column": 63,
+                    "program": "test-ts-type-predicate1.ts"
                   }
                 }
               }
@@ -136,11 +152,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 53
+                "column": 53,
+                "program": "test-ts-type-predicate1.ts"
               },
               "end": {
                 "line": 17,
-                "column": 63
+                "column": 63,
+                "program": "test-ts-type-predicate1.ts"
               }
             }
           },
@@ -148,33 +166,39 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 42
+              "column": 42,
+              "program": "test-ts-type-predicate1.ts"
             },
             "end": {
               "line": 17,
-              "column": 63
+              "column": 63,
+              "program": "test-ts-type-predicate1.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 17,
-            "column": 1
+            "column": 1,
+            "program": "test-ts-type-predicate1.ts"
           },
           "end": {
             "line": 17,
-            "column": 64
+            "column": 64,
+            "program": "test-ts-type-predicate1.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test-ts-type-predicate1.ts"
         },
         "end": {
           "line": 17,
-          "column": 64
+          "column": 64,
+          "program": "test-ts-type-predicate1.ts"
         }
       }
     }
@@ -182,11 +206,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-ts-type-predicate1.ts"
     },
     "end": {
       "line": 17,
-      "column": 64
+      "column": 64,
+      "program": "test-ts-type-predicate1.ts"
     }
   }
 }

@@ -397,7 +397,7 @@ void ETSWarningAnalyzer::ETSWarningImplicitBoxingUnboxing(const ir::AstNode *nod
 
 void ETSWarningAnalyzer::LogWarning(const std::string &message, const lexer::SourcePosition &position)
 {
-    diagnosticEngine_.LogWarning(program_, message, position);
+    diagnosticEngine_.LogWarning(message, position);
 }
 
 void ETSWarningAnalyzer::LogWarning(const diagnostic::DiagnosticKind &diagnostic,
@@ -411,8 +411,7 @@ void ETSWarningAnalyzer::LogWarning(const diagnostic::DiagnosticKind &diagnostic
                                     util::DiagnosticMessageParams &diagnosticParams,
                                     const lexer::SourcePosition &position) const
 {
-    auto loc = position.ToLocation(program_);
-    diagnosticEngine_.LogWarning(diagnostic, std::move(diagnosticParams), program_->SourceFilePath().Utf8(), loc);
+    diagnosticEngine_.LogWarning(diagnostic, std::move(diagnosticParams), position);
 }
 
 }  // namespace ark::es2panda::checker

@@ -51,15 +51,16 @@ private:
     void CollectProgramGlobalClasses(parser::Program *program, ArenaVector<ir::ETSModule *> namespaces);
     ir::ClassDeclaration *TransformNamespace(ir::ETSModule *ns, parser::Program *program);
     ir::ClassDeclaration *CreateTransformedClass(ir::ETSModule *ns);
-    void SetupGlobalMethods(ir::ClassDefinition *globalClass, ArenaVector<ir::Statement *> &&initStatements,
-                            bool isDeclare);
+    void SetupGlobalMethods(parser::Program *program, ArenaVector<ir::Statement *> &&initStatements,
+                            ir::ClassDefinition *globalClass, bool isDeclare);
     ArenaVector<ir::ClassDeclaration *> TransformNamespaces(ArenaVector<ir::ETSModule *> &namespaces,
                                                             parser::Program *program);
     void MergeNamespace(ArenaVector<ir::ETSModule *> &namespaces, parser::ETSParser *parser);
 
-    ir::ClassDeclaration *CreateGlobalClass();
+    ir::ClassDeclaration *CreateGlobalClass(const parser::Program *globalProgram);
     ir::ClassStaticBlock *CreateStaticBlock(ir::ClassDefinition *classDef);
-    ir::MethodDefinition *CreateGlobalMethod(const std::string_view name, ArenaVector<ir::Statement *> &&statements);
+    ir::MethodDefinition *CreateGlobalMethod(const std::string_view name, ArenaVector<ir::Statement *> &&statements,
+                                             const parser::Program *program);
     void AddInitCallFromStaticBlock(ir::ClassDefinition *globalClass, ir::MethodDefinition *initMethod);
 
     ArenaVector<ir::Statement *> FormInitMethodStatements(parser::Program *program,

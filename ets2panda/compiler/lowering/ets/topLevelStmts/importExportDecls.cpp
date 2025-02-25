@@ -69,12 +69,11 @@ GlobalClassHandler::ModuleDependencies ImportExportDecls::HandleGlobalStmts(Aren
                 originNameIt != importedSpecifiersForExportCheck_.end() ? originNameIt->second : middleName;
             auto result = fieldMap_.find(originalName);
             if (result == fieldMap_.end() && !isType && originNameIt == importedSpecifiersForExportCheck_.end()) {
-                parser_->DiagnosticEngine().LogSyntaxError(
-                    varbinder_->Program(), "Cannot find name '" + originalName.Mutf8() + "' to export", startLoc);
+                parser_->DiagnosticEngine().LogSyntaxError("Cannot find name '" + originalName.Mutf8() + "' to export",
+                                                           startLoc);
             }
             if (result != fieldMap_.end() && result->second->IsAnnotationDeclaration() && exportName != originalName) {
-                parser_->DiagnosticEngine().LogSyntaxError(varbinder_->Program(),
-                                                           "Can not rename annotation '" + originalName.Mutf8() +
+                parser_->DiagnosticEngine().LogSyntaxError("Can not rename annotation '" + originalName.Mutf8() +
                                                                "' in export or import statements.",
                                                            startLoc);
             }
@@ -90,8 +89,7 @@ void ImportExportDecls::PopulateAliasMap(const ir::ExportNamedDeclaration *decl,
 {
     for (auto spec : decl->Specifiers()) {
         if (!varbinder_->AddSelectiveExportAlias(path, spec->Local()->Name(), spec->Exported()->Name(), decl)) {
-            parser_->DiagnosticEngine().LogSyntaxError(varbinder_->Program(),
-                                                       "The given name '" + spec->Local()->Name().Mutf8() +
+            parser_->DiagnosticEngine().LogSyntaxError("The given name '" + spec->Local()->Name().Mutf8() +
                                                            "' is already used in another export",
                                                        lastExportErrorPos_);
             lastExportErrorPos_ = lexer::SourcePosition();
@@ -106,8 +104,7 @@ void ImportExportDecls::AddExportFlags(ir::AstNode *node, util::StringView origi
         // Note (oeotvos) Needs to be discussed, whether we would like to allow exporting the same program
         // element using its original name and also an alias, like: export {test_func, test_func as foo}.
         parser_->DiagnosticEngine().LogSyntaxError(
-            varbinder_->Program(), "Cannot export '" + originalFieldName.Mutf8() + "', it was already exported",
-            startLoc);
+            "Cannot export '" + originalFieldName.Mutf8() + "', it was already exported", startLoc);
     }
     if (originalFieldName == exportDefaultName_) {
         node->AddModifier(ir::ModifierFlags::DEFAULT_EXPORT);
@@ -122,8 +119,7 @@ void ImportExportDecls::PopulateAliasMap(const ir::TSTypeAliasDeclaration *decl,
 {
     if (!varbinder_->AddSelectiveExportAlias(path, decl->Id()->AsIdentifier()->Name(),
                                              decl->Id()->AsIdentifier()->Name(), decl)) {
-        parser_->DiagnosticEngine().LogSyntaxError(varbinder_->Program(),
-                                                   "The given name '" + decl->Id()->AsIdentifier()->Name().Mutf8() +
+        parser_->DiagnosticEngine().LogSyntaxError("The given name '" + decl->Id()->AsIdentifier()->Name().Mutf8() +
                                                        "' is already used in another export",
                                                    lastExportErrorPos_);
         lastExportErrorPos_ = lexer::SourcePosition();
@@ -164,7 +160,6 @@ void ImportExportDecls::HandleSelectiveExportWithAlias(util::StringView original
             }
             if (alreadyExported) {
                 parser_->DiagnosticEngine().LogSyntaxError(
-                    varbinder_->Program(),
                     "The given name '" + exportName.Mutf8() + "' is already used in another export", startLoc);
             }
         }
@@ -234,7 +229,6 @@ void ImportExportDecls::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *
         if (!exportNameMap_.emplace(local->Name(), local->Start()).second) {
             lastExportErrorPos_ = local->Start();
             parser_->DiagnosticEngine().LogSyntaxError(
-                varbinder_->Program(),
                 "The given name '" + local->Name().Mutf8() + "' is already used in another export", local->Start());
         }
     }
@@ -256,7 +250,7 @@ void ImportExportDecls::VisitETSImportDeclaration(ir::ETSImportDeclaration *impo
 
 void ImportExportDecls::HandleSimpleType(std::set<util::StringView> &exportedTypes,
                                          std::set<util::StringView> &exportedStatements, ir::Statement *stmt,
-                                         util::StringView name, parser::Program *program, lexer::SourcePosition pos)
+                                         util::StringView name, lexer::SourcePosition pos)
 {
     if (stmt->IsExported()) {
         exportedStatements.insert(name);
@@ -268,12 +262,11 @@ void ImportExportDecls::HandleSimpleType(std::set<util::StringView> &exportedTyp
 
     if (exportedStatements.find(name) != exportedStatements.end()) {
         parser_->DiagnosticEngine().LogSyntaxError(
-            program, "Name '" + name.Mutf8() + "' cannot be exported and type exported at the same time.", pos);
+            "Name '" + name.Mutf8() + "' cannot be exported and type exported at the same time.", pos);
     }
 
     if (exportedTypes.find(name) != exportedTypes.end()) {
-        parser_->DiagnosticEngine().LogSyntaxError(program, "Cannot export the same '" + name.Mutf8() + "' type twice.",
-                                                   pos);
+        parser_->DiagnosticEngine().LogSyntaxError("Cannot export the same '" + name.Mutf8() + "' type twice.", pos);
     } else {
         exportedTypes.insert(name);
     }
@@ -287,32 +280,31 @@ void ImportExportDecls::VerifyTypeExports(const ArenaVector<parser::Program *> &
 
     for (const auto &program : programs) {
         for (auto stmt : program->Ast()->Statements()) {
-            VerifyType(stmt, program, exportedTypes, exportedStatements, typesMap);
+            VerifyType(stmt, exportedTypes, exportedStatements, typesMap);
         }
     }
 }
 
-void ImportExportDecls::VerifyType(ir::Statement *stmt, parser::Program *program,
-                                   std::set<util::StringView> &exportedTypes,
+void ImportExportDecls::VerifyType(ir::Statement *stmt, std::set<util::StringView> &exportedTypes,
                                    std::set<util::StringView> &exportedStatements,
                                    std::map<util::StringView, ir::AstNode *> &typesMap)
 {
     if (stmt->IsClassDeclaration()) {
         typesMap.insert({stmt->AsClassDeclaration()->Definition()->Ident()->Name(), stmt});
         return HandleSimpleType(exportedTypes, exportedStatements, stmt,
-                                stmt->AsClassDeclaration()->Definition()->Ident()->Name(), program, stmt->Start());
+                                stmt->AsClassDeclaration()->Definition()->Ident()->Name(), stmt->Start());
     }
 
     if (stmt->IsTSInterfaceDeclaration()) {
         typesMap.insert({stmt->AsTSInterfaceDeclaration()->Id()->Name(), stmt});
         return HandleSimpleType(exportedTypes, exportedStatements, stmt, stmt->AsTSInterfaceDeclaration()->Id()->Name(),
-                                program, stmt->Start());
+                                stmt->Start());
     }
 
     if (stmt->IsTSTypeAliasDeclaration()) {
         typesMap.insert({stmt->AsTSTypeAliasDeclaration()->Id()->Name(), stmt});
         return HandleSimpleType(exportedTypes, exportedStatements, stmt, stmt->AsTSTypeAliasDeclaration()->Id()->Name(),
-                                program, stmt->Start());
+                                stmt->Start());
     }
 
     if (!stmt->IsExportedType()) {
@@ -320,7 +312,7 @@ void ImportExportDecls::VerifyType(ir::Statement *stmt, parser::Program *program
     }
 
     if (!stmt->IsExportNamedDeclaration()) {
-        parser_->DiagnosticEngine().LogSyntaxError(program, "Can only type export class or interface!", stmt->Start());
+        parser_->DiagnosticEngine().LogSyntaxError("Can only type export class or interface!", stmt->Start());
         return;
     }
 
@@ -330,17 +322,17 @@ void ImportExportDecls::VerifyType(ir::Statement *stmt, parser::Program *program
 
         auto element = typesMap.find(nameFind);
         if (element == typesMap.end()) {
-            parser_->DiagnosticEngine().LogSyntaxError(program, "Can only type export class or interface!",
+            parser_->DiagnosticEngine().LogSyntaxError("Can only type export class or interface!",
                                                        spec->Local()->Start());
             continue;
         }
         if (!element->second->IsExportedType()) {
             element->second->AddModifier(ir::ModifierFlags::EXPORT_TYPE);
         }
-        HandleSimpleType(exportedTypes, exportedStatements, stmt, name, program, spec->Local()->Start());
+        HandleSimpleType(exportedTypes, exportedStatements, stmt, name, spec->Local()->Start());
         if (!name.Is(nameFind.Mutf8())) {
             element->second->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
-            HandleSimpleType(exportedTypes, exportedStatements, stmt, nameFind, program, spec->Local()->Start());
+            HandleSimpleType(exportedTypes, exportedStatements, stmt, nameFind, spec->Local()->Start());
         }
     }
 }
@@ -349,18 +341,18 @@ void ImportExportDecls::VerifySingleExportDefault(const ArenaVector<parser::Prog
 {
     bool metDefaultExport = false;
     auto &logger = parser_->DiagnosticEngine();
-    auto verifyDefault = [&metDefaultExport, &logger](ir::Statement *stmt, parser::Program *program) {
+    auto verifyDefault = [&metDefaultExport, &logger](ir::Statement *stmt) {
         if ((stmt->Modifiers() & ir::ModifierFlags::DEFAULT_EXPORT) == 0) {
             return;
         }
         if (metDefaultExport) {
-            logger.LogSemanticError(program, "Only one default export is allowed in a module", stmt->Start());
+            logger.LogSemanticError("Only one default export is allowed in a module", stmt->Start());
         }
         metDefaultExport = true;
     };
     for (const auto &program : programs) {
         for (auto stmt : program->Ast()->Statements()) {
-            verifyDefault(stmt, program);
+            verifyDefault(stmt);
         }
         metDefaultExport = false;
     }

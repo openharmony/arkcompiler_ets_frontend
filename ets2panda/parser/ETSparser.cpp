@@ -83,7 +83,7 @@ ETSParser::ETSParser(Program *program, const util::Options &options, util::Diagn
     : TypedParser(program, &options, diagnosticEngine, status), globalProgram_(GetProgram())
 {
     namespaceNestedRank_ = 0;
-    importPathManager_ = std::make_unique<util::ImportPathManager>(Allocator(), options, program, diagnosticEngine);
+    importPathManager_ = std::make_unique<util::ImportPathManager>(Allocator(), options, diagnosticEngine);
 }
 
 ETSParser::ETSParser(Program *program, std::nullptr_t, util::DiagnosticEngine &diagnosticEngine)
@@ -548,8 +548,9 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
     auto *memberName = ExpectIdentifier(false, false, TypeAnnotationParsingOptions::NO_OPTS);  // don't report error
     if (memberName == nullptr) {                                                               // log error here
         LogUnexpectedToken(Lexer()->GetToken());
+        const auto &rangeToken = Lexer()->GetToken().Loc();
         Lexer()->NextToken();
-        return AllocBrokenStatement();
+        return AllocBrokenStatement(rangeToken);
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
@@ -620,8 +621,9 @@ ir::Statement *ETSParser::ParseTypeDeclaration(bool allowStatic)
             }
             [[fallthrough]];
         default:
-            LogUnexpectedToken(Lexer()->GetToken());
-            return AllocBrokenStatement();
+            const auto &tokenNow = Lexer()->GetToken();
+            LogUnexpectedToken(tokenNow);
+            return AllocBrokenStatement(tokenNow.Loc());
     }
 }
 
@@ -985,7 +987,7 @@ ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::Modifi
     ir::ImportSource *reExportSource = ParseSourceFromClause(true);
     if (reExportSource == nullptr) {  // Error processing.
         // Error is logged inside ParseSourceFromClause
-        return AllocBrokenStatement();
+        return AllocBrokenStatement(Lexer()->GetToken().Loc());
     }
 
     lexer::SourcePosition endLoc = reExportSource->Source()->End();
@@ -1325,7 +1327,7 @@ ir::AnnotatedExpression *ETSParser::GetAnnotatedExpressionFromParam()
 
         default: {
             LogError(diagnostic::UNEXPECTED_TOKEN_ID);
-            return AllocBrokenExpression();
+            return AllocBrokenExpression(Lexer()->GetToken().Loc());
         }
     }
 
@@ -1353,7 +1355,7 @@ ir::Expression *ETSParser::ParseFunctionReceiver()
     Lexer()->NextToken();  // eat 'this';
     if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
         LogError(diagnostic::FUN_PARAM_THIS_MISSING_TYPE);
-        return AllocBrokenExpression();
+        return AllocBrokenExpression(Lexer()->GetToken().Loc());
     }
 
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
@@ -1361,7 +1363,7 @@ ir::Expression *ETSParser::ParseFunctionReceiver()
 
     if (!GetContext().AllowReceiver()) {
         LogError(diagnostic::UNEXPECTED_THIS, {}, thisLoc);
-        return AllocBrokenExpression();
+        return AllocBrokenExpression(thisLoc);
     }
 
     return CreateParameterThis(typeAnnotation);
@@ -1560,7 +1562,7 @@ ir::Statement *ETSParser::ParseImportDeclaration([[maybe_unused]] StatementParsi
     }
 
     if (importSource == nullptr) {
-        return AllocBrokenStatement();
+        return AllocBrokenStatement(startLoc);
     }
 
     lexer::SourcePosition endLoc = importSource->Source()->End();
@@ -1868,7 +1870,7 @@ ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous
         funcIdentNode = ExpectIdentifier();
     } else if (!canBeAnonymous) {
         LogError(diagnostic::UNEXPECTED_TOKEN_ID);
-        funcIdentNode = AllocBrokenExpression();
+        funcIdentNode = AllocBrokenExpression(Lexer()->GetToken().Loc());
     }
 
     if (funcIdentNode != nullptr) {

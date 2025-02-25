@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 7
+              "column": 7,
+              "program": "eval_lexically_unbound.js"
             },
             "end": {
               "line": 17,
-              "column": 10
+              "column": 10,
+              "program": "eval_lexically_unbound.js"
             }
           }
         },
@@ -30,11 +32,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 3
+                "column": 3,
+                "program": "eval_lexically_unbound.js"
               },
               "end": {
                 "line": 19,
-                "column": 14
+                "column": 14,
+                "program": "eval_lexically_unbound.js"
               }
             }
           },
@@ -66,11 +70,13 @@
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 5
+                              "column": 5,
+                              "program": "eval_lexically_unbound.js"
                             },
                             "end": {
                               "line": 20,
-                              "column": 9
+                              "column": 9,
+                              "program": "eval_lexically_unbound.js"
                             }
                           }
                         },
@@ -81,11 +87,13 @@
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 10
+                              "column": 10,
+                              "program": "eval_lexically_unbound.js"
                             },
                             "end": {
                               "line": 20,
-                              "column": 14
+                              "column": 14,
+                              "program": "eval_lexically_unbound.js"
                             }
                           }
                         },
@@ -94,11 +102,13 @@
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 5
+                            "column": 5,
+                            "program": "eval_lexically_unbound.js"
                           },
                           "end": {
                             "line": 20,
-                            "column": 14
+                            "column": 14,
+                            "program": "eval_lexically_unbound.js"
                           }
                         }
                       },
@@ -108,33 +118,39 @@
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 17
+                            "column": 17,
+                            "program": "eval_lexically_unbound.js"
                           },
                           "end": {
                             "line": 20,
-                            "column": 18
+                            "column": 18,
+                            "program": "eval_lexically_unbound.js"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 5
+                          "column": 5,
+                          "program": "eval_lexically_unbound.js"
                         },
                         "end": {
                           "line": 20,
-                          "column": 18
+                          "column": 18,
+                          "program": "eval_lexically_unbound.js"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 20,
-                        "column": 5
+                        "column": 5,
+                        "program": "eval_lexically_unbound.js"
                       },
                       "end": {
                         "line": 20,
-                        "column": 19
+                        "column": 19,
+                        "program": "eval_lexically_unbound.js"
                       }
                     }
                   }
@@ -142,33 +158,39 @@
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 17
+                    "column": 17,
+                    "program": "eval_lexically_unbound.js"
                   },
                   "end": {
                     "line": 21,
-                    "column": 4
+                    "column": 4,
+                    "program": "eval_lexically_unbound.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 14
+                  "column": 14,
+                  "program": "eval_lexically_unbound.js"
                 },
                 "end": {
                   "line": 21,
-                  "column": 4
+                  "column": 4,
+                  "program": "eval_lexically_unbound.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 19,
-                "column": 14
+                "column": 14,
+                "program": "eval_lexically_unbound.js"
               },
               "end": {
                 "line": 21,
-                "column": 4
+                "column": 4,
+                "program": "eval_lexically_unbound.js"
               }
             }
           },
@@ -177,11 +199,13 @@
           "loc": {
             "start": {
               "line": 19,
-              "column": 3
+              "column": 3,
+              "program": "eval_lexically_unbound.js"
             },
             "end": {
               "line": 21,
-              "column": 4
+              "column": 4,
+              "program": "eval_lexically_unbound.js"
             }
           }
         },
@@ -195,11 +219,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 4
+                  "column": 4,
+                  "program": "eval_lexically_unbound.js"
                 },
                 "end": {
                   "line": 18,
-                  "column": 7
+                  "column": 7,
+                  "program": "eval_lexically_unbound.js"
                 }
               }
             },
@@ -210,11 +236,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 10
+                  "column": 10,
+                  "program": "eval_lexically_unbound.js"
                 },
                 "end": {
                   "line": 18,
-                  "column": 19
+                  "column": 19,
+                  "program": "eval_lexically_unbound.js"
                 }
               }
             },
@@ -228,11 +256,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 3
+                "column": 3,
+                "program": "eval_lexically_unbound.js"
               },
               "end": {
                 "line": 18,
-                "column": 19
+                "column": 19,
+                "program": "eval_lexically_unbound.js"
               }
             }
           }
@@ -240,22 +270,26 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 11
+            "column": 11,
+            "program": "eval_lexically_unbound.js"
           },
           "end": {
-            "line": 22,
-            "column": 2
+            "line": 24,
+            "column": 5,
+            "program": "eval_lexically_unbound.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "eval_lexically_unbound.js"
         },
         "end": {
-          "line": 22,
-          "column": 2
+          "line": 24,
+          "column": 5,
+          "program": "eval_lexically_unbound.js"
         }
       }
     },
@@ -270,11 +304,13 @@
           "loc": {
             "start": {
               "line": 24,
-              "column": 1
+              "column": 1,
+              "program": "eval_lexically_unbound.js"
             },
             "end": {
               "line": 24,
-              "column": 5
+              "column": 5,
+              "program": "eval_lexically_unbound.js"
             }
           }
         },
@@ -283,22 +319,26 @@
         "loc": {
           "start": {
             "line": 24,
-            "column": 1
+            "column": 1,
+            "program": "eval_lexically_unbound.js"
           },
           "end": {
             "line": 24,
-            "column": 7
+            "column": 7,
+            "program": "eval_lexically_unbound.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 24,
-          "column": 1
+          "column": 1,
+          "program": "eval_lexically_unbound.js"
         },
         "end": {
           "line": 24,
-          "column": 8
+          "column": 8,
+          "program": "eval_lexically_unbound.js"
         }
       }
     }
@@ -306,11 +346,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "eval_lexically_unbound.js"
     },
     "end": {
       "line": 25,
-      "column": 1
+      "column": 1,
+      "program": "eval_lexically_unbound.js"
     }
   }
 }

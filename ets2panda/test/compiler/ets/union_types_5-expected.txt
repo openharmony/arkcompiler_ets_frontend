@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 7
+              "column": 7,
+              "program": "union_types_5.sts"
             },
             "end": {
               "line": 16,
-              "column": 8
+              "column": 8,
+              "program": "union_types_5.sts"
             }
           }
         },
@@ -31,11 +33,13 @@
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 9
+                    "column": 9,
+                    "program": "union_types_5.sts"
                   },
                   "end": {
                     "line": 16,
-                    "column": 10
+                    "column": 10,
+                    "program": "union_types_5.sts"
                   }
                 }
               },
@@ -50,44 +54,52 @@
                     "loc": {
                       "start": {
                         "line": 16,
-                        "column": 19
+                        "column": 19,
+                        "program": "union_types_5.sts"
                       },
                       "end": {
                         "line": 16,
-                        "column": 25
+                        "column": 25,
+                        "program": "union_types_5.sts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 19
+                      "column": 19,
+                      "program": "union_types_5.sts"
                     },
                     "end": {
                       "line": 16,
-                      "column": 26
+                      "column": 26,
+                      "program": "union_types_5.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 19
+                    "column": 19,
+                    "program": "union_types_5.sts"
                   },
                   "end": {
                     "line": 16,
-                    "column": 26
+                    "column": 26,
+                    "program": "union_types_5.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 9
+                  "column": 9,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
                   "line": 16,
-                  "column": 26
+                  "column": 26,
+                  "program": "union_types_5.sts"
                 }
               }
             }
@@ -95,11 +107,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 8
+              "column": 8,
+              "program": "union_types_5.sts"
             },
             "end": {
               "line": 16,
-              "column": 26
+              "column": 26,
+              "program": "union_types_5.sts"
             }
           }
         },
@@ -115,11 +129,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 5
+                  "column": 5,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 11
+                  "column": 11,
+                  "program": "union_types_5.sts"
                 }
               }
             },
@@ -140,33 +156,39 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 13
+                      "column": 13,
+                      "program": "union_types_5.sts"
                     },
                     "end": {
                       "line": 17,
-                      "column": 14
+                      "column": 14,
+                      "program": "union_types_5.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 13
+                    "column": 13,
+                    "program": "union_types_5.sts"
                   },
                   "end": {
                     "line": 17,
-                    "column": 15
+                    "column": 15,
+                    "program": "union_types_5.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 13
+                  "column": 13,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 15
+                  "column": 15,
+                  "program": "union_types_5.sts"
                 }
               }
             },
@@ -175,11 +197,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "union_types_5.sts"
               },
               "end": {
                 "line": 17,
-                "column": 15
+                "column": 15,
+                "program": "union_types_5.sts"
               }
             }
           },
@@ -192,11 +216,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -216,11 +242,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -244,33 +272,39 @@
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 25
+                                "column": 25,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 18,
-                                "column": 26
+                                "column": 26,
+                                "program": "union_types_5.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 25
+                              "column": 25,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 18,
-                              "column": 27
+                              "column": 27,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 25
+                            "column": 25,
+                            "program": "union_types_5.sts"
                           },
                           "end": {
                             "line": 18,
-                            "column": 27
+                            "column": 27,
+                            "program": "union_types_5.sts"
                           }
                         }
                       },
@@ -278,22 +312,26 @@
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 17
+                          "column": 17,
+                          "program": "union_types_5.sts"
                         },
                         "end": {
                           "line": 18,
-                          "column": 27
+                          "column": 27,
+                          "program": "union_types_5.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 17
+                        "column": 17,
+                        "program": "union_types_5.sts"
                       },
                       "end": {
                         "line": 18,
-                        "column": 27
+                        "column": 27,
+                        "program": "union_types_5.sts"
                       }
                     }
                   }
@@ -313,11 +351,13 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 9
+                                "column": 9,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 13
+                                "column": 13,
+                                "program": "union_types_5.sts"
                               }
                             }
                           },
@@ -328,11 +368,13 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 14
+                                "column": 14,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 20
+                                "column": 20,
+                                "program": "union_types_5.sts"
                               }
                             }
                           },
@@ -341,11 +383,13 @@
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 9
+                              "column": 9,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 19,
-                              "column": 20
+                              "column": 20,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
@@ -356,33 +400,39 @@
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 23
+                              "column": 23,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 19,
-                              "column": 29
+                              "column": 29,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 9
+                            "column": 9,
+                            "program": "union_types_5.sts"
                           },
                           "end": {
                             "line": 19,
-                            "column": 29
+                            "column": 29,
+                            "program": "union_types_5.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 9
+                          "column": 9,
+                          "program": "union_types_5.sts"
                         },
                         "end": {
                           "line": 19,
-                          "column": 29
+                          "column": 29,
+                          "program": "union_types_5.sts"
                         }
                       }
                     }
@@ -390,33 +440,39 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 28
+                      "column": 28,
+                      "program": "union_types_5.sts"
                     },
                     "end": {
                       "line": 20,
-                      "column": 6
+                      "column": 6,
+                      "program": "union_types_5.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 16
+                    "column": 16,
+                    "program": "union_types_5.sts"
                   },
                   "end": {
                     "line": 20,
-                    "column": 6
+                    "column": 6,
+                    "program": "union_types_5.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 16
+                  "column": 16,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 6
+                  "column": 6,
+                  "program": "union_types_5.sts"
                 }
               }
             },
@@ -425,11 +481,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 5
+                "column": 5,
+                "program": "union_types_5.sts"
               },
               "end": {
                 "line": 20,
-                "column": 6
+                "column": 6,
+                "program": "union_types_5.sts"
               }
             }
           }
@@ -437,22 +495,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 27
+            "column": 27,
+            "program": "union_types_5.sts"
           },
           "end": {
-            "line": 21,
-            "column": 2
+            "line": 22,
+            "column": 6,
+            "program": "union_types_5.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "union_types_5.sts"
         },
         "end": {
-          "line": 21,
-          "column": 2
+          "line": 22,
+          "column": 6,
+          "program": "union_types_5.sts"
         }
       }
     },
@@ -466,11 +528,13 @@
           "loc": {
             "start": {
               "line": 22,
-              "column": 7
+              "column": 7,
+              "program": "union_types_5.sts"
             },
             "end": {
               "line": 22,
-              "column": 8
+              "column": 8,
+              "program": "union_types_5.sts"
             }
           }
         },
@@ -486,11 +550,13 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 5
+                  "column": 5,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
                   "line": 23,
-                  "column": 8
+                  "column": 8,
+                  "program": "union_types_5.sts"
                 }
               }
             },
@@ -500,11 +566,13 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 16
+                  "column": 16,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
                   "line": 23,
-                  "column": 18
+                  "column": 18,
+                  "program": "union_types_5.sts"
                 }
               }
             },
@@ -519,11 +587,13 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 10
+                  "column": 10,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
                   "line": 23,
-                  "column": 13
+                  "column": 13,
+                  "program": "union_types_5.sts"
                 }
               }
             },
@@ -532,11 +602,13 @@
             "loc": {
               "start": {
                 "line": 23,
-                "column": 5
+                "column": 5,
+                "program": "union_types_5.sts"
               },
               "end": {
                 "line": 23,
-                "column": 18
+                "column": 18,
+                "program": "union_types_5.sts"
               }
             }
           },
@@ -548,12 +620,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 22,
+                  "column": 10,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 22,
+                  "column": 10,
+                  "program": "union_types_5.sts"
                 }
               }
             },
@@ -571,12 +645,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 22,
+                      "column": 10,
+                      "program": "union_types_5.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 22,
+                      "column": 10,
+                      "program": "union_types_5.sts"
                     }
                   }
                 },
@@ -589,34 +665,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 22,
+                      "column": 10,
+                      "program": "union_types_5.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 22,
+                      "column": 10,
+                      "program": "union_types_5.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 22,
+                    "column": 10,
+                    "program": "union_types_5.sts"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 22,
+                    "column": 10,
+                    "program": "union_types_5.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 22,
+                  "column": 10,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 22,
+                  "column": 10,
+                  "program": "union_types_5.sts"
                 }
               }
             },
@@ -624,12 +706,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 24,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 24,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -637,22 +721,26 @@
         "loc": {
           "start": {
             "line": 22,
-            "column": 9
+            "column": 9,
+            "program": "union_types_5.sts"
           },
           "end": {
-            "line": 24,
-            "column": 2
+            "line": 25,
+            "column": 6,
+            "program": "union_types_5.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 22,
-          "column": 1
+          "column": 1,
+          "program": "union_types_5.sts"
         },
         "end": {
-          "line": 24,
-          "column": 2
+          "line": 25,
+          "column": 6,
+          "program": "union_types_5.sts"
         }
       }
     },
@@ -666,11 +754,13 @@
           "loc": {
             "start": {
               "line": 25,
-              "column": 7
+              "column": 7,
+              "program": "union_types_5.sts"
             },
             "end": {
               "line": 25,
-              "column": 8
+              "column": 8,
+              "program": "union_types_5.sts"
             }
           }
         },
@@ -686,11 +776,13 @@
               "loc": {
                 "start": {
                   "line": 26,
-                  "column": 5
+                  "column": 5,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
                   "line": 26,
-                  "column": 8
+                  "column": 8,
+                  "program": "union_types_5.sts"
                 }
               }
             },
@@ -700,11 +792,13 @@
               "loc": {
                 "start": {
                   "line": 26,
-                  "column": 16
+                  "column": 16,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
                   "line": 26,
-                  "column": 18
+                  "column": 18,
+                  "program": "union_types_5.sts"
                 }
               }
             },
@@ -719,11 +813,13 @@
               "loc": {
                 "start": {
                   "line": 26,
-                  "column": 10
+                  "column": 10,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
                   "line": 26,
-                  "column": 13
+                  "column": 13,
+                  "program": "union_types_5.sts"
                 }
               }
             },
@@ -732,11 +828,13 @@
             "loc": {
               "start": {
                 "line": 26,
-                "column": 5
+                "column": 5,
+                "program": "union_types_5.sts"
               },
               "end": {
                 "line": 26,
-                "column": 18
+                "column": 18,
+                "program": "union_types_5.sts"
               }
             }
           },
@@ -748,12 +846,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 25,
+                  "column": 10,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 25,
+                  "column": 10,
+                  "program": "union_types_5.sts"
                 }
               }
             },
@@ -771,12 +871,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 25,
+                      "column": 10,
+                      "program": "union_types_5.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 25,
+                      "column": 10,
+                      "program": "union_types_5.sts"
                     }
                   }
                 },
@@ -789,34 +891,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 25,
+                      "column": 10,
+                      "program": "union_types_5.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 25,
+                      "column": 10,
+                      "program": "union_types_5.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 25,
+                    "column": 10,
+                    "program": "union_types_5.sts"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 25,
+                    "column": 10,
+                    "program": "union_types_5.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 25,
+                  "column": 10,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 25,
+                  "column": 10,
+                  "program": "union_types_5.sts"
                 }
               }
             },
@@ -824,12 +932,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 27,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 27,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -837,22 +947,26 @@
         "loc": {
           "start": {
             "line": 25,
-            "column": 9
+            "column": 9,
+            "program": "union_types_5.sts"
           },
           "end": {
-            "line": 27,
-            "column": 2
+            "line": 29,
+            "column": 9,
+            "program": "union_types_5.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 25,
-          "column": 1
+          "column": 1,
+          "program": "union_types_5.sts"
         },
         "end": {
-          "line": 27,
-          "column": 2
+          "line": 29,
+          "column": 9,
+          "program": "union_types_5.sts"
         }
       }
     },
@@ -866,11 +980,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "union_types_5.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "union_types_5.sts"
             }
           }
         },
@@ -886,11 +1002,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -910,11 +1028,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -928,33 +1048,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -963,11 +1089,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "union_types_5.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "union_types_5.sts"
               }
             }
           },
@@ -980,11 +1108,13 @@
               "loc": {
                 "start": {
                   "line": 29,
-                  "column": 10
+                  "column": 10,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
                   "line": 29,
-                  "column": 13
+                  "column": 13,
+                  "program": "union_types_5.sts"
                 }
               }
             },
@@ -1004,11 +1134,13 @@
                   "loc": {
                     "start": {
                       "line": 29,
-                      "column": 10
+                      "column": 10,
+                      "program": "union_types_5.sts"
                     },
                     "end": {
                       "line": 29,
-                      "column": 13
+                      "column": 13,
+                      "program": "union_types_5.sts"
                     }
                   }
                 },
@@ -1035,33 +1167,39 @@
                                 "loc": {
                                   "start": {
                                     "line": 29,
-                                    "column": 17
+                                    "column": 17,
+                                    "program": "union_types_5.sts"
                                   },
                                   "end": {
                                     "line": 29,
-                                    "column": 18
+                                    "column": 18,
+                                    "program": "union_types_5.sts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 29,
-                                  "column": 17
+                                  "column": 17,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 29,
-                                  "column": 19
+                                  "column": 19,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 29,
-                                "column": 17
+                                "column": 17,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 29,
-                                "column": 19
+                                "column": 19,
+                                "program": "union_types_5.sts"
                               }
                             }
                           },
@@ -1076,33 +1214,39 @@
                                 "loc": {
                                   "start": {
                                     "line": 29,
-                                    "column": 19
+                                    "column": 19,
+                                    "program": "union_types_5.sts"
                                   },
                                   "end": {
                                     "line": 29,
-                                    "column": 20
+                                    "column": 20,
+                                    "program": "union_types_5.sts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 29,
-                                  "column": 19
+                                  "column": 19,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 29,
-                                  "column": 21
+                                  "column": 21,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 29,
-                                "column": 19
+                                "column": 19,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 29,
-                                "column": 21
+                                "column": 21,
+                                "program": "union_types_5.sts"
                               }
                             }
                           }
@@ -1110,11 +1254,13 @@
                         "loc": {
                           "start": {
                             "line": 29,
-                            "column": 17
+                            "column": 17,
+                            "program": "union_types_5.sts"
                           },
                           "end": {
                             "line": 29,
-                            "column": 21
+                            "column": 21,
+                            "program": "union_types_5.sts"
                           }
                         }
                       },
@@ -1122,22 +1268,26 @@
                       "loc": {
                         "start": {
                           "line": 29,
-                          "column": 14
+                          "column": 14,
+                          "program": "union_types_5.sts"
                         },
                         "end": {
                           "line": 29,
-                          "column": 21
+                          "column": 21,
+                          "program": "union_types_5.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 29,
-                        "column": 14
+                        "column": 14,
+                        "program": "union_types_5.sts"
                       },
                       "end": {
                         "line": 29,
-                        "column": 21
+                        "column": 21,
+                        "program": "union_types_5.sts"
                       }
                     }
                   }
@@ -1157,11 +1307,13 @@
                           "loc": {
                             "start": {
                               "line": 30,
-                              "column": 9
+                              "column": 9,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 30,
-                              "column": 10
+                              "column": 10,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
@@ -1176,44 +1328,52 @@
                               "loc": {
                                 "start": {
                                   "line": 30,
-                                  "column": 22
+                                  "column": 22,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 30,
-                                  "column": 23
+                                  "column": 23,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 30,
-                                "column": 22
+                                "column": 22,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 30,
-                                "column": 24
+                                "column": 24,
+                                "program": "union_types_5.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 30,
-                              "column": 22
+                              "column": 22,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 30,
-                              "column": 24
+                              "column": 24,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 30,
-                            "column": 9
+                            "column": 9,
+                            "program": "union_types_5.sts"
                           },
                           "end": {
                             "line": 30,
-                            "column": 24
+                            "column": 24,
+                            "program": "union_types_5.sts"
                           }
                         }
                       },
@@ -1231,11 +1391,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 31,
-                                    "column": 9
+                                    "column": 9,
+                                    "program": "union_types_5.sts"
                                   },
                                   "end": {
                                     "line": 31,
-                                    "column": 17
+                                    "column": 17,
+                                    "program": "union_types_5.sts"
                                   }
                                 }
                               },
@@ -1249,11 +1411,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 31,
-                                        "column": 18
+                                        "column": 18,
+                                        "program": "union_types_5.sts"
                                       },
                                       "end": {
                                         "line": 31,
-                                        "column": 19
+                                        "column": 19,
+                                        "program": "union_types_5.sts"
                                       }
                                     }
                                   },
@@ -1264,11 +1428,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 31,
-                                        "column": 20
+                                        "column": 20,
+                                        "program": "union_types_5.sts"
                                       },
                                       "end": {
                                         "line": 31,
-                                        "column": 23
+                                        "column": 23,
+                                        "program": "union_types_5.sts"
                                       }
                                     }
                                   },
@@ -1277,11 +1443,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 31,
-                                      "column": 18
+                                      "column": 18,
+                                      "program": "union_types_5.sts"
                                     },
                                     "end": {
                                       "line": 31,
-                                      "column": 23
+                                      "column": 23,
+                                      "program": "union_types_5.sts"
                                     }
                                   }
                                 },
@@ -1291,11 +1459,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 31,
-                                      "column": 25
+                                      "column": 25,
+                                      "program": "union_types_5.sts"
                                     },
                                     "end": {
                                       "line": 31,
-                                      "column": 27
+                                      "column": 27,
+                                      "program": "union_types_5.sts"
                                     }
                                   }
                                 },
@@ -1305,11 +1475,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 31,
-                                      "column": 29
+                                      "column": 29,
+                                      "program": "union_types_5.sts"
                                     },
                                     "end": {
                                       "line": 31,
-                                      "column": 58
+                                      "column": 58,
+                                      "program": "union_types_5.sts"
                                     }
                                   }
                                 }
@@ -1318,22 +1490,26 @@
                               "loc": {
                                 "start": {
                                   "line": 31,
-                                  "column": 9
+                                  "column": 9,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 31,
-                                  "column": 59
+                                  "column": 59,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 31,
-                                "column": 9
+                                "column": 9,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 31,
-                                "column": 60
+                                "column": 60,
+                                "program": "union_types_5.sts"
                               }
                             }
                           }
@@ -1341,11 +1517,13 @@
                         "loc": {
                           "start": {
                             "line": 30,
-                            "column": 25
+                            "column": 25,
+                            "program": "union_types_5.sts"
                           },
                           "end": {
                             "line": 32,
-                            "column": 6
+                            "column": 6,
+                            "program": "union_types_5.sts"
                           }
                         }
                       },
@@ -1361,11 +1539,13 @@
                             "loc": {
                               "start": {
                                 "line": 32,
-                                "column": 16
+                                "column": 16,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 32,
-                                "column": 17
+                                "column": 17,
+                                "program": "union_types_5.sts"
                               }
                             }
                           },
@@ -1380,44 +1560,52 @@
                                 "loc": {
                                   "start": {
                                     "line": 32,
-                                    "column": 29
+                                    "column": 29,
+                                    "program": "union_types_5.sts"
                                   },
                                   "end": {
                                     "line": 32,
-                                    "column": 30
+                                    "column": 30,
+                                    "program": "union_types_5.sts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 32,
-                                  "column": 29
+                                  "column": 29,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 32,
-                                  "column": 31
+                                  "column": 31,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 32,
-                                "column": 29
+                                "column": 29,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 32,
-                                "column": 31
+                                "column": 31,
+                                "program": "union_types_5.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 32,
-                              "column": 16
+                              "column": 16,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 32,
-                              "column": 31
+                              "column": 31,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
@@ -1435,11 +1623,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 33,
-                                      "column": 9
+                                      "column": 9,
+                                      "program": "union_types_5.sts"
                                     },
                                     "end": {
                                       "line": 33,
-                                      "column": 17
+                                      "column": 17,
+                                      "program": "union_types_5.sts"
                                     }
                                   }
                                 },
@@ -1453,11 +1643,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 33,
-                                          "column": 18
+                                          "column": 18,
+                                          "program": "union_types_5.sts"
                                         },
                                         "end": {
                                           "line": 33,
-                                          "column": 19
+                                          "column": 19,
+                                          "program": "union_types_5.sts"
                                         }
                                       }
                                     },
@@ -1468,11 +1660,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 33,
-                                          "column": 20
+                                          "column": 20,
+                                          "program": "union_types_5.sts"
                                         },
                                         "end": {
                                           "line": 33,
-                                          "column": 23
+                                          "column": 23,
+                                          "program": "union_types_5.sts"
                                         }
                                       }
                                     },
@@ -1481,11 +1675,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 33,
-                                        "column": 18
+                                        "column": 18,
+                                        "program": "union_types_5.sts"
                                       },
                                       "end": {
                                         "line": 33,
-                                        "column": 23
+                                        "column": 23,
+                                        "program": "union_types_5.sts"
                                       }
                                     }
                                   },
@@ -1495,11 +1691,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 33,
-                                        "column": 25
+                                        "column": 25,
+                                        "program": "union_types_5.sts"
                                       },
                                       "end": {
                                         "line": 33,
-                                        "column": 27
+                                        "column": 27,
+                                        "program": "union_types_5.sts"
                                       }
                                     }
                                   },
@@ -1509,11 +1707,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 33,
-                                        "column": 29
+                                        "column": 29,
+                                        "program": "union_types_5.sts"
                                       },
                                       "end": {
                                         "line": 33,
-                                        "column": 58
+                                        "column": 58,
+                                        "program": "union_types_5.sts"
                                       }
                                     }
                                   }
@@ -1522,22 +1722,26 @@
                                 "loc": {
                                   "start": {
                                     "line": 33,
-                                    "column": 9
+                                    "column": 9,
+                                    "program": "union_types_5.sts"
                                   },
                                   "end": {
                                     "line": 33,
-                                    "column": 59
+                                    "column": 59,
+                                    "program": "union_types_5.sts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 33,
-                                  "column": 9
+                                  "column": 9,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 33,
-                                  "column": 60
+                                  "column": 60,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             }
@@ -1545,11 +1749,13 @@
                           "loc": {
                             "start": {
                               "line": 32,
-                              "column": 32
+                              "column": 32,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 34,
-                              "column": 6
+                              "column": 6,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
@@ -1567,11 +1773,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 35,
-                                      "column": 9
+                                      "column": 9,
+                                      "program": "union_types_5.sts"
                                     },
                                     "end": {
                                       "line": 35,
-                                      "column": 19
+                                      "column": 19,
+                                      "program": "union_types_5.sts"
                                     }
                                   }
                                 },
@@ -1582,11 +1790,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 35,
-                                        "column": 20
+                                        "column": 20,
+                                        "program": "union_types_5.sts"
                                       },
                                       "end": {
                                         "line": 35,
-                                        "column": 25
+                                        "column": 25,
+                                        "program": "union_types_5.sts"
                                       }
                                     }
                                   },
@@ -1596,11 +1806,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 35,
-                                        "column": 27
+                                        "column": 27,
+                                        "program": "union_types_5.sts"
                                       },
                                       "end": {
                                         "line": 35,
-                                        "column": 60
+                                        "column": 60,
+                                        "program": "union_types_5.sts"
                                       }
                                     }
                                   }
@@ -1609,22 +1821,26 @@
                                 "loc": {
                                   "start": {
                                     "line": 35,
-                                    "column": 9
+                                    "column": 9,
+                                    "program": "union_types_5.sts"
                                   },
                                   "end": {
                                     "line": 35,
-                                    "column": 61
+                                    "column": 61,
+                                    "program": "union_types_5.sts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 35,
-                                  "column": 9
+                                  "column": 9,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 35,
-                                  "column": 62
+                                  "column": 62,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             }
@@ -1632,33 +1848,39 @@
                           "loc": {
                             "start": {
                               "line": 34,
-                              "column": 12
+                              "column": 12,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 36,
-                              "column": 6
+                              "column": 6,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 32,
-                            "column": 12
+                            "column": 12,
+                            "program": "union_types_5.sts"
                           },
                           "end": {
                             "line": 36,
-                            "column": 6
+                            "column": 6,
+                            "program": "union_types_5.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 30,
-                          "column": 5
+                          "column": 5,
+                          "program": "union_types_5.sts"
                         },
                         "end": {
                           "line": 36,
-                          "column": 6
+                          "column": 6,
+                          "program": "union_types_5.sts"
                         }
                       }
                     }
@@ -1666,33 +1888,39 @@
                   "loc": {
                     "start": {
                       "line": 29,
-                      "column": 22
+                      "column": 22,
+                      "program": "union_types_5.sts"
                     },
                     "end": {
                       "line": 37,
-                      "column": 2
+                      "column": 2,
+                      "program": "union_types_5.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 29,
-                    "column": 10
+                    "column": 10,
+                    "program": "union_types_5.sts"
                   },
                   "end": {
                     "line": 37,
-                    "column": 2
+                    "column": 2,
+                    "program": "union_types_5.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 29,
-                  "column": 10
+                  "column": 10,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
                   "line": 37,
-                  "column": 2
+                  "column": 2,
+                  "program": "union_types_5.sts"
                 }
               }
             },
@@ -1701,11 +1929,13 @@
             "loc": {
               "start": {
                 "line": 29,
-                "column": 1
+                "column": 1,
+                "program": "union_types_5.sts"
               },
               "end": {
                 "line": 37,
-                "column": 2
+                "column": 2,
+                "program": "union_types_5.sts"
               }
             }
           },
@@ -1718,11 +1948,13 @@
               "loc": {
                 "start": {
                   "line": 39,
-                  "column": 10
+                  "column": 10,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
                   "line": 39,
-                  "column": 13
+                  "column": 13,
+                  "program": "union_types_5.sts"
                 }
               }
             },
@@ -1742,11 +1974,13 @@
                   "loc": {
                     "start": {
                       "line": 39,
-                      "column": 10
+                      "column": 10,
+                      "program": "union_types_5.sts"
                     },
                     "end": {
                       "line": 39,
-                      "column": 13
+                      "column": 13,
+                      "program": "union_types_5.sts"
                     }
                   }
                 },
@@ -1770,11 +2004,13 @@
                             "loc": {
                               "start": {
                                 "line": 39,
-                                "column": 17
+                                "column": 17,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 39,
-                                "column": 18
+                                "column": 18,
+                                "program": "union_types_5.sts"
                               }
                             }
                           },
@@ -1795,33 +2031,39 @@
                                         "loc": {
                                           "start": {
                                             "line": 39,
-                                            "column": 19
+                                            "column": 19,
+                                            "program": "union_types_5.sts"
                                           },
                                           "end": {
                                             "line": 39,
-                                            "column": 20
+                                            "column": 20,
+                                            "program": "union_types_5.sts"
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
                                           "line": 39,
-                                          "column": 19
+                                          "column": 19,
+                                          "program": "union_types_5.sts"
                                         },
                                         "end": {
                                           "line": 39,
-                                          "column": 21
+                                          "column": 21,
+                                          "program": "union_types_5.sts"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 39,
-                                        "column": 19
+                                        "column": 19,
+                                        "program": "union_types_5.sts"
                                       },
                                       "end": {
                                         "line": 39,
-                                        "column": 21
+                                        "column": 21,
+                                        "program": "union_types_5.sts"
                                       }
                                     }
                                   },
@@ -1836,33 +2078,39 @@
                                         "loc": {
                                           "start": {
                                             "line": 39,
-                                            "column": 21
+                                            "column": 21,
+                                            "program": "union_types_5.sts"
                                           },
                                           "end": {
                                             "line": 39,
-                                            "column": 22
+                                            "column": 22,
+                                            "program": "union_types_5.sts"
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
                                           "line": 39,
-                                          "column": 21
+                                          "column": 21,
+                                          "program": "union_types_5.sts"
                                         },
                                         "end": {
                                           "line": 39,
-                                          "column": 23
+                                          "column": 23,
+                                          "program": "union_types_5.sts"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 39,
-                                        "column": 21
+                                        "column": 21,
+                                        "program": "union_types_5.sts"
                                       },
                                       "end": {
                                         "line": 39,
-                                        "column": 23
+                                        "column": 23,
+                                        "program": "union_types_5.sts"
                                       }
                                     }
                                   }
@@ -1870,11 +2118,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 39,
-                                    "column": 19
+                                    "column": 19,
+                                    "program": "union_types_5.sts"
                                   },
                                   "end": {
                                     "line": 39,
-                                    "column": 23
+                                    "column": 23,
+                                    "program": "union_types_5.sts"
                                   }
                                 }
                               }
@@ -1882,33 +2132,39 @@
                             "loc": {
                               "start": {
                                 "line": 39,
-                                "column": 18
+                                "column": 18,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 39,
-                                "column": 23
+                                "column": 23,
+                                "program": "union_types_5.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 39,
-                              "column": 17
+                              "column": 17,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 39,
-                              "column": 24
+                              "column": 24,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 39,
-                            "column": 17
+                            "column": 17,
+                            "program": "union_types_5.sts"
                           },
                           "end": {
                             "line": 39,
-                            "column": 24
+                            "column": 24,
+                            "program": "union_types_5.sts"
                           }
                         }
                       },
@@ -1916,22 +2172,26 @@
                       "loc": {
                         "start": {
                           "line": 39,
-                          "column": 14
+                          "column": 14,
+                          "program": "union_types_5.sts"
                         },
                         "end": {
                           "line": 39,
-                          "column": 24
+                          "column": 24,
+                          "program": "union_types_5.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 39,
-                        "column": 14
+                        "column": 14,
+                        "program": "union_types_5.sts"
                       },
                       "end": {
                         "line": 39,
-                        "column": 24
+                        "column": 24,
+                        "program": "union_types_5.sts"
                       }
                     }
                   }
@@ -1953,11 +2213,13 @@
                             "loc": {
                               "start": {
                                 "line": 40,
-                                "column": 9
+                                "column": 9,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 40,
-                                "column": 10
+                                "column": 10,
+                                "program": "union_types_5.sts"
                               }
                             }
                           },
@@ -1968,11 +2230,13 @@
                             "loc": {
                               "start": {
                                 "line": 40,
-                                "column": 11
+                                "column": 11,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 40,
-                                "column": 17
+                                "column": 17,
+                                "program": "union_types_5.sts"
                               }
                             }
                           },
@@ -1981,11 +2245,13 @@
                           "loc": {
                             "start": {
                               "line": 40,
-                              "column": 9
+                              "column": 9,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 40,
-                              "column": 17
+                              "column": 17,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
@@ -2000,44 +2266,52 @@
                               "loc": {
                                 "start": {
                                   "line": 40,
-                                  "column": 29
+                                  "column": 29,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 40,
-                                  "column": 30
+                                  "column": 30,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 40,
-                                "column": 29
+                                "column": 29,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 40,
-                                "column": 31
+                                "column": 31,
+                                "program": "union_types_5.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 40,
-                              "column": 29
+                              "column": 29,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 40,
-                              "column": 31
+                              "column": 31,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 40,
-                            "column": 9
+                            "column": 9,
+                            "program": "union_types_5.sts"
                           },
                           "end": {
                             "line": 40,
-                            "column": 31
+                            "column": 31,
+                            "program": "union_types_5.sts"
                           }
                         }
                       },
@@ -2055,11 +2329,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 41,
-                                    "column": 9
+                                    "column": 9,
+                                    "program": "union_types_5.sts"
                                   },
                                   "end": {
                                     "line": 41,
-                                    "column": 17
+                                    "column": 17,
+                                    "program": "union_types_5.sts"
                                   }
                                 }
                               },
@@ -2075,11 +2351,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 41,
-                                          "column": 18
+                                          "column": 18,
+                                          "program": "union_types_5.sts"
                                         },
                                         "end": {
                                           "line": 41,
-                                          "column": 19
+                                          "column": 19,
+                                          "program": "union_types_5.sts"
                                         }
                                       }
                                     },
@@ -2090,11 +2368,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 41,
-                                          "column": 20
+                                          "column": 20,
+                                          "program": "union_types_5.sts"
                                         },
                                         "end": {
                                           "line": 41,
-                                          "column": 26
+                                          "column": 26,
+                                          "program": "union_types_5.sts"
                                         }
                                       }
                                     },
@@ -2103,11 +2383,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 41,
-                                        "column": 18
+                                        "column": 18,
+                                        "program": "union_types_5.sts"
                                       },
                                       "end": {
                                         "line": 41,
-                                        "column": 26
+                                        "column": 26,
+                                        "program": "union_types_5.sts"
                                       }
                                     }
                                   },
@@ -2118,11 +2400,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 41,
-                                        "column": 27
+                                        "column": 27,
+                                        "program": "union_types_5.sts"
                                       },
                                       "end": {
                                         "line": 41,
-                                        "column": 30
+                                        "column": 30,
+                                        "program": "union_types_5.sts"
                                       }
                                     }
                                   },
@@ -2131,11 +2415,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 41,
-                                      "column": 18
+                                      "column": 18,
+                                      "program": "union_types_5.sts"
                                     },
                                     "end": {
                                       "line": 41,
-                                      "column": 30
+                                      "column": 30,
+                                      "program": "union_types_5.sts"
                                     }
                                   }
                                 },
@@ -2145,11 +2431,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 41,
-                                      "column": 32
+                                      "column": 32,
+                                      "program": "union_types_5.sts"
                                     },
                                     "end": {
                                       "line": 41,
-                                      "column": 34
+                                      "column": 34,
+                                      "program": "union_types_5.sts"
                                     }
                                   }
                                 },
@@ -2159,11 +2447,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 41,
-                                      "column": 36
+                                      "column": 36,
+                                      "program": "union_types_5.sts"
                                     },
                                     "end": {
                                       "line": 41,
-                                      "column": 74
+                                      "column": 74,
+                                      "program": "union_types_5.sts"
                                     }
                                   }
                                 }
@@ -2172,22 +2462,26 @@
                               "loc": {
                                 "start": {
                                   "line": 41,
-                                  "column": 9
+                                  "column": 9,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 41,
-                                  "column": 75
+                                  "column": 75,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 41,
-                                "column": 9
+                                "column": 9,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 41,
-                                "column": 76
+                                "column": 76,
+                                "program": "union_types_5.sts"
                               }
                             }
                           }
@@ -2195,11 +2489,13 @@
                         "loc": {
                           "start": {
                             "line": 40,
-                            "column": 32
+                            "column": 32,
+                            "program": "union_types_5.sts"
                           },
                           "end": {
                             "line": 42,
-                            "column": 6
+                            "column": 6,
+                            "program": "union_types_5.sts"
                           }
                         }
                       },
@@ -2217,11 +2513,13 @@
                               "loc": {
                                 "start": {
                                   "line": 42,
-                                  "column": 16
+                                  "column": 16,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 42,
-                                  "column": 17
+                                  "column": 17,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             },
@@ -2232,11 +2530,13 @@
                               "loc": {
                                 "start": {
                                   "line": 42,
-                                  "column": 18
+                                  "column": 18,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 42,
-                                  "column": 24
+                                  "column": 24,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             },
@@ -2245,11 +2545,13 @@
                             "loc": {
                               "start": {
                                 "line": 42,
-                                "column": 16
+                                "column": 16,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 42,
-                                "column": 24
+                                "column": 24,
+                                "program": "union_types_5.sts"
                               }
                             }
                           },
@@ -2264,44 +2566,52 @@
                                 "loc": {
                                   "start": {
                                     "line": 42,
-                                    "column": 36
+                                    "column": 36,
+                                    "program": "union_types_5.sts"
                                   },
                                   "end": {
                                     "line": 42,
-                                    "column": 37
+                                    "column": 37,
+                                    "program": "union_types_5.sts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 42,
-                                  "column": 36
+                                  "column": 36,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 42,
-                                  "column": 38
+                                  "column": 38,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 42,
-                                "column": 36
+                                "column": 36,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 42,
-                                "column": 38
+                                "column": 38,
+                                "program": "union_types_5.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 42,
-                              "column": 16
+                              "column": 16,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 42,
-                              "column": 38
+                              "column": 38,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
@@ -2319,11 +2629,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 43,
-                                      "column": 9
+                                      "column": 9,
+                                      "program": "union_types_5.sts"
                                     },
                                     "end": {
                                       "line": 43,
-                                      "column": 17
+                                      "column": 17,
+                                      "program": "union_types_5.sts"
                                     }
                                   }
                                 },
@@ -2339,11 +2651,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 43,
-                                            "column": 18
+                                            "column": 18,
+                                            "program": "union_types_5.sts"
                                           },
                                           "end": {
                                             "line": 43,
-                                            "column": 19
+                                            "column": 19,
+                                            "program": "union_types_5.sts"
                                           }
                                         }
                                       },
@@ -2354,11 +2668,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 43,
-                                            "column": 20
+                                            "column": 20,
+                                            "program": "union_types_5.sts"
                                           },
                                           "end": {
                                             "line": 43,
-                                            "column": 26
+                                            "column": 26,
+                                            "program": "union_types_5.sts"
                                           }
                                         }
                                       },
@@ -2367,11 +2683,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 43,
-                                          "column": 18
+                                          "column": 18,
+                                          "program": "union_types_5.sts"
                                         },
                                         "end": {
                                           "line": 43,
-                                          "column": 26
+                                          "column": 26,
+                                          "program": "union_types_5.sts"
                                         }
                                       }
                                     },
@@ -2382,11 +2700,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 43,
-                                          "column": 27
+                                          "column": 27,
+                                          "program": "union_types_5.sts"
                                         },
                                         "end": {
                                           "line": 43,
-                                          "column": 30
+                                          "column": 30,
+                                          "program": "union_types_5.sts"
                                         }
                                       }
                                     },
@@ -2395,11 +2715,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 43,
-                                        "column": 18
+                                        "column": 18,
+                                        "program": "union_types_5.sts"
                                       },
                                       "end": {
                                         "line": 43,
-                                        "column": 30
+                                        "column": 30,
+                                        "program": "union_types_5.sts"
                                       }
                                     }
                                   },
@@ -2409,11 +2731,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 43,
-                                        "column": 32
+                                        "column": 32,
+                                        "program": "union_types_5.sts"
                                       },
                                       "end": {
                                         "line": 43,
-                                        "column": 34
+                                        "column": 34,
+                                        "program": "union_types_5.sts"
                                       }
                                     }
                                   },
@@ -2423,11 +2747,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 43,
-                                        "column": 36
+                                        "column": 36,
+                                        "program": "union_types_5.sts"
                                       },
                                       "end": {
                                         "line": 43,
-                                        "column": 74
+                                        "column": 74,
+                                        "program": "union_types_5.sts"
                                       }
                                     }
                                   }
@@ -2436,22 +2762,26 @@
                                 "loc": {
                                   "start": {
                                     "line": 43,
-                                    "column": 9
+                                    "column": 9,
+                                    "program": "union_types_5.sts"
                                   },
                                   "end": {
                                     "line": 43,
-                                    "column": 75
+                                    "column": 75,
+                                    "program": "union_types_5.sts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 43,
-                                  "column": 9
+                                  "column": 9,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 43,
-                                  "column": 76
+                                  "column": 76,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             }
@@ -2459,11 +2789,13 @@
                           "loc": {
                             "start": {
                               "line": 42,
-                              "column": 39
+                              "column": 39,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 44,
-                              "column": 6
+                              "column": 6,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
@@ -2481,11 +2813,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 45,
-                                      "column": 9
+                                      "column": 9,
+                                      "program": "union_types_5.sts"
                                     },
                                     "end": {
                                       "line": 45,
-                                      "column": 19
+                                      "column": 19,
+                                      "program": "union_types_5.sts"
                                     }
                                   }
                                 },
@@ -2496,11 +2830,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 45,
-                                        "column": 20
+                                        "column": 20,
+                                        "program": "union_types_5.sts"
                                       },
                                       "end": {
                                         "line": 45,
-                                        "column": 25
+                                        "column": 25,
+                                        "program": "union_types_5.sts"
                                       }
                                     }
                                   },
@@ -2510,11 +2846,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 45,
-                                        "column": 27
+                                        "column": 27,
+                                        "program": "union_types_5.sts"
                                       },
                                       "end": {
                                         "line": 45,
-                                        "column": 67
+                                        "column": 67,
+                                        "program": "union_types_5.sts"
                                       }
                                     }
                                   }
@@ -2523,22 +2861,26 @@
                                 "loc": {
                                   "start": {
                                     "line": 45,
-                                    "column": 9
+                                    "column": 9,
+                                    "program": "union_types_5.sts"
                                   },
                                   "end": {
                                     "line": 45,
-                                    "column": 68
+                                    "column": 68,
+                                    "program": "union_types_5.sts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 45,
-                                  "column": 9
+                                  "column": 9,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 45,
-                                  "column": 69
+                                  "column": 69,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             }
@@ -2546,33 +2888,39 @@
                           "loc": {
                             "start": {
                               "line": 44,
-                              "column": 12
+                              "column": 12,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 46,
-                              "column": 6
+                              "column": 6,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 42,
-                            "column": 12
+                            "column": 12,
+                            "program": "union_types_5.sts"
                           },
                           "end": {
                             "line": 46,
-                            "column": 6
+                            "column": 6,
+                            "program": "union_types_5.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 40,
-                          "column": 5
+                          "column": 5,
+                          "program": "union_types_5.sts"
                         },
                         "end": {
                           "line": 46,
-                          "column": 6
+                          "column": 6,
+                          "program": "union_types_5.sts"
                         }
                       }
                     }
@@ -2580,33 +2928,39 @@
                   "loc": {
                     "start": {
                       "line": 39,
-                      "column": 25
+                      "column": 25,
+                      "program": "union_types_5.sts"
                     },
                     "end": {
                       "line": 47,
-                      "column": 2
+                      "column": 2,
+                      "program": "union_types_5.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 39,
-                    "column": 10
+                    "column": 10,
+                    "program": "union_types_5.sts"
                   },
                   "end": {
                     "line": 47,
-                    "column": 2
+                    "column": 2,
+                    "program": "union_types_5.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 39,
-                  "column": 10
+                  "column": 10,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
                   "line": 47,
-                  "column": 2
+                  "column": 2,
+                  "program": "union_types_5.sts"
                 }
               }
             },
@@ -2615,11 +2969,13 @@
             "loc": {
               "start": {
                 "line": 39,
-                "column": 1
+                "column": 1,
+                "program": "union_types_5.sts"
               },
               "end": {
                 "line": 47,
-                "column": 2
+                "column": 2,
+                "program": "union_types_5.sts"
               }
             }
           },
@@ -2632,11 +2988,13 @@
               "loc": {
                 "start": {
                   "line": 49,
-                  "column": 10
+                  "column": 10,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
                   "line": 49,
-                  "column": 14
+                  "column": 14,
+                  "program": "union_types_5.sts"
                 }
               }
             },
@@ -2656,11 +3014,13 @@
                   "loc": {
                     "start": {
                       "line": 49,
-                      "column": 10
+                      "column": 10,
+                      "program": "union_types_5.sts"
                     },
                     "end": {
                       "line": 49,
-                      "column": 14
+                      "column": 14,
+                      "program": "union_types_5.sts"
                     }
                   }
                 },
@@ -2673,11 +3033,13 @@
                   "loc": {
                     "start": {
                       "line": 49,
-                      "column": 18
+                      "column": 18,
+                      "program": "union_types_5.sts"
                     },
                     "end": {
                       "line": 49,
-                      "column": 22
+                      "column": 22,
+                      "program": "union_types_5.sts"
                     }
                   }
                 },
@@ -2703,11 +3065,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 50,
-                                      "column": 12
+                                      "column": 12,
+                                      "program": "union_types_5.sts"
                                     },
                                     "end": {
                                       "line": 50,
-                                      "column": 13
+                                      "column": 13,
+                                      "program": "union_types_5.sts"
                                     }
                                   }
                                 },
@@ -2728,33 +3092,39 @@
                                               "loc": {
                                                 "start": {
                                                   "line": 50,
-                                                  "column": 14
+                                                  "column": 14,
+                                                  "program": "union_types_5.sts"
                                                 },
                                                 "end": {
                                                   "line": 50,
-                                                  "column": 15
+                                                  "column": 15,
+                                                  "program": "union_types_5.sts"
                                                 }
                                               }
                                             },
                                             "loc": {
                                               "start": {
                                                 "line": 50,
-                                                "column": 14
+                                                "column": 14,
+                                                "program": "union_types_5.sts"
                                               },
                                               "end": {
                                                 "line": 50,
-                                                "column": 16
+                                                "column": 16,
+                                                "program": "union_types_5.sts"
                                               }
                                             }
                                           },
                                           "loc": {
                                             "start": {
                                               "line": 50,
-                                              "column": 14
+                                              "column": 14,
+                                              "program": "union_types_5.sts"
                                             },
                                             "end": {
                                               "line": 50,
-                                              "column": 16
+                                              "column": 16,
+                                              "program": "union_types_5.sts"
                                             }
                                           }
                                         },
@@ -2769,33 +3139,39 @@
                                               "loc": {
                                                 "start": {
                                                   "line": 50,
-                                                  "column": 16
+                                                  "column": 16,
+                                                  "program": "union_types_5.sts"
                                                 },
                                                 "end": {
                                                   "line": 50,
-                                                  "column": 17
+                                                  "column": 17,
+                                                  "program": "union_types_5.sts"
                                                 }
                                               }
                                             },
                                             "loc": {
                                               "start": {
                                                 "line": 50,
-                                                "column": 16
+                                                "column": 16,
+                                                "program": "union_types_5.sts"
                                               },
                                               "end": {
                                                 "line": 50,
-                                                "column": 18
+                                                "column": 18,
+                                                "program": "union_types_5.sts"
                                               }
                                             }
                                           },
                                           "loc": {
                                             "start": {
                                               "line": 50,
-                                              "column": 16
+                                              "column": 16,
+                                              "program": "union_types_5.sts"
                                             },
                                             "end": {
                                               "line": 50,
-                                              "column": 18
+                                              "column": 18,
+                                              "program": "union_types_5.sts"
                                             }
                                           }
                                         }
@@ -2803,11 +3179,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 50,
-                                          "column": 14
+                                          "column": 14,
+                                          "program": "union_types_5.sts"
                                         },
                                         "end": {
                                           "line": 50,
-                                          "column": 18
+                                          "column": 18,
+                                          "program": "union_types_5.sts"
                                         }
                                       }
                                     }
@@ -2815,33 +3193,39 @@
                                   "loc": {
                                     "start": {
                                       "line": 50,
-                                      "column": 13
+                                      "column": 13,
+                                      "program": "union_types_5.sts"
                                     },
                                     "end": {
                                       "line": 50,
-                                      "column": 18
+                                      "column": 18,
+                                      "program": "union_types_5.sts"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 50,
-                                    "column": 12
+                                    "column": 12,
+                                    "program": "union_types_5.sts"
                                   },
                                   "end": {
                                     "line": 50,
-                                    "column": 20
+                                    "column": 20,
+                                    "program": "union_types_5.sts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 50,
-                                  "column": 12
+                                  "column": 12,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 50,
-                                  "column": 20
+                                  "column": 20,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             },
@@ -2849,11 +3233,13 @@
                             "loc": {
                               "start": {
                                 "line": 50,
-                                "column": 9
+                                "column": 9,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 50,
-                                "column": 10
+                                "column": 10,
+                                "program": "union_types_5.sts"
                               }
                             }
                           },
@@ -2870,11 +3256,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 50,
-                                      "column": 25
+                                      "column": 25,
+                                      "program": "union_types_5.sts"
                                     },
                                     "end": {
                                       "line": 50,
-                                      "column": 26
+                                      "column": 26,
+                                      "program": "union_types_5.sts"
                                     }
                                   }
                                 },
@@ -2895,33 +3283,39 @@
                                               "loc": {
                                                 "start": {
                                                   "line": 50,
-                                                  "column": 27
+                                                  "column": 27,
+                                                  "program": "union_types_5.sts"
                                                 },
                                                 "end": {
                                                   "line": 50,
-                                                  "column": 28
+                                                  "column": 28,
+                                                  "program": "union_types_5.sts"
                                                 }
                                               }
                                             },
                                             "loc": {
                                               "start": {
                                                 "line": 50,
-                                                "column": 27
+                                                "column": 27,
+                                                "program": "union_types_5.sts"
                                               },
                                               "end": {
                                                 "line": 50,
-                                                "column": 29
+                                                "column": 29,
+                                                "program": "union_types_5.sts"
                                               }
                                             }
                                           },
                                           "loc": {
                                             "start": {
                                               "line": 50,
-                                              "column": 27
+                                              "column": 27,
+                                              "program": "union_types_5.sts"
                                             },
                                             "end": {
                                               "line": 50,
-                                              "column": 29
+                                              "column": 29,
+                                              "program": "union_types_5.sts"
                                             }
                                           }
                                         },
@@ -2936,33 +3330,39 @@
                                               "loc": {
                                                 "start": {
                                                   "line": 50,
-                                                  "column": 29
+                                                  "column": 29,
+                                                  "program": "union_types_5.sts"
                                                 },
                                                 "end": {
                                                   "line": 50,
-                                                  "column": 30
+                                                  "column": 30,
+                                                  "program": "union_types_5.sts"
                                                 }
                                               }
                                             },
                                             "loc": {
                                               "start": {
                                                 "line": 50,
-                                                "column": 29
+                                                "column": 29,
+                                                "program": "union_types_5.sts"
                                               },
                                               "end": {
                                                 "line": 50,
-                                                "column": 31
+                                                "column": 31,
+                                                "program": "union_types_5.sts"
                                               }
                                             }
                                           },
                                           "loc": {
                                             "start": {
                                               "line": 50,
-                                              "column": 29
+                                              "column": 29,
+                                              "program": "union_types_5.sts"
                                             },
                                             "end": {
                                               "line": 50,
-                                              "column": 31
+                                              "column": 31,
+                                              "program": "union_types_5.sts"
                                             }
                                           }
                                         }
@@ -2970,11 +3370,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 50,
-                                          "column": 27
+                                          "column": 27,
+                                          "program": "union_types_5.sts"
                                         },
                                         "end": {
                                           "line": 50,
-                                          "column": 31
+                                          "column": 31,
+                                          "program": "union_types_5.sts"
                                         }
                                       }
                                     }
@@ -2982,33 +3384,39 @@
                                   "loc": {
                                     "start": {
                                       "line": 50,
-                                      "column": 26
+                                      "column": 26,
+                                      "program": "union_types_5.sts"
                                     },
                                     "end": {
                                       "line": 50,
-                                      "column": 31
+                                      "column": 31,
+                                      "program": "union_types_5.sts"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 50,
-                                    "column": 25
+                                    "column": 25,
+                                    "program": "union_types_5.sts"
                                   },
                                   "end": {
                                     "line": 50,
-                                    "column": 32
+                                    "column": 32,
+                                    "program": "union_types_5.sts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 50,
-                                  "column": 25
+                                  "column": 25,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 50,
-                                  "column": 32
+                                  "column": 32,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             },
@@ -3026,33 +3434,39 @@
                                       "loc": {
                                         "start": {
                                           "line": 50,
-                                          "column": 36
+                                          "column": 36,
+                                          "program": "union_types_5.sts"
                                         },
                                         "end": {
                                           "line": 50,
-                                          "column": 37
+                                          "column": 37,
+                                          "program": "union_types_5.sts"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 50,
-                                        "column": 36
+                                        "column": 36,
+                                        "program": "union_types_5.sts"
                                       },
                                       "end": {
                                         "line": 50,
-                                        "column": 38
+                                        "column": 38,
+                                        "program": "union_types_5.sts"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 50,
-                                      "column": 36
+                                      "column": 36,
+                                      "program": "union_types_5.sts"
                                     },
                                     "end": {
                                       "line": 50,
-                                      "column": 38
+                                      "column": 38,
+                                      "program": "union_types_5.sts"
                                     }
                                   }
                                 },
@@ -3060,11 +3474,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 50,
-                                    "column": 32
+                                    "column": 32,
+                                    "program": "union_types_5.sts"
                                   },
                                   "end": {
                                     "line": 50,
-                                    "column": 40
+                                    "column": 40,
+                                    "program": "union_types_5.sts"
                                   }
                                 }
                               }
@@ -3072,22 +3488,26 @@
                             "loc": {
                               "start": {
                                 "line": 50,
-                                "column": 21
+                                "column": 21,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 50,
-                                "column": 41
+                                "column": 41,
+                                "program": "union_types_5.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 50,
-                              "column": 9
+                              "column": 9,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 50,
-                              "column": 41
+                              "column": 41,
+                              "program": "union_types_5.sts"
                             }
                           }
                         }
@@ -3096,11 +3516,13 @@
                       "loc": {
                         "start": {
                           "line": 50,
-                          "column": 5
+                          "column": 5,
+                          "program": "union_types_5.sts"
                         },
                         "end": {
                           "line": 50,
-                          "column": 41
+                          "column": 41,
+                          "program": "union_types_5.sts"
                         }
                       }
                     },
@@ -3115,11 +3537,13 @@
                           "loc": {
                             "start": {
                               "line": 51,
-                              "column": 5
+                              "column": 5,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 51,
-                              "column": 8
+                              "column": 8,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
@@ -3133,11 +3557,13 @@
                               "loc": {
                                 "start": {
                                   "line": 51,
-                                  "column": 9
+                                  "column": 9,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 51,
-                                  "column": 10
+                                  "column": 10,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             },
@@ -3148,11 +3574,13 @@
                               "loc": {
                                 "start": {
                                   "line": 51,
-                                  "column": 11
+                                  "column": 11,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 51,
-                                  "column": 17
+                                  "column": 17,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             },
@@ -3161,11 +3589,13 @@
                             "loc": {
                               "start": {
                                 "line": 51,
-                                "column": 9
+                                "column": 9,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 51,
-                                "column": 17
+                                "column": 17,
+                                "program": "union_types_5.sts"
                               }
                             }
                           }
@@ -3174,22 +3604,26 @@
                         "loc": {
                           "start": {
                             "line": 51,
-                            "column": 5
+                            "column": 5,
+                            "program": "union_types_5.sts"
                           },
                           "end": {
                             "line": 51,
-                            "column": 18
+                            "column": 18,
+                            "program": "union_types_5.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 51,
-                          "column": 5
+                          "column": 5,
+                          "program": "union_types_5.sts"
                         },
                         "end": {
                           "line": 51,
-                          "column": 19
+                          "column": 19,
+                          "program": "union_types_5.sts"
                         }
                       }
                     },
@@ -3204,11 +3638,13 @@
                           "loc": {
                             "start": {
                               "line": 52,
-                              "column": 5
+                              "column": 5,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 52,
-                              "column": 8
+                              "column": 8,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
@@ -3220,11 +3656,13 @@
                             "loc": {
                               "start": {
                                 "line": 52,
-                                "column": 9
+                                "column": 9,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 52,
-                                "column": 10
+                                "column": 10,
+                                "program": "union_types_5.sts"
                               }
                             }
                           }
@@ -3233,22 +3671,26 @@
                         "loc": {
                           "start": {
                             "line": 52,
-                            "column": 5
+                            "column": 5,
+                            "program": "union_types_5.sts"
                           },
                           "end": {
                             "line": 52,
-                            "column": 11
+                            "column": 11,
+                            "program": "union_types_5.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 52,
-                          "column": 5
+                          "column": 5,
+                          "program": "union_types_5.sts"
                         },
                         "end": {
                           "line": 52,
-                          "column": 12
+                          "column": 12,
+                          "program": "union_types_5.sts"
                         }
                       }
                     },
@@ -3266,11 +3708,13 @@
                             "loc": {
                               "start": {
                                 "line": 53,
-                                "column": 5
+                                "column": 5,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 53,
-                                "column": 6
+                                "column": 6,
+                                "program": "union_types_5.sts"
                               }
                             }
                           },
@@ -3281,11 +3725,13 @@
                             "loc": {
                               "start": {
                                 "line": 53,
-                                "column": 7
+                                "column": 7,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 53,
-                                "column": 13
+                                "column": 13,
+                                "program": "union_types_5.sts"
                               }
                             }
                           },
@@ -3294,11 +3740,13 @@
                           "loc": {
                             "start": {
                               "line": 53,
-                              "column": 5
+                              "column": 5,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 53,
-                              "column": 13
+                              "column": 13,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
@@ -3315,33 +3763,39 @@
                                 "loc": {
                                   "start": {
                                     "line": 53,
-                                    "column": 20
+                                    "column": 20,
+                                    "program": "union_types_5.sts"
                                   },
                                   "end": {
                                     "line": 53,
-                                    "column": 21
+                                    "column": 21,
+                                    "program": "union_types_5.sts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 53,
-                                  "column": 20
+                                  "column": 20,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 53,
-                                  "column": 22
+                                  "column": 22,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 53,
-                                "column": 20
+                                "column": 20,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 53,
-                                "column": 22
+                                "column": 22,
+                                "program": "union_types_5.sts"
                               }
                             }
                           },
@@ -3349,33 +3803,39 @@
                           "loc": {
                             "start": {
                               "line": 53,
-                              "column": 16
+                              "column": 16,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 53,
-                              "column": 24
+                              "column": 24,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 53,
-                            "column": 5
+                            "column": 5,
+                            "program": "union_types_5.sts"
                           },
                           "end": {
                             "line": 53,
-                            "column": 24
+                            "column": 24,
+                            "program": "union_types_5.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 53,
-                          "column": 5
+                          "column": 5,
+                          "program": "union_types_5.sts"
                         },
                         "end": {
                           "line": 53,
-                          "column": 24
+                          "column": 24,
+                          "program": "union_types_5.sts"
                         }
                       }
                     },
@@ -3390,11 +3850,13 @@
                           "loc": {
                             "start": {
                               "line": 54,
-                              "column": 5
+                              "column": 5,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 54,
-                              "column": 8
+                              "column": 8,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
@@ -3406,11 +3868,13 @@
                             "loc": {
                               "start": {
                                 "line": 54,
-                                "column": 9
+                                "column": 9,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 54,
-                                "column": 10
+                                "column": 10,
+                                "program": "union_types_5.sts"
                               }
                             }
                           }
@@ -3419,22 +3883,26 @@
                         "loc": {
                           "start": {
                             "line": 54,
-                            "column": 5
+                            "column": 5,
+                            "program": "union_types_5.sts"
                           },
                           "end": {
                             "line": 54,
-                            "column": 11
+                            "column": 11,
+                            "program": "union_types_5.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 54,
-                          "column": 5
+                          "column": 5,
+                          "program": "union_types_5.sts"
                         },
                         "end": {
                           "line": 54,
-                          "column": 12
+                          "column": 12,
+                          "program": "union_types_5.sts"
                         }
                       }
                     },
@@ -3449,11 +3917,13 @@
                           "loc": {
                             "start": {
                               "line": 55,
-                              "column": 5
+                              "column": 5,
+                              "program": "union_types_5.sts"
                             },
                             "end": {
                               "line": 55,
-                              "column": 8
+                              "column": 8,
+                              "program": "union_types_5.sts"
                             }
                           }
                         },
@@ -3467,11 +3937,13 @@
                               "loc": {
                                 "start": {
                                   "line": 55,
-                                  "column": 9
+                                  "column": 9,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 55,
-                                  "column": 10
+                                  "column": 10,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             },
@@ -3482,11 +3954,13 @@
                               "loc": {
                                 "start": {
                                   "line": 55,
-                                  "column": 11
+                                  "column": 11,
+                                  "program": "union_types_5.sts"
                                 },
                                 "end": {
                                   "line": 55,
-                                  "column": 17
+                                  "column": 17,
+                                  "program": "union_types_5.sts"
                                 }
                               }
                             },
@@ -3495,11 +3969,13 @@
                             "loc": {
                               "start": {
                                 "line": 55,
-                                "column": 9
+                                "column": 9,
+                                "program": "union_types_5.sts"
                               },
                               "end": {
                                 "line": 55,
-                                "column": 17
+                                "column": 17,
+                                "program": "union_types_5.sts"
                               }
                             }
                           }
@@ -3508,22 +3984,26 @@
                         "loc": {
                           "start": {
                             "line": 55,
-                            "column": 5
+                            "column": 5,
+                            "program": "union_types_5.sts"
                           },
                           "end": {
                             "line": 55,
-                            "column": 18
+                            "column": 18,
+                            "program": "union_types_5.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 55,
-                          "column": 5
+                          "column": 5,
+                          "program": "union_types_5.sts"
                         },
                         "end": {
                           "line": 55,
-                          "column": 19
+                          "column": 19,
+                          "program": "union_types_5.sts"
                         }
                       }
                     }
@@ -3531,33 +4011,39 @@
                   "loc": {
                     "start": {
                       "line": 49,
-                      "column": 23
+                      "column": 23,
+                      "program": "union_types_5.sts"
                     },
                     "end": {
                       "line": 56,
-                      "column": 2
+                      "column": 2,
+                      "program": "union_types_5.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 49,
-                    "column": 10
+                    "column": 10,
+                    "program": "union_types_5.sts"
                   },
                   "end": {
                     "line": 56,
-                    "column": 2
+                    "column": 2,
+                    "program": "union_types_5.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 49,
-                  "column": 10
+                  "column": 10,
+                  "program": "union_types_5.sts"
                 },
                 "end": {
                   "line": 56,
-                  "column": 2
+                  "column": 2,
+                  "program": "union_types_5.sts"
                 }
               }
             },
@@ -3566,11 +4052,13 @@
             "loc": {
               "start": {
                 "line": 49,
-                "column": 1
+                "column": 1,
+                "program": "union_types_5.sts"
               },
               "end": {
                 "line": 56,
-                "column": 2
+                "column": 2,
+                "program": "union_types_5.sts"
               }
             }
           }
@@ -3578,22 +4066,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "union_types_5.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "union_types_5.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "union_types_5.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "union_types_5.sts"
         }
       }
     }
@@ -3601,11 +4093,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "union_types_5.sts"
     },
     "end": {
       "line": 58,
-      "column": 1
+      "column": 1,
+      "program": "union_types_5.sts"
     }
   }
 }

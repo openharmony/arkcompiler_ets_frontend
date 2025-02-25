@@ -35,7 +35,7 @@ ir::Expression *ETSParser::ParseLaunchExpression(ExpressionParseFlags flags)
     ir::Expression *expr = ParseLeftHandSideExpression(flags);
     if (!expr->IsCallExpression()) {
         LogError(diagnostic::ONLY_CALL_AFTER_LAUNCH, {}, exprStart);
-        return AllocBrokenExpression();
+        return AllocBrokenExpression(exprStart);
     }
     auto call = expr->AsCallExpression();
     auto *launchExpression = AllocNode<ir::ETSLaunchExpression>(call);
@@ -251,8 +251,9 @@ ir::Expression *ETSParser::ParseDefaultPrimaryExpression(ExpressionParseFlags fl
         return ParsePrimaryExpressionIdent(flags);
     }
 
-    LogUnexpectedToken(Lexer()->GetToken());
-    return AllocBrokenExpression();
+    const auto &tokenNow = Lexer()->GetToken();
+    LogUnexpectedToken(tokenNow);
+    return AllocBrokenExpression(tokenNow.Loc());
 }
 
 ir::Expression *ETSParser::ParsePrimaryExpressionWithLiterals(ExpressionParseFlags flags)
@@ -316,8 +317,9 @@ ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
         }
         case lexer::TokenType::KEYW_TYPE: {
             LogError(diagnostic::TYPE_ALIAS_ONLY_TOP_LEVEL);
+            const auto &rangeToken = Lexer()->GetToken().Loc();
             ParseTypeAliasDeclaration();  // Try to parse type alias and drop the result.
-            return AllocBrokenExpression();
+            return AllocBrokenExpression(rangeToken);
         }
         case lexer::TokenType::PUNCTUATOR_FORMAT: {
             return ParseExpressionFormatPlaceholder();

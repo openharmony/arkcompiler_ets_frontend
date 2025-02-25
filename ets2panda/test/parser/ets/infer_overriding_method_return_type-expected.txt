@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 16
+              "column": 16,
+              "program": "infer_overriding_method_return_type.sts"
             },
             "end": {
               "line": 16,
-              "column": 20
+              "column": 20,
+              "program": "infer_overriding_method_return_type.sts"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 14
+                  "column": 14,
+                  "program": "infer_overriding_method_return_type.sts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 20
+                  "column": 20,
+                  "program": "infer_overriding_method_return_type.sts"
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 14
+                      "column": 14,
+                      "program": "infer_overriding_method_return_type.sts"
                     },
                     "end": {
                       "line": 17,
-                      "column": 20
+                      "column": 20,
+                      "program": "infer_overriding_method_return_type.sts"
                     }
                   }
                 },
@@ -78,55 +84,65 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 24
+                          "column": 24,
+                          "program": "infer_overriding_method_return_type.sts"
                         },
                         "end": {
                           "line": 17,
-                          "column": 30
+                          "column": 30,
+                          "program": "infer_overriding_method_return_type.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 17,
-                        "column": 24
+                        "column": 24,
+                        "program": "infer_overriding_method_return_type.sts"
                       },
                       "end": {
                         "line": 17,
-                        "column": 31
+                        "column": 31,
+                        "program": "infer_overriding_method_return_type.sts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 24
+                      "column": 24,
+                      "program": "infer_overriding_method_return_type.sts"
                     },
                     "end": {
                       "line": 17,
-                      "column": 31
+                      "column": 31,
+                      "program": "infer_overriding_method_return_type.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 20
+                    "column": 20,
+                    "program": "infer_overriding_method_return_type.sts"
                   },
                   "end": {
                     "line": 17,
-                    "column": 20
+                    "column": 20,
+                    "program": "infer_overriding_method_return_type.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 20
+                  "column": 20,
+                  "program": "infer_overriding_method_return_type.sts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 20
+                  "column": 20,
+                  "program": "infer_overriding_method_return_type.sts"
                 }
               }
             },
@@ -135,11 +151,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "infer_overriding_method_return_type.sts"
               },
               "end": {
                 "line": 17,
-                "column": 20
+                "column": 20,
+                "program": "infer_overriding_method_return_type.sts"
               }
             }
           },
@@ -151,12 +169,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 22,
+                  "program": "infer_overriding_method_return_type.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 22,
+                  "program": "infer_overriding_method_return_type.sts"
                 }
               }
             },
@@ -174,12 +194,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 22,
+                      "program": "infer_overriding_method_return_type.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 22,
+                      "program": "infer_overriding_method_return_type.sts"
                     }
                   }
                 },
@@ -192,34 +214,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 22,
+                      "program": "infer_overriding_method_return_type.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 22,
+                      "program": "infer_overriding_method_return_type.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 22,
+                    "program": "infer_overriding_method_return_type.sts"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 22,
+                    "program": "infer_overriding_method_return_type.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 22,
+                  "program": "infer_overriding_method_return_type.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 22,
+                  "program": "infer_overriding_method_return_type.sts"
                 }
               }
             },
@@ -227,12 +255,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 18,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 18,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -240,22 +270,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 21
+            "column": 21,
+            "program": "infer_overriding_method_return_type.sts"
           },
           "end": {
-            "line": 18,
-            "column": 2
+            "line": 20,
+            "column": 6,
+            "program": "infer_overriding_method_return_type.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 10
+          "column": 10,
+          "program": "infer_overriding_method_return_type.sts"
         },
         "end": {
-          "line": 18,
-          "column": 2
+          "line": 20,
+          "column": 6,
+          "program": "infer_overriding_method_return_type.sts"
         }
       }
     },
@@ -269,11 +303,13 @@
           "loc": {
             "start": {
               "line": 20,
-              "column": 7
+              "column": 7,
+              "program": "infer_overriding_method_return_type.sts"
             },
             "end": {
               "line": 20,
-              "column": 14
+              "column": 14,
+              "program": "infer_overriding_method_return_type.sts"
             }
           }
         },
@@ -288,33 +324,39 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 23
+                  "column": 23,
+                  "program": "infer_overriding_method_return_type.sts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 27
+                  "column": 27,
+                  "program": "infer_overriding_method_return_type.sts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 20,
-                "column": 23
+                "column": 23,
+                "program": "infer_overriding_method_return_type.sts"
               },
               "end": {
                 "line": 20,
-                "column": 29
+                "column": 29,
+                "program": "infer_overriding_method_return_type.sts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 20,
-              "column": 23
+              "column": 23,
+              "program": "infer_overriding_method_return_type.sts"
             },
             "end": {
               "line": 20,
-              "column": 29
+              "column": 29,
+              "program": "infer_overriding_method_return_type.sts"
             }
           }
         },
@@ -329,11 +371,13 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 5
+                  "column": 5,
+                  "program": "infer_overriding_method_return_type.sts"
                 },
                 "end": {
                   "line": 21,
-                  "column": 11
+                  "column": 11,
+                  "program": "infer_overriding_method_return_type.sts"
                 }
               }
             },
@@ -353,11 +397,13 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 5
+                      "column": 5,
+                      "program": "infer_overriding_method_return_type.sts"
                     },
                     "end": {
                       "line": 21,
-                      "column": 11
+                      "column": 11,
+                      "program": "infer_overriding_method_return_type.sts"
                     }
                   }
                 },
@@ -376,22 +422,26 @@
                         "loc": {
                           "start": {
                             "line": 22,
-                            "column": 16
+                            "column": 16,
+                            "program": "infer_overriding_method_return_type.sts"
                           },
                           "end": {
                             "line": 22,
-                            "column": 19
+                            "column": 19,
+                            "program": "infer_overriding_method_return_type.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 22,
-                          "column": 9
+                          "column": 9,
+                          "program": "infer_overriding_method_return_type.sts"
                         },
                         "end": {
                           "line": 22,
-                          "column": 19
+                          "column": 19,
+                          "program": "infer_overriding_method_return_type.sts"
                         }
                       }
                     }
@@ -399,33 +449,39 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 14
+                      "column": 14,
+                      "program": "infer_overriding_method_return_type.sts"
                     },
                     "end": {
                       "line": 23,
-                      "column": 6
+                      "column": 6,
+                      "program": "infer_overriding_method_return_type.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 11
+                    "column": 11,
+                    "program": "infer_overriding_method_return_type.sts"
                   },
                   "end": {
                     "line": 23,
-                    "column": 6
+                    "column": 6,
+                    "program": "infer_overriding_method_return_type.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 11
+                  "column": 11,
+                  "program": "infer_overriding_method_return_type.sts"
                 },
                 "end": {
                   "line": 23,
-                  "column": 6
+                  "column": 6,
+                  "program": "infer_overriding_method_return_type.sts"
                 }
               }
             },
@@ -434,11 +490,13 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 5
+                "column": 5,
+                "program": "infer_overriding_method_return_type.sts"
               },
               "end": {
                 "line": 23,
-                "column": 6
+                "column": 6,
+                "program": "infer_overriding_method_return_type.sts"
               }
             }
           },
@@ -450,12 +508,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 20,
+                  "column": 29,
+                  "program": "infer_overriding_method_return_type.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 20,
+                  "column": 29,
+                  "program": "infer_overriding_method_return_type.sts"
                 }
               }
             },
@@ -473,12 +533,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 20,
+                      "column": 29,
+                      "program": "infer_overriding_method_return_type.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 20,
+                      "column": 29,
+                      "program": "infer_overriding_method_return_type.sts"
                     }
                   }
                 },
@@ -491,34 +553,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 20,
+                      "column": 29,
+                      "program": "infer_overriding_method_return_type.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 20,
+                      "column": 29,
+                      "program": "infer_overriding_method_return_type.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 20,
+                    "column": 29,
+                    "program": "infer_overriding_method_return_type.sts"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 20,
+                    "column": 29,
+                    "program": "infer_overriding_method_return_type.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 20,
+                  "column": 29,
+                  "program": "infer_overriding_method_return_type.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 20,
+                  "column": 29,
+                  "program": "infer_overriding_method_return_type.sts"
                 }
               }
             },
@@ -526,12 +594,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 24,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 24,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -539,22 +609,26 @@
         "loc": {
           "start": {
             "line": 20,
-            "column": 28
+            "column": 28,
+            "program": "infer_overriding_method_return_type.sts"
           },
           "end": {
             "line": 24,
-            "column": 2
+            "column": 2,
+            "program": "infer_overriding_method_return_type.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "infer_overriding_method_return_type.sts"
         },
         "end": {
           "line": 24,
-          "column": 2
+          "column": 2,
+          "program": "infer_overriding_method_return_type.sts"
         }
       }
     },
@@ -568,11 +642,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "infer_overriding_method_return_type.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "infer_overriding_method_return_type.sts"
             }
           }
         },
@@ -588,11 +664,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -612,11 +690,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -630,33 +710,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -665,11 +751,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "infer_overriding_method_return_type.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "infer_overriding_method_return_type.sts"
               }
             }
           },
@@ -682,11 +770,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -706,11 +796,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -724,33 +816,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -759,11 +857,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "infer_overriding_method_return_type.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "infer_overriding_method_return_type.sts"
               }
             }
           }
@@ -771,22 +871,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "infer_overriding_method_return_type.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "infer_overriding_method_return_type.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "infer_overriding_method_return_type.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "infer_overriding_method_return_type.sts"
         }
       }
     }
@@ -794,11 +898,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "infer_overriding_method_return_type.sts"
     },
     "end": {
       "line": 24,
-      "column": 2
+      "column": 2,
+      "program": "infer_overriding_method_return_type.sts"
     }
   }
 }

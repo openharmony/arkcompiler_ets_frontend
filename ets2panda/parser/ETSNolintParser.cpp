@@ -229,12 +229,12 @@ std::set<ETSWarnings> ETSNolintParser::ParseETSNolintArgs()
         if (cp != lexer::LEX_CHAR_MINUS && cp != lexer::LEX_CHAR_COMMA && cp != lexer::LEX_CHAR_RIGHT_PAREN &&
             (cp < lexer::LEX_CHAR_LOWERCASE_A || cp > lexer::LEX_CHAR_LOWERCASE_Z)) {
             parser_->DiagnosticEngine().LogSyntaxError(
-                parser_->GetProgram(), "Unexpected character for ETSNOLINT argument! [VALID ONLY: a-z, '-'].",
-                lexer::SourceLocation {line_ + 1, 0});
+                "Unexpected character for ETSNOLINT argument! [VALID ONLY: a-z, '-'].",
+                lexer::SourceLocation {line_ + 1, 0, parser_->GetProgram()});
         }
         if ((cp == lexer::LEX_CHAR_COMMA || cp == lexer::LEX_CHAR_RIGHT_PAREN) && !ValidETSNolintArg(warningName)) {
-            parser_->DiagnosticEngine().LogSyntaxError(parser_->GetProgram(), "Invalid argument for ETSNOLINT!",
-                                                       lexer::SourceLocation {line_ + 1, 0});
+            parser_->DiagnosticEngine().LogSyntaxError("Invalid argument for ETSNOLINT!",
+                                                       lexer::SourceLocation {line_ + 1, 0, parser_->GetProgram()});
         }
         if ((cp == lexer::LEX_CHAR_COMMA || cp == lexer::LEX_CHAR_RIGHT_PAREN) && ValidETSNolintArg(warningName)) {
             warningsCollection.insert(MapETSNolintArg(warningName));

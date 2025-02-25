@@ -19,6 +19,7 @@
 #include "checker/types/globalTypesHolder.h"
 #include "evaluate/scopedDebugInfoPlugin.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
+#include "compiler/lowering/util.h"
 
 #include <checker/ETSAnalyzerHelpers.h>
 
@@ -2291,6 +2292,13 @@ ir::Expression *ETSChecker::GenerateImplicitInstantiateArg(const std::string &cl
     auto parser = parser::ETSParser(&program, nullptr, DiagnosticEngine());
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *argExpr = parser.CreateExpression(implicitInstantiateArgument);
+    // NOTE(kaskov): #23399 We temporary delete SourceRange of all artificially created nodes (not from original
+    // Lexer()), because all errors, which created by this code, will got a segfault. That caused because Program exist
+    // till the end this function, and not avaible in diagnosticEngine. Now errors printed, but whitout position
+    // because it doesn't actually exist). PS.Previously written competely wrong positons and file, so situation
+    // isn't changed.
+    compiler::SetSourceRangesRecursively(argExpr, lexer::SourceRange());
+    argExpr->IterateRecursively([](ir::AstNode *node) -> void { node->SetRange(lexer::SourceRange()); });
     compiler::InitScopesPhaseETS::RunExternalNode(argExpr, &program);
 
     return argExpr;

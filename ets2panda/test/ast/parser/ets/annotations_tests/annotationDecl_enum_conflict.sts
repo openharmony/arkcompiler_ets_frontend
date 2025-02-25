@@ -17,13 +17,13 @@ interface MyAnno {}
 /* @@ label */enum MyAnno {one, two, three}
 
 /* @@@ label Error TypeError: Variable 'MyAnno' has already been declared.  */
-/* @@? 1:1 Error TypeError: Property 'one' does not exist on type 'MyAnno' */
-/* @@? 1:1 Error TypeError: Property 'two' does not exist on type 'MyAnno' */
-/* @@? 1:1 Error TypeError: Property 'three' does not exist on type 'MyAnno' */
-/* @@? 1:1 Error TypeError: Property 'one' does not exist on type 'MyAnno' */
-/* @@? 1:1 Error TypeError: Property 'two' does not exist on type 'MyAnno' */
-/* @@? 1:1 Error TypeError: Property 'three' does not exist on type 'MyAnno' */
-/* @@? 1:1 Error TypeError: Cannot cast type 'MyAnno' to 'int' */
-/* @@? 1:1 Error TypeError: Cannot cast type 'int' to 'MyAnno' */
-/* @@? 1:1 Error TypeError: Cannot cast type 'MyAnno' to 'int' */
-/* @@? 1:1 Error TypeError: Cannot cast type 'MyAnno' to 'int' */
+/* @@? 17:28 Error TypeError: Property 'one' does not exist on type 'MyAnno' */
+/* @@? 17:28 Error TypeError: Property 'one' does not exist on type 'MyAnno' */
+/* @@? 17:33 Error TypeError: Property 'two' does not exist on type 'MyAnno' */
+/* @@? 17:33 Error TypeError: Property 'two' does not exist on type 'MyAnno' */
+/* @@? 17:38 Error TypeError: Property 'three' does not exist on type 'MyAnno' */
+/* @@? 17:38 Error TypeError: Property 'three' does not exist on type 'MyAnno' */
+/* @@? 17:15 Error TypeError: Cannot cast type 'MyAnno' to 'int' */
+/* @@? 17:15 Error TypeError: Cannot cast type 'int' to 'MyAnno' */
+/* @@? 17:15 Error TypeError: Cannot cast type 'MyAnno' to 'int' */
+/* @@? 17:15 Error TypeError: Cannot cast type 'MyAnno' to 'int' */

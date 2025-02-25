@@ -10,11 +10,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 6
+            "column": 6,
+            "program": "test-enum-declaration1.ts"
           },
           "end": {
             "line": 17,
-            "column": 9
+            "column": 9,
+            "program": "test-enum-declaration1.ts"
           }
         }
       },
@@ -28,22 +30,26 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 5
+                "column": 5,
+                "program": "test-enum-declaration1.ts"
               },
               "end": {
                 "line": 18,
-                "column": 6
+                "column": 6,
+                "program": "test-enum-declaration1.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 18,
-              "column": 6
+              "column": 6,
+              "program": "test-enum-declaration1.ts"
             },
             "end": {
               "line": 18,
-              "column": 7
+              "column": 7,
+              "program": "test-enum-declaration1.ts"
             }
           }
         },
@@ -56,11 +62,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 5
+                "column": 5,
+                "program": "test-enum-declaration1.ts"
               },
               "end": {
                 "line": 19,
-                "column": 6
+                "column": 6,
+                "program": "test-enum-declaration1.ts"
               }
             }
           },
@@ -70,22 +78,26 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 9
+                "column": 9,
+                "program": "test-enum-declaration1.ts"
               },
               "end": {
                 "line": 19,
-                "column": 14
+                "column": 14,
+                "program": "test-enum-declaration1.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 19,
-              "column": 9
+              "column": 9,
+              "program": "test-enum-declaration1.ts"
             },
             "end": {
               "line": 19,
-              "column": 15
+              "column": 15,
+              "program": "test-enum-declaration1.ts"
             }
           }
         }
@@ -95,11 +107,13 @@
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test-enum-declaration1.ts"
         },
         "end": {
           "line": 20,
-          "column": 2
+          "column": 2,
+          "program": "test-enum-declaration1.ts"
         }
       }
     }
@@ -107,11 +121,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-enum-declaration1.ts"
     },
     "end": {
       "line": 21,
-      "column": 1
+      "column": 1,
+      "program": "test-enum-declaration1.ts"
     }
   }
 }

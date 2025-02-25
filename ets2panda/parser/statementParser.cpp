@@ -318,7 +318,7 @@ ir::Statement *ParserImpl::ParseStructDeclaration(ir::ClassDefinitionModifiers m
     ir::ClassDefinition *classDefinition = ParseClassDefinition(modifiers, flags);
     if (classDefinition == nullptr) {  // Error processing.
         // Error is logged inside ParseClassDefinition
-        return AllocBrokenStatement();
+        return AllocBrokenStatement(Lexer()->GetToken().Loc());
     }
 
     lexer::SourcePosition endLoc = classDefinition->End();
@@ -338,7 +338,7 @@ ir::Statement *ParserImpl::ParseClassDeclaration(ir::ClassDefinitionModifiers mo
     ir::ClassDefinition *classDefinition = ParseClassDefinition(modifiers, flags);
     if (classDefinition == nullptr) {  // Error processing.
         // Error is logged inside ParseClassDefinition
-        return AllocBrokenStatement();
+        return AllocBrokenStatement(Lexer()->GetToken().Loc());
     }
 
     lexer::SourcePosition endLoc = classDefinition->End();
@@ -977,7 +977,7 @@ ir::Statement *ParserImpl::CreateForStatement(ForStatementNodes &&nodes, ForStat
     } else {
         if (nodes.init == nullptr || nodes.right == nullptr) {  // Error processing.
             // Error is logged inside ParseForLoopInitializer or ParseForUpdate, or ParseForInOf
-            return AllocBrokenStatement();
+            return AllocBrokenStatement(Lexer()->GetToken().Loc());
         }
 
         if (forKind == ForStatementKind::IN) {
@@ -1489,7 +1489,7 @@ ir::Statement *ParserImpl::ParseVariableDeclaration(VariableParsingFlags flags)
 
     if (declarators.empty()) {  // Error processing.
         // Error is logged inside ParseVariableDeclaratorKey or ParseVariableDeclaratorInitializer
-        return AllocBrokenStatement();
+        return AllocBrokenStatement(Lexer()->GetToken().Loc());
     }
 
     auto varKind = ir::VariableDeclaration::VariableDeclarationKind::VAR;
@@ -1711,7 +1711,7 @@ ir::Statement *ParserImpl::ParseNamedExportDeclaration(const lexer::SourcePositi
             lexer_->NextToken();  // eat `async` keyword
             if (lexer_->GetToken().Type() != lexer::TokenType::KEYW_FUNCTION) {
                 LogExpectedToken(lexer::TokenType::KEYW_FUNCTION);
-                return AllocBrokenStatement();
+                return AllocBrokenStatement(Lexer()->GetToken().Loc());
             }
             decl = ParseFunctionDeclaration(false, ParserStatus::ASYNC_FUNCTION);
             break;
@@ -1933,9 +1933,16 @@ ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
     return importDeclaration;
 }
 
-ir::Statement *ParserImpl::AllocBrokenStatement()
+ir::Statement *ParserImpl::AllocBrokenStatement(const lexer::SourcePosition &pos)
 {
-    return AllocEmptyStatement();
+    return AllocBrokenStatement({pos, pos});
+}
+
+ir::Statement *ParserImpl::AllocBrokenStatement(const lexer::SourceRange &range)
+{
+    auto *node = AllocEmptyStatement();
+    node->SetRange(range);
+    return node;
 }
 
 bool ParserImpl::IsBrokenStatement(ir::Statement *st)

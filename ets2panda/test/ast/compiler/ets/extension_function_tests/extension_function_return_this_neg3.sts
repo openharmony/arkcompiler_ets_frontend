@@ -21,4 +21,4 @@ function f1(this : B<int>): B</* @@ label*/this> | A {
 }
 
 /* @@@ label Error SyntaxError: A 'this' type is available only as return type in a non-static method of a class or struct and extension functions. */
-/* @@? 1:1 Error TypeError: Type 'B<Int>' is not compatible with the enclosing method's return type 'B<ETSGLOBAL>|A' */
+/* @@? 20:12 Error TypeError: Type 'B<Int>' is not compatible with the enclosing method's return type 'B<ETSGLOBAL>|A' */

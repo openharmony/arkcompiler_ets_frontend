@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "instanceof_object_jsvalue.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "instanceof_object_jsvalue.sts"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +79,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +120,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_object_jsvalue.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_object_jsvalue.sts"
               }
             }
           },
@@ -125,11 +139,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -149,11 +165,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -167,33 +185,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -202,11 +226,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_object_jsvalue.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_object_jsvalue.sts"
               }
             }
           },
@@ -219,11 +245,13 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 10
+                  "column": 10,
+                  "program": "instanceof_object_jsvalue.sts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 12
+                  "column": 12,
+                  "program": "instanceof_object_jsvalue.sts"
                 }
               }
             },
@@ -243,11 +271,13 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 10
+                      "column": 10,
+                      "program": "instanceof_object_jsvalue.sts"
                     },
                     "end": {
                       "line": 20,
-                      "column": 12
+                      "column": 12,
+                      "program": "instanceof_object_jsvalue.sts"
                     }
                   }
                 },
@@ -271,33 +301,39 @@
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 16
+                                "column": 16,
+                                "program": "instanceof_object_jsvalue.sts"
                               },
                               "end": {
                                 "line": 20,
-                                "column": 22
+                                "column": 22,
+                                "program": "instanceof_object_jsvalue.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 16
+                              "column": 16,
+                              "program": "instanceof_object_jsvalue.sts"
                             },
                             "end": {
                               "line": 20,
-                              "column": 23
+                              "column": 23,
+                              "program": "instanceof_object_jsvalue.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 16
+                            "column": 16,
+                            "program": "instanceof_object_jsvalue.sts"
                           },
                           "end": {
                             "line": 20,
-                            "column": 23
+                            "column": 23,
+                            "program": "instanceof_object_jsvalue.sts"
                           }
                         }
                       },
@@ -305,22 +341,26 @@
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 13
+                          "column": 13,
+                          "program": "instanceof_object_jsvalue.sts"
                         },
                         "end": {
                           "line": 20,
-                          "column": 23
+                          "column": 23,
+                          "program": "instanceof_object_jsvalue.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 20,
-                        "column": 13
+                        "column": 13,
+                        "program": "instanceof_object_jsvalue.sts"
                       },
                       "end": {
                         "line": 20,
-                        "column": 23
+                        "column": 23,
+                        "program": "instanceof_object_jsvalue.sts"
                       }
                     }
                   }
@@ -330,11 +370,13 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 25
+                      "column": 25,
+                      "program": "instanceof_object_jsvalue.sts"
                     },
                     "end": {
                       "line": 20,
-                      "column": 32
+                      "column": 32,
+                      "program": "instanceof_object_jsvalue.sts"
                     }
                   }
                 },
@@ -353,11 +395,13 @@
                           "loc": {
                             "start": {
                               "line": 21,
-                              "column": 12
+                              "column": 12,
+                              "program": "instanceof_object_jsvalue.sts"
                             },
                             "end": {
                               "line": 21,
-                              "column": 13
+                              "column": 13,
+                              "program": "instanceof_object_jsvalue.sts"
                             }
                           }
                         },
@@ -372,55 +416,65 @@
                               "loc": {
                                 "start": {
                                   "line": 21,
-                                  "column": 25
+                                  "column": 25,
+                                  "program": "instanceof_object_jsvalue.sts"
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 32
+                                  "column": 32,
+                                  "program": "instanceof_object_jsvalue.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 25
+                                "column": 25,
+                                "program": "instanceof_object_jsvalue.sts"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 33
+                                "column": 33,
+                                "program": "instanceof_object_jsvalue.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 21,
-                              "column": 25
+                              "column": 25,
+                              "program": "instanceof_object_jsvalue.sts"
                             },
                             "end": {
                               "line": 21,
-                              "column": 33
+                              "column": 33,
+                              "program": "instanceof_object_jsvalue.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 21,
-                            "column": 12
+                            "column": 12,
+                            "program": "instanceof_object_jsvalue.sts"
                           },
                           "end": {
                             "line": 21,
-                            "column": 33
+                            "column": 33,
+                            "program": "instanceof_object_jsvalue.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 5
+                          "column": 5,
+                          "program": "instanceof_object_jsvalue.sts"
                         },
                         "end": {
                           "line": 21,
-                          "column": 33
+                          "column": 33,
+                          "program": "instanceof_object_jsvalue.sts"
                         }
                       }
                     }
@@ -428,33 +482,39 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 33
+                      "column": 33,
+                      "program": "instanceof_object_jsvalue.sts"
                     },
                     "end": {
                       "line": 22,
-                      "column": 2
+                      "column": 2,
+                      "program": "instanceof_object_jsvalue.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 10
+                    "column": 10,
+                    "program": "instanceof_object_jsvalue.sts"
                   },
                   "end": {
                     "line": 22,
-                    "column": 2
+                    "column": 2,
+                    "program": "instanceof_object_jsvalue.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 10
+                  "column": 10,
+                  "program": "instanceof_object_jsvalue.sts"
                 },
                 "end": {
                   "line": 22,
-                  "column": 2
+                  "column": 2,
+                  "program": "instanceof_object_jsvalue.sts"
                 }
               }
             },
@@ -463,11 +523,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_object_jsvalue.sts"
               },
               "end": {
                 "line": 22,
-                "column": 2
+                "column": 2,
+                "program": "instanceof_object_jsvalue.sts"
               }
             }
           }
@@ -475,22 +537,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "instanceof_object_jsvalue.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "instanceof_object_jsvalue.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "instanceof_object_jsvalue.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "instanceof_object_jsvalue.sts"
         }
       }
     }
@@ -498,11 +564,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "instanceof_object_jsvalue.sts"
     },
     "end": {
       "line": 23,
-      "column": 1
+      "column": 1,
+      "program": "instanceof_object_jsvalue.sts"
     }
   }
 }

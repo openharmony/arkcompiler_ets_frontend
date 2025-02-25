@@ -39,29 +39,27 @@ void Checker::Initialize(varbinder::VarBinder *varbinder)
 void Checker::LogError(const diagnostic::DiagnosticKind &diagnostic,
                        const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &pos)
 {
-    auto loc = pos.ToLocation(program_);
-    diagnosticEngine_.LogDiagnostic(diagnostic, std::move(diagnosticParams), program_->SourceFilePath().Utf8(),
-                                    loc.line, loc.col);
+    diagnosticEngine_.LogDiagnostic(diagnostic, std::move(diagnosticParams), pos);
 }
 
 void Checker::LogTypeError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)
 {
-    diagnosticEngine_.LogSemanticError(program_, list, pos);
+    diagnosticEngine_.LogSemanticError(list, pos);
 }
 
 void Checker::LogTypeError(std::string_view message, const lexer::SourcePosition &pos)
 {
-    diagnosticEngine_.LogSemanticError(program_, message, pos);
+    diagnosticEngine_.LogSemanticError(message, pos);
 }
 
 void Checker::Warning(const std::string_view message, const lexer::SourcePosition &pos) const
 {
-    diagnosticEngine_.LogWarning(program_, message, pos);
+    diagnosticEngine_.LogWarning(message, pos);
 }
 
 void Checker::ReportWarning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)
 {
-    diagnosticEngine_.LogWarning(program_, list, pos);
+    diagnosticEngine_.LogWarning(list, pos);
 }
 
 bool Checker::IsAllTypesAssignableTo(Type *source, Type *target)

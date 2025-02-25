@@ -52,7 +52,8 @@ static void ValidateFolderContainOnlySamePackageFiles(const public_lib::Context 
             // Showing the full path would be more informative, but it also leaks it to the stdout, which is
             // not the best idea
             ctx->parser->LogError(diagnostic::DIFFERENT_PACKAGE_NAME,
-                                  {prog1->FileName().Mutf8(), prog2->FileName().Mutf8()}, prog1->PackageStart());
+                                  {prog1->FileName().Mutf8(), prog2->FileName().Mutf8()},
+                                  lexer::SourcePosition(0, 0, prog1));
         }
     };
 

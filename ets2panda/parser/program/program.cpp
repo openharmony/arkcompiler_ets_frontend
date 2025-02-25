@@ -100,4 +100,11 @@ bool Program::NodeContainsETSNolint(const ir::AstNode *node, ETSWarnings warning
     return nodeEtsnolints->second.find(warning) != nodeEtsnolints->second.end();
 }
 
+Program::~Program()
+{
+#ifndef NDEBUG
+    poisonValue_ = 0;
+#endif
+}
+
 }  // namespace ark::es2panda::parser

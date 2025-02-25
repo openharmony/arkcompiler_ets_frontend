@@ -13,22 +13,26 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 2
+                "column": 2,
+                "program": "test_decorators1.ts"
               },
               "end": {
                 "line": 17,
-                "column": 8
+                "column": 8,
+                "program": "test_decorators1.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 17,
-              "column": 1
+              "column": 1,
+              "program": "test_decorators1.ts"
             },
             "end": {
               "line": 17,
-              "column": 8
+              "column": 8,
+              "program": "test_decorators1.ts"
             }
           }
         }
@@ -42,11 +46,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 10
+              "column": 10,
+              "program": "test_decorators1.ts"
             },
             "end": {
               "line": 18,
-              "column": 13
+              "column": 13,
+              "program": "test_decorators1.ts"
             }
           }
         },
@@ -63,11 +69,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 17
+                "column": 17,
+                "program": "test_decorators1.ts"
               },
               "end": {
                 "line": 18,
-                "column": 21
+                "column": 21,
+                "program": "test_decorators1.ts"
               }
             }
           },
@@ -75,11 +83,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 17
+              "column": 17,
+              "program": "test_decorators1.ts"
             },
             "end": {
               "line": 18,
-              "column": 21
+              "column": 21,
+              "program": "test_decorators1.ts"
             }
           }
         },
@@ -89,33 +99,39 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 22
+              "column": 22,
+              "program": "test_decorators1.ts"
             },
             "end": {
               "line": 19,
-              "column": 2
+              "column": 2,
+              "program": "test_decorators1.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 18,
-            "column": 1
+            "column": 1,
+            "program": "test_decorators1.ts"
           },
           "end": {
             "line": 19,
-            "column": 2
+            "column": 2,
+            "program": "test_decorators1.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 18,
-          "column": 1
+          "column": 1,
+          "program": "test_decorators1.ts"
         },
         "end": {
           "line": 19,
-          "column": 2
+          "column": 2,
+          "program": "test_decorators1.ts"
         }
       }
     }
@@ -123,11 +139,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test_decorators1.ts"
     },
     "end": {
       "line": 20,
-      "column": 1
+      "column": 1,
+      "program": "test_decorators1.ts"
     }
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,4 +18,4 @@ export namespace MergeSpace {
     export function foo() { return 42; }  // Error: Conflicting 'foo()' definitions
 }
 
-/* @@? 19:2 Error TypeError: Function foo is already declared.  */
+/* @@? src01.sts:19:11 Error TypeError: Function foo is already declared.  */
