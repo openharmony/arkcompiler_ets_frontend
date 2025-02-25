@@ -264,11 +264,6 @@ public:
         return HasSignatureFlag(SignatureFlags::FINAL);
     }
 
-    [[nodiscard]] SignatureFlags GetThrowFlags() const noexcept
-    {
-        return static_cast<SignatureFlags>(flags_ & (SignatureFlags::THROWS | SignatureFlags::RETHROWS));
-    }
-
     void ToAssemblerType(std::stringstream &ss) const;
 
     [[nodiscard]] util::StringView InternalName() const;

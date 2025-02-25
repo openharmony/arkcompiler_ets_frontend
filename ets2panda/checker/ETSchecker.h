@@ -137,8 +137,8 @@ public:
     ETSObjectType *GlobalBuiltinJSValueType() const;
     ETSObjectType *GlobalBuiltinBoxType(Type *contents);
 
-    ETSObjectType *GlobalBuiltinFunctionType(size_t nargs, SignatureFlags flags) const;
-    ETSObjectType *GlobalBuiltinLambdaType(size_t nargs, SignatureFlags flags) const;
+    ETSObjectType *GlobalBuiltinFunctionType(size_t nargs, bool hasRest) const;
+    ETSObjectType *GlobalBuiltinLambdaType(size_t nargs, bool hasRest) const;
     size_t GlobalBuiltinFunctionTypeVariadicThreshold() const;
 
     ETSObjectType *GlobalBuiltinDynamicType(Language lang) const;

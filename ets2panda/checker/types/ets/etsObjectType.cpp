@@ -493,8 +493,25 @@ void ETSObjectType::AssignmentTarget(TypeRelation *const relation, Type *source)
 ETSFunctionType *ETSObjectType::GetFunctionalInterfaceInvokeType() const
 {
     ASSERT(HasObjectFlag(ETSObjectFlags::FUNCTIONAL));
-    auto *invoke = GetOwnProperty<PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
-    ASSERT(invoke && invoke->TsType() && invoke->TsType()->IsETSFunctionType());
+
+    // NOTE(vpukhov): this is still better than to retain any "functional" state in ETSObjectType
+    auto [foundArity, hasRest] = [this]() {
+        auto checker = GetRelation()->GetChecker()->AsETSChecker();
+        auto baseType = GetConstOriginalBaseType();
+        for (size_t arity = 0; arity < checker->GetGlobalTypesHolder()->VariadicFunctionTypeThreshold(); ++arity) {
+            if (auto itf = checker->GlobalBuiltinFunctionType(arity, false); itf == baseType) {
+                return std::make_pair(arity, false);
+            }
+            if (auto itf = checker->GlobalBuiltinFunctionType(arity, true); itf == baseType) {
+                return std::make_pair(arity, true);
+            }
+        }
+        UNREACHABLE();
+    }();
+
+    std::string invokeName = FunctionalInterfaceInvokeName(foundArity, hasRest);
+    auto *invoke = GetOwnProperty<PropertyType::INSTANCE_METHOD>(util::StringView(invokeName));
+    ASSERT(invoke != nullptr && invoke->TsType() != nullptr && invoke->TsType()->IsETSFunctionType());
     return invoke->TsType()->AsETSFunctionType();
 }
 
