@@ -1375,7 +1375,7 @@ bool WriteToFile(const std::string &path, const std::string &content, checker::E
 {
     std::ofstream outStream(path);
     if (outStream.fail()) {
-        checker->DiagnosticEngine().LogFatalError(util::DiagnosticMessageParams {"Failed to open file: ", path});
+        checker->DiagnosticEngine().LogDiagnostic(diagnostic::OPEN_FAILED, util::DiagnosticMessageParams {path});
         return false;
     }
     outStream << content;
@@ -1391,13 +1391,12 @@ bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::p
 
     if ((declBuilder.GetDeclgenOptions().outputDeclEts.empty() && !declBuilder.GetDeclgenOptions().outputEts.empty()) ||
         (!declBuilder.GetDeclgenOptions().outputDeclEts.empty() && declBuilder.GetDeclgenOptions().outputEts.empty())) {
-        checker->DiagnosticEngine().LogFatalError(util::DiagnosticMessageParams {
-            "Genate dynamic declarations, outputDeclEts and outputEts must be set together."});
+        checker->DiagnosticEngine().LogDiagnostic(diagnostic::GENERATE_DYNAMIC_DECLARATIONS,
+                                                  util::DiagnosticMessageParams {});
         return false;
     }
     if (declBuilder.GetDeclgenOptions().outputDeclEts.empty() && declBuilder.GetDeclgenOptions().outputEts.empty()) {
-        checker->DiagnosticEngine().LogFatalError(
-            util::DiagnosticMessageParams {"Output file path must be specified."});
+        checker->DiagnosticEngine().LogDiagnostic(diagnostic::MISSING_OUTPUT_FILE, util::DiagnosticMessageParams {""});
         return false;
     }
 

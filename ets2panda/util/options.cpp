@@ -20,6 +20,7 @@
 #include "os/filesystem.h"
 #include "utils/pandargs.h"
 #include "arktsconfig.h"
+#include "generated/diagnostic.h"
 
 #include <random>
 #include <unordered_set>
@@ -163,15 +164,15 @@ bool Options::ParseInputOutput()
 {
     auto isDebuggerEvalMode = IsDebuggerEval();
     if (isDebuggerEvalMode && compilationMode_ != CompilationMode::SINGLE_FILE) {
-        diagnosticEngine_.LogFatalError("When compiling with --debugger-eval-mode single input file must be provided");
+        diagnosticEngine_.LogDiagnostic(diagnostic::EVAL_MODE_NOT_SINGLE_INPUT, DiagnosticMessageParams {});
         return false;
     }
 
     if (compilationMode_ == CompilationMode::SINGLE_FILE) {
         std::ifstream inputStream(SourceFileName());
         if (inputStream.fail()) {
-            diagnosticEngine_.LogFatalError(
-                util::DiagnosticMessageParams {"Failed to open file: ", util::StringView(SourceFileName())});
+            diagnosticEngine_.LogDiagnostic(diagnostic::OPEN_FAILED,
+                                            util::DiagnosticMessageParams {util::StringView(SourceFileName())});
             return false;
         }
 
@@ -186,7 +187,7 @@ bool Options::ParseInputOutput()
 
     if (WasSetOutput()) {
         if (compilationMode_ == CompilationMode::PROJECT) {
-            diagnosticEngine_.LogFatalError("When compiling in project mode --output key is not needed");
+            diagnosticEngine_.LogDiagnostic(diagnostic::PROJ_COMP_WITH_OUTPUT, DiagnosticMessageParams {});
             return false;
         }
     } else {
@@ -228,12 +229,12 @@ bool Options::Parse(Span<const char *const> args)
         return false;
     }
     if (extension_ != ScriptExtension::JS && IsModule()) {
-        diagnosticEngine_.LogFatalError("--module is not supported for this extension.");
+        diagnosticEngine_.LogDiagnostic(diagnostic::MODULE_INVALID_EXT, DiagnosticMessageParams {});
         return false;
     }
 
     if ((WasSetDumpEtsSrcBeforePhases() || WasSetDumpEtsSrcAfterPhases()) && extension_ != ScriptExtension::ETS) {
-        diagnosticEngine_.LogFatalError("--dump-ets-src-* option is valid only with ETS extension");
+        diagnosticEngine_.LogDiagnostic(diagnostic::DUMP_ETS_INVALID_EXT, DiagnosticMessageParams {});
         return false;
     }
 
@@ -327,7 +328,7 @@ bool Options::DetermineExtension()
 {
     if (compilationMode_ == CompilationMode::PROJECT) {
         if (WasSetExtension() && gen::Options::GetExtension() != "ets") {
-            diagnosticEngine_.LogFatalError("Error: only '--extension=ets' is supported for project compilation mode.");
+            diagnosticEngine_.LogDiagnostic(diagnostic::PROJECT_EXT_NOT_ETS, DiagnosticMessageParams {});
             return false;
         }
         extension_ = ScriptExtension::ETS;
@@ -345,9 +346,7 @@ bool Options::DetermineExtension()
     sourceFileExtension = sourceFileExtension == "ets" ? "ets" : sourceFileExtension;
     auto tempExtension = WasSetExtension() ? gen::Options::GetExtension() : sourceFileExtension;
     if (gen::extension::FromString(tempExtension) == ScriptExtension::INVALID) {
-        diagnosticEngine_.LogFatalError(
-            "Unknown extension of sourcefile, set the '--extension' option or change the file extension "
-            "(available options: js, ts, as, ets)");
+        diagnosticEngine_.LogDiagnostic(diagnostic::UNKNOWN_EXT, DiagnosticMessageParams {});
         return false;
     }
 
@@ -355,15 +354,15 @@ bool Options::DetermineExtension()
     switch (extension_) {
 #ifndef PANDA_WITH_ECMASCRIPT
         case ScriptExtension::JS: {
-            diagnosticEngine_.LogFatalError("js extension is not supported within current build");
+            diagnosticEngine_.LogDiagnostic(diagnostic::JS_UNSUPPORTED, util::DiagnosticMessageParams {});
             return false;
         }
 #endif
         case ScriptExtension::ETS: {
             std::ifstream inputStream(GetArktsconfig());
             if (inputStream.fail()) {
-                diagnosticEngine_.LogFatalError(
-                    util::DiagnosticMessageParams {"Failed to open arktsconfig: ", GetArktsconfig()});
+                diagnosticEngine_.LogDiagnostic(diagnostic::OPEN_FAILED_ARKTSCONF,
+                                                util::DiagnosticMessageParams {GetArktsconfig()});
                 return false;
             }
             return true;
@@ -392,8 +391,8 @@ std::optional<ArkTsConfig> Options::ParseArktsConfig()
     auto config = ArkTsConfig {GetArktsconfig(), diagnosticEngine_};
     std::unordered_set<std::string> parsedConfigPath;
     if (!config.Parse(parsedConfigPath)) {
-        diagnosticEngine_.LogFatalError(
-            util::DiagnosticMessageParams {"Invalid ArkTsConfig: ", util::StringView(GetArktsconfig())});
+        diagnosticEngine_.LogDiagnostic(diagnostic::INVALID_ARKTSCONFIG,
+                                        util::DiagnosticMessageParams {util::StringView(GetArktsconfig())});
         return std::nullopt;
     }
     config.ResolveAllDependenciesInArkTsConfig();

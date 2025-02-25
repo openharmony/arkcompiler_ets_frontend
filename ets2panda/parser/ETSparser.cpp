@@ -280,15 +280,16 @@ std::vector<Program *> ETSParser::ParseSources(bool firstSource)
                 return programs;
             }
 
-            std::string externalSource {};
-            if (std::ifstream inputStream {std::string(parseCandidate)}; inputStream) {
-                std::stringstream ss;
-                ss << inputStream.rdbuf();
-                externalSource = ss.str();
-            } else {
-                LogGenericError("Failed to open file: " + std::string(parseCandidate));
+            util::DiagnosticMessageParams diagParams = {std::string(parseCandidate)};
+            std::ifstream inputStream {std::string(parseCandidate)};
+            if (!inputStream) {
+                DiagnosticEngine().LogDiagnostic(diagnostic::OPEN_FAILED, diagParams);
                 return programs;  // Error processing.
             }
+
+            std::stringstream ss;
+            ss << inputStream.rdbuf();
+            std::string externalSource = ss.str();
 
             auto preservedLang = GetContext().SetLanguage(data.lang);
             auto extSrc = Allocator()->New<util::UString>(externalSource, Allocator());

@@ -1344,11 +1344,6 @@ void ParserImpl::LogError(const diagnostic::DiagnosticKind &diagnostic,
     LogError(diagnostic, diagnosticParams, lexer_->GetToken().Start());
 }
 
-void ParserImpl::LogGenericError(std::string_view errorMessage)
-{
-    diagnosticEngine_.LogFatalError(errorMessage, lexer_->GetToken().Start());
-}
-
 lexer::SourcePosition ParserImpl::GetPositionForDiagnostic() const
 {
     return Lexer()->GetToken().Start();

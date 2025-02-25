@@ -432,7 +432,9 @@ __attribute__((unused)) Context *GenerateBin(Context *ctx)
 
     ES2PANDA_ASSERT(ctx->program != nullptr);
     util::GenerateProgram(ctx->program, *ctx->config->options,
-                          [ctx](const std::string &str) { ctx->diagnosticEngine->LogFatalError(str); });
+                          [ctx](const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &params) {
+                              ctx->diagnosticEngine->LogDiagnostic(kind, params);
+                          });
     ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_BIN_GENERATED : ES2PANDA_STATE_ERROR;
     return ctx;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -44,7 +44,7 @@ static int OptimizeBytecode(ark::pandasm::Program *prog, const util::Options &op
     if (options.GetOptLevel() != 0) {
         InitializeLogging(options);
         if (!ark::pandasm::AsmEmitter::Emit(options.GetOutput(), *prog, statp, mapsp, true)) {
-            reporter("Failed to emit binary data: " + ark::pandasm::AsmEmitter::GetLastError());
+            reporter(diagnostic::EMIT_FAILED, {ark::pandasm::AsmEmitter::GetLastError()});
             return 1;
         }
 
@@ -68,12 +68,12 @@ static int GenerateProgramImpl(ark::pandasm::Program *prog, const util::Options 
     }
 
     if (!ark::pandasm::AsmEmitter::AssignProfileInfo(prog)) {
-        reporter("AssignProfileInfo failed");
+        reporter(diagnostic::ASSIGN_PROFILE_INFO_FAILED, {});
         return 1;
     }
 
     if (!ark::pandasm::AsmEmitter::Emit(options.GetOutput(), *prog, statp, mapsp, true)) {
-        reporter("Failed to emit binary data: " + ark::pandasm::AsmEmitter::GetLastError());
+        reporter(diagnostic::EMIT_FAILED, {ark::pandasm::AsmEmitter::GetLastError()});
         return 1;
     }
 
