@@ -335,6 +335,7 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
             return false;
         }
 
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         if (!ValidateSignatureInvocationContext(substitutedSig, argument, index, flags)) {
             return false;
         }
@@ -347,6 +348,7 @@ bool ETSChecker::ValidateSignatureInvocationContext(Signature *substitutedSig, i
                                                     std::size_t index, TypeRelationFlag flags)
 {
     Type *targetType = substitutedSig->Params()[index]->TsType();
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     Type *argumentType = TryGetTypeFromExtensionAccessor(argument);
 
     flags |= TypeRelationFlag::ONLY_CHECK_WIDENING;
@@ -441,6 +443,7 @@ Signature *ETSChecker::ValidateSignature(
 
     auto count = std::min(signature->ArgCount(), argCount);
     // Check all required formal parameter(s) first
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     if (!ValidateSignatureRequiredParams(signature, arguments, flags, argTypeInferenceRequired, reportError)) {
         return nullptr;
     }
@@ -526,6 +529,7 @@ ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> 
                 !IsSignatureAccessible(sig, Context().ContainingClass(), Relation())) {
                 continue;
             }
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             auto *concreteSig = ValidateSignature(std::make_tuple(sig, typeArguments, relationFlags), arguments, pos,
                                                   argTypeInferenceRequired, signatures.size() == 1);
             if (concreteSig == nullptr) {
@@ -576,6 +580,7 @@ Signature *ETSChecker::GetMostSpecificSignature(ArenaVector<Signature *> &compat
         return nullptr;
     }
 
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     if (!TypeInference(mostSpecificSignature, arguments, resolveFlags)) {
         return nullptr;
     }
@@ -630,8 +635,10 @@ Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
                                           const lexer::SourcePosition &pos, std::string_view signatureKind,
                                           TypeRelationFlag resolveFlags)
 {
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto compatibleSignatures = CollectSignatures(signatures, typeArguments, arguments, pos, resolveFlags);
     if (!compatibleSignatures.empty()) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         return GetMostSpecificSignature(compatibleSignatures, arguments, pos, resolveFlags);
     }
 
@@ -828,6 +835,7 @@ Signature *ETSChecker::ResolvePotentialTrailingLambdaWithReceiver(ir::CallExpres
         auto *currentReceiver = candidateFunctionType->Params()[0];
         trailingLambda->Function()->Params().emplace_back(currentReceiver);
         sigContainLambdaWithReceiverAsParam.emplace_back(sig);
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         signature = ValidateSignatures(sigContainLambdaWithReceiverAsParam, callExpr->TypeParams(), arguments,
                                        callExpr->Start(), "call",
                                        TypeRelationFlag::NO_THROW | TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA);
@@ -837,6 +845,7 @@ Signature *ETSChecker::ResolvePotentialTrailingLambdaWithReceiver(ir::CallExpres
         sigContainLambdaWithReceiverAsParam.clear();
         trailingLambda->Function()->Params().clear();
     }
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     return ValidateSignatures(normalSig, callExpr->TypeParams(), arguments, callExpr->Start(), "call",
                               TypeRelationFlag::NO_THROW | TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA);
 }
@@ -884,6 +893,7 @@ Signature *ETSChecker::ResolveCallExpressionAndTrailingLambda(ArenaVector<Signat
 {
     if (callExpr->TrailingBlock() == nullptr) {
         auto sig =
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             ValidateSignatures(signatures, callExpr->TypeParams(), callExpr->Arguments(), pos, "call", reportFlag);
         UpdateDeclarationFromSignature(callExpr, sig);
         return sig;
@@ -891,15 +901,18 @@ Signature *ETSChecker::ResolveCallExpressionAndTrailingLambda(ArenaVector<Signat
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto arguments = ExtendArgumentsWithFakeLamda(callExpr);
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto sig = ResolvePotentialTrailingLambdaWithReceiver(callExpr, signatures, arguments);
     if (sig != nullptr) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         TransformTraillingLambda(callExpr, sig);
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         TypeInference(sig, callExpr->Arguments());
         UpdateDeclarationFromSignature(callExpr, sig);
         return sig;
     }
 
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     sig = ValidateSignatures(signatures, callExpr->TypeParams(), callExpr->Arguments(), pos, "call", reportFlag);
     if (sig != nullptr) {
         EnsureValidCurlyBrace(callExpr);
@@ -912,6 +925,7 @@ Signature *ETSChecker::ResolveCallExpressionAndTrailingLambda(ArenaVector<Signat
 Signature *ETSChecker::ResolveConstructExpression(ETSObjectType *type, const ArenaVector<ir::Expression *> &arguments,
                                                   const lexer::SourcePosition &pos)
 {
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     return ValidateSignatures(type->ConstructSignatures(), nullptr, arguments, pos, "construct");
 }
 
@@ -1703,9 +1717,13 @@ ir::MethodDefinition *ETSChecker::CreateAsyncImplMethod(ir::MethodDefinition *as
 
     if (!asyncFunc->Signature()->HasSignatureFlag(SignatureFlags::NEED_RETURN_TYPE)) {
         // Set impl method return type "Object" because it may return Promise as well as Promise parameter's type
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto *objectId = AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_OBJECT_CLASS, Allocator());
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         VarBinder()->AsETSBinder()->LookupTypeReference(objectId, false);
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         returnTypeAnn = AllocNode<ir::ETSTypeReference>(
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             AllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr, Allocator()), Allocator());
         objectId->SetParent(returnTypeAnn->Part());
         returnTypeAnn->Part()->SetParent(returnTypeAnn);
@@ -1723,6 +1741,7 @@ ir::MethodDefinition *ETSChecker::CreateAsyncImplMethod(ir::MethodDefinition *as
     }  // NOTE(vpukhov): #19874 - returnTypeAnn is not set
 
     ir::MethodDefinition *implMethod =
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         CreateMethod(implName.View(), modifiers, flags, std::move(params), paramScope, returnTypeAnn, body);
     asyncFunc->SetBody(nullptr);
 
@@ -1801,6 +1820,7 @@ ir::MethodDefinition *ETSChecker::CreateMethod(const util::StringView &name, ir:
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *scope = VarBinder()->Allocator()->New<varbinder::FunctionScope>(Allocator(), paramScope);
     // clang-format off
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *const func = AllocNode<ir::ScriptFunction>(
         Allocator(), ir::ScriptFunction::ScriptFunctionData {
             // CC-OFFNXT(G.FMT.05-CPP) project codestyle clang format off
@@ -1824,6 +1844,7 @@ ir::MethodDefinition *ETSChecker::CreateMethod(const util::StringView &name, ir:
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *nameClone = nameId->Clone(Allocator(), nullptr);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *method = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, nameClone, funcExpr, modifiers,
@@ -1934,6 +1955,7 @@ void ETSChecker::TransformTraillingLambda(ir::CallExpression *callExpr, Signatur
     if (IsLastParameterLambdaWithReceiver(sig)) {
         auto *actualLambdaType =
             sig->Function()->Params().back()->AsETSParameterExpression()->TypeAnnotation()->AsETSFunctionType();
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto *receiverOfTrailingBlock = actualLambdaType->Params()[0]->Clone(Allocator(), nullptr)->AsExpression();
         auto *receiverVar = receiverOfTrailingBlock->AsETSParameterExpression()->Ident()->Variable();
         auto *receiverVarClone =
@@ -1945,6 +1967,7 @@ void ETSChecker::TransformTraillingLambda(ir::CallExpression *callExpr, Signatur
         params.emplace_back(receiverOfTrailingBlock);
         flags |= ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD;
     }
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *funcNode = AllocNode<ir::ScriptFunction>(
         Allocator(), SFunctionData {trailingBlock, ir::FunctionSignature(nullptr, std::move(params), nullptr), flags});
     funcNode->SetScope(funcScope);
@@ -1974,12 +1997,14 @@ ArenaVector<ir::Expression *> ETSChecker::ExtendArgumentsWithFakeLamda(ir::CallE
     auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
     body->SetScope(funcScope);
 
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *funcNode = AllocNode<ir::ScriptFunction>(
         Allocator(),
         ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
                                                 ir::ScriptFunctionFlags::ARROW});
     funcNode->SetScope(funcScope);
     funcScope->BindNode(funcNode);
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(funcNode, Allocator());
     arrowFuncNode->SetParent(callExpr);
 

@@ -773,6 +773,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorInstanceOf(lexer::Sour
     }
 
     checker::Type *opType = rightType->IsETSDynamicType() ? GlobalBuiltinJSValueType() : GlobalETSObjectType();
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     ComputeApparentType(rightType);
     RemoveStatus(checker::CheckerStatus::IN_INSTANCEOF_CONTEXT);
 
@@ -1060,6 +1061,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckArithmeticOperations(
         return {tsType, tsType};
     }
 
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     return CheckBinaryOperatorHelper(this, {left, right, expr, operationType, pos, isEqualOp},
                                      {leftType, rightType, unboxedL, unboxedR});
 }
@@ -1082,6 +1084,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
                                                            ir::Expression *expr, lexer::TokenType operationType,
                                                            lexer::SourcePosition pos, bool forcePromotion)
 {
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     checker::Type *leftType = TryGetTypeFromExtensionAccessor(left);
 
     if (leftType == nullptr) {
@@ -1095,6 +1098,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
     }
 
     Context().CheckTestSmartCastCondition(operationType);
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     checker::Type *rightType = TryGetTypeFromExtensionAccessor(right);
 
     if (rightType == nullptr) {
@@ -1126,6 +1130,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
         return ResolveCheckBinaryOperatorForBigInt(this, leftType, rightType, operationType);
     }
 
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     return CheckArithmeticOperations(expr, std::make_tuple(left, right, operationType, pos), isEqualOp,
                                      std::make_tuple(leftType, rightType, unboxedL, unboxedR));
 }

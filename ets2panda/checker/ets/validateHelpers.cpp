@@ -156,6 +156,7 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident)
     }
 
     auto *smartType = Context().GetSmartCast(resolved);
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *const resolvedType = GetApparentType(smartType != nullptr ? smartType : GetTypeOfVariable(resolved));
 
     switch (ident->Parent()->Type()) {
@@ -281,6 +282,7 @@ void ETSChecker::ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaratio
                 return node;
             }
 
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             return typeParamType->Clone(Allocator(), nullptr);
         },
         TRANSFORMATION_NAME);

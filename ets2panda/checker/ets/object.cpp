@@ -1189,6 +1189,7 @@ void ETSChecker::CreateAsyncProxyMethods(ir::ClassDefinition *classDef)
         }
 
         auto *asyncMethod = it->AsMethodDefinition();
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto *proxy = CreateAsyncProxy(asyncMethod, classDef);
         asyncImpls.push_back(proxy);
 
@@ -1197,6 +1198,7 @@ void ETSChecker::CreateAsyncProxyMethods(ir::ClassDefinition *classDef)
                 continue;
             }
 
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             auto *impl = CreateAsyncProxy(overload, classDef, false);
             impl->Function()->Id()->SetVariable(proxy->Function()->Id()->Variable());
             proxy->AddOverload(impl);
@@ -1992,6 +1994,7 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
 
     if (target->GetDeclNode() != nullptr && target->GetDeclNode()->IsClassDefinition() &&
         !target->GetDeclNode()->AsClassDefinition()->IsClassDefinitionChecked()) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         this->CheckClassDefinition(target->GetDeclNode()->AsClassDefinition());
     }
     const auto *const targetRef = GetTargetRef(memberExpr);
@@ -2195,6 +2198,7 @@ void ETSChecker::TransformProperties(ETSObjectType *classType)
                          field->Declaration()->Node()->Start());
         }
         classType->RemoveProperty<checker::PropertyType::INSTANCE_FIELD>(field);
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         GenerateGetterSetterPropertyAndMethod(originalProp, classType);
     }
 
@@ -2280,14 +2284,19 @@ Type *ETSChecker::GetApparentType(Type *type)
     };
 
     if (type->IsETSTypeParameter()) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         return cached(GetApparentType(type->AsETSTypeParameter()->GetConstraintType()));
     }
     if (type->IsETSNonNullishType()) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         return cached(
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             GetNonNullishType(GetApparentType(type->AsETSNonNullishType()->GetUnderlying()->GetConstraintType())));
     }
     if (type->IsETSPartialTypeParameter()) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         return cached(CreatePartialType(
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             GetApparentType(type->AsETSPartialTypeParameter()->GetUnderlying()->GetConstraintType())));
     }
     if (type->IsETSArrayType()) {
@@ -2297,6 +2306,7 @@ Type *ETSChecker::GetApparentType(Type *type)
         bool differ = false;
         ArenaVector<checker::Type *> newConstituent(Allocator()->Adapter());
         for (auto const &ct : type->AsETSUnionType()->ConstituentTypes()) {
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             newConstituent.push_back(GetApparentType(ct));
             differ |= (newConstituent.back() != ct);
         }
@@ -2312,6 +2322,7 @@ Type const *ETSChecker::GetApparentType(Type const *type) const
     }
     // Relaxed for some types
     if (type->IsETSTypeParameter()) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         return GetApparentType(type->AsETSTypeParameter()->GetConstraintType());
     }
     if (type->IsETSArrayType()) {
