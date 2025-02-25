@@ -22,6 +22,7 @@
 #include "ir/ets/etsReExportDeclaration.h"
 #include "ir/expressions/identifier.h"
 #include "ir/module/importSpecifier.h"
+#include "ir/statements/annotationDeclaration.h"
 
 namespace ark::es2panda::ir {
 class ETSImportDeclaration;

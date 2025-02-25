@@ -12,6 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+@Retention("SOURCE")
 @interface MyAnno {
     testProperty1: string
     testProperty2: number
@@ -27,6 +29,6 @@ function main() : void {
     let x2 = 1, y2 = "abc"
 }
 
-/* @@? 21:2 Error TypeError: Duplicate annotations are not allowed. The annotation 'MyAnno' has already been applied to this element.  */
-/* @@? 21:2 Error TypeError: Duplicate annotations are not allowed. The annotation 'MyAnno' has already been applied to this element.  */
-/* @@? 26:6 Error TypeError: Duplicate annotations are not allowed. The annotation 'MyAnno' has already been applied to this element.  */
+/* @@? 23:2 Error TypeError: Duplicate annotations are not allowed. The annotation 'MyAnno' has already been applied to this element.  */
+/* @@? 23:2 Error TypeError: Duplicate annotations are not allowed. The annotation 'MyAnno' has already been applied to this element.  */
+/* @@? 28:6 Error TypeError: Duplicate annotations are not allowed. The annotation 'MyAnno' has already been applied to this element.  */

@@ -84,7 +84,6 @@ void ClassProperty::Dump(ir::AstDumper *dumper) const
                  {"key", key_},
                  {"value", AstDumper::Optional(value_)},
                  {"accessibility", AstDumper::Optional(AstDumper::ModifierToString(flags_))},
-                 {"abstract", AstDumper::Optional(IsAbstract())},
                  {"static", IsStatic()},
                  {"readonly", IsReadonly()},
                  {"declare", IsDeclare()},

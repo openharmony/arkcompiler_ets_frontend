@@ -21,11 +21,11 @@
 
 namespace ark::es2panda::compiler::test {
 
-class AnnotationsforClass : public AnnotationEmitTest {
+class AnnotationsforNamespace : public AnnotationEmitTest {
 public:
-    AnnotationsforClass() = default;
+    AnnotationsforNamespace() = default;
 
-    ~AnnotationsforClass() override = default;
+    ~AnnotationsforNamespace() override = default;
 
     void RunAnnotationEmitTest(const std::string_view text)
     {
@@ -33,8 +33,7 @@ public:
         ASSERT_NE(program, nullptr);
 
         CheckAnnotations(program.get());
-        CheckClassAnnotations(program.get());
-        CheckFunctionAnnotations(program.get());
+        CheckNamespaceAnnotations(program.get());
     }
 
     void CheckAnnotations(pandasm::Program *program)
@@ -50,10 +49,10 @@ public:
         AnnotationEmitTest::CheckAnnoDecl(program, annoName, expectedAnnotations);
     }
 
-    void CheckClassAnnotations(pandasm::Program *program)
+    void CheckNamespaceAnnotations(pandasm::Program *program)
     {
-        const std::string recordName = "A";
-        const AnnotationMap expectedClassAnnotations = {
+        const std::string recordName1 = "A";
+        const AnnotationMap expectedClassAnnotations1 = {
             {"Anno",
              {
                  {"authorName", "Mike"},
@@ -61,28 +60,8 @@ public:
                  {"testBool", "1"},
              }},
         };
-        AnnotationEmitTest::CheckRecordAnnotations(program, recordName, expectedClassAnnotations);
-    }
-
-    void CheckFunctionAnnotations(pandasm::Program *program)
-    {
-        const std::string funcName = "A.foo:void;";
-        const AnnotationMap expectedFuncAnnotations = {
-            {"Anno",
-             {
-                 {"authorName", "John"},
-                 {"authorAge", "23"},
-                 {"testBool", "0"},
-             }},
-        };
-        AnnotationEmitTest::CheckFunctionAnnotations(program, funcName, false, expectedFuncAnnotations);
-    }
-
-    void CheckClassPropertyAnnotations(pandasm::Program *program)
-    {
-        const std::string record = "A";
-        const std::string fieldName = "x";
-        const AnnotationMap expectedFuncAnnotations = {
+        const std::string recordName2 = "A.B";
+        const AnnotationMap expectedClassAnnotations2 = {
             {"Anno",
              {
                  {"authorName", ""},
@@ -90,15 +69,16 @@ public:
                  {"testBool", "0"},
              }},
         };
-        AnnotationEmitTest::CheckClassFieldAnnotations(program, record, fieldName, expectedFuncAnnotations);
+        AnnotationEmitTest::CheckRecordAnnotations(program, recordName1, expectedClassAnnotations1);
+        AnnotationEmitTest::CheckRecordAnnotations(program, recordName2, expectedClassAnnotations2);
     }
 
 private:
-    NO_COPY_SEMANTIC(AnnotationsforClass);
-    NO_MOVE_SEMANTIC(AnnotationsforClass);
+    NO_COPY_SEMANTIC(AnnotationsforNamespace);
+    NO_MOVE_SEMANTIC(AnnotationsforNamespace);
 };
 
-TEST_F(AnnotationsforClass, annotations_for_class)
+TEST_F(AnnotationsforNamespace, annotations_for_namespace)
 {
     std::string_view text = R"(
     @interface Anno {
@@ -112,16 +92,9 @@ TEST_F(AnnotationsforClass, annotations_for_class)
         authorAge: 18,
         testBool: true
     })
-    class A {
-        @Anno
-        x:int = 1
-
-        @Anno({
-            authorName: "John",
-            authorAge: 23,
-            testBool: false
-        })
-        foo() {}
+    namespace A {
+        @Anno()
+        namespace B {}
     })";
 
     RunAnnotationEmitTest(text);

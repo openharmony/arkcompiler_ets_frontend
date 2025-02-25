@@ -18,6 +18,7 @@
 #include "lexer/lexer.h"
 #include "ir/ets/etsTuple.h"
 #include "ir/ets/etsUnionType.h"
+#include "ir/statements/annotationDeclaration.h"
 
 namespace ark::es2panda::parser {
 
@@ -92,7 +93,7 @@ ir::AnnotationDeclaration *ETSParser::ParseAnnotationDeclaration(ir::ModifierFla
 
     lexer::SourcePosition endLoc = Lexer()->GetToken().End();
 
-    auto *annotationDecl = AllocNode<ir::AnnotationDeclaration>(expr, std::move(properties));
+    auto *annotationDecl = AllocNode<ir::AnnotationDeclaration>(expr, std::move(properties), Allocator());
     annotationDecl->SetRange({startLoc, endLoc});
     annotationDecl->AddModifier(flags);
     return annotationDecl;
@@ -222,18 +223,13 @@ ArenaVector<ir::AnnotationUsage *> ETSParser::ParseAnnotations(bool isTopLevelSt
 {
     ArenaVector<ir::AnnotationUsage *> annotations(Allocator()->Adapter());
     bool hasMoreAnnotations = true;
+    auto save = Lexer()->Save();
     while (hasMoreAnnotations) {
         if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_INTERFACE) {
-            if (!annotations.empty()) {
-                LogError(diagnostic::ANNOTATION_WRONG_DEC);
-            }
-
             if (!isTopLevelSt) {
                 LogError(diagnostic::ANNOTATION_ONLY_TOP_LEVEL);
             }
-
-            // For now we don't support use Annotation before AnnotationDecl,
-            // program will only reach here after LogSyntaxError
+            Lexer()->Rewind(save);
             return annotations;
         }
 
@@ -241,6 +237,7 @@ ArenaVector<ir::AnnotationUsage *> ETSParser::ParseAnnotations(bool isTopLevelSt
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_AT) {
             hasMoreAnnotations = false;
         } else {
+            save = Lexer()->Save();
             Lexer()->NextToken();
         }
     }
@@ -276,7 +273,8 @@ void ETSParser::ApplyAnnotationsToNode(ir::AstNode *node, ArenaVector<ir::Annota
         return;
     }
 
-    if (node->IsAbstract() || (node->IsClassDeclaration() && node->AsClassDeclaration()->Definition()->IsAbstract())) {
+    if ((!node->IsAnnotationDeclaration() && node->IsAbstract()) ||
+        (node->IsClassDeclaration() && node->AsClassDeclaration()->Definition()->IsAbstract())) {
         LogError(diagnostic::ANNOTATION_ABSTRACT, {}, pos);
         return;
     }
@@ -363,6 +361,9 @@ void ETSParser::ApplyAnnotationsToSpecificNodeType(ir::AstNode *node, ArenaVecto
             break;
         case ir::AstNodeType::TS_TYPE_PARAMETER:
             node->AsTSTypeParameter()->SetAnnotations(std::move(annotations));
+            break;
+        case ir::AstNodeType::ANNOTATION_DECLARATION:
+            node->AsAnnotationDeclaration()->SetAnnotations(std::move(annotations));
             break;
         default:
             LogError(diagnostic::ANNOTATION_WRONG_DEC, {}, pos);

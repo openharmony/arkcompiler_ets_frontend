@@ -17,6 +17,7 @@
 
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
+#include "ir/statements/annotationDeclaration.h"
 
 namespace ark::es2panda::checker {
 ByteType *ETSChecker::CreateByteType(int8_t value)

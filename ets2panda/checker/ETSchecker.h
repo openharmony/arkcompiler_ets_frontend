@@ -536,6 +536,9 @@ public:
     void CheckAmbientAnnotation(ir::AnnotationDeclaration *annoImpl, ir::AnnotationDeclaration *annoDecl);
     bool CheckAmbientAnnotationFieldInitializerValue(ir::Expression *init, ir::Expression *expected);
     bool CheckAmbientAnnotationFieldInitializer(ir::Expression *init, ir::Expression *expected);
+    void CheckAnnotationRetention(ir::AnnotationUsage *anno);
+    void HandleAnnotationRetention(ir::AnnotationUsage *anno, ir::AnnotationDeclaration *annoDecl);
+    void CheckStandardAnnotation(ir::AnnotationUsage *anno);
     void CheckAnnotationPropertyType(ir::ClassProperty *property);
     void CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl);
     void CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, util::StringView const &baseName,

@@ -144,6 +144,18 @@ defines:
     ref: PROPERTY
   - name: 'never'
     ref: NEVER_TYPE_NAME
+  - name: 'SOURCE'
+    ref: SOURCE_POLICY
+  - name: 'BYTECODE'
+    ref: BYTECODE_POLICY
+  - name: 'RUNTIME'
+    ref: RUNTIME_POLICY
+  - name: 'std.annotations.'
+    ref: STD_ANNOTATIONS
+  - name: 'std.annotations.Retention'
+    ref: STD_ANNOTATIONS_RETENTION
+  - name: Retention
+    ref: BUILTIN_RETENTION
 
 packages:
   - name: 'std.core'

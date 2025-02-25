@@ -15,6 +15,7 @@
 
 class A{}
 
+@Retention("SOURCE")
 @interface MyAnno {
     testProperty1: string
 }
@@ -22,6 +23,6 @@ class A{}
 function foo(@MyAnno({testProperty1: A}) x: int) {
 }
 
-/* @@? 22:38 Error TypeError: Unresolved reference A  */
-/* @@? 22:38 Error TypeError: Type 'A' cannot be assigned to type 'String'  */
-/* @@? 22:38 Error TypeError: Invalid value for annotation field, expected a constant literal.  */
+/* @@? 23:38 Error TypeError: Unresolved reference A  */
+/* @@? 23:38 Error TypeError: Type 'A' cannot be assigned to type 'String'  */
+/* @@? 23:38 Error TypeError: Invalid value for annotation field, expected a constant literal.  */

@@ -12,6 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
+
+@Retention("SOURCE")
 @interface Anno{}
 
 class MyClass{}
@@ -19,4 +21,4 @@ class MyClass{}
 // annotations for tuple
 let tuple: @Anno @Anno() [@Anno @Anno() Int, @Anno @Anno() String, @Anno @Anno() Object, @Anno @Anno() MyClass]
 
-/* @@? 20:19 Error TypeError: Duplicate annotations are not allowed. The annotation 'Anno' has already been applied to this element.  */
+/* @@? 22:19 Error TypeError: Duplicate annotations are not allowed. The annotation 'Anno' has already been applied to this element.  */

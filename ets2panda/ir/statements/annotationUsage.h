@@ -21,7 +21,6 @@
 #include "ir/statement.h"
 #include "ir/astNode.h"
 #include "ir/expression.h"
-#include "ir/statements/annotationDeclaration.h"
 
 namespace ark::es2panda::ir {
 class AnnotationUsage : public Statement {

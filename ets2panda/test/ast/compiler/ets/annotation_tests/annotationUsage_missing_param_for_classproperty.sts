@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+@Retention("SOURCE")
 @interface MyAnno {
     testProperty1: string
     testProperty2: string
@@ -25,5 +26,5 @@ class B{
     y0 : string
 }
 
-/* @@? 22:6 Error TypeError: The required field 'testProperty2' must be specified. Fields without default values cannot be omitted. */
-/* @@? 24:6 Error TypeError: The required field 'testProperty2' must be specified. Fields without default values cannot be omitted. */
+/* @@? 23:6 Error TypeError: The required field 'testProperty2' must be specified. Fields without default values cannot be omitted. */
+/* @@? 25:6 Error TypeError: The required field 'testProperty2' must be specified. Fields without default values cannot be omitted. */

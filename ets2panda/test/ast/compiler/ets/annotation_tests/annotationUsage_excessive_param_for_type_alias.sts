@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+@Retention("SOURCE")
 @interface MyAnno {
     testProperty1: string
     testProperty2: string
@@ -26,5 +27,5 @@ function main() : void {
     type t2<T> = Array<T>
 }
 
-/* @@? 25:6 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined.  */
-/* @@? 21:2 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined.  */
+/* @@? 26:6 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined.  */
+/* @@? 22:2 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined.  */

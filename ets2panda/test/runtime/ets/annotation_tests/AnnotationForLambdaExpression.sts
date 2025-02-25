@@ -14,6 +14,7 @@
 */
 enum Color{RED, GREEN, BLUE}
 
+@Retention("SOURCE")
 @interface ClassAuthor{
     authorName: string = "Jim"
     authorAge: number = 35
@@ -30,10 +31,12 @@ enum Color{RED, GREEN, BLUE}
     ]
 }
 
+@Retention("SOURCE")
 @interface Log{
     msg:string = ""
 }
 
+@Retention("SOURCE")
 @interface Anno{}
  
 const base = @ClassAuthor (x: number) => x * 2;

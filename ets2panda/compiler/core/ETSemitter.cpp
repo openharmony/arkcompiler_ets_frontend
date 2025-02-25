@@ -25,6 +25,7 @@
 #include "ir/base/classDefinition.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/base/classProperty.h"
+#include "ir/statements/annotationDeclaration.h"
 #include "ir/ts/tsEnumDeclaration.h"
 #include "ir/ts/tsEnumMember.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
@@ -826,8 +827,11 @@ std::vector<pandasm::AnnotationData> ETSEmitter::GenCustomAnnotations(
 {
     std::vector<pandasm::AnnotationData> annotations;
     for (auto *anno : annotationUsages) {
-        auto newBaseName = GenerateMangledName(baseName, anno->GetBaseName()->Name().Mutf8());
-        annotations.emplace_back(GenCustomAnnotation(anno, newBaseName));
+        auto *annoDecl = anno->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
+        if (!annoDecl->IsSourceRetention()) {
+            auto newBaseName = GenerateMangledName(baseName, anno->GetBaseName()->Name().Mutf8());
+            annotations.emplace_back(GenCustomAnnotation(anno, newBaseName));
+        }
     }
     return annotations;
 }
