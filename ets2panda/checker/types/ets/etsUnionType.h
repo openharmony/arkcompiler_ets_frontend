@@ -44,6 +44,7 @@ public:
     void CastTarget(TypeRelation *relation, Type *source) override;
     void IsSupertypeOf(TypeRelation *relation, Type *source) override;
     void IsSubtypeOf(TypeRelation *relation, Type *target) override;
+    void CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag) override;
     Type *FindTypeIsCastableToThis(ir::Expression *node, TypeRelation *relation, Type *source) const;
     Type *FindTypeIsCastableToSomeType(ir::Expression *node, TypeRelation *relation, Type *target) const;
     Type *FindUnboxableType() const;

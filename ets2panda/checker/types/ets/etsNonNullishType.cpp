@@ -114,4 +114,10 @@ Type *ETSNonNullishType::Instantiate([[maybe_unused]] ArenaAllocator *allocator,
     return allocator->New<ETSNonNullishType>(GetUnderlying());
 }
 
+void ETSNonNullishType::CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag)
+{
+    relation->CheckVarianceRecursively(GetUnderlying(),
+                                       relation->TransferVariant(varianceFlag, VarianceFlag::COVARIANT));
+}
+
 }  // namespace ark::es2panda::checker

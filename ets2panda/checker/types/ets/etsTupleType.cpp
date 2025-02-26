@@ -222,4 +222,11 @@ Type *ETSTupleType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[ma
     return tupleType;
 }
 
+void ETSTupleType::CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag)
+{
+    for (auto const &ctype : typeList_) {
+        relation->CheckVarianceRecursively(ctype, relation->TransferVariant(varianceFlag, VarianceFlag::COVARIANT));
+    }
+}
+
 }  // namespace ark::es2panda::checker

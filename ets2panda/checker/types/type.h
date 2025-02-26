@@ -270,7 +270,10 @@ public:
     virtual void IsSupertypeOf(TypeRelation *relation, Type *source);
     virtual void IsSubtypeOf(TypeRelation *relation, Type *target);
     virtual Type *AsSuper(Checker *checker, varbinder::Variable *sourceVar);
-
+    virtual void CheckVarianceRecursively([[maybe_unused]] TypeRelation *relation,
+                                          [[maybe_unused]] VarianceFlag varianceFlag)
+    {
+    }
     [[nodiscard]] static std::uint32_t GetPrecedence(Type const *type) noexcept;
 
     virtual Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes);

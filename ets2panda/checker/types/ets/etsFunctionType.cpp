@@ -364,4 +364,30 @@ void ETSFunctionType::ToDebugInfoType([[maybe_unused]] std::stringstream &ss) co
     ss << FunctionAssemblyTypeFromArity(ArrowSignature()->MinArgCount());
 }
 
+void ETSFunctionType::CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag)
+{
+    // For function, param is `in` and returntype is `out`，(in)=>out
+    for (auto *sig : callSignatures_) {
+        if (sig->HasFunction() && sig->Function()->ReturnTypeAnnotation() != nullptr) {
+            relation->SetNode(sig->Function()->ReturnTypeAnnotation());
+        }
+        relation->CheckVarianceRecursively(sig->ReturnType(),
+                                           relation->TransferVariant(varianceFlag, VarianceFlag::COVARIANT));
+
+        if (sig->HasRestParameter()) {
+            if (sig->HasFunction()) {
+                relation->SetNode(sig->Function()->Params().at(sig->Params().size()));
+            }
+            relation->CheckVarianceRecursively(sig->RestVar()->TsType(),
+                                               relation->TransferVariant(varianceFlag, VarianceFlag::COVARIANT));
+        }
+        for (auto *typeParam : sig->Params()) {
+            relation->SetNode(
+                typeParam->Declaration()->AsParameterDecl()->Node()->AsETSParameterExpression()->TypeAnnotation());
+            relation->CheckVarianceRecursively(typeParam->TsType(),
+                                               relation->TransferVariant(varianceFlag, VarianceFlag::CONTRAVARIANT));
+        }
+    }
+}
+
 }  // namespace ark::es2panda::checker

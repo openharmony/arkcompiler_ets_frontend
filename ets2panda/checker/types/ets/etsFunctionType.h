@@ -109,6 +109,7 @@ public:
     void IsSubtypeOf(TypeRelation *relation, Type *target) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
     ETSFunctionType *Substitute(TypeRelation *relation, const Substitution *substitution) override;
+    void CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag) override;
     void Cast(TypeRelation *relation, Type *target) override;
     void CastTarget(TypeRelation *relation, Type *source) override;
 

@@ -255,6 +255,25 @@ bool TypeRelation::IsSupertypeOf(Type *super, Type *sub)
     return result_ == RelationResult::TRUE;
 }
 
+bool TypeRelation::CheckVarianceRecursively(Type *type, VarianceFlag varianceFlag)
+{
+    type->CheckVarianceRecursively(this, varianceFlag);
+    return result_ == RelationResult::TRUE;
+}
+
+VarianceFlag TypeRelation::TransferVariant(VarianceFlag variance, VarianceFlag posVariance)
+{
+    if (posVariance == VarianceFlag::INVARIANT || variance == VarianceFlag::INVARIANT) {
+        return VarianceFlag::INVARIANT;
+    }
+
+    if (posVariance == VarianceFlag::COVARIANT) {
+        return variance;
+    }
+
+    return variance == VarianceFlag::CONTRAVARIANT ? VarianceFlag::COVARIANT : VarianceFlag::CONTRAVARIANT;
+}
+
 void TypeRelation::RaiseError(const std::string &errMsg, const lexer::SourcePosition &loc) const
 {
     checker_->LogTypeError(errMsg, loc);
