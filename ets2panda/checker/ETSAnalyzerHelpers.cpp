@@ -281,10 +281,6 @@ void CheckPredefinedMethodReturnType(ETSChecker *checker, ir::ScriptFunction *sc
 
     auto const &position = scriptFunc->Start();
 
-    if (scriptFunc->IsSetter() && (scriptFunc->Signature()->ReturnType() != checker->GlobalVoidType())) {
-        checker->LogError(diagnostic::SETTER_NONVOID, {}, position);
-    }
-
     if (scriptFunc->IsGetter() && (scriptFunc->Signature()->ReturnType() == checker->GlobalVoidType())) {
         checker->LogError(diagnostic::GETTER_VOID, {}, position);
     }
@@ -780,4 +776,15 @@ void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containing
         relation->SetFlags(checker::TypeRelationFlag::NONE);
     }
 }
+
+bool CheckReturnTypeNecessity(ir::MethodDefinition *node)
+{
+    bool needReturnType = true;
+    auto *scriptFunc = node->Function();
+    needReturnType &= (node->IsNative() || node->IsDeclare());
+    needReturnType &= !node->IsConstructor();
+    needReturnType &= !scriptFunc->IsSetter();
+    return needReturnType;
+}
+
 }  // namespace ark::es2panda::checker

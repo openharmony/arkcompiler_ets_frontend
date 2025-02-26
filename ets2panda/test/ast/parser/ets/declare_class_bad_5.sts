@@ -20,8 +20,8 @@ declare class A {
   internal foo2() : int
   private get x1() : int
   internal get x2() : int
-  private set x1(x : int) : void
-  internal set x2(x : int) : void
+  private set x1(x : int)
+  internal set x2(x : int)
 }
 
 declare class CIterator implements Iterator<string> {

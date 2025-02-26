@@ -28,7 +28,7 @@ class B {
 
     constructor() { }
 
-    set field(f:int): void {
+    set field(f:int) {
         this._field = f;
     }
 }

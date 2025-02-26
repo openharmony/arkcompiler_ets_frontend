@@ -135,7 +135,7 @@ checker::Type *ETSAnalyzer::Check(ir::ClassStaticBlock *st) const
 static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinition *node)
 {
     auto *scriptFunc = node->Function();
-    if (node->IsNative() && !node->IsConstructor()) {
+    if (node->IsNative() && !node->IsConstructor() && !scriptFunc->IsSetter()) {
         if (scriptFunc->ReturnTypeAnnotation() == nullptr) {
             checker->LogError(diagnostic::NATIVE_WITHOUT_RETURN, {}, scriptFunc->Start());
             node->SetTsType(checker->GlobalTypeError());
@@ -222,8 +222,7 @@ checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
         return returnErrorType();
     }
 
-    if (scriptFunc->ReturnTypeAnnotation() == nullptr &&
-        ((node->IsNative() || node->IsDeclare()) && !node->IsConstructor())) {
+    if (CheckReturnTypeNecessity(node) && scriptFunc->ReturnTypeAnnotation() == nullptr) {
         checker->LogError(diagnostic::MISSING_RETURN_TYPE, {}, scriptFunc->Start());
         return returnErrorType();
     }

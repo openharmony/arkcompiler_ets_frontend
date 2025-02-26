@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,7 +21,7 @@ class Core {
         return this._size;
     }
 
-    final set size(s: int): void {
+    final set size(s: int) {
         this._size = s;
     }
 }
@@ -30,7 +30,7 @@ class Hex extends Core {
     private _size: int;
     private _width: int;
 
-    override set size(s: int): void {
+    override set size(s: int) {
         this._size = s;
     }
 

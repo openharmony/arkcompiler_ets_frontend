@@ -120,7 +120,7 @@ is converted to
 ```
 interface I {
   get v(): int
-  set v(v: int): void
+  set v(v: int)
 }
 ```
 
@@ -605,7 +605,7 @@ let o: I = {n: 33, s: "ouch"} as $anonymous_class$I
 class $anonymous_class$I implements I {
   private _n: int;
   
-  set n(n: int): void {
+  set n(n: int) {
     this._n = n;
   }
   
@@ -615,7 +615,7 @@ class $anonymous_class$I implements I {
   
   private _s: String;
   
-  set s(s: String): void {
+  set s(s: String) {
     this._s = s;
   }
   

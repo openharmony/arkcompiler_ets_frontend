@@ -20,7 +20,7 @@ class A {
         return this._field;
     }
 
-    set field(field: int): void {
+    set field(field: int) {
         this._field = field;
     }
 }

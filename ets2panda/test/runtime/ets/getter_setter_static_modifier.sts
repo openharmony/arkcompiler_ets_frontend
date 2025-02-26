@@ -17,11 +17,11 @@ class Creature {
     public static legs: int = 1;
     public static brain: int = 2;
 
-    public static set Legs(l: int): void {
+    public static set Legs(l: int) {
         Creature.legs = l;
     }
 
-    public static set Brain(b: int): void {
+    public static set Brain(b: int) {
         Creature.brain = b;
     }
 }
@@ -43,7 +43,7 @@ class Glass {
     public static size: int = 1;
     public static transparent: int = 1;
 
-    public static set Size(s: int): void {
+    public static set Size(s: int) {
         Glass.size = s;
     }
 
@@ -55,7 +55,7 @@ class Glass {
         return Glass.size;
     }
 
-    public static set Transparent(t: int): void {
+    public static set Transparent(t: int) {
         Glass.transparent = t;
     }
 }

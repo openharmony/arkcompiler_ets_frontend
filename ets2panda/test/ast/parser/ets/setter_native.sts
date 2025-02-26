@@ -15,7 +15,7 @@
 
 class Door {
     private _width: int;
-    native /* @@ label */set width(w:int): void /* @@ label1 */{
+    native /* @@ label */set width(w:int) /* @@ label1 */{
         this._width = w;
     }
 }

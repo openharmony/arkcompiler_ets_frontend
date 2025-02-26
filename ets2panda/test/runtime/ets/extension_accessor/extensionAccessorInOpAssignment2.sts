@@ -21,7 +21,7 @@ get field(this: A): int {
     return this._field;
 }
 
-set field(this: A, field: int): void {
+set field(this: A, field: int) {
     this._field = field;
 }
 

@@ -22,7 +22,7 @@ get field(this: A): Int {
     return this._field;
 }
 
-set field(this: A, a: int): void {
+set field(this: A, a: int) {
     this._field = a;
 }
 
@@ -30,7 +30,7 @@ get bfield(this: A): boolean {
     return this._bfield;
 }
 
-set bfield(this: A, b: boolean): void {
+set bfield(this: A, b: boolean) {
     this._bfield = b;
 }
 
