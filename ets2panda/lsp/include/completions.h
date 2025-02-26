@@ -89,6 +89,15 @@ public:
     {
         return name_;
     }
+    bool operator==(const CompletionEntry &other) const
+    {
+        return name_ == other.name_ && kind_ == other.kind_ && sortText_ == other.sortText_ &&
+               insertText_ == other.insertText_;
+    }
+    bool operator!=(const CompletionEntry &other) const
+    {
+        return !(*this == other);
+    }
 };
 
 enum class CompletionDataKind { DATA, KEYWORDS };
@@ -119,6 +128,7 @@ public:
 
 std::vector<CompletionEntry> AllKeywordsCompletions();
 std::vector<CompletionEntry> GetKeywordCompletions(const std::string &input);
+std::vector<CompletionEntry> GetMemberCompletions(es2panda_Context *context, size_t position);
 Request KeywordCompletionData(const std::string &input);
 std::string ToLowerCase(const std::string &str);
 std::vector<CompletionEntry> GetCompletionsAtPositionImpl(es2panda_Context *context, size_t position);
