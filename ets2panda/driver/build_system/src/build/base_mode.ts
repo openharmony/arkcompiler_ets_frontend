@@ -23,8 +23,10 @@ import { arkts, arktsGlobal } from 'libarkts/arkoala-arkts/libarkts/build/src/es
 import {
   ABC_SUFFIX,
   ARKTSCONFIG_JSON_FILE,
+  BUILD_MODE,
   LINKER_INPUT_FILE,
   MERGED_ABC_FILE,
+  SYSTEM_SDK_PATH_FROM_SDK,
 } from '../pre_define';
 import {
   changeFileExtension,
@@ -35,7 +37,7 @@ import {
   PluginDriver,
   PluginHook
 } from '../plugins/plugins_driver';
-import { 
+import {
   Logger,
   LogData,
   LogDataFactory
@@ -47,6 +49,8 @@ interface ArkTSConfigObject {
     package: string,
     baseUrl: string,
     paths: Record<string, string[]>;
+    dependencies: string[] | undefined;
+    entry: string;
   }
 };
 
@@ -58,12 +62,14 @@ interface CompileFileInfo {
 };
 
 interface ModuleInfo {
+  isMainModule: boolean,
   packageName: string,
   moduleRootPath: string,
   sourceRoots: string[],
   entryFile: string,
   arktsConfigFile: string,
-  compileFileInfos: CompileFileInfo[]
+  compileFileInfos: CompileFileInfo[],
+  dependencies?: string[]
 }
 
 interface DependentModule {
@@ -90,6 +96,7 @@ export abstract class BaseMode {
   mergedAbcFile: string;
   abcLinkerCmd: string[];
   logger: Logger;
+  isDebug: boolean;
 
   constructor(buildConfig: Record<string, BuildConfigType>) {
     this.buildConfig = buildConfig;
@@ -102,6 +109,7 @@ export abstract class BaseMode {
     this.sourceRoots = buildConfig.sourceRoots as string[];
     this.moduleRootPath = buildConfig.moduleRootPath as string;
     this.dependentModuleList = buildConfig.dependentModuleList as DependentModule[];
+    this.isDebug = buildConfig.buildMode as string === BUILD_MODE.DEBUG;
 
     this.moduleInfos = new Map<string, ModuleInfo>();
     this.mergedAbcFile = path.resolve(this.outputDir, MERGED_ABC_FILE);
@@ -123,7 +131,11 @@ export abstract class BaseMode {
       fileInfo.abcFilePath,
     ];
 
-    this.logger.printInfo('ets2pandaCmd: ' + ets2pandaCmd.toString());
+    if (this.isDebug) {
+      ets2pandaCmd.push('--debug-info');
+    }
+    ets2pandaCmd.push(fileInfo.filePath);
+    this.logger.printInfo('ets2pandaCmd: ' + ets2pandaCmd.join(' '));
     try {
       arktsGlobal.config = arkts.createConfig(ets2pandaCmd);
       const source = fs.readFileSync(fileInfo.filePath).toString();
@@ -186,58 +198,110 @@ export abstract class BaseMode {
     }
   }
 
-  private writeArkTSConfigFile(packageName: string, moduleRootPath: string, sourceRoots: string[],
-    arktsConfigFile: string, pathSection: Record<string, string[]>): void {
-    if (!this.sourceRoots || this.sourceRoots.length == 0) {
+  private generateSystemSdkPathSection(pathSection: Record<string, string[]>): void {
+    let systemSdkPath: string = path.resolve(this.buildSdkPath, SYSTEM_SDK_PATH_FROM_SDK);
+    function traverse(currentDir: string) {
+      const items = fs.readdirSync(currentDir);
+      for (const item of items) {
+        const itemPath = path.join(currentDir, item);
+        const stat = fs.statSync(itemPath);
+
+        if (stat.isFile()) {
+          const basename = path.basename(item, '.d.ets');
+          pathSection[basename] = [changeFileExtension(itemPath, '', '.d.ets')];
+        }
+      }
+    }
+    let apiPath: string = path.resolve(systemSdkPath, 'api');
+    let arktsPath: string = path.resolve(systemSdkPath, 'arkts');
+    let kitsPath: string = path.resolve(systemSdkPath, 'kits');
+    if (!fs.existsSync(apiPath) || !fs.existsSync(arktsPath) || !fs.existsSync(kitsPath)) {
+      const logData: LogData = LogDataFactory.newInstance(
+        ErrorCode.BUILDSYSTEM_SDK_NOT_EXIST_FAIL,
+        `sdk path ${apiPath} or ${arktsPath} or ${kitsPath} not exist.`
+      );
+      this.logger.printErrorAndExit(logData);
+    }
+    traverse(apiPath);
+    traverse(arktsPath);
+    traverse(kitsPath);
+  }
+
+  private getDependentModules(moduleInfo: ModuleInfo): Map<string, ModuleInfo> {
+    if (moduleInfo.isMainModule) {
+      return this.moduleInfos;
+    }
+
+    let depModules: Map<string, ModuleInfo> = new Map<string, ModuleInfo>();
+    if (moduleInfo.dependencies) {
+      moduleInfo.dependencies.forEach((packageName: string) => {
+        let depModuleInfo: ModuleInfo | undefined = this.moduleInfos.get(packageName);
+        if (!depModuleInfo) {
+          const logData: LogData = LogDataFactory.newInstance(
+            ErrorCode.BUILDSYSTEM_DEPENDENT_MODULE_INFO_NOT_FOUND,
+            `Module ${packageName} not found in moduleInfos`
+          );
+          this.logger.printErrorAndExit(logData);
+        } else {
+          depModules.set(packageName, depModuleInfo);
+        }
+      });
+    }
+    return depModules;
+  }
+
+  private generateDependenciesSection(moduleInfo: ModuleInfo, dependenciesSection: string[]): void {
+    let depModules: Map<string, ModuleInfo> = this.getDependentModules(moduleInfo);
+    depModules.forEach((depModuleInfo: ModuleInfo) => {
+      if (depModuleInfo.isMainModule) {
+        return;
+      }
+      dependenciesSection.push(depModuleInfo.arktsConfigFile);
+    });
+  }
+
+  private writeArkTSConfigFile(moduleInfo: ModuleInfo, pathSection: Record<string, string[]>,
+    dependenciesSection: string[]): void {
+    if (!moduleInfo.sourceRoots || moduleInfo.sourceRoots.length == 0) {
       const logData: LogData = LogDataFactory.newInstance(
         ErrorCode.BUILDSYSTEM_SOURCEROOTS_NOT_SET_FAIL,
         'SourceRoots not set from hvigor.'
       );
-      this.logger.printErrorAndExit(logData); // Replace with hivgor throw to stop build process
+      this.logger.printErrorAndExit(logData);
     }
-    let baseUrl: string = path.resolve(moduleRootPath, sourceRoots[0]);
-    pathSection[packageName] = [baseUrl];
+
+    let baseUrl: string = path.resolve(moduleInfo.moduleRootPath, moduleInfo.sourceRoots[0]);
+    pathSection[moduleInfo.packageName] = [baseUrl];
     let arktsConfig: ArkTSConfigObject = {
       compilerOptions: {
-        package: packageName,
+        package: moduleInfo.packageName,
         baseUrl: baseUrl,
-        paths: pathSection
+        paths: pathSection,
+        dependencies: dependenciesSection.length === 0 ? undefined : dependenciesSection,
+        entry: moduleInfo.entryFile
       }
     };
 
-    ensurePathExists(arktsConfigFile);
-    fs.writeFileSync(arktsConfigFile, JSON.stringify(arktsConfig, null, 2), 'utf-8');
-    let moduleInfo: ModuleInfo | undefined = this.moduleInfos.get(moduleRootPath);
-    if (!moduleInfo) {
-      const logData: LogData = LogDataFactory.newInstance(
-        ErrorCode.BUILDSYSTEM_UNRECOGNIZED_MODULEROOTPATH,
-        'Unrecognized ModuleRootPath.',
-        '',
-        moduleRootPath
-      );
-      this.logger.printError(logData);
-    }
+    ensurePathExists(moduleInfo.arktsConfigFile);
+    fs.writeFileSync(moduleInfo.arktsConfigFile, JSON.stringify(arktsConfig, null, 2), 'utf-8');
   }
 
   private generateArkTSConfigForModules(): void {
     let pathSection: Record<string, string[]> = {};
-    let es2pandLibPath: string = path.resolve(this.pandaSdkPath, 'ets');
-    let systemSdkPath: string = path.resolve(this.buildSdkPath, 'local', 'sdk');
-    pathSection['std'] = [path.resolve(es2pandLibPath, 'stdlib', 'std')];
-    pathSection['escompat'] = [path.resolve(es2pandLibPath, 'stdlib', 'escompat')];
-    // TODO: read all sdk path from a config file (400+)
-    pathSection['@ohos.hilog'] = [path.resolve(systemSdkPath, '@ohos.hilog')];
+    pathSection['std'] = [path.resolve(this.pandaSdkPath, 'lib', 'stdlib', 'std')];
+    pathSection['escompat'] = [path.resolve(this.pandaSdkPath, 'lib', 'stdlib', 'escompat')];
+    this.generateSystemSdkPathSection(pathSection);
 
     this.moduleInfos.forEach((moduleInfo: ModuleInfo, moduleRootPath: string) => {
       pathSection[moduleInfo.packageName] = [
-        path.resolve(moduleRootPath),
         path.resolve(moduleRootPath, moduleInfo.sourceRoots[0])
       ]
     });
 
     this.moduleInfos.forEach((moduleInfo: ModuleInfo, moduleRootPath: string)=> {
-      this.writeArkTSConfigFile(moduleInfo.packageName, moduleRootPath, moduleInfo.sourceRoots,
-        moduleInfo.arktsConfigFile, pathSection);
+      let dependenciesSection: string[] = [];
+      this.generateDependenciesSection(moduleInfo, dependenciesSection);
+      this.writeArkTSConfigFile(moduleInfo, pathSection, dependenciesSection);
     });
   }
 
@@ -250,11 +314,12 @@ export abstract class BaseMode {
       this.logger.printError(logData);
     }
     let mainModuleInfo: ModuleInfo = {
+      isMainModule: true,
       packageName: this.packageName,
       moduleRootPath: this.moduleRootPath,
       sourceRoots: this.sourceRoots,
       entryFile: '',
-      arktsConfigFile: path.join(this.cacheDir, this.packageName, ARKTSCONFIG_JSON_FILE),
+      arktsConfigFile: path.resolve(this.cacheDir, this.packageName, ARKTSCONFIG_JSON_FILE),
       compileFileInfos: []
     }
     this.moduleInfos.set(this.moduleRootPath, mainModuleInfo);
@@ -267,11 +332,12 @@ export abstract class BaseMode {
         this.logger.printError(logData);
       }
       let moduleInfo: ModuleInfo = {
+        isMainModule: false,
         packageName: module.packageName,
         moduleRootPath: module.modulePath,
         sourceRoots: module.sourceRoots,
         entryFile: module.entryFile,
-        arktsConfigFile: path.join(this.cacheDir, module.packageName, ARKTSCONFIG_JSON_FILE),
+        arktsConfigFile: path.resolve(this.cacheDir, module.packageName, ARKTSCONFIG_JSON_FILE),
         compileFileInfos: []
       }
       this.moduleInfos.set(module.modulePath, moduleInfo);

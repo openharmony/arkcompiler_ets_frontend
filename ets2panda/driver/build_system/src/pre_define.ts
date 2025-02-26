@@ -21,5 +21,10 @@ export const ETS_SUFFIX: string = '.ets';
 export const ABC_SUFFIX: string = '.abc';
 
 export const BUILD_TYPE_BUILD: string = 'build';
+export enum BUILD_MODE {
+    DEBUG = 'Debug',
+    RELEASE = 'Release'
+};
 
-export const PANDA_SDK_PATH_FROM_SDK: string = './node_modules/libarkts/arkoala-arkts/node_modules/@panda/sdk';
+export const PANDA_SDK_PATH_FROM_SDK: string = './build-tools/ets2panda';
+export const SYSTEM_SDK_PATH_FROM_SDK: string = './';
