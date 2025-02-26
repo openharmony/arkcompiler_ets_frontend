@@ -257,6 +257,15 @@ extern "C" std::vector<FileDiagnostic> GetSuggestionDiagnostics(es2panda_Context
     return ark::es2panda::lsp::GetSuggestionDiagnosticsImpl(ast);
 }
 
+extern "C" ark::es2panda::lsp::CompletionInfo GetCompletionsAtPosition(char const *fileName, size_t position)
+{
+    Initializer initializer = Initializer();
+    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
+    auto result = CompletionInfo(GetCompletionsAtPositionImpl(context, position));
+    initializer.DestroyContext(context);
+    return result;
+}
+
 LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetImplementationAtPosition,
                     GetFileReferences,
@@ -271,7 +280,8 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetReferenceLocationAtPosition,
                     GetDocumentHighlights,
                     FindReferencesWrapper,
-                    GetSuggestionDiagnostics};
+                    GetSuggestionDiagnostics,
+                    GetCompletionsAtPosition};
 }  // namespace ark::es2panda::lsp
 
 LSPAPI const *GetImpl()

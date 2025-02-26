@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_LSP_COMPLETIONS_H
 #define ES2PANDA_LSP_COMPLETIONS_H
 
+#include "public/es2panda_lib.h"
 #include <string>
 #include <vector>
 #include <optional>
@@ -76,15 +77,15 @@ public:
         : name_(std::move(name)), kind_(kind), sortText_(std::move(sortText)), insertText_(std::move(insertText))
     {
     }
-    std::optional<std::string> GetInsertText()
+    std::optional<std::string> GetInsertText() const
     {
         return insertText_;
     }
-    CompletionEntryKind GetCompletionKind()
+    CompletionEntryKind GetCompletionKind() const
     {
         return kind_;
     }
-    std::string GetName()
+    std::string GetName() const
     {
         return name_;
     }
@@ -110,7 +111,7 @@ private:
 public:
     explicit CompletionInfo(std::vector<CompletionEntry> entries = {}) : entries_(std::move(entries)) {}
 
-    std::vector<CompletionEntry> GetEntries()
+    std::vector<CompletionEntry> &GetEntries()
     {
         return entries_;
     }
@@ -120,6 +121,7 @@ std::vector<CompletionEntry> AllKeywordsCompletions();
 std::vector<CompletionEntry> GetKeywordCompletions(const std::string &input);
 Request KeywordCompletionData(const std::string &input);
 std::string ToLowerCase(const std::string &str);
+std::vector<CompletionEntry> GetCompletionsAtPositionImpl(es2panda_Context *context, size_t position);
 
 }  // namespace ark::es2panda::lsp
 #endif
