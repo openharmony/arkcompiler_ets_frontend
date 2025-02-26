@@ -3710,7 +3710,9 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams(bool isDeclare,
             }
         }
 
+        context_.Status() |= ParserStatus::FUNCTION_PARAM;
         ir::Expression *parameter = ParseFunctionParameter(isDeclare);
+        context_.Status() &= ~ParserStatus::FUNCTION_PARAM;
         ValidateFunctionParam(params, parameter, &seenOptional);
 
         params.push_back(parameter);
