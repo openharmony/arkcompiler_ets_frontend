@@ -28,5 +28,4 @@ function foo(a : int) : int
     return a;
 }
 
-/* @@? 26:1 Error TypeError: Function foo is already declared.  */
 /* @@? 18:5 Error TypeError: No matching call signature  */

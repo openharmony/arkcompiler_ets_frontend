@@ -111,7 +111,7 @@ function do_checkout() {
 
 GIT_URL=https://gitee.com/rri_opensource/koala_projects.git
 DEST="${DEST:-koala-sig}"
-do_checkout "${GIT_URL}" panda_rev_5-2-method-to-function "${DEST}"
+do_checkout "${GIT_URL}" panda_rev_5-3-cancel-signature "${DEST}"
 
 cd "${DEST}" || exit 1
 
