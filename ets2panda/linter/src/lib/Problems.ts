@@ -159,6 +159,7 @@ export enum FaultID {
   MethodOverridingField,
   ExplicitFunctionType,
   ClassstaticInitialization,
+  TaggedTemplates,
   // this should always be last enum
   LAST_ID
 }

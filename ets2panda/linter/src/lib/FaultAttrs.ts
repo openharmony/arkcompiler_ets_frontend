@@ -153,6 +153,7 @@ faultsAttrs[FaultID.LimitedLiteralType] = new FaultAttributes(202);
 faultsAttrs[FaultID.ExponentOp] = new FaultAttributes(203);
 faultsAttrs[FaultID.DebuggerStatement] = new FaultAttributes(206);
 faultsAttrs[FaultID.ArgumentsObject] = new FaultAttributes(207);
+faultsAttrs[FaultID.TaggedTemplates] = new FaultAttributes(208);
 faultsAttrs[FaultID.ArrayIndexExprType] = new FaultAttributes(209);
 faultsAttrs[FaultID.SwitchExpression] = new FaultAttributes(210);
 faultsAttrs[FaultID.CaseExpression] = new FaultAttributes(211);
