@@ -16,9 +16,11 @@
 #ifndef ES2PANDA_AOT_ARKTSCONFIG_H
 #define ES2PANDA_AOT_ARKTSCONFIG_H
 
+#include <map>
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "util/language.h"
@@ -54,8 +56,15 @@ class DiagnosticEngine;
 
 namespace ark::es2panda {
 
+struct CompareByLength {
+    bool operator()(const std::string &x, const std::string &y) const
+    {
+        return x.size() == y.size() ? x > y : x.size() > y.size();
+    }
+};
+
 class ArkTsConfig {
-    using PathsMap = std::unordered_map<std::string, std::vector<std::string>>;
+    using PathsMap = std::map<std::string, std::vector<std::string>, CompareByLength>;
 
 public:
 #ifdef ARKTSCONFIG_USE_FILESYSTEM
@@ -104,9 +113,11 @@ public:
         : configPath_(configPath), diagnosticEngine_(de)
     {
     }
-    bool Parse();
+    bool Parse(std::unordered_set<std::string> &parsedConfigPath);
 
     std::optional<std::string> ResolvePath(const std::string &path) const;
+
+    void ResolveAllDependenciesInArkTsConfig();
 
     const std::string &ConfigPath() const
     {
@@ -129,6 +140,22 @@ public:
     {
         return outDir_;
     }
+    const std::unordered_map<std::string, std::shared_ptr<ArkTsConfig>> &Dependencies() const
+    {
+        return dependencies_;
+    }
+    void ResetDependencies()
+    {
+        return dependencies_.clear();
+    }
+    const std::string &Entry() const
+    {
+        return entry_;
+    }
+    const std::unordered_map<std::string, std::string> &Entries() const
+    {
+        return entries_;
+    }
     const std::vector<std::string> &Files() const
     {
         return files_;
@@ -137,7 +164,7 @@ public:
     {
         return paths_;
     }
-    const std::unordered_map<std::string, DynamicImportData> &DynamicPaths() const
+    const std::map<std::string, DynamicImportData, CompareByLength> &DynamicPaths() const
     {
         return dynamicPaths_;
     }
@@ -155,13 +182,19 @@ public:
     bool Check(bool cond, const diagnostic::DiagnosticKind &diag, const util::DiagnosticMessageParams &params);
 
 private:
+    bool ParseCompilerOptions(std::string &arktsConfigDir, std::unordered_set<std::string> &parsedConfigPath,
+                              const JsonObject *arktsConfig);
     std::optional<ArkTsConfig> ParseExtends(const std::string &configPath, const std::string &extends,
-                                            const std::string &configDir);
+                                            const std::string &configDir,
+                                            std::unordered_set<std::string> &parsedConfigPath);
     bool ParsePaths(const JsonObject::JsonObjPointer *options, PathsMap &pathsMap, const std::string &baseUrl);
     bool ParseDynamicPaths(const JsonObject::JsonObjPointer *options,
-                           std::unordered_map<std::string, DynamicImportData> &dynamicPathsMap);
+                           std::map<std::string, DynamicImportData, CompareByLength> &dynamicPathsMap);
     template <class Collection, class Function>
     bool ParseCollection(const JsonObject *config, Collection &out, const std::string &target, Function &&constructor);
+    void ResolveConfigDependencies(std::unordered_map<std::string, std::shared_ptr<ArkTsConfig>> &dependencies,
+                                   std::vector<std::string> &dependencyPaths,
+                                   std::unordered_set<std::string> &parsedConfigPath);
     std::optional<std::string> ReadConfig(const std::string &path);
 
 private:
@@ -174,6 +207,8 @@ private:
     static constexpr const char *INCLUDE = "include";
     static constexpr const char *OUT_DIR = "outDir";
     static constexpr const char *ROOT_DIR = "rootDir";
+    static constexpr const char *DEPENDENCIES = "dependencies";  // CC-OFF(G.NAM.03,G.NAM.03-CPP) project code style
+    static constexpr const char *ENTRY = "entry";                // CC-OFF(G.NAM.03,G.NAM.03-CPP) project code style
 
     void Inherit(const ArkTsConfig &base);
 
@@ -184,9 +219,13 @@ private:
     std::string baseUrl_ {};
     std::string outDir_ {};
     std::string rootDir_ {};
+    std::string entry_ {};
     PathsMap paths_ {};
-    std::unordered_map<std::string, DynamicImportData> dynamicPaths_ {};
+    std::map<std::string, DynamicImportData, CompareByLength> dynamicPaths_ {};
     std::vector<std::string> files_ {};
+    std::unordered_map<std::string, std::shared_ptr<ArkTsConfig>> dependencies_ {};
+    // key: package name; value: entry's absolute path
+    std::unordered_map<std::string, std::string> entries_;
 #ifdef ARKTSCONFIG_USE_FILESYSTEM
     std::vector<Pattern> include_ {};
     std::vector<Pattern> exclude_ {};

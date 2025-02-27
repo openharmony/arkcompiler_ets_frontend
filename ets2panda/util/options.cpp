@@ -22,6 +22,7 @@
 #include "arktsconfig.h"
 
 #include <random>
+#include <unordered_set>
 #include <utility>
 
 #ifdef PANDA_WITH_BYTECODE_OPTIMIZER
@@ -383,11 +384,15 @@ bool Options::ProcessEtsSpecificOptions()
 std::optional<ArkTsConfig> Options::ParseArktsConfig()
 {
     auto config = ArkTsConfig {GetArktsconfig(), diagnosticEngine_};
-    if (!config.Parse()) {
+    std::unordered_set<std::string> parsedConfigPath;
+    if (!config.Parse(parsedConfigPath)) {
         diagnosticEngine_.LogFatalError(
             util::DiagnosticMessageParams {"Invalid ArkTsConfig path: ", util::StringView(GetArktsconfig())});
         return std::nullopt;
     }
+    config.ResolveAllDependenciesInArkTsConfig();
+    // Don't need dependencies anymore, since all necessary information have been moved to current config
+    config.ResetDependencies();
     return std::make_optional(config);
 }
 
