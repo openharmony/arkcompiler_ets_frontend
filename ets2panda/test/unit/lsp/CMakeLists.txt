@@ -63,3 +63,7 @@ ets2panda_add_gtest(lsp_api_test_brace_matching CPP_SOURCES
 ets2panda_add_gtest(lsp_api_completions_test CPP_SOURCES
     get_completions.cpp
 )
+
+ets2panda_add_gtest(lsp_api_gilap_test CPP_SOURCES
+    get_implementation_location.cpp
+)
