@@ -1349,6 +1349,7 @@ ir::Expression *ETSParser::ParseFunctionParameterAnnotations()
 ir::Expression *ETSParser::ParseFunctionReceiver()
 {
     ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS);
+    auto thisLoc = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat 'this';
     if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
         LogError(diagnostic::FUN_PARAM_THIS_MISSING_TYPE);
@@ -1357,6 +1358,11 @@ ir::Expression *ETSParser::ParseFunctionReceiver()
 
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
     ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
+
+    if (!GetContext().AllowReceiver()) {
+        LogError(diagnostic::UNEXPECTED_THIS, {}, thisLoc);
+        return AllocBrokenExpression();
+    }
 
     return CreateParameterThis(typeAnnotation);
 }
@@ -1367,7 +1373,7 @@ ir::Expression *ETSParser::ParseFunctionParameter()
         return ParseFunctionParameterAnnotations();
     }
 
-    if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS && GetContext().AllowReceiver()) {
+    if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS) {
         return ParseFunctionReceiver();
     }
 
