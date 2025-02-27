@@ -24,6 +24,7 @@ set(ES2PANDA_LSP_SRC
   ./src/string_completions.cpp
   ./src/rename.cpp
   ./src/suggestion_diagnostics.cpp
+  ./src/brace_matching.cpp
 )
 
 panda_add_library(${LSP_LIB} SHARED ${ES2PANDA_LSP_SRC})

@@ -27,6 +27,7 @@ config("libes2panda_lsp_config") {
 ohos_source_set("libes2panda_lsp_static") {
   sources = [
     "src/api.cpp",
+    "src/brace_matching.cpp",
     "src/cancellation_token.cpp",
     "src/classifier.cpp",
     "src/internal_api.cpp",

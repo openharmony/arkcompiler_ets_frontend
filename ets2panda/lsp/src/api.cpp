@@ -25,6 +25,7 @@
 #include "util/options.h"
 #include "quick_info.h"
 #include "suggestion_diagnostics.h"
+#include "brace_matching.h"
 
 extern "C" {
 namespace ark::es2panda::lsp {
@@ -250,6 +251,15 @@ FileRefMap FindReferencesWrapper(ark::es2panda::lsp::CancellationToken *tkn,
     return FindReferences(tkn, srcFiles, srcFile, position);
 }
 
+std::vector<TextSpan> GetBraceMatchingAtPositionWrapper(char const *fileName, size_t position)
+{
+    Initializer initializer = Initializer();
+    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
+    auto result = GetBraceMatchingAtPosition(context, position);
+    initializer.DestroyContext(context);
+    return result;
+}
+
 extern "C" std::vector<FileDiagnostic> GetSuggestionDiagnostics(es2panda_Context *context)
 {
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
@@ -281,7 +291,8 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetDocumentHighlights,
                     FindReferencesWrapper,
                     GetSuggestionDiagnostics,
-                    GetCompletionsAtPosition};
+                    GetCompletionsAtPosition,
+                    GetBraceMatchingAtPositionWrapper};
 }  // namespace ark::es2panda::lsp
 
 LSPAPI const *GetImpl()
