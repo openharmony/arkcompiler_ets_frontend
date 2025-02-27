@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@
 #include "quick_info.h"
 #include "suggestion_diagnostics.h"
 #include "brace_matching.h"
+#include "services/services.h"
 
 extern "C" {
 namespace ark::es2panda::lsp {
@@ -276,6 +277,11 @@ extern "C" ark::es2panda::lsp::CompletionInfo GetCompletionsAtPosition(char cons
     return result;
 }
 
+extern "C" std::vector<Location> GetImplementationLocationAtPositionWrapper(es2panda_Context *context, int position)
+{
+    return GetImplementationLocationAtPosition(context, position);
+}
+
 LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetImplementationAtPosition,
                     GetFileReferences,
@@ -292,7 +298,8 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     FindReferencesWrapper,
                     GetSuggestionDiagnostics,
                     GetCompletionsAtPosition,
-                    GetBraceMatchingAtPositionWrapper};
+                    GetBraceMatchingAtPositionWrapper,
+                    GetImplementationLocationAtPositionWrapper};
 }  // namespace ark::es2panda::lsp
 
 LSPAPI const *GetImpl()

@@ -359,6 +359,7 @@ typedef struct LSPAPI {
     std::vector<FileDiagnostic> (*getSuggestionDiagnostics)(es2panda_Context *context);
     ark::es2panda::lsp::CompletionInfo (*getCompletionsAtPosition)(char const *fileName, size_t position);
     std::vector<TextSpan> (*getBraceMatchingAtPosition)(char const *fileName, size_t position);
+    std::vector<Location> (*getImplementationLocationAtPosition)(es2panda_Context *context, int position);
 } LSPAPI;
 
 LSPAPI const *GetImpl();
