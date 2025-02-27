@@ -1318,7 +1318,7 @@ util::StringView ETSChecker::FindPropNameForNamespaceImport(const util::StringVi
     auto relatedMapItem = exportAliases.find(importPath);
     if (relatedMapItem != exportAliases.end()) {
         if (auto result = std::find_if(relatedMapItem->second.begin(), relatedMapItem->second.end(),
-                                       [originalName](const auto &item) { return item.second == originalName; });
+                                       [originalName](const auto &item) { return item.second.first == originalName; });
             result != relatedMapItem->second.end()) {
             return result->first;
         }

@@ -40,6 +40,9 @@ void ImportExportDecls::ProcessProgramStatements(parser::Program *program,
         if (stmt->IsExportNamedDeclaration()) {
             PopulateAliasMap(stmt->AsExportNamedDeclaration(), program->SourceFilePath());
         }
+        if (stmt->IsTSTypeAliasDeclaration() && (stmt->IsExported() || stmt->IsDefaultExported())) {
+            PopulateAliasMap(stmt->AsTSTypeAliasDeclaration(), program->SourceFilePath());
+        }
     }
 }
 
@@ -59,11 +62,13 @@ GlobalClassHandler::ModuleDependencies ImportExportDecls::HandleGlobalStmts(Aren
         ProcessProgramStatements(program, program->Ast()->Statements(), moduleDependencies);
         for (auto const &[exportName, startLoc] : exportNameMap_) {
             const bool isType = exportedTypes_.find(exportName) != exportedTypes_.end();
-            util::StringView originalName = varbinder_->FindNameInAliasMap(program->SourceFilePath(), exportName);
-
-            ES2PANDA_ASSERT(!originalName.Empty());
+            util::StringView middleName = varbinder_->FindNameInAliasMap(program->SourceFilePath(), exportName);
+            ES2PANDA_ASSERT(!middleName.Empty());
+            auto originNameIt = importedSpecifiersForExportCheck_.find(middleName);
+            auto originalName =
+                originNameIt != importedSpecifiersForExportCheck_.end() ? originNameIt->second : middleName;
             auto result = fieldMap_.find(originalName);
-            if (result == fieldMap_.end() && !isType && importedSpecifiersForExportCheck_.count(originalName) == 0) {
+            if (result == fieldMap_.end() && !isType && originNameIt == importedSpecifiersForExportCheck_.end()) {
                 parser_->DiagnosticEngine().LogSyntaxError(
                     varbinder_->Program(), "Cannot find name '" + originalName.Mutf8() + "' to export", startLoc);
             }
@@ -84,7 +89,7 @@ GlobalClassHandler::ModuleDependencies ImportExportDecls::HandleGlobalStmts(Aren
 void ImportExportDecls::PopulateAliasMap(const ir::ExportNamedDeclaration *decl, const util::StringView &path)
 {
     for (auto spec : decl->Specifiers()) {
-        if (!varbinder_->AddSelectiveExportAlias(path, spec->Local()->Name(), spec->Exported()->Name())) {
+        if (!varbinder_->AddSelectiveExportAlias(path, spec->Local()->Name(), spec->Exported()->Name(), decl)) {
             parser_->DiagnosticEngine().LogSyntaxError(varbinder_->Program(),
                                                        "The given name '" + spec->Local()->Name().Mutf8() +
                                                            "' is already used in another export",
@@ -111,6 +116,17 @@ void ImportExportDecls::AddExportFlags(ir::AstNode *node, util::StringView origi
     }
     if (exportedWithAlias) {
         node->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
+    }
+}
+void ImportExportDecls::PopulateAliasMap(const ir::TSTypeAliasDeclaration *decl, const util::StringView &path)
+{
+    if (!varbinder_->AddSelectiveExportAlias(path, decl->Id()->AsIdentifier()->Name(),
+                                             decl->Id()->AsIdentifier()->Name(), decl)) {
+        parser_->DiagnosticEngine().LogSyntaxError(varbinder_->Program(),
+                                                   "The given name '" + decl->Id()->AsIdentifier()->Name().Mutf8() +
+                                                       "' is already used in another export",
+                                                   lastExportErrorPos_);
+        lastExportErrorPos_ = lexer::SourcePosition();
     }
 }
 
@@ -228,7 +244,12 @@ void ImportExportDecls::VisitETSImportDeclaration(ir::ETSImportDeclaration *impo
 {
     for (ir::AstNode *spec : importDecl->AsETSImportDeclaration()->Specifiers()) {
         if (spec->IsImportSpecifier()) {
-            importedSpecifiersForExportCheck_.emplace(spec->AsImportSpecifier()->Imported()->Name());
+            importedSpecifiersForExportCheck_.emplace(spec->AsImportSpecifier()->Local()->Name(),
+                                                      spec->AsImportSpecifier()->Imported()->Name());
+        }
+        if (spec->IsImportDefaultSpecifier()) {
+            importedSpecifiersForExportCheck_.emplace(spec->AsImportDefaultSpecifier()->Local()->Name(),
+                                                      spec->AsImportDefaultSpecifier()->Local()->Name());
         }
     }
 }

@@ -71,6 +71,7 @@ public:
     void HandleSelectiveExportWithAlias(util::StringView originalFieldName, util::StringView exportName,
                                         lexer::SourcePosition startLoc);
     void PopulateAliasMap(const ir::ExportNamedDeclaration *decl, const util::StringView &path);
+    void PopulateAliasMap(const ir::TSTypeAliasDeclaration *decl, const util::StringView &path);
 
 private:
     void VisitFunctionDeclaration(ir::FunctionDeclaration *funcDecl) override;
@@ -90,7 +91,7 @@ private:
     std::map<util::StringView, lexer::SourcePosition> exportNameMap_;
     std::set<util::StringView> exportedTypes_;
     parser::ETSParser *parser_ {nullptr};
-    std::set<util::StringView> importedSpecifiersForExportCheck_;
+    std::map<util::StringView, util::StringView> importedSpecifiersForExportCheck_;
     lexer::SourcePosition lastExportErrorPos_ {};
     util::StringView exportDefaultName_;
 };
