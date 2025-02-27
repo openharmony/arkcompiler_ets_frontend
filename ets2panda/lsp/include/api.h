@@ -356,12 +356,16 @@ typedef struct LSPAPI {
     FileRefMap (*findReferences)(ark::es2panda::lsp::CancellationToken *tkn,
                                  const std::vector<ark::es2panda::SourceFile> &srcFiles,
                                  const ark::es2panda::SourceFile &srcFile, size_t position);
-    std::vector<FileDiagnostic> (*getSuggestionDiagnostics)(es2panda_Context *context);
+    std::vector<FileDiagnostic> (*getSuggestionDiagnostics)(char const *fileName);
     ark::es2panda::lsp::CompletionInfo (*getCompletionsAtPosition)(char const *fileName, size_t position);
     std::vector<TextSpan> (*getBraceMatchingAtPosition)(char const *fileName, size_t position);
 } LSPAPI;
 
+#ifdef _WIN32
+LSPAPI __declspec(dllexport) const *GetImpl();
+#else
 LSPAPI const *GetImpl();
+#endif
 
 // NOLINTEND
 

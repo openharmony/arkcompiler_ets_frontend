@@ -69,15 +69,19 @@ private:
     CompletionEntryKind kind_;
     std::string sortText_;
     // This is what the Client uses
-    std::optional<std::string> insertText_;
+    std::string insertText_;
 
 public:
     explicit CompletionEntry(std::string name = "", CompletionEntryKind kind = CompletionEntryKind::TEXT,
-                             std::string sortText = "", std::optional<std::string> insertText = std::nullopt)
+                             std::string sortText = "", std::string insertText = "")
         : name_(std::move(name)), kind_(kind), sortText_(std::move(sortText)), insertText_(std::move(insertText))
     {
     }
-    std::optional<std::string> GetInsertText() const
+    std::string GetSortText() const
+    {
+        return sortText_;
+    }
+    std::string GetInsertText() const
     {
         return insertText_;
     }
