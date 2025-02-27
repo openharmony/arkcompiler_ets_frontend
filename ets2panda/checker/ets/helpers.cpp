@@ -811,12 +811,6 @@ checker::Type *ETSChecker::ResolveSmartType(checker::Type *sourceType, checker::
         return targetType;
     }
 
-    //  For the Function source or target types leave the target type as is
-    //  until we will be able to create the functional interface type from the source.
-    if (targetType->IsETSArrowType() || sourceType->IsETSArrowType()) {
-        return targetType;
-    }
-
     // Nothing to do with identical types:
     auto *nonConstSourceType = GetNonConstantType(sourceType);
     auto *nonConstTargetType = GetNonConstantType(targetType);

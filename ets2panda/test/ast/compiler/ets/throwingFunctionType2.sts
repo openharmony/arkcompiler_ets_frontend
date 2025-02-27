@@ -16,7 +16,7 @@
 type func_type = () => void throws;
 
 function main(): void {
-  let a: func_type = (): void => {};
+  let a: func_type = (): void throws => {};
 
   /* @@ label */a();
 }
