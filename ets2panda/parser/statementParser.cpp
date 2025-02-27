@@ -1064,7 +1064,7 @@ ir::Statement *ParserImpl::ParseIfStatement()
     return ifStatement;
 }
 
-ir::LabelledStatement *ParserImpl::ParseLabelledStatement(const lexer::LexerPosition &pos)
+ir::Statement *ParserImpl::ParseLabelledStatement(const lexer::LexerPosition &pos)
 {
     const util::StringView &actualLabel = pos.GetToken().Ident();
 
@@ -1084,7 +1084,7 @@ ir::LabelledStatement *ParserImpl::ParseLabelledStatement(const lexer::LexerPosi
     lexer_->NextToken();
 
     if (!ValidateLabeledStatement(Lexer()->GetToken().Type())) {
-        return nullptr;  // Error processing.
+        return AllocBrokenStatement(Lexer()->GetToken().Loc());  // Error processing.
     }
 
     ir::Statement *body = ParseStatement(StatementParsingFlags::LABELLED);

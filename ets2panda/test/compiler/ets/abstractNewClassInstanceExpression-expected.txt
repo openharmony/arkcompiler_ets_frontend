@@ -1024,6 +1024,21 @@
                   "type": "BlockStatement",
                   "statements": [
                     {
+                      "type": "EmptyStatement",
+                      "loc": {
+                        "start": {
+                          "line": 32,
+                          "column": 11,
+                          "program": "abstractNewClassInstanceExpression.sts"
+                        },
+                        "end": {
+                          "line": 32,
+                          "column": 12,
+                          "program": "abstractNewClassInstanceExpression.sts"
+                        }
+                      }
+                    },
+                    {
                       "type": "ExpressionStatement",
                       "expression": {
                         "type": "AssignmentExpression",
