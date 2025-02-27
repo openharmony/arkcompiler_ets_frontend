@@ -389,6 +389,7 @@ public:
     static std::string NameToDescriptor(util::StringView name);
     void ToDebugInfoType(std::stringstream &ss) const override;
     void ToDebugInfoSignatureType(std::stringstream &ss) const;
+    void CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag) override;
 
     void AddReExports(ETSObjectType *reExport);
     void AddReExportAlias(util::StringView const &value, util::StringView const &key);

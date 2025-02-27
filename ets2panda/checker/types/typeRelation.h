@@ -73,6 +73,8 @@ enum class RelationResult { TRUE, FALSE, UNKNOWN, MAYBE, CACHE_MISS, ERROR };
 
 enum class RelationType { COMPARABLE, ASSIGNABLE, IDENTICAL, UNCHECKED_CASTABLE, SUPERTYPE };
 
+enum class VarianceFlag { COVARIANT, CONTRAVARIANT, INVARIANT };
+
 }  // namespace ark::es2panda::checker
 
 template <>
@@ -298,10 +300,10 @@ public:
     }
     bool IsLegalBoxedPrimitiveConversion(Type *target, Type *source);
     bool IsSupertypeOf(Type *super, Type *sub);
-
     bool IsIdenticalTo(IndexInfo *source, IndexInfo *target);
-    bool SignatureIsSupertypeOf(Signature *sub, Signature *super);
-
+    bool SignatureIsSupertypeOf(Signature *super, Signature *sub);
+    bool CheckVarianceRecursively(Type *type, VarianceFlag varianceFlag);
+    VarianceFlag TransferVariant(VarianceFlag variance, VarianceFlag posVariance);
     void RaiseError(const std::string &errMsg, const lexer::SourcePosition &loc) const;
     void RaiseError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &loc) const;
     void LogError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &loc) const;

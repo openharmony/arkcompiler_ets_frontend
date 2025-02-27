@@ -2745,4 +2745,44 @@ ir::CallExpression *ETSChecker::CreateExtensionAccessorCall(ETSChecker *checker,
     return callExpr->AsCallExpression();
 }
 
+void ETSChecker::CheckTypeParameterVariance(ir::ClassDefinition *classDef)
+{
+    if (classDef->TypeParams() == nullptr) {
+        return;
+    }
+
+    Context().SetContainingClass(classDef->TsType()->AsETSObjectType());
+    auto checkVariance = [this](VarianceFlag varianceFlag, ir::Expression *expression, Type *type) {
+        Relation()->Result(RelationResult::TRUE);
+        Relation()->SetNode(expression);
+        Relation()->CheckVarianceRecursively(type, varianceFlag);
+        Relation()->SetNode(nullptr);
+    };
+
+    for (auto *it : classDef->Body()) {
+        if (!it->IsClassProperty() || it->AsClassProperty()->TypeAnnotation() == nullptr) {
+            continue;
+        }
+        // Readonly Fields may have out type parameters, otherwise fields should be invariant type parameters
+        checkVariance(it->AsClassProperty()->IsReadonly() ? VarianceFlag::COVARIANT : VarianceFlag::INVARIANT,
+                      it->AsClassProperty()->TypeAnnotation(), it->AsClassProperty()->TsType());
+    }
+
+    for (auto *it : classDef->Body()) {
+        if (!it->IsMethodDefinition() || it->AsMethodDefinition()->IsConstructor()) {
+            continue;
+        }
+        // Methods may have out type parameters as return types, and in type parameters as parameter types，(in)=>out
+        checkVariance(VarianceFlag::COVARIANT, it->AsMethodDefinition()->Id(), it->Check(this));
+    }
+
+    if (classDef->Super() != nullptr) {
+        checkVariance(VarianceFlag::COVARIANT, classDef->Super(), classDef->Super()->Check(this));
+    }
+
+    for (auto *implement : classDef->Implements()) {
+        checkVariance(VarianceFlag::COVARIANT, implement, implement->Expr()->AsTypeNode()->Check(this));
+    }
+}
+
 }  // namespace ark::es2panda::checker

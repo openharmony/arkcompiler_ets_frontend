@@ -1250,4 +1250,30 @@ bool ETSObjectType::IsSameBasedGeneric(TypeRelation *relation, Type const *other
     return relation->IsTrue();
 }
 
+void ETSObjectType::CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag)
+{
+    if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
+        relation->CheckVarianceRecursively(GetFunctionalInterfaceInvokeType(), varianceFlag);
+        return;
+    }
+
+    auto *params = GetDeclNode()->IsClassDefinition() ? GetDeclNode()->AsClassDefinition()->TypeParams()
+                                                      : GetDeclNode()->AsTSInterfaceDeclaration()->TypeParams();
+    if (params == nullptr) {
+        return;
+    }
+
+    auto typeArgs = TypeArguments();
+    for (size_t i = 0; i < typeArgs.size(); ++i) {
+        // If the Variance of type Args is the same as the Variance of type params, then the class is Covariant.
+        // If the Variance of type Args is the opposite of the Variance of type params, then the class is
+        // Contravariant.
+        auto param = params->Params().at(i);
+        relation->CheckVarianceRecursively(
+            typeArgs.at(i), relation->TransferVariant(varianceFlag, param->IsIn()    ? VarianceFlag::CONTRAVARIANT
+                                                                    : param->IsOut() ? VarianceFlag::COVARIANT
+                                                                                     : VarianceFlag::INVARIANT));
+    }
+}
+
 }  // namespace ark::es2panda::checker

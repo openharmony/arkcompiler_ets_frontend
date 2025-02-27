@@ -166,4 +166,10 @@ Type *ETSArrayType::Substitute(TypeRelation *relation, const Substitution *subst
     return result;
 }
 
+void ETSArrayType::CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag)
+{
+    // The type of array should be Invariant
+    relation->CheckVarianceRecursively(element_, relation->TransferVariant(varianceFlag, VarianceFlag::INVARIANT));
+}
+
 }  // namespace ark::es2panda::checker

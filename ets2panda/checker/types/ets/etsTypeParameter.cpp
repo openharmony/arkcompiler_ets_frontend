@@ -88,6 +88,42 @@ void ETSTypeParameter::IsSubtypeOf(TypeRelation *relation, Type *target)
     relation->Result(false);
 }
 
+void ETSTypeParameter::CheckVarianceRecursively([[maybe_unused]] TypeRelation *relation, VarianceFlag varianceFlag)
+{
+    if (!declNode_->IsIn() && !declNode_->IsOut()) {
+        return;
+    }
+    auto classTypeParameters = relation->GetChecker()->Context().ContainingClass()->TypeArguments();
+    if (std::all_of(classTypeParameters.begin(), classTypeParameters.end(), [this](Type *param) {
+            return this->GetDeclNode()->Name()->Name() != param->AsETSTypeParameter()->Name();
+        })) {
+        return;
+    }
+
+    if (varianceFlag == VarianceFlag::INVARIANT) {
+        relation->GetChecker()->LogTypeError({"Type Parameter '", declNode_->Name()->Name(), "' is declared as",
+                                              declNode_->IsOut() ? " 'out'" : " 'in'",
+                                              " but occurs in 'invariant' position."},
+                                             relation->GetNode()->Start());
+        relation->Result(false);
+        return;
+    }
+
+    if (varianceFlag == VarianceFlag::COVARIANT && !declNode_->IsOut()) {
+        relation->GetChecker()->LogTypeError(
+            {"Type Parameter '", declNode_->Name()->Name(), "' is declared as 'in' but occurs in 'out' position."},
+            relation->GetNode()->Start());
+        relation->Result(false);
+    }
+
+    if (varianceFlag == VarianceFlag::CONTRAVARIANT && !declNode_->IsIn()) {
+        relation->GetChecker()->LogTypeError(
+            {"Type Parameter '", declNode_->Name()->Name(), "' is declared as 'out' but occurs in 'in' position."},
+            relation->GetNode()->Start());
+        relation->Result(false);
+    }
+}
+
 Type *ETSTypeParameter::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
                                     [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {

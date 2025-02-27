@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -88,6 +88,7 @@ public:
     Type *Substitute(TypeRelation *relation, const Substitution *substitution) override;
     void Cast(TypeRelation *relation, Type *target) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
+    void CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag) override;
 
 private:
     ArenaVector<Type *> const typeList_;

@@ -1115,6 +1115,7 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
     CheckConstFields(classType);
     CheckGetterSetterProperties(classType);
     CheckInvokeMethodsLegitimacy(classType);
+    CheckTypeParameterVariance(classDef);
 }
 
 void ETSChecker::CheckClassElement(ir::ClassDefinition *classDef)

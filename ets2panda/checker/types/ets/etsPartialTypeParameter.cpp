@@ -104,4 +104,11 @@ void ETSPartialTypeParameter::ToDebugInfoType(std::stringstream &ss) const
 {
     checker_->CreatePartialType(GetUnderlying()->GetConstraintType())->ToDebugInfoType(ss);
 }
+
+void ETSPartialTypeParameter::CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag)
+{
+    relation->CheckVarianceRecursively(GetUnderlying(),
+                                       relation->TransferVariant(varianceFlag, VarianceFlag::COVARIANT));
+}
+
 }  // namespace ark::es2panda::checker

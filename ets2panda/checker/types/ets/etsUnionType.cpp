@@ -352,6 +352,13 @@ void ETSUnionType::IsSubtypeOf(TypeRelation *relation, Type *target)
     }
 }
 
+void ETSUnionType::CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag)
+{
+    for (auto const &ctype : ConstituentTypes()) {
+        relation->CheckVarianceRecursively(ctype, relation->TransferVariant(varianceFlag, VarianceFlag::COVARIANT));
+    }
+}
+
 bool ETSUnionType::IsAssignableType(checker::Type *sourceType) const noexcept
 {
     if (sourceType->IsETSTypeParameter() || sourceType->IsTypeError()) {
