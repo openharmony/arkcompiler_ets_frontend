@@ -53,7 +53,7 @@ Bitops3BitBitsInByte.sts
 BitopsBitsInByte.sts
 BitopsBitwiseAnd.sts
 BitopsNSieveBits.sts
-Boxing.sts
+boxing_2.sts
 CallThisGetter.sts
 CastFromTypeParameter.sts
 CastReference.sts
@@ -186,7 +186,7 @@ assignment_lowering.sts
 async-func-overload-and-type-infer.sts
 async_optional.sts
 async_scope_fix.sts
-boxing.sts
+boxing_1.sts
 boxingUnboxingCalls.sts
 call_static_with_type_alias.sts
 castUnion.sts
