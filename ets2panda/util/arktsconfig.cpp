@@ -358,11 +358,11 @@ bool ArkTsConfig::ParseCompilerOptions(std::string &arktsConfigDir, std::unorder
 
     // Parse "entry"
     if (compilerOptions->get()->HasKey(ENTRY)) {
-        entry_ = MakeAbsolute(ValueOrEmptyString(compilerOptions, ENTRY), baseUrl_);
+        entry_ = MakeAbsolute(ValueOrEmptyString(compilerOptions, ENTRY), rootDir_);
     }
 
     // Parse "dependencies"
-    auto concatPath = [this](const auto &val) { return MakeAbsolute(val, baseUrl_); };
+    auto concatPath = [this](const auto &val) { return MakeAbsolute(val, rootDir_); };
     std::vector<std::string> dependencyPaths;
     if (compilerOptions->get()->HasKey(DEPENDENCIES)) {
         ParseCollection(compilerOptions->get(), dependencyPaths, DEPENDENCIES, concatPath);
