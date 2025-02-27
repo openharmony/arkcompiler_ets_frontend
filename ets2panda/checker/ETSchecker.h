@@ -70,6 +70,7 @@ using FunctionalInterfaceMap = ArenaUnorderedMap<util::StringView, ETSObjectType
 using TypeMapping = ArenaUnorderedMap<Type const *, Type *>;
 using DynamicCallNamesMap = ArenaMap<const ArenaVector<util::StringView>, uint32_t>;
 using ConstraintCheckRecord = std::tuple<const ArenaVector<Type *> *, const Substitution *, lexer::SourcePosition>;
+using DiagnosticInfo = std::pair<std::optional<diagnostic::DiagnosticKind>, util::DiagnosticMessageParams>;
 
 class ETSChecker final : public Checker {
 public:
@@ -481,7 +482,8 @@ public:
     bool CheckThrowMarkers(Signature *source, Signature *target);
     bool NeedToVerifySignatureVisibility(Signature *signature, const lexer::SourcePosition &pos);
     void ValidateSignatureAccessibility(ETSObjectType *callee, const ir::CallExpression *callExpr, Signature *signature,
-                                        const lexer::SourcePosition &pos, char const *errorMessage = nullptr);
+                                        const lexer::SourcePosition &pos,
+                                        const DiagnosticInfo &errorInfo = {std::nullopt, {}});
     void CheckCapturedVariables();
     void CheckCapturedVariableInSubnodes(ir::AstNode *node, varbinder::Variable *var);
     void CheckCapturedVariable(ir::AstNode *node, varbinder::Variable *var);

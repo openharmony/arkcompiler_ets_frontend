@@ -82,7 +82,7 @@ private:
         bool acceptVoid =
             parent->IsExpressionStatement() || parent->IsReturnStatement() || parent->IsETSLaunchExpression();
         if (!acceptVoid) {
-            checker->LogTypeError("Cannot use type 'void' as value. ", expr->Start());
+            checker->LogError(diagnostic::VOID_VALUE, {}, expr->Start());
         }
     }
 };

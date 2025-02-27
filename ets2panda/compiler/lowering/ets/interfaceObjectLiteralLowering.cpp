@@ -133,7 +133,7 @@ static void FillClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode *> *
         auto *ifaceMethod = it->AsMethodDefinition();
 
         if (!ifaceMethod->Function()->IsGetter() && !ifaceMethod->Function()->IsSetter()) {
-            checker->LogTypeError("Interface has methods", objExpr->Start());
+            checker->LogError(diagnostic::INTERFACE_WITH_METHOD, {}, objExpr->Start());
             objExpr->SetTsType(checker->GlobalTypeError());
             return;
         }
@@ -264,8 +264,8 @@ static checker::Type *GenerateAnonClassTypeFromAbstractClass(public_lib::Context
 
         for (auto *it : abstractClassNode->Body()) {
             if (it->IsMethodDefinition() && it->AsMethodDefinition()->IsAbstract()) {
-                checker->LogTypeError({"Abstract class has abstract method ", it->AsMethodDefinition()->Id()->Name()},
-                                      objExpr->Start());
+                checker->LogError(diagnostic::ABSTRACT_METH_IN_ABSTRACT_CLASS, {it->AsMethodDefinition()->Id()->Name()},
+                                  objExpr->Start());
             }
         }
     };

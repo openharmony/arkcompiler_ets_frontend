@@ -178,7 +178,7 @@ void AliveAnalyzer::AnalyzeDef(const ir::AstNode *node)
 {
     AnalyzeStat(node);
     if (node != nullptr && node->IsClassStaticBlock() && status_ == LivenessStatus::DEAD) {
-        checker_->LogTypeError("Initializer must be able to complete normally.", node->Start());
+        checker_->LogError(diagnostic::INIT_DOESNT_COMPLETE, {}, node->Start());
     }
 }
 
@@ -189,7 +189,7 @@ void AliveAnalyzer::AnalyzeStat(const ir::AstNode *node)
     }
 
     if (status_ == LivenessStatus::DEAD) {
-        checker_->LogTypeError("Unreachable statement.", node->Start());
+        checker_->LogError(diagnostic::UNREACHABLE_STMT, {}, node->Start());
         return;
     }
 
@@ -253,12 +253,12 @@ void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
 
     if (status_ == LivenessStatus::ALIVE && !isVoid && !isPromiseVoid && !checker_->IsAsyncImplMethod(methodDef)) {
         if (!methodDef->Function()->HasReturnStatement()) {
-            checker_->LogTypeError("Function with a non void return type must return a value.", func->Start());
+            checker_->LogError(diagnostic::MISSING_RETURN_STMT, {}, func->Start());
             ClearPendingExits();
             return;
         }
 
-        checker_->LogTypeError("Not all code paths return a value.", func->Start());
+        checker_->LogError(diagnostic::NONRETURNING_PATHS, {}, func->Start());
     }
 
     ClearPendingExits();

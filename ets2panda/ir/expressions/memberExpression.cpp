@@ -232,7 +232,7 @@ checker::Type *MemberExpression::TraverseUnionMember(checker::ETSChecker *checke
 {
     auto const addPropType = [this, checker, &commonPropType](checker::Type *memberType) {
         if (commonPropType != nullptr && commonPropType != memberType) {
-            checker->LogTypeError("Member type must be the same for all union objects.", Start());
+            checker->LogError(diagnostic::MEMBER_TYPE_MISMATCH_ACROSS_UNION, {}, Start());
         } else {
             commonPropType = memberType;
         }
@@ -243,7 +243,7 @@ checker::Type *MemberExpression::TraverseUnionMember(checker::ETSChecker *checke
             SetObjectType(apparent->AsETSObjectType());
             addPropType(ResolveObjectMember(checker).first);
         } else {
-            checker->LogTypeError({"Type ", unionType, " is illegal in union member expression."}, Start());
+            checker->LogError(diagnostic::UNION_MEMBER_ILLEGAL_TYPE, {unionType}, Start());
         }
     }
     return commonPropType;
@@ -287,7 +287,7 @@ checker::Type *MemberExpression::GetExtensionAccessorReturnType(checker::ETSChec
     auto *signature = checker->ResolveCallExpressionAndTrailingLambda(TsType()->AsETSFunctionType()->CallSignatures(),
                                                                       dummyCallExpr, Start());
     if (signature == nullptr) {
-        checker->LogTypeError("Can't find the extension accessor.", Start());
+        checker->LogError(diagnostic::MISSING_EXTENSION_ACCESSOR, {}, Start());
         return checker->GlobalVoidType();
     }
 
@@ -333,7 +333,7 @@ bool MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
     if (number.IsInteger()) {
         auto const value = number.GetLong();
         if (value < 0) {
-            checker->LogTypeError("Index value cannot be less than zero.", property_->Start());
+            checker->LogError(diagnostic::NEGATIVE_INDEX, {}, property_->Start());
             return false;
         }
         index = static_cast<std::size_t>(value);
@@ -341,7 +341,7 @@ bool MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
         double value = number.GetDouble();
         double fraction = std::modf(value, &value);
         if (value < 0.0 || fraction >= std::numeric_limits<double>::epsilon()) {
-            checker->LogTypeError("Index value cannot be less than zero or fractional.", property_->Start());
+            checker->LogError(diagnostic::INDEX_NEGATIVE_OR_FRACTIONAL, {}, property_->Start());
             return false;
         }
         index = static_cast<std::size_t>(value);
@@ -350,7 +350,7 @@ bool MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
     }
 
     if (object_->IsArrayExpression() && object_->AsArrayExpression()->Elements().size() <= index) {
-        checker->LogTypeError("Index value cannot be greater than or equal to the array size.", property_->Start());
+        checker->LogError(diagnostic::INDEX_OOB, {}, property_->Start());
         return false;
     }
 
@@ -373,7 +373,7 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
 
     auto *const method = objType_->GetProperty(methodName, searchFlag);
     if (method == nullptr || !method->HasFlag(varbinder::VariableFlags::METHOD)) {
-        checker->LogTypeError("Object type doesn't have proper index access method.", Start());
+        checker->LogError(diagnostic::NO_INDEX_ACCESS_METHOD, {}, Start());
         return nullptr;
     }
 
@@ -392,11 +392,11 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
     checker::Signature *signature = checker->ValidateSignatures(signatures, nullptr, arguments, Start(), "indexing",
                                                                 checker::TypeRelationFlag::NO_THROW);
     if (signature == nullptr) {
-        checker->LogTypeError("Cannot find index access method with the required signature.", Property()->Start());
+        checker->LogError(diagnostic::MISSING_INDEX_ACCESSOR_WITH_SIG, {}, Property()->Start());
         return nullptr;
     }
     checker->ValidateSignatureAccessibility(objType_, nullptr, signature, Start(),
-                                            "Index access method is not visible here.");
+                                            {diagnostic::INVISIBLE_INDEX_ACCESSOR, {}});
 
     ES2PANDA_ASSERT(signature->Function() != nullptr);
 
@@ -484,7 +484,7 @@ checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, che
             return checker->GlobalBuiltinETSStringType();
         }
     }
-    checker->LogTypeError("Indexed access is not supported for such expression type.", Object()->Start());
+    checker->LogError(diagnostic::INDEX_ON_INVALID_TYPE, {}, Object()->Start());
     return nullptr;
 }
 

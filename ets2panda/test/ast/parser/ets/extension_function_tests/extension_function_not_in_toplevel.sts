@@ -34,6 +34,6 @@ function main() {
 /* @@? 20:20 Error SyntaxError: Expected '{', got 'this'. */
 /* @@? 20:20 Error TypeError: Cannot reference 'this' in this context. */
 /* @@? 20:24 Error SyntaxError: Unexpected token ':'. */
-/* @@? 20:26 Error TypeError: Class name "Fruit" used in the wrong context */
 /* @@? 20:31 Error SyntaxError: Unexpected token ')'. */
+/* @@? 20:26 Error TypeError: Class name 'Fruit' used in the wrong context */
 /* @@? 27:11 Error TypeError: Property 'price' does not exist on type 'Fruit' */

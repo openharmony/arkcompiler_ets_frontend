@@ -44,9 +44,8 @@ void CheckExtensionIsShadowedInCurrentClassOrInterface(checker::ETSChecker *chec
     // check if there are class and interfaces' instance fields with the same name as extensions.
     auto *const fieldVariable = objType->GetOwnProperty<checker::PropertyType::INSTANCE_FIELD>(methodName);
     if (fieldVariable != nullptr) {
-        checker->LogTypeError({"The extension accessor or extension function '", methodName,
-                               "' has the same name with field of class ", objType->Name()},
-                              extensionFunc->Body()->Start());
+        checker->LogError(diagnostic::EXTENSION_NAME_CONFLICT_WITH_FIELD, {methodName, objType->Name()},
+                          extensionFunc->Body()->Start());
         return;
     }
 
@@ -65,13 +64,11 @@ void CheckExtensionIsShadowedInCurrentClassOrInterface(checker::ETSChecker *chec
         }
 
         if (signature->Function()->IsGetter() || signature->Function()->IsSetter()) {
-            checker->LogTypeError({"The extension accessor '", funcType->Name(),
-                                   "' has the same name with method in class ", objType->Name()},
-                                  extensionFunc->Body()->Start());
+            checker->LogError(diagnostic::EXTENSION_NAME_CONFLICT_WITH_METHOD, {funcType->Name(), objType->Name()},
+                              extensionFunc->Body()->Start());
         } else if (funcSignature->HasSignatureFlag(SignatureFlags::PUBLIC)) {
-            checker->LogTypeError({"The extension function '", funcType->Name(),
-                                   "' has the same name with public method in class ", objType->Name()},
-                                  extensionFunc->Body()->Start());
+            checker->LogError(diagnostic::EXTENSION_FUNC_NAME_CONFLICT_WITH_METH, {funcType->Name(), objType->Name()},
+                              extensionFunc->Body()->Start());
         } else {
             checker->ReportWarning({"The extension function '", funcType->Name(),
                                     "' has the same name with non-public method in class ", objType->Name()},
@@ -170,7 +167,7 @@ void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *exte
                                              originalExtensionSignature);
         }
     } else {
-        checker->LogTypeError("Extension function can only defined for class, interface or array.", node->Start());
+        checker->LogError(diagnostic::EXTENSION_FUNC_ON_INEXETENSIBLE, {}, node->Start());
     }
 }
 
@@ -178,14 +175,14 @@ static void CheckMethodBodyForNativeAbstractDeclare(ETSChecker *checker, ir::Met
                                                     ir::ScriptFunction *scriptFunc)
 {
     if ((node->IsNative() && !node->IsConstructor()) || node->IsAbstract() || node->IsDeclare()) {
-        checker->LogTypeError("Native, Abstract and Declare methods cannot have body.", scriptFunc->Body()->Start());
+        checker->LogError(diagnostic::UNEXPECTED_FUNC_BODY, {}, scriptFunc->Body()->Start());
     }
 }
 
 static void CheckNativeConstructorBody(ETSChecker *checker, ir::MethodDefinition *node, ir::ScriptFunction *scriptFunc)
 {
     if (node->IsNative() && node->IsConstructor()) {
-        checker->LogTypeError("Native constructor declaration cannot have a body.", scriptFunc->Body()->Start());
+        checker->LogError(diagnostic::NATIVE_WITH_BODY, {}, scriptFunc->Body()->Start());
     }
 }
 
@@ -284,11 +281,11 @@ void CheckPredefinedMethodReturnType(ETSChecker *checker, ir::ScriptFunction *sc
     auto const &position = scriptFunc->Start();
 
     if (scriptFunc->IsSetter() && (scriptFunc->Signature()->ReturnType() != checker->GlobalVoidType())) {
-        checker->LogTypeError("Setter must have void return type", position);
+        checker->LogError(diagnostic::SETTER_NONVOID, {}, position);
     }
 
     if (scriptFunc->IsGetter() && (scriptFunc->Signature()->ReturnType() == checker->GlobalVoidType())) {
-        checker->LogTypeError("Getter must return a value", position);
+        checker->LogError(diagnostic::GETTER_VOID, {}, position);
     }
 
     auto const name = scriptFunc->Id()->Name();
@@ -296,11 +293,11 @@ void CheckPredefinedMethodReturnType(ETSChecker *checker, ir::ScriptFunction *sc
 
     if (name.Is(compiler::Signatures::GET_INDEX_METHOD)) {
         if (scriptFunc->Signature()->ReturnType() == checker->GlobalVoidType()) {
-            checker->LogTypeError(methodName + "' shouldn't have void return type.", position);
+            checker->LogError(diagnostic::UNEXPECTED_VOID, {util::StringView(methodName)}, position);
         }
     } else if (name.Is(compiler::Signatures::SET_INDEX_METHOD)) {
         if (scriptFunc->Signature()->ReturnType() != checker->GlobalVoidType()) {
-            checker->LogTypeError(methodName + "' should have void return type.", position);
+            checker->LogError(diagnostic::UNEXPECTED_NONVOID, {util::StringView(methodName)}, position);
         }
     } else if (name.Is(compiler::Signatures::ITERATOR_METHOD)) {
         CheckIteratorMethodReturnType(checker, scriptFunc, position, methodName);
@@ -331,7 +328,7 @@ void CheckIteratorMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scri
     const auto *returnType = scriptFunc->Signature()->ReturnType();
 
     if (returnType == nullptr) {
-        checker->LogTypeError(methodName + "' doesn't have return type.", position);
+        checker->LogError(diagnostic::MISSING_RETURN_TYPE_2, {util::StringView(methodName)}, position);
         return;
     }
 
@@ -350,9 +347,7 @@ void CheckIteratorMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scri
         }
     }
 
-    checker->LogTypeError(
-        {"The return type of '", scriptFunc->Id()->Name(), "' must be a type that implements Iterator interface."},
-        position);
+    checker->LogError(diagnostic::RETURN_ISNT_ITERATOR, {scriptFunc->Id()->Name()}, position);
 }
 
 static void SwitchMethodCallToFunctionCall(checker::ETSChecker *checker, ir::CallExpression *expr, Signature *signature)
@@ -392,9 +387,9 @@ checker::Signature *ResolveCallExtensionFunction(checker::Type *functionType, ch
             return nullptr;
         }
         if (!signature->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION)) {
-            checker->LogTypeError({"Property '", memberExpr->Property()->AsIdentifier()->Name(),
-                                   "' does not exist on type '", memberExpr->ObjType()->Name(), "'"},
-                                  memberExpr->Property()->Start());
+            checker->LogError(diagnostic::PROPERTY_NONEXISTENT,
+                              {memberExpr->Property()->AsIdentifier()->Name(), memberExpr->ObjType()->Name()},
+                              memberExpr->Property()->Start());
             return nullptr;
         }
 
@@ -551,8 +546,7 @@ void ProcessExclamationMark(ETSChecker *checker, ir::UnaryExpression *expr, chec
     }
 
     if (operandType == nullptr || !operandType->IsConditionalExprType()) {
-        checker->LogTypeError("Bad operand type, the type of the operand must be boolean type.",
-                              expr->Argument()->Start());
+        checker->LogError(diagnostic::ASSERT_NOT_LOGICAL, {}, expr->Argument()->Start());
         expr->SetTsType(checker->GlobalTypeError());
         return;
     }
@@ -574,8 +568,7 @@ void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr,
         case lexer::TokenType::PUNCTUATOR_MINUS:
         case lexer::TokenType::PUNCTUATOR_PLUS: {
             if (operandType == nullptr || !operandType->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
-                checker->LogTypeError("Bad operand type, the type of the operand must be numeric type.",
-                                      expr->Argument()->Start());
+                checker->LogError(diagnostic::OPERAND_NOT_NUMERIC, {}, expr->Argument()->Start());
                 expr->SetTsType(checker->GlobalTypeError());
                 break;
             }
@@ -591,8 +584,7 @@ void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr,
         }
         case lexer::TokenType::PUNCTUATOR_TILDE: {
             if (operandType == nullptr || !operandType->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
-                checker->LogTypeError("Bad operand type, the type of the operand must be numeric type.",
-                                      expr->Argument()->Start());
+                checker->LogError(diagnostic::OPERAND_NOT_NUMERIC, {}, expr->Argument()->Start());
                 expr->SetTsType(checker->GlobalTypeError());
                 break;
             }
@@ -615,12 +607,6 @@ void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr,
         }
     }
 }
-
-// NOLINTBEGIN(modernize-avoid-c-arrays)
-static constexpr char const INVALID_CONST_ASSIGNMENT[] = "Cannot assign a value to a constant variable ";
-static constexpr char const INVALID_READONLY_ASSIGNMENT[] = "Cannot assign a value to a readonly variable ";
-static constexpr char const ITERATOR_TYPE_ABSENT[] = "Cannot obtain iterator type in 'for-of' statement.";
-// NOLINTEND(modernize-avoid-c-arrays)
 
 checker::Type *GetIteratorType(ETSChecker *checker, checker::Type *elemType, ir::AstNode *left)
 {
@@ -645,9 +631,11 @@ checker::Type *GetIteratorType(ETSChecker *checker, checker::Type *elemType, ir:
         if (auto *const variable = left->AsIdentifier()->Variable(); variable != nullptr) {
             auto *decl = variable->Declaration();
             if (decl->IsConstDecl() || decl->IsReadonlyDecl()) {
-                std::string_view errorMsg =
-                    decl->IsConstDecl() ? INVALID_CONST_ASSIGNMENT : INVALID_READONLY_ASSIGNMENT;
-                checker->LogTypeError({errorMsg, variable->Name()}, decl->Node()->Start());
+                const auto errorMsg = decl->IsConstDecl() ? diagnostic::INVALID_CONST_ASSIGNMENT
+                                                          : diagnostic::INVALID_READONLY_ASSIGNMENT;
+                // NOTE(pronaip): see memory corruption issue in 23053, replace with LogError once resolved
+                checker->LogTypeError({errorMsg.Message().substr(0, errorMsg.Message().size() - 2), variable->Name()},
+                                      decl->Node()->Start());
             }
         }
         iterType = left->AsIdentifier()->TsType();
@@ -658,7 +646,7 @@ checker::Type *GetIteratorType(ETSChecker *checker, checker::Type *elemType, ir:
     }
 
     if (iterType == nullptr) {
-        checker->LogTypeError(ITERATOR_TYPE_ABSENT, left->Start());
+        checker->LogError(diagnostic::ITERATOR_TYPE_ABSENT, {}, left->Start());
         return checker->GlobalTypeError();
     }
     return iterType;
@@ -669,7 +657,7 @@ bool CheckArgumentVoidType(checker::Type *&funcReturnType, ETSChecker *checker, 
 {
     if (name.find(compiler::Signatures::ETS_MAIN_WITH_MANGLE_BEGIN) != std::string::npos) {
         if (!funcReturnType->IsETSVoidType() && !funcReturnType->IsIntType()) {
-            checker->LogTypeError("Bad return type, main enable only void or int type.", st->Start());
+            checker->LogError(diagnostic::MAIN_BAD_RETURN, {}, st->Start());
         }
     }
     return true;
@@ -680,8 +668,7 @@ bool CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker
 {
     if (funcReturnType->IsETSVoidType() || funcReturnType == checker->GlobalVoidType()) {
         if (argumentType != checker->GlobalVoidType()) {
-            checker->LogTypeError("Unexpected return value, enclosing method return type is void.",
-                                  stArgument->Start());
+            checker->LogError(diagnostic::UNEXPECTED_VALUE_RETURN, {}, stArgument->Start());
             return false;
         }
         if (!checker::AssignmentContext(checker->Relation(), stArgument, argumentType, funcReturnType,
@@ -689,8 +676,7 @@ bool CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker
                                         checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
                  // CC-OFFNXT(G.FMT.02) project code style
                  .IsAssignable()) {
-            checker->LogTypeError("Return statement type is not compatible with the enclosing method's return type.",
-                                  stArgument->Start());
+            checker->LogError(diagnostic::RETURN_TYPE_MISMATCH, {}, stArgument->Start());
             return false;
         }
         return true;
@@ -710,9 +696,7 @@ bool CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker
                                     {}, checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
              // CC-OFFNXT(G.FMT.02) project code style
              .IsAssignable()) {
-        checker->LogTypeError({"Type '", argumentType, "' is not compatible with the enclosing method's return type '",
-                               funcReturnType, "'"},
-                              stArgument->Start());
+        checker->LogError(diagnostic::ARROW_TYPE_MISMATCH, {argumentType, funcReturnType}, stArgument->Start());
         return false;
     }
     return true;
@@ -746,10 +730,7 @@ void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, ch
                                         checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
                  // CC-OFFNXT(G.FMT.02) project code style
                  .IsAssignable()) {
-            checker->LogTypeError({"Type '", argumentType,
-                                   "' is not compatible with the enclosing method's return type '", funcReturnType,
-                                   "'"},
-                                  stArgument->Start());
+            checker->LogError(diagnostic::ARROW_TYPE_MISMATCH, {argumentType, funcReturnType}, stArgument->Start());
             funcReturnType = checker->GlobalTypeError();
             return;
         }
@@ -773,8 +754,7 @@ void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containing
     if (stArgument == nullptr) {
         // previous return statement(s) have value
         if (!funcReturnType->IsETSVoidType() && funcReturnType != checker->GlobalVoidType()) {
-            checker->LogTypeError("All return statements in the function should be empty or have a value.",
-                                  st->Start());
+            checker->LogError(diagnostic::MIXED_VOID_NONVOID, {}, st->Start());
             return;
         }
     } else {
@@ -790,8 +770,7 @@ void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containing
 
         //  previous return statement(s) don't have any value
         if (funcReturnType->IsETSVoidType() && !argumentType->IsETSVoidType()) {
-            checker->LogTypeError("All return statements in the function should be empty or have a value.",
-                                  stArgument->Start());
+            checker->LogError(diagnostic::MIXED_VOID_NONVOID, {}, stArgument->Start());
             return;
         }
 

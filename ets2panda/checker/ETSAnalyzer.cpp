@@ -110,7 +110,7 @@ checker::Type *ETSAnalyzer::Check(ir::ClassStaticBlock *st) const
     ETSChecker *checker = GetETSChecker();
 
     if (checker->HasStatus(checker::CheckerStatus::INNER_CLASS)) {
-        checker->LogTypeError("Static initializer is not allowed in inner class.", st->Start());
+        checker->LogError(diagnostic::STATIC_INIT_IN_NESTED_CLASS, {}, st->Start());
         st->SetTsType(checker->GlobalTypeError());
         return st->TsType();
     }
@@ -137,7 +137,7 @@ static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinitio
     auto *scriptFunc = node->Function();
     if (node->IsNative() && !node->IsConstructor()) {
         if (scriptFunc->ReturnTypeAnnotation() == nullptr) {
-            checker->LogTypeError("'Native' method should have explicit return type", scriptFunc->Start());
+            checker->LogError(diagnostic::NATIVE_WITHOUT_RETURN, {}, scriptFunc->Start());
             node->SetTsType(checker->GlobalTypeError());
         }
         if (scriptFunc->IsGetter() || scriptFunc->IsSetter()) {
@@ -199,7 +199,7 @@ checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
     };
 
     if (scriptFunc == nullptr) {
-        checker->LogTypeError("Invalid function expression", node->Start());
+        checker->LogError(diagnostic::FUNC_EXPR_INVALID, {}, node->Start());
         return returnErrorType();
     }
     checker->CheckAnnotations(scriptFunc->Annotations());
@@ -219,13 +219,13 @@ checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
     // NOTE: aszilagyi. make it correctly check for open function not have body
     if (!scriptFunc->HasBody() && !(node->IsAbstract() || node->IsNative() || node->IsDeclare() ||
                                     checker->HasStatus(checker::CheckerStatus::IN_INTERFACE))) {
-        checker->LogTypeError("Only abstract or native methods can't have body.", scriptFunc->Start());
+        checker->LogError(diagnostic::FUNCTION_WITHOUT_BODY, {}, scriptFunc->Start());
         return returnErrorType();
     }
 
     if (scriptFunc->ReturnTypeAnnotation() == nullptr &&
         ((node->IsNative() || node->IsDeclare()) && !node->IsConstructor())) {
-        checker->LogTypeError("Native and Declare methods should have explicit return type.", scriptFunc->Start());
+        checker->LogError(diagnostic::MISSING_RETURN_TYPE, {}, scriptFunc->Start());
         return returnErrorType();
     }
 
@@ -251,16 +251,13 @@ void ETSAnalyzer::CheckMethodModifiers(ir::MethodDefinition *node) const
                                     ir::ModifierFlags::OVERRIDE | ir::ModifierFlags::FINAL | ir::ModifierFlags::STATIC;
 
     if (node->IsAbstract() && (node->flags_ & notValidInAbstract) != 0U) {
-        checker->LogTypeError(
-            "Invalid method modifier(s): an abstract method can't have private, override, static, final or native "
-            "modifier.",
-            node->Start());
+        checker->LogError(diagnostic::ABSTRACT_METHOD_INVALID_MODIFIER, {}, node->Start());
         node->SetTsType(checker->GlobalTypeError());
         return;
     }
 
     if (node->Function() == nullptr) {
-        checker->LogTypeError("Invalid function expression", node->Start());
+        checker->LogError(diagnostic::FUNC_EXPR_INVALID, {}, node->Start());
         node->SetTsType(checker->GlobalTypeError());
         return;
     }
@@ -268,24 +265,21 @@ void ETSAnalyzer::CheckMethodModifiers(ir::MethodDefinition *node) const
     if ((node->IsAbstract() || (!node->Function()->HasBody() && !node->IsNative() && !node->IsDeclare())) &&
         !(checker->HasStatus(checker::CheckerStatus::IN_ABSTRACT) ||
           checker->HasStatus(checker::CheckerStatus::IN_INTERFACE))) {
-        checker->LogTypeError("Non abstract class has abstract method.", node->Start());
+        checker->LogError(diagnostic::ABSTRACT_IN_CONCRETE, {}, node->Start());
         node->SetTsType(checker->GlobalTypeError());
     }
 
     auto const notValidInFinal = ir::ModifierFlags::ABSTRACT | ir::ModifierFlags::STATIC;
 
     if (node->IsFinal() && (node->flags_ & notValidInFinal) != 0U) {
-        checker->LogTypeError("Invalid method modifier(s): a final method can't have abstract or static modifier.",
-                              node->Start());
+        checker->LogError(diagnostic::FINAL_METHOD_INVALID_MODIFIER, {}, node->Start());
         node->SetTsType(checker->GlobalTypeError());
     }
 
     auto const notValidInStatic = ir::ModifierFlags::ABSTRACT | ir::ModifierFlags::FINAL | ir::ModifierFlags::OVERRIDE;
 
     if (node->IsStatic() && (node->flags_ & notValidInStatic) != 0U) {
-        checker->LogTypeError(
-            "Invalid method modifier(s): a static method can't have abstract, final or override modifier.",
-            node->Start());
+        checker->LogError(diagnostic::STATIC_METHOD_INVALID_MODIFIER, {}, node->Start());
         node->SetTsType(checker->GlobalTypeError());
     }
 }
@@ -304,9 +298,7 @@ checker::Type *ETSAnalyzer::Check(ir::SpreadElement *expr) const
     if (!exprType->IsETSArrayType()) {
         if (!exprType->IsTypeError()) {
             // Don't duplicate error messages for the same error
-            checker->LogTypeError(
-                {"Spread expression can be applied only to array or tuple type, but '", exprType, "' is provided"},
-                expr->Start());
+            checker->LogError(diagnostic::SPREAD_OF_INVALID_TYPE, {exprType}, expr->Start());
         }
         return expr->SetTsType(checker->GlobalTypeError());
     }
@@ -327,13 +319,13 @@ checker::Type *ETSAnalyzer::Check(ir::ETSClassLiteral *expr) const
     ETSChecker *checker = GetETSChecker();
     auto *const literal = expr->Expr();
 
-    checker->LogTypeError("Class literal is not yet supported.", literal->Start());
+    checker->LogError(diagnostic::UNSUPPORTED_CLASS_LITERAL, {}, literal->Start());
     expr->SetTsType(checker->GlobalTypeError());
     return expr->TsType();
 
     auto exprType = literal->Check(checker);
     if (exprType->IsETSVoidType()) {
-        checker->LogTypeError("Invalid .class reference", literal->Start());
+        checker->LogError(diagnostic::INVALID_DOT_CLASS, {}, literal->Start());
         expr->SetTsType(checker->GlobalTypeError());
         return expr->TsType();
     }
@@ -447,14 +439,13 @@ void ETSAnalyzer::CheckInstantatedClass(ir::ETSNewClassInstanceExpression *expr,
 {
     ETSChecker *checker = GetETSChecker();
     if (calleeObj->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT)) {
-        checker->LogTypeError({calleeObj->Name(), " is abstract therefore cannot be instantiated."}, expr->Start());
+        checker->LogError(diagnostic::ABSTRACT_INSTANTIATION, {calleeObj->Name()}, expr->Start());
         expr->SetTsType(checker->GlobalTypeError());
     }
 
     if (calleeObj->HasObjectFlag(ETSObjectFlags::REQUIRED) &&
         !expr->HasAstNodeFlags(ir::AstNodeFlags::ALLOW_REQUIRED_INSTANTIATION)) {
-        checker->LogTypeError("Required type can be instantiated only with object literal",
-                              expr->GetTypeRef()->Start());
+        checker->LogError(diagnostic::NONLITERAL_INSTANTIATION, {}, expr->GetTypeRef()->Start());
         expr->SetTsType(checker->GlobalTypeError());
     }
 }
@@ -643,9 +634,8 @@ static bool CheckArrayElement(ETSChecker *checker, checker::Type *elementType,
               .IsAssignable() &&
          !(targetElementType[0]->IsETSArrayType() && currentElement->IsArrayExpression()))) {
         if (targetElementType[1] == nullptr) {
-            checker->LogTypeError({"Array element type '", elementType, "' is not assignable to explicit type '",
-                                   targetElementType[0], "'"},
-                                  currentElement->Start());
+            checker->LogError(diagnostic::ARRAY_ELEMENT_UNASSIGNABLE, {elementType, targetElementType[0]},
+                              currentElement->Start());
             return false;
         }
 
@@ -657,9 +647,8 @@ static bool CheckArrayElement(ETSChecker *checker, checker::Type *elementType,
                                         TypeRelationFlag::NO_THROW)
                  // CC-OFFNXT(G.FMT.02) project code style
                  .IsAssignable()) {
-            checker->LogTypeError({"Array element type '", elementType, "' is not assignable to explicit type '",
-                                   targetElementType[1], "'"},
-                                  currentElement->Start());
+            checker->LogError(diagnostic::ARRAY_ELEMENT_UNASSIGNABLE, {elementType, targetElementType[1]},
+                              currentElement->Start());
             return false;
         }
         isSecondaryChosen = true;
@@ -679,7 +668,7 @@ static bool AddSpreadElementTypes(ETSChecker *checker, ir::Expression *const ele
         return true;
     }
     if (!argumentType->IsETSTupleType() && isPreferredTuple) {
-        checker->LogTypeError({"'", argumentType, "' cannot be spread in tuple."}, element->Start());
+        checker->LogError(diagnostic::INVALID_SPREAD_IN_TUPLE, {argumentType}, element->Start());
         elementTypes.push_back({elementType, element});
         return false;
     }
@@ -739,18 +728,15 @@ static bool CheckElement(ir::ArrayExpression *expr, ETSChecker *checker, std::ve
 
             auto *compareType = tupleType->GetTypeAtIndex(idx);
             if (compareType == nullptr) {
-                util::DiagnosticMessageParams params {"Too many elements in array initializer for tuple with size of ",
-                                                      static_cast<size_t>(tupleType->GetTupleSize())};
-                checker->LogTypeError(params, currentElement->Start());
+                checker->LogError(diagnostic::TUPLE_SIZE_MISMATCH, {static_cast<size_t>(tupleType->GetTupleSize())},
+                                  currentElement->Start());
                 checkResult = false;
                 continue;
             }
-            auto ctx = AssignmentContext(checker->Relation(), currentElement, elementType, compareType,
-                                         currentElement->Start(), {}, TypeRelationFlag::NO_THROW);
+            const auto ctx = AssignmentContext(checker->Relation(), currentElement, elementType, compareType,
+                                               currentElement->Start(), {}, TypeRelationFlag::NO_THROW);
             if (!ctx.IsAssignable()) {
-                util::DiagnosticMessageParams params {
-                    "Array initializer's type is not assignable to tuple type at index: ", idx};
-                checker->LogTypeError(params, currentElement->Start());
+                checker->LogError(diagnostic::TUPLE_UNASSIGNABLE_ARRAY, {idx}, currentElement->Start());
                 checkResult = false;
                 continue;
             }
@@ -807,8 +793,7 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
 
     if (expr->preferredType_ != nullptr && !expr->preferredType_->IsETSArrayType() &&
         !checker->Relation()->IsSupertypeOf(expr->preferredType_, checker->GlobalETSObjectType())) {
-        checker->LogTypeError({"Expected type for array literal should be an array type, got ", expr->preferredType_},
-                              expr->Start());
+        checker->LogError(diagnostic::UNEXPECTED_ARRAY, {expr->preferredType_}, expr->Start());
         return checker->InvalidateType(expr);
     }
 
@@ -905,7 +890,7 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
         auto *retType = signature->ReturnType();
         if (!retType->IsETSObjectType() ||
             retType->AsETSObjectType()->GetOriginalBaseType() != checker->GlobalBuiltinPromiseType()) {
-            checker->LogTypeError("Return type of async lambda must be 'Promise'", expr->Function()->Start());
+            checker->LogError(diagnostic::ASYNC_DOESNT_PROMISE, {}, expr->Function()->Start());
             expr->SetTsType(checker->GlobalTypeError());
             return expr->TsType();
         }
@@ -920,12 +905,11 @@ static bool IsInvalidArrayMemberAssignment(ir::AssignmentExpression *const expr,
         expr->Left()->AsMemberExpression()->Object()->TsType()->IsETSArrayType()) {
         auto *const leftExpr = expr->Left()->AsMemberExpression();
         if (leftExpr->Property()->IsIdentifier() && leftExpr->Property()->AsIdentifier()->Name().Is("length")) {
-            checker->LogTypeError("Setting the length of an array is not permitted", expr->Left()->Start());
+            checker->LogError(diagnostic::ARRAY_LENGTH_MODIFICATION, {}, expr->Left()->Start());
             return true;
         }
         if (leftExpr->Object()->TsType()->HasTypeFlag(TypeFlag::READONLY)) {
-            checker->LogTypeError("Cannot modify an array or tuple content that has the readonly parameter",
-                                  expr->Left()->Start());
+            checker->LogError(diagnostic::READONLY_ARRAYLIKE_MODIFICATION, {}, expr->Left()->Start());
             return true;
         }
     }
@@ -985,7 +969,7 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
     } else if (expr->Left()->IsMemberExpression()) {
         expr->target_ = expr->Left()->AsMemberExpression()->PropVar();
     } else {
-        checker->LogTypeError("Invalid left-hand side of assignment expression", expr->Left()->Start());
+        checker->LogError(diagnostic::ASSIGNMENT_INVALID_LHS, {}, expr->Left()->Start());
         expr->SetTsType(checker->GlobalTypeError());
         return expr->TsType();
     }
@@ -1199,7 +1183,7 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
                                        signature->HasSignatureFlag(SignatureFlags::GETTER_OR_SETTER));
         if (isSignatureExtensionAccessor && !isReturnTypeLambda &&
             !checker->HasStatus(CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK)) {
-            checker->LogTypeError("Extension accessor can't be used as a method call or function call.", expr->Start());
+            checker->LogError(diagnostic::EXTENSION_ACCESSOR_INVALID_CALL, {}, expr->Start());
             return nullptr;
         }
         // NOTE(xingshunxiang): we can't use extension accessor as a call,
@@ -1286,7 +1270,7 @@ static void CheckAbstractCall(ETSChecker *checker, ir::CallExpression *expr)
         auto obj = expr->Callee()->AsMemberExpression()->Object();
         if (obj != nullptr && obj->IsSuperExpression()) {
             if ((expr->Signature() != nullptr) && (expr->Signature()->HasSignatureFlag(SignatureFlags::ABSTRACT))) {
-                checker->LogTypeError("Cannot call abstract method!", expr->Start());
+                checker->LogError(diagnostic::ABSTRACT_CALL, {}, expr->Start());
                 expr->SetTsType(checker->GlobalTypeError());
             }
         }
@@ -1300,7 +1284,7 @@ static void CheckCallee(ETSChecker *checker, ir::CallExpression *expr)
         expr->Callee()->AsMemberExpression()->Object()->TsType()->IsETSObjectType() &&
         expr->Callee()->AsMemberExpression()->Object()->TsType()->AsETSObjectType()->HasObjectFlag(
             ETSObjectFlags::READONLY)) {
-        checker->LogTypeError("Cannot call readonly type methods.", expr->Start());
+        checker->LogError(diagnostic::READONLY_CALL, {}, expr->Start());
         expr->SetTsType(checker->GlobalTypeError());
     }
 }
@@ -1540,7 +1524,7 @@ std::pair<checker::Type *, util::StringView> SearchReExportsType(ETSObjectType *
 
         if (item->GetProperty(name, PropertySearchFlags::SEARCH_ALL) != nullptr) {
             if (ret.first != nullptr) {
-                checker->LogTypeError({"Ambiguous reference to '", aliasName, "'"}, expr->Start());
+                checker->LogError(diagnostic::AMBIGUOUS_REFERENCE, {aliasName}, expr->Start());
                 expr->SetTsType(checker->GlobalTypeError());
                 return ret;
             }
@@ -1679,7 +1663,7 @@ static bool ValidatePreferredType(ir::ObjectExpression *expr, ETSChecker *checke
 {
     auto preferredType = expr->PreferredType();
     if (preferredType == nullptr) {
-        checker->LogTypeError("need to specify target type for class composite", expr->Start());
+        checker->LogError(diagnostic::CLASS_COMPOSITE_UNKNOWN_TYPE, {}, expr->Start());
         return false;
     }
 
@@ -1689,8 +1673,7 @@ static bool ValidatePreferredType(ir::ObjectExpression *expr, ETSChecker *checke
     }
 
     if (!preferredType->IsETSObjectType()) {
-        checker->LogTypeError(
-            {"Target type for class composite needs to be an object type, found '", preferredType, "'"}, expr->Start());
+        checker->LogError(diagnostic::CKASS_COMPOSITE_INVALID_TARGET, {preferredType}, expr->Start());
         return false;
     }
 
@@ -1780,7 +1763,7 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr, checker
 
     for (ir::Expression *propExpr : expr->Properties()) {
         if (!propExpr->IsProperty()) {
-            checker->LogTypeError("The object literal properties must be key-value pairs", expr->Start());
+            checker->LogError(diagnostic::OBJECT_LITERAL_NOT_KV, {}, expr->Start());
             return;
         }
         ir::Expression *key = propExpr->AsProperty()->Key();
@@ -1792,13 +1775,12 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr, checker
         } else if (key->IsIdentifier()) {
             pname = key->AsIdentifier()->Name();
         } else {
-            checker->LogTypeError("key in class composite should be either identifier or string literal",
-                                  expr->Start());
+            checker->LogError(diagnostic::CLASS_COMPOSITE_INVALID_KEY, {}, expr->Start());
             return;
         }
         varbinder::LocalVariable *lv = objType->GetProperty(pname, searchFlags);
         if (lv == nullptr) {
-            checker->LogTypeError({"type ", objType->Name(), " has no property named ", pname}, propExpr->Start());
+            checker->LogError(diagnostic::UNDEFINED_PROPERTY, {objType->Name(), pname}, propExpr->Start());
             return;
         }
         checker->ValidatePropertyAccess(lv, objType, propExpr->Start());
@@ -1809,8 +1791,7 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr, checker
 
         auto *propType = checker->GetTypeOfVariable(lv);
         if (propType->IsETSMethodType()) {
-            checker->LogTypeError({"Method '", pname, "' cannot be used as a key of object literal."},
-                                  propExpr->Start());
+            checker->LogError(diagnostic::OBJECT_LITERAL_METHOD_KEY, {pname}, propExpr->Start());
             return;
         }
         key->SetTsType(propType);
@@ -1874,7 +1855,7 @@ checker::Type *ETSAnalyzer::Check(ir::TemplateLiteral *expr) const
     }
 
     if (expr->Quasis().size() != expr->Expressions().size() + 1U) {
-        checker->LogTypeError("Invalid string template expression", expr->Start());
+        checker->LogError(diagnostic::TEMPLATE_COUNT_MISMATCH, {}, expr->Start());
         expr->SetTsType(checker->GlobalTypeError());
         return expr->TsType();
     }
@@ -2097,8 +2078,7 @@ checker::Type *ETSAnalyzer::Check(ir::UpdateExpression *expr) const
 
     auto unboxedType = checker->MaybeUnboxInRelation(operandType);
     if (unboxedType == nullptr || !unboxedType->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
-        checker->LogTypeError("Bad operand type, the type of the operand must be numeric type.",
-                              expr->Argument()->Start());
+        checker->LogError(diagnostic::OPERAND_NOT_NUMERIC, {}, expr->Argument()->Start());
         return expr->SetTsType(checker->GlobalTypeError());
     }
 
@@ -2217,13 +2197,13 @@ checker::Type *ETSAnalyzer::Check(ir::AssertStatement *st) const
     ETSChecker *checker = GetETSChecker();
     Type *testType = st->Test()->Check(checker);
     if (!(testType->HasTypeFlag(TypeFlag::ETS_BOOLEAN | TypeFlag::BOOLEAN_LIKE) || testType->ToString() == "Boolean")) {
-        checker->LogTypeError("Bad operand type, the type of the operand must be boolean type.", st->Test()->Start());
+        checker->LogError(diagnostic::ASSERT_NOT_LOGICAL, {}, st->Test()->Start());
     }
 
     if (st->Second() != nullptr) {
         auto msgType = st->second_->Check(checker);
         if (!msgType->IsETSStringType()) {
-            checker->LogTypeError("Assert message must be string", st->Second()->Start());
+            checker->LogError(diagnostic::ASSERT_MESSAGE_NOT_STRING, {}, st->Second()->Start());
             return checker->GlobalTypeError();
         }
     }
@@ -2337,7 +2317,7 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
 
     if (st->GetBaseName()->Variable() == nullptr ||
         !st->GetBaseName()->Variable()->Declaration()->Node()->IsAnnotationDeclaration()) {
-        checker->LogTypeError({"'", st->GetBaseName()->Name(), "' is not an annotation."}, st->GetBaseName()->Start());
+        checker->LogError(diagnostic::NOT_AN_ANNOTATION, {st->GetBaseName()->Name()}, st->GetBaseName()->Start());
         return ReturnTypeForStatement(st);
     }
 
@@ -2351,8 +2331,7 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
     }
 
     if (annoDecl->Properties().size() < st->Properties().size()) {
-        checker->LogTypeError(
-            "The number of arguments provided for the annotation exceeds the number of fields defined.", st->Start());
+        checker->LogError(diagnostic::ANNOTATION_ARG_COUNT_MISMATCH, {}, st->Start());
         return ReturnTypeForStatement(st);
     }
 
@@ -2420,10 +2399,7 @@ static bool ValidateAndProcessIteratorType(ETSChecker *checker, Type *elemType, 
                           : st->Left()->AsIdentifier());
 
     if (!relation->IsAssignableTo(elemType, iterType)) {
-        std::stringstream ss {};
-        ss << "Source element type '" << elemType->ToString() << "' is not assignable to the loop iterator type '"
-           << iterType->ToString() << "'.";
-        checker->LogTypeError(ss.str(), st->Start());
+        checker->LogError(diagnostic::ITERATOR_ELEMENT_TYPE_MISMATCH, {elemType, iterType}, st->Start());
         return false;
     }
 
@@ -2438,12 +2414,6 @@ static bool ValidateAndProcessIteratorType(ETSChecker *checker, Type *elemType, 
     }
     return true;
 }
-// NOLINTBEGIN(modernize-avoid-c-arrays)
-static constexpr char const MISSING_SOURCE_EXPR_TYPE[] =
-    "Cannot determine source expression type in the 'for-of' statement.";
-static constexpr char const INVALID_SOURCE_EXPR_TYPE[] =
-    "'For-of' statement source expression is not of iterable type.";
-// NOLINTEND(modernize-avoid-c-arrays)
 
 checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *const st) const
 {
@@ -2455,7 +2425,7 @@ checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *const st) const
 
     checker::Type *const exprType = st->Right()->Check(checker);
     if (exprType == nullptr) {
-        checker->LogTypeError(MISSING_SOURCE_EXPR_TYPE, st->Right()->Start());
+        checker->LogError(diagnostic::FOROF_CANT_INFER_SOURCE, {}, st->Right()->Start());
         return checker->GlobalTypeError();
     }
 
@@ -2470,7 +2440,7 @@ checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *const st) const
     }
 
     if (elemType == nullptr) {
-        checker->LogTypeError(INVALID_SOURCE_EXPR_TYPE, st->Right()->Start());
+        checker->LogError(diagnostic::FOROF_SOURCE_NONITERABLE, {}, st->Right()->Start());
         return checker->GlobalTypeError();
     }
 
@@ -2587,7 +2557,7 @@ static bool CheckIsValidReturnTypeAnnotation(ir::ReturnStatement *st, ir::Script
         (containingFunc->IsExtensionMethod() && (st->Argument() == nullptr || !st->Argument()->IsIdentifier() ||
                                                  !st->Argument()->AsIdentifier()->IsReceiver()));
     if (inValidNormalFuncReturnThisType && inValidExtensionFuncReturnThisType) {
-        checker->LogTypeError("Only extension function or a class method can return 'this'", st->Start());
+        checker->LogError(diagnostic::RETURN_THIS_OUTSIDE_METHOD, {}, st->Start());
         return false;
     }
 
@@ -2608,7 +2578,7 @@ bool ETSAnalyzer::CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::S
     if (st->argument_ == nullptr) {
         if (!funcReturnType->IsETSVoidType() && funcReturnType != checker->GlobalVoidType() &&
             !funcReturnType->IsETSAsyncFuncReturnType()) {
-            checker->LogTypeError("Missing return value.", st->Start());
+            checker->LogError(diagnostic::RETURN_WITHOUT_VALUE, {}, st->Start());
             return false;
         }
         funcReturnType = checker->GlobalVoidType();
@@ -2686,7 +2656,7 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
 
     if (containingFunc->IsConstructor()) {
         if (st->argument_ != nullptr) {
-            checker->LogTypeError("Return statement with expression isn't allowed in constructor.", st->Start());
+            checker->LogError(diagnostic::NON_VOID_RETURN_IN_CONSTRUCTOR, {}, st->Start());
             return checker->GlobalTypeError();
         }
         return ReturnTypeForStatement(st);
@@ -2776,7 +2746,7 @@ checker::Type *ETSAnalyzer::Check(ir::TryStatement *st) const
     bool defaultCatchFound = false;
     for (auto *catchClause : st->CatchClauses()) {
         if (defaultCatchFound) {
-            checker->LogTypeError("Default catch clause should be the last in the try statement", catchClause->Start());
+            checker->LogError(diagnostic::CATCH_DEFAULT_NOT_LAST, {}, catchClause->Start());
             return checker->GlobalTypeError();
         }
 
@@ -2983,7 +2953,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSEnumDeclaration *st) const
         } else if (itemInit->IsStringLiteral()) {
             checker->CreateEnumStringTypeFromEnumDeclaration(st);
         } else {
-            checker->LogTypeError("Invalid enumeration value type.", st->Start());
+            checker->LogError(diagnostic::ENUM_TYPE_INVALID, {}, st->Start());
             enumVar->SetTsType(checker->GlobalTypeError());
             st->SetTsType(checker->GlobalTypeError());
         }
@@ -3060,7 +3030,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSQualifiedName *expr) const
             baseType->AsETSObjectType()->GetProperty(searchName, checker::PropertySearchFlags::SEARCH_DECL);
         // NOTE(dslynko): in debugger evaluation mode must lazily generate module's properties here.
         if (prop == nullptr) {
-            checker->LogTypeError({"'", expr->Right()->Name(), "' type does not exist."}, expr->Right()->Start());
+            checker->LogError(diagnostic::NONEXISTENT_TYPE, {expr->Right()->Name()}, expr->Right()->Start());
             return checker->GlobalTypeError();
         }
 
@@ -3069,7 +3039,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSQualifiedName *expr) const
         return checker->GetTypeOfVariable(prop);
     }
 
-    checker->LogTypeError({"'", expr->Right()->Name(), "' type does not exist."}, expr->Right()->Start());
+    checker->LogError(diagnostic::NONEXISTENT_TYPE, {expr->Right()->Name()}, expr->Right()->Start());
     return checker->GlobalTypeError();
 }
 
@@ -3108,9 +3078,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
         });
 
         if (res == nullptr) {
-            checker->LogTypeError(
-                {"Type alias generic parameter '", param->Name()->Name(), "' is not used in type annotation"},
-                param->Start());
+            checker->LogError(diagnostic::ANNOTATION_UNUSED_GENERIC_ALIAS, {param->Name()->Name()}, param->Start());
             return checker->GlobalTypeError();
         }
     }

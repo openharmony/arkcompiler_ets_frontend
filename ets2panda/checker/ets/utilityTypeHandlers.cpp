@@ -28,8 +28,7 @@ std::optional<ir::TypeNode *> ETSChecker::GetUtilityTypeTypeParamNode(
     const ir::TSTypeParameterInstantiation *const typeParams, const std::string_view &utilityTypeName)
 {
     if (typeParams->Params().size() != 1) {
-        LogTypeError({"Invalid number of type parameters for ", utilityTypeName, " type, should be 1."},
-                     typeParams->Start());
+        LogError(diagnostic::UTIL_TYPE_INVALID_TYPE_PARAM_COUNT, {utilityTypeName}, typeParams->Start());
         return std::nullopt;
     }
     return typeParams->Params().front();
@@ -53,7 +52,7 @@ Type *ETSChecker::HandleUtilityTypeParameterNode(const ir::TSTypeParameterInstan
     }
 
     if (!baseType->IsETSReferenceType()) {
-        LogTypeError("Only reference types can be converted to utility types.", typeParams->Start());
+        LogError(diagnostic::UTIL_TYPE_OF_NONREFERENCE, {}, typeParams->Start());
         return GlobalTypeError();
     }
 
@@ -70,7 +69,7 @@ Type *ETSChecker::HandleUtilityTypeParameterNode(const ir::TSTypeParameterInstan
         return HandleRequiredType(baseType);
     }
 
-    LogTypeError("This utility type is not yet implemented.", typeParams->Start());
+    LogError(diagnostic::UTILITY_TYPE_UNIMPLEMENTED, {}, typeParams->Start());
     return baseType;
 }
 
@@ -1090,9 +1089,8 @@ void ETSChecker::ValidateObjectLiteralForRequiredType(const ETSObjectType *const
 
             auto fieldname = method->AsMethodDefinition()->Key()->AsIdentifier()->Name();
             if (!initObjExprContainsField(fieldname)) {
-                LogTypeError({"Class property '", fieldname, "' needs to be initialized for Required<",
-                              requiredType->Name(), ">."},
-                             initObjExpr->Start());
+                LogError(diagnostic::REQUIRED_PROP_MISSING_INIT, {fieldname, requiredType->Name()},
+                         initObjExpr->Start());
             }
         }
 
@@ -1101,9 +1099,7 @@ void ETSChecker::ValidateObjectLiteralForRequiredType(const ETSObjectType *const
 
     for (const auto &[propName, _] : requiredType->InstanceFields()) {
         if (!initObjExprContainsField(propName)) {
-            LogTypeError(
-                {"Class property '", propName, "' needs to be initialized for Required<", requiredType->Name(), ">."},
-                initObjExpr->Start());
+            LogError(diagnostic::REQUIRED_PROP_MISSING_INIT, {propName, requiredType->Name()}, initObjExpr->Start());
         }
     }
 }

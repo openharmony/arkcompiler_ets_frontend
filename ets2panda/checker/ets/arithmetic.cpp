@@ -39,7 +39,7 @@ static inline BinaryArithmOperands GetBinaryOperands(ETSChecker *checker, ir::Bi
 static void LogOperatorCannotBeApplied(ETSChecker *checker, lexer::TokenType op, Type *typeL, Type *typeR,
                                        lexer::SourcePosition pos)
 {
-    checker->LogTypeError({"Operator '", op, "' cannot be applied to types '", typeL, "' and '", typeR, "'."}, pos);
+    checker->LogError(diagnostic::BINOP_INVALID_TYPE, {TokenToString(op), typeL, typeR}, pos);
 }
 
 static void LogOperatorCannotBeApplied(ETSChecker *checker, BinaryArithmOperands const &ops)
@@ -283,17 +283,11 @@ bool ETSChecker::CheckBinaryPlusMultDivOperandsForUnionType(const Type *leftType
 {
     std::stringstream ss;
     if (leftType->IsETSUnionType()) {
-        leftType->AsETSUnionType()->ToString(ss, false);
-        LogTypeError("Bad operand type: multiple types left in the normalized union type (" + ss.str() +
-                         "). Unions are not allowed in binary expressions except equality.",
-                     left->Start());
+        LogError(diagnostic::BINOP_ON_UNION, {leftType}, left->Start());
         return false;
     }
     if (rightType->IsETSUnionType()) {
-        rightType->AsETSUnionType()->ToString(ss, false);
-        LogTypeError("Bad operand type: multiple types left in the normalized union type (" + ss.str() +
-                         "). Unions are not allowed in binary expressions except equality.",
-                     right->Start());
+        LogError(diagnostic::BINOP_ON_UNION, {rightType}, right->Start());
         return false;
     }
     return true;
@@ -324,7 +318,7 @@ checker::Type *ETSChecker::CheckBinaryOperatorMulDivMod(
 
     if (promotedType == nullptr || !unboxedL->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) ||
         !unboxedR->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
-        LogTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
+        LogError(diagnostic::OP_NONNUMERIC, {}, pos);
         return GlobalTypeError();
     }
 
@@ -375,7 +369,7 @@ checker::Type *ETSChecker::CheckBinaryOperatorPlus(
     if (leftType->IsETSStringType() || rightType->IsETSStringType()) {
         if (operationType == lexer::TokenType::PUNCTUATOR_MINUS ||
             operationType == lexer::TokenType::PUNCTUATOR_MINUS_EQUAL) {
-            LogTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
+            LogError(diagnostic::OP_NONNUMERIC, {}, pos);
             return GlobalTypeError();
         }
 
@@ -396,7 +390,7 @@ checker::Type *ETSChecker::CheckBinaryOperatorPlus(
         if (type != nullptr) {
             return type;
         }
-        LogTypeError("Bad operand type, the types of the operands must be numeric type, enum or String.", pos);
+        LogError(diagnostic::BINOP_NONARITHMETIC_TYPE, {}, pos);
         return GlobalTypeError();
     }
 
@@ -420,7 +414,7 @@ checker::Type *ETSChecker::CheckBinaryOperatorShift(
     RepairTypeErrorWithDefault(&unboxedR, GlobalIntType());
 
     if (leftType->IsETSUnionType() || rightType->IsETSUnionType()) {
-        LogTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
+        LogError(diagnostic::BINOP_UNION, {}, pos);
         return GlobalTypeError();
     }
 
@@ -433,7 +427,7 @@ checker::Type *ETSChecker::CheckBinaryOperatorShift(
     if (promotedLeftType == nullptr || !promotedLeftType->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) ||
         promotedRightType == nullptr ||
         !promotedRightType->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
-        LogTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
+        LogError(diagnostic::OP_NONNUMERIC, {}, pos);
         return GlobalTypeError();
     }
 
@@ -480,7 +474,7 @@ checker::Type *ETSChecker::CheckBinaryOperatorBitwise(
     }
 
     if (leftType->IsETSUnionType() || rightType->IsETSUnionType()) {
-        LogTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
+        LogError(diagnostic::BINOP_UNION, {}, pos);
         return GlobalTypeError();
     }
 
@@ -497,7 +491,7 @@ checker::Type *ETSChecker::CheckBinaryOperatorBitwise(
 
     if (promotedType == nullptr || !unboxedL->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) ||
         !unboxedR->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
-        LogTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
+        LogError(diagnostic::OP_NONNUMERIC, {}, pos);
         return GlobalTypeError();
     }
 
@@ -519,13 +513,13 @@ checker::Type *ETSChecker::CheckBinaryOperatorLogical(ir::Expression *left, ir::
     }
 
     if (leftType->IsETSUnionType() || rightType->IsETSUnionType()) {
-        LogTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
+        LogError(diagnostic::BINOP_UNION, {}, pos);
         return GlobalTypeError();
     }
 
     if (unboxedL == nullptr || !unboxedL->IsConditionalExprType() || unboxedR == nullptr ||
         !unboxedR->IsConditionalExprType()) {
-        LogTypeError("Bad operand type, the types of the operands must be of possible condition type.", pos);
+        LogError(diagnostic::BINOP_NOT_LOGICAL, {}, pos);
         return GlobalTypeError();
     }
 
@@ -593,7 +587,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorStrictEqual(ir::Expres
 
     checker::Type *tsType {};
     if (!IsReferenceType(leftType) || !IsReferenceType(rightType)) {
-        LogTypeError("Both operands have to be reference types", pos);
+        LogError(diagnostic::BINOP_NOT_REFERENCE, {}, pos);
         return {GlobalETSBooleanType(), GlobalETSObjectType()};
     }
 
@@ -635,7 +629,7 @@ static Type *CheckOperatorEqualDynamic(ETSChecker *checker, BinaryArithmOperands
         // have to prevent casting dyn_exp via ApplyCast without nullish flag
         return checker->GlobalETSNullishObjectType();
     }
-    checker->LogTypeError("Unimplemented case in dynamic type comparison.", ops.expr->Start());
+    checker->LogError(diagnostic::BINOP_DYN_UNIMPLEMENTED, {}, ops.expr->Start());
     return checker->GlobalETSNullishObjectType();
 }
 
@@ -654,8 +648,7 @@ static Type *CheckBinaryOperatorEqual(ETSChecker *checker, BinaryArithmOperands 
     if (reducedL->IsETSEnumType() && reducedR->IsETSEnumType()) {
         if (!reducedL->AsETSEnumType()->IsSameEnumType(reducedR->AsETSEnumType())) {
             // We still know that operation result should be boolean, so recover.
-            checker->LogTypeError("Bad operand type, the types of the operands must be the same enum type.",
-                                  expr->Start());
+            checker->LogError(diagnostic::BINOP_MISMATCHED_ENUMS, {}, expr->Start());
             return reducedL;
         }
         UnboxOperands(checker, ops);
@@ -715,7 +708,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(ir::Expres
     if ((leftType->IsETSUnionType() || rightType->IsETSUnionType()) &&
         operationType != lexer::TokenType::PUNCTUATOR_EQUAL &&
         operationType != lexer::TokenType::PUNCTUATOR_NOT_EQUAL) {
-        LogTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
+        LogError(diagnostic::BINOP_UNION, {}, pos);
         return {GlobalETSBooleanType(), leftType};
     }
 
@@ -737,8 +730,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(ir::Expres
             return {GlobalETSBooleanType(), GlobalETSBooleanType()};
         }
 
-        LogTypeError("Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type.",
-                     pos);
+        LogError(diagnostic::BINOP_INCOMPARABLE, {}, pos);
         return {GlobalETSBooleanType(), GlobalETSBooleanType()};
     }
 
@@ -763,12 +755,12 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorInstanceOf(lexer::Sour
         rightType = MaybeBoxType(rightType);
     }
     if (!IsReferenceType(leftType) || !IsReferenceType(rightType)) {
-        LogTypeError("Bad operand type, the types of the operands must be same type.", pos);
+        LogError(diagnostic::BINOP_NOT_SAME, {}, pos);
         return {GlobalETSBooleanType(), leftType};
     }
 
     if (rightType->IsETSDynamicType() && !rightType->AsETSDynamicType()->HasDecl()) {
-        LogTypeError("Right-hand side of instanceof expression must represent a type.", pos);
+        LogError(diagnostic::INSTANCEOF_NOT_TYPE, {}, pos);
         return {GlobalETSBooleanType(), leftType};
     }
 
@@ -800,7 +792,7 @@ Type *ETSChecker::CheckBinaryOperatorNullishCoalescing(ir::Expression *left, ir:
 {
     auto *leftType = left->TsType();
     if (!IsReferenceType(leftType)) {
-        LogTypeError("Left-hand side of nullish-coalescing expression must be a reference type.", pos);
+        LogError(diagnostic::COALESCE_NOT_REF, {}, pos);
         return leftType;
     }
     leftType = GetNonNullishType(leftType);
@@ -1088,7 +1080,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
     checker::Type *leftType = TryGetTypeFromExtensionAccessor(left);
 
     if (leftType == nullptr) {
-        LogTypeError("Unexpected type error in binary expression", left->Start());
+        LogError(diagnostic::BINOP_UNEXPECTED_ERROR, {}, left->Start());
         auto rightType = right->Check(this);
         return {rightType, rightType};
     }
@@ -1110,7 +1102,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
     }
 
     if (rightType == nullptr) {
-        LogTypeError("Unexpected type error in binary expression", pos);
+        LogError(diagnostic::BINOP_UNEXPECTED_ERROR, {}, pos);
         return {leftType, leftType};
     }
 

@@ -58,6 +58,7 @@
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "public/es2panda_lib.h"
 #include "util/options.h"
+#include "generated/diagnostic.h"
 
 namespace ark::es2panda::compiler {
 
@@ -206,8 +207,7 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
 {
 #ifndef NDEBUG
     if (!Precondition(ctx, program)) {
-        ctx->checker->LogTypeError({"Precondition check failed for ", util::StringView {Name()}},
-                                   lexer::SourcePosition {});
+        ctx->checker->LogError(diagnostic::PRECOND_FAILED, {Name()}, lexer::SourcePosition {});
         return false;
     }
 #endif
@@ -218,8 +218,7 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
 
 #ifndef NDEBUG
     if (!Postcondition(ctx, program)) {
-        ctx->checker->LogTypeError({"Postcondition check failed for ", util::StringView {Name()}},
-                                   lexer::SourcePosition {});
+        ctx->checker->LogError(diagnostic::POSTCOND_FAILED, {Name()}, lexer::SourcePosition {});
         return false;
     }
 #endif

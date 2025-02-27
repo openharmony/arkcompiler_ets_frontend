@@ -175,7 +175,7 @@ static const Substitution *BuildExplicitSubstitutionForArguments(ETSChecker *che
     }
     if (sigParams.size() != instArgs.size()) {
         if ((flags & TypeRelationFlag::NO_THROW) == static_cast<std::underlying_type_t<TypeRelationFlag>>(0U)) {
-            checker->LogTypeError({"Expected ", sigParams.size(), " type arguments, got ", instArgs.size(), " ."}, pos);
+            checker->LogError(diagnostic::RTYPE_PARAM_COUNT_MISMATCH, {sigParams.size(), instArgs.size()}, pos);
         }
         return nullptr;
     }

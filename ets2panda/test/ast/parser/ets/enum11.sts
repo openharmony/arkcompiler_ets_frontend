@@ -23,4 +23,4 @@ function main(): void {
   let ordinalFail: int = /* @@ label */Color as int;
 }
 
-/* @@@ label Error TypeError: Enum name "Color" used in the wrong context  */
+/* @@@ label Error TypeError: Enum name 'Color' used in the wrong context  */

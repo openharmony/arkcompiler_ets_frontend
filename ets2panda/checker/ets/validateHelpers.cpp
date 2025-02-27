@@ -152,7 +152,7 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident)
 {
     varbinder::Variable *const resolved = ident->Variable();
     if (resolved->Declaration()->IsAnnotationDecl() && !ident->IsAnnotationUsage()) {
-        LogTypeError("Annotation missing '@' symbol before annotation name.", ident->Start());
+        LogError(diagnostic::ANNOT_WITHOUT_AT, {}, ident->Start());
     }
 
     auto *smartType = Context().GetSmartCast(resolved);
@@ -302,15 +302,13 @@ bool ETSChecker::ValidateTupleMinElementSize(ir::ArrayExpression *const arrayExp
                 size += argType->AsETSTupleType()->GetTupleTypesList().size();
                 continue;
             }
-            LogTypeError({"'", argType, "' cannot be spread in tuple."}, element->Start());
+            LogError(diagnostic::INVALID_SPREAD_IN_TUPLE, {argType}, element->Start());
         }
         ++size;
     }
 
     if (size < static_cast<size_t>(tuple->GetMinTupleSize())) {
-        LogTypeError(util::DiagnosticMessageParams {"Few elements in array initializer for tuple with size of ",
-                                                    static_cast<size_t>(tuple->GetMinTupleSize())},
-                     arrayExpr->Start());
+        LogError(diagnostic::TUPLE_TOO_FEW_ELEMS, {static_cast<size_t>(tuple->GetMinTupleSize())}, arrayExpr->Start());
         return false;
     }
 

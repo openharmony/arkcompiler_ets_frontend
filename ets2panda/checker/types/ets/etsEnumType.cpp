@@ -192,18 +192,18 @@ ETSEnumType *ETSEnumType::LookupConstant(ETSChecker *const checker, const ir::Ex
     if (!IsEnumTypeExpression(expression)) {
         if (expression->IsIdentifier() &&
             expression->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::TYPE_ALIAS)) {
-            checker->LogTypeError("Cannot refer to enum members through type alias.", prop->Start());
+            checker->LogError(diagnostic::ENUM_REFERENCE_VIA_ALIAS, {}, prop->Start());
         } else if (IsLiteralType()) {
-            checker->LogTypeError("Cannot refer to enum members through variable.", prop->Start());
+            checker->LogError(diagnostic::ENUMB_REFERENCE_VIA_VAR, {}, prop->Start());
         } else {
-            checker->LogTypeError({"Enum constant does not have property '", prop->Name(), "'."}, prop->Start());
+            checker->LogError(diagnostic::ENUM_CONST_MISSING_PROP, {prop->Name()}, prop->Start());
         }
         return nullptr;
     }
 
     auto *const member = FindMember(prop->Name());
     if (member == nullptr) {
-        checker->LogTypeError({"No enum constant named '", prop->Name(), "' in enum '", this, "'"}, prop->Start());
+        checker->LogError(diagnostic::ENUM_NO_SUCH_CONST, {prop->Name(), this}, prop->Start());
         return nullptr;
     }
 
@@ -366,7 +366,7 @@ ETSFunctionType *ETSEnumType::LookupConstantMethod(ETSChecker *const checker, co
         return getNameMethod_.memberProxyType;
     }
 
-    checker->LogTypeError({"No enum item method called '", prop->Name(), "'"}, prop->Start());
+    checker->LogError(diagnostic::ENUM_NO_SUCH_METHOD, {prop->Name()}, prop->Start());
     return nullptr;
 }
 
@@ -382,7 +382,7 @@ ETSFunctionType *ETSEnumType::LookupTypeMethod(ETSChecker *const checker, const 
         return getValueOfMethod_.memberProxyType;
     }
 
-    checker->LogTypeError({"No enum type method called '", prop->Name(), "'"}, prop->Start());
+    checker->LogError(diagnostic::ENUM_NO_SUCH_STATIC_METHOD, {prop->Name()}, prop->Start());
     return nullptr;
 }
 
