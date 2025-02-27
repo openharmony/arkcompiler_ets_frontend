@@ -23,6 +23,7 @@ import type { ReportAutofixCallback } from './autofixes/ReportAutofixCallback';
 export interface LinterOptions {
   checkTsAsSource?: boolean;
   ideMode?: boolean;
+  ideInteractive?: boolean;
   warningsAsErrors?: boolean;
   enableAutofix?: boolean;
   arkts2?: boolean;

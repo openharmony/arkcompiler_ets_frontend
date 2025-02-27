@@ -29,6 +29,7 @@ import { Autofixer } from './autofixes/Autofixer';
 import { SYMBOL, SYMBOL_CONSTRUCTOR, TsUtils } from './utils/TsUtils';
 import { FUNCTION_HAS_NO_RETURN_ERROR_CODE } from './utils/consts/FunctionHasNoReturnErrorCode';
 import { LIMITED_STANDARD_UTILITY_TYPES } from './utils/consts/LimitedStandardUtilityTypes';
+import { arkts2Rules } from './utils/consts/ArkTS2Rules';
 import { LIKE_FUNCTION } from './utils/consts/LikeFunction';
 import {
   NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS,
@@ -230,6 +231,8 @@ export class TypeScriptLinter {
     const { line, character } = this.getLineAndCharacterOfNode(node);
     if (this.options.ideMode) {
       this.incrementCountersIdeMode(node, faultId, autofix);
+    } else if (this.options.ideInteractive) {
+      this.incrementCountersCLI2(node, faultId, autofix);
     } else {
       const faultDescr = faultDesc[faultId];
       const faultType = LinterConfig.tsSyntaxKindNames[node.kind];
@@ -287,6 +290,49 @@ export class TypeScriptLinter {
       // eslint-disable-next-line no-nested-ternary
       rule: isMsgNumValid && cookBookTg !== '' ? cookBookTg : faultDescr ? faultDescr : faultType,
       ruleTag: cookBookMsgNum,
+      autofix: autofix,
+      autofixTitle: isMsgNumValid && autofix !== undefined ? cookBookRefToFixTitle.get(cookBookMsgNum) : undefined
+    };
+    this.problemsInfos.push(badNodeInfo);
+    // problems with autofixes might be collected separately
+    if (this.options.reportAutofixCb && badNodeInfo.autofix) {
+      this.options.reportAutofixCb(badNodeInfo);
+    }
+  }
+
+  private incrementCountersCLI2(node: ts.Node | ts.CommentRange, faultId: number, autofix?: Autofix[]): void {
+    if (!this.options.ideInteractive) {
+      return;
+    }
+    const [startOffset, endOffset] = TsUtils.getHighlightRange(node, faultId);
+    const startPos = this.sourceFile!.getLineAndCharacterOfPosition(startOffset);
+    const endPos = this.sourceFile!.getLineAndCharacterOfPosition(endOffset);
+
+    const faultDescr = faultDesc[faultId];
+    const faultType = LinterConfig.tsSyntaxKindNames[node.kind];
+
+    const cookBookMsgNum = faultsAttrs[faultId] ? faultsAttrs[faultId].cookBookRef : 0;
+    if (!arkts2Rules.includes(cookBookMsgNum) && this.options.arkts2) {
+      return;
+    }
+    const cookBookTg = cookBookTag[cookBookMsgNum];
+    const severity = faultsAttrs[faultId]?.severity ?? ProblemSeverity.ERROR;
+    const isMsgNumValid = cookBookMsgNum > 0;
+    const badNodeInfo: ProblemInfo = {
+      line: startPos.line + 1,
+      column: startPos.character + 1,
+      endLine: endPos.line + 1,
+      endColumn: endPos.character + 1,
+      start: startOffset,
+      end: endOffset,
+      type: faultType,
+      severity: severity,
+      problem: FaultID[faultId],
+      suggest: '',
+      // eslint-disable-next-line no-nested-ternary
+      rule: isMsgNumValid && cookBookTg !== '' ? cookBookTg : faultDescr ? faultDescr : faultType,
+      ruleTag: cookBookMsgNum,
+      autofixable: !!autofix,
       autofix: autofix,
       autofixTitle: isMsgNumValid && autofix !== undefined ? cookBookRefToFixTitle.get(cookBookMsgNum) : undefined
     };
