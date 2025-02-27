@@ -18,6 +18,7 @@
 /es2panda/ @gavin1012_hw
 /ets2panda/ @igelhaus @Prof1983
 /ets2panda/ast_verifier @mbolshov ^igelhaus ^Prof1983
+/ets2panda/bindings ^igelhaus ^Prof1983 @dreamdoomwalker @Ascnbio ^muhammet-fevzi-bayiroglu @utkugursel
 /ets2panda/lexer @chernykhsergey @igelhaus @zelentsovdmitry @Prof1983
 /ets2panda/lsp ^igelhaus ^Prof1983 @dreamdoomwalker @Ascnbio ^muhammet-fevzi-bayiroglu @utkugursel
 /ets2panda/parser @chernykhsergey ^igelhaus ^Prof1983
