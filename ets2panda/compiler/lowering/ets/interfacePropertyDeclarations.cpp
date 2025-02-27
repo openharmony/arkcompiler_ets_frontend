@@ -31,9 +31,9 @@
 
 namespace ark::es2panda::compiler {
 
-namespace {
-
-void TransformOptionalFieldTypeAnnotation(checker::ETSChecker *const checker, ir::ClassProperty *const field)
+void InterfacePropertyDeclarationsPhase::TransformOptionalFieldTypeAnnotation(checker::ETSChecker *const checker,
+                                                                              ir::ClassProperty *const field,
+                                                                              bool isInterface)
 {
     if (!field->IsOptionalDeclaration()) {
         return;
@@ -62,16 +62,17 @@ void TransformOptionalFieldTypeAnnotation(checker::ETSChecker *const checker, ir
         field->SetTypeAnnotation(unionType);
     }
     field->ClearModifier(ir::ModifierFlags::OPTIONAL);
+
+    if (isInterface) {
+        GetPropCollector().InsertInterfaceProperty(field->Key()->ToString());
+    }
 }
 
-}  // namespace
-
-static ir::FunctionSignature GenerateGetterOrSetterSignature(checker::ETSChecker *const checker,
-                                                             varbinder::ETSBinder *varbinder,
-                                                             ir::ClassProperty *const field, bool isSetter,
-                                                             varbinder::FunctionParamScope *paramScope)
+ir::FunctionSignature InterfacePropertyDeclarationsPhase::GenerateGetterOrSetterSignature(
+    checker::ETSChecker *const checker, varbinder::ETSBinder *varbinder, ir::ClassProperty *const field, bool isSetter,
+    varbinder::FunctionParamScope *paramScope)
 {
-    TransformOptionalFieldTypeAnnotation(checker, field);
+    TransformOptionalFieldTypeAnnotation(checker, field, true);
     ArenaVector<ir::Expression *> params(checker->Allocator()->Adapter());
 
     if (isSetter) {
@@ -96,8 +97,10 @@ static ir::FunctionSignature GenerateGetterOrSetterSignature(checker::ETSChecker
     return ir::FunctionSignature(nullptr, std::move(params), isSetter ? nullptr : field->TypeAnnotation());
 }
 
-static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const checker, varbinder::ETSBinder *varbinder,
-                                                    ir::ClassProperty *const field, bool isSetter)
+ir::MethodDefinition *InterfacePropertyDeclarationsPhase::GenerateGetterOrSetter(checker::ETSChecker *const checker,
+                                                                                 varbinder::ETSBinder *varbinder,
+                                                                                 ir::ClassProperty *const field,
+                                                                                 bool isSetter)
 {
     auto classScope = NearestScope(field);
     auto *paramScope = checker->Allocator()->New<varbinder::FunctionParamScope>(checker->Allocator(), classScope);
@@ -153,12 +156,41 @@ static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const c
     return method;
 }
 
-static ir::Expression *UpdateInterfacePropertys(checker::ETSChecker *const checker, varbinder::ETSBinder *varbinder,
-                                                ir::TSInterfaceBody *const interface)
+void InterfacePropertyDeclarationsPhase::CollectPropertiesAndSuperInterfaces(ir::TSInterfaceBody *const interface)
+{
+    ES2PANDA_ASSERT(interface->Parent()->IsTSInterfaceDeclaration());
+    auto *interfaceDecl = interface->Parent()->AsTSInterfaceDeclaration();
+    GetPropCollector().SetInterfaceId(interfaceDecl->Id()->ToString());
+    GetPropCollector().InitInterfacePropertyMap();
+    for (const auto &superInterface : interfaceDecl->Extends()) {
+        std::string superId = superInterface->Expr()->AsETSTypeReference()->Part()->Name()->ToString();
+        if (!GetPropCollector().IsParentExists(GetPropCollector().GetInterfaceId())) {
+            GetPropCollector().InitInterfaceParentMap();
+        }
+        GetPropCollector().InsertInterfaceParent(superId);
+    }
+}
+
+void InterfacePropertyDeclarationsPhase::HandleInternalGetterOrSetterMethod(ir::AstNode *const ast)
+{
+    if (!ast->IsMethodDefinition()) {
+        return;
+    }
+    auto *method = ast->AsMethodDefinition();
+    if (method->Kind() == ir::MethodDefinitionKind::GET || method->Kind() == ir::MethodDefinitionKind::SET) {
+        GetPropCollector().InsertInterfaceProperty(method->Key()->ToString());
+    }
+}
+
+ir::Expression *InterfacePropertyDeclarationsPhase::UpdateInterfaceProperties(checker::ETSChecker *const checker,
+                                                                              varbinder::ETSBinder *varbinder,
+                                                                              ir::TSInterfaceBody *const interface)
 {
     if (interface->Body().empty()) {
         return interface;
     }
+
+    CollectPropertiesAndSuperInterfaces(interface);
 
     auto propertyList = interface->Body();
     ArenaVector<ir::AstNode *> newPropertyList(checker->Allocator()->Adapter());
@@ -169,6 +201,7 @@ static ir::Expression *UpdateInterfacePropertys(checker::ETSChecker *const check
     for (const auto &prop : propertyList) {
         if (!prop->IsClassProperty()) {
             newPropertyList.emplace_back(prop);
+            HandleInternalGetterOrSetterMethod(prop);
             continue;
         }
         auto getter = GenerateGetterOrSetter(checker, varbinder, prop->AsClassProperty(), false);
@@ -210,16 +243,58 @@ static ir::Expression *UpdateInterfacePropertys(checker::ETSChecker *const check
     return newInterface;
 }
 
+void InterfacePropertyDeclarationsPhase::CollectSuperInterfaceProperties(InterfacePropertyType &implInterfaceProperties,
+                                                                         const std::string &interId)
+{
+    if (GetPropCollector().IsInterfaceHasProperty(interId)) {
+        InterfacePropertyType &properties = GetPropCollector().GetInterfaceProperty(interId);
+        implInterfaceProperties.insert(properties.begin(), properties.end());
+    }
+    if (GetPropCollector().IsParentExists(interId)) {
+        for (auto &superId : GetPropCollector().GetInterfaceParent(interId)) {
+            CollectSuperInterfaceProperties(implInterfaceProperties, superId);
+        }
+    }
+}
+
+void InterfacePropertyDeclarationsPhase::UpdateClassProperties(checker::ETSChecker *const checker,
+                                                               ir::ClassDefinition *const klass)
+{
+    if (klass->Body().empty()) {
+        return;
+    }
+
+    InterfacePropertyType implInterfaceProperties = {};
+    for (const auto &implement : klass->Implements()) {
+        std::string interId = implement->Expr()->AsETSTypeReference()->Part()->Name()->ToString();
+        CollectSuperInterfaceProperties(implInterfaceProperties, interId);
+    }
+
+    for (auto *elem : klass->Body()) {
+        if (elem->IsClassProperty() && implInterfaceProperties.count(elem->AsClassProperty()->Key()->ToString())) {
+            TransformOptionalFieldTypeAnnotation(checker, elem->AsClassProperty());
+        }
+    }
+}
+
 bool InterfacePropertyDeclarationsPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
     varbinder::ETSBinder *const varbinder = ctx->parserProgram->VarBinder()->AsETSBinder();
 
-    ir::NodeTransformer handleInterfacePropertyDecl = [checker, varbinder](ir::AstNode *const ast) {
-        return ast->IsTSInterfaceBody() ? UpdateInterfacePropertys(checker, varbinder, ast->AsTSInterfaceBody()) : ast;
+    ir::NodeTransformer handleInterfacePropertyDecl = [this, checker, varbinder](ir::AstNode *const ast) {
+        return ast->IsTSInterfaceBody() ? UpdateInterfaceProperties(checker, varbinder, ast->AsTSInterfaceBody()) : ast;
+    };
+
+    ir::NodeTransformer handleClassPropertyDecl = [this, checker](ir::AstNode *const ast) {
+        if (ast->IsClassDefinition() && !ast->AsClassDefinition()->Implements().empty()) {
+            UpdateClassProperties(checker, ast->AsClassDefinition());
+        }
+        return ast;
     };
 
     program->Ast()->TransformChildrenRecursively(handleInterfacePropertyDecl, Name());
+    program->Ast()->TransformChildrenRecursively(handleClassPropertyDecl, Name());
 
     return true;
 }
