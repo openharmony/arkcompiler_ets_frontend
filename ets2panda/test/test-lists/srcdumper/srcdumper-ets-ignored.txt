@@ -196,6 +196,7 @@ ast/compiler/ets/namespace_tests/namespace_ambient_export01.ets
 ast/compiler/ets/namespace_tests/namespace_ambient_export02.ets
 ast/compiler/ets/namespace_tests/namespace_ambient_export03.ets
 runtime/ets/namespace_tests/namespace_import_type_test/namespace_import.ets
+runtime/ets/namespace_tests/namespace_initializer.ets
 
 # #21051 should be log warnings, but there aren't
 ast/compiler/ets/not_initialized_variable/import_types.ets

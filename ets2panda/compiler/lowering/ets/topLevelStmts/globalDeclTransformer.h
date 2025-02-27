@@ -45,15 +45,24 @@ class GlobalDeclTransformer : public ir::visitor::CustomAstVisitor {
 
 public:
     struct ResultT {
-        explicit ResultT(ArenaAllocator *alloc) : classProperties(alloc->Adapter()), initStatements(alloc->Adapter()) {}
+        explicit ResultT(ArenaAllocator *alloc) : classProperties(alloc->Adapter()), initializers_(alloc->Adapter())
+        {
+            // Note: first for immediate initializer, second for initializer block.
+            initializers_.emplace_back(alloc->Adapter());
+            initializers_.emplace_back(alloc->Adapter());
+        }
 
         // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
         ArenaVector<ir::Statement *> classProperties;
         // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
-        ArenaVector<ir::Statement *> initStatements;
+        ArenaVector<ArenaVector<ir::Statement *>> initializers_;
     };
 
-    explicit GlobalDeclTransformer(ArenaAllocator *allocator) : allocator_(allocator), result_(allocator) {}
+    explicit GlobalDeclTransformer(ArenaAllocator *allocator, ir::Statement const *currentModule,
+                                   parser::ETSParser *const parser)
+        : allocator_(allocator), result_(allocator), currentModule_(currentModule), parser_(parser)
+    {
+    }
 
     /**
      * Removes top level statements, global variable declarations, global function declarations
@@ -72,15 +81,25 @@ public:
 
     void VisitFunctionDeclaration(ir::FunctionDeclaration *funcDecl) override;
     void VisitVariableDeclaration(ir::VariableDeclaration *varDecl) override;
+    void VisitClassStaticBlock(ir::ClassStaticBlock *classStaticBlock) override;
     void HandleNode(ir::AstNode *node) override;
+    bool CheckValidInitializer(ir::AstNode const *initializer) const;
 
     ir::Identifier *RefIdent(const util::StringView &name);
 
     ir::ExpressionStatement *InitTopLevelProperty(ir::ClassProperty *classProperty);
 
+    [[nodiscard]] bool IsMultiInitializer() const
+    {
+        return initializerBlockCount > 1;
+    }
+
 private:
     ArenaAllocator *allocator_;
     ResultT result_;
+    ir::Statement const *currentModule_;
+    parser::ETSParser *const parser_;
+    size_t initializerBlockCount = 0;
 };
 
 }  // namespace ark::es2panda::compiler

@@ -73,6 +73,7 @@ ir::ClassDeclaration *GlobalClassHandler::CreateTransformedClass(ir::ETSModule *
 }
 
 void GlobalClassHandler::SetupGlobalMethods(parser::Program *program, ArenaVector<ir::Statement *> &&initStatements,
+                                            ArenaVector<ir::Statement *> &&initializerBlock,
                                             ir::ClassDefinition *globalClass, bool isDeclare)
 {
     auto const insertInGlobal = [globalClass](ir::AstNode *node) {
@@ -86,6 +87,13 @@ void GlobalClassHandler::SetupGlobalMethods(parser::Program *program, ArenaVecto
         insertInGlobal(initMethod);
         if (!initMethod->Function()->Body()->AsBlockStatement()->Statements().empty()) {
             AddInitCallFromStaticBlock(globalClass, initMethod);
+        }
+
+        ir::MethodDefinition *initializerBlockInit =
+            CreateGlobalMethod(compiler::Signatures::INITIALIZER_BLOCK_INIT, std::move(initializerBlock), program);
+        insertInGlobal(initializerBlockInit);
+        if (!initializerBlockInit->Function()->Body()->AsBlockStatement()->Statements().empty()) {
+            AddInitCallFromStaticBlock(globalClass, initializerBlockInit);
         }
     }
 }
@@ -133,19 +141,22 @@ ir::ClassDeclaration *GlobalClassHandler::TransformNamespace(ir::ETSModule *ns, 
     ir::ClassDeclaration *const globalDecl = CreateTransformedClass(ns);
     ir::ClassDefinition *const globalClass = globalDecl->Definition();
 
-    ArenaVector<GlobalStmts> statements(allocator_->Adapter());
+    ArenaVector<GlobalStmts> immediateInitializers(allocator_->Adapter());
+    ArenaVector<GlobalStmts> initializerBlock(allocator_->Adapter());
     ArenaVector<ir::ETSModule *> namespaces(allocator_->Adapter());
     auto &body = ns->Statements();
     for (auto *statement : body) {
         statement->Iterate([this](ir::AstNode *node) { AddStaticBlockToClass(node); });
     }
-
-    auto stmts = CollectProgramGlobalStatements(body, globalClass);
-    statements.emplace_back(GlobalStmts {program, std::move(stmts)});
+    auto stmts = CollectProgramGlobalStatements(body, globalClass, ns);
+    immediateInitializers.emplace_back(GlobalStmts {program, std::move(stmts[0])});
+    initializerBlock.emplace_back(GlobalStmts {program, std::move(stmts[1])});
     AddStaticBlockToClass(globalClass);
     const ModuleDependencies md {allocator_->Adapter()};
-    auto initStatements = FormInitMethodStatements(program, &md, std::move(statements));
-    SetupGlobalMethods(program, std::move(initStatements), globalClass, ns->IsDeclare());
+    auto immediateInitStatements = FormInitMethodStatements(program, &md, std::move(immediateInitializers));
+    auto initializerBlockStatements = FormInitMethodStatements(program, &md, std::move(initializerBlock));
+    SetupGlobalMethods(program, std::move(immediateInitStatements), std::move(initializerBlockStatements), globalClass,
+                       ns->IsDeclare());
 
     // remove namespaceDecl from orginal node
     auto end = std::remove_if(body.begin(), body.end(), [&namespaces](ir::AstNode *node) {
@@ -199,7 +210,7 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
     for (auto program : programs) {
         program->Ast()->IterateRecursively([this](ir::AstNode *node) { AddStaticBlockToClass(node); });
         auto &body = program->Ast()->Statements();
-        auto stmts = CollectProgramGlobalStatements(body, globalClass);
+        auto stmts = CollectProgramGlobalStatements(body, globalClass, program->Ast());
         auto end = std::remove_if(body.begin(), body.end(), [&namespaces](ir::AstNode *node) {
             if (node->IsETSModule() && node->AsETSModule()->IsNamespace()) {
                 namespaces.emplace_back(node->AsETSModule());
@@ -208,7 +219,8 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
             return false;
         });
         body.erase(end, body.end());
-        statements.emplace_back(GlobalStmts {program, std::move(stmts)});
+        // NOTE: Initializer block for Package is to be done(xingshunxiang).
+        statements.emplace_back(GlobalStmts {program, std::move(stmts[0])});
         program->SetGlobalClass(globalClass);
     }
 
@@ -415,14 +427,33 @@ ir::ClassStaticBlock *GlobalClassHandler::CreateStaticBlock(ir::ClassDefinition 
     return staticBlock;
 }
 
-ArenaVector<ir::Statement *> GlobalClassHandler::CollectProgramGlobalStatements(ArenaVector<ir::Statement *> &stmts,
-                                                                                ir::ClassDefinition *classDef)
+ArenaVector<ArenaVector<ir::Statement *>> GlobalClassHandler::CollectProgramGlobalStatements(
+    ArenaVector<ir::Statement *> &stmts, ir::ClassDefinition *classDef, ir::Statement const *stmt)
 {
-    auto globalDecl = GlobalDeclTransformer(allocator_);
+    auto globalDecl = GlobalDeclTransformer(allocator_, stmt, parser_);
     auto statements = globalDecl.TransformStatements(stmts);
+    if (globalDecl.IsMultiInitializer()) {
+        parser_->LogError(diagnostic::MULTIPLE_STATIC_BLOCK, {}, stmt->Start());
+    }
     classDef->AddProperties(util::Helpers::ConvertVector<ir::AstNode>(statements.classProperties));
+    /*
+    initializers_ consists of two parts:
+    immediate initializers and initializer blocks, the former should be executed firstly.
+
+    Example code:
+        namespace NS {
+            let a: number;
+            let b: number = 2;
+            static {
+                a = 1;
+                b = 0;
+            }
+        }
+
+    In the example code, execute order will be: b = 2, a = 1, b = 0;
+    */
     globalDecl.FilterDeclarations(stmts);
-    return std::move(statements.initStatements);
+    return std::move(statements.initializers_);
 }
 
 ir::ClassDeclaration *GlobalClassHandler::CreateGlobalClass(const parser::Program *const globalProgram)

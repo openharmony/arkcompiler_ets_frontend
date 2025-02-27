@@ -173,6 +173,20 @@ bool ETSParser::IsExportedDeclaration(ir::ModifierFlags memberModifiers)
             Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
 }
 
+bool ETSParser::IsInitializerBlockStart() const
+{
+    if (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_STATIC) {
+        return false;
+    }
+
+    auto savedPos = Lexer()->Save();
+    Lexer()->NextToken();
+    const bool validStart = Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE &&
+                            (GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0;
+    Lexer()->Rewind(savedPos);
+    return validStart;
+}
+
 ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags)
 {
     auto [memberModifiers, startLoc] = ParseMemberModifiers();
@@ -209,7 +223,7 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
         case lexer::TokenType::KEYW_ENUM:
         case lexer::TokenType::KEYW_INTERFACE:
         case lexer::TokenType::KEYW_CLASS:
-            result = ParseTypeDeclaration(false);
+            result = ParseTypeDeclaration(IsInitializerBlockStart());
             break;
         case lexer::TokenType::PUNCTUATOR_AT:
             result = ParseTopLevelAnnotation(memberModifiers);

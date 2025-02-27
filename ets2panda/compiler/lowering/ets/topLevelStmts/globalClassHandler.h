@@ -52,7 +52,8 @@ private:
     ir::ClassDeclaration *TransformNamespace(ir::ETSModule *ns, parser::Program *program);
     ir::ClassDeclaration *CreateTransformedClass(ir::ETSModule *ns);
     void SetupGlobalMethods(parser::Program *program, ArenaVector<ir::Statement *> &&initStatements,
-                            ir::ClassDefinition *globalClass, bool isDeclare);
+                            ArenaVector<ir::Statement *> &&initializerBlock, ir::ClassDefinition *globalClass,
+                            bool isDeclare);
     ArenaVector<ir::ClassDeclaration *> TransformNamespaces(ArenaVector<ir::ETSModule *> &namespaces,
                                                             parser::Program *program);
     void MergeNamespace(ArenaVector<ir::ETSModule *> &namespaces, parser::ETSParser *parser);
@@ -70,8 +71,9 @@ private:
     void FormDependentInitTriggers(ArenaVector<ir::Statement *> &statements,
                                    const ModuleDependencies *moduleDependencies);
 
-    ArenaVector<ir::Statement *> CollectProgramGlobalStatements(ArenaVector<ir::Statement *> &stmts,
-                                                                ir::ClassDefinition *classDef);
+    ArenaVector<ArenaVector<ir::Statement *>> CollectProgramGlobalStatements(ArenaVector<ir::Statement *> &stmts,
+                                                                             ir::ClassDefinition *classDef,
+                                                                             ir::Statement const *emd);
 
     ir::Identifier *RefIdent(const util::StringView &name);
     util::UString ReplaceSpecialCharacters(util::UString *word) const;
