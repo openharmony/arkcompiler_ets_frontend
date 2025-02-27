@@ -1035,7 +1035,9 @@ ir::ImportSource *ETSParser::ParseSourceFromClause(bool requireFrom)
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_STRING) {
         LogExpectedToken(lexer::TokenType::LITERAL_STRING);
-        return nullptr;  // Error processing.
+        // Try to create DUMMY import source as error placeholder
+        auto errorLiteral = AllocNode<ir::StringLiteral>(ERROR_LITERAL);
+        return Allocator()->New<ir::ImportSource>(errorLiteral, errorLiteral, Language(Language::Id::ETS), false);
     }
 
     ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_STRING);
@@ -1065,11 +1067,6 @@ ir::Statement *ETSParser::ParseImportDeclarationHelper(lexer::SourcePosition sta
                                                        ir::ImportKinds importKind)
 {
     auto const importSource = ParseSourceFromClause(true);
-    if (importSource == nullptr) {
-        // Error is logged inside ParseSourceFromClause
-        return AllocBrokenStatement();  // Error processing.
-    }
-
     const auto endLocDef = importSource->Source()->End();
     auto *const importDeclaration =
         AllocNode<ir::ETSImportDeclaration>(importSource, std::move(specifiers), importKind);
@@ -1108,9 +1105,7 @@ ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseImportDeclarations()
         auto pos = Lexer()->Save();
         if (!specifiers.empty()) {
             auto *const importDecl = ParseImportDeclarationHelper(startLoc, specifiers, importKind);
-            if (!importDecl->IsBrokenStatement()) {
-                statements.push_back(importDecl->AsETSImportDeclaration());
-            }
+            statements.push_back(importDecl->AsETSImportDeclaration());
         }
 
         if (!defaultSpecifiers.empty()) {

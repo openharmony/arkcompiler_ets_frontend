@@ -924,6 +924,11 @@ varbinder::Variable *ETSBinder::FindStaticBinding(const ArenaVector<parser::Prog
 ArenaVector<parser::Program *> ETSBinder::GetExternalProgram(const util::StringView &sourceName,
                                                              const ir::StringLiteral *importPath)
 {
+    if (sourceName == ERROR_LITERAL) {
+        // avoid logging rediculus messages, there must be a syntax error
+        ASSERT(GetContext()->diagnosticEngine->IsAnyError());
+        return ArenaVector<parser::Program *>(Allocator()->Adapter());
+    }
     // NOTE: quick fix to make sure not to look for the global program among the external sources
     if (sourceName.Compare(globalRecordTable_.Program()->AbsoluteName()) == 0) {
         ArenaVector<parser::Program *> mainModule(Allocator()->Adapter());
