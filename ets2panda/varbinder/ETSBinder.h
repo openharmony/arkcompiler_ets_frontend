@@ -66,7 +66,6 @@ public:
           reExportImports_(Allocator()->Adapter()),
           reexportedNames_(Allocator()->Adapter()),
           dynamicImportVars_(Allocator()->Adapter()),
-          importSpecifiers_(Allocator()->Adapter()),
           selectiveExportAliasMultimap_(Allocator()->Adapter())
     {
         InitImplicitThisParam();
@@ -254,9 +253,6 @@ public:
     util::StringView FindNameInAliasMap(const util::StringView &pathAsKey, const util::StringView &aliasName);
     const ir::AstNode *FindNodeInAliasMap(const util::StringView &pathAsKey, const util::StringView &aliasName);
 
-    util::StringView FindLocalNameForImport(const ir::ImportSpecifier *const importSpecifier,
-                                            util::StringView &imported, const ir::StringLiteral *const importPath);
-
 private:
     void BuildClassDefinitionImpl(ir::ClassDefinition *classDef);
     void InitImplicitThisParam();
@@ -279,7 +275,6 @@ private:
     ArenaSet<util::StringView> reexportedNames_;
     DynamicImportVariables dynamicImportVars_;
     ir::Identifier *thisParam_ {};
-    ArenaVector<std::pair<util::StringView, util::StringView>> importSpecifiers_;
     ir::AstNode *defaultExport_ {};
     ModulesToExportedNamesWithAliases selectiveExportAliasMultimap_;
 

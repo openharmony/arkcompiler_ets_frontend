@@ -219,26 +219,6 @@ const ir::AstNode *ETSBinder::FindNodeInAliasMap(const util::StringView &pathAsK
     return nullptr;
 }
 
-util::StringView ETSBinder::FindLocalNameForImport(const ir::ImportSpecifier *const importSpecifier,
-                                                   util::StringView &imported,
-                                                   const ir::StringLiteral *const importPath)
-{
-    if (importSpecifier->Local() != nullptr) {
-        auto checkImportPathAndName = [&importPath, &imported](const auto &savedSpecifier) {
-            return importPath->Str() != savedSpecifier.first && imported == savedSpecifier.second;
-        };
-        if (!std::any_of(importSpecifiers_.begin(), importSpecifiers_.end(), checkImportPathAndName)) {
-            TopScope()->EraseBinding(imported);
-        }
-
-        importSpecifiers_.emplace_back(importPath->Str(), imported);
-
-        return importSpecifier->Local()->Name();
-    }
-
-    return imported;
-}
-
 void ETSBinder::LookupIdentReference(ir::Identifier *ident)
 {
     if (ident->IsErrorPlaceHolder()) {
@@ -803,27 +783,6 @@ void ETSBinder::ValidateImportVariable(const ir::AstNode *node, const ir::ETSImp
     }
 }
 
-static util::StringView ImportLocalName(const ir::ImportSpecifier *importSpecifier, const ir::StringLiteral *importPath,
-                                        util::StringView imported,
-                                        ArenaVector<std::pair<util::StringView, util::StringView>> &importSpecifiers,
-                                        GlobalScope *topScope)
-{
-    if (importSpecifier->Local() != nullptr) {
-        auto fnc = [&importPath, &imported](const auto &savedSpecifier) {
-            return importPath->Str() != savedSpecifier.first && imported == savedSpecifier.second;
-        };
-        if (!std::any_of(importSpecifiers.begin(), importSpecifiers.end(), fnc)) {
-            topScope->EraseBinding(imported);
-        }
-
-        importSpecifiers.push_back(std::make_pair(importPath->Str(), imported));
-
-        return importSpecifier->Local()->Name();
-    }
-
-    return imported;
-}
-
 bool ETSBinder::DetectNameConflict(const util::StringView localName, Variable *const var, Variable *const otherVar,
                                    const ir::StringLiteral *const importPath, bool overloadAllowed)
 {
@@ -880,8 +839,6 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
     importSpecifier->Imported()->SetVariable(var);
     importSpecifier->Local()->SetVariable(var);
 
-    const auto localName = ImportLocalName(importSpecifier, importPath, imported, importSpecifiers_, TopScope());
-
     if (var == nullptr) {
         ir::ETSImportDeclaration *implDecl = FindImportDeclInReExports(import, viewedReExport, imported, importPath);
         if (implDecl != nullptr) {
@@ -893,10 +850,16 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
         return false;
     }
 
+    // NOTE(rsipka): Needs to remove erase for annotations, because it shouldn't depend on this (#23490 internal issue)
+    if (var->Declaration()->IsAnnotationDecl()) {
+        TopScope()->EraseBinding(imported);
+    }
+
     auto *node = FindNodeInAliasMap(import->ResolvedSource()->Str(), imported);
 
     ValidateImportVariable(node != nullptr ? node : var->Declaration()->Node(), import, imported, importPath);
 
+    const auto localName = importSpecifier->Local()->Name();
     auto varInGlobalClassScope = Program()->GlobalClassScope()->FindLocal(localName, ResolveBindingOptions::ALL);
     auto previouslyImportedVariable = TopScope()->FindLocal(localName, ResolveBindingOptions::ALL);
     if (DetectNameConflict(localName, var, varInGlobalClassScope, importPath, true) ||
