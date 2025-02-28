@@ -22,9 +22,10 @@ namespace ark::es2panda::declgen_ets2ts {
 static void PrintUsage()
 {
     std::cerr << "Usage: declgen_ets2ts [OPTIONS] [input]\n";
-    std::cerr << "    --export-all        Treat all top level statements as exported\n";
-    std::cerr << "    --output-dts=[FILE] Path to output .d.ts file\n";
-    std::cerr << "    --help              Print this message and exit. Default: false\n";
+    std::cerr << "    --export-all         Treat all top level statements as exported\n";
+    std::cerr << "    --output-dets=[FILE] Path to output .d.ets file\n";
+    std::cerr << "    --output-ets=[FILE]  Path to output .ets file\n";
+    std::cerr << "    --help               Print this message and exit. Default: false\n";
     std::cerr << "Tail arguments:\n";
     std::cerr << "input: input file\n";
 }
@@ -36,8 +37,8 @@ void FilterArgs(Span<const char *const> args, int &newArgc, const char **&newArg
     filteredArgs.push_back(args[0]);
     for (size_t i = 1; i < args.size(); ++i) {
         if (std::strcmp(args[i], "--export-all") == 0 ||
-            std::strncmp(args[i], "--output-dts", std::strlen("--output-dts")) == 0 ||
-            std::strncmp(args[i], "--output-ts", std::strlen("--output-ts")) == 0) {
+            std::strncmp(args[i], "--output-dets", std::strlen("--output-dets")) == 0 ||
+            std::strncmp(args[i], "--output-ets", std::strlen("--output-ets")) == 0) {
             continue;
         }
         filteredArgs.push_back(args[i]);
@@ -57,14 +58,14 @@ static DeclgenOptions ParseOptions(Span<const char *const> args)
     for (size_t i = 1; i < args.size(); ++i) {
         if (std::strcmp(args[i], "--export-all") == 0) {
             options.exportAll = true;
-        } else if (std::strncmp(args[i], "--output-dts", std::strlen("--output-dts")) == 0 &&
+        } else if (std::strncmp(args[i], "--output-dets", std::strlen("--output-dets")) == 0 &&
                    std::strchr(args[i], '=') != nullptr) {
             std::string arg = args[i];
-            options.outputDts = arg.substr(std::strlen("--output-dts="));
-        } else if (std::strncmp(args[i], "--output-ts", std::strlen("--output-ts")) == 0 &&
+            options.outputDeclEts = arg.substr(std::strlen("--output-dets="));
+        } else if (std::strncmp(args[i], "--output-ets", std::strlen("--output-ets")) == 0 &&
                    std::strchr(args[i], '=') != nullptr) {
             std::string arg = args[i];
-            options.outputTs = arg.substr(std::strlen("--output-ts="));
+            options.outputEts = arg.substr(std::strlen("--output-ets="));
         }
     }
     return options;

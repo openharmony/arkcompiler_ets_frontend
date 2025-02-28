@@ -27,8 +27,8 @@ namespace ark::es2panda::declgen_ets2ts {
 
 struct DeclgenOptions {
     bool exportAll = false;
-    std::string outputDts;
-    std::string outputTs;
+    std::string outputDeclEts;
+    std::string outputEts;
 };
 
 // Consume program after checker stage and generate out_path typescript file with declarations
@@ -42,7 +42,8 @@ public:
           program_(program),
           diagnosticEngine_(checker->DiagnosticEngine()),
           allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
-          objectArguments_(allocator_.Adapter())
+          indirectDependencyObjects_(allocator_.Adapter()),
+          typeAliasMap_(allocator_.Adapter())
     {
     }
 
@@ -85,17 +86,18 @@ private:
     void GenUnionType(const checker::ETSUnionType *unionType);
 
     void GenImportDeclaration(const ir::ETSImportDeclaration *importDeclaration);
+    void GenReExportDeclaration(const ir::ETSReExportDeclaration *reExportDeclaration);
     void GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAlias);
     void GenEnumDeclaration(const ir::TSEnumDeclaration *enumDecl);
     void GenInterfaceDeclaration(const ir::TSInterfaceDeclaration *interfaceDecl);
     void GenClassDeclaration(const ir::ClassDeclaration *classDecl);
-    void GenMethodDeclaration(const ir::MethodDefinition *methodDef, const bool isInGlobalClass);
+    void GenMethodDeclaration(const ir::MethodDefinition *methodDef);
     void GenPropDeclaration(const ir::ClassProperty *classProp);
     void GenGlobalVarDeclaration(const ir::ClassProperty *globalVar);
     void GenLiteral(const ir::Literal *literal);
 
     template <class T>
-    void GenModifier(const T *node);
+    void GenModifier(const T *node, bool isProp = false);
     void GenTypeParameters(const ir::TSTypeParameterDeclaration *typeParams);
     void GenExport(const ir::Identifier *symbol);
     void GenExport(const ir::Identifier *symbol, const std::string &alias);
@@ -103,12 +105,30 @@ private:
     bool ShouldEmitDeclarationSymbol(const ir::Identifier *symbol);
 
     template <class T, class CB>
-    void GenSeparated(const T &container, const CB &cb, const char *separator = ", ");
+    void GenSeparated(const T &container, const CB &cb, const char *separator = ", ", bool isReExport = false);
 
     void PrepareClassDeclaration(const ir::ClassDefinition *classDef);
     bool ShouldSkipClassDeclaration(const std::string_view &className) const;
     void HandleClassDeclarationTypeInfo(const ir::ClassDefinition *classDef, const std::string_view &className);
-    void ProcessClassBody(const ir::ClassDefinition *classDef, const bool isInGlobalClass);
+    void ProcessClassBody(const ir::ClassDefinition *classDef);
+    std::string ReplaceETSGLOBAL(const std::string &typeName);
+    std::string GetIndent() const;
+    void ProcessIndent();
+
+    void GenGlobalDescriptor();
+    void CollectIndirectExportDependencies();
+    void ProcessTypeAliasDependencies(const ir::TSTypeAliasDeclaration *typeAliasDecl);
+    void ProcessClassDependencies(const ir::ClassDeclaration *classDecl);
+    void AddSuperType(const ir::Expression *super);
+    void ProcessInterfacesDependencies(const ArenaVector<checker::ETSObjectType *> &interfaces);
+    void AddObjectDependencies(const util::StringView &typeName, const std::string &alias = "");
+    void GenDeclarations();
+    void CloseClassBlock(const bool isDts);
+
+    void EmitClassDeclaration(const ir::ClassDefinition *classDef, const std::string_view &className);
+    void EmitClassGlueCode(const ir::ClassDefinition *classDef, const std::string &className);
+    void EmitMethodGlueCode(const std::string &methodName, const ir::Identifier *methodIdentifier);
+    void EmitPropGlueCode(const ir::ClassProperty *classProp, const std::string &propName);
 
     void OutDts() {}
 
@@ -147,8 +167,15 @@ private:
         const ir::Expression *super {nullptr};
         bool inInterface {false};
         bool inGlobalClass {false};
+        bool inNamespace {false};
         std::string currentClassDescriptor {};
     } state_ {};
+
+    struct ClassNode {
+        bool hasNestedClass {false};
+        bool isIndirect {false};
+        size_t indentLevel {1};
+    } classNode_ {};
 
     std::stringstream outputDts_;
     std::stringstream outputTs_;
@@ -156,9 +183,10 @@ private:
     const ark::es2panda::parser::Program *program_ {};
     util::DiagnosticEngine &diagnosticEngine_;
     ArenaAllocator allocator_;
-    ArenaSet<std::string> objectArguments_;
+    ArenaSet<std::string> indirectDependencyObjects_;
     DeclgenOptions declgenOptions_ {};
     std::string globalDesc_;
+    ArenaMap<std::string, std::string> typeAliasMap_;
 };
 }  // namespace ark::es2panda::declgen_ets2ts
 
