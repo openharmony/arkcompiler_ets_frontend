@@ -362,14 +362,17 @@ ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus newStatus)
         functionContext.AddFlag(ir::ScriptFunctionFlags::ARROW);
     }
 
+    auto &contextStatus = GetContext().Status();
+    contextStatus |= ParserStatus::ALLOW_SUPER;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         std::tie(std::ignore, body, endLoc, isOverload) =
-            ParseFunctionBody(signature.Params(), newStatus, GetContext().Status());
+            ParseFunctionBody(signature.Params(), newStatus, contextStatus);
     } else if (isArrow) {
         body = ParseExpression();
         endLoc = body->AsExpression()->End();
         functionContext.AddFlag(ir::ScriptFunctionFlags::EXPRESSION);
     }
+    contextStatus ^= ParserStatus::ALLOW_SUPER;
 
     if ((GetContext().Status() & ParserStatus::FUNCTION_HAS_RETURN_STATEMENT) != 0) {
         functionContext.AddFlag(ir::ScriptFunctionFlags::HAS_RETURN);

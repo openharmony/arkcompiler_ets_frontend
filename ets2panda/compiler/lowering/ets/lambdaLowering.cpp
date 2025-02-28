@@ -64,7 +64,8 @@ static bool CheckIfNeedThis(ir::ArrowFunctionExpression *lambda, checker::ETSChe
 {
     auto *lambdaClass = ContainingClass(lambda);
     return lambda->IsAnyChild([&checker, &lambdaClass](ir::AstNode *ast) {
-        return ast->IsThisExpression() && checker->Relation()->IsIdenticalTo(lambdaClass, ContainingClass(ast));
+        return (ast->IsThisExpression() || ast->IsSuperExpression()) &&
+               checker->Relation()->IsIdenticalTo(lambdaClass, ContainingClass(ast));
     });
 }
 
