@@ -19,7 +19,6 @@
 #include <gtest/gtest.h>
 
 using ark::es2panda::compiler::ast_verifier::CheckScopeDeclaration;
-using ark::es2panda::ir::AstNode;
 
 namespace {
 
@@ -31,18 +30,10 @@ TEST_F(ASTVerifierTest, FunctionScope)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_LOWERED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
-
-    const auto &messages = Verify<CheckScopeDeclaration>(ast);
-
-    // Expecting no warnings
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_LOWERED, text)
+    {
+        EXPECT_TRUE(Verify<CheckScopeDeclaration>());
+    }
 }
 
 TEST_F(ASTVerifierTest, ForUpdateLoopScope)
@@ -53,18 +44,10 @@ TEST_F(ASTVerifierTest, ForUpdateLoopScope)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_LOWERED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
-
-    const auto &messages = Verify<CheckScopeDeclaration>(ast);
-
-    // Expecting no warnings
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_LOWERED, text)
+    {
+        EXPECT_TRUE(Verify<CheckScopeDeclaration>());
+    }
 }
 
 TEST_F(ASTVerifierTest, ForInLoopScope)
@@ -79,17 +62,10 @@ TEST_F(ASTVerifierTest, ForInLoopScope)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_LOWERED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = Verify<CheckScopeDeclaration>(ast);
-
-    // Expecting no warnings
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_LOWERED, text)
+    {
+        EXPECT_TRUE(Verify<CheckScopeDeclaration>());
+    }
 }
 
 TEST_F(ASTVerifierTest, PartialClass)
@@ -100,17 +76,10 @@ TEST_F(ASTVerifierTest, PartialClass)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_LOWERED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = Verify<CheckScopeDeclaration>(ast);
-
-    // Expecting no warnings
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_LOWERED, text)
+    {
+        EXPECT_TRUE(Verify<CheckScopeDeclaration>());
+    }
 }
 
 TEST_F(ASTVerifierTest, TryCatch)
@@ -127,17 +96,10 @@ TEST_F(ASTVerifierTest, TryCatch)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_LOWERED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = Verify<CheckScopeDeclaration>(ast);
-
-    // Expecting no warnings
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_LOWERED, text)
+    {
+        EXPECT_TRUE(Verify<CheckScopeDeclaration>());
+    }
 }
 
 }  // namespace

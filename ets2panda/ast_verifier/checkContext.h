@@ -74,6 +74,11 @@ public:
         return std::move(messages_);
     }
 
+    const auto &ViewMessages() const
+    {
+        return messages_;
+    }
+
     bool HasMessages() const
     {
         return !messages_.empty();

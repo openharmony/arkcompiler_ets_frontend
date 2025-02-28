@@ -20,7 +20,6 @@
 #include <gtest/gtest.h>
 
 using ark::es2panda::compiler::ast_verifier::CheckInfiniteLoop;
-using ark::es2panda::ir::AstNode;
 
 namespace {
 struct TestData {
@@ -87,17 +86,9 @@ TEST_P(InfiniteLoopTests, InfiniteLoop)
 
     char const *text = data.program;
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = Verify<CheckInfiniteLoop>(ast);
-
-    // Expecting warning
-    ASSERT_EQ(messages.size(), 1);
-    ASSERT_EQ(messages[0].Cause(), "INFINITE LOOP");
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<CheckInfiniteLoop>(ExpectVerifierMessage {"INFINITE LOOP"}));
+    }
 }
 }  // namespace

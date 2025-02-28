@@ -21,7 +21,6 @@
 
 using ark::es2panda::checker::ETSChecker;
 using ark::es2panda::compiler::ast_verifier::GetterSetterValidation;
-using ark::es2panda::ir::AstNode;
 using ark::es2panda::ir::ETSParameterExpression;
 using ark::es2panda::ir::Identifier;
 using ark::es2panda::ir::MethodDefinitionKind;
@@ -46,14 +45,7 @@ TEST_F(ASTVerifierTest, ValidateGetterReturnTypeAnnotation)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
-
-    // Change annotation return type to void
-    ast->IterateRecursively([&checker](ark::es2panda::ir::AstNode *child) {
+    auto cb = [&checker](ark::es2panda::ir::AstNode *child) {
         if (child->IsMethodDefinition()) {
             auto *const method = child->AsMethodDefinition();
             if (method->Kind() == MethodDefinitionKind::GET && method->Value()->IsFunctionExpression()) {
@@ -62,14 +54,15 @@ TEST_F(ASTVerifierTest, ValidateGetterReturnTypeAnnotation)
                 function->ReturnTypeAnnotation()->SetTsType(checker.GlobalVoidType());
             }
         }
-    });
+    };
 
-    const auto &messages = Verify<GetterSetterValidation>(ast);
-
-    ASSERT_EQ(messages.size(), 1);
-    ASSERT_EQ(messages[0].Cause(), "GETTER METHOD HAS VOID RETURN TYPE IN RETURN TYPE ANNOTATION");
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        // Change annotation return type to void
+        GetAst()->IterateRecursively(cb);
+        EXPECT_TRUE(Verify<GetterSetterValidation>(
+            ExpectVerifierMessage {"GETTER METHOD HAS VOID RETURN TYPE IN RETURN TYPE ANNOTATION"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, ValidateGetterHasReturnStatement)
@@ -89,14 +82,7 @@ TEST_F(ASTVerifierTest, ValidateGetterHasReturnStatement)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
-
-    // Remove return statements from getter
-    ast->IterateRecursively([](ark::es2panda::ir::AstNode *child) {
+    auto cb = [](ark::es2panda::ir::AstNode *child) {
         if (child->IsMethodDefinition()) {
             auto *const method = child->AsMethodDefinition();
             if (method->Kind() == MethodDefinitionKind::GET && method->Value()->IsFunctionExpression()) {
@@ -105,14 +91,14 @@ TEST_F(ASTVerifierTest, ValidateGetterHasReturnStatement)
                 returns.clear();
             }
         }
-    });
-
-    const auto &messages = Verify<GetterSetterValidation>(ast);
-
-    ASSERT_EQ(messages.size(), 1);
-    ASSERT_EQ(messages[0].Cause(), "MISSING RETURN TYPE ANNOTATION AND RETURN STATEMENT IN GETTER METHOD");
-
-    impl_->DestroyContext(ctx);
+    };
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        // Remove return statements from getter
+        GetAst()->IterateRecursively(cb);
+        EXPECT_TRUE(Verify<GetterSetterValidation>(
+            ExpectVerifierMessage {"MISSING RETURN TYPE ANNOTATION AND RETURN STATEMENT IN GETTER METHOD"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, ValidateGetterVoidReturnStatement)
@@ -133,34 +119,24 @@ TEST_F(ASTVerifierTest, ValidateGetterVoidReturnStatement)
             }
         }
     )";
-
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
-
-    // Change return statement type to void
-    ast->IterateRecursively([&checker](ark::es2panda::ir::AstNode *child) {
+    auto cb = [&checker](ark::es2panda::ir::AstNode *child) {
         if (child->IsMethodDefinition()) {
             auto *const method = child->AsMethodDefinition();
             if (method->Kind() == MethodDefinitionKind::GET && method->Value()->IsFunctionExpression()) {
                 auto *const function = method->Value()->AsFunctionExpression()->Function();
                 auto &returns = function->ReturnStatements();
                 ASSERT_EQ(returns.size(), 1);
-
                 returns[0]->SetArgument(nullptr);
                 returns[0]->SetReturnType(&checker, checker.GlobalVoidType());
             }
         }
-    });
-
-    const auto &messages = Verify<GetterSetterValidation>(ast);
-
-    ASSERT_EQ(messages.size(), 1);
-    ASSERT_EQ(messages[0].Cause(), "GETTER METHOD HAS VOID RETURN TYPE");
-
-    impl_->DestroyContext(ctx);
+    };
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        // Change return statement type to void
+        GetAst()->IterateRecursively(cb);
+        EXPECT_TRUE(Verify<GetterSetterValidation>(ExpectVerifierMessage {"GETTER METHOD HAS VOID RETURN TYPE"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, ValidateGetterArguments)
@@ -182,17 +158,10 @@ TEST_F(ASTVerifierTest, ValidateGetterArguments)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
     // Create argument
     auto *ident = checker.AllocNode<Identifier>("ident", Allocator());
-    auto *param = checker.AllocNode<ETSParameterExpression>(ident, false, Allocator());
-
-    // Add argument to getter
-    ast->IterateRecursively([param](ark::es2panda::ir::AstNode *child) {
+    auto *param = checker.AllocNode<ETSParameterExpression>(ident, nullptr, Allocator());
+    auto cb = [param](ark::es2panda::ir::AstNode *child) {
         if (child->IsMethodDefinition()) {
             auto *const method = child->AsMethodDefinition();
             if (method->Kind() == MethodDefinitionKind::GET && method->Value()->IsFunctionExpression()) {
@@ -202,15 +171,14 @@ TEST_F(ASTVerifierTest, ValidateGetterArguments)
                 params.push_back(param);
             }
         }
-    });
-
-    const auto &messages = Verify<GetterSetterValidation>(ast);
-
-    // Expecting warning
-    ASSERT_EQ(messages.size(), 1);
-    ASSERT_EQ(messages[0].Cause(), "GETTER METHOD HAS INCORRECT NUMBER OF ARGUMENTS");
-
-    impl_->DestroyContext(ctx);
+    };
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        // Add argument to getter
+        GetAst()->IterateRecursively(cb);
+        EXPECT_TRUE(
+            Verify<GetterSetterValidation>(ExpectVerifierMessage {"GETTER METHOD HAS INCORRECT NUMBER OF ARGUMENTS"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, ValidateSetterReturnType)
@@ -231,14 +199,7 @@ TEST_F(ASTVerifierTest, ValidateSetterReturnType)
             }
         }
     )";
-
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    // Change setter return type
-    ast->IterateRecursively([&checker](ark::es2panda::ir::AstNode *child) {
+    auto cb = [&checker](ark::es2panda::ir::AstNode *child) {
         if (child->IsMethodDefinition()) {
             auto *const method = child->AsMethodDefinition();
             if (method->Kind() == MethodDefinitionKind::SET && method->Value()->IsFunctionExpression()) {
@@ -247,15 +208,14 @@ TEST_F(ASTVerifierTest, ValidateSetterReturnType)
                 function->ReturnTypeAnnotation()->SetTsType(checker.GlobalIntType());
             }
         }
-    });
+    };
 
-    const auto &messages = Verify<GetterSetterValidation>(ast);
-
-    // Expecting warning
-    ASSERT_EQ(messages.size(), 1);
-    ASSERT_EQ(messages[0].Cause(), "SETTER METHOD HAS NON-VOID RETURN TYPE");
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        // Change setter return type
+        GetAst()->IterateRecursively(cb);
+        EXPECT_TRUE(Verify<GetterSetterValidation>(ExpectVerifierMessage {"SETTER METHOD HAS NON-VOID RETURN TYPE"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, ValidateSetterArguments)
@@ -276,14 +236,7 @@ TEST_F(ASTVerifierTest, ValidateSetterArguments)
             }
         }
     )";
-
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    // Change setter arguments
-    ast->IterateRecursively([](ark::es2panda::ir::AstNode *child) {
+    auto cb = [](ark::es2panda::ir::AstNode *child) {
         if (child->IsMethodDefinition()) {
             auto *const method = child->AsMethodDefinition();
             if (method->Kind() == MethodDefinitionKind::SET && method->Value()->IsFunctionExpression()) {
@@ -293,15 +246,14 @@ TEST_F(ASTVerifierTest, ValidateSetterArguments)
                 params.clear();
             }
         }
-    });
-
-    const auto &messages = Verify<GetterSetterValidation>(ast);
-
-    // Expecting warning
-    ASSERT_EQ(messages.size(), 1);
-    ASSERT_EQ(messages[0].Cause(), "SETTER METHOD HAS INCORRECT NUMBER OF ARGUMENTS");
-
-    impl_->DestroyContext(ctx);
+    };
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        // Change setter arguments
+        GetAst()->IterateRecursively(cb);
+        EXPECT_TRUE(
+            Verify<GetterSetterValidation>(ExpectVerifierMessage {"SETTER METHOD HAS INCORRECT NUMBER OF ARGUMENTS"}));
+    }
 }
 
 }  // anonymous namespace

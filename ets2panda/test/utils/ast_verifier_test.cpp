@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,17 +28,9 @@ AstVerifierTest::AstVerifierTest()
 
 AstVerifierTest::~AstVerifierTest()
 {
+    ASSERT(ctx_ == nullptr);
     delete allocator_;
     impl_->DestroyConfig(cfg_);
-}
-
-es2panda_Context *AstVerifierTest::CreateContextAndProceedToState(const es2panda_Impl *impl, es2panda_Config *config,
-                                                                  char const *source, char const *fileName,
-                                                                  es2panda_ContextState state)
-{
-    es2panda_Context *ctx = impl->CreateContextFromString(config, source, fileName);
-    impl->ProceedToState(ctx, state);
-    return ctx;
 }
 
 }  // namespace test::utils

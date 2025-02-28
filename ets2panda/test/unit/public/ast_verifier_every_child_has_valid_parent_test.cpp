@@ -22,7 +22,6 @@
 #include <gtest/gtest.h>
 
 using ark::es2panda::compiler::ast_verifier::EveryChildHasValidParent;
-using ark::es2panda::ir::AstNode;
 
 namespace {
 TEST_F(ASTVerifierTest, ReturnTypeInLambda)
@@ -33,14 +32,10 @@ TEST_F(ASTVerifierTest, ReturnTypeInLambda)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<EveryChildHasValidParent>(ast);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<EveryChildHasValidParent>());
+    }
 }
 
 TEST_F(ASTVerifierTest, TSThisType)
@@ -53,14 +48,10 @@ TEST_F(ASTVerifierTest, TSThisType)
         function main () {}
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<EveryChildHasValidParent>(ast);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<EveryChildHasValidParent>());
+    }
 }
 
 TEST_F(ASTVerifierTest, TupleFieldInInterface)
@@ -71,14 +62,10 @@ TEST_F(ASTVerifierTest, TupleFieldInInterface)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<EveryChildHasValidParent>(ast);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<EveryChildHasValidParent>());
+    }
 }
 
 }  // namespace

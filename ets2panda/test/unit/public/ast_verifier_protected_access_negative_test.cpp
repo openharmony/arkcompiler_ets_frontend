@@ -17,7 +17,6 @@
 #include "checker/ETSchecker.h"
 
 using ark::es2panda::compiler::ast_verifier::ModifierAccessValid;
-using ark::es2panda::ir::ETSModule;
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestNegative1)
 {
@@ -30,25 +29,21 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative1)
             let a = base.a;
         }
     )";
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        GetAst()
+            ->AsETSModule()
+            ->Statements()[1]
+            ->AsClassDeclaration()
+            ->Definition()
+            ->AsClassDefinition()
+            ->Body()[0]
+            ->AsClassProperty()
+            ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
-    auto *ast = reinterpret_cast<ETSModule *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
-
-    ast->AsETSModule()
-        ->Statements()[1]
-        ->AsClassDeclaration()
-        ->Definition()
-        ->AsClassDefinition()
-        ->Body()[0]
-        ->AsClassProperty()
-        ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
-
-    const auto &messages = Verify<ModifierAccessValid>(ast);
-    ASSERT_EQ(messages.size(), 1);
-
-    impl_->DestroyContext(ctx);
+        EXPECT_TRUE(Verify<ModifierAccessValid>(
+            ExpectVerifierMessage {"PROPERTY_NOT_VISIBLE_HERE(AstNodeType::MEMBER_EXPRESSION, line 7)"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestNegative2)
@@ -63,25 +58,20 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative2)
             let a = derived.a;
         }
     )";
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        GetAst()
+            ->AsETSModule()
+            ->Statements()[1]
+            ->AsClassDeclaration()
+            ->Definition()
+            ->AsClassDefinition()
+            ->Body()[0]
+            ->AsClassProperty()
+            ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
-    auto *ast = reinterpret_cast<ETSModule *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
-
-    ast->AsETSModule()
-        ->Statements()[1]
-        ->AsClassDeclaration()
-        ->Definition()
-        ->AsClassDefinition()
-        ->Body()[0]
-        ->AsClassProperty()
-        ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
-
-    const auto &messages = Verify<ModifierAccessValid>(ast);
-    ASSERT_EQ(messages.size(), 1);
-
-    impl_->DestroyContext(ctx);
+        EXPECT_TRUE(Verify<ModifierAccessValid>(ExpectVerifierMessage {"PROPERTY_NOT_VISIBLE_HERE"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestNegative3)
@@ -96,25 +86,21 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative3)
             let a = derived.a;
         }
     )";
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        GetAst()
+            ->AsETSModule()
+            ->Statements()[1]
+            ->AsClassDeclaration()
+            ->Definition()
+            ->AsClassDefinition()
+            ->Body()[0]
+            ->AsClassProperty()
+            ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
-    auto *ast = reinterpret_cast<ETSModule *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
-
-    ast->AsETSModule()
-        ->Statements()[1]
-        ->AsClassDeclaration()
-        ->Definition()
-        ->AsClassDefinition()
-        ->Body()[0]
-        ->AsClassProperty()
-        ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
-
-    const auto &messages = Verify<ModifierAccessValid>(ast);
-    ASSERT_EQ(messages.size(), 1);
-
-    impl_->DestroyContext(ctx);
+        EXPECT_TRUE(Verify<ModifierAccessValid>(
+            ExpectVerifierMessage {"PROPERTY_NOT_VISIBLE_HERE(AstNodeType::MEMBER_EXPRESSION, line 8)"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestNegative4)
@@ -131,35 +117,31 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative4)
             base.protectedMethod();
         }
     )";
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        GetAst()
+            ->AsETSModule()
+            ->Statements()[0]
+            ->AsClassDeclaration()
+            ->Definition()
+            ->AsClassDefinition()
+            ->Body()[1]
+            ->AsClassElement()
+            ->Value()
+            ->AsFunctionExpression()
+            ->Function()
+            ->AsScriptFunction()
+            ->Body()
+            ->AsBlockStatement()
+            ->Statements()[1]
+            ->AsExpressionStatement()
+            ->GetExpression()
+            ->AsCallExpression()
+            ->Signature()
+            ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PROTECTED);
 
-    auto ast = GetAstFromContext<ETSModule>(impl_, ctx);
-
-    ast->AsETSModule()
-        ->Statements()[0]
-        ->AsClassDeclaration()
-        ->Definition()
-        ->AsClassDefinition()
-        ->Body()[1]
-        ->AsClassElement()
-        ->Value()
-        ->AsFunctionExpression()
-        ->Function()
-        ->AsScriptFunction()
-        ->Body()
-        ->AsBlockStatement()
-        ->Statements()[1]
-        ->AsExpressionStatement()
-        ->GetExpression()
-        ->AsCallExpression()
-        ->Signature()
-        ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PROTECTED);
-
-    const auto &messages = Verify<ModifierAccessValid>(ast);
-    ASSERT_EQ(messages.size(), 1);
-
-    impl_->DestroyContext(ctx);
+        EXPECT_TRUE(Verify<ModifierAccessValid>(ExpectVerifierMessage {"PROPERTY_NOT_VISIBLE_HERE"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestNegative5)
@@ -177,35 +159,31 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative5)
             derived.protectedMethod();
         }
     )";
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        GetAst()
+            ->AsETSModule()
+            ->Statements()[0]
+            ->AsClassDeclaration()
+            ->Definition()
+            ->AsClassDefinition()
+            ->Body()[1]
+            ->AsClassElement()
+            ->Value()
+            ->AsFunctionExpression()
+            ->Function()
+            ->AsScriptFunction()
+            ->Body()
+            ->AsBlockStatement()
+            ->Statements()[1]
+            ->AsExpressionStatement()
+            ->GetExpression()
+            ->AsCallExpression()
+            ->Signature()
+            ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PROTECTED);
 
-    auto ast = GetAstFromContext<ETSModule>(impl_, ctx);
-
-    ast->AsETSModule()
-        ->Statements()[0]
-        ->AsClassDeclaration()
-        ->Definition()
-        ->AsClassDefinition()
-        ->Body()[1]
-        ->AsClassElement()
-        ->Value()
-        ->AsFunctionExpression()
-        ->Function()
-        ->AsScriptFunction()
-        ->Body()
-        ->AsBlockStatement()
-        ->Statements()[1]
-        ->AsExpressionStatement()
-        ->GetExpression()
-        ->AsCallExpression()
-        ->Signature()
-        ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PROTECTED);
-
-    const auto &messages = Verify<ModifierAccessValid>(ast);
-    ASSERT_EQ(messages.size(), 1);
-
-    impl_->DestroyContext(ctx);
+        EXPECT_TRUE(Verify<ModifierAccessValid>(ExpectVerifierMessage {"PROPERTY_NOT_VISIBLE_HERE"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestNegative6)
@@ -223,33 +201,29 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative6)
             derived.protectedMethod();
         }
     )";
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        GetAst()
+            ->AsETSModule()
+            ->Statements()[0]
+            ->AsClassDeclaration()
+            ->Definition()
+            ->AsClassDefinition()
+            ->Body()[1]
+            ->AsClassElement()
+            ->Value()
+            ->AsFunctionExpression()
+            ->Function()
+            ->AsScriptFunction()
+            ->Body()
+            ->AsBlockStatement()
+            ->Statements()[1]
+            ->AsExpressionStatement()
+            ->GetExpression()
+            ->AsCallExpression()
+            ->Signature()
+            ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PROTECTED);
 
-    auto ast = GetAstFromContext<ETSModule>(impl_, ctx);
-
-    ast->AsETSModule()
-        ->Statements()[0]
-        ->AsClassDeclaration()
-        ->Definition()
-        ->AsClassDefinition()
-        ->Body()[1]
-        ->AsClassElement()
-        ->Value()
-        ->AsFunctionExpression()
-        ->Function()
-        ->AsScriptFunction()
-        ->Body()
-        ->AsBlockStatement()
-        ->Statements()[1]
-        ->AsExpressionStatement()
-        ->GetExpression()
-        ->AsCallExpression()
-        ->Signature()
-        ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PROTECTED);
-
-    const auto &messages = Verify<ModifierAccessValid>(ast);
-    ASSERT_EQ(messages.size(), 1);
-
-    impl_->DestroyContext(ctx);
+        EXPECT_TRUE(Verify<ModifierAccessValid>(ExpectVerifierMessage {"PROPERTY_NOT_VISIBLE_HERE"}));
+    }
 }

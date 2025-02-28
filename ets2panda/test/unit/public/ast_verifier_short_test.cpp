@@ -55,35 +55,28 @@ using ark::es2panda::varbinder::VariableFlags;
 TEST_F(ASTVerifierTest, NullParent)
 {
     StringLiteral emptyNode;
-    const auto &messages = VerifyNode<NodeHasParent>(&emptyNode);
-    bool hasParent = messages.empty();
-    ASSERT_FALSE(hasParent);
-    ASSERT_EQ(messages.size(), 1);
+    EXPECT_TRUE(VerifyNode<NodeHasParent>(&emptyNode,
+                                          ExpectVerifierMessage {"NULL_PARENT(AstNodeType::STRING_LITERAL, line 1)"}));
 }
 
 TEST_F(ASTVerifierTest, NullRange)
 {
     StringLiteral emptyNode;
-    const auto &messages = VerifyNode<NodeHasSourceRange>(&emptyNode);
-    bool hasSourceRange = messages.empty();
-    ASSERT_FALSE(hasSourceRange);
-    ASSERT_EQ(messages.size(), 1);
+    EXPECT_TRUE(VerifyNode<NodeHasSourceRange>(
+        &emptyNode, ExpectVerifierMessage {"NULL_RANGE(AstNodeType::STRING_LITERAL, line 1)"}));
 }
 
 TEST_F(ASTVerifierTest, NullType)
 {
     StringLiteral emptyNode;
-    const auto &messages = VerifyNode<NodeHasType>(&emptyNode);
-    bool hasType = messages.empty();
-    ASSERT_EQ(hasType, false);
-    ASSERT_NE(messages.size(), 0);
+    EXPECT_TRUE(VerifyNode<NodeHasType>(&emptyNode,
+                                        ExpectVerifierMessage {"NULL_TS_TYPE(AstNodeType::STRING_LITERAL, line 1)"}));
 }
 
 TEST_F(ASTVerifierTest, WithoutScope)
 {
     StringLiteral emptyNode;
-    const auto &messages = VerifyNode<VariableHasScope>(&emptyNode);
-    ASSERT_EQ(messages.size(), 0);
+    EXPECT_TRUE(VerifyNode<VariableHasScope>(&emptyNode));
 }
 
 TEST_F(ASTVerifierTest, ScopeTest)
@@ -101,8 +94,7 @@ TEST_F(ASTVerifierTest, ScopeTest)
 
     local.SetScope(&scope);
 
-    const auto &messages = VerifyNode<VariableHasScope>(&ident);
-    ASSERT_EQ(messages.size(), 0);
+    EXPECT_TRUE(VerifyNode<VariableHasScope>(&ident));
 }
 
 TEST_F(ASTVerifierTest, ScopeNodeTest)
@@ -121,8 +113,7 @@ TEST_F(ASTVerifierTest, ScopeNodeTest)
 
     local.SetScope(&scope);
 
-    const auto &messages = VerifyNode<VariableHasEnclosingScope>(&ident);
-    ASSERT_EQ(messages.size(), 0);
+    EXPECT_TRUE(VerifyNode<VariableHasEnclosingScope>(&ident));
 }
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect1)
@@ -137,8 +128,7 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect1)
     left.SetTsType(etschecker.GlobalIntType());
     right.SetTsType(etschecker.GlobalIntType());
 
-    const auto &messages = VerifyNode<ArithmeticOperationValid>(arithmeticExpression.AsBinaryExpression());
-    ASSERT_EQ(messages.size(), 0);
+    EXPECT_TRUE(VerifyNode<ArithmeticOperationValid>(arithmeticExpression.AsBinaryExpression()));
 }
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect2)
@@ -160,8 +150,7 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect2)
     left2.SetTsType(etschecker.GlobalIntType());
     right2.SetTsType(etschecker.GlobalIntType());
 
-    const auto &messages = VerifyNode<ArithmeticOperationValid>(arithmeticExpression.AsBinaryExpression());
-    ASSERT_EQ(messages.size(), 0);
+    EXPECT_TRUE(VerifyNode<ArithmeticOperationValid>(arithmeticExpression.AsBinaryExpression()));
 }
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionNegative1)
@@ -178,8 +167,8 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionNegative1)
     left.SetTsType(etschecker.GlobalETSStringLiteralType());
     right.SetTsType(etschecker.GlobalIntType());
 
-    const auto &messages = VerifyNode<ArithmeticOperationValid>(arithmeticExpression.AsBinaryExpression());
-    ASSERT_EQ(messages.size(), 1);
+    EXPECT_TRUE(VerifyNode<ArithmeticOperationValid>(arithmeticExpression.AsBinaryExpression(),
+                                                     ExpectVerifierMessage {"Not a numeric type"}));
 }
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionNegative2)
@@ -194,8 +183,9 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionNegative2)
     left.SetTsType(etschecker.GlobalETSStringLiteralType());
     right.SetTsType(etschecker.GlobalIntType());
 
-    const auto &messages = VerifyNode<ArithmeticOperationValid>(arithmeticExpression.AsBinaryExpression());
-    ASSERT_EQ(messages.size(), 1);
+    EXPECT_TRUE(VerifyNode<ArithmeticOperationValid>(
+        arithmeticExpression.AsBinaryExpression(),
+        ExpectVerifierMessage {"Not a numeric type(AstNodeType::BOOLEAN_LITERAL, line 1)"}));
 }
 
 TEST_F(ASTVerifierTest, PrimitiveType)
@@ -206,11 +196,9 @@ TEST_F(ASTVerifierTest, PrimitiveType)
     auto ast = BooleanLiteral(true);
     ast.SetTsType(etschecker.CreateETSBooleanType(true));
 
-    auto messages = VerifyNode<NoPrimitiveTypes>(&ast);
-    ASSERT_EQ(messages.size(), 1);
+    ASSERT_TRUE(VerifyNode<NoPrimitiveTypes>(&ast, ExpectVerifierMessage {"PRIMITIVE_BEFORE_LOWERING"}));
     std::get<NoPrimitiveTypes>(invariants_).SetNumberLoweringOccured();
-    messages = VerifyNode<NoPrimitiveTypes>(&ast);
-    ASSERT_EQ(messages.size(), 0);
+    ASSERT_TRUE(VerifyNode<NoPrimitiveTypes>(&ast));
     std::get<NoPrimitiveTypes>(invariants_).SetNumberLoweringOccured(false);
 }
 
@@ -218,15 +206,17 @@ TEST_F(ASTVerifierTest, SequenceExpressionType)
 {
     auto de = DiagnosticEngine();
     auto checker = ETSChecker(de);
-    auto *last = Tree(Node<NumberLiteral>(Number {3}));
-    auto *sequenceExpression = Tree(Node<SequenceExpression>(
-        Nodes<Expression>(Node<NumberLiteral>(Number {1}), Node<NumberLiteral>(Number {2}), last)));
+    const auto literalsCount = 3;
+    std::array<NumberLiteral, literalsCount> literals {NumberLiteral {Number {1}}, NumberLiteral {Number {2}},
+                                                       NumberLiteral {Number {3}}};
+    ark::ArenaVector<Expression *> expressions {Allocator()->Adapter()};
+    expressions.insert(expressions.end(), {&literals[0], &literals[1], &literals[2]});
+    SequenceExpression sequenceExpression {std::move(expressions)};
 
-    last->SetTsType(checker.GlobalIntType());
-    sequenceExpression->SetTsType(checker.GlobalIntType());
+    literals[literalsCount - 1].SetTsType(checker.GlobalIntType());
+    sequenceExpression.SetTsType(checker.GlobalIntType());
 
-    const auto &messages = VerifyNode<SequenceExpressionHasLastType>(sequenceExpression);
-    ASSERT_EQ(messages.size(), 0);
+    EXPECT_TRUE(VerifyNode<SequenceExpressionHasLastType>(&sequenceExpression));
 }
 
 TEST_F(ASTVerifierTest, VariableNameIdentifierNameSameNegative)
@@ -240,40 +230,36 @@ TEST_F(ASTVerifierTest, VariableNameIdentifierNameSameNegative)
                 return num;
             }
             let n_tmp = tmp + 2;
-            return 1;
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        // Note(@kirillbychkov): Change Identifier name in variable lambda2
+        GetAst()
+            ->AsETSModule()
+            ->Statements()[0]
+            ->AsClassDeclaration()
+            ->Definition()
+            ->AsClassDefinition()
+            ->Body()[1]
+            ->AsClassElement()
+            ->Value()
+            ->AsFunctionExpression()
+            ->Function()
+            ->AsScriptFunction()
+            ->Body()
+            ->AsBlockStatement()
+            ->Statements()[1]
+            ->AsVariableDeclaration()
+            ->Declarators()[0]
+            ->AsVariableDeclarator()
+            ->Id()
+            ->AsIdentifier()
+            ->SetName("not_name");
 
-    auto ast = GetAstFromContext<ark::es2panda::ir::ETSModule>(impl_, ctx);
-
-    // Note(@kirillbychkov): Change Identifier name in variable lambda2
-    ast->AsETSModule()
-        ->Statements()[0]
-        ->AsClassDeclaration()
-        ->Definition()
-        ->AsClassDefinition()
-        ->Body()[1]
-        ->AsClassElement()
-        ->Value()
-        ->AsFunctionExpression()
-        ->Function()
-        ->AsScriptFunction()
-        ->Body()
-        ->AsBlockStatement()
-        ->Statements()[1]
-        ->AsVariableDeclaration()
-        ->Declarators()[0]
-        ->AsVariableDeclarator()
-        ->Id()
-        ->AsIdentifier()
-        ->SetName("not_name");
-
-    const auto &messages = Verify<VariableNameIdentifierNameSame>(ast);
-    ASSERT_EQ(messages.size(), 1);
-
-    impl_->DestroyContext(ctx);
+        EXPECT_TRUE(Verify<VariableNameIdentifierNameSame>(ExpectVerifierMessage {"IDENTIFIER_NAME_DIFFERENCE"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, VariableNameIdentifierNameSame)
@@ -287,14 +273,11 @@ TEST_F(ASTVerifierTest, VariableNameIdentifierNameSame)
                 return num;
             }
             let n_tmp = tmp + 2;
-            return 1;
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<ark::es2panda::ir::ETSModule>(impl_, ctx);
-    const auto &messages = Verify<VariableNameIdentifierNameSame>(ast);
-    ASSERT_EQ(messages.size(), 0);
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<VariableNameIdentifierNameSame>());
+    }
 }

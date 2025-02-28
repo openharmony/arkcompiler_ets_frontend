@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,34 +24,7 @@
 
 namespace ark::es2panda {
 
-class LoweringTest : public test::utils::AstVerifierTest {
-public:
-    LoweringTest() = default;
-
-    ~LoweringTest() override
-    {
-        if (ctx_ != nullptr) {
-            impl_->DestroyContext(ctx_);
-        }
-    }
-
-    parser::Program *SetupContext(const char *text, es2panda_ContextState state)
-    {
-        ASSERT(ctx_ == nullptr);
-        ctx_ = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", state);
-        ASSERT(impl_->ContextState(ctx_) == state);
-
-        return reinterpret_cast<parser::Program *>(impl_->ContextProgram(ctx_));
-    }
-
-    NO_COPY_SEMANTIC(LoweringTest);
-    NO_MOVE_SEMANTIC(LoweringTest);
-
-protected:
-    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    es2panda_Context *ctx_ {};
-    // NOLINTEND(misc-non-private-member-variables-in-classes)
-};
+using LoweringTest = test::utils::AstVerifierTest;
 
 }  // namespace ark::es2panda
 

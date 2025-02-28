@@ -23,7 +23,6 @@
 
 using ark::es2panda::checker::SignatureFlags;
 using ark::es2panda::compiler::ast_verifier::CheckAbstractMethod;
-using ark::es2panda::ir::AstNode;
 using ark::es2panda::ir::Identifier;
 using ark::es2panda::ir::MemberExpression;
 using ark::es2panda::ir::MemberExpressionKind;
@@ -49,36 +48,28 @@ TEST_F(ASTVerifierTest, LabelsHaveReferences)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        // Setup call to abstract method via super
+        GetAst()->IterateRecursively([&checker, this](ark::es2panda::ir::AstNode *child) {
+            if (child->IsCallExpression()) {
+                auto *const call = child->AsCallExpression();
+                auto *super = checker.AllocNode<SuperExpression>();
+                auto *id = checker.AllocNode<Identifier>("foo", Allocator());
 
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
+                auto *callee =
+                    checker.AllocNode<MemberExpression>(super, id, MemberExpressionKind::PROPERTY_ACCESS, false, false);
+                call->SetCallee(callee);
 
-    // Setup call to abstract method via super
-    ast->IterateRecursively([&checker, this](ark::es2panda::ir::AstNode *child) {
-        if (child->IsCallExpression()) {
-            auto *const call = child->AsCallExpression();
-            auto *super = checker.AllocNode<SuperExpression>();
-            auto *id = checker.AllocNode<Identifier>("foo", Allocator());
+                // For testing just copy signature from original callee and add abstract flag
+                auto *const signature = call->Signature();
+                signature->AddSignatureFlag(SignatureFlags::ABSTRACT);
+                call->SetSignature(signature);
+            }
+        });
 
-            auto *callee =
-                checker.AllocNode<MemberExpression>(super, id, MemberExpressionKind::PROPERTY_ACCESS, false, false);
-            call->SetCallee(callee);
-
-            // For testing just copy signature from original callee and add abstract flag
-            auto *const signature = call->Signature();
-            signature->AddSignatureFlag(SignatureFlags::ABSTRACT);
-            call->SetSignature(signature);
-        }
-    });
-
-    const auto &messages = Verify<CheckAbstractMethod>(ast);
-
-    // Expecting warning
-    ASSERT_EQ(messages.size(), 1);
-    ASSERT_EQ(messages[0].Cause(), "CALL TO ABSTRACT METHOD VIA SUPER");
-
-    impl_->DestroyContext(ctx);
+        EXPECT_TRUE(Verify<CheckAbstractMethod>(ExpectVerifierMessage {"CALL TO ABSTRACT METHOD VIA SUPER"}));
+    }
 }
 
 }  // namespace

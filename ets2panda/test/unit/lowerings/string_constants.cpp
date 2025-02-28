@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,12 +27,15 @@ TEST_F(LoweringTest, TestStringConstansConcat)
     )";
     char const *expect = "abb1ccc123dddd";
 
-    ir::AstNode *const ast = SetupContext(text, ES2PANDA_STATE_CHECKED)->Ast();
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        const auto *const ast = GetAst();
 
-    ASSERT_FALSE(ast->IsAnyChild([](ir::AstNode *const node) { return node->IsBinaryExpression(); }));
-    ASSERT_TRUE(ast->IsAnyChild([expect](ir::AstNode *const node) {
-        return node->IsStringLiteral() && node->AsStringLiteral()->Str().Is(expect);
-    }));
+        ASSERT_FALSE(ast->IsAnyChild([](ir::AstNode *const node) { return node->IsBinaryExpression(); }));
+        ASSERT_TRUE(ast->IsAnyChild([expect](ir::AstNode *const node) {
+            return node->IsStringLiteral() && node->AsStringLiteral()->Str().Is(expect);
+        }));
+    }
 }
 
 }  // namespace ark::es2panda
