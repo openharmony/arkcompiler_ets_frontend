@@ -185,6 +185,15 @@ static bool IsClassMemberAccessModifier(lexer::TokenType type)
            type == lexer::TokenType::KEYW_PROTECTED || type == lexer::TokenType::KEYW_INTERNAL;
 }
 
+void ETSParser::ReportAccessModifierError(const lexer::Token &token)
+{
+    const auto keywordType = token.KeywordType();
+    if (InAmbientContext() && keywordType != lexer::TokenType::KEYW_PUBLIC &&
+        keywordType != lexer::TokenType::KEYW_PROTECTED) {
+        LogError(diagnostic::PROHIBITED_ACCESS_MODIFIER_IN_AMBIENT_CLASS, {token.ToString()}, token.Start());
+    }
+}
+
 std::tuple<ir::ModifierFlags, bool> ETSParser::ParseClassMemberAccessModifiers()
 {
     if (!IsClassMemberAccessModifier(Lexer()->GetToken().Type())) {
@@ -192,8 +201,7 @@ std::tuple<ir::ModifierFlags, bool> ETSParser::ParseClassMemberAccessModifiers()
     }
 
     char32_t nextCp = Lexer()->Lookahead();
-    if (!(nextCp != lexer::LEX_CHAR_EQUALS && nextCp != lexer::LEX_CHAR_COLON &&
-          nextCp != lexer::LEX_CHAR_LEFT_PAREN)) {
+    if (nextCp == lexer::LEX_CHAR_EQUALS || nextCp == lexer::LEX_CHAR_COLON || nextCp == lexer::LEX_CHAR_LEFT_PAREN) {
         return {ir::ModifierFlags::NONE, false};
     }
 
@@ -204,7 +212,9 @@ std::tuple<ir::ModifierFlags, bool> ETSParser::ParseClassMemberAccessModifiers()
 
     ir::ModifierFlags accessFlag = ir::ModifierFlags::NONE;
 
-    switch (Lexer()->GetToken().KeywordType()) {
+    const auto token = Lexer()->GetToken();
+
+    switch (token.KeywordType()) {
         case lexer::TokenType::KEYW_PUBLIC: {
             accessFlag = ir::ModifierFlags::PUBLIC;
             break;
@@ -220,8 +230,8 @@ std::tuple<ir::ModifierFlags, bool> ETSParser::ParseClassMemberAccessModifiers()
         case lexer::TokenType::KEYW_INTERNAL: {
             Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
             if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_PROTECTED) {
-                accessFlag = ir::ModifierFlags::INTERNAL;
-                return {accessFlag, true};
+                ReportAccessModifierError(token);
+                return {ir::ModifierFlags::INTERNAL, true};
             }
             accessFlag = ir::ModifierFlags::INTERNAL_PROTECTED;
             break;
@@ -230,6 +240,9 @@ std::tuple<ir::ModifierFlags, bool> ETSParser::ParseClassMemberAccessModifiers()
             UNREACHABLE();
         }
     }
+
+    ReportAccessModifierError(token);
+
     if (((GetContext().Status() & ParserStatus::FUNCTION) != 0) &&
         (accessFlag == ir::ModifierFlags::PUBLIC || accessFlag == ir::ModifierFlags::PRIVATE ||
          accessFlag == ir::ModifierFlags::PROTECTED)) {

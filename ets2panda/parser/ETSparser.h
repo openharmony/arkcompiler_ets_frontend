@@ -321,6 +321,7 @@ private:
     ir::ModifierFlags ParseInterfaceMethodModifiers();
     ir::ClassProperty *ParseInterfaceField();
     ir::MethodDefinition *ParseInterfaceMethod(ir::ModifierFlags flags, ir::MethodDefinitionKind methodKind);
+    void ReportAccessModifierError(const lexer::Token &token);
     std::tuple<ir::ModifierFlags, bool> ParseClassMemberAccessModifiers();
     ir::ModifierFlags ParseClassFieldModifiers(bool seenStatic);
     ir::ModifierFlags ParseClassMethodModifierFlag();
