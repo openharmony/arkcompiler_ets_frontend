@@ -20,4 +20,4 @@ function main(): void {
     let a: my_type/* @@ label */<Int, Double> = new Int();
 }
 
-/* @@@ label Error TypeError: Wrong number of type parameters for generic type alias  */
+/* @@@ label Error TypeError: Expected at least 1 type arguments, but got 2.  */

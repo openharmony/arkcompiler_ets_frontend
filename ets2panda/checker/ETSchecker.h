@@ -523,6 +523,10 @@ public:
     void ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaration *typeAliasNode,
                                                const ir::TSTypeParameterInstantiation *exactTypeParams);
     Type *HandleTypeAlias(ir::Expression *name, const ir::TSTypeParameterInstantiation *typeParams);
+    bool CheckMinimumTypeArgsPresent(const ir::TSTypeAliasDeclaration *typeAliasNode,
+                                     const ir::TSTypeParameterInstantiation *typeParams);
+    static ir::TypeNode *ResolveTypeNodeForTypeArg(const ir::TSTypeAliasDeclaration *typeAliasNode,
+                                                   const ir::TSTypeParameterInstantiation *typeParams, size_t idx);
     Type *GetTypeFromEnumReference(varbinder::Variable *var);
     Type *GetTypeFromTypeParameterReference(varbinder::LocalVariable *var, const lexer::SourcePosition &pos);
     Type *GetNonConstantType(Type *type);
