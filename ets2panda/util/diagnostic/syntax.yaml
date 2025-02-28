@@ -963,3 +963,7 @@ syntax:
 - name: REST_PARAM_LAST
   id: 238
   message: "Rest parameter should be the last one."
+
+- name: READONLY_TYPE_EXPECTED
+  id: 239
+  message: "Readonly<T> utility type expected but readonly<T> found."
