@@ -264,36 +264,28 @@ __attribute__((unused)) static es2panda_Context *CreateContext(es2panda_Config *
         return reinterpret_cast<es2panda_Context *>(res);
     }
 
-    try {
-        res->sourceFile = new SourceFile(res->sourceFileName, res->input, cfg->options->IsModule());
-        res->allocator = new ArenaAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
-        res->queue = new compiler::CompileQueue(cfg->options->GetThread());
+    res->sourceFile = new SourceFile(res->sourceFileName, res->input, cfg->options->IsModule());
+    res->allocator = new ArenaAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
+    res->queue = new compiler::CompileQueue(cfg->options->GetThread());
 
-        auto *varbinder = res->allocator->New<varbinder::ETSBinder>(res->allocator);
-        res->parserProgram = new parser::Program(res->allocator, varbinder);
-        res->diagnosticEngine = cfg->diagnosticEngine;
-        res->parser = new parser::ETSParser(res->parserProgram, *cfg->options, *cfg->diagnosticEngine,
-                                            parser::ParserStatus::NO_OPTS);
-        res->checker = new checker::ETSChecker(*res->diagnosticEngine);
-        res->analyzer = new checker::ETSAnalyzer(res->checker);
-        res->checker->SetAnalyzer(res->analyzer);
+    auto *varbinder = res->allocator->New<varbinder::ETSBinder>(res->allocator);
+    res->parserProgram = new parser::Program(res->allocator, varbinder);
+    res->diagnosticEngine = cfg->diagnosticEngine;
+    res->parser =
+        new parser::ETSParser(res->parserProgram, *cfg->options, *cfg->diagnosticEngine, parser::ParserStatus::NO_OPTS);
+    res->checker = new checker::ETSChecker(*res->diagnosticEngine);
+    res->analyzer = new checker::ETSAnalyzer(res->checker);
+    res->checker->SetAnalyzer(res->analyzer);
 
-        varbinder->SetProgram(res->parserProgram);
+    varbinder->SetProgram(res->parserProgram);
 
-        varbinder->SetContext(res);
-        res->codeGenCb = CompileJob;
-        res->phases = compiler::GetPhaseList(ScriptExtension::STS);
-        res->currentPhase = 0;
-        res->emitter = new compiler::ETSEmitter(res);
-        res->program = nullptr;
-        res->state = ES2PANDA_STATE_NEW;
-    } catch (util::ThrowableDiagnostic &e) {
-        std::stringstream ss;
-        ss << util::DiagnosticTypeToString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
-           << e.Offset() << "]";
-        res->errorMessage = ss.str();
-        res->state = ES2PANDA_STATE_ERROR;
-    }
+    varbinder->SetContext(res);
+    res->codeGenCb = CompileJob;
+    res->phases = compiler::GetPhaseList(ScriptExtension::STS);
+    res->currentPhase = 0;
+    res->emitter = new compiler::ETSEmitter(res);
+    res->program = nullptr;
+    res->state = ES2PANDA_STATE_NEW;
     return reinterpret_cast<es2panda_Context *>(res);
 }
 
@@ -333,25 +325,10 @@ __attribute__((unused)) static Context *Parse(Context *ctx)
         ctx->errorMessage = "Bad state at entry to Parse, needed NEW";
         return ctx;
     }
-    auto handleError = [ctx](const util::DiagnosticBase &e) {
-        std::stringstream ss;
-        ss << util::DiagnosticTypeToString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
-           << e.Offset() << "]";
-        ctx->errorMessage = ss.str();
-        ctx->state = ES2PANDA_STATE_ERROR;
-    };
 
-    try {
-        ctx->parser->ParseScript(*ctx->sourceFile,
-                                 ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB);
-        ctx->state = ES2PANDA_STATE_PARSED;
-        if (ctx->diagnosticEngine->IsAnyError()) {
-            handleError(ctx->parser->DiagnosticEngine().GetAnyError());
-        }
-    } catch (const util::ThrowableDiagnostic &e) {
-        handleError(e);
-    }
-
+    ctx->parser->ParseScript(*ctx->sourceFile,
+                             ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB);
+    ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_PARSED : ES2PANDA_STATE_ERROR;
     return ctx;
 }
 
@@ -366,22 +343,13 @@ __attribute__((unused)) static Context *Bind(Context *ctx)
     }
 
     ES2PANDA_ASSERT(ctx->state == ES2PANDA_STATE_PARSED);
-
-    try {
-        do {
-            if (ctx->currentPhase >= ctx->phases.size()) {
-                break;
-            }
-            ctx->phases[ctx->currentPhase]->Apply(ctx, ctx->parserProgram);
-        } while (ctx->phases[ctx->currentPhase++]->Name() != compiler::ResolveIdentifiers::NAME);
-        ctx->state = ES2PANDA_STATE_BOUND;
-    } catch (util::ThrowableDiagnostic &e) {
-        std::stringstream ss;
-        ss << util::DiagnosticTypeToString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
-           << e.Offset() << "]";
-        ctx->errorMessage = ss.str();
-        ctx->state = ES2PANDA_STATE_ERROR;
-    }
+    do {
+        if (ctx->currentPhase >= ctx->phases.size()) {
+            break;
+        }
+        ctx->phases[ctx->currentPhase]->Apply(ctx, ctx->parserProgram);
+    } while (ctx->phases[ctx->currentPhase++]->Name() != compiler::ResolveIdentifiers::NAME);
+    ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_BOUND : ES2PANDA_STATE_ERROR;
     return ctx;
 }
 
@@ -397,30 +365,14 @@ __attribute__((unused)) static Context *Check(Context *ctx)
 
     ES2PANDA_ASSERT(ctx->state >= ES2PANDA_STATE_PARSED && ctx->state < ES2PANDA_STATE_CHECKED);
 
-    auto handleError = [ctx](const util::DiagnosticBase &e) {
-        std::stringstream ss;
-        ss << util::DiagnosticTypeToString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
-           << e.Offset() << "]";
-        ctx->errorMessage = ss.str();
-        ctx->state = ES2PANDA_STATE_ERROR;
-    };
-
-    try {
-        do {
-            if (ctx->currentPhase >= ctx->phases.size()) {
-                break;
-            }
-
-            ctx->phases[ctx->currentPhase]->Apply(ctx, ctx->parserProgram);
-        } while (ctx->phases[ctx->currentPhase++]->Name() != compiler::CheckerPhase::NAME);
-        if (ctx->diagnosticEngine->IsAnyError()) {
-            handleError(ctx->diagnosticEngine->GetAnyError());
-        } else {
-            ctx->state = ES2PANDA_STATE_CHECKED;
+    do {
+        if (ctx->currentPhase >= ctx->phases.size()) {
+            break;
         }
-    } catch (const util::ThrowableDiagnostic &e) {
-        handleError(e);
-    }
+
+        ctx->phases[ctx->currentPhase]->Apply(ctx, ctx->parserProgram);
+    } while (ctx->phases[ctx->currentPhase++]->Name() != compiler::CheckerPhase::NAME);
+    ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_CHECKED : ES2PANDA_STATE_ERROR;
     return ctx;
 }
 
@@ -435,21 +387,10 @@ __attribute__((unused)) static Context *Lower(Context *ctx)
     }
 
     ES2PANDA_ASSERT(ctx->state == ES2PANDA_STATE_CHECKED);
-
-    try {
-        while (ctx->currentPhase < ctx->phases.size()) {
-            ctx->phases[ctx->currentPhase++]->Apply(ctx, ctx->parserProgram);
-        }
-
-        ctx->state = ES2PANDA_STATE_LOWERED;
-    } catch (util::ThrowableDiagnostic &e) {
-        std::stringstream ss;
-        ss << util::DiagnosticTypeToString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
-           << e.Offset() << "]";
-        ctx->errorMessage = ss.str();
-        ctx->state = ES2PANDA_STATE_ERROR;
+    while (ctx->currentPhase < ctx->phases.size()) {
+        ctx->phases[ctx->currentPhase++]->Apply(ctx, ctx->parserProgram);
     }
-
+    ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_LOWERED : ES2PANDA_STATE_ERROR;
     return ctx;
 }
 
@@ -466,33 +407,23 @@ __attribute__((unused)) static Context *GenerateAsm(Context *ctx)
     ES2PANDA_ASSERT(ctx->state == ES2PANDA_STATE_LOWERED);
 
     auto *emitter = ctx->emitter;
-    try {
-        emitter->GenAnnotation();
+    emitter->GenAnnotation();
 
-        // Handle context literals.
-        uint32_t index = 0;
-        for (const auto &buff : ctx->contextLiterals) {
-            emitter->AddLiteralBuffer(buff, index++);
-        }
-
-        emitter->LiteralBufferIndex() += ctx->contextLiterals.size();
-
-        /* Main thread can also be used instead of idling */
-        ctx->queue->Schedule(ctx);
-        ctx->queue->Consume();
-        ctx->queue->Wait(
-            [emitter](compiler::CompileJob *job) { emitter->AddProgramElement(job->GetProgramElement()); });
-        ES2PANDA_ASSERT(ctx->program == nullptr);
-        ctx->program = emitter->Finalize(ctx->config->options->IsDumpDebugInfo(), compiler::Signatures::ETS_GLOBAL);
-
-        ctx->state = ES2PANDA_STATE_ASM_GENERATED;
-    } catch (util::ThrowableDiagnostic &e) {
-        std::stringstream ss;
-        ss << util::DiagnosticTypeToString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
-           << e.Offset() << "]";
-        ctx->errorMessage = ss.str();
-        ctx->state = ES2PANDA_STATE_ERROR;
+    // Handle context literals.
+    uint32_t index = 0;
+    for (const auto &buff : ctx->contextLiterals) {
+        emitter->AddLiteralBuffer(buff, index++);
     }
+
+    emitter->LiteralBufferIndex() += ctx->contextLiterals.size();
+
+    /* Main thread can also be used instead of idling */
+    ctx->queue->Schedule(ctx);
+    ctx->queue->Consume();
+    ctx->queue->Wait([emitter](compiler::CompileJob *job) { emitter->AddProgramElement(job->GetProgramElement()); });
+    ES2PANDA_ASSERT(ctx->program == nullptr);
+    ctx->program = emitter->Finalize(ctx->config->options->IsDumpDebugInfo(), compiler::Signatures::ETS_GLOBAL);
+    ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_ASM_GENERATED : ES2PANDA_STATE_ERROR;
     return ctx;
 }
 
@@ -508,19 +439,10 @@ __attribute__((unused)) Context *GenerateBin(Context *ctx)
 
     ES2PANDA_ASSERT(ctx->state == ES2PANDA_STATE_ASM_GENERATED);
 
-    try {
-        ES2PANDA_ASSERT(ctx->program != nullptr);
-        util::GenerateProgram(ctx->program, *ctx->config->options,
-                              [ctx](const std::string &str) { ctx->errorMessage = str; });
-
-        ctx->state = ES2PANDA_STATE_BIN_GENERATED;
-    } catch (util::ThrowableDiagnostic &e) {
-        std::stringstream ss;
-        ss << util::DiagnosticTypeToString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
-           << e.Offset() << "]";
-        ctx->errorMessage = ss.str();
-        ctx->state = ES2PANDA_STATE_ERROR;
-    }
+    ES2PANDA_ASSERT(ctx->program != nullptr);
+    util::GenerateProgram(ctx->program, *ctx->config->options,
+                          [ctx](const std::string &str) { ctx->diagnosticEngine->LogFatalError(str); });
+    ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_BIN_GENERATED : ES2PANDA_STATE_ERROR;
     return ctx;
 }
 
@@ -692,27 +614,52 @@ extern "C" es2panda_SourceRange *CreateSourceRange(es2panda_Context *context, es
     return reinterpret_cast<es2panda_SourceRange *>(allocator->New<lexer::SourceRange>(startE2p, endE2p));
 }
 
-extern "C" void LogTypeError(es2panda_Context *context, const char *errorMsg, es2panda_SourcePosition *pos)
+extern "C" const es2panda_DiagnosticKind *CreateDiagnosticKind(es2panda_Context *context, const char *dmessage)
 {
     auto ctx = reinterpret_cast<Context *>(context);
-    auto posE2p = *(reinterpret_cast<lexer::SourcePosition *>(pos));
-    ctx->checker->Initialize(ctx->parserProgram->VarBinder());
-    ctx->checker->LogTypeError(errorMsg, posE2p);
+    auto id = ctx->config->diagnosticKindStorage.size() + 1;
+    ctx->config->diagnosticKindStorage.emplace_back(util::DiagnosticType::PLUGIN, id, dmessage);
+    return reinterpret_cast<const es2panda_DiagnosticKind *>(&ctx->config->diagnosticKindStorage.back());
 }
 
-extern "C" void LogWarning(es2panda_Context *context, const char *warnMsg, es2panda_SourcePosition *pos)
+extern "C" void LogDiagnostic(es2panda_Context *context, const es2panda_DiagnosticKind *ekind, const char **args,
+                              size_t argc, es2panda_SourcePosition *pos)
 {
     auto ctx = reinterpret_cast<Context *>(context);
-    auto posE2p = *(reinterpret_cast<lexer::SourcePosition *>(pos));
-    ctx->checker->Initialize(ctx->parserProgram->VarBinder());
-    ctx->checker->Warning(warnMsg, posE2p);
+    auto kind = reinterpret_cast<const diagnostic::DiagnosticKind *>(ekind);
+    util::DiagnosticMessageParams params;
+    for (size_t i = 0; i < argc; ++i) {
+        params.push_back(args[i]);
+    }
+    auto posE2p = reinterpret_cast<lexer::SourcePosition *>(pos);
+    ctx->diagnosticEngine->LogDiagnostic(*kind, params, *posE2p);
 }
 
-extern "C" void LogSyntaxError(es2panda_Context *context, const char *errorMsg, es2panda_SourcePosition *pos)
+const es2panda_DiagnosticStorage *GetDiagnostics(es2panda_Context *context, size_t etype)
 {
-    auto *parser = reinterpret_cast<Context *>(context)->parser;
-    auto posE2p = *(reinterpret_cast<lexer::SourcePosition *>(pos));
-    parser->LogSyntaxError(errorMsg, posE2p);
+    auto ctx = reinterpret_cast<Context *>(context);
+    auto type = static_cast<util::DiagnosticType>(etype);
+    return reinterpret_cast<const es2panda_DiagnosticStorage *>(&ctx->diagnosticEngine->GetDiagnosticStorage(type));
+}
+
+extern "C" const es2panda_DiagnosticStorage *GetSemanticErrors(es2panda_Context *context)
+{
+    return GetDiagnostics(context, util::DiagnosticType::SEMANTIC);
+}
+
+extern "C" const es2panda_DiagnosticStorage *GetSyntaxErrors(es2panda_Context *context)
+{
+    return GetDiagnostics(context, util::DiagnosticType::SYNTAX);
+}
+
+extern "C" const es2panda_DiagnosticStorage *GetPluginErrors(es2panda_Context *context)
+{
+    return GetDiagnostics(context, util::DiagnosticType::PLUGIN);
+}
+
+extern "C" const es2panda_DiagnosticStorage *GetWarnings(es2panda_Context *context)
+{
+    return GetDiagnostics(context, util::DiagnosticType::WARNING);
 }
 
 extern "C" size_t SourcePositionIndex([[maybe_unused]] es2panda_Context *context, es2panda_SourcePosition *position)
@@ -833,9 +780,12 @@ es2panda_Impl g_impl = {
     SourcePositionLine,
     SourceRangeStart,
     SourceRangeEnd,
-    LogTypeError,
-    LogWarning,
-    LogSyntaxError,
+    CreateDiagnosticKind,
+    LogDiagnostic,
+    GetSemanticErrors,
+    GetSyntaxErrors,
+    GetPluginErrors,
+    GetWarnings,
     AstNodeFindNearestScope,
     AstNodeRebind,
     AstNodeRecheck,

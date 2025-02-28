@@ -75,7 +75,7 @@ pandasm::Program *Compiler::Compile(const SourceFile &input, const util::Options
 {
     try {
         return compiler_->Compile(compiler::CompilationUnit {input, options, parseStatus, ext_, diagnosticEngine});
-    } catch (const class util::ThrowableDiagnostic &e) {
+    } catch (const util::ThrowableDiagnostic &e) {
         error_ = e;
         return nullptr;
     }
