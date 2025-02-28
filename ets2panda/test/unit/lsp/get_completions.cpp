@@ -19,6 +19,7 @@
 class LSPCompletionsTests : public LSPAPITests {};
 
 using ark::es2panda::lsp::CompletionEntry;
+using ark::es2panda::lsp::CompletionEntryKind;
 using ark::es2panda::lsp::sort_text::GLOBALS_OR_KEYWORDS;
 
 void AssertCompletionsContainAndNotContainEntries(const std::vector<CompletionEntry> &entries,
@@ -187,4 +188,82 @@ let axx = b
         CompletionEntry("bcc", ark::es2panda::lsp::CompletionEntryKind::VARIABLE, std::string(GLOBALS_OR_KEYWORDS)),
     };
     AssertCompletionsContainAndNotContainEntries(res.GetEntries(), expectedEntries, unexpectedEntries);
+}
+
+TEST_F(LSPCompletionsTests, MemberCompletionsForClassTest1)
+{
+    std::vector<std::string> files = {"getCompletionsAtPosition5.sts"};
+    std::vector<std::string> texts = {R"delimiter(
+class MyClass1 {
+  public myProp: number = 0;
+  public prop: number = 1;
+}
+let obj1 = new MyClass1()
+let prop = obj1.yp)delimiter"};
+    auto filePaths = CreateTempFile(files, texts);
+    int const expectedFileCount = 1;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+
+    LSPAPI const *lspApi = GetImpl();
+    const size_t offset = 119;
+    auto res = lspApi->getCompletionsAtPosition(filePaths[0].c_str(), offset);
+    auto entries = res.GetEntries();
+    ASSERT_TRUE(entries.size() == 1);
+
+    std::string propertyName1 = "myProp";
+    CompletionEntry entry1 = CompletionEntry(propertyName1, CompletionEntryKind::PROPERTY,
+                                             std::string(ark::es2panda::lsp::sort_text::SUGGESTED_CLASS_MEMBERS));
+    ASSERT_EQ(entry1, entries[0]);
+}
+
+TEST_F(LSPCompletionsTests, MemberCompletionsForClassTest2)
+{
+    std::vector<std::string> files = {"getCompletionsAtPosition6.sts"};
+    std::vector<std::string> texts = {R"delimiter(
+namespace space {
+  export class classInSpace {
+    public  c: number = 2;
+  }
+}
+let numOfSpace: space.classi)delimiter"};
+    auto filePaths = CreateTempFile(files, texts);
+    int const expectedFileCount = 1;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+
+    LSPAPI const *lspApi = GetImpl();
+    const size_t offset = 109;
+    auto res = lspApi->getCompletionsAtPosition(filePaths[0].c_str(), offset);
+    auto entries = res.GetEntries();
+    std::string propertyName1 = "classInSpace";
+    ASSERT_TRUE(entries.size() == 1);
+    CompletionEntry entry1 =
+        CompletionEntry(propertyName1, CompletionEntryKind::CLASS,
+                        std::string(ark::es2panda::lsp::sort_text::MEMBER_DECLARED_BY_SPREAD_ASSIGNMENT));
+    ASSERT_EQ(entry1, entries[0]);
+}
+
+TEST_F(LSPCompletionsTests, MemberCompletionsForClassTest4)
+{
+    std::vector<std::string> files = {"getCompletionsAtPosition6.sts"};
+    std::vector<std::string> texts = {R"delimiter(
+enum Color {
+  Red = "red",
+  Blue = "blue"
+}
+let myColor: Color = Color.R)delimiter"};
+    auto filePaths = CreateTempFile(files, texts);
+    int const expectedFileCount = 1;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+
+    LSPAPI const *lspApi = GetImpl();
+    const size_t offset = 74;
+    auto res = lspApi->getCompletionsAtPosition(filePaths[0].c_str(), offset);
+    auto entries = res.GetEntries();
+    ASSERT_TRUE(entries.size() == 1);
+
+    std::string propertyName1 = "Red";
+    CompletionEntry entry1 =
+        CompletionEntry(propertyName1, CompletionEntryKind::ENUM_MEMBER,
+                        std::string(ark::es2panda::lsp::sort_text::MEMBER_DECLARED_BY_SPREAD_ASSIGNMENT));
+    ASSERT_EQ(entry1, entries[0]);
 }
