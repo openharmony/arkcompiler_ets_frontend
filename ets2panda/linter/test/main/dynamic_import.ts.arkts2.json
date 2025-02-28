@@ -1,6 +1,6 @@
 {
     "copyright": [
-        "Copyright (c) 2022-2024 Huawei Device Co., Ltd.",
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
         "Licensed under the Apache License, Version 2.0 (the 'License');",
         "you may not use this file except in compliance with the License.",
         "You may obtain a copy of the License at",
@@ -25,6 +25,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 17,
+            "column": 25,
+            "endLine": 17,
+            "endColumn": 50,
+            "problem": "DynamicImport",
+            "suggest": "",
+            "rule": "Dynamic import is not supported(arkts-no-dynamic-import)",
+            "severity": "ERROR"
+        },
+        {
             "line": 18,
             "column": 9,
             "endLine": 18,
@@ -46,12 +56,32 @@
         },
         {
             "line": 25,
+            "column": 3,
+            "endLine": 25,
+            "endColumn": 19,
+            "problem": "DynamicImport",
+            "suggest": "",
+            "rule": "Dynamic import is not supported(arkts-no-dynamic-import)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
             "column": 26,
             "endLine": 25,
             "endColumn": 27,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 1,
+            "endLine": 30,
+            "endColumn": 17,
+            "problem": "DynamicImport",
+            "suggest": "",
+            "rule": "Dynamic import is not supported(arkts-no-dynamic-import)",
             "severity": "ERROR"
         },
         {

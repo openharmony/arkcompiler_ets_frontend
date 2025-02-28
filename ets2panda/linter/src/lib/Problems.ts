@@ -137,7 +137,18 @@ export enum FaultID {
   VoidOperator,
   RegularExpressionLiteral,
   ArgumentsObject,
+  LimitedVoidType,
+  DecoratorsNotSupported,
   DebuggerStatement,
+  NoSideEffectImport,
+  DynamicImport,
+  ImportLazyIdentifier,
+  CaseExpression,
+  SwitchExpression,
+  LimitedLiteralType,
+  IndexNegative,
+  ArrayIndexExprType,
+  NoTuplesArrays,
   // this should always be last enum
   LAST_ID
 }

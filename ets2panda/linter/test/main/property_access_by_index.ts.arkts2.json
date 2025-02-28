@@ -65,6 +65,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 56,
+            "column": 14,
+            "endLine": 56,
+            "endColumn": 27,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 106,
+            "column": 24,
+            "endLine": 106,
+            "endColumn": 39,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
             "line": 107,
             "column": 5,
             "endLine": 107,
@@ -72,6 +92,16 @@
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 116,
+            "column": 20,
+            "endLine": 116,
+            "endColumn": 35,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
             "severity": "ERROR"
         },
         {

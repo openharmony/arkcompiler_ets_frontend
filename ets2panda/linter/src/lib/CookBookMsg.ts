@@ -16,7 +16,7 @@
 export const cookBookMsg: string[] = [];
 export const cookBookTag: string[] = [];
 
-for (let i = 0; i <= 183; i++) {
+for (let i = 0; i <= 237; i++) {
   cookBookMsg[i] = '';
 }
 
@@ -230,6 +230,17 @@ cookBookTag[183] = 'Object literal properties can only contain name-value pairs 
 cookBookTag[184] = 'Optional methods are not supported (arkts-optional-methods)';
 cookBookTag[185] = 'syntax for import type is disabled (arkts-import-types)';
 cookBookTag[186] = '"new" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)';
+cookBookTag[192] = 'Type "void" has no instances.(arkts-limited-void-type)';
 cookBookTag[193] = '"void" operator is not supported (arkts-no-void-operator)';
+cookBookTag[202] = 'Literal types are restricted(arkts-limited-literal-types)';
 cookBookTag[206] = '"debugger" is not supported (arkts-no-debugger-stmt)';
 cookBookTag[207] = 'Special arguments object inside functions are not supported (arkts-no-arguments-obj)';
+cookBookTag[209] = 'The index expression must be of a numeric type (arkts-array-index-expr-type)';
+cookBookTag[210] = 'The switch expression type must be of type number,string or enum (arkts-switch-expr)';
+cookBookTag[211] = 'No two case constant expressions have identical values.(arkts-case-expr)';
+cookBookTag[212] = 'The index expression must be zero or positive value.(arkts-array-index-negative)';
+cookBookTag[222] = 'Import for side-effect only is prohibited.(arkts-no-side-effect-import)';
+cookBookTag[232] = 'Lazy import is not supported(arkts-no-lazy-import)';
+cookBookTag[233] = 'Dynamic import is not supported(arkts-no-dynamic-import)';
+cookBookTag[234] = 'Decorators are not supported(arkts-no-ts-decorators)';
+cookBookTag[237] = 'Array and tuple are different type(arkts-no-tuples-arrays)';

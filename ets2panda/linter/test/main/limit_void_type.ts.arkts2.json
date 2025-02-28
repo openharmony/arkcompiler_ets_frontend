@@ -1,0 +1,888 @@
+{
+    "copyright": [
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+      {
+        "line": 19,
+        "column": 8,
+        "endLine": 19,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 19,
+        "column": 15,
+        "endLine": 19,
+        "endColumn": 22,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 22,
+        "column": 8,
+        "endLine": 22,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 22,
+        "column": 15,
+        "endLine": 22,
+        "endColumn": 22,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 27,
+        "column": 8,
+        "endLine": 27,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 27,
+        "column": 15,
+        "endLine": 27,
+        "endColumn": 34,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 29,
+        "column": 8,
+        "endLine": 29,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 29,
+        "column": 15,
+        "endLine": 29,
+        "endColumn": 38,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 29,
+        "column": 16,
+        "endLine": 29,
+        "endColumn": 35,
+        "problem": "FunctionExpression",
+        "suggest": "",
+        "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 32,
+        "column": 8,
+        "endLine": 32,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 35,
+        "column": 10,
+        "endLine": 35,
+        "endColumn": 14,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 35,
+        "column": 17,
+        "endLine": 35,
+        "endColumn": 21,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 39,
+        "column": 8,
+        "endLine": 39,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 39,
+        "column": 15,
+        "endLine": 39,
+        "endColumn": 22,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 42,
+        "column": 8,
+        "endLine": 42,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 45,
+        "column": 8,
+        "endLine": 45,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 45,
+        "column": 15,
+        "endLine": 45,
+        "endColumn": 27,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 47,
+        "column": 13,
+        "endLine": 47,
+        "endColumn": 14,
+        "problem": "ObjectLiteralNoContextType",
+        "suggest": "",
+        "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 50,
+        "column": 8,
+        "endLine": 50,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 50,
+        "column": 15,
+        "endLine": 50,
+        "endColumn": 27,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 54,
+        "column": 8,
+        "endLine": 54,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 54,
+        "column": 15,
+        "endLine": 54,
+        "endColumn": 22,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 57,
+        "column": 8,
+        "endLine": 57,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 57,
+        "column": 15,
+        "endLine": 57,
+        "endColumn": 29,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 60,
+        "column": 8,
+        "endLine": 60,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 60,
+        "column": 15,
+        "endLine": 60,
+        "endColumn": 28,
+        "problem": "GenericCallNoTypeArgs",
+        "suggest": "",
+        "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 60,
+        "column": 15,
+        "endLine": 60,
+        "endColumn": 28,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 65,
+        "column": 8,
+        "endLine": 65,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 65,
+        "column": 15,
+        "endLine": 65,
+        "endColumn": 29,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 69,
+        "column": 8,
+        "endLine": 69,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 69,
+        "column": 15,
+        "endLine": 69,
+        "endColumn": 26,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 77,
+        "column": 8,
+        "endLine": 77,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 77,
+        "column": 15,
+        "endLine": 77,
+        "endColumn": 34,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 80,
+        "column": 8,
+        "endLine": 80,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 80,
+        "column": 15,
+        "endLine": 80,
+        "endColumn": 26,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 83,
+        "column": 8,
+        "endLine": 83,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 83,
+        "column": 15,
+        "endLine": 83,
+        "endColumn": 27,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 86,
+        "column": 8,
+        "endLine": 86,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 86,
+        "column": 24,
+        "endLine": 86,
+        "endColumn": 28,
+        "problem": "FunctionApplyCall",
+        "suggest": "",
+        "rule": "'Function.apply', 'Function.call' are not supported (arkts-no-func-apply-call)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 88,
+        "column": 1,
+        "endLine": 90,
+        "endColumn": 2,
+        "problem": "GeneratorFunction",
+        "suggest": "",
+        "rule": "Generator functions are not supported (arkts-no-generators)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 89,
+        "column": 3,
+        "endLine": 89,
+        "endColumn": 8,
+        "problem": "YieldExpression",
+        "suggest": "",
+        "rule": "Generator functions are not supported (arkts-no-generators)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 91,
+        "column": 8,
+        "endLine": 91,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 94,
+        "column": 8,
+        "endLine": 94,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 94,
+        "column": 15,
+        "endLine": 94,
+        "endColumn": 24,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 97,
+        "column": 12,
+        "endLine": 97,
+        "endColumn": 16,
+        "problem": "ThisType",
+        "suggest": "",
+        "rule": "Type notation using \"this\" is not supported (arkts-no-typing-with-this)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 100,
+        "column": 8,
+        "endLine": 100,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 100,
+        "column": 15,
+        "endLine": 100,
+        "endColumn": 41,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 102,
+        "column": 7,
+        "endLine": 102,
+        "endColumn": 32,
+        "problem": "DestructuringDeclaration",
+        "suggest": "",
+        "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 103,
+        "column": 8,
+        "endLine": 103,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 103,
+        "column": 15,
+        "endLine": 103,
+        "endColumn": 21,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 105,
+        "column": 19,
+        "endLine": 105,
+        "endColumn": 20,
+        "problem": "ObjectTypeLiteral",
+        "suggest": "",
+        "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 106,
+        "column": 38,
+        "endLine": 106,
+        "endColumn": 39,
+        "problem": "ObjectLiteralNoContextType",
+        "suggest": "",
+        "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 107,
+        "column": 8,
+        "endLine": 107,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 107,
+        "column": 15,
+        "endLine": 107,
+        "endColumn": 30,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 109,
+        "column": 23,
+        "endLine": 109,
+        "endColumn": 61,
+        "problem": "ConditionalType",
+        "suggest": "",
+        "rule": "Conditional types are not supported (arkts-no-conditional-types)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 111,
+        "column": 9,
+        "endLine": 111,
+        "endColumn": 13,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 111,
+        "column": 16,
+        "endLine": 111,
+        "endColumn": 26,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 114,
+        "column": 3,
+        "endLine": 114,
+        "endColumn": 12,
+        "problem": "CallSignature",
+        "suggest": "",
+        "rule": "Use \"class\" instead of a type with call signature (arkts-no-call-signatures)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 117,
+        "column": 29,
+        "endLine": 117,
+        "endColumn": 35,
+        "problem": "LimitedStdLibApi",
+        "suggest": "",
+        "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 117,
+        "column": 46,
+        "endLine": 117,
+        "endColumn": 47,
+        "problem": "ObjectLiteralNoContextType",
+        "suggest": "",
+        "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 118,
+        "column": 9,
+        "endLine": 118,
+        "endColumn": 13,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 118,
+        "column": 16,
+        "endLine": 118,
+        "endColumn": 23,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 121,
+        "column": 10,
+        "endLine": 121,
+        "endColumn": 21,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 123,
+        "column": 9,
+        "endLine": 123,
+        "endColumn": 13,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 123,
+        "column": 16,
+        "endLine": 123,
+        "endColumn": 27,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 126,
+        "column": 10,
+        "endLine": 126,
+        "endColumn": 34,
+        "problem": "FunctionExpression",
+        "suggest": "",
+        "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 126,
+        "column": 27,
+        "endLine": 126,
+        "endColumn": 30,
+        "problem": "AnyType",
+        "suggest": "",
+        "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 128,
+        "column": 1,
+        "endLine": 128,
+        "endColumn": 13,
+        "problem": "DecoratorsNotSupported",
+        "suggest": "",
+        "rule": "Decorators are not supported(arkts-no-ts-decorators)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 130,
+        "column": 9,
+        "endLine": 130,
+        "endColumn": 13,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 130,
+        "column": 16,
+        "endLine": 130,
+        "endColumn": 38,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 130,
+        "column": 28,
+        "endLine": 130,
+        "endColumn": 37,
+        "problem": "ClassAsObjectError",
+        "suggest": "",
+        "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 134,
+        "column": 10,
+        "endLine": 134,
+        "endColumn": 14,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 136,
+        "column": 6,
+        "endLine": 136,
+        "endColumn": 10,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 138,
+        "column": 9,
+        "endLine": 138,
+        "endColumn": 13,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 140,
+        "column": 9,
+        "endLine": 140,
+        "endColumn": 13,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 140,
+        "column": 19,
+        "endLine": 140,
+        "endColumn": 23,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 142,
+        "column": 7,
+        "endLine": 142,
+        "endColumn": 11,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 144,
+        "column": 9,
+        "endLine": 144,
+        "endColumn": 13,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 146,
+        "column": 9,
+        "endLine": 146,
+        "endColumn": 13,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 146,
+        "column": 16,
+        "endLine": 146,
+        "endColumn": 20,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 148,
+        "column": 16,
+        "endLine": 148,
+        "endColumn": 20,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 150,
+        "column": 4,
+        "endLine": 150,
+        "endColumn": 8,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 153,
+        "column": 6,
+        "endLine": 153,
+        "endColumn": 10,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 155,
+        "column": 8,
+        "endLine": 155,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 157,
+        "column": 18,
+        "endLine": 157,
+        "endColumn": 22,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 162,
+        "column": 16,
+        "endLine": 162,
+        "endColumn": 20,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 165,
+        "column": 8,
+        "endLine": 165,
+        "endColumn": 12,
+        "problem": "LimitedVoidType",
+        "suggest": "",
+        "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+        "severity": "ERROR"
+    }
+    ]
+}

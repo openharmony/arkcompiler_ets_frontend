@@ -69,6 +69,8 @@ import { identiferUseInValueContext } from './utils/functions/identiferUseInValu
 import { isAssignmentOperator } from './utils/functions/isAssignmentOperator';
 import { StdClassVarDecls } from './utils/consts/StdClassVariableDeclarations';
 import type { LinterOptions } from './LinterOptions';
+import { BUILTIN_GENERIC_CONSTRUCTORS } from './utils/consts/BuiltinGenericConstructor';
+import { DEFAULT_DECORATOR_WHITE_LIST } from './utils/consts/DefaultDecoratorWhitelist';
 
 export class TypeScriptLinter {
   totalVisitedNodes: number = 0;
@@ -204,7 +206,11 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.ImportType, this.handleImportType],
     [ts.SyntaxKind.VoidExpression, this.handleVoidExpression],
     [ts.SyntaxKind.RegularExpressionLiteral, this.handleRegularExpressionLiteral],
-    [ts.SyntaxKind.DebuggerStatement, this.handleDebuggerStatement]
+    [ts.SyntaxKind.DebuggerStatement, this.handleDebuggerStatement],
+    [ts.SyntaxKind.SwitchStatement, this.handleSwitchStatement],
+    [ts.SyntaxKind.UnionType, this.handleUnionType],
+    [ts.SyntaxKind.ArrayType, this.handleArrayType],
+    [ts.SyntaxKind.LiteralType, this.handleLimitedLiteralType]
   ]);
 
   private getLineAndCharacterOfNode(node: ts.Node | ts.CommentRange): ts.LineAndCharacter {
@@ -537,6 +543,10 @@ export class TypeScriptLinter {
     });
     this.handleDeclarationDestructuring(tsParam);
     this.handleDeclarationInferredType(tsParam);
+    const typeNode = tsParam.type;
+    if (this.options.arkts2 && typeNode && typeNode.kind === ts.SyntaxKind.VoidKeyword) {
+      this.incrementCounters(typeNode, FaultID.LimitedVoidType);
+    }
   }
 
   private handleEnumDeclaration(node: ts.Node): void {
@@ -656,8 +666,13 @@ export class TypeScriptLinter {
   private handleImportDeclaration(node: ts.Node): void {
     // early exit via exception if cancellation was requested
     this.options.cancellationToken?.throwIfCancellationRequested();
-
     const importDeclNode = node as ts.ImportDeclaration;
+    if (this.options.arkts2) {
+      const importClause = importDeclNode.importClause;
+      if (!importClause || !importClause.name && !importClause.namedBindings) {
+        this.incrementCounters(node, FaultID.NoSideEffectImport);
+      }
+    }
     for (const stmt of importDeclNode.parent.statements) {
       if (stmt === importDeclNode) {
         break;
@@ -749,6 +764,9 @@ export class TypeScriptLinter {
     );
     const classDecorators = ts.getDecorators(node.parent);
     const propType = node.type?.getText();
+    if (this.options.arkts2 && propType === 'void' && node.type) {
+      this.incrementCounters(node.type, FaultID.LimitedVoidType);
+    }
     this.filterOutDecoratorsDiagnostics(
       classDecorators,
       NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS,
@@ -1295,6 +1313,7 @@ export class TypeScriptLinter {
     this.handleEsObjectDelaration(tsVarDecl);
     this.handleDeclarationInferredType(tsVarDecl);
     this.handleDefiniteAssignmentAssertion(tsVarDecl);
+    this.handleLimitedVoidType(tsVarDecl);
   }
 
   private handleDeclarationDestructuring(decl: ts.VariableDeclaration | ts.ParameterDeclaration): void {
@@ -1423,6 +1442,22 @@ export class TypeScriptLinter {
     }
 
     this.processClassStaticBlocks(tsClassDecl);
+  }
+
+  private handleNotSupportCustomDecorators(decorator: ts.Decorator): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    let decoratorName;
+    if (ts.isCallExpression(decorator.expression)) {
+      decoratorName = decorator.expression.expression.getText(this.sourceFile);
+    } else {
+      decoratorName = decorator.expression.getText(this.sourceFile);
+    }
+    if (!DEFAULT_DECORATOR_WHITE_LIST.includes(decoratorName)) {
+      this.incrementCounters(decorator, FaultID.DecoratorsNotSupported);
+    }
   }
 
   private checkClassDeclarationHeritageClause(hClause: ts.HeritageClause, isSendableClass: boolean): void {
@@ -1562,6 +1597,9 @@ export class TypeScriptLinter {
 
   private handleImportClause(node: ts.Node): void {
     const tsImportClause = node as ts.ImportClause;
+    if (this.options.arkts2 && tsImportClause.isLazy) {
+      this.incrementCounters(node, FaultID.ImportLazyIdentifier);
+    }
     if (tsImportClause.name) {
       this.countDeclarationsWithDuplicateName(tsImportClause.name, tsImportClause);
     }
@@ -1820,6 +1858,33 @@ export class TypeScriptLinter {
       const faultId = this.options.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
       this.incrementCounters(node, faultId);
     }
+    if (this.tsUtils.isOrDerivedFrom(tsElemAccessBaseExprType, this.tsUtils.isIndexableArray)) {
+      this.handleIndexNegative(node);
+    }
+    this.checkArrayIndexType(node, tsElemAccessBaseExprType, tsElemAccessArgType, tsElementAccessExpr);
+  }
+
+  private checkArrayIndexType(
+    node: ts.Node,
+    exprType: ts.Type,
+    argType: ts.Type,
+    expr: ts.ElementAccessExpression
+  ): void {
+    const argExpr = expr.argumentExpression;
+
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (this.tsUtils.isOrDerivedFrom(exprType, this.tsUtils.isIndexableArray)) {
+      if (this.tsUtils.isNumberLikeType(argType)) {
+        if (ts.isNumericLiteral(argExpr) && !Number.isInteger(Number(argExpr.text))) {
+          this.incrementCounters(argExpr, FaultID.ArrayIndexExprType);
+        }
+      } else {
+        this.incrementCounters(argExpr, FaultID.ArrayIndexExprType);
+      }
+    }
   }
 
   private handleEnumMember(node: ts.Node): void {
@@ -1834,6 +1899,7 @@ export class TypeScriptLinter {
     const firstEnumMember = enumDecl.members[0];
     const firstEnumMemberType = this.tsTypeChecker.getTypeAtLocation(firstEnumMember);
     const firstElewmVal = this.tsTypeChecker.getConstantValue(firstEnumMember);
+    this.handleEnumNotSupportFloat(tsEnumMember);
 
     /*
      * each string enum member has its own type
@@ -1860,6 +1926,29 @@ export class TypeScriptLinter {
     }
   }
 
+  private handleEnumNotSupportFloat(enumMember: ts.EnumMember): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const initializer = enumMember.initializer;
+    if (!initializer) {
+      return;
+    }
+    let value;
+    if (ts.isNumericLiteral(initializer)) {
+      value = parseFloat(initializer.text);
+    } else if (ts.isPrefixUnaryExpression(initializer)) {
+      const operand = initializer.operand;
+      value = ts.isNumericLiteral(operand) ? parseFloat(operand.text) : value;
+    } else {
+      return;
+    }
+
+    if (!Number.isInteger(value)) {
+      this.incrementCounters(enumMember, FaultID.EnumMemberNonConstInit);
+    }
+  }
+
   private handleExportAssignment(node: ts.Node): void {
     const exportAssignment = node as ts.ExportAssignment;
     if (exportAssignment.isExportEquals) {
@@ -1880,7 +1969,6 @@ export class TypeScriptLinter {
 
     const calleeSym = this.tsUtils.trueSymbolAtLocation(tsCallExpr.expression);
     const callSignature = this.tsTypeChecker.getResolvedSignature(tsCallExpr);
-
     this.handleImportCall(tsCallExpr);
     this.handleRequireCall(tsCallExpr);
     if (calleeSym !== undefined) {
@@ -1910,6 +1998,9 @@ export class TypeScriptLinter {
       const faultId = this.options.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
       this.incrementCounters(node, faultId);
     }
+    if (!ts.isExpressionStatement(tsCallExpr.parent) && !ts.isVoidExpression(tsCallExpr.parent)) {
+      this.handleLimitedVoidWithCall(tsCallExpr);
+    }
   }
 
   private handleEtsComponentExpression(node: ts.Node): void {
@@ -1921,6 +2012,8 @@ export class TypeScriptLinter {
   private handleImportCall(tsCallExpr: ts.CallExpression): void {
     if (tsCallExpr.expression.kind !== ts.SyntaxKind.ImportKeyword) {
       return;
+    } else if (this.options.arkts2) {
+      this.incrementCounters(tsCallExpr, FaultID.DynamicImport);
     }
 
     // relax rule#133 "arkts-no-runtime-import"
@@ -1964,11 +2057,29 @@ export class TypeScriptLinter {
      * became redundant. Therefore, it was reverted. See #13721 comments
      * for a detailed analysis.
      */
+    if (this.options.arkts2 && TypeScriptLinter.isInvalidBuiltinGenericConstructorCall(callLikeExpr)) {
+      this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs);
+      return;
+    }
+    this.checkTypeArgumentsForGenericCallWithNoTypeArgs(callLikeExpr, callSignature);
+  }
+
+  private static isInvalidBuiltinGenericConstructorCall(newExpression: ts.CallExpression | ts.NewExpression): boolean {
+    if (!ts.isNewExpression(newExpression)) {
+      return false;
+    }
+    const isBuiltin = BUILTIN_GENERIC_CONSTRUCTORS.has(newExpression.expression.getText().replace(/Constructor$/, ''));
+    return isBuiltin && (!newExpression.typeArguments || newExpression.typeArguments.length === 0);
+  }
+
+  private checkTypeArgumentsForGenericCallWithNoTypeArgs(
+    callLikeExpr: ts.CallExpression | ts.NewExpression,
+    callSignature: ts.Signature
+  ): void {
     const tsSyntaxKind = ts.isNewExpression(callLikeExpr) ?
       ts.SyntaxKind.Constructor :
       ts.SyntaxKind.FunctionDeclaration;
     const signFlags = ts.NodeBuilderFlags.WriteTypeArgumentsOfSignature | ts.NodeBuilderFlags.IgnoreErrors;
-
     const signDecl = this.tsTypeChecker.signatureToSignatureDeclaration(
       callSignature,
       tsSyntaxKind,
@@ -1978,6 +2089,7 @@ export class TypeScriptLinter {
     if (!signDecl?.typeArguments) {
       return;
     }
+
     const resolvedTypeArgs = signDecl.typeArguments;
     const startTypeArg = callLikeExpr.typeArguments?.length ?? 0;
     for (let i = startTypeArg; i < resolvedTypeArgs.length; ++i) {
@@ -2863,6 +2975,7 @@ export class TypeScriptLinter {
     isNewStructuralCheck: boolean = false
   ): void {
     const rhsType = this.tsTypeChecker.getTypeAtLocation(rhsExpr);
+    this.handleNoTuplesArrays(field, lhsType, rhsType);
     // check that 'sendable typeAlias' is assigned correctly
     if (this.tsUtils.isWrongSendableFunctionAssignment(lhsType, rhsType)) {
       this.incrementCounters(field, FaultID.SendableFunctionAssignment);
@@ -2886,6 +2999,7 @@ export class TypeScriptLinter {
         this.incrementCounters(decorator, FaultID.SendableDecoratorLimited, autofix);
       }
     }
+    this.handleNotSupportCustomDecorators(decorator);
   }
 
   private isSendableDecoratorValid(decl: ts.FunctionDeclaration | ts.TypeAliasDeclaration): boolean {
@@ -2926,11 +3040,197 @@ export class TypeScriptLinter {
     this.incrementCounters(node, FaultID.RegularExpressionLiteral, autofix);
   }
 
+  private handleLimitedVoidType(node: ts.VariableDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const typeNode = node.type;
+    if (typeNode && typeNode.kind === ts.SyntaxKind.VoidKeyword) {
+      this.incrementCounters(typeNode, FaultID.LimitedVoidType);
+    }
+  }
+
+  private handleLimitedVoidWithCall(node: ts.CallExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const signature = this.tsTypeChecker.getResolvedSignature(node);
+    if (signature) {
+      const returnType = this.tsTypeChecker.getReturnTypeOfSignature(signature);
+      if (this.tsTypeChecker.typeToString(returnType) === 'void') {
+        this.incrementCounters(node, FaultID.LimitedVoidType);
+      }
+    }
+  }
+
+  private handleArrayType(arrayType: ts.Node): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (!arrayType || !ts.isArrayTypeNode(arrayType)) {
+      return;
+    }
+
+    if (arrayType.elementType.kind === ts.SyntaxKind.VoidKeyword) {
+      this.incrementCounters(arrayType.elementType, FaultID.LimitedVoidType);
+    }
+  }
+
+  private handleUnionType(unionType: ts.Node): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (!unionType || !ts.isUnionTypeNode(unionType)) {
+      return;
+    }
+
+    const types = unionType.types;
+    for (const type of types) {
+      if (type.kind === ts.SyntaxKind.VoidKeyword) {
+        this.incrementCounters(type, FaultID.LimitedVoidType);
+      }
+    }
+  }
+
   private handleDebuggerStatement(node: ts.Node): void {
     if (!this.options.arkts2) {
       return;
     }
     const autofix = this.autofixer?.fixDebuggerStatement(node as ts.DebuggerStatement);
     this.incrementCounters(node, FaultID.DebuggerStatement, autofix);
+  }
+
+  private handleSwitchStatement(node: ts.Node): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const switchStatement = node as ts.SwitchStatement;
+    if (!this.isValidSwitchExpr(switchStatement)) {
+      this.incrementCounters(switchStatement.expression, FaultID.SwitchExpression);
+    }
+    const duplicateCases = this.findDuplicateCases(switchStatement);
+    if (duplicateCases.length > 0) {
+      for (const duplicateCase of duplicateCases) {
+        this.incrementCounters(duplicateCase.expression, FaultID.CaseExpression);
+      }
+    }
+  }
+
+  private findDuplicateCases(switchStatement: ts.SwitchStatement): ts.CaseClause[] {
+    const seenValues = new Map<string | number | boolean, ts.CaseClause>();
+    const duplicates: ts.CaseClause[] = [];
+
+    for (const clause of switchStatement.caseBlock.clauses) {
+      if (ts.isCaseClause(clause) && clause.expression) {
+        const value = this.getConstantValue(clause.expression);
+        const key = value !== undefined ? value : clause.expression.getText();
+        if (seenValues.has(key)) {
+          duplicates.push(clause);
+        } else {
+          seenValues.set(key, clause);
+        }
+      }
+    }
+    return duplicates;
+  }
+
+  private getConstantValue(expression: ts.Expression): string | number | boolean | undefined {
+    if (ts.isLiteralExpression(expression)) {
+      return ts.isNumericLiteral(expression) ? Number(expression.text) : expression.text;
+    }
+
+    switch (expression.kind) {
+      case ts.SyntaxKind.TrueKeyword:
+        return true;
+      case ts.SyntaxKind.FalseKeyword:
+        return false;
+      default:
+        if (ts.isElementAccessExpression(expression) || ts.isPropertyAccessExpression(expression)) {
+          const constantValue = this.tsTypeChecker.getConstantValue(expression);
+          if (constantValue !== undefined) {
+            return constantValue;
+          }
+        }
+        return undefined;
+    }
+  }
+
+  private isValidSwitchExpr(switchStatement: ts.SwitchStatement): boolean {
+    const expressionType = this.tsTypeChecker.getTypeAtLocation(switchStatement.expression);
+    if (!expressionType) {
+      return false;
+    }
+    if (TypeScriptLinter.isSwitchAllowedType(expressionType)) {
+      return true;
+    }
+    if (expressionType.isUnion()) {
+      const unionTypes = expressionType.types;
+      return unionTypes.every(TypeScriptLinter.isSwitchAllowedType);
+    }
+    return false;
+  }
+
+  private static isSwitchAllowedType(type: ts.Type): boolean {
+    const flags = type.flags;
+    return (
+      (flags & ts.TypeFlags.NumberLike) !== 0 ||
+      (flags & ts.TypeFlags.StringLike) !== 0 ||
+      (flags & ts.TypeFlags.EnumLike) !== 0
+    );
+  }
+
+  private handleLimitedLiteralType(literalTypeNode: ts.LiteralTypeNode): void {
+    if (!this.options.arkts2 || !literalTypeNode) {
+      return;
+    }
+    const literal = literalTypeNode.literal;
+    if (
+      !(
+        literal.kind === ts.SyntaxKind.StringLiteral ||
+        literal.kind === ts.SyntaxKind.NullKeyword ||
+        literal.kind === ts.SyntaxKind.UndefinedKeyword
+      )
+    ) {
+      this.incrementCounters(literalTypeNode, FaultID.LimitedLiteralType);
+    }
+  }
+
+  private handleIndexNegative(node: ts.Node): void {
+    if (!this.options.arkts2 || !ts.isElementAccessExpression(node)) {
+      return;
+    }
+    const indexNode = node.argumentExpression;
+    if (indexNode) {
+      let isInvalidIndex = false;
+      if (ts.isNumericLiteral(indexNode)) {
+        isInvalidIndex = parseInt(indexNode.text) < 0;
+      }
+      if (
+        ts.isPrefixUnaryExpression(indexNode) &&
+        indexNode.operator === ts.SyntaxKind.MinusToken &&
+        ts.isNumericLiteral(indexNode.operand)
+      ) {
+        isInvalidIndex = true;
+      }
+      if (isInvalidIndex) {
+        this.incrementCounters(node, FaultID.IndexNegative);
+      }
+    }
+  }
+
+  private handleNoTuplesArrays(node: ts.Node, lhsType: ts.Type, rhsType: ts.Type): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    if (
+      this.tsUtils.isOrDerivedFrom(lhsType, this.tsUtils.isArray) &&
+      this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple)
+    ) {
+      this.incrementCounters(node, FaultID.NoTuplesArrays);
+    }
   }
 }

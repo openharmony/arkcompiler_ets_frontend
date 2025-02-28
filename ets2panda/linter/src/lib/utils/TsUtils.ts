@@ -1271,7 +1271,8 @@ export class TsUtils {
     [FaultID.SendableDefiniteAssignment, TsUtils.getSendableDefiniteAssignmentHighlightRange],
     [FaultID.ObjectTypeLiteral, TsUtils.getObjectTypeLiteralHighlightRange],
     [FaultID.StructuralIdentity, TsUtils.getStructuralIdentityHighlightRange],
-    [FaultID.VoidOperator, TsUtils.getVoidOperatorHighlightRange]
+    [FaultID.VoidOperator, TsUtils.getVoidOperatorHighlightRange],
+    [FaultID.ImportLazyIdentifier, TsUtils.getImportLazyHighlightRange]
   ]);
 
   static getKeywordHighlightRange(nodeOrComment: ts.Node | ts.CommentRange, keyword: string): [number, number] {
@@ -1427,6 +1428,10 @@ export class TsUtils {
 
   static getVoidOperatorHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
     return this.getKeywordHighlightRange(nodeOrComment, 'void');
+  }
+
+  static getImportLazyHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
+    return this.getKeywordHighlightRange(nodeOrComment, 'lazy');
   }
 
   isStdRecordType(type: ts.Type): boolean {
