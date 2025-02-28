@@ -1073,6 +1073,7 @@ ark_gen("gen") {
 # libes2panda does not include bytecode optimizer, because it is used in
 # libarkruntime, and conflict with JIT setup ensues
 libes2panda_public_sources = [
+  "declgen_ets2ts/declgenEts2Ts.cpp",
   "public/${LIB_NAME}.cpp",
   "util/generateBin.cpp",
   "util/options.cpp",

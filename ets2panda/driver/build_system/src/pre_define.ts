@@ -17,6 +17,7 @@ export const ARKTSCONFIG_JSON_FILE: string = 'arktsconfig.json';
 export const MERGED_ABC_FILE: string = 'modules_static.abc';
 export const LINKER_INPUT_FILE: string = 'fileInfo.txt';
 
+export const DECL_ETS_SUFFIX: string = '.d.ets';
 export const ETS_SUFFIX: string = '.ets';
 export const ABC_SUFFIX: string = '.abc';
 

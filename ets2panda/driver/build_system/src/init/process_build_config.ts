@@ -30,10 +30,57 @@ import {
 } from '../logger';
 import { ErrorCode } from '../error_code';
 
-export type BuildConfigType = string | string[] | object;
+export interface PluginsConfig {
+  [pluginName: string]: string;
+}
 
-export function processBuildConfig(projectConfig: Record<string, BuildConfigType>): Record<string, BuildConfigType> {
-  let buildConfig: Record<string, BuildConfigType> = { ...projectConfig };
+export interface BuildBaseConfig {
+  buildType: 'build' | 'preview' | 'hotreload' | 'coldreload';
+  buildMode: 'Debug' | 'Release';
+}
+
+export interface ModuleConfig {
+  packageName: string;
+  moduleType: string;
+  moduleRootPath: string;
+  sourceRoots: string[];
+}
+
+export interface PathConfig {
+  loaderOutPath: string;
+  cachePath: string;
+  buildSdkPath: string;
+  pandaSdkPath?: string;
+  abcLinkerPath?: string;
+}
+
+export interface DeclgenConfig {
+  enableDeclgenEts2Ts: boolean;
+  declgenDeclEtsOutPath?: string;
+  declgenEtsOutPath?: string;
+}
+
+export interface LoggerConfig {
+  getHvigorConsoleLogger?: Function;
+}
+
+export interface DependentModuleConfig {
+  packageName: string;
+  moduleName: string;
+  moduleType: string;
+  modulePath: string;
+  sourceRoots: string[];
+  entryFile: string;
+}
+
+export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfig, ModuleConfig, PathConfig {
+  plugins: PluginsConfig;
+  compileFiles: string[];
+  dependentModuleList: DependentModuleConfig[];
+}
+
+export function processBuildConfig(projectConfig: BuildConfig): BuildConfig {
+  let buildConfig: BuildConfig = { ...projectConfig };
   let buildSdkPath: string = buildConfig.buildSdkPath as string;
   buildConfig.pandaSdkPath = path.resolve(buildSdkPath, PANDA_SDK_PATH_FROM_SDK);
 
@@ -45,7 +92,7 @@ export function processBuildConfig(projectConfig: Record<string, BuildConfigType
   return buildConfig;
 }
 
-function initPlatformSpecificConfig(buildConfig: Record<string, BuildConfigType>): void {
+function initPlatformSpecificConfig(buildConfig: BuildConfig): void {
   const pandaSdkPath: string = path.resolve(buildConfig.pandaSdkPath as string);
   const logger: Logger = Logger.getInstance();
   if (isWindows()) {
@@ -61,13 +108,13 @@ function initPlatformSpecificConfig(buildConfig: Record<string, BuildConfigType>
       ErrorCode.BUILDSYSTEM_ARK_LINK_NOT_FOUND_FAIL,
       'Ark_link not found in path.',
       '',
-      buildConfig.abcLinkerPath.toString()
+      buildConfig.abcLinkerPath as string
     );
     logger.printError(logData);
   }
 }
 
-export function initBuildEnv(buildConfig: Record<string, BuildConfigType>): void {
+export function initBuildEnv(buildConfig: BuildConfig): void {
   const pandaSdkPath: string = path.resolve(buildConfig.pandaSdkPath as string);
   const currentPath: string | undefined = process.env.PATH;
   const logger: Logger = Logger.getInstance();

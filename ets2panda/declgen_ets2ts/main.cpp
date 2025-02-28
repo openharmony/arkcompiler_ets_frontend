@@ -98,7 +98,7 @@ static int Run(int argc, const char **argv)
     impl->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
 
     int res = 0;
-    if (!GenerateTsDeclarations(checker, ctxImpl->parserProgram, cfgImpl->options, declgenOptions)) {
+    if (!GenerateTsDeclarations(checker, ctxImpl->parserProgram, declgenOptions)) {
         res = 1;
     }
 

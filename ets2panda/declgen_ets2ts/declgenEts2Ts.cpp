@@ -947,43 +947,51 @@ void TSDeclGen::GenGlobalVarDeclaration(const ir::ClassProperty *globalVar)
     EmitPropGlueCode(globalVar, varName);
 }
 
+bool WriteToFile(const std::string &path, const std::string &content, checker::ETSChecker *checker)
+{
+    std::ofstream outStream(path);
+    if (outStream.fail()) {
+        checker->DiagnosticEngine().LogFatalError(util::DiagnosticMessageParams {"Failed to open file: ", path});
+        return false;
+    }
+    outStream << content;
+    outStream.close();
+    return true;
+}
+
 bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::parser::Program *program,
-                            const util::Options *options, const DeclgenOptions &declgenOptions)
+                            const DeclgenOptions &declgenOptions)
 {
     TSDeclGen declBuilder(checker, program);
     declBuilder.SetDeclgenOptions(declgenOptions);
+
+    if ((declBuilder.GetDeclgenOptions().outputDeclEts.empty() && !declBuilder.GetDeclgenOptions().outputEts.empty()) ||
+        (!declBuilder.GetDeclgenOptions().outputDeclEts.empty() && declBuilder.GetDeclgenOptions().outputEts.empty())) {
+        checker->DiagnosticEngine().LogFatalError(util::DiagnosticMessageParams {
+            "Genate dynamic declarations, outputDeclEts and outputEts must be set together."});
+        return false;
+    }
+    if (declBuilder.GetDeclgenOptions().outputDeclEts.empty() && declBuilder.GetDeclgenOptions().outputEts.empty()) {
+        checker->DiagnosticEngine().LogFatalError(
+            util::DiagnosticMessageParams {"Output file path must be specified."});
+        return false;
+    }
+
     declBuilder.Generate();
 
-    std::string outDtsPath;
-    if (declBuilder.GetDeclgenOptions().outputDeclEts.empty()) {
-        outDtsPath = ark::os::RemoveExtension(util::BaseName(options->SourceFileName())).append(".d.ets");
-    } else {
-        outDtsPath = declBuilder.GetDeclgenOptions().outputDeclEts;
+    if (!declBuilder.GetDeclgenOptions().outputDeclEts.empty()) {
+        auto outDtsPath = declBuilder.GetDeclgenOptions().outputDeclEts;
+        if (!WriteToFile(outDtsPath, declBuilder.GetDtsOutput(), checker)) {
+            return false;
+        }
     }
 
-    std::ofstream outDtsStream(outDtsPath);
-    if (outDtsStream.fail()) {
-        checker->DiagnosticEngine().LogFatalError(util::DiagnosticMessageParams {"Failed to open file: ", outDtsPath});
-        return false;
+    if (!declBuilder.GetDeclgenOptions().outputEts.empty()) {
+        auto outTsPath = declBuilder.GetDeclgenOptions().outputEts;
+        if (!WriteToFile(outTsPath, declBuilder.GetTsOutput(), checker)) {
+            return false;
+        }
     }
-
-    outDtsStream << declBuilder.GetDtsOutput();
-    outDtsStream.close();
-
-    std::string outTsPath;
-    if (declBuilder.GetDeclgenOptions().outputEts.empty()) {
-        outTsPath = ark::os::RemoveExtension(util::BaseName(options->SourceFileName())).append(".ets");
-    } else {
-        outTsPath = declBuilder.GetDeclgenOptions().outputEts;
-    }
-    std::ofstream outTsStream(outTsPath);
-    if (outTsStream.fail()) {
-        std::cerr << "Failed to open file: " << outTsPath << std::endl;
-        return false;
-    }
-
-    outTsStream << declBuilder.GetTsOutput();
-    outTsStream.close();
 
     return true;
 }

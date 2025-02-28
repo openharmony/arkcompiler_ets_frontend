@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { BuildConfigType } from './init/process_build_config';
+import { BuildConfig } from './init/process_build_config';
 import {
   ErrorCode,
   SubsystemCode
@@ -23,7 +23,7 @@ export class Logger {
   private static instance: Logger | undefined;
   private loggerMap: { [key in SubsystemCode]?: Object };
 
-  private constructor(projectConfig: Record<string, BuildConfigType>) {
+  private constructor(projectConfig: BuildConfig) {
     if (typeof projectConfig.getHvigorConsoleLogger !== 'function') {
       projectConfig.getHvigorConsoleLogger = getConsoleLogger;
     }
@@ -33,7 +33,7 @@ export class Logger {
     this.loggerMap[SubsystemCode.ES2PANDA] = getHvigorConsoleLogger(SubsystemCode.ES2PANDA);
   }
 
-  public static getInstance(projectConfig?: Record<string, BuildConfigType>): Logger {
+  public static getInstance(projectConfig?: BuildConfig): Logger {
     if (!Logger.instance) {
       if (!projectConfig) {
         throw new Error('projectConfig is required for the first instantiation.');
