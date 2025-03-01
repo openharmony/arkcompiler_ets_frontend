@@ -337,6 +337,8 @@ bool Options::DetermineExtension()
                                       ", Manual(used): ", std::string_view(gen::Options::GetExtension())});
     }
 #endif  // ENABLE_AFTER_21192
+    // Note: the file suffix `.ets` is a valid suffix for compiler, which is equivalent to `.sts`
+    sourceFileExtension = sourceFileExtension == "ets" ? "sts" : sourceFileExtension;
     auto tempExtension = WasSetExtension() ? gen::Options::GetExtension() : sourceFileExtension;
     if (gen::extension::FromString(tempExtension) == ScriptExtension::INVALID) {
         diagnosticEngine_.LogFatalError(
