@@ -511,44 +511,44 @@ static void CompileLogical(compiler::ETSGen *etsg, const ir::BinaryExpression *e
         CompileNullishCoalescing(etsg, expr);
         return;
     }
-
     ES2PANDA_ASSERT(expr->IsLogicalExtended());
+    // Always compile the left hand side
+    etsg->CompileAndCheck(expr->Left());
+
+    // If the Result is given, we can optimize the process.
+    if (expr->Result() != nullptr) {
+        if (expr->Result() != expr->Left()) {
+            ES2PANDA_ASSERT(expr->Result() == expr->Right());
+            expr->Result()->Compile(etsg);
+        }
+        etsg->ApplyConversion(expr->Result(), expr->TsType());
+        etsg->SetAccumulatorType(expr->TsType());
+        ES2PANDA_ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
+        return;
+    }
     auto ttctx = compiler::TargetTypeContext(etsg, expr->OperationType());
     compiler::RegScope rs(etsg);
-    auto lhs = etsg->AllocReg();
+    auto endValue = etsg->AllocReg();
+    auto orgValue = etsg->AllocReg();
 
-    expr->Left()->Compile(etsg);
-    etsg->ApplyConversionAndStoreAccumulator(expr->Left(), lhs, expr->OperationType());
-
+    etsg->StoreAccumulator(expr->Left(), orgValue);
+    etsg->ApplyConversionAndStoreAccumulator(expr->Left(), endValue, expr->TsType());
     auto *endLabel = etsg->AllocLabel();
 
-    auto returnLeftLabel = etsg->AllocLabel();
+    etsg->LoadAccumulator(expr, orgValue);
     if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
-        etsg->ResolveConditionalResultIfFalse(expr->Left(), returnLeftLabel);
-        etsg->BranchIfFalse(expr, returnLeftLabel);
-
-        expr->Right()->Compile(etsg);
-        etsg->ApplyConversion(expr->Right(), expr->OperationType());
-        etsg->Branch(expr, endLabel);
-
-        etsg->SetLabel(expr, returnLeftLabel);
-        etsg->LoadAccumulator(expr, lhs);
+        etsg->BranchConditionalIfFalse(expr->Left(), endLabel);
     } else {
-        etsg->ResolveConditionalResultIfTrue(expr->Left(), returnLeftLabel);
-        etsg->BranchIfTrue(expr, returnLeftLabel);
-
-        expr->Right()->Compile(etsg);
-        etsg->ApplyConversion(expr->Right(), expr->OperationType());
-        etsg->Branch(expr, endLabel);
-
-        etsg->SetLabel(expr, returnLeftLabel);
-        etsg->LoadAccumulator(expr, lhs);
+        ES2PANDA_ASSERT(expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_OR);
+        etsg->BranchConditionalIfTrue(expr->Left(), endLabel);
     }
 
+    etsg->CompileAndCheck(expr->Right());
+    etsg->ApplyConversionAndStoreAccumulator(expr->Right(), endValue, expr->TsType());
     etsg->SetLabel(expr, endLabel);
-    etsg->SetAccumulatorType(expr->TsType());
-    etsg->ApplyConversion(expr, expr->OperationType());
+    etsg->LoadAccumulator(expr, endValue);
 
+    etsg->SetAccumulatorType(expr->TsType());
     ES2PANDA_ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
 }
 
@@ -895,10 +895,13 @@ void ETSCompiler::Compile(const ir::ConditionalExpression *expr) const
     expr->Consequent()->Compile(etsg);
     etsg->ApplyConversion(expr->Consequent());
     etsg->Branch(expr, endLabel);
+
     etsg->SetLabel(expr, falseLabel);
     expr->Alternate()->Compile(etsg);
     etsg->ApplyConversion(expr->Alternate());
+
     etsg->SetLabel(expr, endLabel);
+    etsg->ApplyConversion(expr, expr->TsType());
     etsg->SetAccumulatorType(expr->TsType());
 }
 
@@ -1045,6 +1048,7 @@ bool ETSCompiler::HandleEnumTypes(const ir::MemberExpression *expr, ETSGen *etsg
     if (exprType->IsETSEnumType() && exprType->AsETSEnumType()->IsLiteralType()) {
         auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
         etsg->LoadAccumulatorInt(expr, exprType->AsETSEnumType()->GetOrdinal());
+        etsg->ApplyConversion(expr, expr->TsType());
         return true;
     }
     return false;

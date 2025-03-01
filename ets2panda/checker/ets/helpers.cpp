@@ -385,44 +385,6 @@ std::tuple<bool, bool> ETSChecker::IsResolvedAndValue(const ir::Expression *expr
     return std::make_tuple(isResolve, isValue);
 }
 
-Type *ETSChecker::HandleBooleanLogicalOperatorsExtended(Type *leftType, Type *rightType, ir::BinaryExpression *expr)
-{
-    ES2PANDA_ASSERT(leftType->IsConditionalExprType() && rightType->IsConditionalExprType());
-
-    auto [resolveLeft, leftValue] = IsResolvedAndValue(expr->Left(), leftType);
-    auto [resolveRight, rightValue] = IsResolvedAndValue(expr->Right(), rightType);
-
-    if (!resolveLeft && !resolveRight && IsTypeIdenticalTo(leftType, rightType)) {
-        return leftType;
-    }
-
-    switch (expr->OperatorType()) {
-        case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
-            if (leftValue) {
-                expr->SetResult(expr->Left());
-                return leftType->IsETSBooleanType() ? CreateETSBooleanType(true) : leftType;
-            }
-
-            expr->SetResult(expr->Right());
-            return rightType->IsETSBooleanType() && resolveRight ? CreateETSBooleanType(rightValue) : rightType;
-        }
-        case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
-            if (leftValue) {
-                expr->SetResult(expr->Right());
-                return rightType->IsETSBooleanType() && resolveRight ? CreateETSBooleanType(rightValue) : rightType;
-            }
-
-            expr->SetResult(expr->Left());
-            return leftType->IsETSBooleanType() ? CreateETSBooleanType(false) : leftType;
-        }
-        default: {
-            break;
-        }
-    }
-
-    UNREACHABLE();
-}
-
 Type *ETSChecker::HandleBooleanLogicalOperators(Type *leftType, Type *rightType, lexer::TokenType tokenType)
 {
     using UType = typename ETSBooleanType::UType;
@@ -458,6 +420,30 @@ Type *ETSChecker::HandleBooleanLogicalOperators(Type *leftType, Type *rightType,
 
     UNREACHABLE();
     return nullptr;
+}
+
+bool ETSChecker::HandleLogicalPotentialResult(ir::Expression *left, ir::Expression *right, ir::BinaryExpression *expr,
+                                              checker::Type *leftType)
+{
+    if (leftType->IsConstantType() && leftType->IsETSBooleanType()) {
+        if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
+            expr->SetResult(leftType->AsETSBooleanType()->GetValue() ? right : left);
+            return true;
+        }
+        expr->SetResult(leftType->AsETSBooleanType()->GetValue() ? left : right);
+        return true;
+    }
+
+    if (!leftType->IsETSPrimitiveType() && !leftType->PossiblyETSValueTyped()) {
+        expr->SetResult(expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_AND ? right : left);
+        return true;
+    }
+    if (leftType->IsETSNullType() || leftType->IsETSUndefinedType()) {
+        expr->SetResult(expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_AND ? left : right);
+        return true;
+    }
+
+    return false;
 }
 
 void ETSChecker::ResolveReturnStatement(checker::Type *funcReturnType, checker::Type *argumentType,

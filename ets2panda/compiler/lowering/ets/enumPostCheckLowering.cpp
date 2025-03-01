@@ -121,6 +121,10 @@ bool EnumPostCheckLoweringPhase::PerformForModule(public_lib::Context *ctx, pars
                 }
                 node->Check(ctx->checker->AsETSChecker());
                 node->RemoveAstNodeFlags(ir::AstNodeFlags::RECHECK);
+                if (node->IsExpression() && node->AsExpression()->TsType() != nullptr &&
+                    !node->AsExpression()->TsType()->IsETSIntEnumType()) {
+                    node->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
+                }
             }
             if (node->HasAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF)) {
                 return GenerateValueOfCall(ctx->checker->AsETSChecker(), node);

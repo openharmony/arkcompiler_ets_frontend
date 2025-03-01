@@ -292,7 +292,7 @@ static bool IsValueTypedObjectType(ETSObjectType const *t)
 bool Type::PossiblyETSValueTyped() const
 {
     return MatchConstituentOrConstraint(this, [](const Type *t) {
-        return t->IsNullType() || t->IsUndefinedType() ||
+        return t->IsETSNullType() || t->IsETSUndefinedType() ||
                (t->IsETSObjectType() && IsValueTypedObjectType(t->AsETSObjectType()));
     });
 }

@@ -502,8 +502,8 @@ checker::Type *ETSChecker::CheckBinaryOperatorBitwise(
     return SelectGlobalIntegerTypeForNumeric(promotedType);
 }
 
-checker::Type *ETSChecker::CheckBinaryOperatorLogical(ir::Expression *left, ir::Expression *right, ir::Expression *expr,
-                                                      lexer::SourcePosition pos, checker::Type *leftType,
+checker::Type *ETSChecker::CheckBinaryOperatorLogical(ir::Expression *left, ir::Expression *right,
+                                                      ir::BinaryExpression *expr, checker::Type *leftType,
                                                       checker::Type *rightType, Type *unboxedL, Type *unboxedR)
 {
     RepairTypeErrorsInOperands(&leftType, &rightType);
@@ -511,26 +511,42 @@ checker::Type *ETSChecker::CheckBinaryOperatorLogical(ir::Expression *left, ir::
     if (leftType->IsTypeError()) {  // both are errors
         return GlobalTypeError();
     }
-
-    if (leftType->IsETSUnionType() || rightType->IsETSUnionType()) {
-        LogError(diagnostic::BINOP_UNION, {}, pos);
-        return GlobalTypeError();
+    if (leftType->IsETSEnumType() || rightType->IsETSEnumType()) {
+        left->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
+        right->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
+        return CreateETSUnionType({MaybeBoxExpression(left), MaybeBoxExpression(right)});
     }
 
-    if (unboxedL == nullptr || !unboxedL->IsConditionalExprType() || unboxedR == nullptr ||
-        !unboxedR->IsConditionalExprType()) {
-        LogError(diagnostic::BINOP_NOT_LOGICAL, {}, pos);
-        return GlobalTypeError();
+    if (right->IsNumberLiteral() && AdjustNumberLiteralType(right->AsNumberLiteral(), rightType, leftType)) {
+        return leftType;
+    }
+    if (left->IsNumberLiteral() && AdjustNumberLiteralType(left->AsNumberLiteral(), leftType, rightType)) {
+        return rightType;
     }
 
-    if (unboxedL->IsETSPrimitiveType()) {
+    if (HandleLogicalPotentialResult(left, right, expr, leftType)) {
+        ES2PANDA_ASSERT(expr->Result()->TsType() != nullptr);
+        return expr->Result()->TsType();
+    }
+
+    if (IsTypeIdenticalTo(leftType, rightType)) {
+        return GetNonConstantType(leftType);
+    }
+
+    if (IsTypeIdenticalTo(unboxedL, unboxedR)) {
         FlagExpressionWithUnboxing(leftType, unboxedL, left);
-    }
-    if (unboxedR->IsETSPrimitiveType()) {
         FlagExpressionWithUnboxing(rightType, unboxedR, right);
+        return GetNonConstantType(unboxedL);
     }
 
-    return HandleBooleanLogicalOperatorsExtended(unboxedL, unboxedR, expr->AsBinaryExpression());
+    if (unboxedL != nullptr && unboxedL->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) && unboxedR != nullptr &&
+        unboxedR->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
+        FlagExpressionWithUnboxing(leftType, unboxedL, left);
+        FlagExpressionWithUnboxing(rightType, unboxedR, right);
+        return EffectiveTypeOfNumericOp(this, unboxedL, unboxedR);
+    }
+
+    return CreateETSUnionType({MaybeBoxExpression(left), MaybeBoxExpression(right)});
 }
 
 bool ETSChecker::CheckValidEqualReferenceType(checker::Type *const leftType, checker::Type *const rightType)
@@ -633,9 +649,41 @@ static Type *CheckOperatorEqualDynamic(ETSChecker *checker, BinaryArithmOperands
     return checker->GlobalETSNullishObjectType();
 }
 
+static Type *HandelReferenceBinaryEquality(ETSChecker *checker, BinaryArithmOperands const &ops)
+{
+    [[maybe_unused]] auto const [expr, typeL, typeR, reducedL, reducedR] = ops;
+    if ((typeR->IsETSNullType() && typeL->IsETSPrimitiveType()) ||
+        (typeL->IsETSNullType() && typeR->IsETSPrimitiveType())) {
+        return checker->CreateETSUnionType({typeL, typeR});
+    }
+
+    if (typeL->IsETSReferenceType() && typeR->IsETSReferenceType()) {
+        checker->Relation()->SetNode(expr->Left());
+        if (!checker->CheckValidEqualReferenceType(typeL, typeR)) {
+            LogOperatorCannotBeApplied(checker, ops);
+            return typeL;
+        }
+        return checker->CreateETSUnionType({typeL, typeR});
+    }
+
+    if ((reducedL->IsETSReferenceType() || reducedR->IsETSReferenceType()) &&
+        !(typeL->IsETSNullType() || typeL->IsETSUndefinedType()) &&
+        !(typeR->IsETSNullType() || typeR->IsETSUndefinedType())) {
+        if (checker->CheckValidEqualReferenceType(checker->MaybeBoxType(typeL), checker->MaybeBoxType(typeR))) {
+            return checker->CreateETSUnionType(
+                {checker->MaybeBoxExpression(expr->Left()), checker->MaybeBoxExpression(expr->Right())});
+        }
+    }
+
+    return nullptr;
+}
+
 static Type *CheckBinaryOperatorEqual(ETSChecker *checker, BinaryArithmOperands const &ops)
 {
     [[maybe_unused]] auto const [expr, typeL, typeR, reducedL, reducedR] = ops;
+
+    expr->Left()->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
+    expr->Right()->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
 
     if (typeL->IsTypeError()) {  // both are errors
         return checker->GlobalTypeError();
@@ -665,22 +713,7 @@ static Type *CheckBinaryOperatorEqual(ETSChecker *checker, BinaryArithmOperands 
         return checker->GlobalETSBooleanType();
     }
 
-    // Temporary workaround before == and === refactoring
-    if ((typeR->IsETSNullType() && typeL->IsETSPrimitiveType()) ||
-        (typeL->IsETSNullType() && typeR->IsETSPrimitiveType())) {
-        return checker->CreateETSUnionType({typeL, typeR});
-    }
-
-    if (typeL->IsETSReferenceType() && typeR->IsETSReferenceType()) {
-        checker->Relation()->SetNode(expr->Left());
-        if (!checker->CheckValidEqualReferenceType(typeL, typeR)) {
-            LogOperatorCannotBeApplied(checker, ops);
-            return typeL;
-        }
-        return checker->CreateETSUnionType({typeL, typeR});
-    }
-
-    return nullptr;
+    return HandelReferenceBinaryEquality(checker, ops);
 }
 
 // Satisfying the Chinese checker
@@ -879,9 +912,9 @@ static std::tuple<Type *, Type *> CheckBinaryOperatorHelper(ETSChecker *checker,
     switch (binaryParams.operationType) {
         case lexer::TokenType::PUNCTUATOR_LOGICAL_AND:
         case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
-            tsType = checker->CheckBinaryOperatorLogical(left, right, binaryParams.expr, pos, leftType, rightType,
-                                                         typeParams.unboxedL, typeParams.unboxedR);
-            break;
+            tsType = checker->CheckBinaryOperatorLogical(left, right, binaryParams.expr->AsBinaryExpression(), leftType,
+                                                         rightType, typeParams.unboxedL, typeParams.unboxedR);
+            return {tsType, left->TsType()};
         }
         case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL:

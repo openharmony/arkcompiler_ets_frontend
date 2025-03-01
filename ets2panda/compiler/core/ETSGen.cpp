@@ -1688,6 +1688,7 @@ void ETSGen::CastToLong(const ir::AstNode *node)
             Sa().Emit<F64toi64>(node);
             break;
         }
+        case checker::TypeFlag::ETS_ARRAY:
         case checker::TypeFlag::ETS_OBJECT: {
             break;
         }
@@ -2274,6 +2275,64 @@ void ETSGen::ResolveConditionalResultIfTrue(const ir::AstNode *node, Label *ifFa
 
 template void ETSGen::ResolveConditionalResultIfTrue<false, true>(const ir::AstNode *node, Label *ifFalse);
 template void ETSGen::ResolveConditionalResultIfTrue<false, false>(const ir::AstNode *node, Label *ifFalse);
+
+template <typename CondCompare, typename NegCondCompare>
+void ETSGen::BranchConditional(const ir::AstNode *node, Label *endLabel)
+{
+    auto type = GetAccumulatorType();
+    if (type->IsETSReferenceType()) {
+        VReg valReg = AllocReg();
+        StoreAccumulator(node, valReg);
+        EmitEtsIstrue(node, valReg);
+    } else if (type->IsDoubleType() || type->IsFloatType()) {
+        ConditionalFloat(node);
+    } else if (type->IsLongType()) {
+        VReg zeroReg = AllocReg();
+        MoveImmediateToRegister(node, zeroReg, checker::TypeFlag::LONG, 0);
+        Ra().Emit<CmpWide>(node, zeroReg);
+    }
+
+    Sa().Emit<CondCompare>(node, endLabel);
+}
+
+void ETSGen::ConditionalFloat(const ir::AstNode *node)
+{
+    auto type = GetAccumulatorType();
+    VReg tmpReg = AllocReg();
+    VReg isNaNReg = AllocReg();
+
+    StoreAccumulator(node, tmpReg);
+    if (type->IsFloatType()) {
+        FloatIsNaN(node);
+    } else {
+        DoubleIsNaN(node);
+    }
+    Sa().Emit<Xori>(node, 1);
+    StoreAccumulator(node, isNaNReg);
+    LoadAccumulator(node, tmpReg);
+
+    VReg zeroReg = AllocReg();
+
+    if (type->IsFloatType()) {
+        MoveImmediateToRegister(node, zeroReg, checker::TypeFlag::FLOAT, 0);
+        Ra().Emit<Fcmpl>(node, zeroReg);
+    } else {
+        MoveImmediateToRegister(node, zeroReg, checker::TypeFlag::DOUBLE, 0);
+        Ra().Emit<FcmplWide>(node, zeroReg);
+    }
+    Sa().Emit<Xori>(node, 0);
+    Sa().Emit<And2>(node, isNaNReg);
+}
+
+void ETSGen::BranchConditionalIfFalse(const ir::AstNode *node, Label *endLabel)
+{
+    BranchConditional<Jeqz, Jnez>(node, endLabel);
+}
+
+void ETSGen::BranchConditionalIfTrue(const ir::AstNode *node, Label *endLabel)
+{
+    BranchConditional<Jnez, Jeqz>(node, endLabel);
+}
 
 void ETSGen::BranchIfNullish(const ir::AstNode *node, Label *ifNullish)
 {
