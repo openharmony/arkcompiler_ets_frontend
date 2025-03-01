@@ -42,8 +42,8 @@ function main() {
   assertEQ(nequ<T0>(null, undefined), false)
   assertEQ(nequs<T0>(null, undefined), true)
 
-  assertEQ(null, undefined)
-  assertTrue(!(null === undefined))
+  assertTrue(null == undefined)
+  assertNE(null, undefined)
 
   assertTrue(!(null != undefined))
   assertTrue(null !== undefined)

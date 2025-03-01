@@ -28,8 +28,8 @@ function main(): void {
     // assertEQ(foo(a)?.(), 3 // bug)
     assertEQ(foo(a)?.(), a)
 
-    assertEQ(foo(null)?.(), null)
-    assertEQ(null, foo(null)?.())
+    assertTrue(foo(null)?.() == null)
+    assertTrue(null == foo(null)?.())
 
     assertEQ(foo(null)?.(), undefined)
     assertEQ(undefined, foo(null)?.())
