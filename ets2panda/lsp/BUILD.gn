@@ -19,6 +19,16 @@ if (ark_standalone_build) {
   import("//build/ohos.gni")
 }
 
+declare_args() {
+  lsp_build_enable = false
+}
+
+group("lsp_packages") {
+  if (lsp_build_enable) {
+    deps = [ ":libes2panda_lsp" ]
+  }
+}
+
 config("libes2panda_lsp_config") {
   include_dirs = [ "include" ]
   cflags_cc = [ "-Wno-return-type-c-linkage" ]
@@ -30,9 +40,17 @@ ohos_source_set("libes2panda_lsp_static") {
     "src/brace_matching.cpp",
     "src/cancellation_token.cpp",
     "src/classifier.cpp",
+    "src/completions.cpp",
+    "src/find_references.cpp",
+    "src/get_adjusted_location.cpp",
     "src/internal_api.cpp",
     "src/quick_info.cpp",
     "src/references.cpp",
+    "src/rename.cpp",
+    "src/services/services.cpp",
+    "src/services/utilities.cpp",
+    "src/string_completions.cpp",
+    "src/suggestion_diagnostics.cpp",
   ]
   configs = [
     "$ark_root/assembler:arkassembler_public_config",
