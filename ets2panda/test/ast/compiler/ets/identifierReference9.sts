@@ -21,8 +21,8 @@ class A {
   }
 
   bar(): void {
-    this./* @@ label */foo = /* @@ label1 */2;
+    this.foo = 2;
   }
 }
 
-/* @@@ label Error TypeError: Instance method is used as value  */
+/* @@? 24:16 Error TypeError: Type 'int' cannot be assigned to type '() => void'  */

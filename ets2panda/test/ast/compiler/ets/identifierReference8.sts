@@ -21,8 +21,8 @@ class A {
   }
 
   bar(): void {
-    /* @@ label */this./* @@ label1 */foo + 5;
+    this.foo + 5;
   }
 }
 
-/* @@@ label1 Error TypeError: Instance method is used as value  */
+/* @@? 24:5 Error TypeError: Bad operand type, the types of the operands must be numeric type, enum or String.  */

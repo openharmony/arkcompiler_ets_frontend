@@ -951,4 +951,4 @@
     }
   }
 }
-TypeError: Instance method is used as value [func-ref-private.sts:24:19]
+TypeError: Private method is used as value [func-ref-private.sts:24:19]

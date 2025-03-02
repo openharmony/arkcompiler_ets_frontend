@@ -435,5 +435,6 @@ verifier_acc_type1.stsvisible_signatures.sts
 verifier_acc_type1.sts
 visible_signatures.sts
 nestedNameSpaceWithStaticField.sts
+Non-staticMethod-used-as-param.sts
 implicit_this_array.sts
 stringInSwitchCase.sts

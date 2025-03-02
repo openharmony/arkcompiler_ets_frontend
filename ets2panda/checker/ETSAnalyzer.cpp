@@ -1471,10 +1471,12 @@ static Type *TransformTypeForMethodReference(ETSChecker *checker, ir::Expression
     if (expr->Parent()->IsCallExpression() && expr->Parent()->AsCallExpression()->Callee() == expr) {
         return type;  // type is actually used as method
     }
-    if (!type->AsETSFunctionType()->CallSignatures().at(0)->HasSignatureFlag(SignatureFlags::STATIC)) {
-        checker->LogTypeError("Instance method is used as value", getUseSite());
+
+    if (type->AsETSFunctionType()->CallSignatures().at(0)->HasSignatureFlag(SignatureFlags::PRIVATE)) {
+        checker->LogTypeError("Private method is used as value", getUseSite());
         return checker->GlobalTypeError();
     }
+
     if (type->AsETSFunctionType()->CallSignatures().size() > 1) {
         checker->LogTypeError("Overloaded method is used as value", getUseSite());
         return checker->GlobalTypeError();
