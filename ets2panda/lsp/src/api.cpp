@@ -261,13 +261,20 @@ std::vector<TextSpan> GetBraceMatchingAtPositionWrapper(char const *fileName, si
     return result;
 }
 
-std::vector<FileDiagnostic> GetSuggestionDiagnostics(char const *fileName)
+DiagnosticReferences GetSuggestionDiagnostics(const char *fileName)
 {
     Initializer initializer = Initializer();
     auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
+    DiagnosticReferences res {};
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
     auto ast = ctx->parserProgram->Ast();
-    return ark::es2panda::lsp::GetSuggestionDiagnosticsImpl(ast);
+    auto vec = GetSuggestionDiagnosticsImpl(ast);
+    res.diagnostic.reserve(vec.size());
+    for (const auto &diag : vec) {
+        res.diagnostic.push_back(diag.diagnostic);
+    }
+    initializer.DestroyContext(context);
+    return res;
 }
 
 ark::es2panda::lsp::CompletionInfo GetCompletionsAtPosition(char const *fileName, size_t position)

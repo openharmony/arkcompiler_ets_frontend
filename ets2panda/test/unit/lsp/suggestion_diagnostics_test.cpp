@@ -150,6 +150,31 @@ TEST_F(LspSuggestionTests, GetSuggestionDiagnostics)
     initializer.DestroyContext(context);
 }
 
+TEST_F(LspSuggestionTests, GetSuggestionDiagnostics2)
+{
+    std::vector<std::string> files = {"ds1.sts"};
+    std::vector<std::string> texts = {
+        "function fetchData(){\nreturn Promise.resolve(\"h\")\n;}\nfunction processData()"
+        "{\nreturn fetchData().finally();\n};\nprocessData();\n"};
+    auto filePaths = CreateTempFile(files, texts);
+    size_t const expectedFileCount = 1;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+    LSPAPI const *lspApi = GetImpl();
+    auto diag = lspApi->getSuggestionDiagnostics(filePaths[0].c_str());
+    const auto msg = "This_may_be_converted_to_an_async_function";
+    auto severity = DiagnosticSeverity::Hint;
+    int const startLine = 0;
+    int const endLine = 2;
+    int const startChar = 9;
+    int const endChar = 52;
+    ASSERT_EQ(diag.diagnostic.at(0).range_.start.line_, startLine);
+    ASSERT_EQ(diag.diagnostic.at(0).range_.end.line_, endLine);
+    ASSERT_EQ(diag.diagnostic.at(0).range_.start.character_, startChar);
+    ASSERT_EQ(diag.diagnostic.at(0).range_.end.character_, endChar);
+    ASSERT_EQ(diag.diagnostic.at(0).message_, msg);
+    ASSERT_EQ(diag.diagnostic.at(0).severity_, severity);
+}
+
 TEST_F(LspSuggestionTests, isPromiseHandler)
 {
     const char *source =
