@@ -967,3 +967,7 @@ syntax:
 - name: READONLY_TYPE_EXPECTED
   id: 239
   message: "Readonly<T> utility type expected but readonly<T> found."
+
+- name: PROHIBITED_ACCESS_MODIFIER_IN_AMBIENT_CLASS
+  id: 240
+  message: Methods or fields should not be decorated with {} in ambient class.

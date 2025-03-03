@@ -15,8 +15,8 @@
 
 declare class CIterator implements Iterator<string> {
 
-  private ind_: int;
-  private base_: C;
+  public ind_: int;
+  public base_: C;
 
   constructor (base: C)
 
@@ -24,7 +24,7 @@ declare class CIterator implements Iterator<string> {
 }
 
 declare class C {
-  private y: string[];
+  protected y: string[];
 
   [Symbol.iterator](): CIterator
 }
