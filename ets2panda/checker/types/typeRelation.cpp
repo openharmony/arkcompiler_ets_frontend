@@ -275,13 +275,14 @@ VarianceFlag TypeRelation::TransferVariant(VarianceFlag variance, VarianceFlag p
     return variance == VarianceFlag::CONTRAVARIANT ? VarianceFlag::COVARIANT : VarianceFlag::CONTRAVARIANT;
 }
 
-void TypeRelation::RaiseError(const std::string &errMsg, const lexer::SourcePosition &loc) const
+void TypeRelation::RaiseError(const diagnostic::DiagnosticKind &kind, const lexer::SourcePosition &loc) const
 {
-    checker_->LogTypeError(errMsg, loc);
+    RaiseError(kind, {}, loc);
 }
 
-void TypeRelation::RaiseError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &loc) const
+void TypeRelation::RaiseError(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &list,
+                              const lexer::SourcePosition &loc) const
 {
-    checker_->LogTypeError(list, loc);
+    checker_->LogError(kind, list, loc);
 }
 }  // namespace ark::es2panda::checker

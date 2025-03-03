@@ -1253,9 +1253,8 @@ checker::Type *TSAnalyzer::Check(ir::ReturnStatement *st) const
             returnType = checker->CheckTypeCached(st->Argument());
         }
 
-        checker->IsTypeAssignableTo(returnType, funcReturnType,
-                                    {"Type '", returnType, "' is not assignable to type '", funcReturnType, "'."},
-                                    st->Start());
+        checker->IsTypeAssignableTo(returnType, funcReturnType, diagnostic::INVALID_ASSIGNMNENT_2,
+                                    {returnType, funcReturnType}, st->Start());
     }
 
     return nullptr;
@@ -1356,11 +1355,8 @@ static void CheckSimpleVariableDeclaration(checker::TSChecker *checker, ir::Vari
     }
 
     if (previousType != nullptr) {
-        checker->IsTypeIdenticalTo(bindingVar->TsType(), previousType,
-                                   {"Subsequent variable declaration must have the same type. Variable '",
-                                    bindingVar->Name(), "' must be of type '", previousType, "', but here has type '",
-                                    bindingVar->TsType(), "'."},
-                                   declarator->Id()->Start());
+        checker->IsTypeIdenticalTo(bindingVar->TsType(), previousType, diagnostic::DIFFERENT_SUBSEQ_DECL,
+                                   {bindingVar->Name(), previousType, bindingVar->TsType()}, declarator->Id()->Start());
     }
 
     checker->RemoveStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
@@ -1498,12 +1494,8 @@ checker::Type *TSAnalyzer::Check(ir::TSAsExpression *expr) const
     checker::Type *exprType = checker->GetBaseTypeOfLiteralType(expr->Expr()->Check(checker));
     checker::Type *targetType = expr->TypeAnnotation()->GetType(checker);
 
-    checker->IsTypeComparableTo(
-        targetType, exprType,
-        {"Conversion of type '", exprType, "' to type '", targetType,
-         "' may be a mistake because neither type sufficiently overlaps with the other. If this was ",
-         "intentional, convert the expression to 'unknown' first."},
-        expr->Start());
+    checker->IsTypeComparableTo(targetType, exprType, diagnostic::DISJOINT_CONVERSION, {exprType, targetType},
+                                expr->Start());
 
     return targetType;
 }
@@ -1940,10 +1932,8 @@ static void CheckInheritedPropertiesAreIdentical(checker::TSChecker *checker, ch
             } else if (res->second.second != type) {
                 checker::Type *sourceType = checker->GetTypeOfVariable(inheritedProp);
                 checker::Type *targetType = checker->GetTypeOfVariable(res->second.first);
-                checker->IsTypeIdenticalTo(sourceType, targetType,
-                                           {"Interface '", type, "' cannot simultaneously extend types '",
-                                            res->second.second, "' and '", base->AsInterfaceType(), "'."},
-                                           locInfo);
+                checker->IsTypeIdenticalTo(sourceType, targetType, diagnostic::IFACE_MULTIPLE_EXTENSION,
+                                           {type, res->second.second, base->AsInterfaceType()}, locInfo);
             }
         }
     }
@@ -1971,9 +1961,8 @@ checker::Type *TSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const
         CheckInheritedPropertiesAreIdentical(checker, resolvedInterface, st->Id()->Start());
 
         for (auto *base : resolvedInterface->Bases()) {
-            checker->IsTypeAssignableTo(
-                resolvedInterface, base,
-                {"Interface '", st->Id()->Name(), "' incorrectly extends interface '", base, "'"}, st->Id()->Start());
+            checker->IsTypeAssignableTo(resolvedInterface, base, diagnostic::IFACE_INVALID_EXTENDS,
+                                        {st->Id()->Name(), base}, st->Id()->Start());
         }
 
         checker->CheckIndexConstraints(resolvedInterface);

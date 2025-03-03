@@ -18,8 +18,8 @@
 #include "checker/ETSchecker.h"
 
 namespace ark::es2panda::checker {
-CastingContext::CastingContext(TypeRelation *relation, const util::DiagnosticMessageParams &list,
-                               ConstructorData &&data)
+CastingContext::CastingContext(TypeRelation *relation, const diagnostic::DiagnosticKind &diagKind,
+                               const util::DiagnosticMessageParams &list, ConstructorData &&data)
 {
     flags_ |= data.extraFlags;
 
@@ -35,7 +35,7 @@ CastingContext::CastingContext(TypeRelation *relation, const util::DiagnosticMes
             relation->Result(true);
         }
         if (!relation->IsTrue() && (flags_ & TypeRelationFlag::NO_THROW) == 0) {
-            relation->RaiseError(list, data.pos);
+            relation->RaiseError(diagKind, list, data.pos);
         }
     }
 

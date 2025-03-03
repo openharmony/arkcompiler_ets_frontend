@@ -238,7 +238,7 @@ checker::Type *MemberExpression::CheckUnionMember(checker::ETSChecker *checker, 
     auto *const unionType = baseType->AsETSUnionType();
     if (object_->Variable() != nullptr && object_->Variable()->Declaration() != nullptr &&
         object_->Variable()->Declaration()->IsTypeAliasDecl()) {
-        checker->LogTypeError("Static union member expression cannot be interpreted.", Start());
+        checker->LogError(diagnostic::STATIC_UNION, {}, Start());
         return checker->GlobalTypeError();
     }
     auto *const commonPropType = TraverseUnionMember(checker, unionType);
@@ -384,7 +384,7 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
         return nullptr;
     }
     checker->ValidateSignatureAccessibility(objType_, nullptr, signature, Start(),
-                                            {diagnostic::INVISIBLE_INDEX_ACCESSOR, {}});
+                                            {{diagnostic::INVISIBLE_INDEX_ACCESSOR, {}}});
 
     ES2PANDA_ASSERT(signature->Function() != nullptr);
 
@@ -432,7 +432,7 @@ static void CastTupleElementFromClassMemberType(checker::ETSChecker *checker,
     auto *storedTupleType = checker->MaybeBoxType(typeOfTuple);
 
     const checker::CastingContext tupleCast(
-        checker->Relation(), {"this cast should never fail"},
+        checker->Relation(), diagnostic::CAST_FAIL_UNREACHABLE, {},
         checker::CastingContext::ConstructorData {tupleElementAccessor, storedTupleType, typeOfTuple,
                                                   tupleElementAccessor->Start(), checker::TypeRelationFlag::NO_THROW});
 }

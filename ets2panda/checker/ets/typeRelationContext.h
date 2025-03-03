@@ -25,7 +25,7 @@ class AssignmentContext {
 public:
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     AssignmentContext(TypeRelation *relation, ir::Expression *node, Type *source, Type *target,
-                      const lexer::SourcePosition &pos, const util::DiagnosticMessageParams &list,
+                      const lexer::SourcePosition &pos, std::optional<util::DiagnosticWithParams> diag = std::nullopt,
                       TypeRelationFlag flags = TypeRelationFlag::NONE)
     {
         flags_ |= ((flags & TypeRelationFlag::NO_BOXING) != 0) ? TypeRelationFlag::NONE : TypeRelationFlag::BOXING;
@@ -69,7 +69,7 @@ public:
         }
 
         if (!relation->IsTrue() && (flags_ & TypeRelationFlag::NO_THROW) == 0) {
-            relation->RaiseError(list, pos);
+            relation->RaiseError(diag->kind, diag->params, pos);
         }
 
         relation->SetNode(nullptr);
@@ -93,7 +93,7 @@ class InvocationContext {
 public:
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     InvocationContext(TypeRelation *relation, ir::Expression *node, Type *source, Type *target,
-                      const lexer::SourcePosition &pos, const util::DiagnosticMessageParams &list,
+                      const lexer::SourcePosition &pos, const std::optional<util::DiagnosticWithParams> &diag,
                       TypeRelationFlag initialFlags = TypeRelationFlag::NONE)
     {
         flags_ |=
@@ -122,7 +122,7 @@ public:
         if (!relation->IsTrue()) {
             invocable_ = false;
             if ((initialFlags & TypeRelationFlag::NO_THROW) == 0) {
-                relation->RaiseError(list, pos);
+                relation->RaiseError(diag->kind, diag->params, pos);
             }
             return;
         }

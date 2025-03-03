@@ -356,9 +356,9 @@ bool ETSChecker::ValidateSignatureInvocationContext(Signature *substitutedSig, i
 
     flags |= TypeRelationFlag::ONLY_CHECK_WIDENING;
 
-    auto const invocationCtx = checker::InvocationContext(
-        Relation(), argument, argumentType, targetType, argument->Start(),
-        {"Type '", argumentType, "' is not compatible with type '", targetType, "' at index ", index + 1}, flags);
+    auto const invocationCtx =
+        checker::InvocationContext(Relation(), argument, argumentType, targetType, argument->Start(),
+                                   {{diagnostic::TYPE_MISMATCH_AT_IDX, {argumentType, targetType, index + 1}}}, flags);
 
     return invocationCtx.IsInvocable() || CheckOptionalLambdaFunction(argument, substitutedSig, index);
 }
@@ -380,11 +380,9 @@ bool ETSChecker::IsValidRestArgument(ir::Expression *const argument, Signature *
     if (substitutedSig->OwnerVar() == nullptr) {
         targetType = MaybeBoxType(targetType);
     }
-    auto const invocationCtx =
-        checker::InvocationContext(Relation(), argument, argumentType, targetType, argument->Start(),
-                                   {"Type '", argumentType, "' is not compatible with rest parameter type '",
-                                    targetType, "' at index ", index + 1},
-                                   flags);
+    auto const invocationCtx = checker::InvocationContext(
+        Relation(), argument, argumentType, targetType, argument->Start(),
+        {{diagnostic::REST_PARAM_INCOMPAT_AT, {argumentType, targetType, index + 1}}}, flags);
 
     return invocationCtx.IsInvocable();
 }
@@ -428,8 +426,7 @@ bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const Ar
 
         auto const invocationCtx = checker::InvocationContext(
             Relation(), restArgument, argumentType, substitutedSig->RestVar()->TsType(), argument->Start(),
-            {"Type '", argumentType, "' is not compatible with rest parameter type '",
-             substitutedSig->RestVar()->TsType(), "' at index ", index + 1},
+            {{diagnostic::REST_PARAM_INCOMPAT_AT, {argumentType, substitutedSig->RestVar()->TsType(), index + 1}}},
             flags);
         if (!invocationCtx.IsInvocable()) {
             if (restArgument->IsArrayExpression()) {
@@ -1612,7 +1609,7 @@ bool ETSChecker::NeedToVerifySignatureVisibility(Signature *signature, const lex
 
 void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, const ir::CallExpression *callExpr,
                                                 Signature *signature, const lexer::SourcePosition &pos,
-                                                const DiagnosticInfo &errorInfo)
+                                                const MaybeDiagnosticInfo &maybeErrorInfo)
 {
     if (!NeedToVerifySignatureVisibility(signature, pos)) {
         return;
@@ -1648,12 +1645,12 @@ void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, const ir:
         return;
     }
 
-    const auto [diagnostic, diagnosticParams] = errorInfo;
-    if (diagnostic == std::nullopt) {
+    if (!maybeErrorInfo.has_value()) {
         LogError(diagnostic::SIG_INVISIBLE, {signature->Function()->Id()->Name(), signature}, pos);
         return;
     }
-    LogError(diagnostic.value(), diagnosticParams, pos);
+    const auto [diagnostic, diagnosticParams] = *maybeErrorInfo;
+    LogError(diagnostic, diagnosticParams, pos);
 }
 
 void ETSChecker::CheckCapturedVariable(ir::AstNode *const node, varbinder::Variable *const var)

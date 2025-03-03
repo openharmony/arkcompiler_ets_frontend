@@ -169,23 +169,22 @@ public:
                   const util::DiagnosticMessageParams &diagnosticParams = {});
     void LogError(const diagnostic::DiagnosticKind &diagnostic, const util::DiagnosticMessageParams &diagnosticParams,
                   const lexer::SourcePosition &pos);
+    void LogError(const diagnostic::DiagnosticKind &diagnostic, const lexer::SourcePosition &pos);
     void LogTypeError(std::string_view message, const lexer::SourcePosition &pos);
-    void LogTypeError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos);
     void Warning(std::string_view message, const lexer::SourcePosition &pos) const;
     void ReportWarning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos);
 
     bool IsTypeIdenticalTo(Type *source, Type *target);
-    bool IsTypeIdenticalTo(Type *source, Type *target, const std::string &errMsg, const lexer::SourcePosition &errPos);
-    bool IsTypeIdenticalTo(Type *source, Type *target, const util::DiagnosticMessageParams &list,
+    bool IsTypeIdenticalTo(Type *source, Type *target, const diagnostic::DiagnosticKind &diagKind,
+                           const util::DiagnosticMessageParams &diagParams, const lexer::SourcePosition &errPos);
+    bool IsTypeIdenticalTo(Type *source, Type *target, const diagnostic::DiagnosticKind &diagKind,
                            const lexer::SourcePosition &errPos);
     bool IsTypeAssignableTo(Type *source, Type *target);
-    bool IsTypeAssignableTo(Type *source, Type *target, const std::string &errMsg, const lexer::SourcePosition &errPos);
-    bool IsTypeAssignableTo(Type *source, Type *target, const util::DiagnosticMessageParams &list,
-                            const lexer::SourcePosition &errPos);
+    bool IsTypeAssignableTo(Type *source, Type *target, const diagnostic::DiagnosticKind &diagKind,
+                            const util::DiagnosticMessageParams &list, const lexer::SourcePosition &errPos);
     bool IsTypeComparableTo(Type *source, Type *target);
-    bool IsTypeComparableTo(Type *source, Type *target, const std::string &errMsg, const lexer::SourcePosition &errPos);
-    bool IsTypeComparableTo(Type *source, Type *target, const util::DiagnosticMessageParams &list,
-                            const lexer::SourcePosition &errPos);
+    bool IsTypeComparableTo(Type *source, Type *target, const diagnostic::DiagnosticKind &diagKind,
+                            const util::DiagnosticMessageParams &list, const lexer::SourcePosition &errPos);
     bool AreTypesComparable(Type *source, Type *target);
     bool IsTypeEqualityComparableTo(Type *source, Type *target);
     bool IsAllTypesAssignableTo(Type *source, Type *target);
@@ -263,29 +262,15 @@ private:
 
 class TypeStackElement {
 public:
-    explicit TypeStackElement(Checker *checker, void *element, const util::DiagnosticMessageParams &list,
+    explicit TypeStackElement(Checker *checker, void *element, const std::optional<util::DiagnosticWithParams> &diag,
                               const lexer::SourcePosition &pos, bool isRecursive = false)
-        : checker_(checker), element_(element), hasErrorChecker_(false), isRecursive_(isRecursive), cleanup_(true)
+        : checker_(checker), element_(element), isRecursive_(isRecursive)
     {
         if (!checker->typeStack_.insert({element, nullptr}).second) {
             if (isRecursive_) {
                 cleanup_ = false;
             } else {
-                checker_->LogTypeError(list, pos);
-                element_ = nullptr;
-            }
-        }
-    }
-
-    explicit TypeStackElement(Checker *checker, void *element, std::string_view err, const lexer::SourcePosition &pos,
-                              bool isRecursive = false)
-        : checker_(checker), element_(element), hasErrorChecker_(false), isRecursive_(isRecursive), cleanup_(true)
-    {
-        if (!checker->typeStack_.insert({element, nullptr}).second) {
-            if (isRecursive_) {
-                cleanup_ = false;
-            } else {
-                checker_->LogTypeError(err, pos);
+                checker_->LogError(diag->kind, diag->params, pos);
                 element_ = nullptr;
             }
         }
@@ -325,9 +310,9 @@ public:
 private:
     Checker *checker_;
     void *element_;
-    bool hasErrorChecker_;
+    bool hasErrorChecker_ {false};
     bool isRecursive_;
-    bool cleanup_;
+    bool cleanup_ {true};
 };
 
 template <typename T>

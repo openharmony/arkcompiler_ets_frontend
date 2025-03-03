@@ -25,4 +25,4 @@ function main()
 }
 
 /* @@@ label Error TypeError: Cannot find type 'a'.  */
-/* @@? 24:5 Error TypeError: Using the "instance of" operator with non-object type "b" */
+/* @@? 24:5 Error TypeError: Using the 'instance of' operator with non-object type 'b' */
