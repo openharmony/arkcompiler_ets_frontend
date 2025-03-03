@@ -160,9 +160,9 @@ ETSFunctionType *ETSFunctionType::Clone(ArenaAllocator *const allocator, AstNode
         clone->SetAnnotations(std::move(annotationUsages));
     }
 
-    // Reset scope for clone
-    // Using old scopes with clone may lead to incorrect ast-structure
-    clone->SetScope(nullptr);
+    // If the scope is set to empty, it will result in the inability to retrieve the scope after clone,
+    // and an error cannot find type will be reported
+    clone->SetScope(this->scope_);
 
     return clone;
 }
