@@ -25,6 +25,7 @@
 #include <string>
 #include <variant>
 #include <vector>
+#include "line_column_offset.h"
 #include "public/es2panda_lib.h"
 #include "cancellation_token.h"
 #include "find_references.h"
@@ -360,6 +361,7 @@ typedef struct LSPAPI {
     ark::es2panda::lsp::CompletionInfo (*getCompletionsAtPosition)(char const *fileName, size_t position);
     std::vector<TextSpan> (*getBraceMatchingAtPosition)(char const *fileName, size_t position);
     std::vector<Location> (*getImplementationLocationAtPosition)(es2panda_Context *context, int position);
+    ark::es2panda::lsp::LineAndCharacter (*toLineColumnOffset)(char const *fileName, size_t position);
 } LSPAPI;
 
 #ifdef _WIN32

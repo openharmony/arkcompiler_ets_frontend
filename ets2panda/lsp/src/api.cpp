@@ -26,6 +26,7 @@
 #include "quick_info.h"
 #include "suggestion_diagnostics.h"
 #include "brace_matching.h"
+#include "line_column_offset.h"
 #include "services/services.h"
 
 extern "C" {
@@ -284,6 +285,15 @@ extern "C" std::vector<Location> GetImplementationLocationAtPositionWrapper(es2p
     return GetImplementationLocationAtPosition(context, position);
 }
 
+LineAndCharacter ToLineColumnOffsetWrapper(char const *fileName, size_t position)
+{
+    Initializer initializer = Initializer();
+    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
+    auto result = ToLineColumnOffset(context, position);
+    initializer.DestroyContext(context);
+    return result;
+}
+
 LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetImplementationAtPosition,
                     GetFileReferences,
@@ -301,7 +311,8 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetSuggestionDiagnostics,
                     GetCompletionsAtPosition,
                     GetBraceMatchingAtPositionWrapper,
-                    GetImplementationLocationAtPositionWrapper};
+                    GetImplementationLocationAtPositionWrapper,
+                    ToLineColumnOffsetWrapper};
 }  // namespace ark::es2panda::lsp
 
 #ifdef _WIN32
