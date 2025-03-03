@@ -76,7 +76,7 @@ Diagnostic CreateDiagnosticWithoutFile(const util::DiagnosticBase &error);
 void GetGlobalDiagnostics(es2panda_Context *context, DiagnosticReferences &compilerOptionsDiagnostics);
 void GetOptionDiagnostics(es2panda_Context *context, DiagnosticReferences &compilerOptionsDiagnostics);
 size_t GetTokenPosOfNode(const ir::AstNode *astNode);
-ir::AstNode *GetDefinitionAtPositionImpl(es2panda_Context *context, size_t pos);
+std::pair<ir::AstNode *, util::StringView> GetDefinitionAtPositionImpl(es2panda_Context *context, size_t pos);
 DocumentHighlights GetDocumentHighlightsImpl(es2panda_Context *context, size_t position);
 
 void GetReferenceLocationAtPositionImpl(FileNodeInfo fileNodeInfo, es2panda_Context *referenceFileContext,

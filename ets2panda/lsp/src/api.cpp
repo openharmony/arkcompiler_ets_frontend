@@ -17,7 +17,9 @@
 #include <cstddef>
 #include <string>
 #include <vector>
+#include "compiler/lowering/util.h"
 #include "internal_api.h"
+#include "ir/astNode.h"
 #include "references.h"
 #include "public/es2panda_lib.h"
 #include "cancellation_token.h"
@@ -35,13 +37,17 @@ DefinitionInfo GetDefinitionAtPosition(char const *fileName, size_t position)
 {
     Initializer initializer = Initializer();
     auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
-    auto declNode = GetDefinitionAtPositionImpl(context, position);
-    auto node = declNode;
+    auto declInfo = GetDefinitionAtPositionImpl(context, position);
     DefinitionInfo result {};
+    auto node = declInfo.first;
     while (node != nullptr) {
         if (node->IsETSModule()) {
             auto name = std::string(node->AsETSModule()->Program()->SourceFilePath());
-            result = {name, declNode->Start().index, declNode->End().index - declNode->Start().index};
+            auto targetNode = declInfo.first->FindChild([&declInfo](ir::AstNode *childNode) {
+                return childNode->IsIdentifier() && childNode->AsIdentifier()->Name() == declInfo.second &&
+                       childNode->Parent()->Type() == declInfo.first->Type();
+            });
+            result = {name, targetNode->Start().index, targetNode->End().index - targetNode->Start().index};
             break;
         }
         node = node->Parent();
