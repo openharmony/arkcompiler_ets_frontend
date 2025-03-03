@@ -61,7 +61,7 @@ uint32_t ETSTupleType::Rank() const
 
 Type *ETSTupleType::GetTypeAtIndex(const TupleSizeType index) const
 {
-    ASSERT(index < GetTupleSize());
+    ES2PANDA_ASSERT(index < GetTupleSize());
     return GetTupleTypesList().at(index);
 }
 

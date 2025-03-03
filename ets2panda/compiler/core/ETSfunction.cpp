@@ -51,7 +51,7 @@ void ETSFunction::CallImplicitCtor(ETSGen *etsg)
     auto res = std::find_if(superType->ConstructSignatures().cbegin(), superType->ConstructSignatures().cend(),
                             [](const checker::Signature *sig) { return sig->MinArgCount() == 0; });
     if (res == superType->ConstructSignatures().cend()) {
-        ASSERT(superType->ConstructSignatures().empty());
+        ES2PANDA_ASSERT(superType->ConstructSignatures().empty());
         return;
     }
     auto sig = *res;

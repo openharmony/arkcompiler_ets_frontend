@@ -260,7 +260,7 @@ public:
 
     virtual std::tuple<bool, bool> ResolveConditionExpr() const
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     };
 
     virtual void Identical(TypeRelation *relation, Type *other);

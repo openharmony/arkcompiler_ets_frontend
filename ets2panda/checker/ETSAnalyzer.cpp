@@ -353,7 +353,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSFunctionType *node) const
     auto *returnType = checker->ComposeReturnType(node->ReturnType(), node->IsAsync());
     auto *const signature = checker->CreateSignature(signatureInfo, returnType, node->Flags());
     if (signature == nullptr) {  // #23134
-        ASSERT(GetChecker()->IsAnyError());
+        ES2PANDA_ASSERT(GetChecker()->IsAnyError());
         return node->SetTsType(checker->GlobalTypeError());
     }
 
@@ -553,8 +553,8 @@ checker::Type *ETSAnalyzer::Check(ir::ETSParameterExpression *expr) const
     } else {
         expr->SetTsType(expr->Ident()->Check(checker));
     }
-    ASSERT(!expr->IsOptional() ||
-           checker->Relation()->IsSupertypeOf(expr->TsType(), checker->GlobalETSUndefinedType()));
+    ES2PANDA_ASSERT(!expr->IsOptional() ||
+                    checker->Relation()->IsSupertypeOf(expr->TsType(), checker->GlobalETSUndefinedType()));
     return expr->TsType();
 }
 
@@ -1078,7 +1078,7 @@ std::tuple<Type *, ir::Expression *> ETSAnalyzer::CheckAssignmentExprOperatorTyp
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
             break;
         }
     }
@@ -1250,7 +1250,7 @@ static ETSObjectType *GetCallExpressionCalleeObject(ETSChecker *checker, ir::Cal
     if (callee->IsMemberExpression()) {
         return callee->AsMemberExpression()->ObjType();
     }
-    ASSERT(callee->IsIdentifier());
+    ES2PANDA_ASSERT(callee->IsIdentifier());
     return checker->Context().ContainingClass();
 }
 
@@ -1285,7 +1285,7 @@ Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, Type *calleeType) con
     }
 
     if (calleeType->IsETSMethodType() && signature->Function()->IsDynamic()) {
-        ASSERT(signature->Function()->IsDynamic());
+        ES2PANDA_ASSERT(signature->Function()->IsDynamic());
         auto lang = signature->Function()->Language();
         expr->SetSignature(checker->ResolveDynamicCallExpression(expr->Callee(), signature->Params(), lang, false));
     } else {
@@ -1429,7 +1429,7 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
         expr->SetUncheckedType(checker->GuaranteedTypeForUncheckedCallReturn(expr->Signature()));
     }
     if (expr->UncheckedType() != nullptr) {
-        ASSERT(expr->UncheckedType()->IsETSReferenceType());
+        ES2PANDA_ASSERT(expr->UncheckedType()->IsETSReferenceType());
         checker->ComputeApparentType(returnType);
     }
 
@@ -1503,7 +1503,7 @@ checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
 // Convert method references to Arrow type if method is used as value
 static Type *TransformTypeForMethodReference(ETSChecker *checker, ir::Expression *const use, Type *type)
 {
-    ASSERT(use->IsIdentifier() || use->IsMemberExpression());
+    ES2PANDA_ASSERT(use->IsIdentifier() || use->IsMemberExpression());
     if (!type->IsETSMethodType()) {
         return type;
     }
@@ -1947,7 +1947,7 @@ static checker::Type *GetTypeOfStringType(checker::Type *argType, ETSChecker *ch
             case TypeFlag::DOUBLE:
                 return checker->CreateETSStringLiteralType("number");
             default:
-                UNREACHABLE();
+                ES2PANDA_UNREACHABLE();
         }
     }
     if (argType->IsETSUndefinedType()) {

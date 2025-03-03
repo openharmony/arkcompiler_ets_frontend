@@ -16,12 +16,12 @@
 #ifndef ES2PANDA_IR_AST_NODE_H
 #define ES2PANDA_IR_AST_NODE_H
 
+#include "es2panda.h"
 #include "astNodeFlags.h"
 #include "astNodeMapping.h"
 #include "ir/visitor/AstVisitor.h"
 #include "lexer/token/sourceLocation.h"
-#include "macros.h"
-#include "util/diagnosticEngine.h"
+#include "util/es2pandaMacros.h"
 
 namespace ark::es2panda::compiler {
 class PandaGen;
@@ -88,7 +88,7 @@ inline std::string_view ToString(AstNodeType nodeType)
         AST_NODE_REINTERPRET_MAPPING(STRING_FROM_NODE_TYPE_REINTERPRET)
         default:
             LOG(FATAL, ES2PANDA) << "Invalid 'AstNodeType'";
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -331,7 +331,7 @@ public:
 
     virtual void AddDecorators([[maybe_unused]] ArenaVector<ir::Decorator *> &&decorators)
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     virtual bool CanHaveDecorator([[maybe_unused]] bool inTs) const

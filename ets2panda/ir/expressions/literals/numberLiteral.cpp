@@ -138,7 +138,7 @@ void GetBase(FpType d, int digits, int *decpt, Span<char> buf)
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg)
     auto ret = snprintf_s(buf.begin(), buf.size(), buf.size() - 1, "%.*e", digits - 1, d);
     if (ret == -1) {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
     char *end = buf.begin() + ret;
     ES2PANDA_ASSERT(*end == 0);
@@ -244,7 +244,7 @@ static Span<char> FpToStringDecimalRadixMainCase(FpType number, bool negative, S
             // the remaining k−n digits of the decimal representation of s.
             auto fracStart = bufferStart + n;
             if (memmove_s(fracStart + 1, buffer.end() - (fracStart + 1), fracStart, k - n) != EOK) {
-                UNREACHABLE();
+                ES2PANDA_UNREACHABLE();
             }
             *fracStart = '.';
             bufferEnd++;
@@ -256,7 +256,7 @@ static Span<char> FpToStringDecimalRadixMainCase(FpType number, bool negative, S
         auto length = -n + 2U;
         auto fracStart = bufferStart + length;
         if (memmove_s(fracStart, buffer.end() - fracStart, bufferStart, k) != EOK) {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
         std::fill_n(bufferStart, length, '0');
         bufferStart[1] = '.';
@@ -280,7 +280,7 @@ static Span<char> FpToStringDecimalRadixMainCase(FpType number, bool negative, S
         if (bufferEnd + result.size() <= buffer.end()) {
             bufferEnd = std::copy(result.begin(), result.end(), bufferEnd);
         } else {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
     if (negative) {

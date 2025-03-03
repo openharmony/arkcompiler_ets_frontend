@@ -162,7 +162,7 @@ private:
                 return static_cast<TType>(value);
             }
             default: {
-                UNREACHABLE();
+                ES2PANDA_UNREACHABLE();
             }
         }
     }

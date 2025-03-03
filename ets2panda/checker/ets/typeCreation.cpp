@@ -200,7 +200,7 @@ static SignatureFlags ConvertToSignatureFlags(ir::ModifierFlags inModifiers, ir:
 Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *returnType, ir::ScriptFunction *func)
 {
     if (info == nullptr) {  // #23134
-        ASSERT(IsAnyError());
+        ES2PANDA_ASSERT(IsAnyError());
         return nullptr;
     }
     auto signature = Allocator()->New<Signature>(info, returnType, func);
@@ -211,7 +211,7 @@ Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *returnType, ir
 Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *returnType, ir::ScriptFunctionFlags sff)
 {
     if (info == nullptr) {  // #23134
-        ASSERT(IsAnyError());
+        ES2PANDA_ASSERT(IsAnyError());
         return nullptr;
     }
     auto signature = Allocator()->New<Signature>(info, returnType, nullptr);

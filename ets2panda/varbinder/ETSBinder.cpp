@@ -970,7 +970,7 @@ ArenaVector<parser::Program *> ETSBinder::GetExternalProgram(const util::StringV
 {
     if (sourceName == ERROR_LITERAL) {
         // avoid logging rediculus messages, there must be a syntax error
-        ASSERT(GetContext()->diagnosticEngine->IsAnyError());
+        ES2PANDA_ASSERT(GetContext()->diagnosticEngine->IsAnyError());
         return ArenaVector<parser::Program *>(Allocator()->Adapter());
     }
     // NOTE: quick fix to make sure not to look for the global program among the external sources
@@ -1025,7 +1025,7 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
             auto item1 = std::find_if(selectMap2->second.begin(), selectMap2->second.end(), predicateFunc1);
             if (item1 != selectMap2->second.end()) {
                 auto item2 = globalBindings.find(item1->first);
-                ASSERT(item2 != globalBindings.end());
+                ES2PANDA_ASSERT(item2 != globalBindings.end());
                 specifier->AsImportDefaultSpecifier()->Local()->SetVariable(item2->second);
                 InsertForeignBinding(specifier, import, specifier->AsImportDefaultSpecifier()->Local()->Name(),
                                      item2->second);

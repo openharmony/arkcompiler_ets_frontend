@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,7 +22,7 @@
 #include <string_view>
 #include <tuple>
 
-#include "libpandabase/macros.h"
+#include "util/es2pandaMacros.h"
 
 namespace ark::es2panda {
 
@@ -46,7 +46,7 @@ public:
             }
         }
 
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     static std::optional<Language> FromString(std::string_view str)
@@ -73,7 +73,7 @@ public:
             }
         }
 
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     bool operator==(const Language &l) const

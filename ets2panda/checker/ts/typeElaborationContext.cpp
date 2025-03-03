@@ -108,7 +108,7 @@ Type *ObjectElaborationContext::NonComputedPropKeyType(ir::Property *prop)
             return checker_->Allocator()->New<StringLiteralType>(prop->Key()->AsStringLiteral()->Str());
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
             break;
         }
     }

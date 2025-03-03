@@ -114,7 +114,7 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(parser::ETSParser *
         declared = false;
         loopVariableName = left->AsIdentifier()->Name().Mutf8();
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     whileStatement += loopVariableName + " = @@I6.value!; ";

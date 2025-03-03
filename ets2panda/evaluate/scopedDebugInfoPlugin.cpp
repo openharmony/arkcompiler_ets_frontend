@@ -255,7 +255,7 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindClass(ir::Identifier *ident)
     // NOTE: separate this into a method.
     auto importPath = pathResolver_.FindNamedImportAll(context_.sourceFilePath.Utf8(), identName.Utf8());
     if (!importPath.empty()) {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
         return nullptr;
     }
 

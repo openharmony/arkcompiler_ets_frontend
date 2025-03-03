@@ -67,7 +67,7 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
         return functionN->Substitute(checker->Relation(), substitution, true, isExtensionHack);
     }
 
-    ASSERT(arity >= signature->MinArgCount() && arity <= signature->ArgCount());
+    ES2PANDA_ASSERT(arity >= signature->MinArgCount() && arity <= signature->ArgCount());
 
     // Note: FunctionN is not supported yet
     if (arity >= checker->GetGlobalTypesHolder()->VariadicFunctionTypeThreshold()) {
@@ -115,13 +115,13 @@ ETSFunctionType *ETSFunctionType::MethodToArrow(ETSChecker *checker)
         return cached;
     }
 
-    ASSERT(!IsETSArrowType() && CallSignatures().size() == 1);
+    ES2PANDA_ASSERT(!IsETSArrowType() && CallSignatures().size() == 1);
     return cached = checker->CreateETSArrowType(CallSignatures()[0]);
 }
 
 void ETSFunctionType::AddCallSignature(Signature *signature)
 {
-    ASSERT(!IsETSArrowType());
+    ES2PANDA_ASSERT(!IsETSArrowType());
 
     if (signature->Function()->IsGetter()) {
         AddTypeFlag(TypeFlag::GETTER);
@@ -232,9 +232,9 @@ bool ETSFunctionType::AssignmentSource(TypeRelation *relation, Type *target)
 
     // this should be defined by the dynamic type itself
     if (target->IsETSDynamicType()) {
-        ASSERT(relation->GetNode() != nullptr);
+        ES2PANDA_ASSERT(relation->GetNode() != nullptr);
         if (relation->GetNode()->IsArrowFunctionExpression()) {
-            ASSERT(callSignatures_.size() == 1 && ArrowSignature()->HasSignatureFlag(SignatureFlags::CALL));
+            ES2PANDA_ASSERT(callSignatures_.size() == 1 && ArrowSignature()->HasSignatureFlag(SignatureFlags::CALL));
             return relation->Result(true);
         }
         return relation->Result(false);
@@ -357,7 +357,7 @@ static std::string FunctionAssemblyTypeFromArity(uint32_t arity)
 
 void ETSFunctionType::ToDebugInfoType([[maybe_unused]] std::stringstream &ss) const
 {
-    ASSERT(IsETSArrowType());
+    ES2PANDA_ASSERT(IsETSArrowType());
     ss << FunctionAssemblyTypeFromArity(ArrowSignature()->MinArgCount());
 }
 

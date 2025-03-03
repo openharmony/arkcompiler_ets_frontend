@@ -269,7 +269,7 @@ bool LocalClassConstructionPhase::PerformForModule(public_lib::Context *ctx, par
             auto *newExpr = ast->AsETSNewClassInstanceExpression();
             checker::Type *calleeType = newExpr->GetTypeRef()->Check(checker);
 
-            ASSERT(calleeType->IsETSObjectType());
+            ES2PANDA_ASSERT(calleeType->IsETSObjectType());
             auto *calleeObj = calleeType->AsETSObjectType();
             if (!calleeObj->GetDeclNode()->IsClassDefinition()) {
                 return;

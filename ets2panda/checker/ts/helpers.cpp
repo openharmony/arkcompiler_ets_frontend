@@ -465,7 +465,7 @@ Type *TSChecker::GetDeclTsType(varbinder::Variable *var, varbinder::Decl *decl)
             break;
         }
         case varbinder::DeclType::ENUM_LITERAL: {
-            UNREACHABLE();  // NOTE: aszilagyi.
+            ES2PANDA_UNREACHABLE();  // NOTE: aszilagyi.
         }
         default: {
             break;

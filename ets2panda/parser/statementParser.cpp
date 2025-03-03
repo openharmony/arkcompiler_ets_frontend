@@ -203,7 +203,7 @@ ir::Statement *ParserImpl::ParseStatementBasedOnTokenType(StatementParsingFlags 
 
 ir::Statement *ParserImpl::ParseAnnotationsInStatement([[maybe_unused]] StatementParsingFlags flags)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 ir::Statement *ParserImpl::ParseVarStatement()
@@ -443,7 +443,7 @@ void ParserImpl::ParseDirectivePrologue(ArenaVector<ir::Statement *> *statements
 
 ir::Statement *ParserImpl::ParseAssertStatement()
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 bool ParserImpl::ValidateLabeledStatement([[maybe_unused]] lexer::TokenType type)
@@ -1414,7 +1414,7 @@ ir::VariableDeclaratorFlag ParserImpl::GetFlag(VariableParsingFlags flags)
         case VariableParsingFlags::LET:
             return ir::VariableDeclaratorFlag::LET;
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 

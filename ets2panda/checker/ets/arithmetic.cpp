@@ -181,7 +181,7 @@ Type *ETSChecker::NegateNumericType(Type *type, ir::Expression *node)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -229,7 +229,7 @@ Type *ETSChecker::BitwiseNegateNumericType(Type *type, ir::Expression *node)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -468,7 +468,7 @@ static checker::Type *GetBitwiseCompatibleType(ETSChecker *checker, Type *const 
             return checker->GlobalLongType();
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
     return nullptr;
@@ -1001,7 +1001,7 @@ static std::tuple<Type *, Type *> CheckBinaryOperatorHelper(ETSChecker *checker,
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
             break;
         }
     }

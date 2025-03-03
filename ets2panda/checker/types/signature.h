@@ -188,13 +188,13 @@ public:
 
     [[nodiscard]] ir::ScriptFunction *Function() noexcept
     {
-        ASSERT(HasFunction());
+        ES2PANDA_ASSERT(HasFunction());
         return func_;
     }
 
     [[nodiscard]] const ir::ScriptFunction *Function() const noexcept
     {
-        ASSERT(HasFunction());
+        ES2PANDA_ASSERT(HasFunction());
         return func_;
     }
 

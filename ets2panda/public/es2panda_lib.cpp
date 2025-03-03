@@ -75,7 +75,7 @@ __attribute__((unused)) lexer::TokenType StrToToken(TokenTypeToStr const *table,
             return tp->token;
         }
     }
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 __attribute__((unused)) char const *TokenToStr(TokenTypeToStr const *table, lexer::TokenType token)
@@ -86,7 +86,7 @@ __attribute__((unused)) char const *TokenToStr(TokenTypeToStr const *table, lexe
             return tp->str;
         }
     }
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 __attribute__((unused)) char *StringViewToCString(ArenaAllocator *allocator, util::StringView const sv)

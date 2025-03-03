@@ -105,7 +105,7 @@ static ir::Expression *FindOptionalInChain(ir::Expression *expr)
     if (expr->IsTSNonNullExpression()) {
         return FindOptionalInChain(expr->AsTSNonNullExpression()->Expr());
     }
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 static ir::AstNode *LowerChain(public_lib::Context *ctx, ir::ChainExpression *const chain)
@@ -117,7 +117,7 @@ static ir::AstNode *LowerChain(public_lib::Context *ctx, ir::ChainExpression *co
     if (optional->IsCallExpression()) {
         return LowerExpression(ctx, optional->AsCallExpression(), chain);
     }
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 bool OptionalLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)

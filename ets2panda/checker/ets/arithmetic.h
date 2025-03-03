@@ -50,7 +50,7 @@ typename TargetType::UType ETSChecker::GetOperand(Type *type)
             return type->AsETSBooleanType()->GetValue();
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -92,7 +92,7 @@ Type *ETSChecker::PerformRelationOperationOnTypes(Type *left, Type *right, lexer
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -142,7 +142,7 @@ Type *ETSChecker::PerformArithmeticOperationOnTypes(Type *left, Type *right, lex
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -237,7 +237,7 @@ Type *ETSChecker::HandleBitWiseArithmetic(Type *left, Type *right, lexer::TokenT
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 

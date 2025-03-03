@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,29 +18,29 @@
 namespace ark::es2panda::checker {
 void TypeParameter::ToString([[maybe_unused]] std::stringstream &ss, [[maybe_unused]] bool precise) const
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 void TypeParameter::Identical([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *other)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 void TypeParameter::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 TypeFacts TypeParameter::GetTypeFacts() const
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
     return TypeFacts::NONE;
 }
 
 Type *TypeParameter::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
                                  [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
     return nullptr;
 }
 }  // namespace ark::es2panda::checker

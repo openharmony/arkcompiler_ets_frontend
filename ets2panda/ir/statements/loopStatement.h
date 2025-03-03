@@ -52,27 +52,27 @@ public:
     void TransformChildren([[maybe_unused]] const NodeTransformer &cb,
                            [[maybe_unused]] std::string_view const transformationName) override
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     void Iterate([[maybe_unused]] const NodeTraverser &cb) const override
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     void Dump([[maybe_unused]] AstDumper *dumper) const override
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
         return nullptr;
     }
 

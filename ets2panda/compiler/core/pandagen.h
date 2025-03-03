@@ -25,7 +25,7 @@
 #include "compiler/core/regScope.h"
 #include "ir/irnode.h"
 #include "generated/tokenType.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 
 #include <unordered_map>
 

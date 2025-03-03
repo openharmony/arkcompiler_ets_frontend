@@ -83,7 +83,7 @@ public:
                 return <%= data.dynamic_class %>;
             }
 % end
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
 
         static std::string_view CallClass(Language lang)
@@ -94,7 +94,7 @@ public:
                 return <%= data.call_class.name %>;
             }
 % end
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
 
         static std::string_view InitCallClassBuiltin(Language lang)
@@ -105,7 +105,7 @@ public:
                 return <%= data.call_class.init_builtin %>;
             }
 % end
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
 
         static std::string_view NewClass(Language lang)
@@ -116,7 +116,7 @@ public:
                 return <%= data.new_class.name %>;
             }
 % end
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
 
         static std::string_view InitNewClassBuiltin(Language lang)
@@ -127,7 +127,7 @@ public:
                 return <%= data.new_class.init_builtin %>;
             }
 % end
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
 
         static std::string_view LoadModuleBuiltin(Language lang)
@@ -138,7 +138,7 @@ public:
                 return <%= data.module_class.load_builtin %>;
             }
 % end
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
 
         static std::optional<Language> LanguageFromType(std::string_view assemblerName)
@@ -159,7 +159,7 @@ public:
                 return <%= data.builtins.get_undefined %>;
             }
 % end
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
 
 % def generate(attr, pref)
@@ -181,7 +181,7 @@ public:
 %       res += "                return #{builtin};\n"
 %       res += "            }\n"
 %     end
-%     res += "              UNREACHABLE();\n"
+%     res += "              ES2PANDA_UNREACHABLE();\n"
 %     res += "        }"
 %   end
 % res

@@ -18,7 +18,7 @@
 
 #include <string>
 #include <vector>
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "util/ustring.h"
 #include "generated/tokenType.h"
 
@@ -47,7 +47,6 @@ enum DiagnosticType {
     PLUGIN,
     DECLGEN_ETS2TS_ERROR,
     DECLGEN_ETS2TS_WARNING,
-    COMPILER_BUG,
     ARKTS_CONFIG_ERROR,
     COUNT,
     INVALID = COUNT

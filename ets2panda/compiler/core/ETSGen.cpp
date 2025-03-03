@@ -327,7 +327,7 @@ void ETSGen::LoadVar(const ir::Identifier *node, varbinder::Variable const *cons
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -353,7 +353,7 @@ void ETSGen::StoreVar(const ir::Identifier *node, const varbinder::ConstScopeFin
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -448,7 +448,7 @@ void ETSGen::StorePropertyByName([[maybe_unused]] const ir::AstNode *node, [[may
         Ra().Emit<EtsStobjName>(node, objReg, fullName);
     }
 #else
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 #endif  // PANDA_WITH_ETS
 }
 
@@ -468,7 +468,7 @@ void ETSGen::LoadPropertyByName([[maybe_unused]] const ir::AstNode *const node, 
     }
     SetAccumulatorType(propType);
 #else
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 #endif  // PANDA_WITH_ETS
 }
 
@@ -609,7 +609,7 @@ void ETSGen::CallRangeFillUndefined(const ir::AstNode *const node, checker::Sign
                                     const VReg thisReg)
 {
     RegScope rs(this);
-    ASSERT(signature->MinArgCount() == 0);
+    ES2PANDA_ASSERT(signature->MinArgCount() == 0);
 
     auto undef = AllocReg();
     LoadAccumulatorUndefined(node);
@@ -775,7 +775,7 @@ void ETSGen::IsInstanceDynamic(const ir::BinaryExpression *const node, const VRe
                 CallExact(node, Signatures::BUILTIN_JSRUNTIME_INSTANCE_OF_STATIC, srcReg, typeReg);
             }
         } else {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
     SetAccumulatorType(Checker()->GlobalETSBooleanType());
@@ -839,7 +839,7 @@ void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, std::tuple
             break;
         }
         default:
-            UNREACHABLE();  // other types must not appear here
+            ES2PANDA_UNREACHABLE();  // other types must not appear here
     }
     SetAccumulatorType(nullptr);
 }
@@ -1081,7 +1081,7 @@ bool ETSGen::TryLoadConstantExpression(const ir::Expression *node)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -1169,7 +1169,7 @@ void ETSGen::ApplyUnboxingConversion(const ir::AstNode *node)
             callUnbox(Signatures::BUILTIN_DOUBLE_UNBOXED, Checker()->GlobalDoubleType());
             return;
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -1320,7 +1320,7 @@ void ETSGen::EmitBoxingConversion(ir::BoxingUnboxingFlags boxingFlag, const ir::
             callBox(Signatures::BUILTIN_DOUBLE_VALUE_OF, Checker()->GlobalDoubleType());
             return;
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -1396,7 +1396,7 @@ void ETSGen::CastToBoolean([[maybe_unused]] const ir::AstNode *node)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -1444,7 +1444,7 @@ void ETSGen::CastToByte([[maybe_unused]] const ir::AstNode *node)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -1497,7 +1497,7 @@ void ETSGen::CastToChar([[maybe_unused]] const ir::AstNode *node)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -1547,7 +1547,7 @@ void ETSGen::CastToShort([[maybe_unused]] const ir::AstNode *node)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -1590,7 +1590,7 @@ void ETSGen::CastToDouble(const ir::AstNode *node)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -1632,7 +1632,7 @@ void ETSGen::CastToFloat(const ir::AstNode *node)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -1675,7 +1675,7 @@ void ETSGen::CastToLong(const ir::AstNode *node)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -1716,7 +1716,7 @@ void ETSGen::CastToInt(const ir::AstNode *node)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -1808,7 +1808,7 @@ void ETSGen::CastDynamicToObject(const ir::AstNode *node, const checker::Type *t
         return;
     }
 
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 void ETSGen::CastToString(const ir::AstNode *const node)
@@ -1860,7 +1860,7 @@ void ETSGen::CastToDynamic(const ir::AstNode *node, const checker::ETSDynamicTyp
             }
             [[fallthrough]];
         case checker::TypeFlag::FUNCTION:
-            ASSERT(!GetAccumulatorType()->IsETSMethodType());
+            ES2PANDA_ASSERT(!GetAccumulatorType()->IsETSMethodType());
             [[fallthrough]];
         case checker::TypeFlag::ETS_ARRAY:
         case checker::TypeFlag::ETS_TUPLE:
@@ -1870,7 +1870,7 @@ void ETSGen::CastToDynamic(const ir::AstNode *node, const checker::ETSDynamicTyp
             SetAccumulatorType(type);
             return;
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 
     ES2PANDA_ASSERT(!methodName.empty());
@@ -1907,7 +1907,7 @@ void ETSGen::CastDynamicTo(const ir::AstNode *node, enum checker::TypeFlag typeF
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -1975,7 +1975,7 @@ void ETSGen::BinaryLogic(const ir::AstNode *node, lexer::TokenType op, VReg lhs)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
     ES2PANDA_ASSERT(node->IsAssignmentExpression() || node->IsBinaryExpression());
@@ -2102,7 +2102,7 @@ void ETSGen::Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs, L
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -2437,7 +2437,7 @@ void ETSGen::BinaryEqualityCondition(const ir::AstNode *node, VReg lhs, Label *i
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -2479,7 +2479,7 @@ void ETSGen::BinaryRelationCondition(const ir::AstNode *node, VReg lhs, Label *i
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -2537,7 +2537,7 @@ void ETSGen::BinaryBitwiseArithmetic(const ir::AstNode *node, VReg lhs)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -2650,7 +2650,7 @@ void ETSGen::UpdateOperator(const ir::AstNode *node)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -2733,7 +2733,7 @@ void ETSGen::Negate(const ir::AstNode *node)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -2807,7 +2807,7 @@ void ETSGen::LoadAccumulatorNull([[maybe_unused]] const ir::AstNode *node)
     Sa().Emit<EtsLdnullvalue>(node);
     SetAccumulatorType(Checker()->GlobalETSNullType());
 #else
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 #endif  // PANDA_WITH_ETS
 }
 
@@ -2833,7 +2833,7 @@ void ETSGen::Unary(const ir::AstNode *node, lexer::TokenType op)
             LogicalNot(node);
             break;
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -2867,7 +2867,7 @@ void ETSGen::UnaryMinus(const ir::AstNode *node)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -2895,7 +2895,7 @@ void ETSGen::UnaryTilde(const ir::AstNode *node)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -2912,7 +2912,7 @@ void ETSGen::Update(const ir::AstNode *node, lexer::TokenType op)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -2929,7 +2929,7 @@ void ETSGen::UpdateBigInt(const ir::Expression *node, VReg arg, lexer::TokenType
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -3147,7 +3147,7 @@ void ETSGen::LoadArrayElement(const ir::AstNode *node, VReg objectReg)
         }
 
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -3190,7 +3190,7 @@ void ETSGen::StoreArrayElement(const ir::AstNode *node, VReg objectReg, VReg ind
         }
 
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -3240,7 +3240,7 @@ void ETSGen::LoadTupleElement(const ir::AstNode *node, VReg objectReg)
         }
 
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -3286,7 +3286,7 @@ void ETSGen::StoreTupleElement(const ir::AstNode *node, VReg objectReg, VReg ind
         }
 
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -3319,7 +3319,7 @@ void ETSGen::IncrementImmediateRegister(const ir::AstNode *node, VReg reg, const
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -3466,7 +3466,7 @@ void ETSGen::SetAccumulatorTargetType(const ir::AstNode *node, checker::TypeFlag
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }

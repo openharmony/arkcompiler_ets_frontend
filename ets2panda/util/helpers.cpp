@@ -81,7 +81,7 @@ util::StringView Helpers::LiteralToPropName(const ir::Expression *lit)
             return "undefined";
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }

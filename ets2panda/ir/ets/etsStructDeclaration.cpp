@@ -36,7 +36,7 @@ void ETSStructDeclaration::Dump(ir::SrcDumper *dumper) const
 
 checker::Type *ETSStructDeclaration::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 checker::VerifiedType ETSStructDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)

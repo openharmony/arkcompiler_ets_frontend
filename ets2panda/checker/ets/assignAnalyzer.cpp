@@ -1228,7 +1228,7 @@ util::StringView AssignAnalyzer::GetVariableType(const ir::AstNode *node) const
         case ir::AstNodeType::VARIABLE_DECLARATOR:
             return "variable";
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -1240,7 +1240,7 @@ util::StringView AssignAnalyzer::GetVariableName(const ir::AstNode *node) const
         case ir::AstNodeType::VARIABLE_DECLARATOR:
             return node->AsVariableDeclarator()->Id()->AsIdentifier()->Name();
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -1312,7 +1312,7 @@ varbinder::Variable *AssignAnalyzer::GetBoundVariable(const ir::AstNode *node)
     } else if (node->IsVariableDeclarator()) {
         ret = node->AsVariableDeclarator()->Id()->AsIdentifier()->Variable();
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     return ret;
@@ -1364,7 +1364,7 @@ bool AssignAnalyzer::VariableHasDefaultValue(const ir::AstNode *node)
         ES2PANDA_ASSERT(variable != nullptr);
         type = variable->TsType();
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     return type != nullptr &&

@@ -22,7 +22,7 @@
 #include "checker/types/ts/types.h"
 #include "util/enumbitops.h"
 #include "util/ustring.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 
 #include <cstdint>
 #include <initializer_list>

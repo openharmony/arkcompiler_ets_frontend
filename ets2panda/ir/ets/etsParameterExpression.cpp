@@ -28,7 +28,7 @@ ETSParameterExpression::ETSParameterExpression(AnnotatedExpression *const identO
 {
     SetOptional(isOptional);
 
-    ASSERT(identOrSpread != nullptr);
+    ES2PANDA_ASSERT(identOrSpread != nullptr);
     identOrSpread->SetParent(this);
     SetRange(identOrSpread->Range());
     if (identOrSpread->IsIdentifier()) {
@@ -39,7 +39,7 @@ ETSParameterExpression::ETSParameterExpression(AnnotatedExpression *const identO
         ident_ = spread_->Argument()->AsIdentifier();
         ident_->SetParent(spread_);
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 }
 

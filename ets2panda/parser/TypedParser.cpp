@@ -490,7 +490,7 @@ static util::StringView GetTSPropertyName(ir::Expression *key)
             return key->AsStringLiteral()->Str();
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -1107,7 +1107,7 @@ static std::pair<ir::ModifierFlags, ir::ModifierFlags> ParseActualNextStatus(lex
             return {ir::ModifierFlags::READONLY,
                     ir::ModifierFlags::ASYNC | ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT};
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 

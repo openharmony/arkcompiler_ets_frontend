@@ -82,7 +82,6 @@ struct enumbitops::IsAllowedType<ark::es2panda::checker::TypeRelationFlag> : std
 };
 
 namespace ark::es2panda::checker {
-using DiagnosticMessageElement = util::DiagnosticMessageElement;
 
 class RelationKey {
 public:

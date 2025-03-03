@@ -366,7 +366,7 @@ void ETSCompiler::Compile(const ir::ETSTypeReferencePart *node) const
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::ETSWildcardType *node) const
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::ArrayExpression *expr) const
@@ -455,7 +455,7 @@ void ETSCompiler::Compile(const ir::AwaitExpression *expr) const
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::ImportExpression *expr) const
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 static void CompileNullishCoalescing(compiler::ETSGen *etsg, ir::BinaryExpression const *const node)
@@ -776,7 +776,7 @@ void ETSCompiler::Compile(const ir::CallExpression *expr) const
     auto const callee = expr->Callee();
     checker::Signature *const signature = expr->Signature();
 
-    ASSERT(!callee->TsType()->IsETSArrowType());  // should have been lowered
+    ES2PANDA_ASSERT(!callee->TsType()->IsETSArrowType());  // should have been lowered
 
     bool const isStatic = signature->HasSignatureFlag(checker::SignatureFlags::STATIC);
 
@@ -797,12 +797,12 @@ void ETSCompiler::Compile(const ir::CallExpression *expr) const
         }
         EmitCall(expr, calleeReg, signature);
     } else if (callee->IsSuperExpression() || callee->IsThisExpression()) {
-        ASSERT(expr->IsETSConstructorCall());
+        ES2PANDA_ASSERT(expr->IsETSConstructorCall());
         callee->Compile(etsg);  // ctor is not a value!
         etsg->StoreAccumulator(expr, calleeReg);
         EmitCall(expr, calleeReg, signature);
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     if (expr->HasBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOXING_FLAG | ir::BoxingUnboxingFlags::BOXING_FLAG)) {
@@ -889,7 +889,7 @@ bool ETSCompiler::CompileComputed(compiler::ETSGen *etsg, const ir::MemberExpres
     } else if (objectType->IsETSArrayType()) {
         etsg->LoadArrayElement(expr, objReg);
     } else {
-        ASSERT(objectType->IsETSTupleType());
+        ES2PANDA_ASSERT(objectType->IsETSTupleType());
         etsg->LoadTupleElement(expr, objReg);
     }
 
@@ -1023,7 +1023,7 @@ void ETSCompiler::Compile(const ir::ObjectExpression *expr) const
         } else if (key->IsIdentifier()) {
             pname = key->AsIdentifier()->Name();
         } else {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
 
         value->Compile(etsg);
@@ -1641,7 +1641,7 @@ void ETSCompiler::CompileCastUnboxable(const ir::TSAsExpression *expr) const
             etsg->CastToDouble(expr);
             break;
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -1684,7 +1684,7 @@ void ETSCompiler::CompileCastPrimitives(const ir::TSAsExpression *expr) const
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }

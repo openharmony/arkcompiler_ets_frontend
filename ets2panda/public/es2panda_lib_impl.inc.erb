@@ -53,7 +53,7 @@ end %>::<%= name %>)0U;
 end %>::<%= name %>::<%= flag %>;
 % end
     default:
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 %end
 }
@@ -93,7 +93,7 @@ end %>::<%= name %>::<%= flag %>:
         return Es2panda<%= name %>::<%= enum.name_to_upper_snake %>_<%= flag %>;
 % end
     default:
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 % end
 }

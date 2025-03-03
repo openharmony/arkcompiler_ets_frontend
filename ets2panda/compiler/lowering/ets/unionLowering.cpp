@@ -115,8 +115,8 @@ static void HandleUnionPropertyAccess(checker::ETSChecker *checker, varbinder::V
     }
 
     [[maybe_unused]] auto const *const parent = expr->Parent();
-    ASSERT(!(parent->IsCallExpression() && parent->AsCallExpression()->Callee() == expr &&
-             !parent->AsCallExpression()->Signature()->HasFunction()));
+    ES2PANDA_ASSERT(!(parent->IsCallExpression() && parent->AsCallExpression()->Callee() == expr &&
+                      !parent->AsCallExpression()->Signature()->HasFunction()));
     expr->SetPropVar(
         CreateNamedAccessProperty(checker, vbind, expr->TsType(), expr->Property()->AsIdentifier()->Name()));
     ES2PANDA_ASSERT(expr->PropVar() != nullptr);

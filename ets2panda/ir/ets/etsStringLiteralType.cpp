@@ -52,12 +52,12 @@ void ETSStringLiteralType::Dump(ir::SrcDumper *dumper) const
 
 void ETSStringLiteralType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 checker::Type *ETSStringLiteralType::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 checker::VerifiedType ETSStringLiteralType::Check([[maybe_unused]] checker::ETSChecker *checker)

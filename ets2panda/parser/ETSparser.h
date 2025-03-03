@@ -352,7 +352,7 @@ private:
     ir::TypeNode *ParseTsArrayType(ir::TypeNode *typeNode, TypeAnnotationParsingOptions *options);
     bool ParseTriplePeriod(bool spreadTypePresent);
     std::pair<bool, std::size_t> CheckDefaultParameters(const ir::ScriptFunction *function);
-    static std::string PrimitiveTypeToName(ir::PrimitiveType type);
+    std::string PrimitiveTypeToName(ir::PrimitiveType type) const;
     std::string GetNameForTypeNode(const ir::TypeNode *typeAnnotation) const;
     std::string GetNameForETSUnionType(const ir::TypeNode *typeAnnotation) const;
     ir::TSInterfaceDeclaration *ParseInterfaceBody(ir::Identifier *name, bool isStatic);

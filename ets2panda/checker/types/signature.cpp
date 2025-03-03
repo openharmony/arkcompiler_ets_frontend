@@ -205,8 +205,8 @@ std::string Signature::ToString() const
 static bool MethodSignaturesAreCompatible(TypeRelation *relation, bool checkIdentical, Signature *const super,
                                           Signature *const sub)
 {
-    ASSERT(!sub->HasRestParameter() || (sub->ArgCount() == sub->MinArgCount()));
-    ASSERT(!super->HasRestParameter() || (super->ArgCount() == super->MinArgCount()));
+    ES2PANDA_ASSERT(!sub->HasRestParameter() || (sub->ArgCount() == sub->MinArgCount()));
+    ES2PANDA_ASSERT(!super->HasRestParameter() || (super->ArgCount() == super->MinArgCount()));
 
     if (sub->ArgCount() != super->ArgCount()) {
         return false;
@@ -298,7 +298,7 @@ Signature *Signature::ToArrowSignature(ETSChecker *checker)
     resultSig->flags_ = flags_;
     resultSig->SetOwner(Owner());
     resultSig->SetOwnerVar(OwnerVar());
-    ASSERT(!resultSig->HasFunction());
+    ES2PANDA_ASSERT(!resultSig->HasFunction());
     return resultSig;
 }
 

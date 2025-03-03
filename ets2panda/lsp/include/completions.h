@@ -23,6 +23,7 @@
 #include <vector>
 #include <optional>
 #include "checker/checker.h"
+#include "util/arktsconfig.h"
 
 namespace ark::es2panda::lsp {
 

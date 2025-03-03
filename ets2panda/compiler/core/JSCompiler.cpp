@@ -98,7 +98,7 @@ compiler::Literal PropertyMethodKind(const ir::MethodDefinition *propMethod, uti
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
     return value;
@@ -310,7 +310,7 @@ static void CompilePropertyKind(const ir::MethodDefinition *prop, compiler::VReg
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -964,7 +964,7 @@ void CompileRemainingPropertyKind(const ir::Property *prop, compiler::VReg objRe
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }

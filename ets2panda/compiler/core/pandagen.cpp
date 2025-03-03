@@ -49,33 +49,33 @@ public:
     template <typename... Args>
     explicit EcmaDisabled(const ir::AstNode *node, [[maybe_unused]] Args &&...args) : IRNode(node)
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     Formats GetFormats() const override
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     size_t Registers([[maybe_unused]] std::array<VReg *, MAX_REG_OPERAND> *regs) override
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     size_t Registers([[maybe_unused]] std::array<const VReg *, MAX_REG_OPERAND> *regs) const override
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     size_t OutRegisters([[maybe_unused]] std::array<OutVReg, MAX_REG_OPERAND> *regs) const override
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     void Transform([[maybe_unused]] pandasm::Ins *ins, [[maybe_unused]] ProgramElement *programElement,
                    [[maybe_unused]] uint32_t totalRegs) const override
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 };
 
@@ -411,7 +411,7 @@ void PandaGen::LoadConst(const ir::AstNode *node, Constant id)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -674,7 +674,7 @@ void PandaGen::Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs,
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -714,7 +714,7 @@ void PandaGen::Unary(const ir::AstNode *node, lexer::TokenType op, VReg operand)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -783,7 +783,7 @@ void PandaGen::Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs)
         case lexer::TokenType::PUNCTUATOR_LOGICAL_NULLISH_EQUAL:
             return Unimplemented();
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 

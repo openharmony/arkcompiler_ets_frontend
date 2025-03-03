@@ -16,7 +16,7 @@
 #include "ETSparser.h"
 #include "ETSNolintParser.h"
 
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "parser/parserFlags.h"
 #include "util/errorRecovery.h"
 #include "util/helpers.h"

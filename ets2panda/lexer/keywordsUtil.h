@@ -20,7 +20,7 @@
 #include "lexer/lexer.h"
 #include "lexer/token/letters.h"
 #include "generated/tokenType.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "util/ustring.h"
 #include "utils/span.h"
 

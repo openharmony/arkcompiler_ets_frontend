@@ -19,7 +19,7 @@
 #include "lexer/token/sourceLocation.h"
 #include "generated/tokenType.h"
 #include "lexer/token/number.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "util/enumbitops.h"
 #include "util/ustring.h"
 

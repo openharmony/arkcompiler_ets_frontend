@@ -96,14 +96,14 @@ static TargetType GetOperand(ir::Literal *const node)
         if (numNode->Number().IsDouble()) {
             return numNode->Number().GetDouble();
         }
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     if (node->IsCharLiteral()) {
         return node->AsCharLiteral()->Char();
     }
 
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 static TypeRank GetTypeRank(ir::Literal *const literal)
@@ -124,7 +124,7 @@ static TypeRank GetTypeRank(ir::Literal *const literal)
         }
         return TypeRank::FLOAT;
     }
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 static bool TestLiteralIsNotZero(ir::Literal *literal)
@@ -147,7 +147,7 @@ static bool TestLiteralIsNotZero(ir::Literal *literal)
     if (number.IsFloat()) {
         return number.GetFloat() != 0;
     }
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 ir::AstNode *ConstantExpressionLowering::FoldTernaryConstant(ir::ConditionalExpression *cond)
@@ -201,7 +201,7 @@ bool ConstantExpressionLowering::PerformRelationOperator(InputType left, InputTy
             return left != right;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -233,7 +233,7 @@ bool ConstantExpressionLowering::HandleRelationOperator(ir::Literal *left, ir::L
             return PerformRelationOperator(GetOperand<int32_t>(left), GetOperand<int32_t>(right), opType);
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -254,7 +254,7 @@ bool ConstantExpressionLowering::HandleBitwiseLogicalOperator(ir::Literal *left,
             return (static_cast<uint32_t>(leftValue) | static_cast<uint32_t>(rightValue)) != 0U;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -276,7 +276,7 @@ ir::AstNode *ConstantExpressionLowering::HandleLogicalOperator(ir::BinaryExpress
     } else if (left->IsNullLiteral() || left->IsUndefinedLiteral()) {
         leftBoolValue = false;
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     switch (opType) {
@@ -297,7 +297,7 @@ ir::AstNode *ConstantExpressionLowering::HandleLogicalOperator(ir::BinaryExpress
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -393,7 +393,7 @@ IntegerType ConstantExpressionLowering::PerformBitwiseArithmetic(IntegerType lef
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -419,7 +419,7 @@ lexer::Number ConstantExpressionLowering::HandleBitwiseOperator(TargetType leftN
             return lexer::Number(PerformBitwiseArithmetic<int32_t>(leftNum, rightNum, operationType));
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -459,7 +459,7 @@ TargetType ConstantExpressionLowering::HandleArithmeticOperation(TargetType left
             }
         }
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -529,7 +529,7 @@ ir::AstNode *ConstantExpressionLowering::FoldBinaryNumericConstant(ir::BinaryExp
             return FoldBinaryNumericConstantHelper<int32_t>(expr, targetRank);
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -579,7 +579,7 @@ lexer::Number ConstantExpressionLowering::HandleBitwiseNegate(InputType value, T
             return lexer::Number(static_cast<int32_t>(~static_cast<uint32_t>(value)));
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -605,7 +605,7 @@ ir::AstNode *ConstantExpressionLowering::FoldUnaryNumericConstantHelper(ir::Unar
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -635,7 +635,7 @@ ir::AstNode *ConstantExpressionLowering::FoldUnaryNumericConstant(ir::UnaryExpre
             return FoldUnaryNumericConstantHelper<int32_t>(unary, literal, rank);
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -654,7 +654,7 @@ ir::AstNode *ConstantExpressionLowering::FoldUnaryBooleanConstant(ir::UnaryExpre
             result = !value;
         }
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     auto resNode = util::NodeAllocator::Alloc<ir::BooleanLiteral>(context_->allocator, result);

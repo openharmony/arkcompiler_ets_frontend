@@ -17,7 +17,6 @@
 #define ES2PANDA_LEXER_TOKEN_SOURCE_LOCATION_H
 
 #include "macros.h"
-#include "util/ustring.h"
 #include <cstddef>
 #include <cstdint>
 #include <vector>
@@ -25,6 +24,11 @@
 namespace ark::es2panda::parser {
 class Program;
 }  // namespace ark::es2panda::parser
+
+namespace ark::es2panda::util {
+class StringView;
+}  // namespace ark::es2panda::util
+
 namespace ark::es2panda::lexer {
 
 class SourceLocation;

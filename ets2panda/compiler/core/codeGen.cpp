@@ -297,7 +297,7 @@ void CodeGen::SetFirstStmt(const ir::Statement *stmt) noexcept
 void CodeGen::Unimplemented()
 {
     // Unimplemented code path
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 SimpleAllocator &CodeGen::Sa() noexcept

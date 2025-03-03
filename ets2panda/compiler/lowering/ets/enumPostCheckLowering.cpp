@@ -40,7 +40,7 @@ static ir::ClassDeclaration *FindEnclosingClass(ir::AstNode *ast)
             return curr->AsClassDeclaration();
         }
     }
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 static std::string TypeToString(checker::Type *type)
@@ -82,7 +82,7 @@ static bool IsValidEnumCasting(checker::Type *type, EnumCastType castType)
             return true;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -282,7 +282,7 @@ void EnumPostCheckLoweringPhase::CreateStatementForUnionConstituentType(EnumCast
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }

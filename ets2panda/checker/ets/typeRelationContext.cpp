@@ -65,6 +65,7 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
     return false;
 }
 
+// CC-OFFNXT(huge_depth[C++]) solid logic
 void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParameterInstantiation *typeArgs)
 {
     ArenaVector<Type *> typeArgTypes(checker_->Allocator()->Adapter());
@@ -82,9 +83,12 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
                 checker_->Relation()->SetNode(it);
 
                 auto *const boxedTypeArg = checker_->MaybeBoxInRelation(paramType);
-                ASSERT(boxedTypeArg != nullptr);
-                paramType = boxedTypeArg->Instantiate(checker_->Allocator(), checker_->Relation(),
-                                                      checker_->GetGlobalTypesHolder());
+                if (boxedTypeArg != nullptr) {
+                    paramType = boxedTypeArg->Instantiate(checker_->Allocator(), checker_->Relation(),
+                                                          checker_->GetGlobalTypesHolder());
+                } else {
+                    ES2PANDA_UNREACHABLE();
+                }
             }
 
             typeArgTypes.push_back(paramType);

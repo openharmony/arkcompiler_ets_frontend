@@ -16,7 +16,7 @@
 #include "TSparser.h"
 
 #include "parser/parserStatusContext.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "parserFlags.h"
 #include "util/helpers.h"
 #include "varbinder/privateBinding.h"

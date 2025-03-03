@@ -493,7 +493,7 @@ std::tuple<varbinder::Decl *, varbinder::Variable *> ScopesInitPhase::AddOrGetVa
         case ir::VariableDeclaratorFlag::CONST:
             return VarBinder()->NewVarDecl<varbinder::ConstDecl>(id->Start(), name);
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -625,7 +625,7 @@ void ScopeInitTyped::VisitTSEnumMember(ir::TSEnumMember *enumMember)
     } else if (key->IsStringLiteral()) {
         name = key->AsStringLiteral()->Str();
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
     if (auto *decl = AddOrGetDecl<varbinder::EnumDecl>(VarBinder(), name, enumMember, key->Start(), name);
         decl != nullptr) {

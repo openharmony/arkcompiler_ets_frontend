@@ -217,7 +217,7 @@ static void ClearOptionalParameters(public_lib::Context *ctx, ir::ScriptFunction
                                                                                           false, allocator);
             params[idx]->SetParent(function);
         }
-        ASSERT(!params[idx]->AsETSParameterExpression()->IsOptional());
+        ES2PANDA_ASSERT(!params[idx]->AsETSParameterExpression()->IsOptional());
     }
 }
 
@@ -250,7 +250,7 @@ static void ProcessGlobalFunctionDefinition(ir::MethodDefinition *method, public
             auto param = params[i]->AsETSParameterExpression();
             ir::Expression *init;
             if (param->Initializer() == nullptr) {
-                ASSERT(param->IsOptional());
+                ES2PANDA_ASSERT(param->IsOptional());
                 init = allocator->New<ir::UndefinedLiteral>();
             } else if (param->Initializer()->IsArrowFunctionExpression()) {
                 init = param->Initializer();

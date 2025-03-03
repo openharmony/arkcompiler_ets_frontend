@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_CHECKER_CHECKER_CONTEXT_H
 #define ES2PANDA_CHECKER_CHECKER_CONTEXT_H
 
+#include "es2panda.h"
 #include "generated/tokenType.h"
 #include "lexer/token/sourceLocation.h"
 #include "util/enumbitops.h"

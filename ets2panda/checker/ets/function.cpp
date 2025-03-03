@@ -69,7 +69,7 @@ bool ETSChecker::IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typ
     if (typeArgument->IsETSVoidType()) {
         typeArgument = GlobalETSUndefinedType();
     }
-    ASSERT(IsReferenceType(typeArgument));
+    ES2PANDA_ASSERT(IsReferenceType(typeArgument));
     auto constraint = typeParam->GetConstraintType()->Substitute(Relation(), substitution);
     return Relation()->IsSupertypeOf(constraint, typeArgument);
 }
@@ -199,7 +199,7 @@ bool ETSChecker::EnhanceSubstitutionForFunction(const ArenaVector<Type *> &typeP
 // Try to find the base type somewhere in object subtypes. Incomplete, yet safe
 static ETSObjectType *FindEnhanceTargetInSupertypes(ETSObjectType *object, ETSObjectType *base)
 {
-    ASSERT(base == base->GetOriginalBaseType());
+    ES2PANDA_ASSERT(base == base->GetOriginalBaseType());
     if (object->GetConstOriginalBaseType() == base) {
         return object;
     }
@@ -235,7 +235,7 @@ bool ETSChecker::EnhanceSubstitutionForObject(const ArenaVector<Type *> &typePar
     if (enhanceType == nullptr) {
         return true;
     }
-    ASSERT(enhanceType->GetOriginalBaseType() == paramType->GetOriginalBaseType());
+    ES2PANDA_ASSERT(enhanceType->GetOriginalBaseType() == paramType->GetOriginalBaseType());
     bool res = true;
     for (size_t i = 0; i < enhanceType->TypeArguments().size(); i++) {
         res &= enhance(paramType->TypeArguments()[i], enhanceType->TypeArguments()[i]);
@@ -1058,7 +1058,7 @@ Signature *ETSChecker::ComposeSignature(ir::ScriptFunction *func, SignatureInfo 
 {
     auto *signature = CreateSignature(signatureInfo, returnType, func);
     if (signature == nullptr) {  // #23134
-        ASSERT(IsAnyError());
+        ES2PANDA_ASSERT(IsAnyError());
         return nullptr;
     }
     signature->SetOwner(Context().ContainingClass());
@@ -1128,8 +1128,8 @@ static bool AppendSignatureInfoParam(ETSChecker *checker, SignatureInfo *sigInfo
     if (!param->IsOptional()) {
         ++sigInfo->minArgCount;
     }
-    ASSERT(!param->IsOptional() ||
-           checker->Relation()->IsSupertypeOf(param->Ident()->TsType(), checker->GlobalETSUndefinedType()));
+    ES2PANDA_ASSERT(!param->IsOptional() ||
+                    checker->Relation()->IsSupertypeOf(param->Ident()->TsType(), checker->GlobalETSUndefinedType()));
     return true;
 }
 
@@ -1149,7 +1149,7 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::TSTypeParameterDeclaration *
     for (auto *const p : params) {
         if (!p->IsETSParameterExpression() ||
             !AppendSignatureInfoParam(this, signatureInfo, p->AsETSParameterExpression())) {  // #23134
-            ASSERT(IsAnyError());
+            ES2PANDA_ASSERT(IsAnyError());
             return nullptr;
         }
     }
@@ -1157,11 +1157,11 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::TSTypeParameterDeclaration *
     if (!params.empty()) {
         if (auto param = params.back()->AsETSParameterExpression(); param->IsRestParameter()) {
             if (param->TypeAnnotation() == nullptr) {  // #23134
-                ASSERT(IsAnyError());
+                ES2PANDA_ASSERT(IsAnyError());
                 return nullptr;
             }
             signatureInfo->restVar = SetupSignatureParameter(param, param->TypeAnnotation()->GetType(this));
-            ASSERT(signatureInfo->restVar != nullptr);
+            ES2PANDA_ASSERT(signatureInfo->restVar != nullptr);
         }
     }
 
@@ -1204,7 +1204,7 @@ void ETSChecker::BuildFunctionSignature(ir::ScriptFunction *func, bool isConstru
     auto *returnType = ComposeReturnType(func->ReturnTypeAnnotation(), func->IsAsyncFunc());
     auto *signature = ComposeSignature(func, signatureInfo, returnType, nameVar);
     if (signature == nullptr) {  // #23134
-        ASSERT(IsAnyError());
+        ES2PANDA_ASSERT(IsAnyError());
         return;
     }
 
@@ -1406,7 +1406,7 @@ void ETSChecker::ReportOverrideError(Signature *signature, Signature *overridden
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -1530,7 +1530,7 @@ Signature *ETSChecker::GetSignatureFromMethodDefinition(const ir::MethodDefiniti
     if (methodDef->TsType()->IsTypeError()) {
         return nullptr;
     }
-    ES2PANDA_ASSERT3(methodDef->TsType() && methodDef->TsType()->IsETSFunctionType(), methodDef->Start());
+    ES2PANDA_ASSERT_POS(methodDef->TsType() && methodDef->TsType()->IsETSFunctionType(), methodDef->Start());
     for (auto *it : methodDef->TsType()->AsETSFunctionType()->CallSignatures()) {
         if (it->Function() == methodDef->Function()) {
             return it;
@@ -1681,7 +1681,7 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
     // is parametrized or not to use a proper subtyping check. To be replaced with IsETSPrimitiveType after #19701.
     auto const hasPrimitiveReturnType = [](Signature *s) {
         bool origIsRef = s->Function()->Signature()->ReturnType()->IsETSReferenceType();
-        ES2PANDA_ASSERT3(origIsRef == s->ReturnType()->IsETSReferenceType(), s->Function()->Start());
+        ES2PANDA_ASSERT_POS(origIsRef == s->ReturnType()->IsETSReferenceType(), s->Function()->Start());
         return !origIsRef;
     };
     // - If R1 is a primitive type then R2 is identical to R1.
@@ -1705,7 +1705,7 @@ std::string ETSChecker::GetAsyncImplName(const util::StringView &name)
 std::string ETSChecker::GetAsyncImplName(ir::MethodDefinition *asyncMethod)
 {
     ir::Identifier *asyncName = asyncMethod->Function()->Id();
-    ES2PANDA_ASSERT3(asyncName != nullptr, asyncMethod->Start());
+    ES2PANDA_ASSERT_POS(asyncName != nullptr, asyncMethod->Start());
     return GetAsyncImplName(asyncName->Name());
 }
 

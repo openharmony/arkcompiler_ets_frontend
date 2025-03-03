@@ -115,7 +115,7 @@ protected:
     void ValidateClassKey(ClassElementDescriptor *desc);
     bool ValidatePrivateIdentifier();
 
-    static ir::VariableDeclaratorFlag GetFlag(VariableParsingFlags flags);
+    ir::VariableDeclaratorFlag GetFlag(VariableParsingFlags flags);
 
     void ValidateAccessor(ExpressionParseFlags flags, lexer::TokenFlags currentTokenFlags);
     void CheckPropertyKeyAsyncModifier(ParserStatus *methodStatus);

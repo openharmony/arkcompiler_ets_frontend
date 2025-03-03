@@ -600,6 +600,7 @@ set(ES2PANDA_LIB_SRC
   util/diagnostic.cpp
   util/diagnosticEngine.cpp
   util/errorRecovery.cpp
+  util/es2pandaMacros.cpp
   util/helpers.cpp
   util/importPathManager.cpp
   util/path.cpp

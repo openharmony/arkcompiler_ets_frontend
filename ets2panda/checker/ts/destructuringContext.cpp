@@ -487,7 +487,7 @@ void ArrayDestructuringContext::HandleElement(ir::Expression *element, Type *nex
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -708,7 +708,7 @@ void ObjectDestructuringContext::Start()
         } else if (itType == ir::AstNodeType::REST_ELEMENT) {
             HandleRest(it->AsRestElement());
         } else {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }

@@ -78,7 +78,7 @@ void VariableDeclaration::Dump(ir::AstDumper *dumper) const
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -111,7 +111,7 @@ void VariableDeclaration::Dump(ir::SrcDumper *dumper) const
             dumper->Add("var ");
             break;
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 
     for (auto declarator : declarators_) {

@@ -24,10 +24,10 @@ static void TransformArguments(public_lib::Context *ctx, ir::Expression *callLik
                                ArenaVector<ir::Expression *> &arguments)
 {
     if (signature->ArgCount() < arguments.size()) {
-        ASSERT(signature->HasRestParameter());
+        ES2PANDA_ASSERT(signature->HasRestParameter());
         return;
     }
-    ASSERT(signature->ArgCount() >= signature->MinArgCount());
+    ES2PANDA_ASSERT(signature->ArgCount() >= signature->MinArgCount());
     if (arguments.size() < signature->MinArgCount()) {  // #22952: workaround for dynamic types
         auto callee = callLike->IsCallExpression() ? callLike->AsCallExpression()->Callee()
                                                    : callLike->AsETSNewClassInstanceExpression()->GetTypeRef();
@@ -35,7 +35,7 @@ static void TransformArguments(public_lib::Context *ctx, ir::Expression *callLik
             return;
         }
     }
-    ASSERT(arguments.size() >= signature->MinArgCount());
+    ES2PANDA_ASSERT(arguments.size() >= signature->MinArgCount());
 
     auto const checker = ctx->checker->AsETSChecker();
     auto const allocator = ctx->allocator;

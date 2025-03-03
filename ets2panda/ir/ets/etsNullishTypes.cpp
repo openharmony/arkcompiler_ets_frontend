@@ -51,12 +51,12 @@ void ETSUndefinedType::Dump(ir::SrcDumper *dumper) const
 
 void ETSUndefinedType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 checker::Type *ETSUndefinedType::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 checker::VerifiedType ETSUndefinedType::Check([[maybe_unused]] checker::ETSChecker *checker)
@@ -122,12 +122,12 @@ void ETSNullType::Dump(ir::SrcDumper *dumper) const
 
 void ETSNullType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 checker::Type *ETSNullType::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 checker::VerifiedType ETSNullType::Check([[maybe_unused]] checker::ETSChecker *checker)

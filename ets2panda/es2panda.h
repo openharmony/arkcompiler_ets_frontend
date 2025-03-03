@@ -16,11 +16,11 @@
 #ifndef ES2PANDA_PUBLIC_H
 #define ES2PANDA_PUBLIC_H
 
-#include "macros.h"
-#include "util/arktsconfig.h"
+#include "util/es2pandaMacros.h"
 #include "util/plugin.h"
 #include "util/diagnostic.h"
 #include "generated/options.h"
+#include "util/language.h"
 
 namespace ark::pandasm {
 struct Program;
@@ -68,9 +68,8 @@ inline Language ToLanguage(ScriptExtension ext)
         case ScriptExtension::STS:
             return Language(Language::Id::ETS);
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
-    UNREACHABLE();
 }
 
 struct SourceFile {

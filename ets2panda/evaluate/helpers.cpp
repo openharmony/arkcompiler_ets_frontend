@@ -66,7 +66,7 @@ ir::TypeNode *PrimitiveToTypeNode(panda_file::Type::TypeId typeId, checker::ETSC
             irType = ir::PrimitiveType::DOUBLE;
             break;
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 
     return checker->AllocNode<ir::ETSPrimitiveType>(irType, checker->Allocator());
@@ -226,7 +226,7 @@ static std::optional<std::string> ReferenceToName(std::string_view typeSignature
             return arrayType;
         }
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
     return {};
 }

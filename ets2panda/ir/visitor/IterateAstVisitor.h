@@ -105,7 +105,7 @@ public:
 
     void HandleNode(ir::AstNode * /*node*/) final
     {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 };
 

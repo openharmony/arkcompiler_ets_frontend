@@ -20,7 +20,7 @@
 #include <cstddef>
 #include <array>
 #include "globals.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 
 // Almost copy of ets_runtime/ecmascript/base/dtoa_helper.h
 
@@ -167,7 +167,7 @@ private:
             DiyFp pl = DiyFp((f_ << 1U) + 1, e_ - 1).NormalizeBoundary();
             DiyFp mi = (f_ == DOUBLE_HIDDEN_BIT) ? DiyFp((f_ << 2U) - 1, e_ - 2)
                                                  : DiyFp((f_ << 1U) - 1, e_ - 1);  // 2: parameter
-            ASSERT(mi.e_ >= pl.e_);
+            ES2PANDA_ASSERT(mi.e_ >= pl.e_);
             mi.f_ <<= static_cast<uint32_t>(mi.e_ - pl.e_);
             mi.e_ = pl.e_;
             *plus = pl;

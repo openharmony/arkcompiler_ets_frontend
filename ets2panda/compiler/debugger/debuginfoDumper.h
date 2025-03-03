@@ -18,7 +18,7 @@
 
 #include "assembly-ins.h"
 #include "assembly-program.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 
 namespace ark::es2panda::debuginfo {
 
