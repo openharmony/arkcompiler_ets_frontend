@@ -245,6 +245,10 @@ public:
 
     [[nodiscard]] SmartCastArray CheckTryBlock(ir::BlockStatement const &tryBlock) noexcept;
 
+    checker::Type *GetIntersectionOfTypes(checker::Type *type1, checker::Type *type2) const noexcept;
+    checker::Type *GetUnionOfTypes(checker::Type *type1, checker::Type *type2) const noexcept;
+    void MergeSmartTypesForLogicalAnd(SmartCastTuple &newSmartCastTypes);
+    void InvalidateNecessarySmartCastsInLogicalAnd(std::optional<SmartCastTuple> &newSmartCastTypes);
     void CheckTestSmartCastCondition(lexer::TokenType operatorType);
     void CheckIdentifierSmartCastCondition(ir::Identifier const *identifier) noexcept;
     void CheckUnarySmartCastCondition(ir::UnaryExpression const *unaryExpression) noexcept;
