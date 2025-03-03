@@ -15,7 +15,7 @@
 
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
-import { NodeUtils, collectReservedNameForObf } from '../../../src/utils/NodeUtils';
+import { NodeUtils, collectReservedNameForObf, hasExportModifier } from '../../../src/utils/NodeUtils';
 import * as ts from 'typescript'
 import sinon from 'sinon';
 import { MergedConfig } from '../../../src/initialization/ConfigResolver';
@@ -557,4 +557,28 @@ describe('test for NodeUtils', function () {
             UnobfuscationCollections.clear();
         })
     })
+
+  describe('test for hasExportModifier', function () {
+    it('should return false if has no modifier', function () {
+      const fileContent = `
+      let a = 1;
+    `;
+      const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true);
+      expect(hasExportModifier(sourceFile.statements[0])).to.be.false;
+    })
+    it('should return false if has no export modifier', function () {
+      const fileContent = `
+      declare const a = 1;
+    `;
+      const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true);
+      expect(hasExportModifier(sourceFile.statements[0])).to.be.false;
+    })
+    it('should return true if has export modifier', function () {
+      const fileContent = `
+      export const a = 1;
+    `;
+      const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true);
+      expect(hasExportModifier(sourceFile.statements[0])).to.be.true;
+    })
+  })
 })

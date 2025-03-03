@@ -47,10 +47,11 @@ import path from 'path';
 import fs from 'fs';
 import { FileUtils } from '../../../src/utils/FileUtils';
 import sinon from 'sinon';
-import { UnobfuscationCollections } from '../../../src/utils/CommonCollections';
+import { AtKeepCollections, UnobfuscationCollections } from '../../../src/utils/CommonCollections';
 import {
   clearHistoryUnobfuscatedMap,
-  historyAllUnobfuscatedNamesMap
+  historyAllUnobfuscatedNamesMap,
+  historyUnobfuscatedPropMap
 } from '../../../src/initialization/Initializer';
 
 const OBFUSCATE_TESTDATA_DIR = path.resolve(__dirname, '../../testData/obfuscation/system_api_obfuscation');
@@ -791,6 +792,7 @@ describe('test for ConfigResolve', function() {
           -enable-filename-obfuscation,
           -enable-export-obfuscation,
           -enable-lib-obfuscation-options,
+          -use-keep-in-source,
           -extra-options strip-language-default,
           -extra-options strip-system-api-args,
           -keep-parameter-names
@@ -812,6 +814,7 @@ describe('test for ConfigResolve', function() {
         expect(configs.options.enableFileNameObfuscation).to.be.true;
         expect(configs.options.enableExportObfuscation).to.be.true;
         expect(configs.options.enableLibObfuscationOptions).to.be.true;
+        expect(configs.options.enableAtKeep).to.be.true;
         expect(configs.options.compact).to.be.true;
         expect(configs.options.removeLog).to.be.true;
         expect(configs.options.stripLanguageDefault).to.be.true;
@@ -2087,9 +2090,98 @@ describe('test for ConfigResolve', function() {
     it('should clear historyMangledTable and nameCacheMap', () => {
       PropCollections.historyMangledTable.set('name1','name2');
       nameCacheMap.set('name1','name2');
+      historyAllUnobfuscatedNamesMap.set('key', {'prop1': 'aaa'});
+      historyUnobfuscatedPropMap.set('key', ['value']);
       clearNameCache();
       expect(PropCollections.historyMangledTable.size).to.be.equal(0);
       expect(nameCacheMap.size).to.be.equal(0);
+      expect(historyAllUnobfuscatedNamesMap.size).to.equal(0);
+      expect(historyUnobfuscatedPropMap.size).to.equal(0);
+    });
+  });
+
+  describe('emitConsumerConfigFiles', () => {
+    it('should also collect atKeepNames when atKeep is enabled', () => {
+      const atKeepExportedPath = path.join(__dirname, '../../testData/output/atKeep_obfuscation01.txt');
+      const sourceObConfig = {
+        selfConfig: {
+          ruleOptions: {
+            enable: true,
+            rules: ['./test/testData/obfuscation/testAtKeep/obfuscation-rules-atKeep.txt']
+          },
+          consumerRules: ['./test/testData/obfuscation/testAtKeep/consumer-rules.txt'],
+        },
+        dependencies: { libraries: [], hars: [] },
+        obfuscationCacheDir: './test/testData/cache',
+        options: {
+          disableObfuscation: false
+        },
+        exportRulePath: atKeepExportedPath,
+        sdkApis: []
+      };
+      const projectConfig = {
+        obfuscationOptions: sourceObConfig,
+        compileHar: false,
+        compileShared: true
+      }
+      const obConfigResolver = new ObConfigResolver(projectConfig, printObfLogger);
+      obConfigResolver.resolveObfuscationConfigs();
+      AtKeepCollections.clear();
+      AtKeepCollections.keepAsConsumer.globalNames.add('globalName1');
+      AtKeepCollections.keepAsConsumer.propertyNames.add('propertyName1');
+      AtKeepCollections.keepSymbol.globalNames.add('globalName2');
+      AtKeepCollections.keepSymbol.propertyNames.add('propertyName2');
+      obConfigResolver.emitConsumerConfigFiles();
+      const atKeepContent = fs.readFileSync(sourceObConfig.exportRulePath, 'utf-8');  
+      expect(atKeepContent).to.include('-enable-property-obfuscation');
+      expect(atKeepContent).to.include('-keep-global-name');
+      expect(atKeepContent).to.include('globalName00');
+      expect(atKeepContent).to.include('globalName1');
+      expect(atKeepContent).to.include('-keep-property-name');
+      expect(atKeepContent).to.include('propertyName00');
+      expect(atKeepContent).to.include('propertyName1');
+      expect(atKeepContent).not.to.include('globalName2');
+      expect(atKeepContent).not.to.include('propertyName2');
+      FileUtils.deleteFile(atKeepExportedPath);
+    });
+
+    it('should not collect atKeepNames when atKeep is not enabled', () => {
+      const atKeepExportedPath = path.join(__dirname, '../../testData/output/atKeep_obfuscation02.txt');
+      const sourceObConfig = {
+        selfConfig: {
+          ruleOptions: {
+            enable: true,
+            rules: ['./test/testData/obfuscation/testAtKeep/obfuscation-rules.txt']
+          },
+          consumerRules: ['./test/testData/obfuscation/testAtKeep/consumer-rules.txt'],
+        },
+        dependencies: { libraries: [], hars: [] },
+        obfuscationCacheDir: './test/testData/cache',
+        options: {
+          disableObfuscation: false
+        },
+        exportRulePath: atKeepExportedPath,
+        sdkApis: []
+      };
+      const projectConfig = {
+        obfuscationOptions: sourceObConfig,
+        compileHar: false,
+        compileShared: true
+      }
+      AtKeepCollections.clear();
+      const obConfigResolver = new ObConfigResolver(projectConfig, printObfLogger);
+      obConfigResolver.resolveObfuscationConfigs();
+      const atKeepContent = fs.readFileSync(sourceObConfig.exportRulePath, 'utf-8');  
+      expect(atKeepContent).to.include('-enable-property-obfuscation');
+      expect(atKeepContent).to.include('-keep-global-name');
+      expect(atKeepContent).to.include('globalName00');
+      expect(atKeepContent).not.to.include('globalName1');
+      expect(atKeepContent).to.include('-keep-property-name');
+      expect(atKeepContent).to.include('propertyName00');
+      expect(atKeepContent).not.to.include('propertyName1');
+      expect(atKeepContent).not.to.include('globalName2');
+      expect(atKeepContent).not.to.include('propertyName2');
+      FileUtils.deleteFile(atKeepExportedPath);
     });
   });
 });

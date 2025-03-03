@@ -36,14 +36,15 @@ import {
 
 import { isDebug, isFileExist, sortAndDeduplicateStringArr, mergeSet, convertSetToArray } from './utils';
 import { nameCacheMap, yellow, unobfuscationNamesObj } from './CommonObject';
-import { historyAllUnobfuscatedNamesMap, historyUnobfuscatedPropMap } from './Initializer';
-import { LocalVariableCollections, UnobfuscationCollections } from '../utils/CommonCollections';
+import { clearHistoryUnobfuscatedMap, historyAllUnobfuscatedNamesMap, historyUnobfuscatedPropMap } from './Initializer';
+import { AtKeepCollections, LocalVariableCollections, UnobfuscationCollections } from '../utils/CommonCollections';
 import { INameObfuscationOption } from '../configs/INameObfuscationOption';
 import { WhitelistType } from '../utils/TransformUtil';
 import { endFilesEvent, startFilesEvent } from '../utils/PrinterUtils';
 import { initScanProjectConfigByMergeConfig, scanProjectConfig, resetScanProjectConfig } from '../common/ApiReader';
 import { MemoryDottingDefine } from '../utils/MemoryDottingDefine';
 import type { HvigorErrorInfo } from '../common/type';
+import { addToSet, KeepInfo } from '../utils/ProjectCollections';
 
 enum OptionType {
   NONE,
@@ -60,6 +61,7 @@ enum OptionType {
   ENABLE_FILENAME_OBFUSCATION,
   ENABLE_EXPORT_OBFUSCATION,
   ENABLE_LIB_OBFUSCATION_OPTIONS,
+  ENABLE_ATKEEP,
   COMPACT,
   REMOVE_LOG,
   REMOVE_COMMENTS,
@@ -87,6 +89,7 @@ class ObOptions {
   enableFileNameObfuscation: boolean = false;
   enableExportObfuscation: boolean = false;
   enableLibObfuscationOptions: boolean = false;
+  enableAtKeep: boolean = false;
   printKeptNames: boolean = false;
   removeComments: boolean = false;
   compact: boolean = false;
@@ -112,6 +115,7 @@ class ObOptions {
     this.stripLanguageDefault = this.stripLanguageDefault || other.stripLanguageDefault;
     this.stripSystemApiArgs = this.stripSystemApiArgs || other.stripSystemApiArgs;
     this.keepParameterNames = this.keepParameterNames || other.keepParameterNames;
+    this.enableAtKeep = this.enableAtKeep || other.enableAtKeep;
 
     if (other.printNameCache.length > 0) {
       this.printNameCache = other.printNameCache;
@@ -198,6 +202,8 @@ export class ObConfigResolver {
   isHarCompiled: boolean | undefined;
   isHspCompiled: boolean | undefined;
   isTerser: boolean;
+  needConsumerConfigs: boolean = false;
+  dependencyConfigs: MergedConfig;
 
   constructor(projectConfig: any, printObfLogger: Function, isTerser?: boolean) {
     this.sourceObConfig = projectConfig.obfuscationOptions;
@@ -222,13 +228,12 @@ export class ObConfigResolver {
       selfConfig.options.disableObfuscation = true;
     }
 
-    let needConsumerConfigs: boolean =
-      (this.isHarCompiled || this.isHspCompiled) &&
+    this.needConsumerConfigs = (this.isHarCompiled || this.isHspCompiled) &&
       sourceObConfig.selfConfig.consumerRules &&
       sourceObConfig.selfConfig.consumerRules.length > 0;
-    let needDependencyConfigs: boolean = enableObfuscation || needConsumerConfigs;
+    let needDependencyConfigs: boolean = enableObfuscation || this.needConsumerConfigs;
 
-    let dependencyConfigs: MergedConfig = new MergedConfig();
+    this.dependencyConfigs = new MergedConfig();
     const dependencyMaxLength: number = Math.max(
       sourceObConfig.dependencies.libraries.length,
       sourceObConfig.dependencies.hars.length,
@@ -236,11 +241,11 @@ export class ObConfigResolver {
       sourceObConfig.dependencies.hspLibraries?.length ?? 0
     );
     if (needDependencyConfigs && dependencyMaxLength > 0) {
-      dependencyConfigs = new MergedConfig();
-      this.getDependencyConfigs(sourceObConfig, dependencyConfigs);
-      enableObfuscation = enableObfuscation && !dependencyConfigs.options.disableObfuscation;
+      this.dependencyConfigs = new MergedConfig();
+      this.getDependencyConfigs(sourceObConfig, this.dependencyConfigs);
+      enableObfuscation = enableObfuscation && !this.dependencyConfigs.options.disableObfuscation;
     }
-    const mergedConfigs: MergedConfig = this.getMergedConfigs(selfConfig, dependencyConfigs);
+    const mergedConfigs: MergedConfig = this.getMergedConfigs(selfConfig, this.dependencyConfigs);
     this.handleReservedArray(mergedConfigs);
 
     let needKeepSystemApi =
@@ -261,12 +266,19 @@ export class ObConfigResolver {
       }
     }
 
-    if (needConsumerConfigs) {
-      let selfConsumerConfig = new MergedConfig();
-      this.getSelfConsumerConfig(selfConsumerConfig);
-      this.genConsumerConfigFiles(sourceObConfig, selfConsumerConfig, dependencyConfigs);
+    // when atKeep is enabled, we can not emit here since we need to collect names marked with atKeep
+    if (!mergedConfigs.options.enableAtKeep) {
+      this.emitConsumerConfigFiles();
     }
     return mergedConfigs;
+  }
+
+  public emitConsumerConfigFiles(): void {
+    if (this.needConsumerConfigs) {
+      let selfConsumerConfig = new MergedConfig();
+      this.getSelfConsumerConfig(selfConsumerConfig);
+      this.genConsumerConfigFiles(this.sourceObConfig, selfConsumerConfig, this.dependencyConfigs);
+    }
   }
 
   private getSelfConfigs(selfConfigs: MergedConfig): void {
@@ -339,6 +351,7 @@ export class ObConfigResolver {
   static readonly ENABLE_FILENAME_OBFUSCATION = '-enable-filename-obfuscation';
   static readonly ENABLE_EXPORT_OBFUSCATION = '-enable-export-obfuscation';
   static readonly ENABLE_LIB_OBFUSCATION_OPTIONS = '-enable-lib-obfuscation-options';
+  static readonly ENABLE_ATKEEP = '-use-keep-in-source';
   static readonly REMOVE_COMMENTS = '-remove-comments';
   static readonly COMPACT = '-compact';
   static readonly REMOVE_LOG = '-remove-log';
@@ -385,6 +398,8 @@ export class ObConfigResolver {
         return OptionType.ENABLE_EXPORT_OBFUSCATION;
       case ObConfigResolver.ENABLE_LIB_OBFUSCATION_OPTIONS:
         return OptionType.ENABLE_LIB_OBFUSCATION_OPTIONS;
+      case ObConfigResolver.ENABLE_ATKEEP:
+        return OptionType.ENABLE_ATKEEP;
       case ObConfigResolver.REMOVE_COMMENTS:
         return OptionType.REMOVE_COMMENTS;
       case ObConfigResolver.COMPACT:
@@ -466,6 +481,11 @@ export class ObConfigResolver {
         }
         case OptionType.ENABLE_LIB_OBFUSCATION_OPTIONS: {
           configs.options.enableLibObfuscationOptions = true;
+          extraOptionType = OptionType.NONE;
+          continue;
+        }
+        case OptionType.ENABLE_ATKEEP: {
+          configs.options.enableAtKeep = true;
           extraOptionType = OptionType.NONE;
           continue;
         }
@@ -852,8 +872,18 @@ export class ObConfigResolver {
     if (this.isHarCompiled) {
       selfConsumerConfig.mergeAllRules(dependencyConfigs);
     }
+    this.addKeepConsumer(selfConsumerConfig, AtKeepCollections.keepAsConsumer);
     selfConsumerConfig.sortAndDeduplicate();
     this.writeConsumerConfigFile(selfConsumerConfig, sourceObConfig.exportRulePath);
+  }
+
+  private addKeepConsumer(selfConsumerConfig: MergedConfig, keepAsConsumer: KeepInfo): void {
+    keepAsConsumer.propertyNames.forEach((propertyName) => {
+      selfConsumerConfig.reservedPropertyNames.push(propertyName);
+    });
+    keepAsConsumer.globalNames.forEach((globalName) =>{
+      selfConsumerConfig.reservedGlobalNames.push(globalName);
+    });
   }
 
   public genConsumerConfigFilesForTest(
@@ -984,6 +1014,7 @@ export function readNameCache(nameCachePath: string, printObfLogger: Function): 
 export function clearNameCache(): void {
   PropCollections.historyMangledTable?.clear();
   nameCacheMap?.clear();
+  clearHistoryUnobfuscatedMap();
 }
 
 /**
@@ -1114,6 +1145,7 @@ export function printWhitelist(obfuscationOptions: ObOptions, nameOptions: IName
   const enableProperty = obfuscationOptions.enablePropertyObfuscation;
   const enableStringProp = obfuscationOptions.enableStringPropertyObfuscation;
   const enableExport = obfuscationOptions.enableExportObfuscation;
+  const enableAtKeep = obfuscationOptions.enableAtKeep;
   const reservedConfToplevelArrary = nameOptions.mReservedToplevelNames ?? [];
   const reservedConfPropertyArray = nameOptions.mReservedProperties ?? [];
   let whitelistObj = {
@@ -1163,6 +1195,14 @@ export function printWhitelist(obfuscationOptions: ObOptions, nameOptions: IName
   if (hasTopLevelConfig) {
     whitelistObj.conf.push(...reservedConfToplevelArrary);
     handleUniversalReservedList(nameOptions.mUniversalReservedToplevelNames, whitelistObj.conf);
+  }
+  if (enableAtKeep) {
+    let atKeepSet: Set<string> = new Set();
+    addToSet(atKeepSet, AtKeepCollections.keepAsConsumer.globalNames);
+    addToSet(atKeepSet, AtKeepCollections.keepAsConsumer.propertyNames);
+    addToSet(atKeepSet, AtKeepCollections.keepSymbol.globalNames);
+    addToSet(atKeepSet, AtKeepCollections.keepSymbol.propertyNames);
+    whitelistObj.conf.push(...atKeepSet);
   }
 
   let enumSet: Set<string>;

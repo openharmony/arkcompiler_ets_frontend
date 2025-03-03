@@ -71,6 +71,7 @@ export function initObfuscationConfig(projectConfig: any, arkProjectConfig: any,
     mergedObConfig,
     isHarCompiled,
   );
+  arkProjectConfig.arkObfuscator.obfConfigResolver = obConfig;
 }
 
 function initArkGuardConfig(
@@ -95,7 +96,8 @@ function initArkGuardConfig(
       mReservedToplevelNames: mergedObConfig.reservedGlobalNames,
       mKeepParameterNames: mergedObConfig.options.keepParameterNames,
       mUniversalReservedProperties: mergedObConfig.universalReservedPropertyNames,
-      mUniversalReservedToplevelNames: mergedObConfig.universalReservedGlobalNames
+      mUniversalReservedToplevelNames: mergedObConfig.universalReservedGlobalNames,
+      mEnableAtKeep: mergedObConfig.options.enableAtKeep
     },
     mUnobfuscationOption: {
       mPrintKeptNames: mergedObConfig.options.printKeptNames,

@@ -27,6 +27,7 @@ import type {
   PrivateIdentifier
 } from 'typescript';
 import {
+  canHaveModifiers,
   Symbol,
   SyntaxKind,
   getModifiers,
@@ -45,6 +46,7 @@ import {
   isMetaProperty,
   isMethodDeclaration,
   isMethodSignature,
+  isModifier,
   isNumericLiteral,
   isParameter,
   isPrivateIdentifier,
@@ -342,4 +344,22 @@ export function collectReservedNameForObf(obfuscationConfig: MergedConfig | unde
       return visitEachChild(node, collectReservedNames, context);
     }
   };
+}
+
+// if node has export modifier
+export function hasExportModifier(node: Node): boolean {
+  // get modifiers of node
+  const modifiers = canHaveModifiers(node) ? getModifiers(node) : undefined;
+
+  if (!modifiers) {
+    return false;
+  }
+
+  for (const modifier of modifiers) {
+    if (isModifier(modifier) && modifier.kind === SyntaxKind.ExportKeyword) {
+      return true;
+    }
+  }
+
+  return false;
 }

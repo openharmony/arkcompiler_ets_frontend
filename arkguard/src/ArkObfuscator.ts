@@ -35,7 +35,7 @@ import type {
 
 import path from 'path';
 
-import { LocalVariableCollections, PropCollections } from './utils/CommonCollections';
+import { AtKeepCollections, LocalVariableCollections, PropCollections } from './utils/CommonCollections';
 import type { IOptions } from './configs/IOptions';
 import { FileUtils } from './utils/FileUtils';
 import { TransformerManager } from './transformers/TransformerManager';
@@ -68,6 +68,7 @@ import {
   initPerformancePrinter,
   startSingleFileEvent,
 } from './utils/PrinterUtils';
+import { ObConfigResolver } from './initialization/ConfigResolver';
 
 export {
   EventList,
@@ -142,6 +143,7 @@ export function clearGlobalCaches(): void {
   PropCollections.clearPropsCollections();
   UnobfuscationCollections.clear();
   LocalVariableCollections.clear();
+  AtKeepCollections.clear();
   renameFileNameModule.clearCaches();
   clearUnobfuscationNamesObj();
   clearHistoryUnobfuscatedMap();
@@ -194,6 +196,8 @@ export class ArkObfuscator {
   public filePathManager: FilePathManager | undefined;
 
   public fileContentManager: FileContentManager | undefined;
+
+  public obfConfigResolver: ObConfigResolver;
 
   public constructor() {
     this.mCompilerOptions = {};
@@ -348,8 +352,7 @@ export class ArkObfuscator {
     }
 
     if (cachePath) {
-      // 'false' will be replaced by 'config.mNameObfuscation.mEnableAtKeep' after atKeep is Implemented
-      this.initIncrementalCache(cachePath, false);
+      this.initIncrementalCache(cachePath, !!this.mCustomProfiles.mNameObfuscation.mEnableAtKeep);
     }
 
     return true;

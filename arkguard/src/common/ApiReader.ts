@@ -27,11 +27,14 @@ export interface ScanProjectConfig {
   mExportObfuscation?: boolean,
   mkeepFilesAndDependencies?: Set<string>,
   isHarCompiled?: boolean,
-  mStripSystemApiArgs?: boolean
+  mStripSystemApiArgs?: boolean,
+  mEnableAtKeep: boolean
 }
 
 // Settings for collect white lists.
-export let scanProjectConfig: ScanProjectConfig = {};
+export let scanProjectConfig: ScanProjectConfig = {
+  mEnableAtKeep: false
+};
 
 /**
  * if rename property is not open, api read and extract can be skipped
@@ -74,6 +77,7 @@ function initScanProjectConfig(customProfiles: IOptions, isHarCompiled?: boolean
   scanProjectConfig.mExportObfuscation = customProfiles.mExportObfuscation;
   scanProjectConfig.mkeepFilesAndDependencies = customProfiles.mKeepFileSourceCode?.mkeepFilesAndDependencies;
   scanProjectConfig.isHarCompiled = isHarCompiled;
+  scanProjectConfig.mEnableAtKeep = customProfiles.mNameObfuscation?.mEnableAtKeep;
 }
 
 /**
@@ -146,7 +150,9 @@ export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<s
   }
 
   // scanProjectConfig needs to be cleared to prevent affecting incremental compilation
-  scanProjectConfig = {};
+  scanProjectConfig = {
+    mEnableAtKeep: false
+  };
 
   return {
     structPropertySet: structPropertySet,
