@@ -1334,7 +1334,9 @@ class BcVersionTest(Test):
             13: "12.0.6.0",
             14: "12.0.6.0",
             15: "12.0.6.0",
-            16: "13.0.1.0"
+            16: "12.0.6.0",
+            17: "12.0.6.0",
+            18: "13.0.1.0"
         }
         self.es2abc_script_expect = {
             8: "0.0.0.2",
@@ -1348,7 +1350,9 @@ class BcVersionTest(Test):
             13: "12.0.6.0",
             14: "12.0.6.0",
             15: "12.0.6.0",
-            16: "13.0.1.0"
+            16: "12.0.6.0",
+            17: "12.0.6.0",
+            18: "13.0.1.0"
         }
 
     def run(self):
@@ -2125,7 +2129,7 @@ class TestVersionControl(Test):
         Test.__init__(self, test_path, flags)
         self.beta_version_default = 3
         self.version_with_sub_version_list = [12]
-        self.target_api_version_list = ["9", "10", "11", "12", "16"]
+        self.target_api_version_list = ["9", "10", "11", "12", "18"]
         self.target_api_sub_version_list = ["beta1", "beta2", "beta3"]
         self.specific_api_version_list = ["API11", "API12beta3"]
         self.output = None
@@ -2589,14 +2593,14 @@ def add_directory_for_regression(runners, args):
     runner.add_directory("parser/js/language/arguments-object", "js", ["--parse-only"])
     runner.add_directory("parser/js/language/statements/for-statement", "js", ["--parse-only", "--dump-ast"])
     runner.add_directory("parser/js/language/expressions/optional-chain", "js", ["--parse-only", "--dump-ast"])
-    runner.add_directory("parser/js/language/import/syntax/api16", "js",
-                         ["--parse-only", "--module", "--target-api-version=16"])
+    runner.add_directory("parser/js/language/import/syntax/api18", "js",
+                         ["--parse-only", "--module", "--target-api-version=18"])
     runner.add_directory("parser/js/language/import/syntax/api12/beta3", "js",
                          ["--parse-only", "--module", "--target-api-version=12", "--target-api-sub-version=beta3"])
     runner.add_directory("parser/js/language/import/syntax/api12/beta2", "js",
                          ["--parse-only", "--module", "--target-api-version=12", "--target-api-sub-version=beta2"])
     runner.add_directory("parser/js/language/import", "ts",
-                         ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-version=16"])
+                         ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-version=18"])
     runner.add_directory("parser/sendable_class", "ts",
                          ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-sub-version=beta3"])
     runner.add_directory("parser/sendable_class/api12beta2", "ts",
@@ -2736,7 +2740,7 @@ def add_directory_for_bytecode(runners, args):
     runner.add_directory("bytecode/ts/ic", "ts", ["--dump-assembly"])
     runner.add_directory("bytecode/ts/api11", "ts", ["--dump-assembly", "--module", "--target-api-version=11"])
     runner.add_directory("bytecode/ts/api12", "ts", ["--dump-assembly", "--module", "--target-api-version=12"])
-    runner.add_directory("bytecode/ts/api16", "ts", ["--dump-assembly", "--module", "--target-api-version=16"])
+    runner.add_directory("bytecode/ts/api18", "ts", ["--dump-assembly", "--module", "--target-api-version=18"])
     runner.add_directory("bytecode/watch-expression", "js", ["--debugger-evaluate-expression", "--dump-assembly"])
 
     runners.append(runner)

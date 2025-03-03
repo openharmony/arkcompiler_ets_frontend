@@ -3203,9 +3203,9 @@ void ParserImpl::VerifySupportLazyImportVersion(bool isNamedImport)
     } else {
         if (!util::Helpers::IsSupportLazyImportDefaultVersion(program_.TargetApiVersion())) {
             std::string errMessage = "Current configuration does not support using lazy import default."
-                "Lazy import can be used in the version of API 16 or higher versions.\n"
+                "Lazy import can be used in the version of API 18 or higher versions.\n"
                 "Solutions: > Check the compatibleSdkVersion in build-profile.json5."
-                "> If compatibleSdkVersion is set to API 16."
+                "> If compatibleSdkVersion is set to API 18."
                 "> If you're running es2abc in commandline without IDE, please check whether target-api-version "
                 "options are correctly configured.";
             ThrowSyntaxError(errMessage);
