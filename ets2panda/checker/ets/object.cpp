@@ -1519,12 +1519,44 @@ bool ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, ir::MemberE
     auto const *const unboxedExpressionType = MaybeUnboxInRelation(expressionType);
 
     if (expressionType->IsETSObjectType() && (unboxedExpressionType != nullptr)) {
-        expr->AddBoxingUnboxingFlags(GetUnboxingFlag(unboxedExpressionType));
+        expr->Property()->AddBoxingUnboxingFlags(GetUnboxingFlag(unboxedExpressionType));
     }
 
     const auto *const exprType = expr->Property()->TsType();
     ES2PANDA_ASSERT(exprType != nullptr);
 
+    if (!exprType->HasTypeFlag(TypeFlag::CONSTANT)) {
+        if (exprType->IsETSObjectType() && (unboxedExpressionType != nullptr)) {
+            return ValidateTupleIndexFromEtsObject(tuple, expr);
+        } else {
+            LogError(diagnostic::TUPLE_INDEX_NONCONST, {}, expr->Property()->Start());
+            return false;
+        }
+    }
+
+    if (!exprType->HasTypeFlag(TypeFlag::ETS_ARRAY_INDEX | TypeFlag::LONG)) {
+        LogError(diagnostic::TUPLE_INDEX_NOT_INT, {}, expr->Property()->Start());
+        return false;
+    }
+
+    auto exprValue = GetTupleElementAccessValue(exprType);
+    if (!exprValue.has_value() || (*exprValue >= tuple->GetTupleSize())) {
+        LogError(diagnostic::TUPLE_INDEX_OOB, {}, expr->Property()->Start());
+        return false;
+    }
+
+    return true;
+}
+
+bool ETSChecker::ValidateTupleIndexFromEtsObject(const ETSTupleType *const tuple, ir::MemberExpression *const expr)
+{
+    auto *value = expr->Property()->Variable()->Declaration()->Node()->AsClassElement()->Value();
+    if (value == nullptr) {
+        LogError(diagnostic::TUPLE_INDEX_NONCONST, {}, expr->Property()->Start());
+        return false;
+    }
+    auto *exprType = value->TsType();
+    ES2PANDA_ASSERT(exprType != nullptr);
     if (!exprType->HasTypeFlag(TypeFlag::CONSTANT)) {
         LogError(diagnostic::TUPLE_INDEX_NONCONST, {}, expr->Property()->Start());
         return false;
