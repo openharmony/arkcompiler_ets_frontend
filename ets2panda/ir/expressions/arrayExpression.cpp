@@ -429,8 +429,8 @@ void ArrayExpression::SetPreferredTypeBasedOnFuncParam(checker::ETSChecker *chec
 
     for (auto *const elem : elements_) {
         checker->SetPreferredTypeIfPossible(elem, elementType);
-        auto assignCtx = checker::AssignmentContext(checker->Relation(), elem, elem->Check(checker), elementType,
-                                                    elem->Start(), {""}, checker::TypeRelationFlag::NO_THROW | flags);
+        checker::AssignmentContext assignCtx(checker->Relation(), elem, elem->Check(checker), elementType,
+                                             elem->Start(), std::nullopt, checker::TypeRelationFlag::NO_THROW | flags);
         isAssignable &= assignCtx.IsAssignable();
     }
 

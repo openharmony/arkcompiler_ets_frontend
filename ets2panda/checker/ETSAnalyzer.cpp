@@ -438,13 +438,13 @@ static checker::Type *CheckInstantiatedNewType(ETSChecker *checker, ir::ETSNewCl
         return checker->InvalidateType(expr->GetTypeRef());
     }
     if (calleeType->IsETSUnionType()) {
-        return checker->TypeError(expr->GetTypeRef(), "The union type is not constructible.", expr->Start());
+        return checker->TypeError(expr->GetTypeRef(), diagnostic::UNION_NONCONSTRUCTIBLE, expr->Start());
     }
     if (!ir::ETSNewClassInstanceExpression::TypeIsAllowedForInstantiation(calleeType)) {
-        return checker->TypeError(expr->GetTypeRef(), {"Type '", calleeType, "' is not constructible."}, expr->Start());
+        return checker->TypeError(expr->GetTypeRef(), diagnostic::CALLEE_NONCONSTRUCTIBLE, {calleeType}, expr->Start());
     }
     if (!calleeType->IsETSObjectType()) {
-        return checker->TypeError(expr->GetTypeRef(), "This expression is not constructible.", expr->Start());
+        return checker->TypeError(expr->GetTypeRef(), diagnostic::EXPR_NONCONSTRUCTIBLE, {}, expr->Start());
     }
 
     auto calleeObj = calleeType->AsETSObjectType();
@@ -710,14 +710,14 @@ static bool CheckElement(ETSChecker *checker, Type *const preferredType,
         }
 
         auto ctx = AssignmentContext(checker->Relation(), currentElement, elementType, compareType,
-                                     currentElement->Start(), {}, TypeRelationFlag::NO_THROW);
+                                     currentElement->Start(), std::nullopt, TypeRelationFlag::NO_THROW);
         if (!ctx.IsAssignable()) {
             checker->LogError(diagnostic::TUPLE_UNASSIGNABLE_ARRAY, {idx}, currentElement->Start());
             return false;
         }
 
         const CastingContext castCtx(
-            checker->Relation(), {"this cast should never fail"},
+            checker->Relation(), diagnostic::CAST_FAIL_UNREACHABLE, {},
             CastingContext::ConstructorData {currentElement, compareType, checker->MaybeBoxType(compareType),
                                              currentElement->Start(), TypeRelationFlag::NO_THROW});
 
@@ -836,7 +836,7 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
     }
 
     if (expr->GetPreferredType() == nullptr) {
-        return checker->TypeError(expr, "Can't resolve array type", expr->Start());
+        return checker->TypeError(expr, diagnostic::UNRESOLVABLE_ARRAY, expr->Start());
     }
 
     expr->SetTsType(expr->GetPreferredType());
@@ -1015,11 +1015,9 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
 
     checker::Type *smartType = rightType;
     if (!leftType->IsTypeError()) {
-        if (auto ctx = checker::AssignmentContext(
-                // CC-OFFNXT(G.FMT.06-CPP) project code style
-                checker->Relation(), relationNode, rightType, leftType, expr->Right()->Start(),
-                // CC-OFFNXT(G.FMT.06-CPP) project code style
-                {"Type '", rightType, "' cannot be assigned to type '", leftType, "'"});
+        if (const auto ctx = checker::AssignmentContext(checker->Relation(), relationNode, rightType, leftType,
+                                                        expr->Right()->Start(),
+                                                        {{diagnostic::INVALID_ASSIGNMNENT, {rightType, leftType}}});
             ctx.IsAssignable()) {
             smartType = GetSmartType(expr, leftType, rightType);
         }
@@ -1097,8 +1095,7 @@ checker::Type *ETSAnalyzer::Check(ir::AwaitExpression *expr) const
     // Check the argument type of await expression
     if (!argType->IsETSObjectType() ||
         (argType->AsETSObjectType()->GetOriginalBaseType() != checker->GlobalBuiltinPromiseType())) {
-        return checker->TypeError(expr, "'await' expressions require Promise object as argument.",
-                                  expr->Argument()->Start());
+        return checker->TypeError(expr, diagnostic::AWAITED_NOT_PROMISE, expr->Argument()->Start());
     }
 
     Type *type = argType->AsETSObjectType()->TypeArguments().at(0);
@@ -1488,12 +1485,12 @@ static Type *TransformTypeForMethodReference(ETSChecker *checker, ir::Expression
     }
 
     if (type->AsETSFunctionType()->CallSignatures().at(0)->HasSignatureFlag(SignatureFlags::PRIVATE)) {
-        checker->LogTypeError("Private method is used as value", getUseSite());
+        checker->LogError(diagnostic::PRIVATE_METHOD_AS_VALUE, getUseSite());
         return checker->GlobalTypeError();
     }
 
     if (type->AsETSFunctionType()->CallSignatures().size() > 1) {
-        checker->LogTypeError("Overloaded method is used as value", getUseSite());
+        checker->LogError(diagnostic::OVERLOADED_METHOD_AS_VALUE, getUseSite());
         return checker->GlobalTypeError();
     }
     return type->AsETSFunctionType()->MethodToArrow(checker);
@@ -1556,9 +1553,8 @@ std::pair<checker::Type *, util::StringView> SearchReExportsType(ETSObjectType *
 static void TypeErrorOnMissingProperty(ir::MemberExpression *expr, checker::Type *baseType,
                                        checker::ETSChecker *checker)
 {
-    std::ignore = checker->TypeError(
-        expr, {"Property '", expr->Property()->AsIdentifier()->Name(), "' does not exist on type '", baseType, "'"},
-        expr->Object()->Start());
+    std::ignore = checker->TypeError(expr, diagnostic::PROPERTY_NONEXISTENT,
+                                     {expr->Property()->AsIdentifier()->Name(), baseType}, expr->Object()->Start());
 }
 
 checker::Type *ETSAnalyzer::ResolveMemberExpressionByBaseType(ETSChecker *checker, checker::Type *baseType,
@@ -1735,7 +1731,7 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
         }
     }
     if (!haveEmptyConstructor) {
-        return checker->TypeError(expr, {"type ", objType->Name(), " has no parameterless constructor"}, expr->Start());
+        return checker->TypeError(expr, diagnostic::NO_PARAMLESS_CTOR, {objType->Name()}, expr->Start());
     }
 
     CheckObjectExprProps(expr, checker::PropertySearchFlags::SEARCH_INSTANCE_FIELD |
@@ -1789,9 +1785,8 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr, checker
         key->SetTsType(propType);
         value->SetTsType(value->Check(checker));
 
-        checker::AssignmentContext(
-            checker->Relation(), value, value->TsType(), propType, value->Start(),
-            {"Type '", value->TsType(), "' is not compatible with type '", propType, "' at property '", pname, "'"});
+        checker::AssignmentContext(checker->Relation(), value, value->TsType(), propType, value->Start(),
+                                   {{diagnostic::PROP_INCOMPAT, {value->TsType(), propType, pname}}});
     }
 
     if (objType->HasObjectFlag(ETSObjectFlags::REQUIRED)) {
@@ -2899,11 +2894,11 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
     }
 
     if (sourceType->DefinitelyETSNullish() && !targetType->PossiblyETSNullish()) {
-        return checker->TypeError(expr, "Cannot cast 'null' or 'undefined' to non-nullish type.", expr->Start());
+        return checker->TypeError(expr, diagnostic::NULLISH_CAST_TO_NONNULLISH, expr->Start());
     }
 
     const checker::CastingContext ctx(
-        checker->Relation(), {"Cannot cast type '", sourceType, "' to '", targetType, "'"},
+        checker->Relation(), diagnostic::INVALID_CAST, {sourceType, targetType},
         checker::CastingContext::ConstructorData {expr->Expr(), sourceType, targetType, expr->Expr()->Start()});
 
     if (sourceType->IsETSDynamicType() && targetType->IsLambdaObject()) {
@@ -2922,7 +2917,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
     }
 
     if (targetType == checker->GetGlobalTypesHolder()->GlobalETSNeverType()) {
-        return checker->TypeError(expr, "Cast to 'never' is prohibited", expr->Start());
+        return checker->TypeError(expr, diagnostic::CAST_TO_NEVER, expr->Start());
     }
 
     checker->ComputeApparentType(targetType);

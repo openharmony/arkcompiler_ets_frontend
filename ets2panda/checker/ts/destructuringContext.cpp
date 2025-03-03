@@ -80,11 +80,8 @@ void DestructuringContext::SetInferredTypeForVariable(varbinder::Variable *var, 
     }
 
     if (var->TsType() != nullptr) {
-        checker_->IsTypeIdenticalTo(var->TsType(), inferredType,
-                                    {"Subsequent variable declaration must have the same type. Variable '", var->Name(),
-                                     "' must be of type '", var->TsType(), "', but here has type '", inferredType,
-                                     "'."},
-                                    loc);
+        checker_->IsTypeIdenticalTo(var->TsType(), inferredType, diagnostic::DIFFERENT_SUBSEQ_DECL,
+                                    {var->Name(), var->TsType(), inferredType}, loc);
         return;
     }
 

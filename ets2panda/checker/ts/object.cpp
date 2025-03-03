@@ -55,10 +55,8 @@ void TSChecker::CheckIndexConstraints(Type *type)
         for (auto *it : properties) {
             if (it->HasFlag(varbinder::VariableFlags::NUMERIC_NAME)) {
                 Type *propType = GetTypeOfVariable(it);
-                IsTypeAssignableTo(propType, numberInfo->GetType(),
-                                   {"Property '", it->Name(), "' of type '", propType,
-                                    "' is not assignable to numeric index type '", numberInfo->GetType(), "'."},
-                                   it->Declaration()->Node()->Start());
+                IsTypeAssignableTo(propType, numberInfo->GetType(), diagnostic::PROP_ASSIGN_TO_NUMERIC_INDEX,
+                                   {it->Name(), propType, numberInfo->GetType()}, it->Declaration()->Node()->Start());
             }
         }
     }
@@ -66,10 +64,8 @@ void TSChecker::CheckIndexConstraints(Type *type)
     if (stringInfo != nullptr) {
         for (auto *it : properties) {
             Type *propType = GetTypeOfVariable(it);
-            IsTypeAssignableTo(propType, stringInfo->GetType(),
-                               {"Property '", it->Name(), "' of type '", propType,
-                                "' is not assignable to string index type '", stringInfo->GetType(), "'."},
-                               it->Declaration()->Node()->Start());
+            IsTypeAssignableTo(propType, stringInfo->GetType(), diagnostic::PROP_ASSIGN_TO_STRING_INDEX,
+                               {it->Name(), propType, stringInfo->GetType()}, it->Declaration()->Node()->Start());
         }
 
         if (numberInfo != nullptr && !IsTypeAssignableTo(numberInfo->GetType(), stringInfo->GetType())) {
@@ -442,7 +438,7 @@ ArenaVector<ObjectType *> TSChecker::GetBaseTypes(InterfaceType *type)
     ES2PANDA_ASSERT(type->Variable() && type->Variable()->Declaration()->IsInterfaceDecl());
     varbinder::InterfaceDecl *decl = type->Variable()->Declaration()->AsInterfaceDecl();
 
-    TypeStackElement tse(this, type, {"Type ", type->Name(), " recursively references itself as a base type."},
+    TypeStackElement tse(this, type, {{diagnostic::RECURSIVE_EXTENSION, {type->Name()}}},
                          decl->Node()->AsTSInterfaceDeclaration()->Id()->Start());
     if (tse.HasTypeError()) {
         type->Bases().clear();
@@ -540,10 +536,8 @@ bool TSChecker::ValidateInterfaceMemberRedeclaration(ObjectType *type, varbinder
 
     Type *targetType = GetTypeOfVariable(prop);
     Type *sourceType = GetTypeOfVariable(found);
-    IsTypeIdenticalTo(targetType, sourceType,
-                      {"Subsequent property declarations must have the same type.  Property ", prop->Name(),
-                       " must be of type ", sourceType, ", but here has type ", targetType, "."},
-                      locInfo);
+    IsTypeIdenticalTo(targetType, sourceType, diagnostic::DIFFERENT_SUBSEQ_PROP_DECL,
+                      {prop->Name(), sourceType, targetType}, locInfo);
     return false;
 }
 }  // namespace ark::es2panda::checker

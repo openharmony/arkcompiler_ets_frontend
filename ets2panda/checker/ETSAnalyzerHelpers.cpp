@@ -596,11 +596,9 @@ checker::Type *GetIteratorType(ETSChecker *checker, checker::Type *elemType, ir:
 
         auto *decl = variable->Declaration();
         if (decl->IsConstDecl() || decl->IsReadonlyDecl()) {
-            const auto errorMsg =
+            const auto &errorMsg =
                 decl->IsConstDecl() ? diagnostic::INVALID_CONST_ASSIGNMENT : diagnostic::INVALID_READONLY_ASSIGNMENT;
-            // NOTE(pronaip): see memory corruption issue in 23053, replace with LogError once resolved
-            checker->LogTypeError({errorMsg.Message().substr(0, errorMsg.Message().size() - 2), variable->Name()},
-                                  decl->Node()->Start());
+            checker->LogError(errorMsg, {variable->Name()}, decl->Node()->Start());
         }
         iterType = left->AsIdentifier()->TsType();
     } else if (left->IsVariableDeclaration()) {
@@ -636,7 +634,7 @@ bool CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker
             return false;
         }
         if (!checker::AssignmentContext(checker->Relation(), stArgument, argumentType, funcReturnType,
-                                        stArgument->Start(), {},
+                                        stArgument->Start(), std::nullopt,
                                         checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
                  // CC-OFFNXT(G.FMT.02) project code style
                  .IsAssignable()) {
@@ -649,7 +647,8 @@ bool CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker
     if (containingFunc->IsAsyncFunc() && funcReturnType->IsETSObjectType() &&
         funcReturnType->AsETSObjectType()->GetOriginalBaseType() == checker->GlobalBuiltinPromiseType()) {
         auto promiseArg = funcReturnType->AsETSObjectType()->TypeArguments()[0];
-        checker::AssignmentContext(checker->Relation(), stArgument, argumentType, promiseArg, stArgument->Start(), {},
+        checker::AssignmentContext(checker->Relation(), stArgument, argumentType, promiseArg, stArgument->Start(),
+                                   std::nullopt,
                                    checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW);
         if (checker->Relation()->IsTrue()) {
             return true;
@@ -657,7 +656,8 @@ bool CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker
     }
 
     if (!checker::AssignmentContext(checker->Relation(), stArgument, argumentType, funcReturnType, stArgument->Start(),
-                                    {}, checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
+                                    std::nullopt,
+                                    checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
              // CC-OFFNXT(G.FMT.02) project code style
              .IsAssignable()) {
         checker->LogError(diagnostic::ARROW_TYPE_MISMATCH, {argumentType, funcReturnType}, stArgument->Start());
@@ -691,7 +691,7 @@ void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, ch
         auto *argumentType = arrowFunc->TsType();
         funcReturnType = typeAnnotation->GetType(checker);
         if (!checker::AssignmentContext(checker->Relation(), arrowFunc, argumentType, funcReturnType,
-                                        stArgument->Start(), {},
+                                        stArgument->Start(), std::nullopt,
                                         checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
                  // CC-OFFNXT(G.FMT.02) project code style
                  .IsAssignable()) {
@@ -730,7 +730,7 @@ void CastPossibleTupleOnRHS(ETSChecker *checker, ir::AssignmentExpression *expr)
         auto *storedTupleType = expr->Left()->AsMemberExpression()->Object()->TsType();
 
         const checker::CastingContext tupleCast(
-            checker->Relation(), {"this cast should never fail"},
+            checker->Relation(), diagnostic::CAST_FAIL_UNREACHABLE, {},
             checker::CastingContext::ConstructorData {expr->Right(), expr->Right()->TsType(), storedTupleType,
                                                       expr->Right()->Start(), TypeRelationFlag::NO_THROW});
     }
