@@ -388,6 +388,8 @@ optional_field_variable.sts
 optional_trailing_lambda.sts
 override_for_partial_01.sts
 override_for_partial_02.sts
+overload-resolution-rest-1.sts
+overload-resolution-rest-2.sts
 partialTypeRuntime_1.sts
 partialTypeRuntime_2.sts
 partialTypeRuntime_3.sts
