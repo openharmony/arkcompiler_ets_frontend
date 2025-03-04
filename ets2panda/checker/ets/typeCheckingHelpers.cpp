@@ -945,6 +945,9 @@ void ETSChecker::CheckAnnotationRetention(ir::AnnotationUsage *anno)
 
 void ETSChecker::HandleAnnotationRetention(ir::AnnotationUsage *anno, ir::AnnotationDeclaration *annoDecl)
 {
+    if (anno->Properties().size() != 1) {
+        return;
+    }
     auto policyStr = anno->Properties()[0]->AsClassProperty()->Value()->AsStringLiteral()->Str().Mutf8();
     if (policyStr == compiler::Signatures::SOURCE_POLICY) {
         annoDecl->SetSourceRetention();
