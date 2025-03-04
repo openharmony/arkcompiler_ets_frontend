@@ -63,10 +63,10 @@ public:
         propertiesInstantiated_ = true;
     }
 
-    void AddInterface(ETSObjectType *interface)
+    void AddInterface(ETSObjectType *interfaceType)
     {
-        if (std::find(interfaces_.begin(), interfaces_.end(), interface) == interfaces_.end()) {
-            interfaces_.push_back(interface);
+        if (std::find(interfaces_.begin(), interfaces_.end(), interfaceType) == interfaces_.end()) {
+            interfaces_.push_back(interfaceType);
         }
     }
 
