@@ -64,6 +64,9 @@ fs::path NormalizePath(const fs::path &p)
             result /= part;
         }
     }
+    if (fs::exists(result)) {
+        return fs::canonical(result);
+    }
     return result;
 }
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
@@ -268,6 +271,9 @@ bool ArkTsConfig::ParseDynamicPaths(const JsonObject::JsonObjPointer *options,
         std::string normalizedDeclPath {};
         if (declPathValue != nullptr) {
             normalizedDeclPath = ark::os::GetAbsolutePath(*declPathValue);
+            if (!Check(ark::os::IsFileExists(normalizedDeclPath), diagnostic::INVALID_DYNAMIC_PATH, {key})) {
+                return false;
+            }
         }
         auto res = dynamicPathsMap.insert(
             {ark::os::NormalizePath(key), ArkTsConfig::DynamicImportData(*lang, normalizedDeclPath, ohmUrlValue)});
