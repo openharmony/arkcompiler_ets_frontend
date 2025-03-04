@@ -134,6 +134,8 @@ bool ArkTsConfig::Pattern::Match(const std::string &path) const
         pattern = std::regex_replace(pattern, std::regex("\\?"), "[^/]");
         // './src' -> 'src'
         pattern = std::regex_replace(pattern, std::regex("\\.\\/"), "");
+        // '[^/]*.' -> '[^/]*\.'
+        pattern = std::regex_replace(pattern, std::regex(R"(\[\^\/\]\*\.)"), "[^/]*\\.");
     }
     if (!value.has_extension()) {
         // default extensions to match
@@ -536,7 +538,8 @@ std::vector<fs::path> GetSourceList(const std::shared_ptr<ArkTsConfig> &arktsCon
             continue;
         }
         for (const auto &dirEntry : fs::recursive_directory_iterator(traverseRoot)) {
-            if (include.Match(dirEntry.path().string()) && !MatchExcludes(dirEntry, excludes)) {
+            if (include.Match(dirEntry.path().string()) && !MatchExcludes(dirEntry, excludes) &&
+                !fs::is_directory(dirEntry)) {
                 sourceList.emplace_back(dirEntry);
             }
         }

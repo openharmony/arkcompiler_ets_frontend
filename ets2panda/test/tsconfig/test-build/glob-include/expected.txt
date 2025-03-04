@@ -1,1 +1,5 @@
+./build/src/arkts/file2.abc
+./build/src/ark.ts/file2.abc
 ./build/src/main.abc
+./build/test/arkts/file2.abc
+./build/test/ark.ts/file2.abc
