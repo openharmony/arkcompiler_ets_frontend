@@ -137,6 +137,7 @@ export enum FaultID {
   VoidOperator,
   RegularExpressionLiteral,
   ArgumentsObject,
+  DebuggerStatement,
   // this should always be last enum
   LAST_ID
 }

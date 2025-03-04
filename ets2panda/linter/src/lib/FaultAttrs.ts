@@ -147,4 +147,5 @@ faultsAttrs[FaultID.OptionalMethod] = new FaultAttributes(184);
 faultsAttrs[FaultID.ImportType] = new FaultAttributes(185);
 faultsAttrs[FaultID.DynamicCtorCall] = new FaultAttributes(186);
 faultsAttrs[FaultID.VoidOperator] = new FaultAttributes(193);
+faultsAttrs[FaultID.DebuggerStatement] = new FaultAttributes(206);
 faultsAttrs[FaultID.ArgumentsObject] = new FaultAttributes(207);

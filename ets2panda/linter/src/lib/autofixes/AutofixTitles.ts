@@ -36,5 +36,6 @@ export const cookBookRefToFixTitle: Map<number, string> = new Map([
   [171, 'Add type annotation'],
   [177, 'Add \'Sendable\' decorator'],
   [180, 'Remove the decorator'],
-  [193, 'Replace with arrow function']
+  [193, 'Replace with arrow function'],
+  [206, 'Replace with a special library to call']
 ]);
