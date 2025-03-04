@@ -428,6 +428,37 @@ Napi::Value GetCompletionsAtPositionWrapper(const Napi::CallbackInfo &info)
     return CompletionInfoToNapiObject(result, env);
 }
 
+Napi::Object LineAndCharacterToNapiObject(const ark::es2panda::lsp::LineAndCharacter &lac, Napi::Env env)
+{
+    Napi::Object obj = Napi::Object::New(env);
+
+    obj.Set("line", Napi::String::New(env, lac.GetLine()));
+    obj.Set("character", Napi::Number::New(env, lac.GetCharacter());
+
+    return obj;
+}
+
+Napi::Value ToLineColumnOffsetWrapper(const Napi::CallbackInfo &info)
+{
+    Napi::Env env = info.Env();
+    if (info.Length() < INPUT_NUMBER) {
+        Napi::TypeError::New(env, "Expected two arguments").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+
+    std::string fileName = info[0].As<Napi::String>();
+    size_t position = info[1].As<Napi::Number>().Uint32Value();
+
+    const LSPAPI *lsp = GetImpl();
+    if (!lsp) {
+        Napi::Error::New(env, "Failed to get LSP implementation").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+
+    ark::es2panda::lsp::LineAndCharacter result = lsp->toLineColumnOffset(fileName.c_str(), position);
+    return LineAndCharacterToNapiObject(result, env);
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
     exports.Set("getDefinitionAtPosition", Napi::Function::New(env, GetDefinitionAtPositionWrapper));
@@ -440,6 +471,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
     exports.Set("getImplementationAtPosition", Napi::Function::New(env, GetImplementationAtPositionWrapper));
     exports.Set("getFileReferences", Napi::Function::New(env, GetFileReferencesWrapper));
     exports.Set("getCompletionsAtPosition", Napi::Function::New(env, GetCompletionsAtPositionWrapper));
+    exports.Set("toLineColumnOffset", Napi::Function::New(env, ToLineColumnOffsetWrapper));
     return exports;
 }
 

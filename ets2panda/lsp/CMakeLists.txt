@@ -27,6 +27,7 @@ set(ES2PANDA_LSP_SRC
   ./src/brace_matching.cpp
   ./src/services/services.cpp
   ./src/services/utilities.cpp
+  ./src/line_column_offset.cpp
 )
 
 panda_add_library(${LSP_LIB} SHARED ${ES2PANDA_LSP_SRC})
