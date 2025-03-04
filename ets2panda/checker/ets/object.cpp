@@ -1649,8 +1649,9 @@ void ETSChecker::ValidateNamespaceProperty(varbinder::Variable *property, const 
         parent = node->Parent();
     }
 
+    bool isExported = node->IsExported() || node->IsExportedType() || node->IsDefaultExported();
     if (parent != nullptr && parent->IsClassDefinition() && parent->AsClassDefinition()->IsNamespaceTransformed() &&
-        !(node->IsExported() || node->IsExportedType() || node->IsDefaultExported())) {
+        !parent->AsClassDefinition()->IsDeclare() && !isExported) {
         LogError(diagnostic::NOT_EXPORTED, {ident->Name(), target->Name()}, ident->Start());
     }
 }

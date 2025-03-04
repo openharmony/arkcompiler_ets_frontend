@@ -34,7 +34,7 @@ ir::ETSModule *ETSParser::ParseNamespaceStatement(ir::ModifierFlags memberModifi
     if (((memberModifiers & ir::ModifierFlags::DEFAULT_EXPORT) != 0)) {
         modifiers |= ir::ModifierFlags::DEFAULT_EXPORT;
     }
-    if ((memberModifiers & ir::ModifierFlags::DECLARE) != 0) {
+    if ((memberModifiers & ir::ModifierFlags::DECLARE) != 0 || InAmbientContext()) {
         modifiers |= ir::ModifierFlags::DECLARE;
         GetContext().Status() |= ParserStatus::IN_AMBIENT_CONTEXT;
     }
