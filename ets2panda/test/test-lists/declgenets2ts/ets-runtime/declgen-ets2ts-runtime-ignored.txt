@@ -317,6 +317,7 @@ interfaceGetterSetter.sts
 interfaceMethodWithOptionalParameter.sts
 interfacePropertyFunctionType.sts
 interface_readonly_properties1.sts
+interface_prop.sts
 lambda-class-field.sts
 lambda-context.sts
 lambdaWithOptionalParam3.sts
