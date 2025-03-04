@@ -1,2 +1,2 @@
-SyntaxError: Current configuration does not support using lazy import default.Lazy import can be used in the version of API 16 or higher versions.
-Solutions: > Check the compatibleSdkVersion in build-profile.json5.> If compatibleSdkVersion is set to API 16.> If you're running es2abc in commandline without IDE, please check whether target-api-version options are correctly configured. [import-lazy-beta2-2.js:16:13]
+SyntaxError: Current configuration does not support using lazy import default.Lazy import can be used in the version of API 18 or higher versions.
+Solutions: > Check the compatibleSdkVersion in build-profile.json5.> If compatibleSdkVersion is set to API 18.> If you're running es2abc in commandline without IDE, please check whether target-api-version options are correctly configured. [import-lazy-beta2-2.js:16:13]

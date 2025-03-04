@@ -1788,7 +1788,9 @@ void PandaGen::LoadSendableClass(const ir::AstNode *node, int32_t level)
 void PandaGen::LoadLocalModuleVariable(const ir::AstNode *node, const binder::ModuleVariable *variable)
 {
     auto index = variable->Index();
-    if (inSendable_ && Binder()->Program()->TargetApiVersion() >= 16) {
+    if (inSendable_ &&
+        Binder()->Program()->TargetApiVersion() >=
+        util::Helpers::SENDABLE_CLASS_USING_LOCAL_MODULE_VAR_MIN_SUPPORTED_API_VERSION) {
         index <= util::Helpers::MAX_INT8 ? ra_.Emit<CallruntimeLdsendablelocalmodulevar>(node, index) :
                                            ra_.Emit<CallruntimeWideldsendablelocalmodulevar>(node, index);
         return;
