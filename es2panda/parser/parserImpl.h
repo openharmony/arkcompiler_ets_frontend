@@ -253,6 +253,8 @@ private:
     static bool IsMethodDefinitionsAreSame(const ir::MethodDefinition *property, ir::MethodDefinition *overload);
     ir::TSTypeReference *ParseTsConstExpression();
     ir::Expression *ParseTsTypeOperatorOrTypeReference(bool throwError);
+    ir::Expression *ParseTsTypeOperator();
+    ir::Expression *ParseTsInferType();
     ir::Expression *ParseTsIdentifierReference(TypeAnnotationParsingOptions options);
     ir::Expression *ParseTsBasicType(TypeAnnotationParsingOptions options);
     ir::TSIntersectionType *ParseTsIntersectionType(ir::Expression *type, bool inUnion, bool restrictExtends,
