@@ -23,7 +23,7 @@ namespace ark::es2panda::ir {
 
 class ETSTuple : public TypeNode {
 public:
-    using TupleSizeType = uint32_t;
+    using TupleSizeType = std::size_t;
 
     explicit ETSTuple(ArenaAllocator *const allocator)
         : TypeNode(AstNodeType::ETS_TUPLE, allocator), typeAnnotationList_(allocator->Adapter())
@@ -35,9 +35,7 @@ public:
     {
     }
     explicit ETSTuple(const ArenaVector<ir::TypeNode *> &typeList, ArenaAllocator *const allocator)
-        : TypeNode(AstNodeType::ETS_TUPLE, allocator),
-          typeAnnotationList_(typeList),
-          size_(static_cast<TupleSizeType>(typeList.size()))
+        : TypeNode(AstNodeType::ETS_TUPLE, allocator), typeAnnotationList_(typeList), size_(typeList.size())
     {
     }
 
@@ -49,16 +47,6 @@ public:
     [[nodiscard]] ArenaVector<ir::TypeNode *> GetTupleTypeAnnotationsList() const
     {
         return typeAnnotationList_;
-    }
-
-    [[nodiscard]] bool HasSpreadType() const
-    {
-        return spreadType_ != nullptr;
-    }
-
-    void SetSpreadType(TypeNode *const newSpreadType)
-    {
-        spreadType_ = newSpreadType;
     }
 
     void SetTypeAnnotationsList(ArenaVector<TypeNode *> &&typeNodeList)
@@ -74,7 +62,7 @@ public:
     void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
-    checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker) override;
+    [[nodiscard]] checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {
@@ -82,14 +70,12 @@ public:
     }
 
     // NOTE(vpukhov): hide in TypeCreation
-    static checker::Type *CalculateLUBForTuple(checker::ETSChecker *checker, ArenaVector<checker::Type *> &typeList,
-                                               checker::Type **spreadTypePtr);
+    static checker::Type *GetHolderTypeForTuple(checker::ETSChecker *checker, ArenaVector<checker::Type *> &typeList);
 
     [[nodiscard]] ETSTuple *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
 private:
     ArenaVector<TypeNode *> typeAnnotationList_;
-    TypeNode *spreadType_ {};
     TupleSizeType size_ {0};
 };
 

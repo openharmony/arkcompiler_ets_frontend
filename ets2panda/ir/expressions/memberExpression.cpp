@@ -304,6 +304,8 @@ checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checke
         uncheckedType_ = checker->GuaranteedTypeForUncheckedPropertyAccess(PropVar());
     } else if (IsComputed() && objType->IsETSArrayType()) {  // access erased array or tuple type
         uncheckedType_ = checker->GuaranteedTypeForUncheckedCast(objType->AsETSArrayType()->ElementType(), type);
+    } else if (IsComputed() && objType->IsETSTupleType()) {
+        uncheckedType_ = checker->GuaranteedTypeForUncheckedCast(objType->AsETSTupleType()->GetLubType(), type);
     } else if (checker->IsExtensionAccessorFunctionType(type)) {
         SetTsType(type);
         return GetExtensionAccessorReturnType(checker);
@@ -417,7 +419,7 @@ checker::Type *MemberExpression::CheckTupleAccessMethod(checker::ETSChecker *che
 {
     ES2PANDA_ASSERT(baseType->IsETSTupleType());
 
-    auto idxIfAny = checker->GetTupleElementAccessValue(Property()->TsType(), Property()->Start());
+    auto idxIfAny = checker->GetTupleElementAccessValue(Property()->TsType());
     if (!idxIfAny.has_value()) {
         return nullptr;
     }
@@ -429,7 +431,7 @@ checker::Type *MemberExpression::CheckTupleAccessMethod(checker::ETSChecker *che
         // LUB was calculated by casting
         const checker::CastingContext cast(
             checker->Relation(), {"Tuple type couldn't be converted "},
-            checker::CastingContext::ConstructorData {this, baseType->AsETSArrayType()->ElementType(), tupleTypeAtIdx,
+            checker::CastingContext::ConstructorData {this, baseType->AsETSTupleType()->GetLubType(), tupleTypeAtIdx,
                                                       Start()});
     }
 
@@ -447,13 +449,8 @@ checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, che
 
     if (baseType->IsETSArrayType()) {
         auto *dflt = baseType->AsETSArrayType()->ElementType();
-        if (!baseType->IsETSTupleType() && !checker->ValidateArrayIndex(property_)) {
+        if (!checker->ValidateArrayIndex(property_)) {
             // error already reported to log
-            return dflt;
-        }
-
-        if (baseType->IsETSTupleType() && !checker->ValidateTupleIndex(baseType->AsETSTupleType(), this)) {
-            // error reported to log
             return dflt;
         }
 
@@ -463,13 +460,19 @@ checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, che
             return dflt;
         }
 
-        // NOTE: apply capture conversion on this type
-        if (baseType->IsETSTupleType()) {
-            auto *res = CheckTupleAccessMethod(checker, baseType);
-            return (res == nullptr) ? dflt : res;
+        return dflt;
+    }
+
+    if (baseType->IsETSTupleType()) {
+        auto *dflt = baseType->AsETSTupleType()->GetLubType();
+        if (!checker->ValidateTupleIndex(baseType->AsETSTupleType(), this)) {
+            // error reported to log
+            return dflt;
         }
 
-        return dflt;
+        // NOTE: apply capture conversion on this type
+        auto *res = CheckTupleAccessMethod(checker, baseType);
+        return (res == nullptr) ? dflt : res;
     }
 
     if (baseType->IsETSObjectType()) {

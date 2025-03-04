@@ -937,7 +937,7 @@ semantic:
 
 - name: TUPLE_TOO_FEW_ELEMS
   id: 232
-  message: "Few elements in array initializer for tuple with size of {}"
+  message: "Initializer has {} elements, but tuple requires {}"
 
 - name: ANNOT_IS_VOID
   id: 233

@@ -295,7 +295,7 @@ checker::Type *ETSAnalyzer::Check(ir::SpreadElement *expr) const
     ETSChecker *checker = GetETSChecker();
     Type *exprType = expr->AsSpreadElement()->Argument()->Check(checker);
 
-    if (!exprType->IsETSArrayType()) {
+    if (!exprType->IsETSArrayType() && !exprType->IsETSTupleType()) {
         if (!exprType->IsTypeError()) {
             // Don't duplicate error messages for the same error
             checker->LogError(diagnostic::SPREAD_OF_INVALID_TYPE, {exprType}, expr->Start());
@@ -303,7 +303,8 @@ checker::Type *ETSAnalyzer::Check(ir::SpreadElement *expr) const
         return expr->SetTsType(checker->GlobalTypeError());
     }
 
-    checker::Type *elementType = exprType->AsETSArrayType()->ElementType();
+    checker::Type *const elementType = exprType->IsETSTupleType() ? exprType->AsETSTupleType()->GetLubType()
+                                                                  : exprType->AsETSArrayType()->ElementType();
     return expr->SetTsType(elementType);
 }
 
@@ -617,42 +618,52 @@ checker::Type *ETSAnalyzer::GetPreferredType(ir::ArrayExpression *expr) const
     return expr->preferredType_;
 }
 
-static bool CheckArrayElement(ETSChecker *checker, checker::Type *elementType,
-                              std::vector<checker::Type *> targetElementType, ir::Expression *currentElement,
-                              bool &isSecondaryChosen)
+struct ArrayTargetTypes {
+    checker::Type *arrayType;
+    checker::Type *possibleTupleType;
+};
+
+static bool CheckArrayElementForTupleAssignment(ETSChecker *checker, checker::Type *elementType,
+                                                ArrayTargetTypes &targetElementTypes,
+                                                ir::Expression *const currentElement)
 {
-    if ((targetElementType[0]->IsETSArrayType() &&
-         targetElementType[0]->AsETSArrayType()->ElementType()->IsETSArrayType() &&
-         !(targetElementType[0]->AsETSArrayType()->ElementType()->IsETSTupleType() &&
-           targetElementType[1] == nullptr)) ||
-        (!checker::AssignmentContext(checker->Relation(), currentElement, elementType, targetElementType[0],
-                                     currentElement->Start(),
-                                     {"Array element type '", elementType, "' is not assignable to explicit type '",
-                                      targetElementType[0], "'"},
-                                     TypeRelationFlag::NO_THROW)
-              // CC-OFFNXT(G.FMT.02) project code style
-              .IsAssignable() &&
-         !(targetElementType[0]->IsETSArrayType() && currentElement->IsArrayExpression()))) {
-        if (targetElementType[1] == nullptr) {
-            checker->LogError(diagnostic::ARRAY_ELEMENT_UNASSIGNABLE, {elementType, targetElementType[0]},
-                              currentElement->Start());
-            return false;
+    // NOTE (mmartin): Need to find out the semantics behind this function, and refactor it even more in the future or
+    // remove it
+    const bool isTargetArray = targetElementTypes.arrayType->IsETSArrayType();
+    const bool arrayExpressionAssignedToArrayType = isTargetArray && currentElement->IsArrayExpression();
+    const Type *const targetArrayElementType =
+        isTargetArray ? targetElementTypes.arrayType->AsETSArrayType()->ElementType() : nullptr;
+
+    const bool hasTupleTargetType = targetElementTypes.possibleTupleType != nullptr;
+    bool needElementTypecheck = (isTargetArray && targetArrayElementType->IsETSArrayType() && hasTupleTargetType);
+    if (!needElementTypecheck) {
+        needElementTypecheck =
+            !arrayExpressionAssignedToArrayType &&
+            !checker::AssignmentContext(checker->Relation(), currentElement, elementType, targetElementTypes.arrayType,
+                                        currentElement->Start(), {}, TypeRelationFlag::NO_THROW)
+                 .IsAssignable();
+    }
+
+    if (needElementTypecheck) {
+        auto *const targetType =
+            hasTupleTargetType ? targetElementTypes.possibleTupleType : targetElementTypes.arrayType;
+
+        bool isNodeErroneous = !hasTupleTargetType;
+        if (hasTupleTargetType) {
+            isNodeErroneous = !arrayExpressionAssignedToArrayType &&
+                              !checker::AssignmentContext(checker->Relation(), currentElement, elementType, targetType,
+                                                          currentElement->Start(), {}, TypeRelationFlag::NO_THROW)
+                                   .IsAssignable();
         }
 
-        if (!(targetElementType[0]->IsETSArrayType() && currentElement->IsArrayExpression()) &&
-            !checker::AssignmentContext(checker->Relation(), currentElement, elementType, targetElementType[1],
-                                        currentElement->Start(),
-                                        {"Array element type '", elementType, "' is not assignable to explicit type '",
-                                         targetElementType[1], "'"},
-                                        TypeRelationFlag::NO_THROW)
-                 // CC-OFFNXT(G.FMT.02) project code style
-                 .IsAssignable()) {
-            checker->LogError(diagnostic::ARRAY_ELEMENT_UNASSIGNABLE, {elementType, targetElementType[1]},
+        if (isNodeErroneous) {
+            checker->LogError(diagnostic::ARRAY_ELEMENT_UNASSIGNABLE, {elementType, targetType},
                               currentElement->Start());
+
             return false;
         }
-        isSecondaryChosen = true;
     }
+
     return true;
 }
 
@@ -661,36 +672,36 @@ static bool AddSpreadElementTypes(ETSChecker *checker, ir::Expression *const ele
 {
     Type *elementType = element->Check(checker);
     Type *argumentType = element->AsSpreadElement()->Argument()->Check(checker);
+
     if (argumentType->IsETSTupleType()) {
         for (Type *type : argumentType->AsETSTupleType()->GetTupleTypesList()) {
-            elementTypes.push_back({type, element});
+            elementTypes.emplace_back(type, element);
         }
         return true;
     }
+
     if (!argumentType->IsETSTupleType() && isPreferredTuple) {
         checker->LogError(diagnostic::INVALID_SPREAD_IN_TUPLE, {argumentType}, element->Start());
-        elementTypes.push_back({elementType, element});
+        elementTypes.emplace_back(elementType, element);
         return false;
     }
-    elementTypes.push_back({elementType, element});
+
+    elementTypes.emplace_back(elementType, element);
     return true;
 }
 
 static ArenaVector<std::pair<Type *, ir::Expression *>> GetElementTypes(ir::ArrayExpression *expr, ETSChecker *checker,
-                                                                        bool isPreferredTuple, bool &checkResult)
+                                                                        const bool isPreferredTuple, bool &checkResult)
 {
     ArenaVector<std::pair<Type *, ir::Expression *>> elementTypes(checker->Allocator()->Adapter());
+
     for (std::size_t idx = 0; idx < expr->Elements().size(); ++idx) {
         ir::Expression *const element = expr->Elements()[idx];
 
         if (element->IsArrayExpression() &&
-            !expr->HandleNestedArrayExpression(checker, element->AsArrayExpression(), isPreferredTuple, idx)) {
-            elementTypes.push_back({nullptr, element});
+            !expr->TrySetPreferredTypeForNestedArrayExpr(checker, element->AsArrayExpression(), idx)) {
+            elementTypes.emplace_back(checker->GlobalTypeError(), element);
             continue;
-        }
-
-        if (element->IsObjectExpression()) {
-            element->AsObjectExpression()->SetPreferredType(expr->GetPreferredType()->AsETSArrayType()->ElementType());
         }
 
         if (element->IsSpreadElement()) {
@@ -700,58 +711,69 @@ static ArenaVector<std::pair<Type *, ir::Expression *>> GetElementTypes(ir::Arra
             continue;
         }
 
-        Type *elementType = element->Check(checker);
-        elementTypes.push_back({elementType, element});
+        if (element->IsObjectExpression()) {
+            auto *const exprPreferredType = expr->GetPreferredType();
+            checker->SetPreferredTypeIfPossible(element, exprPreferredType->IsETSTupleType()
+                                                             ? exprPreferredType->AsETSTupleType()->GetTypeAtIndex(idx)
+                                                             : exprPreferredType->AsETSArrayType()->ElementType());
+        }
+
+        elementTypes.emplace_back(element->Check(checker), element);
     }
 
     return elementTypes;
 }
 
-// CC-OFFNXT(huge_depth[C++]) solid logic
-static bool CheckElement(ir::ArrayExpression *expr, ETSChecker *checker, std::vector<checker::Type *> targetElementType,
-                         bool isPreferredTuple)
+static bool CheckElement(ETSChecker *checker, const ir::ArrayExpression *const arrayExpr,
+                         ArenaVector<std::pair<Type *, ir::Expression *>> arrayExprElementTypes,
+                         ArrayTargetTypes &targetElementTypes, std::size_t idx)
 {
-    bool isSecondaryChosen = false;
+    auto [elementType, currentElement] = arrayExprElementTypes[idx];
+
+    if (elementType->IsTypeError()) {
+        return true;
+    }
+
+    if (!elementType->IsETSArrayType() && arrayExpr->GetPreferredType()->IsETSTupleType()) {
+        const auto *const tupleType = arrayExpr->GetPreferredType()->AsETSTupleType();
+        if (tupleType->GetTupleSize() != arrayExprElementTypes.size()) {
+            return false;
+        }
+
+        auto *const compareType = tupleType->GetTypeAtIndex(idx);
+        if (compareType == nullptr) {
+            checker->LogError(diagnostic::TUPLE_SIZE_MISMATCH, {tupleType->GetTupleSize()}, currentElement->Start());
+            return false;
+        }
+
+        auto ctx = AssignmentContext(checker->Relation(), currentElement, elementType, compareType,
+                                     currentElement->Start(), {}, TypeRelationFlag::NO_THROW);
+        if (!ctx.IsAssignable()) {
+            checker->LogError(diagnostic::TUPLE_UNASSIGNABLE_ARRAY, {idx}, currentElement->Start());
+            return false;
+        }
+
+        elementType = compareType;
+    }
+
+    if (targetElementTypes.arrayType == elementType) {
+        return true;
+    }
+
+    return CheckArrayElementForTupleAssignment(checker, elementType, targetElementTypes, currentElement);
+}
+
+// CC-OFFNXT(huge_depth[C++]) solid logic
+static bool CheckArrayExpressionElements(ir::ArrayExpression *arrayExpr, ETSChecker *checker,
+                                         ArrayTargetTypes &targetElementTypes, bool isPreferredTuple)
+{
     bool checkResult = true;
 
-    ArenaVector<std::pair<Type *, ir::Expression *>> elementTypes =
-        GetElementTypes(expr, checker, isPreferredTuple, checkResult);
+    const ArenaVector<std::pair<Type *, ir::Expression *>> arrayExprElementTypes =
+        GetElementTypes(arrayExpr, checker, isPreferredTuple, checkResult);
 
-    for (std::size_t idx = 0; idx < elementTypes.size(); ++idx) {
-        auto [elementType, currentElement] = elementTypes[idx];
-        if (elementType == nullptr) {
-            continue;
-        }
-
-        if (!elementType->IsETSArrayType() && isPreferredTuple) {
-            auto const *const tupleType = expr->GetPreferredType()->AsETSTupleType();
-
-            auto *compareType = tupleType->GetTypeAtIndex(idx);
-            if (compareType == nullptr) {
-                checker->LogError(diagnostic::TUPLE_SIZE_MISMATCH, {static_cast<size_t>(tupleType->GetTupleSize())},
-                                  currentElement->Start());
-                checkResult = false;
-                continue;
-            }
-            const auto ctx = AssignmentContext(checker->Relation(), currentElement, elementType, compareType,
-                                               currentElement->Start(), {}, TypeRelationFlag::NO_THROW);
-            if (!ctx.IsAssignable()) {
-                checker->LogError(diagnostic::TUPLE_UNASSIGNABLE_ARRAY, {idx}, currentElement->Start());
-                checkResult = false;
-                continue;
-            }
-
-            elementType = compareType;
-        }
-
-        if (targetElementType[0] == elementType) {
-            continue;
-        }
-
-        if (!CheckArrayElement(checker, elementType, targetElementType, currentElement, isSecondaryChosen)) {
-            checkResult = false;
-            continue;
-        }
+    for (std::size_t idx = 0; idx < arrayExprElementTypes.size(); ++idx) {
+        checkResult &= CheckElement(checker, arrayExpr, arrayExprElementTypes, targetElementTypes, idx);
     }
 
     return checkResult;
@@ -762,12 +784,12 @@ void ETSAnalyzer::GetUnionPreferredType(ir::ArrayExpression *expr) const
     ES2PANDA_ASSERT(expr->preferredType_->IsETSUnionType());
     checker::Type *preferredType = nullptr;
     for (auto &type : expr->preferredType_->AsETSUnionType()->ConstituentTypes()) {
-        if (type->IsETSArrayType()) {
+        if (type->IsETSArrayType() || type->IsETSTupleType()) {
             if (preferredType != nullptr) {
                 preferredType = nullptr;
                 break;
             }
-            preferredType = type->AsETSArrayType();
+            preferredType = type;
         }
     }
 
@@ -781,56 +803,60 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
         return expr->TsType();
     }
 
-    if (expr->preferredType_ != nullptr) {
-        if (expr->preferredType_->IsETSTypeAliasType()) {
-            expr->preferredType_ = expr->preferredType_->AsETSTypeAliasType()->GetTargetType();
+    if (expr->GetPreferredType() != nullptr) {
+        if (expr->GetPreferredType()->IsETSTypeAliasType()) {
+            expr->SetPreferredType(expr->GetPreferredType()->AsETSTypeAliasType()->GetTargetType());
         }
 
-        if (expr->preferredType_->IsETSUnionType()) {
+        if (expr->GetPreferredType()->IsETSUnionType()) {
             GetUnionPreferredType(expr);
         }
     }
 
-    if (expr->preferredType_ != nullptr && !expr->preferredType_->IsETSArrayType() &&
+    if (expr->GetPreferredType() != nullptr && !expr->GetPreferredType()->IsETSArrayType() &&
+        !expr->GetPreferredType()->IsETSTupleType() &&
         !checker->Relation()->IsSupertypeOf(expr->preferredType_, checker->GlobalETSObjectType())) {
         checker->LogError(diagnostic::UNEXPECTED_ARRAY, {expr->preferredType_}, expr->Start());
         return checker->InvalidateType(expr);
     }
 
-    const bool isArray = (expr->preferredType_ != nullptr) && expr->preferredType_->IsETSArrayType() &&
-                         !expr->preferredType_->IsETSTupleType();
-
     if (!expr->Elements().empty()) {
-        if (expr->preferredType_ == nullptr || expr->preferredType_ == checker->GlobalETSObjectType()) {
+        if (expr->GetPreferredType() == nullptr || expr->GetPreferredType() == checker->GlobalETSObjectType()) {
             /*
              * NOTE(SM): If elements has different types
              *           should calculated as union of types from each element,
              *           otherwise don't properly work with array from union type
              */
-            expr->preferredType_ =
-                checker->CreateETSArrayType(checker->GetNonConstantType(expr->Elements()[0]->Check(checker)));
+            expr->SetPreferredType(
+                checker->CreateETSArrayType(checker->GetNonConstantType(expr->Elements().front()->Check(checker))));
         }
 
-        const bool isPreferredTuple = expr->preferredType_->IsETSTupleType();
+        auto *const preferredType = expr->GetPreferredType();
+
         // NOTE(aakmaev): Need to rework type inference of array literal (#19096 internal issue)
-        auto *targetElementType =
-            checker->GetNonConstantType(expr->GetPreferredType()->AsETSArrayType()->ElementType());
-        Type *targetElementTypeSecondary = nullptr;
-        if (isPreferredTuple && !isArray) {
-            targetElementTypeSecondary = expr->GetPreferredType()->AsETSTupleType()->ElementType();
-        }
+        const bool isPreferredTuple = preferredType->IsETSTupleType();
 
-        if (!CheckElement(expr, checker, {targetElementType, targetElementTypeSecondary}, isPreferredTuple)) {
+        Type *const arrayTargetElementType =
+            isPreferredTuple ? preferredType->AsETSTupleType()->GetLubType()
+                             : checker->GetNonConstantType(preferredType->AsETSArrayType()->ElementType());
+
+        Type *const possibleTupleTargetType =
+            isPreferredTuple ? preferredType->AsETSTupleType()->GetLubType() : nullptr;
+
+        ArrayTargetTypes targetElementTypes {arrayTargetElementType, possibleTupleTargetType};
+        if (!CheckArrayExpressionElements(expr, checker, targetElementTypes, isPreferredTuple)) {
             return checker->InvalidateType(expr);
         }
     }
 
-    if (expr->preferredType_ == nullptr) {
+    if (expr->GetPreferredType() == nullptr) {
         return checker->TypeError(expr, "Can't resolve array type", expr->Start());
     }
 
-    expr->SetTsType(expr->preferredType_);
-    auto *const arrayType = expr->TsType()->AsETSArrayType();
+    expr->SetTsType(expr->GetPreferredType());
+    const auto *const arrayType = expr->TsType()->IsETSTupleType()
+                                      ? expr->TsType()->AsETSTupleType()->GetHolderArrayType()
+                                      : expr->TsType()->AsETSArrayType();
     checker->CreateBuiltinArraySignature(arrayType, arrayType->Rank());
     return expr->TsType();
 }
@@ -899,20 +925,26 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
     return expr->TsType();
 }
 
-static bool IsInvalidArrayMemberAssignment(ir::AssignmentExpression *const expr, ETSChecker *checker)
+static bool IsInvalidArrayMemberAssignment(const ir::AssignmentExpression *const expr, ETSChecker *checker)
 {
-    if (expr->Left()->IsMemberExpression() &&
-        expr->Left()->AsMemberExpression()->Object()->TsType()->IsETSArrayType()) {
-        auto *const leftExpr = expr->Left()->AsMemberExpression();
-        if (leftExpr->Property()->IsIdentifier() && leftExpr->Property()->AsIdentifier()->Name().Is("length")) {
+    if (!expr->Left()->IsMemberExpression()) {
+        return false;
+    }
+
+    const auto *const leftExpr = expr->Left()->AsMemberExpression();
+    if (leftExpr->Object()->TsType()->IsETSArrayType() || leftExpr->Object()->TsType()->IsETSTupleType()) {
+        if (leftExpr->Object()->TsType()->IsETSArrayType() && leftExpr->Property()->IsIdentifier() &&
+            leftExpr->Property()->AsIdentifier()->Name().Is("length")) {
             checker->LogError(diagnostic::ARRAY_LENGTH_MODIFICATION, {}, expr->Left()->Start());
             return true;
         }
+
         if (leftExpr->Object()->TsType()->HasTypeFlag(TypeFlag::READONLY)) {
             checker->LogError(diagnostic::READONLY_ARRAYLIKE_MODIFICATION, {}, expr->Left()->Start());
             return true;
         }
     }
+
     return false;
 }
 
@@ -923,7 +955,8 @@ checker::Type *ETSAnalyzer::GetSmartType(ir::AssignmentExpression *expr, checker
     checker::Type *smartType = leftType;
 
     if (expr->Left()->IsIdentifier() && expr->Target() != nullptr) {
-        //  Now try to define the actual type of Identifier so that smart cast can be used in further checker processing
+        //  Now try to define the actual type of Identifier so that smart cast can be used in further checker
+        //  processing
         smartType = checker->ResolveSmartType(rightType, leftType);
         auto const *const variable = expr->Target();
 
@@ -1023,6 +1056,10 @@ std::tuple<Type *, ir::Expression *> ETSAnalyzer::CheckAssignmentExprOperatorTyp
         }
         case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {
             if (leftType->IsETSArrayType() && expr->Right()->IsArrayExpression()) {
+                checker->ModifyPreferredType(expr->Right()->AsArrayExpression(), leftType);
+            }
+
+            if (leftType->IsETSTupleType() && expr->Right()->IsArrayExpression()) {
                 checker->ModifyPreferredType(expr->Right()->AsArrayExpression(), leftType);
             }
 
@@ -1187,7 +1224,8 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
             return nullptr;
         }
         // NOTE(xingshunxiang): we can't use extension accessor as a call,
-        // except when the return type of the extension getter is a function type, such a feature is to be completed.
+        // except when the return type of the extension getter is a function type, such a feature is to be
+        // completed.
         return signature;
     }
     auto &signatures = expr->IsETSConstructorCall() ? calleeType->AsETSObjectType()->ConstructSignatures()
@@ -1325,9 +1363,12 @@ checker::Type *ETSAnalyzer::GetCallExpressionReturnType(ir::CallExpression *expr
         return checker->GlobalTypeError();
     }
 
-    auto const signature = expr->Signature();
-    if (signature->RestVar() != nullptr) {
-        auto *const elementType = signature->RestVar()->TsType()->AsETSArrayType()->ElementType();
+    auto *const signature = expr->Signature();
+    if (signature->RestVar() != nullptr && signature->RestVar()->TsType()->IsETSArrayType()) {
+        auto *elementType = signature->RestVar()->TsType()->AsETSArrayType()->ElementType();
+        if (elementType->IsETSTupleType()) {
+            elementType = elementType->AsETSTupleType()->GetLubType();
+        }
         auto *const arrayType = checker->CreateETSArrayType(elementType)->AsETSArrayType();
         checker->CreateBuiltinArraySignature(arrayType, arrayType->Rank());
     }
@@ -1578,7 +1619,7 @@ checker::Type *ETSAnalyzer::ResolveMemberExpressionByBaseType(ETSChecker *checke
         return expr->SetAndAdjustType(checker, checker->GlobalETSObjectType());
     }
 
-    if (baseType->IsETSFunctionType()) {
+    if (baseType->IsETSFunctionType() || baseType->IsETSTupleType()) {
         return expr->SetAndAdjustType(checker, checker->GlobalETSObjectType());
     }
 
@@ -1683,16 +1724,13 @@ static bool ValidatePreferredType(ir::ObjectExpression *expr, ETSChecker *checke
 static void SetTypeforRecordProperties(const ir::ObjectExpression *expr, checker::ETSObjectType *objType,
                                        ETSChecker *checker)
 {
-    auto recordProperties = expr->Properties();
+    const auto recordProperties = expr->Properties();
     auto typeArguments = objType->TypeArguments();
-    auto valueType = typeArguments[1];  //  Record<K, V>  type arguments
+    auto *const valueType = typeArguments[1];  //  Record<K, V>  type arguments
 
-    for (auto recordProperty : recordProperties) {
-        auto recordPropertyExpr = recordProperty->AsProperty()->Value();
-        if (recordPropertyExpr->IsObjectExpression()) {
-            auto objectExpr = recordPropertyExpr->AsObjectExpression();
-            objectExpr->SetPreferredType(valueType);
-        }
+    for (auto *const recordProperty : recordProperties) {
+        auto *const recordPropertyExpr = recordProperty->AsProperty()->Value();
+        ETSChecker::SetPreferredTypeIfPossible(recordPropertyExpr, valueType);
         recordPropertyExpr->Check(checker);
     }
 }
@@ -1794,11 +1832,9 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr, checker
             checker->LogError(diagnostic::OBJECT_LITERAL_METHOD_KEY, {pname}, propExpr->Start());
             return;
         }
-        key->SetTsType(propType);
 
-        if (value->IsObjectExpression()) {
-            value->AsObjectExpression()->SetPreferredType(propType);
-        }
+        ETSChecker::SetPreferredTypeIfPossible(value, propType);
+        key->SetTsType(propType);
         value->SetTsType(value->Check(checker));
 
         checker::AssignmentContext(
@@ -2857,7 +2893,10 @@ checker::Type *ETSAnalyzer::Check(ir::TSArrayType *node) const
     node->elementType_->Check(checker);
     node->SetTsType(node->GetType(checker));
 
-    const auto arrayType = node->TsType()->AsETSArrayType();
+    const auto *arrayType = node->TsType()->AsETSArrayType();
+    if (arrayType->IsETSTupleType()) {
+        arrayType = arrayType->AsETSTupleType()->GetHolderArrayType();
+    }
     checker->CreateBuiltinArraySignature(arrayType, arrayType->Rank());
     return node->TsType();
 }
@@ -2876,15 +2915,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
         return checker->InvalidateType(expr);
     }
 
-    // Object expression requires that its type be set by the context before checking. in this case, the target type
-    // provides that context.
-    if (expr->Expr()->IsObjectExpression()) {
-        expr->Expr()->AsObjectExpression()->SetPreferredType(targetType);
-    }
-
-    if (expr->Expr()->IsArrayExpression()) {
-        expr->Expr()->AsArrayExpression()->SetPreferredType(targetType);
-    }
+    ETSChecker::SetPreferredTypeIfPossible(expr->Expr(), targetType);
 
     auto const sourceType = expr->Expr()->Check(checker);
     if (sourceType->IsTypeError()) {
@@ -2917,8 +2948,10 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
 
     // Make sure the array type symbol gets created for the assembler to be able to emit checkcast.
     // Because it might not exist, if this particular array type was never created explicitly.
-    if (!expr->isUncheckedCast_ && targetType->IsETSArrayType()) {
-        auto *const targetArrayType = targetType->AsETSArrayType();
+    if (!expr->isUncheckedCast_ && (targetType->IsETSArrayType() || targetType->IsETSTupleType())) {
+        const auto *const targetArrayType = targetType->IsETSTupleType()
+                                                ? targetType->AsETSTupleType()->GetHolderArrayType()
+                                                : targetType->AsETSArrayType();
         checker->CreateBuiltinArraySignature(targetArrayType, targetArrayType->Rank());
     }
 

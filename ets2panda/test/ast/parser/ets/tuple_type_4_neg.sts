@@ -14,7 +14,18 @@
  */
 
 
-let a: [a0: /* @@ label */, a1: number] = [1, 2, 3];
+let a: [a0: , a1: number] = [1, 2, 3];
 
-/* @@@ label Error SyntaxError: Invalid Type.  */
-/* @@? 17:50 Error TypeError: Too many elements in array initializer for tuple with size of 2 */
+/* @@? 17:9 Error TypeError: Cannot find type 'a0'. */
+/* @@? 17:11 Error SyntaxError: Unexpected token, expected ',' or ']'. */
+/* @@? 17:11 Error SyntaxError: Unexpected token ':'. */
+/* @@? 17:11 Error SyntaxError: Unexpected token ':'. */
+/* @@? 17:11 Error SyntaxError: Unexpected token ':'. */
+/* @@? 17:13 Error SyntaxError: Unexpected token ','. */
+/* @@? 17:13 Error SyntaxError: Unexpected token ','. */
+/* @@? 17:19 Error SyntaxError: Label must be followed by a loop statement. */
+/* @@? 17:19 Error TypeError: Unresolved reference number */
+/* @@? 17:25 Error SyntaxError: Unexpected token ']'. */
+/* @@? 17:25 Error SyntaxError: Unexpected token ']'. */
+/* @@? 17:25 Error SyntaxError: Unexpected token ']'. */
+/* @@? 17:27 Error SyntaxError: Unexpected token '='. */

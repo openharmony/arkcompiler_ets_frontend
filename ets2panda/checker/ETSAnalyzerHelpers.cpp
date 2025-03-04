@@ -790,5 +790,4 @@ void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containing
         relation->SetFlags(checker::TypeRelationFlag::NONE);
     }
 }
-
 }  // namespace ark::es2panda::checker

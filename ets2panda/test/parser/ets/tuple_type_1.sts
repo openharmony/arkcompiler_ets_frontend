@@ -21,7 +21,4 @@ function foo(a0: [int, number]): [number, number] {
 
 let a: [number, number] = [1, 2];
 let b: [Object, Number] = [1, 2 as double];
-let c: [number, number, ...number[]] = [1, 2, 3];
 let d: [] = [];
-let e: [a0: number, a1: number] = [1, 2];
-let f: [a0: number, int, a1: number] = [1, 2, 3];

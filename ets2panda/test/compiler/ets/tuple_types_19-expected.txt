@@ -202,7 +202,6 @@
                   }
                 }
               ],
-              "spreadType": null,
               "loc": {
                 "start": {
                   "line": 17,
@@ -363,7 +362,6 @@
                             }
                           }
                         ],
-                        "spreadType": null,
                         "loc": {
                           "start": {
                             "line": 18,
@@ -665,7 +663,6 @@
                       }
                     }
                   ],
-                  "spreadType": null,
                   "loc": {
                     "start": {
                       "line": 19,
@@ -979,7 +976,6 @@
                   }
                 }
               ],
-              "spreadType": null,
               "loc": {
                 "start": {
                   "line": 23,
@@ -1140,7 +1136,6 @@
                             }
                           }
                         ],
-                        "spreadType": null,
                         "loc": {
                           "start": {
                             "line": 24,
@@ -1442,7 +1437,6 @@
                       }
                     }
                   ],
-                  "spreadType": null,
                   "loc": {
                     "start": {
                       "line": 25,
@@ -1934,7 +1928,6 @@
                                   }
                                 }
                               ],
-                              "spreadType": null,
                               "loc": {
                                 "start": {
                                   "line": 29,
@@ -2387,7 +2380,6 @@
                                   }
                                 }
                               ],
-                              "spreadType": null,
                               "loc": {
                                 "start": {
                                   "line": 31,

@@ -17,9 +17,9 @@
 
 #include "checker/ETSchecker.h"
 #include "checker/TSchecker.h"
-#include "checker/types/ets/etsTupleType.h"
 #include "checker/ets/typeRelationContext.h"
 #include "checker/ts/destructuringContext.h"
+#include "checker/types/ets/etsTupleType.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 
@@ -349,39 +349,36 @@ checker::Type *ArrayExpression::CheckPattern(checker::TSChecker *checker)
     return checker->CreateTupleType(desc, std::move(elementFlags), tupleTypeInfo);
 }
 
-bool ArrayExpression::HandleNestedArrayExpression(checker::ETSChecker *const checker,
-                                                  ArrayExpression *const currentElement, const bool isPreferredTuple,
-                                                  const std::size_t idx)
+bool ArrayExpression::TrySetPreferredTypeForNestedArrayExpr(checker::ETSChecker *const checker,
+                                                            ArrayExpression *const nestedArrayExpr,
+                                                            const std::size_t idx) const
 {
-    if (isPreferredTuple) {
-        currentElement->SetPreferredType(preferredType_->AsETSTupleType()->GetTypeAtIndex(idx));
+    auto doesArrayExprFitInTuple = [&checker, &nestedArrayExpr](const checker::Type *const possibleTupleType) {
+        return !possibleTupleType->IsETSTupleType() ||
+               checker->IsArrayExprSizeValidForTuple(nestedArrayExpr, possibleTupleType->AsETSTupleType());
+    };
 
-        if (currentElement->GetPreferredType()->IsETSTupleType()) {
-            if (!checker->ValidateTupleMinElementSize(currentElement,
-                                                      currentElement->GetPreferredType()->AsETSTupleType())) {
-                return false;
-            }
-        }
+    if (preferredType_->IsETSTupleType()) {
+        auto *const typeInTupleAtIdx = preferredType_->AsETSTupleType()->GetTypeAtIndex(idx);
+        nestedArrayExpr->SetPreferredType(typeInTupleAtIdx);
 
-        return true;
+        return doesArrayExprFitInTuple(typeInTupleAtIdx);
     }
 
     if (preferredType_->IsETSArrayType()) {
-        if (preferredType_->AsETSArrayType()->ElementType()->IsETSTupleType()) {
-            if (!checker->ValidateTupleMinElementSize(
-                    // CC-OFFNXT(G.FMT.06-CPP) project code style
-                    currentElement, preferredType_->AsETSArrayType()->ElementType()->AsETSTupleType())) {
-                return false;
-            }
+        auto *const arrayElementType = preferredType_->AsETSArrayType()->ElementType();
+        if (!doesArrayExprFitInTuple(arrayElementType)) {
+            return false;
         }
 
-        currentElement->SetPreferredType(preferredType_->AsETSArrayType()->ElementType());
+        nestedArrayExpr->SetPreferredType(arrayElementType);
         return true;
     }
 
-    if (currentElement->GetPreferredType() == nullptr) {
-        currentElement->SetPreferredType(preferredType_);
+    if (nestedArrayExpr->GetPreferredType() == nullptr) {
+        nestedArrayExpr->SetPreferredType(preferredType_);
     }
+
     return true;
 }
 
@@ -390,24 +387,52 @@ checker::VerifiedType ArrayExpression::Check(checker::ETSChecker *checker)
     return {this, checker->GetAnalyzer()->Check(this)};
 }
 
-void ArrayExpression::GetPrefferedTypeFromFuncParam(checker::ETSChecker *checker, checker::Type *param,
-                                                    checker::TypeRelationFlag flags)
+static std::optional<checker::Type *> ExtractPossiblePreferredType(checker::Type *type)
 {
+    if (type->IsETSArrayType() || type->IsETSTupleType()) {
+        return std::make_optional(type);
+    }
+
+    if (type->IsETSUnionType()) {
+        for (checker::Type *const typeOfUnion : type->AsETSUnionType()->ConstituentTypes()) {
+            auto possiblePreferredType = ExtractPossiblePreferredType(typeOfUnion);
+            if (possiblePreferredType.has_value()) {
+                return std::make_optional(possiblePreferredType.value());
+            }
+        }
+    }
+
+    return std::nullopt;
+}
+
+void ArrayExpression::SetPreferredTypeBasedOnFuncParam(checker::ETSChecker *checker, checker::Type *param,
+                                                       checker::TypeRelationFlag flags)
+{
+    // NOTE (mmartin): This needs a complete solution
     if (preferredType_ != nullptr) {
         return;
     }
-    if (param->IsETSArrayType()) {
-        auto *elementType = param->AsETSArrayType()->ElementType();
-        bool isAssignable = true;
-        for (auto elem : elements_) {
-            auto assignCtx =
-                checker::AssignmentContext(checker->Relation(), elem, elem->Check(checker), elementType, elem->Start(),
-                                           {""}, checker::TypeRelationFlag::NO_THROW | flags);
-            isAssignable &= assignCtx.IsAssignable();
-        }
-        if (isAssignable) {
-            preferredType_ = param;
-        }
+
+    auto possiblePreferredType = ExtractPossiblePreferredType(param);
+    if (!possiblePreferredType.has_value()) {
+        return;
+    }
+
+    param = possiblePreferredType.value();
+
+    auto *elementType =
+        param->IsETSArrayType() ? param->AsETSArrayType()->ElementType() : param->AsETSTupleType()->GetLubType();
+    bool isAssignable = true;
+
+    for (auto *const elem : elements_) {
+        checker->SetPreferredTypeIfPossible(elem, elementType);
+        auto assignCtx = checker::AssignmentContext(checker->Relation(), elem, elem->Check(checker), elementType,
+                                                    elem->Start(), {""}, checker::TypeRelationFlag::NO_THROW | flags);
+        isAssignable &= assignCtx.IsAssignable();
+    }
+
+    if (isAssignable) {
+        preferredType_ = param;
     }
 }
 

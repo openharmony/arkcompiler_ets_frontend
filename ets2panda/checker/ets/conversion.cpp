@@ -19,6 +19,7 @@
 #include "checker/ets/narrowingConverter.h"
 #include "checker/ets/unboxingConverter.h"
 #include "checker/ets/wideningConverter.h"
+#include "checker/types/ets/etsTupleType.h"
 #include "checker/types/globalTypesHolder.h"
 
 namespace ark::es2panda::checker::conversion {
@@ -117,7 +118,7 @@ bool IsAllowedNarrowingReferenceConversionObjectObject(TypeRelation *const relat
 bool IsAllowedNarrowingReferenceConversion(TypeRelation *const relation, Type *const source, Type *const target)
 {
     ES2PANDA_ASSERT(source->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) &&
-                    target->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT));
+                    target->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT | TypeFlag::ETS_TUPLE));
 
     // 11.1.6. Narrowing Reference Conversion
     // A narrowing reference conversion exists from reference type S to a reference type T if all of the following are
@@ -143,6 +144,13 @@ bool IsAllowedNarrowingReferenceConversion(TypeRelation *const relation, Type *c
     }
 
     if (source->HasTypeFlag(TypeFlag::ETS_OBJECT) && target->HasTypeFlag(TypeFlag::ETS_ARRAY)) {
+        // 7. S is the class type Object of the interface type java.io.Serializable or Cloneable (the only interfaces
+        //    implemented by arrays (link to class objects for arrays)), and T is an array type.
+        // NOTE: implement
+        return true;
+    }
+
+    if (source->HasTypeFlag(TypeFlag::ETS_OBJECT) && target->HasTypeFlag(TypeFlag::ETS_TUPLE)) {
         // 7. S is the class type Object of the interface type java.io.Serializable or Cloneable (the only interfaces
         //    implemented by arrays (link to class objects for arrays)), and T is an array type.
         // NOTE: implement
@@ -188,7 +196,7 @@ bool IsUncheckedNarrowingReferenceConversion([[maybe_unused]] TypeRelation *cons
                                              [[maybe_unused]] Type *const source, [[maybe_unused]] Type *const target)
 {
     ES2PANDA_ASSERT(source->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) &&
-                    target->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT));
+                    target->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT | TypeFlag::ETS_TUPLE));
 
     // The unchecked narrowing reference conversions are as follows:
     // - A narrowing reference conversion from a type S to a parameterized class or interface
@@ -207,7 +215,7 @@ bool IsUncheckedNarrowingReferenceConversion([[maybe_unused]] TypeRelation *cons
 
 void NarrowingReferenceImpl(TypeRelation *const relation, Type *const source, Type *const target)
 {
-    ES2PANDA_ASSERT(target->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT));
+    ES2PANDA_ASSERT(target->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT | TypeFlag::ETS_TUPLE));
 
     if (!IsAllowedNarrowingReferenceConversion(relation, source, target)) {
         Forbidden(relation);
@@ -244,6 +252,11 @@ void NarrowingReference(TypeRelation *const relation, ETSObjectType *const sourc
         return;
     }
 
+    NarrowingReferenceImpl(relation, source, target);
+}
+
+void NarrowingReference(TypeRelation *const relation, ETSObjectType *const source, ETSTupleType *const target)
+{
     NarrowingReferenceImpl(relation, source, target);
 }
 

@@ -19,4 +19,14 @@ function main(): void {
     let b: [number, string, Int] = /* @@ label */a;
 }
 
-/* @@@ label Error TypeError: Type '[Double, String, ...Int[]]' cannot be assigned to type '[Double, String, Int]'  */
+/* @@? 18:29 Error SyntaxError: Invalid Type. */
+/* @@? 18:29 Error SyntaxError: Unexpected token, expected ',' or ']'. */
+/* @@? 18:29 Error SyntaxError: Unexpected token '...'. */
+/* @@? 18:29 Error SyntaxError: Unexpected token '...'. */
+/* @@? 18:29 Error SyntaxError: Unexpected token '...'. */
+/* @@? 18:37 Error SyntaxError: Unexpected token ']'. */
+/* @@? 18:37 Error SyntaxError: Unexpected token ']'. */
+/* @@? 18:37 Error SyntaxError: Unexpected token ']'. */
+/* @@? 18:39 Error SyntaxError: Unexpected token '='. */
+/* @@? 18:45 Error TypeError: Array element type '"a"' is not assignable to explicit type 'int' */
+/* @@@ label Error TypeError: Type '[Double, String, *ERROR_TYPE*]' cannot be assigned to type '[Double, String, Int]'  */

@@ -17,5 +17,4 @@
 function main(): void {
     let a: [number, string, Int] = [2, "a", 3];
     let b: [number, string, Int] = a;
-    let c: [number, string, ...Int[]] = a;
 }

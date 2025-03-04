@@ -385,7 +385,7 @@ void ETSEmitter::GenClassInheritedFields(const checker::ETSObjectType *baseType,
     }
 }
 
-void ETSEmitter::GenGlobalArrayRecord(checker::ETSArrayType *arrayType, checker::Signature *signature)
+void ETSEmitter::GenGlobalArrayRecord(const checker::ETSArrayType *arrayType, checker::Signature *signature)
 {
     std::stringstream ss;
     arrayType->ToAssemblerTypeWithRank(ss);

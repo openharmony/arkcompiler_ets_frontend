@@ -76,7 +76,6 @@
             }
           }
         ],
-        "spreadType": null,
         "loc": {
           "start": {
             "line": 16,
@@ -846,7 +845,6 @@
                                       }
                                     }
                                   ],
-                                  "spreadType": null,
                                   "loc": {
                                     "start": {
                                       "line": 22,
@@ -903,7 +901,6 @@
                                       }
                                     }
                                   ],
-                                  "spreadType": null,
                                   "loc": {
                                     "start": {
                                       "line": 22,
@@ -1001,7 +998,6 @@
                                       }
                                     }
                                   ],
-                                  "spreadType": null,
                                   "loc": {
                                     "start": {
                                       "line": 22,
@@ -1012,63 +1008,63 @@
                                       "column": 59
                                     }
                                   }
-                                }
-                              ],
-                              "spreadType": {
-                                "type": "TSArrayType",
-                                "elementType": {
-                                  "type": "ETSTypeReference",
-                                  "part": {
-                                    "type": "ETSTypeReferencePart",
-                                    "name": {
-                                      "type": "Identifier",
-                                      "name": "custom_tuple_type",
-                                      "decorators": [],
+                                },
+                                {
+                                  "type": "TSArrayType",
+                                  "elementType": {
+                                    "type": "ETSTypeReference",
+                                    "part": {
+                                      "type": "ETSTypeReferencePart",
+                                      "name": {
+                                        "type": "Identifier",
+                                        "name": "custom_tuple_type",
+                                        "decorators": [],
+                                        "loc": {
+                                          "start": {
+                                            "line": 22,
+                                            "column": 61
+                                          },
+                                          "end": {
+                                            "line": 22,
+                                            "column": 78
+                                          }
+                                        }
+                                      },
                                       "loc": {
                                         "start": {
                                           "line": 22,
-                                          "column": 64
+                                          "column": 61
                                         },
                                         "end": {
                                           "line": 22,
-                                          "column": 81
+                                          "column": 79
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 22,
-                                        "column": 64
+                                        "column": 61
                                       },
                                       "end": {
                                         "line": 22,
-                                        "column": 82
+                                        "column": 79
                                       }
                                     }
                                   },
+                                  "annotations": [],
                                   "loc": {
                                     "start": {
                                       "line": 22,
-                                      "column": 64
+                                      "column": 78
                                     },
                                     "end": {
                                       "line": 22,
-                                      "column": 82
+                                      "column": 80
                                     }
                                   }
-                                },
-                                "annotations": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 22,
-                                    "column": 81
-                                  },
-                                  "end": {
-                                    "line": 22,
-                                    "column": 83
-                                  }
                                 }
-                              },
+                              ],
                               "loc": {
                                 "start": {
                                   "line": 22,
@@ -1076,7 +1072,7 @@
                                 },
                                 "end": {
                                   "line": 22,
-                                  "column": 84
+                                  "column": 81
                                 }
                               }
                             },
@@ -1104,11 +1100,11 @@
                                     "loc": {
                                       "start": {
                                         "line": 22,
-                                        "column": 89
+                                        "column": 86
                                       },
                                       "end": {
                                         "line": 22,
-                                        "column": 90
+                                        "column": 87
                                       }
                                     }
                                   },
@@ -1118,11 +1114,11 @@
                                     "loc": {
                                       "start": {
                                         "line": 22,
-                                        "column": 92
+                                        "column": 89
                                       },
                                       "end": {
                                         "line": 22,
-                                        "column": 93
+                                        "column": 90
                                       }
                                     }
                                   }
@@ -1130,11 +1126,11 @@
                                 "loc": {
                                   "start": {
                                     "line": 22,
-                                    "column": 88
+                                    "column": 85
                                   },
                                   "end": {
                                     "line": 22,
-                                    "column": 94
+                                    "column": 91
                                   }
                                 }
                               },
@@ -1150,11 +1146,11 @@
                                         "loc": {
                                           "start": {
                                             "line": 22,
-                                            "column": 98
+                                            "column": 95
                                           },
                                           "end": {
                                             "line": 22,
-                                            "column": 101
+                                            "column": 98
                                           }
                                         }
                                       },
@@ -1164,11 +1160,11 @@
                                         "loc": {
                                           "start": {
                                             "line": 22,
-                                            "column": 103
+                                            "column": 100
                                           },
                                           "end": {
                                             "line": 22,
-                                            "column": 104
+                                            "column": 101
                                           }
                                         }
                                       }
@@ -1176,11 +1172,11 @@
                                     "loc": {
                                       "start": {
                                         "line": 22,
-                                        "column": 97
+                                        "column": 94
                                       },
                                       "end": {
                                         "line": 22,
-                                        "column": 105
+                                        "column": 102
                                       }
                                     }
                                   }
@@ -1188,11 +1184,11 @@
                                 "loc": {
                                   "start": {
                                     "line": 22,
-                                    "column": 96
+                                    "column": 93
                                   },
                                   "end": {
                                     "line": 22,
-                                    "column": 106
+                                    "column": 103
                                   }
                                 }
                               },
@@ -1212,33 +1208,33 @@
                                           "loc": {
                                             "start": {
                                               "line": 22,
-                                              "column": 113
+                                              "column": 110
                                             },
                                             "end": {
                                               "line": 22,
-                                              "column": 114
+                                              "column": 111
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 22,
-                                            "column": 113
+                                            "column": 110
                                           },
                                           "end": {
                                             "line": 22,
-                                            "column": 115
+                                            "column": 112
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
                                           "line": 22,
-                                          "column": 113
+                                          "column": 110
                                         },
                                         "end": {
                                           "line": 22,
-                                          "column": 115
+                                          "column": 112
                                         }
                                       }
                                     },
@@ -1246,11 +1242,11 @@
                                     "loc": {
                                       "start": {
                                         "line": 22,
-                                        "column": 109
+                                        "column": 106
                                       },
                                       "end": {
                                         "line": 22,
-                                        "column": 117
+                                        "column": 114
                                       }
                                     }
                                   },
@@ -1267,33 +1263,33 @@
                                           "loc": {
                                             "start": {
                                               "line": 22,
-                                              "column": 122
+                                              "column": 119
                                             },
                                             "end": {
                                               "line": 22,
-                                              "column": 123
+                                              "column": 120
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 22,
-                                            "column": 122
+                                            "column": 119
                                           },
                                           "end": {
                                             "line": 22,
-                                            "column": 124
+                                            "column": 121
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
                                           "line": 22,
-                                          "column": 122
+                                          "column": 119
                                         },
                                         "end": {
                                           "line": 22,
-                                          "column": 124
+                                          "column": 121
                                         }
                                       }
                                     },
@@ -1301,54 +1297,155 @@
                                     "loc": {
                                       "start": {
                                         "line": 22,
-                                        "column": 118
+                                        "column": 115
                                       },
                                       "end": {
+                                        "line": 22,
+                                        "column": 123
+                                      }
+                                    }
+                                  }
+                                ],
+                                "loc": {
+                                  "start": {
+                                    "line": 22,
+                                    "column": 105
+                                  },
+                                  "end": {
+                                    "line": 22,
+                                    "column": 123
+                                  }
+                                }
+                              },
+                              {
+                                "type": "ArrayExpression",
+                                "elements": [
+                                  {
+                                    "type": "ArrayExpression",
+                                    "elements": [
+                                      {
+                                        "type": "StringLiteral",
+                                        "value": "b",
+                                        "loc": {
+                                          "start": {
+                                            "line": 22,
+                                            "column": 127
+                                          },
+                                          "end": {
+                                            "line": 22,
+                                            "column": 130
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "type": "NumberLiteral",
+                                        "value": 8,
+                                        "loc": {
+                                          "start": {
+                                            "line": 22,
+                                            "column": 132
+                                          },
+                                          "end": {
+                                            "line": 22,
+                                            "column": 133
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "loc": {
+                                      "start": {
                                         "line": 22,
                                         "column": 126
-                                      }
-                                    }
-                                  }
-                                ],
-                                "loc": {
-                                  "start": {
-                                    "line": 22,
-                                    "column": 108
-                                  },
-                                  "end": {
-                                    "line": 22,
-                                    "column": 126
-                                  }
-                                }
-                              },
-                              {
-                                "type": "ArrayExpression",
-                                "elements": [
-                                  {
-                                    "type": "StringLiteral",
-                                    "value": "b",
-                                    "loc": {
-                                      "start": {
-                                        "line": 22,
-                                        "column": 129
                                       },
                                       "end": {
-                                        "line": 22,
-                                        "column": 132
-                                      }
-                                    }
-                                  },
-                                  {
-                                    "type": "NumberLiteral",
-                                    "value": 8,
-                                    "loc": {
-                                      "start": {
                                         "line": 22,
                                         "column": 134
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "ArrayExpression",
+                                    "elements": [
+                                      {
+                                        "type": "StringLiteral",
+                                        "value": "c",
+                                        "loc": {
+                                          "start": {
+                                            "line": 22,
+                                            "column": 137
+                                          },
+                                          "end": {
+                                            "line": 22,
+                                            "column": 140
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "type": "NumberLiteral",
+                                        "value": 10,
+                                        "loc": {
+                                          "start": {
+                                            "line": 22,
+                                            "column": 142
+                                          },
+                                          "end": {
+                                            "line": 22,
+                                            "column": 144
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "loc": {
+                                      "start": {
+                                        "line": 22,
+                                        "column": 136
                                       },
                                       "end": {
                                         "line": 22,
-                                        "column": 135
+                                        "column": 145
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "ArrayExpression",
+                                    "elements": [
+                                      {
+                                        "type": "StringLiteral",
+                                        "value": "d",
+                                        "loc": {
+                                          "start": {
+                                            "line": 22,
+                                            "column": 148
+                                          },
+                                          "end": {
+                                            "line": 22,
+                                            "column": 151
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "type": "NumberLiteral",
+                                        "value": 12,
+                                        "loc": {
+                                          "start": {
+                                            "line": 22,
+                                            "column": 153
+                                          },
+                                          "end": {
+                                            "line": 22,
+                                            "column": 155
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "loc": {
+                                      "start": {
+                                        "line": 22,
+                                        "column": 147
+                                      },
+                                      "end": {
+                                        "line": 22,
+                                        "column": 156
                                       }
                                     }
                                   }
@@ -1356,97 +1453,11 @@
                                 "loc": {
                                   "start": {
                                     "line": 22,
-                                    "column": 128
+                                    "column": 125
                                   },
                                   "end": {
                                     "line": 22,
-                                    "column": 136
-                                  }
-                                }
-                              },
-                              {
-                                "type": "ArrayExpression",
-                                "elements": [
-                                  {
-                                    "type": "StringLiteral",
-                                    "value": "c",
-                                    "loc": {
-                                      "start": {
-                                        "line": 22,
-                                        "column": 139
-                                      },
-                                      "end": {
-                                        "line": 22,
-                                        "column": 142
-                                      }
-                                    }
-                                  },
-                                  {
-                                    "type": "NumberLiteral",
-                                    "value": 10,
-                                    "loc": {
-                                      "start": {
-                                        "line": 22,
-                                        "column": 144
-                                      },
-                                      "end": {
-                                        "line": 22,
-                                        "column": 146
-                                      }
-                                    }
-                                  }
-                                ],
-                                "loc": {
-                                  "start": {
-                                    "line": 22,
-                                    "column": 138
-                                  },
-                                  "end": {
-                                    "line": 22,
-                                    "column": 147
-                                  }
-                                }
-                              },
-                              {
-                                "type": "ArrayExpression",
-                                "elements": [
-                                  {
-                                    "type": "StringLiteral",
-                                    "value": "d",
-                                    "loc": {
-                                      "start": {
-                                        "line": 22,
-                                        "column": 150
-                                      },
-                                      "end": {
-                                        "line": 22,
-                                        "column": 153
-                                      }
-                                    }
-                                  },
-                                  {
-                                    "type": "NumberLiteral",
-                                    "value": 12,
-                                    "loc": {
-                                      "start": {
-                                        "line": 22,
-                                        "column": 155
-                                      },
-                                      "end": {
-                                        "line": 22,
-                                        "column": 157
-                                      }
-                                    }
-                                  }
-                                ],
-                                "loc": {
-                                  "start": {
-                                    "line": 22,
-                                    "column": 149
-                                  },
-                                  "end": {
-                                    "line": 22,
-                                    "column": 158
+                                    "column": 157
                                   }
                                 }
                               }
@@ -1454,11 +1465,11 @@
                             "loc": {
                               "start": {
                                 "line": 22,
-                                "column": 87
+                                "column": 84
                               },
                               "end": {
                                 "line": 22,
-                                "column": 159
+                                "column": 158
                               }
                             }
                           },
@@ -1469,7 +1480,7 @@
                             },
                             "end": {
                               "line": 22,
-                              "column": 159
+                              "column": 158
                             }
                           }
                         }
@@ -1482,7 +1493,7 @@
                         },
                         "end": {
                           "line": 22,
-                          "column": 160
+                          "column": 159
                         }
                       }
                     },
@@ -1739,9 +1750,38 @@
                             "object": {
                               "type": "MemberExpression",
                               "object": {
-                                "type": "Identifier",
-                                "name": "a_tup",
-                                "decorators": [],
+                                "type": "MemberExpression",
+                                "object": {
+                                  "type": "Identifier",
+                                  "name": "a_tup",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 24,
+                                      "column": 28
+                                    },
+                                    "end": {
+                                      "line": 24,
+                                      "column": 33
+                                    }
+                                  }
+                                },
+                                "property": {
+                                  "type": "NumberLiteral",
+                                  "value": 3,
+                                  "loc": {
+                                    "start": {
+                                      "line": 24,
+                                      "column": 34
+                                    },
+                                    "end": {
+                                      "line": 24,
+                                      "column": 35
+                                    }
+                                  }
+                                },
+                                "computed": true,
+                                "optional": false,
                                 "loc": {
                                   "start": {
                                     "line": 24,
@@ -1749,21 +1789,21 @@
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 33
+                                    "column": 36
                                   }
                                 }
                               },
                               "property": {
                                 "type": "NumberLiteral",
-                                "value": 6,
+                                "value": 0,
                                 "loc": {
                                   "start": {
                                     "line": 24,
-                                    "column": 34
+                                    "column": 37
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 35
+                                    "column": 38
                                   }
                                 }
                               },
@@ -1776,7 +1816,7 @@
                                 },
                                 "end": {
                                   "line": 24,
-                                  "column": 36
+                                  "column": 39
                                 }
                               }
                             },
@@ -1786,11 +1826,11 @@
                               "loc": {
                                 "start": {
                                   "line": 24,
-                                  "column": 37
+                                  "column": 40
                                 },
                                 "end": {
                                   "line": 24,
-                                  "column": 38
+                                  "column": 41
                                 }
                               }
                             },
@@ -1803,7 +1843,7 @@
                               },
                               "end": {
                                 "line": 24,
-                                "column": 39
+                                "column": 42
                               }
                             }
                           },
@@ -1814,7 +1854,7 @@
                             },
                             "end": {
                               "line": 24,
-                              "column": 39
+                              "column": 42
                             }
                           }
                         }
@@ -1827,7 +1867,7 @@
                         },
                         "end": {
                           "line": 24,
-                          "column": 40
+                          "column": 43
                         }
                       }
                     },

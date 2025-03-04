@@ -19,9 +19,9 @@ class A {foo(){}}
 class B extends A {bar(){}}
 
 function main(): void {
-    let a_tup: [[int, number], [custom_tuple_type], [A, B], ...custom_tuple_type[]] = [[2, 3], [["a", 6]], [new B(), new B()], ["b", 8], ["c", 10], ["d", 12]];
+    let a_tup: [[int, number], [custom_tuple_type], [A, B], custom_tuple_type[]] = [[2, 3], [["a", 6]], [new B(), new B()], [["b", 8], ["c", 10], ["d", 12]]];
     let my_str: String = a_tup[1][0][0];
-    let my_str_2: String = a_tup[6][0];
+    let my_str_2: String = a_tup[3][0][0];
     a_tup[2][0].foo();
     a_tup[2][1].bar();
 }

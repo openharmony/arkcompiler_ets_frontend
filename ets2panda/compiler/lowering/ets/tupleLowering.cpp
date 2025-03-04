@@ -51,19 +51,17 @@ public:
     checker::Type *SetArgumentType(checker::Type *const argumentType)
     {
         auto *const savedType = argument_->TsType();
-        argument_->SetTsType(argumentType->AsETSTupleType()->ElementType());
+        argument_->SetTsType(argumentType->AsETSTupleType()->GetLubType());
         return savedType;
     }
 
     void ComputeTypes(checker::Type *const argumentType)
     {
         tupleTypeAtIdx_ = argumentType->AsETSTupleType()->GetTypeAtIndex(
-
             // After the checker, we are guranteed that the index is correct.
-            *checker_->GetTupleElementAccessValue(argument_->AsMemberExpression()->Property()->TsType(),
-                                                  argument_->AsMemberExpression()->Property()->Start()));
+            *checker_->GetTupleElementAccessValue(argument_->AsMemberExpression()->Property()->TsType()));
 
-        tupleElementTypeNode_ = checker_->AllocNode<ir::OpaqueTypeNode>(argumentType->AsETSTupleType()->ElementType(),
+        tupleElementTypeNode_ = checker_->AllocNode<ir::OpaqueTypeNode>(argumentType->AsETSTupleType()->GetLubType(),
                                                                         checker_->Allocator());
         tupleTypeAtIdxNode_ = checker_->AllocNode<ir::OpaqueTypeNode>(tupleTypeAtIdx_, checker_->Allocator());
     }
@@ -234,12 +232,12 @@ static ir::AssignmentExpression *ConvertTupleAssignment(checker::ETSChecker *con
 
     // Set tuple type to <tuple element_type> (because we may need implicit boxing)
     auto *const savedLeftType = left->TsType();
-    left->SetTsType(leftObjectType->AsETSTupleType()->ElementType());
+    left->SetTsType(leftObjectType->AsETSTupleType()->GetLubType());
     // --------------
 
     // Compute necessary types and OpaqueTypeNodes
     auto *const elementTypeTypeNode =
-        checker->AllocNode<ir::OpaqueTypeNode>(leftObjectType->AsETSTupleType()->ElementType(), checker->Allocator());
+        checker->AllocNode<ir::OpaqueTypeNode>(leftObjectType->AsETSTupleType()->GetLubType(), checker->Allocator());
     auto *const tupleTypeAtIdxTypeNode = checker->AllocNode<ir::OpaqueTypeNode>(savedLeftType, checker->Allocator());
     // --------------
 
@@ -300,7 +298,7 @@ bool TupleLowering::PostconditionForModule([[maybe_unused]] public_lib::Context 
         // yes, then the right hand side must be a type of the element type.
         return isLeftMemberExpr && isLeftTuple &&
                (ast->AsAssignmentExpression()->Right()->TsType() ==
-                ast->AsAssignmentExpression()->Left()->AsMemberExpression()->TsType()->AsETSTupleType()->ElementType());
+                ast->AsAssignmentExpression()->Left()->AsMemberExpression()->TsType()->AsETSTupleType()->GetLubType());
     });
 }
 

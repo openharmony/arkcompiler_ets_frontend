@@ -320,7 +320,7 @@ bool Type::IsETSMethodType() const
         TypeFlag::TYPE_ERROR | TypeFlag::ETS_NULL | TypeFlag::ETS_UNDEFINED | TypeFlag::ETS_OBJECT |
         TypeFlag::ETS_TYPE_PARAMETER | TypeFlag::WILDCARD | TypeFlag::ETS_NONNULLISH |
         TypeFlag::ETS_REQUIRED_TYPE_PARAMETER | TypeFlag::ETS_NEVER | TypeFlag::ETS_UNION | TypeFlag::ETS_ARRAY |
-        TypeFlag::FUNCTION | TypeFlag::ETS_PARTIAL_TYPE_PARAMETER;
+        TypeFlag::FUNCTION | TypeFlag::ETS_PARTIAL_TYPE_PARAMETER | TypeFlag::ETS_TUPLE;
 
     // Issues
     if (type->IsETSVoidType()) {  // NOTE(vpukhov): #19701 void refactoring

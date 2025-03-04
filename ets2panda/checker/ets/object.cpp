@@ -1471,7 +1471,7 @@ bool ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
     return true;
 }
 
-std::optional<int32_t> ETSChecker::GetTupleElementAccessValue(const Type *const type, const lexer::SourcePosition &pos)
+std::optional<std::size_t> ETSChecker::GetTupleElementAccessValue(const Type *const type)
 {
     ES2PANDA_ASSERT(type->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
 
@@ -1488,10 +1488,8 @@ std::optional<int32_t> ETSChecker::GetTupleElementAccessValue(const Type *const 
         case TypeFlag::LONG: {
             if (auto val = type->AsLongType()->GetValue();
                 val <= std::numeric_limits<int32_t>::max() && val >= std::numeric_limits<int32_t>::min()) {
-                return static_cast<int32_t>(val);
+                return static_cast<std::size_t>(val);
             }
-
-            LogError(diagnostic::TUPLE_INDEX_OOB, {}, pos);
             return std::nullopt;
         }
         default: {
@@ -1512,7 +1510,7 @@ bool ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, ir::MemberE
     const auto *const exprType = expr->Property()->TsType();
     ES2PANDA_ASSERT(exprType != nullptr);
 
-    if (!exprType->HasTypeFlag(TypeFlag::CONSTANT) && !tuple->HasSpreadType()) {
+    if (!exprType->HasTypeFlag(TypeFlag::CONSTANT)) {
         LogError(diagnostic::TUPLE_INDEX_NONCONST, {}, expr->Property()->Start());
         return false;
     }
@@ -1522,11 +1520,8 @@ bool ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, ir::MemberE
         return false;
     }
 
-    auto exprValue = GetTupleElementAccessValue(exprType, expr->Property()->Start());
-    if (!exprValue.has_value()) {
-        return false;  // spread the error
-    }
-    if (((*exprValue >= tuple->GetTupleSize()) && !tuple->HasSpreadType()) || (*exprValue < 0)) {
+    auto exprValue = GetTupleElementAccessValue(exprType);
+    if (!exprValue.has_value() || (*exprValue >= tuple->GetTupleSize())) {
         LogError(diagnostic::TUPLE_INDEX_OOB, {}, expr->Property()->Start());
         return false;
     }

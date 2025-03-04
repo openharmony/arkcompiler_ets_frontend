@@ -145,7 +145,6 @@
             }
           }
         ],
-        "spreadType": null,
         "loc": {
           "start": {
             "line": 16,

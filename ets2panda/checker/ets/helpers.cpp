@@ -612,10 +612,9 @@ bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, 
     }
 
     if (init->IsArrayExpression() && (annotationType != nullptr) && !annotationType->IsETSDynamicType()) {
-        if (annotationType->IsETSTupleType()) {
-            if (!ValidateTupleMinElementSize(init->AsArrayExpression(), annotationType->AsETSTupleType())) {
-                return false;
-            }
+        if (annotationType->IsETSTupleType() &&
+            !IsArrayExprSizeValidForTuple(init->AsArrayExpression(), annotationType->AsETSTupleType())) {
+            return false;
         }
 
         init->AsArrayExpression()->SetPreferredType(annotationType);
@@ -2771,6 +2770,19 @@ void ETSChecker::CheckTypeParameterVariance(ir::ClassDefinition *classDef)
 
     for (auto *implement : classDef->Implements()) {
         checkVariance(VarianceFlag::COVARIANT, implement, implement->Expr()->AsTypeNode()->Check(this));
+    }
+}
+
+void ETSChecker::SetPreferredTypeIfPossible(ir::Expression *const expr, Type *const targetType)
+{
+    // Object expression requires that its type be set by the context before checking. in this case, the target type
+    // provides that context.
+    if (expr->IsObjectExpression()) {
+        expr->AsObjectExpression()->SetPreferredType(targetType);
+    }
+
+    if (expr->IsArrayExpression()) {
+        expr->AsArrayExpression()->SetPreferredType(targetType);
     }
 }
 

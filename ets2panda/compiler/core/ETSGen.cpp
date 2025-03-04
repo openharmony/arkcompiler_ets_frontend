@@ -41,6 +41,7 @@
 #include "checker/checker.h"
 #include "checker/ETSchecker.h"
 #include "checker/types/ets/etsObjectType.h"
+#include "checker/types/ets/etsTupleType.h"
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "parser/program/program.h"
 #include "checker/types/globalTypesHolder.h"
@@ -830,7 +831,9 @@ void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, std::tuple
             JumpTo(node, ifTrue);
             break;
         case checker::TypeFlag::ETS_ARRAY:
+        case checker::TypeFlag::ETS_TUPLE:
         case checker::TypeFlag::FUNCTION: {
+            // NOTE (mmartin): remove tuple, after runtime representation has changed
             Sa().Emit<Isinstance>(node, ToAssemblerType(target));
             BranchIfTrue(node, ifTrue);
             break;
@@ -916,7 +919,7 @@ void ETSGen::InternalIsInstance(const ir::AstNode *node, const es2panda::checker
 // checkcast can only be used for Object and [] types, ensure source is not nullish!
 void ETSGen::InternalCheckCast(const ir::AstNode *node, const es2panda::checker::Type *target)
 {
-    ES2PANDA_ASSERT(target->IsETSObjectType() || target->IsETSArrayType());
+    ES2PANDA_ASSERT(target->IsETSObjectType() || target->IsETSArrayType() || target->IsETSTupleType());
     if (!IsNullUnsafeObjectType(target)) {
         Sa().Emit<Checkcast>(node, ToAssemblerType(target));
     }
@@ -926,7 +929,7 @@ void ETSGen::InternalCheckCast(const ir::AstNode *node, const es2panda::checker:
 // optimized specialization for object and [] targets
 void ETSGen::CheckedReferenceNarrowingObject(const ir::AstNode *node, const checker::Type *target)
 {
-    ES2PANDA_ASSERT(target->IsETSObjectType() || target->IsETSArrayType());
+    ES2PANDA_ASSERT(target->IsETSObjectType() || target->IsETSArrayType() || target->IsETSTupleType());
     const RegScope rs(this);
     const auto srcReg = AllocReg();
     StoreAccumulator(node, srcReg);
@@ -976,7 +979,8 @@ void ETSGen::CheckedReferenceNarrowing(const ir::AstNode *node, const checker::T
         SetAccumulatorType(target);
         return;
     }
-    if (target->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) && !target->IsConstantType()) {
+    if (target->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT | checker::TypeFlag::ETS_TUPLE) &&
+        !target->IsConstantType()) {
         CheckedReferenceNarrowingObject(node, target);
         return;
     }
@@ -1807,7 +1811,8 @@ void ETSGen::CastDynamicToObject(const ir::AstNode *node, const checker::Type *t
     // the DefinitelyETSNullish function has been used to add handling for null and undefined cases,
     // and this function will need to be refactored in the future.
     if (targetType->IsETSArrayType() || targetType->IsETSObjectType() || targetType->IsETSTypeParameter() ||
-        targetType->IsETSUnionType() || targetType->IsETSFunctionType() || targetType->DefinitelyETSNullish()) {
+        targetType->IsETSUnionType() || targetType->IsETSFunctionType() || targetType->DefinitelyETSNullish() ||
+        targetType->IsETSTupleType()) {
         auto lang = GetAccumulatorType()->AsETSDynamicType()->Language();
         auto methodName = compiler::Signatures::Dynamic::GetObjectBuiltin(lang);
 
@@ -1878,6 +1883,7 @@ void ETSGen::CastToDynamic(const ir::AstNode *node, const checker::ETSDynamicTyp
             ASSERT(!GetAccumulatorType()->IsETSMethodType());
             [[fallthrough]];
         case checker::TypeFlag::ETS_ARRAY:
+        case checker::TypeFlag::ETS_TUPLE:
             methodName = compiler::Signatures::Dynamic::NewObjectBuiltin(type->Language());
             break;
         case checker::TypeFlag::ETS_DYNAMIC_TYPE:
@@ -3219,6 +3225,102 @@ void ETSGen::StoreArrayElement(const ir::AstNode *node, VReg objectReg, VReg ind
     SetAccumulatorType(elementType);
 }
 
+void ETSGen::LoadTupleElement(const ir::AstNode *node, VReg objectReg)
+{
+    auto *elementType = GetVRegType(objectReg)->AsETSTupleType()->GetLubType();
+    if (elementType->IsETSReferenceType()) {
+        Ra().Emit<LdarrObj>(node, objectReg);
+        SetAccumulatorType(elementType);
+        return;
+    }
+    switch (checker::ETSChecker::ETSType(elementType)) {
+        case checker::TypeFlag::ETS_BOOLEAN:
+        case checker::TypeFlag::BYTE: {
+            Ra().Emit<Ldarr8>(node, objectReg);
+            break;
+        }
+        case checker::TypeFlag::CHAR: {
+            Ra().Emit<Ldarru16>(node, objectReg);
+            break;
+        }
+        case checker::TypeFlag::SHORT: {
+            Ra().Emit<Ldarr16>(node, objectReg);
+            break;
+        }
+        case checker::TypeFlag::ETS_STRING_ENUM:
+            [[fallthrough]];
+        case checker::TypeFlag::ETS_INT_ENUM:
+        case checker::TypeFlag::INT: {
+            Ra().Emit<Ldarr>(node, objectReg);
+            break;
+        }
+        case checker::TypeFlag::LONG: {
+            Ra().Emit<LdarrWide>(node, objectReg);
+            break;
+        }
+        case checker::TypeFlag::FLOAT: {
+            Ra().Emit<Fldarr32>(node, objectReg);
+            break;
+        }
+        case checker::TypeFlag::DOUBLE: {
+            Ra().Emit<FldarrWide>(node, objectReg);
+            break;
+        }
+
+        default: {
+            UNREACHABLE();
+        }
+    }
+
+    SetAccumulatorType(elementType);
+}
+
+void ETSGen::StoreTupleElement(const ir::AstNode *node, VReg objectReg, VReg index, const checker::Type *elementType)
+{
+    if (elementType->IsETSReferenceType()) {
+        Ra().Emit<StarrObj>(node, objectReg, index);
+        SetAccumulatorType(elementType);
+        return;
+    }
+    switch (checker::ETSChecker::ETSType(elementType)) {
+        case checker::TypeFlag::ETS_BOOLEAN:
+        case checker::TypeFlag::BYTE: {
+            Ra().Emit<Starr8>(node, objectReg, index);
+            break;
+        }
+        case checker::TypeFlag::CHAR:
+        case checker::TypeFlag::SHORT: {
+            Ra().Emit<Starr16>(node, objectReg, index);
+            break;
+        }
+        case checker::TypeFlag::ETS_STRING_ENUM:
+            [[fallthrough]];
+        case checker::TypeFlag::ETS_INT_ENUM:
+        case checker::TypeFlag::INT: {
+            Ra().Emit<Starr>(node, objectReg, index);
+            break;
+        }
+        case checker::TypeFlag::LONG: {
+            Ra().Emit<StarrWide>(node, objectReg, index);
+            break;
+        }
+        case checker::TypeFlag::FLOAT: {
+            Ra().Emit<Fstarr32>(node, objectReg, index);
+            break;
+        }
+        case checker::TypeFlag::DOUBLE: {
+            Ra().Emit<FstarrWide>(node, objectReg, index);
+            break;
+        }
+
+        default: {
+            UNREACHABLE();
+        }
+    }
+
+    SetAccumulatorType(elementType);
+}
+
 template <typename T>
 void ETSGen::IncrementImmediateRegister(const ir::AstNode *node, VReg reg, const checker::TypeFlag valueType,
                                         T const value)
@@ -3408,7 +3510,7 @@ template <typename T>
 void ETSGen::LoadAccumulatorNumber(const ir::AstNode *node, T number, checker::TypeFlag targetType)
 {
     auto typeKind = targetType_ && (!targetType_->IsETSObjectType() && !targetType_->IsETSUnionType() &&
-                                    !targetType_->IsETSArrayType())
+                                    !targetType_->IsETSArrayType() && !targetType_->IsETSTupleType())
                         ? checker::ETSChecker::TypeKind(targetType_)
                         : targetType;
 

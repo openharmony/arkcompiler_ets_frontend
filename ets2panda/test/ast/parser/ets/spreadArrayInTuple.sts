@@ -21,6 +21,6 @@ function main() {
 }
 
 /* @@@ label1 Error TypeError: '(Int|String)[]' cannot be spread in tuple. */
-/* @@@ label Error TypeError: Few elements in array initializer for tuple with size of 2 */
+/* @@@ label Error TypeError: Initializer has 1 elements, but tuple requires 2 */
 /* @@@ label3 Error TypeError: '(Int|String)[]' cannot be spread in tuple. */
-/* @@@ label2 Error TypeError: Few elements in array initializer for tuple with size of 3 */
+/* @@@ label2 Error TypeError: Initializer has 2 elements, but tuple requires 3 */

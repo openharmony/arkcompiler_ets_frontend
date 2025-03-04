@@ -84,6 +84,7 @@ private:
     void GenObjectType(const checker::ETSObjectType *objectType);
     void GenEnumType(const checker::ETSIntEnumType *enumType);
     void GenUnionType(const checker::ETSUnionType *unionType);
+    void GenTupleType(const checker::ETSTupleType *tupleType);
 
     void GenImportDeclaration(const ir::ETSImportDeclaration *importDeclaration);
     void GenReExportDeclaration(const ir::ETSReExportDeclaration *reExportDeclaration);

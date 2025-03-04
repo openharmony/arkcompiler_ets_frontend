@@ -235,6 +235,9 @@ public:
     void LoadArrayElement(const ir::AstNode *node, VReg objectReg);
     void StoreArrayElement(const ir::AstNode *node, VReg objectReg, VReg index, const checker::Type *elementType);
 
+    void LoadTupleElement(const ir::AstNode *node, VReg objectReg);
+    void StoreTupleElement(const ir::AstNode *node, VReg objectReg, VReg index, const checker::Type *elementType);
+
     template <typename T>
     void MoveImmediateToRegister(const ir::AstNode *node, VReg reg, const checker::TypeFlag valueType, T const value);
 

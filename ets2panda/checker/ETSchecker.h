@@ -62,7 +62,7 @@ struct PairHash {
 using ComputedAbstracts =
     ArenaUnorderedMap<ETSObjectType *, std::pair<ArenaVector<ETSFunctionType *>, ArenaUnorderedSet<ETSObjectType *>>>;
 using ArrayMap = ArenaUnorderedMap<std::pair<Type *, bool>, ETSArrayType *, PairHash>;
-using GlobalArraySignatureMap = ArenaUnorderedMap<ETSArrayType *, Signature *>;
+using GlobalArraySignatureMap = ArenaUnorderedMap<const ETSArrayType *, Signature *>;
 using DynamicCallIntrinsicsMap = ArenaUnorderedMap<Language, ArenaUnorderedMap<util::StringView, ir::ScriptFunction *>>;
 using DynamicClassIntrinsicsMap = ArenaUnorderedMap<Language, ir::ClassDeclaration *>;
 using DynamicLambdaObjectSignatureMap = ArenaUnorderedMap<std::string, Signature *>;
@@ -184,7 +184,7 @@ public:
     void ValidateImplementedInterface(ETSObjectType *type, Type *interface, std::unordered_set<Type *> *extendsSet,
                                       const lexer::SourcePosition &pos);
     void ResolveDeclaredMembersOfObject(const Type *type);
-    std::optional<int32_t> GetTupleElementAccessValue(const Type *type, const lexer::SourcePosition &pos);
+    std::optional<std::size_t> GetTupleElementAccessValue(const Type *type);
     bool ValidateArrayIndex(ir::Expression *expr, bool relaxed = false);
     bool ValidateTupleIndex(const ETSTupleType *tuple, ir::MemberExpression *expr);
     ETSObjectType *CheckThisOrSuperAccess(ir::Expression *node, ETSObjectType *classType, std::string_view msg);
@@ -300,8 +300,9 @@ public:
     ETSTypeParameter *CreateTypeParameter();
     ETSObjectType *CreateETSObjectType(ir::AstNode *declNode, ETSObjectFlags flags);
     ETSObjectType *CreateETSObjectTypeOrBuiltin(ir::AstNode *declNode, ETSObjectFlags flags);
-    std::tuple<util::StringView, SignatureInfo *> CreateBuiltinArraySignatureInfo(ETSArrayType *arrayType, size_t dim);
-    Signature *CreateBuiltinArraySignature(ETSArrayType *arrayType, size_t dim);
+    std::tuple<util::StringView, SignatureInfo *> CreateBuiltinArraySignatureInfo(const ETSArrayType *arrayType,
+                                                                                  size_t dim);
+    Signature *CreateBuiltinArraySignature(const ETSArrayType *arrayType, size_t dim);
     IntType *CreateIntTypeFromType(Type *type);
     std::tuple<Language, bool> CheckForDynamicLang(ir::AstNode *declNode, util::StringView assemblerName);
     ETSObjectType *CreatePromiseOf(Type *type);
@@ -419,8 +420,10 @@ public:
                                             TypeRelationFlag flags);
     bool CheckOptionalLambdaFunction(ir::Expression *argument, Signature *substitutedSig, std::size_t index);
     bool ValidateArgumentAsIdentifier(const ir::Identifier *identifier);
+    bool IsValidRestArgument(ir::Expression *argument, Signature *substitutedSig, TypeRelationFlag flags,
+                             std::size_t index);
     bool ValidateSignatureRestParams(Signature *substitutedSig, const ArenaVector<ir::Expression *> &arguments,
-                                     TypeRelationFlag flags, bool reportError, const bool unique);
+                                     TypeRelationFlag flags, bool reportError, bool unique);
     void ThrowSignatureMismatch(ArenaVector<Signature *> &signatures, const ArenaVector<ir::Expression *> &arguments,
                                 const lexer::SourcePosition &pos, std::string_view signatureKind);
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
@@ -650,7 +653,7 @@ public:
     void SetArrayPreferredTypeForNestedMemberExpressions(ir::MemberExpression *expr, Type *annotationType);
     bool IsExtensionETSFunctionType(checker::Type *type);
     bool IsExtensionAccessorFunctionType(checker::Type *type);
-    bool ValidateTupleMinElementSize(ir::ArrayExpression *arrayExpr, ETSTupleType *tuple);
+    bool IsArrayExprSizeValidForTuple(const ir::ArrayExpression *arrayExpr, const ETSTupleType *tuple);
     void ModifyPreferredType(ir::ArrayExpression *arrayExpr, Type *newPreferredType);
     Type *SelectGlobalIntegerTypeForNumeric(Type *type);
 
@@ -670,6 +673,7 @@ public:
     void ETSObjectTypeDeclNode(ETSChecker *checker, ETSObjectType *const objectType);
     ir::CallExpression *CreateExtensionAccessorCall(ETSChecker *checker, ir::MemberExpression *expr,
                                                     ArenaVector<ir::Expression *> &&args);
+    static void SetPreferredTypeIfPossible(ir::Expression *expr, Type *targetType);
     checker::Type *TryGetTypeFromExtensionAccessor(ir::Expression *expr);
     // Utility type handler functions
     std::optional<ir::TypeNode *> GetUtilityTypeTypeParamNode(const ir::TSTypeParameterInstantiation *typeParams,

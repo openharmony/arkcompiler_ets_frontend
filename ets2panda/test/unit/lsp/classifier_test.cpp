@@ -284,7 +284,7 @@ TEST_F(LspClassificationTests, GetSyntacticClassifications12)
     es2panda_Context *ctx = initializer.CreateContext(
         "punctuator-type2.sts", ES2PANDA_STATE_PARSED,
         "a === b;\na <= b;\na / b;\na >> b;\na /= b;\na >>= b;\na++;\na == b;\na >= b;\na % b;\na << b;\na %= "
-        "b;\na >>>= b;\na--;\na = b;\nlet var1: [...number[]];\n(a);\nlet d:[];\n{a};\nc??b;\na != b;\na !== b;\n");
+        "b;\na >>>= b;\na--;\na = b;\nlet var1: [number[]];\n(a);\nlet d:[];\n{a};\nc??b;\na != b;\na !== b;\n");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
     size_t const start = 0;
     size_t const length = 428;
@@ -306,15 +306,15 @@ TEST_F(LspClassificationTests, GetSyntacticClassifications12)
         {95, 4, "punctuation"},  {100, 1, "identifier"},  {101, 1, "punctuation"}, {103, 1, "identifier"},
         {104, 2, "punctuation"}, {106, 1, "punctuation"}, {108, 1, "identifier"},  {110, 1, "punctuation"},
         {112, 1, "identifier"},  {113, 1, "punctuation"}, {115, 3, "keyword"},     {119, 4, "identifier"},
-        {123, 1, "punctuation"}, {125, 1, "punctuation"}, {126, 3, "punctuation"}, {129, 6, "identifier"},
-        {135, 1, "punctuation"}, {136, 1, "punctuation"}, {137, 1, "punctuation"}, {138, 1, "punctuation"},
-        {140, 1, "punctuation"}, {141, 1, "identifier"},  {142, 1, "punctuation"}, {143, 1, "punctuation"},
-        {145, 3, "keyword"},     {149, 1, "identifier"},  {150, 1, "punctuation"}, {151, 1, "punctuation"},
-        {152, 1, "punctuation"}, {153, 1, "punctuation"}, {155, 1, "punctuation"}, {156, 1, "identifier"},
-        {157, 1, "punctuation"}, {158, 1, "punctuation"}, {160, 1, "identifier"},  {161, 2, "punctuation"},
-        {163, 1, "identifier"},  {164, 1, "punctuation"}, {166, 1, "identifier"},  {168, 2, "punctuation"},
-        {171, 1, "identifier"},  {172, 1, "punctuation"}, {174, 1, "identifier"},  {176, 3, "punctuation"},
-        {180, 1, "identifier"},  {181, 1, "punctuation"}};
+        {123, 1, "punctuation"}, {125, 1, "punctuation"}, {126, 6, "identifier"},  {132, 1, "punctuation"},
+        {133, 1, "punctuation"}, {134, 1, "punctuation"}, {135, 1, "punctuation"}, {137, 1, "punctuation"},
+        {138, 1, "identifier"},  {139, 1, "punctuation"}, {140, 1, "punctuation"}, {142, 3, "keyword"},
+        {146, 1, "identifier"},  {147, 1, "punctuation"}, {148, 1, "punctuation"}, {149, 1, "punctuation"},
+        {150, 1, "punctuation"}, {152, 1, "punctuation"}, {153, 1, "identifier"},  {154, 1, "punctuation"},
+        {155, 1, "punctuation"}, {157, 1, "identifier"},  {158, 2, "punctuation"}, {160, 1, "identifier"},
+        {161, 1, "punctuation"}, {163, 1, "identifier"},  {165, 2, "punctuation"}, {168, 1, "identifier"},
+        {169, 1, "punctuation"}, {171, 1, "identifier"},  {173, 3, "punctuation"}, {177, 1, "identifier"},
+        {178, 1, "punctuation"}};
     // NOLINTEND(readability-magic-numbers)
     ASSERT_EQ(result.size(), expectedResult.size());
     for (size_t i = 0; i < result.size(); i++) {

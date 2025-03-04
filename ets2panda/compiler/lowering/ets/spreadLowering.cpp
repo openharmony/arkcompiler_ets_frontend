@@ -15,11 +15,22 @@
 
 #include "spreadLowering.h"
 #include "checker/ETSchecker.h"
+#include "checker/types/ets/etsTupleType.h"
 #include "compiler/lowering/util.h"
 
 namespace ark::es2panda::compiler {
 
 using AstNodePtr = ir::AstNode *;
+
+void SetPossibleTupleType(ir::Identifier *arrIdent, ir::Expression *spreadArgument)
+{
+    // Tuple types are used when referenceing the generated identifier of the spread argument node, as tuples don't have
+    // 'length' property, and cannot be iterated by for-of statements
+    auto *const spreadType = spreadArgument->TsType();
+    if (spreadType->IsETSTupleType()) {
+        arrIdent->SetTsType(spreadType);
+    }
+}
 
 void CreateSpreadArrayDeclareStatements(public_lib::Context *ctx, ir::ArrayExpression *array,
                                         std::vector<ir::Identifier *> &spreadArrayIds,
@@ -32,7 +43,9 @@ void CreateSpreadArrayDeclareStatements(public_lib::Context *ctx, ir::ArrayExpre
             continue;
         }
         ir::Identifier *const arrIdent = Gensym(allocator);
-        auto *const initExpr = element->AsSpreadElement()->Argument()->Clone(allocator, nullptr);
+        auto *const spreadArgument = element->AsSpreadElement()->Argument();
+        auto *const initExpr = spreadArgument->Clone(allocator, nullptr);
+        SetPossibleTupleType(arrIdent, spreadArgument);
         spreadArrayIds.emplace_back(arrIdent);
         statements.emplace_back(parser->CreateFormattedStatement("let @@I1 = (@@E2);", arrIdent, initExpr));
     }
@@ -46,13 +59,17 @@ ir::Identifier *CreateNewArrayLengthStatement(public_lib::Context *ctx, ir::Arra
     auto *const parser = ctx->parser->AsETSParser();
     ir::Identifier *newArrayLengthId = Gensym(allocator);
     std::vector<ir::AstNode *> nodesWaitingInsert {newArrayLengthId->Clone(allocator, nullptr)};
-    int argumentCount = 1;
+    size_t argumentCount = 1;
     std::stringstream lengthString;
-    int normalElementCount = array->Elements().size() - spreadArrayIds.size();
+    const size_t normalElementCount = array->Elements().size() - spreadArrayIds.size();
     lengthString << "let @@I" << (argumentCount++) << " : int = " << normalElementCount << " + ";
-    for (auto *spaId : spreadArrayIds) {
-        lengthString << "@@I" << (argumentCount++) << ".length + ";
-        nodesWaitingInsert.emplace_back(spaId->Clone(allocator, nullptr));
+    for (auto *const spaId : spreadArrayIds) {
+        if (spaId->TsType() != nullptr && spaId->TsType()->IsETSTupleType()) {
+            lengthString << "(" << spaId->TsType()->AsETSTupleType()->GetTupleTypesList().size() << ") + ";
+        } else {
+            lengthString << "@@I" << (argumentCount++) << ".length + ";
+            nodesWaitingInsert.emplace_back(spaId->Clone(allocator, nullptr));
+        }
     }
     lengthString << "0;";
 
@@ -69,7 +86,9 @@ static ir::Identifier *CreateNewArrayDeclareStatement(public_lib::Context *ctx, 
     auto *const allocator = ctx->allocator;
     auto *const parser = ctx->parser->AsETSParser();
     ir::Identifier *newArrayId = Gensym(allocator);
-    checker::Type *arrayElementType = array->TsType()->AsETSArrayType()->ElementType();
+    checker::Type *arrayElementType = array->TsType()->IsETSArrayType()
+                                          ? array->TsType()->AsETSArrayType()->ElementType()
+                                          : array->TsType()->AsETSTupleType()->GetLubType();
     checker::Type *newArrayElementType = arrayElementType;
 
     // NOTE: If arrayElementType is ETSUnionType(String|Int) or ETSObjectType(private constructor) or ..., we cannot
@@ -152,6 +171,31 @@ static ir::Statement *CreateElementsAssignStatementBySingle(public_lib::Context 
     return elementsAssignStatement;
 }
 
+static std::vector<ir::Statement *> CreateElementsAssignForTupleElements(public_lib::Context *ctx, ir::Identifier *spId,
+                                                                         std::vector<ir::AstNode *> &newArrayAndIndex)
+{
+    auto *const allocator = ctx->allocator;
+    auto *const parser = ctx->parser->AsETSParser();
+    auto *const newArrayId = newArrayAndIndex[0];
+    auto *const newArrayIndexId = newArrayAndIndex[1];
+
+    ASSERT(spId->TsType()->IsETSTupleType());
+    const auto *const spreadType = spId->TsType()->AsETSTupleType();
+    std::vector<ir::Statement *> tupleAssignmentStatements {};
+
+    for (size_t idx = 0; idx < spreadType->GetTupleTypesList().size(); ++idx) {
+        std::stringstream tupleAssignmentsStr {};
+        tupleAssignmentsStr << "@@I1[@@I2] = (@@I3[" << idx << "]);";
+        tupleAssignmentsStr << "@@I4++;";
+        tupleAssignmentStatements.emplace_back(parser->CreateFormattedStatement(
+            tupleAssignmentsStr.str(), newArrayId->Clone(allocator, nullptr),
+            newArrayIndexId->Clone(allocator, nullptr), spId->Clone(allocator, nullptr),
+            newArrayIndexId->Clone(allocator, nullptr)));
+    }
+
+    return tupleAssignmentStatements;
+}
+
 static void CreateNewArrayElementsAssignStatement(public_lib::Context *ctx, ir::ArrayExpression *array,
                                                   std::vector<ir::Identifier *> &spArrIds,
                                                   ArenaVector<ir::Statement *> &statements,
@@ -160,14 +204,21 @@ static void CreateNewArrayElementsAssignStatement(public_lib::Context *ctx, ir::
     auto *const allocator = ctx->allocator;
     auto *const parser = ctx->parser->AsETSParser();
     auto *const newArrayId = newArrayAndIndex[0];
-    int spArrIdx = 0;
+    size_t spArrIdx = 0;
 
     for (auto *element : array->Elements()) {
-        if (element->Type() == ir::AstNodeType::SPREAD_ELEMENT) {
-            ir::Identifier *spreadArrIterator = Gensym(allocator);
-            statements.emplace_back(CreateSpreadArrIteratorStatement(ctx, array, spreadArrIterator));
-            statements.emplace_back(CreateElementsAssignStatementBySpreadArr(ctx, spArrIds[spArrIdx++],
-                                                                             newArrayAndIndex, spreadArrIterator));
+        if (element->IsSpreadElement()) {
+            if (element->AsSpreadElement()->Argument()->TsType()->IsETSTupleType()) {
+                const auto newTupleAssignmentStatements =
+                    CreateElementsAssignForTupleElements(ctx, spArrIds[spArrIdx++], newArrayAndIndex);
+                statements.insert(statements.cend(), newTupleAssignmentStatements.cbegin(),
+                                  newTupleAssignmentStatements.cend());
+            } else {
+                ir::Identifier *spreadArrIterator = Gensym(allocator);
+                statements.emplace_back(CreateSpreadArrIteratorStatement(ctx, array, spreadArrIterator));
+                statements.emplace_back(CreateElementsAssignStatementBySpreadArr(ctx, spArrIds[spArrIdx++],
+                                                                                 newArrayAndIndex, spreadArrIterator));
+            }
         } else {
             statements.emplace_back(CreateElementsAssignStatementBySingle(ctx, element, newArrayAndIndex));
         }

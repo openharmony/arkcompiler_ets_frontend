@@ -215,7 +215,7 @@ TEST_F(PluginConversionRuleUnitTest, CheckerTupleSizeTypeInputParameter)
 {
     std::string targetCAPI {R"(
     extern "C" es2panda_AstNode *CreateETSTuple1([[maybe_unused]] es2panda_Context *context,
-[[maybe_unused]] uint32_t size)
+[[maybe_unused]] size_t size)
     {
         auto *allocatorE2p = reinterpret_cast<Context *>(context)->allocator;
         auto *ctx = reinterpret_cast<Context *>(context);
@@ -232,7 +232,7 @@ TEST_F(PluginConversionRuleUnitTest, CheckerTupleSizeTypeInputParameter)
 TEST_F(PluginConversionRuleUnitTest, CheckerTupleSizeTypeReturnValue)
 {
     std::string targetCAPI {R"(
-    extern "C" uint32_t ETSTupleGetTupleSizeConst([[maybe_unused]] es2panda_Context *context,
+    extern "C" size_t ETSTupleGetTupleSizeConst([[maybe_unused]] es2panda_Context *context,
 es2panda_AstNode *classInstance/*return_args:*/)
     {
         auto apiRes = ((reinterpret_cast<const ir::ETSTuple *>(classInstance))->GetTupleSize());

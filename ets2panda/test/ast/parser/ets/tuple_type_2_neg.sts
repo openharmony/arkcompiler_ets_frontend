@@ -14,7 +14,18 @@
  */
 
 
-let a: [number, ...number[], /* @@ label */number/* @@ label1 */] = [1, 2, 3];
+let a: [number, ...number[], number] = [1, 2, 3];
 
-/* @@@ label Error SyntaxError: Spread type must be at the last index in the tuple type.  */
-/* @@@ label1 Error SyntaxError: Spread type must be an array type.  */
+/* @@? 17:17 Error SyntaxError: Invalid Type. */
+/* @@? 17:17 Error SyntaxError: Unexpected token, expected ',' or ']'. */
+/* @@? 17:17 Error SyntaxError: Unexpected token '...'. */
+/* @@? 17:17 Error SyntaxError: Unexpected token '...'. */
+/* @@? 17:17 Error SyntaxError: Unexpected token '...'. */
+/* @@? 17:28 Error SyntaxError: Unexpected token ','. */
+/* @@? 17:28 Error SyntaxError: Unexpected token ','. */
+/* @@? 17:28 Error SyntaxError: Unexpected token ','. */
+/* @@? 17:30 Error TypeError: Unresolved reference number */
+/* @@? 17:36 Error SyntaxError: Unexpected token ']'. */
+/* @@? 17:36 Error SyntaxError: Unexpected token ']'. */
+/* @@? 17:36 Error SyntaxError: Unexpected token ']'. */
+/* @@? 17:38 Error SyntaxError: Unexpected token '='. */

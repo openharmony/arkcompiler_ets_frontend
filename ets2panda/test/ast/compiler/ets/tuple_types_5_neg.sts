@@ -15,7 +15,15 @@
 
 
 function main(): void {
-    let a: [number, ...number[]] = /* @@ label */[1];
+    let a: [number, ...number[]] = [1];
 }
 
-/* @@@ label Error TypeError: Few elements in array initializer for tuple with size of 2  */
+/* @@? 18:21 Error SyntaxError: Invalid Type. */
+/* @@? 18:21 Error SyntaxError: Unexpected token, expected ',' or ']'. */
+/* @@? 18:21 Error SyntaxError: Unexpected token '...'. */
+/* @@? 18:21 Error SyntaxError: Unexpected token '...'. */
+/* @@? 18:21 Error SyntaxError: Unexpected token '...'. */
+/* @@? 18:32 Error SyntaxError: Unexpected token ']'. */
+/* @@? 18:32 Error SyntaxError: Unexpected token ']'. */
+/* @@? 18:32 Error SyntaxError: Unexpected token ']'. */
+/* @@? 18:34 Error SyntaxError: Unexpected token '='. */

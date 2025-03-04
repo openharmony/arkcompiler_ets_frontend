@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -85,7 +85,7 @@ private:
     using DynamicCallNamesMap = ArenaMap<const ArenaVector<util::StringView>, uint32_t>;
 
     void GenExternalRecord(varbinder::RecordTable *recordTable);
-    void GenGlobalArrayRecord(checker::ETSArrayType *arrayType, checker::Signature *signature);
+    void GenGlobalArrayRecord(const checker::ETSArrayType *arrayType, checker::Signature *signature);
     std::vector<pandasm::AnnotationData> GenAnnotations(const ir::ClassDefinition *classDef);
     void GenClassRecord(const ir::ClassDefinition *classDef, bool external);
     pandasm::AnnotationElement ProcessArrayType(const ir::ClassProperty *prop, std::string &baseName,

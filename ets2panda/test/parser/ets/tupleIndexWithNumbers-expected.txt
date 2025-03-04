@@ -397,7 +397,6 @@
                                   }
                                 }
                               ],
-                              "spreadType": null,
                               "loc": {
                                 "start": {
                                   "line": 20,
