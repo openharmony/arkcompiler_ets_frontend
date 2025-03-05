@@ -14,51 +14,52 @@
  */
 
 #include "phase.h"
-#include "checker/checker.h"
-#include "ets/ambientLowering.h"
-#include "lexer/token/sourceLocation.h"
-#include "compiler/lowering/resolveIdentifiers.h"
 #include "compiler/lowering/checkerPhase.h"
-#include "compiler/lowering/ets/stringConstantsLowering.h"
-#include "compiler/lowering/ets/constantExpressionLowering.h"
-#include "compiler/lowering/ets/constStringToCharLowering.h"
-#include "compiler/lowering/ets/expandBrackets.h"
-#include "compiler/lowering/ets/recordLowering.h"
-#include "compiler/lowering/ets/topLevelStmts/topLevelStmts.h"
-#include "compiler/lowering/ets/expressionLambdaLowering.h"
+#include "compiler/lowering/ets/bigintLowering.h"
 #include "compiler/lowering/ets/boxingForLocals.h"
+#include "compiler/lowering/ets/boxedTypeLowering.h"
 #include "compiler/lowering/ets/capturedVariables.h"
-#include "compiler/lowering/ets/lambdaLowering.h"
-#include "compiler/lowering/ets/defaultParametersLowering.h"
+#include "compiler/lowering/ets/constStringToCharLowering.h"
+#include "compiler/lowering/ets/constantExpressionLowering.h"
+#include "compiler/lowering/ets/declareOverloadLowering.h"
 #include "compiler/lowering/ets/defaultParametersInConstructorLowering.h"
-#include "compiler/lowering/ets/optionalArgumentsLowering.h"
-#include "compiler/lowering/ets/spreadLowering.h"
+#include "compiler/lowering/ets/defaultParametersLowering.h"
+#include "compiler/lowering/ets/enumLowering.h"
+#include "compiler/lowering/ets/enumPostCheckLowering.h"
+#include "compiler/lowering/ets/expandBrackets.h"
+#include "compiler/lowering/ets/expressionLambdaLowering.h"
 #include "compiler/lowering/ets/extensionAccessorLowering.h"
+#include "compiler/lowering/ets/genericBridgesLowering.h"
+#include "compiler/lowering/ets/interfaceObjectLiteralLowering.h"
 #include "compiler/lowering/ets/interfacePropertyDeclarations.h"
+#include "compiler/lowering/ets/lambdaLowering.h"
+#include "compiler/lowering/ets/localClassLowering.h"
 #include "compiler/lowering/ets/objectIndexAccess.h"
 #include "compiler/lowering/ets/objectIterator.h"
-#include "compiler/lowering/ets/localClassLowering.h"
-#include "compiler/lowering/ets/opAssignment.h"
 #include "compiler/lowering/ets/objectLiteralLowering.h"
-#include "compiler/lowering/ets/interfaceObjectLiteralLowering.h"
+#include "compiler/lowering/ets/optionalArgumentsLowering.h"
 #include "compiler/lowering/ets/optionalLowering.h"
+#include "compiler/lowering/ets/opAssignment.h"
 #include "compiler/lowering/ets/packageImplicitImport.h"
 #include "compiler/lowering/ets/partialExportClassGen.h"
 #include "compiler/lowering/ets/promiseVoid.h"
+#include "compiler/lowering/ets/recordLowering.h"
+#include "compiler/lowering/ets/spreadLowering.h"
 #include "compiler/lowering/ets/stringComparison.h"
-#include "compiler/lowering/ets/tupleLowering.h"
-#include "compiler/lowering/ets/bigintLowering.h"
-#include "compiler/lowering/ets/unionLowering.h"
+#include "compiler/lowering/ets/stringConstantsLowering.h"
 #include "compiler/lowering/ets/stringConstructorLowering.h"
-#include "compiler/lowering/ets/enumLowering.h"
-#include "compiler/lowering/ets/enumPostCheckLowering.h"
-#include "compiler/lowering/ets/genericBridgesLowering.h"
-#include "compiler/lowering/ets/boxedTypeLowering.h"
+#include "compiler/lowering/ets/topLevelStmts/topLevelStmts.h"
+#include "compiler/lowering/ets/tupleLowering.h"
+#include "compiler/lowering/ets/unionLowering.h"
 #include "compiler/lowering/plugin_phase.h"
+#include "compiler/lowering/resolveIdentifiers.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
+#include "ets/ambientLowering.h"
+#include "generated/diagnostic.h"
+#include "lexer/token/sourceLocation.h"
 #include "public/es2panda_lib.h"
 #include "util/options.h"
-#include "generated/diagnostic.h"
+#include "checker/checker.h"
 
 namespace ark::es2panda::compiler {
 
@@ -89,6 +90,7 @@ static OptionalLowering g_optionalLowering;
 static ExpandBracketsPhase g_expandBracketsPhase;
 static PromiseVoidInferencePhase g_promiseVoidInferencePhase;
 static RecordLowering g_recordLowering;
+static DeclareOverloadLowering g_declareOverloadLowering;
 static DefaultParametersLowering g_defaultParametersLowering;
 static DefaultParametersInConstructorLowering g_defaultParametersInConstructorLowering;
 static OptionalArgumentsLowering g_optionalArgumentsLowering;
@@ -135,6 +137,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_capturedVariables,
         &g_checkerPhase,        // please DO NOT change order of these two phases: checkerPhase and pluginsAfterCheck
         &g_pluginsAfterCheck,   // pluginsAfterCheck has to go right after checkerPhase, nothing should be between them
+        &g_declareOverloadLowering,
         &g_enumPostCheckLoweringPhase,
         &g_spreadConstructionPhase,
         &g_bigintLowering,

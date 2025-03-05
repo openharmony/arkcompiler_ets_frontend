@@ -973,37 +973,57 @@ checker::Type *ETSChecker::BuildMethodSignature(ir::MethodDefinition *method)
     auto *funcType = BuildMethodType(method->Function());
     std::vector<checker::ETSFunctionType *> overloads;
 
+    method->InitializeOverloadInfo();
+
+    ir::OverloadInfo &ldInfo = method->GetOverloadInfo();
+
     for (ir::MethodDefinition *const currentFunc : method->Overloads()) {
+        ldInfo.isDeclare &= currentFunc->IsDeclare();
+
         currentFunc->Function()->Id()->SetVariable(currentFunc->Id()->Variable());
         BuildFunctionSignature(currentFunc->Function(), isConstructSig);
         if (currentFunc->Function()->Signature() == nullptr) {
             return method->Id()->Variable()->SetTsType(GlobalTypeError());
         }
         auto *const overloadType = BuildMethodType(currentFunc->Function());
-        CheckIdenticalOverloads(funcType, overloadType, currentFunc);
+        ldInfo.needHelperOverload |= CheckIdenticalOverloads(funcType, overloadType, currentFunc, ldInfo.isDeclare);
+
         currentFunc->SetTsType(overloadType);
         funcType->AddCallSignature(currentFunc->Function()->Signature());
         overloads.push_back(overloadType);
+
+        ldInfo.minArg = std::min(ldInfo.minArg, currentFunc->Function()->Signature()->MinArgCount());
+        ldInfo.maxArg = std::max(ldInfo.maxArg, currentFunc->Function()->Signature()->ArgCount());
+        ldInfo.hasRestVar |= (currentFunc->Function()->Signature()->RestVar() != nullptr);
+        ldInfo.returnVoid |= currentFunc->Function()->Signature()->ReturnType()->IsETSVoidType();
     }
+
     for (size_t baseFuncCounter = 0; baseFuncCounter < overloads.size(); ++baseFuncCounter) {
         auto *overloadType = overloads.at(baseFuncCounter);
         for (size_t compareFuncCounter = baseFuncCounter + 1; compareFuncCounter < overloads.size();
              compareFuncCounter++) {
             auto *compareOverloadType = overloads.at(compareFuncCounter);
-            CheckIdenticalOverloads(overloadType, compareOverloadType, method->Overloads()[compareFuncCounter]);
+            ldInfo.needHelperOverload |= CheckIdenticalOverloads(
+                overloadType, compareOverloadType, method->Overloads()[compareFuncCounter], ldInfo.isDeclare);
         }
+    }
+
+    ldInfo.needHelperOverload &= ldInfo.isDeclare;
+    if (ldInfo.needHelperOverload) {
+        Warning("Function " + std::string(funcType->Name()) + " with this assembly signature already declared.",
+                method->Start());
     }
 
     return method->Id()->Variable()->SetTsType(funcType);
 }
 
-void ETSChecker::CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType *overload,
-                                         const ir::MethodDefinition *const currentFunc)
+bool ETSChecker::CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType *overload,
+                                         const ir::MethodDefinition *const currentFunc, bool omitSameAsm)
 {
     // Don't necessary to check overload for invalid functions
     if (func->Name().Is(ERROR_LITERAL)) {
         ASSERT(IsAnyError());
-        return;
+        return false;
     }
 
     SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK);
@@ -1012,9 +1032,22 @@ void ETSChecker::CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType 
     if (Relation()->IsTrue() && func->CallSignatures()[0]->GetSignatureInfo()->restVar ==
                                     overload->CallSignatures()[0]->GetSignatureInfo()->restVar) {
         LogError(diagnostic::FUNCTION_REDECL_BY_TYPE_SIG, {func->Name().Mutf8()}, currentFunc->Start());
-    } else if (HasSameAssemblySignatures(func, overload)) {
-        LogError(diagnostic::FUNCTION_REDECL_BY_ASM_SIG, {func->Name().Mutf8()}, currentFunc->Start());
+        return false;
     }
+
+    if (!HasSameAssemblySignatures(func, overload)) {
+        return false;
+    }
+
+    if (!omitSameAsm) {
+        LogError(diagnostic::FUNCTION_REDECL_BY_ASM_SIG, {func->Name().Mutf8()}, currentFunc->Start());
+        return false;
+    }
+
+    func->CallSignatures()[0]->AddSignatureFlag(SignatureFlags::DUPLICATE_ASM);
+    overload->CallSignatures()[0]->AddSignatureFlag(SignatureFlags::DUPLICATE_ASM);
+
+    return true;
 }
 
 Signature *ETSChecker::ComposeSignature(ir::ScriptFunction *func, SignatureInfo *signatureInfo, Type *returnType,

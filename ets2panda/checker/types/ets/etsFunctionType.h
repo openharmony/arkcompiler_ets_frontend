@@ -118,12 +118,33 @@ public:
         return {false, false};
     }
 
+    void SetHelperSignature(Signature *signature) noexcept
+    {
+        helperSignature_ = signature;
+    }
+
+    const Signature *GetHelperSignature() const
+    {
+        return helperSignature_;
+    }
+
+    Signature *GetHelperSignature()
+    {
+        return helperSignature_;
+    }
+
+    bool HasHelperSignature()
+    {
+        return helperSignature_ != nullptr;
+    }
+
 private:
     ArenaVector<Signature *> callSignatures_;
     util::StringView const name_;
     util::StringView const assemblerName_;
     ETSFunctionType *invokeToArrowSignature_;
     ETSObjectType *arrowToFuncInterface_;
+    Signature *helperSignature_ {};
 };
 }  // namespace ark::es2panda::checker
 

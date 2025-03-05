@@ -265,4 +265,17 @@ MethodDefinition *MethodDefinition::Clone(ArenaAllocator *const allocator, AstNo
 
     return clone;
 }
+
+void MethodDefinition::InitializeOverloadInfo()
+{
+    ES2PANDA_ASSERT(this->Function() != nullptr);
+
+    overloadInfo_ = {this->Function()->Signature()->MinArgCount(),
+                     this->Function()->Signature()->ArgCount(),
+                     false,
+                     this->IsDeclare(),
+                     (this->Function()->Signature()->RestVar() != nullptr),
+                     this->Function()->Signature()->ReturnType()->IsETSVoidType()};
+}
+
 }  // namespace ark::es2panda::ir

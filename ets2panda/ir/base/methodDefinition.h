@@ -38,6 +38,15 @@ enum class MethodDefinitionKind {
     EXTENSION_SET,
 };
 
+struct OverloadInfo {
+    uint32_t minArg = 0;
+    size_t maxArg = 0;
+    bool needHelperOverload = false;
+    bool isDeclare = false;
+    bool hasRestVar = false;
+    bool returnVoid = false;
+};
+
 class MethodDefinition : public ClassElement {
 public:
     MethodDefinition() = delete;
@@ -104,6 +113,11 @@ public:
         return asyncPairMethod_;
     }
 
+    [[nodiscard]] OverloadInfo &GetOverloadInfo() noexcept
+    {
+        return overloadInfo_;
+    }
+
     void SetOverloads(OverloadsT &&overloads)
     {
         overloads_ = std::move(overloads);
@@ -138,6 +152,7 @@ public:
 
     ScriptFunction *Function();
     const ScriptFunction *Function() const;
+    void InitializeOverloadInfo();
     PrivateFieldKind ToPrivateFieldKind(bool isStatic) const override;
 
     [[nodiscard]] MethodDefinition *Clone(ArenaAllocator *allocator, AstNode *parent) override;
@@ -171,6 +186,7 @@ private:
     // Pair method points at the original async method in case of an implement method and vice versa an implement
     // method's point at the async method
     MethodDefinition *asyncPairMethod_;
+    OverloadInfo overloadInfo_;
 };
 }  // namespace ark::es2panda::ir
 

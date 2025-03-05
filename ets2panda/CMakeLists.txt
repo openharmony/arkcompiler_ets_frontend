@@ -260,6 +260,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/boxingForLocals.cpp
   compiler/lowering/ets/capturedVariables.cpp
   compiler/lowering/ets/constantExpressionLowering.cpp
+  compiler/lowering/ets/declareOverloadLowering.cpp
   compiler/lowering/ets/defaultParametersInConstructorLowering.cpp
   compiler/lowering/ets/defaultParametersLowering.cpp
   compiler/lowering/ets/lambdaLowering.cpp
