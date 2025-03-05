@@ -34,8 +34,8 @@
 /test_ecma_bcopt/ @gavin1012_hw
 /ets2panda/checker/ETS*.* @zelentsovdmitry ^igelhaus ^Prof1983 @chernykhsergey
 /ets2panda/checker/ETSAnalyzer.cpp @akmaevaleksey ^vpukhov ^igelhaus ^Prof1983
-/ets2panda/declgen_ets2ts/ @trubachevilya ^ivagin ^hufeng20 ^igelhaus ^Prof1983
-/ets2panda/driver/ @trubachevilya ^dreamdoomwalker @chenqy930 @hufeng20 ^igelhaus ^Prof1983
+/ets2panda/declgen_ets2ts/ @dreamdoomwalker ^trubachevilya ^ivagin ^hufeng20 ^igelhaus ^Prof1983
+/ets2panda/driver/ ^trubachevilya @dreamdoomwalker @chenqy930 @hufeng20 ^igelhaus ^Prof1983
 /ets2panda/linter/              @ragnvald @rosinskiyigor @eokolnov1
 /ets2panda/parser/ETSparser*.* @zelentsovdmitry ^igelhaus ^Prof1983 @chernykhsergey
 /ets2panda/parser/expressionParser.cpp @zelentsovdmitry ^igelhaus ^Prof1983 @chernykhsergey
@@ -43,9 +43,9 @@
 /ets2panda/parser/statementParser.cpp @zelentsovdmitry ^igelhaus ^Prof1983 @chernykhsergey
 /ets2panda/scripts/*-build.sh @titovatatiana ^igelhaus ^Prof1983
 /ets2panda/scripts/arkui* @titovatatiana ^igelhaus ^Prof1983
-/ets2panda/util/arktsconfig* @trubachevilya ^igelhaus ^Prof1983
+/ets2panda/util/arktsconfig* @dreamdoomwalker ^trubachevilya ^igelhaus ^Prof1983
 /ets2panda/util/diagnostic* @chernykhsergey ^igelhaus ^Prof1983
-/ets2panda/util/importPathManager* @trubachevilya ^igelhaus ^Prof1983
+/ets2panda/util/importPathManager* @dreamdoomwalker ^trubachevilya ^igelhaus ^Prof1983
 /test/workload/ignored*.txt     @shirunova_viktoria @kuchkovairina @gavin1012_hw @zhuheng27
 /ets2panda/checker/ets/dynamic.cpp @akmaevaleksey  ^vpukhov ^igelhaus ^Prof1983
 /ets2panda/checker/ets/function.cpp ^vpukhov @gogabr ^igelhaus ^Prof1983
