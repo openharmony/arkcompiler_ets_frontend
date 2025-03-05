@@ -54,7 +54,7 @@ ir::MethodDefinition *CreateMethodFunctionDefinition(ir::DummyNode *node, public
     auto parser = ctx->parser->AsETSParser();
 
     auto indexName = node->GetIndexName();
-    auto const returnType = node->GetReturnTypeLiteral()->AsETSTypeReferencePart()->Name()->AsIdentifier();
+    auto const returnType = node->GetReturnTypeLiteral()->AsETSTypeReferencePart()->GetIdent();
     if (returnType->IsErrorPlaceHolder()) {
         return nullptr;
     }

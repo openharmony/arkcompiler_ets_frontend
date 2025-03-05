@@ -1278,11 +1278,7 @@ static ir::AstNode *DerefETSTypeReference(ir::AstNode *node)
 {
     ES2PANDA_ASSERT(node->IsETSTypeReference());
     do {
-        auto *name = node->AsETSTypeReference()->Part()->Name();
-
-        while (name->IsTSQualifiedName()) {
-            name = name->AsTSQualifiedName()->Right();
-        }
+        auto *name = node->AsETSTypeReference()->Part()->GetIdent();
 
         ES2PANDA_ASSERT(name->IsIdentifier());
         auto *var = name->AsIdentifier()->Variable();

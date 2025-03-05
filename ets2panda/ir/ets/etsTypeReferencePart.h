@@ -67,6 +67,7 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::VerifiedType Check(checker::ETSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker) override;
+    ir::Identifier *GetIdent();
 
     void Accept(ASTVisitorT *v) override
     {

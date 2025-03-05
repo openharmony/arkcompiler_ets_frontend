@@ -67,7 +67,7 @@ ir::Expression *ETSParser::ParseAnnotationName()
     if (Lexer()->Lookahead() == '.') {
         auto opt = TypeAnnotationParsingOptions::NO_OPTS;
         expr = ParseTypeReference(&opt);
-        setAnnotation(expr->AsETSTypeReference()->Part()->Name()->AsTSQualifiedName()->Right());
+        setAnnotation(expr->AsETSTypeReference()->Part()->GetIdent());
     } else {
         expr = ExpectIdentifier();
         setAnnotation(expr->AsIdentifier());

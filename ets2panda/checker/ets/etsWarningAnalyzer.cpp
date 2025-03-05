@@ -63,8 +63,8 @@ void ETSWarningAnalyzer::AnalyzeClassDefForFinalModifier(const ir::ClassDefiniti
                 continue;
             }
 
-            if (superClass->IsETSTypeReference() && superClass->AsETSTypeReference()->Part()->Name()->IsIdentifier() &&
-                superClass->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name() == classDef->Ident()->Name()) {
+            if (superClass->IsETSTypeReference() &&
+                superClass->AsETSTypeReference()->Part()->GetIdent()->Name() == classDef->Ident()->Name()) {
                 return;
             }
         }

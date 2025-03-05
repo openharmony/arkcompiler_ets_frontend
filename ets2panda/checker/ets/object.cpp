@@ -83,7 +83,7 @@ bool ETSChecker::ComputeSuperType(ETSObjectType *type)
         return false;
     }
 
-    auto superName = classDef->Super()->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name();
+    auto superName = classDef->Super()->AsETSTypeReference()->Part()->GetIdent()->Name();
     if (superName == compiler::Signatures::PARTIAL_TYPE_NAME || superName == compiler::Signatures::READONLY_TYPE_NAME ||
         superName == compiler::Signatures::REQUIRED_TYPE_NAME) {
         LogError(diagnostic::EXTENDING_UTILITY_TYPE, {classDef->Ident()->Name()}, classDef->Super()->Start());
@@ -244,7 +244,11 @@ bool ETSChecker::CheckDefaultTypeParameter(const ir::TSTypeParameter *param, Typ
                                                        &ok](ir::AstNode *node) -> void {
         if (node->IsETSTypeReferencePart()) {
             ir::ETSTypeReferencePart *defaultTypePart = node->AsETSTypeReferencePart();
-            auto *const variable = defaultTypePart->Name()->Variable();
+            if (defaultTypePart->Name()->IsTSQualifiedName()) {
+                defaultTypePart->Name()->Check(this);
+            }
+            auto *const variable = defaultTypePart->GetIdent()->Variable();
+            ES2PANDA_ASSERT(variable != nullptr);
             if (variable->TsType() == nullptr && (variable->Flags() & varbinder::VariableFlags::TYPE_PARAMETER) != 0U &&
                 typeParameterDecls.count(variable) == 0U) {
                 LogError(diagnostic::TYPE_PARAM_USE_BEFORE_DEFINE,
@@ -268,7 +272,7 @@ bool ETSChecker::CheckDefaultTypeParameter(const ir::TSTypeParameter *param, Typ
 bool ETSChecker::CheckTypeParameterConstraint(ir::TSTypeParameter *param, Type2TypeMap &extends)
 {
     const auto typeParamVar = param->Name()->Variable();
-    const auto constraintVar = param->Constraint()->AsETSTypeReference()->Part()->Name()->Variable();
+    const auto constraintVar = param->Constraint()->AsETSTypeReference()->Part()->GetIdent()->Variable();
     extends.emplace(typeParamVar, constraintVar);
     auto it = extends.find(constraintVar);
     while (it != extends.cend()) {
@@ -291,11 +295,8 @@ void ETSChecker::SetUpTypeParameterConstraint(ir::TSTypeParameter *const param)
             if (!typeNode->IsETSTypeReference()) {
                 return;
             }
-            // Note: If `typeName` is imported from another files, it will not simply be `Identifier`.
-            const auto typeName = typeNode->AsETSTypeReference()->Part()->Name();
-            auto searchName = typeName->IsIdentifier() ? typeName->AsIdentifier()->Name()
-                                                       : typeName->AsTSQualifiedName()->Right()->AsIdentifier()->Name();
-            auto *const found = scope->FindLocal(searchName, varbinder::ResolveBindingOptions::BINDINGS);
+            const auto typeName = typeNode->AsETSTypeReference()->Part()->GetIdent()->Name();
+            auto *const found = scope->FindLocal(typeName, varbinder::ResolveBindingOptions::BINDINGS);
             if (found != nullptr) {
                 SetUpTypeParameterConstraint(found->Declaration()->Node()->AsTSTypeParameter());
             }
@@ -604,7 +605,7 @@ bool ETSChecker::HasETSFunctionType(ir::TypeNode *typeAnnotation)
         }
     };
 
-    auto *typeDecl = typeAnnotation->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Variable()->Declaration();
+    auto *typeDecl = typeAnnotation->AsETSTypeReference()->Part()->GetIdent()->Variable()->Declaration();
     if (typeDecl != nullptr && typeDecl->IsTypeAliasDecl()) {
         addTypeAlias(typeDecl);
     }

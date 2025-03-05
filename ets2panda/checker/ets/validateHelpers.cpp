@@ -247,7 +247,7 @@ void ETSChecker::ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaratio
                 return node;
             }
 
-            const auto *const nodeIdent = node->AsETSTypeReference()->Part()->Name()->AsIdentifier();
+            const auto *const nodeIdent = node->AsETSTypeReference()->Part()->GetIdent();
 
             size_t typeParamIdx = 0;
             for (const auto *const typeParam : typeAliasNode->TypeParams()->Params()) {

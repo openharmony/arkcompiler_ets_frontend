@@ -46,11 +46,8 @@ static bool IsSupportedLiteral(ir::Expression *const node)
 
 static bool IsStringTypeReference(ir::ETSTypeReference *type)
 {
-    if (type->Part()->Name()->IsIdentifier()) {
-        auto name = type->Part()->Name()->AsIdentifier()->Name();
-        return name == "string" || name == "String";
-    }
-    return false;
+    auto name = type->Part()->GetIdent()->Name();
+    return name == "string" || name == "String";
 }
 
 static bool CheckIsBooleanConstantForUnary(ir::Literal *const unaryLiteral, lexer::TokenType opType)

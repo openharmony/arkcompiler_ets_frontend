@@ -548,7 +548,7 @@ void ETSChecker::InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::Arr
     if (localTypeAnnotation->IsETSTypeReference()) {
         bool isAnnotationTypeAlias = true;
         while (localTypeAnnotation->IsETSTypeReference() && isAnnotationTypeAlias) {
-            auto *nodeVar = localTypeAnnotation->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Variable();
+            auto *nodeVar = localTypeAnnotation->AsETSTypeReference()->Part()->GetIdent()->Variable();
             if (nodeVar == nullptr) {
                 break;
             }
@@ -2055,8 +2055,7 @@ void ETSChecker::CheckRethrowingFunction(ir::ScriptFunction *func)
         auto const *typeAnnotation = item->AsETSParameterExpression()->TypeAnnotation();
 
         if (typeAnnotation->IsETSTypeReference()) {
-            auto *typeDecl =
-                typeAnnotation->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Variable()->Declaration();
+            auto *typeDecl = typeAnnotation->AsETSTypeReference()->Part()->GetIdent()->Variable()->Declaration();
             if (typeDecl->IsTypeAliasDecl()) {
                 typeAnnotation = typeDecl->Node()->AsTSTypeAliasDeclaration()->TypeAnnotation();
             }
