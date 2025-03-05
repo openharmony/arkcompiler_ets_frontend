@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 #
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -76,8 +76,8 @@ def save_custom_yamls() -> None:
         os.makedirs(headers_path)
 
     for _, value in custom_yamls.items():
-        yaml_file = value["yaml_file"]
-        print_to_yaml(yaml_file, value["collection"])
+        yaml_file = value.get("yaml_file")
+        print_to_yaml(yaml_file, value.get("collection"))
 
         statistics["generated_yamls"]["collection"].add( # CC-OFF(G.TYP.07) dict key exist
             os.path.basename(yaml_file)
@@ -90,6 +90,6 @@ def save_statistics() -> None:
         os.makedirs(logs_path)
 
     for _, value in statistics.items():
-        with os.fdopen(os.open(value["log_file"], os.O_WRONLY | os.O_CREAT, mode=511), "w", encoding="utf-8") as f:
-            for item in value["collection"]:
+        with os.fdopen(os.open(value.get("log_file"), os.O_WRONLY | os.O_CREAT, mode=511), "w", encoding="utf-8") as f:
+            for item in value.get("collection"):
                 f.write(f"{item}\n")
