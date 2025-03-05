@@ -17,7 +17,9 @@
 #define ES2PANDA_LSP_COMPLETIONS_H
 
 #include "public/es2panda_lib.h"
+#include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 #include <optional>
 #include "checker/checker.h"
@@ -63,6 +65,47 @@ constexpr std::string_view AUTO_IMPORT_SUGGESTIONS = "16";
 constexpr std::string_view CLASS_MEMBER_SNIPPETS = "17";
 }  // namespace sort_text
 
+enum class ResolutionStatus { RESOLVED, UNRESOLVED };
+struct CompletionEntryData {
+private:
+    const char *fileName_;
+    std::string namedExport_;
+    std::string importDeclaration_;
+    std::string completionName_;
+    ResolutionStatus status_;
+
+public:
+    explicit CompletionEntryData(const char *fileName = "", std::string namedExport = "",
+                                 std::string importDeclaration = "", std::string completionName = "",
+                                 ResolutionStatus status = ResolutionStatus::UNRESOLVED)
+        : fileName_(fileName),
+          namedExport_(std::move(namedExport)),
+          importDeclaration_(std::move(importDeclaration)),
+          completionName_(std::move(completionName)),
+          status_(status)
+    {
+    }
+
+    const char *GetFileName()
+    {
+        return fileName_;
+    }
+
+    const std::string &GetNamedExport()
+    {
+        return namedExport_;
+    }
+
+    const std::string &GetImportDeclaration()
+    {
+        return importDeclaration_;
+    }
+
+    ResolutionStatus GetStatus()
+    {
+        return status_;
+    }
+};
 struct CompletionEntry {
 private:
     std::string name_;
@@ -70,11 +113,17 @@ private:
     std::string sortText_;
     // This is what the Client uses
     std::string insertText_;
+    std::optional<CompletionEntryData> data_;
 
 public:
     explicit CompletionEntry(std::string name = "", CompletionEntryKind kind = CompletionEntryKind::TEXT,
-                             std::string sortText = "", std::string insertText = "")
-        : name_(std::move(name)), kind_(kind), sortText_(std::move(sortText)), insertText_(std::move(insertText))
+                             std::string sortText = "", std::string insertText = "",
+                             std::optional<CompletionEntryData> data = std::nullopt)
+        : name_(std::move(name)),
+          kind_(kind),
+          sortText_(std::move(sortText)),
+          insertText_(std::move(insertText)),
+          data_(std::move(data))
     {
     }
     std::string GetSortText() const
@@ -101,6 +150,14 @@ public:
     bool operator!=(const CompletionEntry &other) const
     {
         return !(*this == other);
+    }
+    std::string GetSortText()
+    {
+        return sortText_;
+    }
+    std::optional<CompletionEntryData> GetCompletionEntryData()
+    {
+        return data_;
     }
 };
 
@@ -136,6 +193,20 @@ std::vector<CompletionEntry> GetMemberCompletions(es2panda_Context *context, siz
 Request KeywordCompletionData(const std::string &input);
 std::string ToLowerCase(const std::string &str);
 std::vector<CompletionEntry> GetCompletionsAtPositionImpl(es2panda_Context *context, size_t position);
+ArenaVector<varbinder::Scope *> BuildScopePath(varbinder::Scope *startScope, ArenaAllocator *allocator);
+CompletionEntry ProcessAutoImportForEntry(CompletionEntry &entry);
+
+std::optional<CompletionEntryData> GetAutoImportCompletionEntry(ark::es2panda::lsp::CompletionEntryData *data,
+                                                                const std::shared_ptr<ArkTsConfig> &config,
+                                                                const std::string &name);
+std::optional<CompletionEntryData> CompletionEntryDataToOriginInfo(ark::es2panda::lsp::CompletionEntryData *data,
+                                                                   const std::shared_ptr<ArkTsConfig> &config,
+                                                                   const std::string &name);
+std::optional<bool> IsCompletionEntryDataResolved(ark::es2panda::lsp::CompletionEntryData *data,
+                                                  const std::shared_ptr<ArkTsConfig> &config);
+
+bool StartsWith(const std::string &str, const std::string &prefix);
+std::shared_ptr<ArkTsConfig> GetArkTsConfigFromFile(const char *fileName);
 
 }  // namespace ark::es2panda::lsp
 #endif
