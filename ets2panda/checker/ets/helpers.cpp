@@ -23,10 +23,10 @@
 #include "compiler/lowering/util.h"
 
 namespace ark::es2panda::checker {
-varbinder::Variable *ETSChecker::FindVariableInFunctionScope(const util::StringView name,
-                                                             const varbinder::ResolveBindingOptions options)
+varbinder::Variable *ETSChecker::FindVariableInFunctionScope(const util::StringView name)
 {
-    return Scope() != nullptr ? Scope()->FindInFunctionScope(name, options).variable : nullptr;
+    return Scope() != nullptr ? Scope()->FindInFunctionScope(name, varbinder::ResolveBindingOptions::ALL).variable
+                              : nullptr;
 }
 
 std::pair<varbinder::Variable *, const ETSObjectType *> ETSChecker::FindVariableInClassOrEnclosing(
@@ -47,10 +47,11 @@ std::pair<varbinder::Variable *, const ETSObjectType *> ETSChecker::FindVariable
     return {resolved, classType};
 }
 
-varbinder::Variable *ETSChecker::FindVariableInGlobal(const ir::Identifier *const identifier,
-                                                      const varbinder::ResolveBindingOptions options)
+varbinder::Variable *ETSChecker::FindVariableInGlobal(const ir::Identifier *const identifier)
 {
-    return Scope() != nullptr ? Scope()->FindInGlobal(identifier->Name(), options).variable : nullptr;
+    return Scope() != nullptr
+               ? Scope()->FindInGlobal(identifier->Name(), varbinder::ResolveBindingOptions::ALL).variable
+               : nullptr;
 }
 
 bool ETSChecker::IsVariableStatic(const varbinder::Variable *var)
@@ -264,14 +265,11 @@ Type *ETSChecker::ResolveIdentifier(ir::Identifier *ident)
         return GetTypeOfVariable(resolved);
     }
 
-    auto options = ident->Parent()->IsTSTypeAliasDeclaration() ? varbinder::ResolveBindingOptions::TYPE_ALIASES
-                                                               : varbinder::ResolveBindingOptions::ALL_NON_TYPE;
-
-    auto *resolved = FindVariableInFunctionScope(ident->Name(), options);
+    auto *resolved = FindVariableInFunctionScope(ident->Name());
     if (resolved == nullptr) {
         // If the reference is not found already in the current class, then it is not bound to the class, so we have to
         // find the reference in the global class first, then in the global scope
-        resolved = FindVariableInGlobal(ident, options);
+        resolved = FindVariableInGlobal(ident);
         if (UNLIKELY(resolved == nullptr && debugInfoPlugin_ != nullptr)) {
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             resolved = debugInfoPlugin_->FindIdentifier(ident);

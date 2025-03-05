@@ -1722,7 +1722,7 @@ varbinder::Variable *ETSChecker::GetExtensionFuncVarInGlobalField(const ir::Memb
 varbinder::Variable *ETSChecker::GetExtensionFuncVarInFunctionScope(const ir::MemberExpression *const memberExpr)
 {
     auto propertyName = memberExpr->Property()->AsIdentifier()->Name();
-    auto *funcScopeVar = Scope()->FindInFunctionScope(propertyName, VO::ALL_NON_TYPE).variable;
+    auto *funcScopeVar = Scope()->FindInFunctionScope(propertyName, VO::ALL).variable;
     if (funcScopeVar == nullptr || !IsExtensionETSFunctionType(funcScopeVar->TsType())) {
         return nullptr;
     }

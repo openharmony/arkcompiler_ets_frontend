@@ -66,7 +66,6 @@ enum class DeclType {
     _(ANNOTATION, AnnotationScope)                \
     _(ANNOTATIONPARAMSCOPE, AnnotationParamScope) \
     _(LOCAL, LocalScope)                          \
-    _(LOCAL_WITH_ALIAS, LocalScopeWithTypeAlias)  \
     /* Variable Scopes */                         \
     _(LOOP, LoopScope)                            \
     _(LOOP_DECL, LoopDeclarationScope)            \
@@ -101,7 +100,6 @@ enum class ResolveBindingOptions : uint32_t {
 
     LAST = TYPE_ALIASES,
     ALL = (LAST << 1U) - 1U,
-    ALL_NON_TYPE = ALL - TYPE_ALIASES,
 };
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
