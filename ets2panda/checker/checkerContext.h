@@ -93,7 +93,11 @@ using SmartCastTestMap = ArenaMap<varbinder::Variable const *, std::pair<checker
 using SmartCastTuple = std::tuple<varbinder::Variable const *, checker::Type *, checker::Type *>;
 using SmartCastTestArray = std::vector<SmartCastTuple>;
 using PreservedSmartCastsMap = ArenaMultiMap<ir::AstNode const *, SmartCastArray>;
-using SmartVariables = std::unordered_set<varbinder::Variable const *>;
+
+// ReassignedVariableMap
+//  - key: a variable that is on the left side of an assignment
+//  - value: a boolean that marks, if the variable was accessed after it has been reassigned
+using ReassignedVariableMap = std::unordered_map<varbinder::Variable const *, bool>;
 
 struct SmartCastCondition final {
     SmartCastCondition() = default;
@@ -220,7 +224,8 @@ public:
         return CloneTestSmartCasts(true);
     }
 
-    [[nodiscard]] std::pair<SmartCastArray, bool> EnterLoop(ir::LoopStatement const &loop) noexcept;
+    [[nodiscard]] std::pair<SmartCastArray, bool> EnterLoop(const ir::LoopStatement &loop,
+                                                            SmartCastTypes loopConditionSmartCasts) noexcept;
 
     [[nodiscard]] bool IsInLoop() const noexcept
     {
@@ -250,6 +255,7 @@ public:
     checker::Type *GetUnionOfTypes(checker::Type *type1, checker::Type *type2) const noexcept;
     void MergeSmartTypesForLogicalAnd(SmartCastTuple &newSmartCastTypes);
     void InvalidateNecessarySmartCastsInLogicalAnd(std::optional<SmartCastTuple> &newSmartCastTypes);
+    ReassignedVariableMap GetReassignedVariablesInNode(const ir::AstNode *node) const;
     void CheckTestSmartCastCondition(lexer::TokenType operatorType);
     void CheckIdentifierSmartCastCondition(ir::Identifier const *identifier) noexcept;
     void CheckUnarySmartCastCondition(ir::UnaryExpression const *unaryExpression) noexcept;
@@ -283,7 +289,7 @@ private:
     void ClearTestSmartCasts() noexcept;
     [[nodiscard]] std::optional<SmartCastTuple> ResolveSmartCastTypes();
     [[nodiscard]] bool CheckTestOrSmartCastCondition(SmartCastTuple const &types);
-    void CheckAssignments(ir::AstNode const *node, SmartVariables &changedVariables) noexcept;
+    void CheckAssignments(ir::AstNode const *node, ReassignedVariableMap &changedVariables) const noexcept;
 };
 
 class SavedCheckerContextStatus final {
