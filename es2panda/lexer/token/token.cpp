@@ -77,6 +77,11 @@ bool Token::IsPropNameLiteral() const
             type_ == TokenType::LITERAL_TRUE || type_ == TokenType::LITERAL_FALSE);
 }
 
+bool Token::IsBooleanOrNullLiteral() const
+{
+    return (type_ == TokenType::LITERAL_NULL || type_ == TokenType::LITERAL_TRUE || type_ == TokenType::LITERAL_FALSE);
+}
+
 bool Token::IsKeyword() const
 {
     return (type_ >= TokenType::FIRST_KEYW || type_ == TokenType::KEYW_IN || type_ == TokenType::KEYW_INSTANCEOF);

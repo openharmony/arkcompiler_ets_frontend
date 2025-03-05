@@ -2379,7 +2379,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElmentDescriptor *desc, bool isDe
     }
 
     ir::Expression *propName = nullptr;
-    if (lexer_->GetToken().IsKeyword()) {
+    if (lexer_->GetToken().IsKeyword() || lexer_->GetToken().IsBooleanOrNullLiteral()) {
         lexer_->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
     }
 
