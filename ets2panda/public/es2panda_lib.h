@@ -33,6 +33,14 @@ extern "C" {
 
 #define ES2PANDA_LIB_VERSION 1
 
+#ifndef CAPI_EXPORT
+#ifdef PANDA_TARGET_WINDOWS
+#define CAPI_EXPORT __declspec(dllexport)
+#else
+#define CAPI_EXPORT __attribute__((visibility("default")))
+#endif
+#endif
+
 typedef struct es2panda_Config es2panda_Config;
 typedef struct es2panda_Context es2panda_Context;
 
@@ -121,7 +129,7 @@ typedef enum es2panda_ContextState es2panda_ContextState;
 // CC-OFFNXT(G.INC.08) project code style
 #include "generated/es2panda_lib/es2panda_lib_enums.inc"
 
-struct es2panda_Impl {
+struct CAPI_EXPORT es2panda_Impl {
     int version;
 
     es2panda_Config *(*CreateConfig)(int argc, char const *const *argv);
@@ -182,7 +190,7 @@ struct es2panda_Impl {
 #include "generated/es2panda_lib/es2panda_lib_decl.inc"
 };
 
-struct es2panda_Impl const *es2panda_GetImpl(int version);
+CAPI_EXPORT struct es2panda_Impl const *es2panda_GetImpl(int version);
 
 // NOLINTEND
 
