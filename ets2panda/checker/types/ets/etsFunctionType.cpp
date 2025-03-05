@@ -34,21 +34,20 @@ ETSFunctionType::ETSFunctionType(ETSChecker *checker, Signature *signature)
     : Type(TypeFlag::FUNCTION),
       callSignatures_({{signature->ToArrowSignature(checker)}, checker->Allocator()->Adapter()}),
       name_(""),
-      assemblerName_(checker->GlobalBuiltinFunctionType(signature->MinArgCount(), signature->GetThrowFlags())
-                         ->AsETSObjectType()
-                         ->AssemblerName())
+      assemblerName_(
+          checker->GlobalBuiltinFunctionType(signature->MinArgCount(), false)->AsETSObjectType()->AssemblerName())
 {
 }
 
 // #22951: proper this type implementation
-static void HackThisParameterInExtensionFunctionInvoke(ETSObjectType *interface)
+static void HackThisParameterInExtensionFunctionInvoke(ETSObjectType *interface, size_t arity)
 {
-    auto &callSigsOfInvoke0 =
-        interface->AsETSObjectType()
-            ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME)
-            ->TsType()
-            ->AsETSFunctionType()
-            ->CallSignatures();
+    auto invokeName = FunctionalInterfaceInvokeName(arity, false);
+    auto &callSigsOfInvoke0 = interface->AsETSObjectType()
+                                  ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(util::StringView(invokeName))
+                                  ->TsType()
+                                  ->AsETSFunctionType()
+                                  ->CallSignatures();
     for (auto sig : callSigsOfInvoke0) {
         sig->AddSignatureFlag(SignatureFlags::THIS_RETURN_TYPE);
     }
@@ -60,10 +59,9 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
     bool isExtensionHack = signature->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION);
 
     if (signature->RestVar() != nullptr) {
-        auto *functionN = checker
-                              ->GlobalBuiltinFunctionType(checker->GlobalBuiltinFunctionTypeVariadicThreshold(),
-                                                          signature->GetThrowFlags())
-                              ->AsETSObjectType();
+        auto *functionN =
+            checker->GlobalBuiltinFunctionType(checker->GlobalBuiltinFunctionTypeVariadicThreshold(), false)
+                ->AsETSObjectType();
         auto *substitution = checker->NewSubstitution();
         substitution->emplace(functionN->TypeArguments()[0]->AsETSTypeParameter(),
                               checker->MaybeBoxType(signature->ReturnType()));
@@ -77,7 +75,7 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
         return nullptr;
     }
 
-    auto *funcIface = checker->GlobalBuiltinFunctionType(arity, signature->GetThrowFlags())->AsETSObjectType();
+    auto *funcIface = checker->GlobalBuiltinFunctionType(arity, false)->AsETSObjectType();
     auto *substitution = checker->NewSubstitution();
 
     for (size_t i = 0; i < arity; i++) {
@@ -89,7 +87,7 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
     auto result = funcIface->Substitute(checker->Relation(), substitution, true, isExtensionHack);
 
     if (signature->HasSignatureFlag(SignatureFlags::THIS_RETURN_TYPE)) {
-        HackThisParameterInExtensionFunctionInvoke(result);
+        HackThisParameterInExtensionFunctionInvoke(result, arity);
     }
     return result;
 }

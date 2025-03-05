@@ -70,23 +70,20 @@ void GlobalTypesHolder::AddETSEscompatLayer()
 void GlobalTypesHolder::AddFunctionTypes(ArenaAllocator *allocator)
 {
     auto addTypes = [this, allocator](std::string name, GlobalTypeId from, GlobalTypeId to) {
-        for (size_t id = static_cast<size_t>(from), nargs = 0; id < static_cast<size_t>(to); id++, nargs++) {
+        for (size_t id = static_cast<size_t>(from), nargs = 0; id <= static_cast<size_t>(to); id++, nargs++) {
             builtinNameMappings_.emplace(util::UString(name + std::to_string(nargs), allocator).View(),
                                          static_cast<GlobalTypeId>(id));
         }
-        builtinNameMappings_.emplace(util::UString((name + "N"), allocator).View(), to);
     };
 
-    addTypes("ThrowingFunction", GlobalTypeId::ETS_THROWING_FUNCTION0_CLASS,
-             GlobalTypeId::ETS_THROWING_FUNCTIONN_CLASS);
-    addTypes("RethrowingFunction", GlobalTypeId::ETS_RETHROWING_FUNCTION0_CLASS,
-             GlobalTypeId::ETS_RETHROWING_FUNCTIONN_CLASS);
-    addTypes("Function", GlobalTypeId::ETS_FUNCTION0_CLASS, GlobalTypeId::ETS_FUNCTIONN_CLASS);
+    addTypes("Function", GlobalTypeId::ETS_FUNCTION0_CLASS, GlobalTypeId::ETS_FUNCTION16_CLASS);
+    addTypes("Lambda", GlobalTypeId::ETS_LAMBDA0_CLASS, GlobalTypeId::ETS_LAMBDA16_CLASS);
 
-    addTypes("ThrowingLambda", GlobalTypeId::ETS_THROWING_LAMBDA0_CLASS, GlobalTypeId::ETS_THROWING_LAMBDAN_CLASS);
-    addTypes("RethrowingLambda", GlobalTypeId::ETS_RETHROWING_LAMBDA0_CLASS,
-             GlobalTypeId::ETS_RETHROWING_LAMBDAN_CLASS);
-    addTypes("Lambda", GlobalTypeId::ETS_LAMBDA0_CLASS, GlobalTypeId::ETS_LAMBDAN_CLASS);
+    addTypes("FunctionR", GlobalTypeId::ETS_FUNCTIONR0_CLASS, GlobalTypeId::ETS_FUNCTIONR16_CLASS);
+    addTypes("LambdaR", GlobalTypeId::ETS_LAMBDAR0_CLASS, GlobalTypeId::ETS_LAMBDAR16_CLASS);
+
+    builtinNameMappings_.emplace("FunctionN", GlobalTypeId::ETS_FUNCTIONN_CLASS);
+    builtinNameMappings_.emplace("LambdaN", GlobalTypeId::ETS_FUNCTIONN_CLASS);
 }
 
 void GlobalTypesHolder::AddTSSpecificTypes(ArenaAllocator *allocator)
@@ -195,15 +192,6 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMap
     AddETSEscompatLayer();
 
     builtinNameMappings_.emplace("TYPE ERROR", GlobalTypeId::TYPE_ERROR);
-
-    // ETS functional types
-    for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS), nargs = 0;
-         id < static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS); id++, nargs++) {
-        builtinNameMappings_.emplace(util::UString("Function" + std::to_string(nargs), allocator).View(),
-                                     static_cast<GlobalTypeId>(id));
-    }
-
-    builtinNameMappings_.emplace("FunctionN", GlobalTypeId::ETS_FUNCTIONN_CLASS);
 
     // Function types
     AddFunctionTypes(allocator);
@@ -645,55 +633,26 @@ Type *GlobalTypesHolder::GlobalDoubleBoxBuiltinType()
 
 size_t GlobalTypesHolder::VariadicFunctionTypeThreshold()
 {
-    auto val =
-        static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS) - static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS);
-    ES2PANDA_ASSERT(val == (static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTIONN_CLASS) -
-                            static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTION0_CLASS)));
-    ES2PANDA_ASSERT(val == (static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTIONN_CLASS) -
-                            static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTION0_CLASS)));
-    return val;
+    return static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS) -
+           static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS);
 }
 
-Type *GlobalTypesHolder::GlobalFunctionBuiltinType(size_t nargs, ThrowMarker flags)
+Type *GlobalTypesHolder::GlobalFunctionBuiltinType(size_t nargs, bool hasRest)
 {
-    Type *type = globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS) + nargs);
-
-    if (nargs >= VariadicFunctionTypeThreshold()) {
-        if ((flags == ThrowMarker::THROWS) != 0U) {
-            type = globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTIONN_CLASS));
-        } else if ((flags == ThrowMarker::RETHROWS) != 0U) {
-            type = globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTIONN_CLASS));
-        } else {
-            type = globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS));
-        }
-    } else if ((flags == ThrowMarker::THROWS) != 0U) {
-        type = globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTION0_CLASS) + nargs);
-    } else if ((flags == ThrowMarker::RETHROWS) != 0U) {
-        type = globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTION0_CLASS) + nargs);
+    if (nargs < VariadicFunctionTypeThreshold()) {
+        auto base = hasRest ? GlobalTypeId::ETS_FUNCTIONR0_CLASS : GlobalTypeId::ETS_FUNCTION0_CLASS;
+        return globalTypes_.at(static_cast<size_t>(base) + nargs);
     }
-
-    return type;
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS));
 }
 
-Type *GlobalTypesHolder::GlobalLambdaBuiltinType(size_t nargs, ThrowMarker flags)
+Type *GlobalTypesHolder::GlobalLambdaBuiltinType(size_t nargs, bool hasRest)
 {
-    Type *type = globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_LAMBDA0_CLASS) + nargs);
-
-    if (nargs >= VariadicFunctionTypeThreshold()) {
-        if ((flags == ThrowMarker::THROWS) != 0U) {
-            type = globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_THROWING_LAMBDAN_CLASS));
-        } else if ((flags == ThrowMarker::RETHROWS) != 0U) {
-            type = globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_LAMBDAN_CLASS));
-        } else {
-            type = globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_LAMBDAN_CLASS));
-        }
-    } else if ((flags == ThrowMarker::THROWS) != 0U) {
-        type = globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_THROWING_LAMBDA0_CLASS) + nargs);
-    } else if ((flags == ThrowMarker::RETHROWS) != 0U) {
-        type = globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_LAMBDA0_CLASS) + nargs);
+    if (nargs < VariadicFunctionTypeThreshold()) {
+        auto base = hasRest ? GlobalTypeId::ETS_LAMBDAR0_CLASS : GlobalTypeId::ETS_LAMBDA0_CLASS;
+        return globalTypes_.at(static_cast<size_t>(base) + nargs);
     }
-
-    return type;
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_LAMBDAN_CLASS));
 }
 
 Type *GlobalTypesHolder::GlobalTypeError()

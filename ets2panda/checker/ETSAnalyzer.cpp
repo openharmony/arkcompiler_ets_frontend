@@ -171,9 +171,8 @@ static checker::Type *CheckMethodDefinitionHelper(ETSChecker *checker, ir::Metho
 
     // NOTE(gogabr): temporary, until we have proper bridges, see #16485
     // Don't check overriding for synthetic functional classes.
-    if ((node->Parent()->Modifiers() & ir::ModifierFlags::FUNCTIONAL) == 0 &&
-        !node->Id()->Name().Is(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME)) {
-        checker->CheckOverride(node->TsType()->AsETSFunctionType()->FindSignature(scriptFunc));
+    if ((node->Parent()->Modifiers() & ir::ModifierFlags::FUNCTIONAL) == 0) {
+        checker->CheckOverride(node->TsType()->AsETSFunctionType()->FindSignature(node->Function()));
     }
 
     for (auto *overload : node->Overloads()) {

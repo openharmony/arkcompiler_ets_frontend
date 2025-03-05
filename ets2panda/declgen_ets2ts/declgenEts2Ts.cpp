@@ -391,10 +391,9 @@ void TSDeclGen::GenObjectType(const checker::ETSObjectType *objectType)
         return;
     }
     if (objectType->HasObjectFlag(checker::ETSObjectFlags::FUNCTIONAL)) {
-        const auto *invoke = objectType->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(
-            checker::FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
-        ES2PANDA_ASSERT(invoke && invoke->TsType() && invoke->TsType()->IsETSFunctionType());
-        GenType(invoke->TsType());
+        const auto *invoke = objectType->GetFunctionalInterfaceInvokeType();
+        ES2PANDA_ASSERT(invoke && invoke->IsETSFunctionType());
+        GenType(invoke);
         return;
     }
     if (objectType->HasObjectFlag(checker::ETSObjectFlags::DYNAMIC)) {

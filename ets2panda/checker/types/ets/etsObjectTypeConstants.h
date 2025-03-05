@@ -108,7 +108,10 @@ enum class PropertyType {
 };
 
 /* Invoke method name in functional interfaces */
-constexpr char const *FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME = "invoke0";
+inline std::string FunctionalInterfaceInvokeName(size_t arity, bool hasRest)
+{
+    return (hasRest ? "invokeR" : "invoke") + std::to_string(arity);
+}
 
 }  // namespace ark::es2panda::checker
 

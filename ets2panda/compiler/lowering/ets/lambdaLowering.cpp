@@ -621,29 +621,30 @@ static checker::ETSObjectType *FunctionTypeToLambdaProviderType(checker::ETSChec
                                                                 checker::Signature *signature)
 {
     if (signature->RestVar() != nullptr) {
-        return checker
-            ->GlobalBuiltinLambdaType(checker->GlobalBuiltinFunctionTypeVariadicThreshold(), signature->GetThrowFlags())
+        return checker->GlobalBuiltinLambdaType(checker->GlobalBuiltinFunctionTypeVariadicThreshold(), false)
             ->AsETSObjectType();
     }
     // Note: FunctionN is not supported yet
     if (signature->ArgCount() >= checker->GlobalBuiltinFunctionTypeVariadicThreshold()) {
         return nullptr;
     }
-    return checker->GlobalBuiltinLambdaType(signature->ArgCount(), signature->GetThrowFlags())->AsETSObjectType();
+    return checker->GlobalBuiltinLambdaType(signature->ArgCount(), false)->AsETSObjectType();
 }
 
 // The `invoke` and `invoke0` of extension lambda class has two `this` identifier in parameter scope,
 // first one is the lambdaClass itself and second one is the receiver class,
 // the true `this` of the `invoke` and `invoke0` functionScope is the lambdaClass.
-static void CorrectTheTrueThisForExtensionLambda(public_lib::Context *ctx, ir::ClassDeclaration *lambdaClass)
+static void CorrectTheTrueThisForExtensionLambda(public_lib::Context *ctx, ir::ClassDeclaration *lambdaClass,
+                                                 size_t arity)
 {
     auto *checker = ctx->checker->AsETSChecker();
     auto *classScope = lambdaClass->Definition()->Scope();
     ArenaVector<varbinder::Variable *> invokeFuncsOfLambda(checker->Allocator()->Adapter());
+    auto invokeName = checker::FunctionalInterfaceInvokeName(arity, false);
     invokeFuncsOfLambda.emplace_back(
         classScope->FindLocal(compiler::Signatures::LAMBDA_OBJECT_INVOKE, varbinder::ResolveBindingOptions::METHODS));
-    invokeFuncsOfLambda.emplace_back(classScope->FindLocal(checker::FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME,
-                                                           varbinder::ResolveBindingOptions::METHODS));
+    invokeFuncsOfLambda.emplace_back(
+        classScope->FindLocal(util::StringView(invokeName), varbinder::ResolveBindingOptions::METHODS));
     for (auto *invokeFuncOfLambda : invokeFuncsOfLambda) {
         if (invokeFuncOfLambda == nullptr) {
             continue;
@@ -741,14 +742,17 @@ static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, checker
 
     for (size_t arity = signature->MinArgCount(); arity <= signature->ArgCount(); ++arity) {
         lciInfo.arity = arity;
-        CreateLambdaClassInvokeMethod(ctx, info, &lciInfo, checker::FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME, true);
-        CreateLambdaClassInvokeMethod(ctx, info, &lciInfo, compiler::Signatures::LAMBDA_OBJECT_INVOKE, false);
+        auto invokeMethodName =
+            util::UString {checker::FunctionalInterfaceInvokeName(arity, false), ctx->allocator}.View();
+        CreateLambdaClassInvokeMethod(ctx, info, &lciInfo, invokeMethodName, true);
+        // NOTE(vpukhov): for optional methods, the required invokeRk k={min, max-1} is not emitted
     }
+    CreateLambdaClassInvokeMethod(ctx, info, &lciInfo, compiler::Signatures::LAMBDA_OBJECT_INVOKE, false);
 
     InitScopesPhaseETS::RunExternalNode(classDeclaration, varBinder);
     varBinder->ResolveReferencesForScopeWithContext(classDeclaration, varBinder->TopScope());
     classDeclaration->Check(checker);
-    CorrectTheTrueThisForExtensionLambda(ctx, classDeclaration);
+    CorrectTheTrueThisForExtensionLambda(ctx, classDeclaration, signature->MinArgCount());
     return classDeclaration;
 }
 
@@ -972,18 +976,18 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
 
     auto *oldCallee = call->Callee();
     auto *oldType = checker->GetApparentType(oldCallee->TsType());
-    auto *ifaceType =
-        oldType->IsETSObjectType()
-            ? oldType->AsETSObjectType()
-            : oldType->AsETSFunctionType()->ArrowToFunctionalInterfaceDesiredArity(checker, call->Arguments().size());
+    size_t arity = call->Arguments().size();
+    auto *ifaceType = oldType->IsETSObjectType()
+                          ? oldType->AsETSObjectType()
+                          : oldType->AsETSFunctionType()->ArrowToFunctionalInterfaceDesiredArity(checker, arity);
     if (ifaceType->IsETSDynamicType()) {
         return call;
     }
-    auto *prop = ifaceType->GetProperty(checker::FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME,
-                                        checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD |
-                                            checker::PropertySearchFlags::SEARCH_IN_INTERFACES);
+    auto invokeMethodName = util::UString {checker::FunctionalInterfaceInvokeName(arity, false), allocator}.View();
+    auto *prop = ifaceType->GetProperty(invokeMethodName, checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD |
+                                                              checker::PropertySearchFlags::SEARCH_IN_INTERFACES);
     ASSERT(prop != nullptr);
-    auto *invoke0Id = allocator->New<ir::Identifier>(checker::FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME, allocator);
+    auto *invoke0Id = allocator->New<ir::Identifier>(invokeMethodName, allocator);
     invoke0Id->SetTsType(prop->TsType());
     invoke0Id->SetVariable(prop);
 

@@ -14,11 +14,11 @@
  */
 
 class A {
-    public static foo<A1>(fn: Function1<A1, void>, arg: A1): void {
-        fn.invoke0(arg)
+    public static foo<A1>(fn: (a: A1) => void, arg: A1): void {
+        fn(arg)
     }
-    public static foo<A1, A2>(fn: Function2<A1, A2, void>, arg1: A1, arg2: A2): void {
-        fn.invoke0(arg1, arg2)
+    public static foo<A1, A2>(fn: (a1: A1, a2: A2) => void, arg1: A1, arg2: A2): void {
+        fn(arg1, arg2)
     }
 }
 
