@@ -142,13 +142,13 @@ __attribute__((unused)) es2panda_variantDoubleCharArrayBool EnumMemberResultToEs
     es2panda_variantDoubleCharArrayBool es2panda_variant;
     es2panda_variant.index = variant.index();
     switch (es2panda_variant.index) {
-        case es2panda_variantIndex::DOUBLE:
+        case es2panda_variantIndex::CAPI_DOUBLE:
             es2panda_variant.variant.d = std::get<double>(variant);
             break;
-        case es2panda_variantIndex::CHAR:
+        case es2panda_variantIndex::CAPI_CHAR:
             es2panda_variant.variant.c = StringViewToCString(allocator, std::get<util::StringView>(variant));
             break;
-        case es2panda_variantIndex::BOOL:
+        case es2panda_variantIndex::CAPI_BOOL:
             es2panda_variant.variant.b = std::get<bool>(variant);
             break;
         default:

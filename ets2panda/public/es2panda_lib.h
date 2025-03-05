@@ -46,9 +46,9 @@ typedef struct es2panda_variantDoubleCharArrayBool {
 } es2panda_variantDoubleCharArrayBool;
 
 enum es2panda_variantIndex {
-    DOUBLE = 0,
-    CHAR = 1,
-    BOOL = 2,
+    CAPI_DOUBLE = 0,
+    CAPI_CHAR = 1,
+    CAPI_BOOL = 2,
 };
 
 typedef struct es2panda_Program es2panda_Program;
