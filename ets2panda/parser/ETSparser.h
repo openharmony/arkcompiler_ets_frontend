@@ -453,7 +453,7 @@ private:
                                 ir::ModifierFlags memberModifiers, const lexer::SourcePosition &startLoc);
     bool CheckAccessorDeclaration(ir::ModifierFlags memberModifiers);
 
-    ir::AstNode *ParseAmbientSignature();
+    ir::AstNode *ParseAmbientSignature(const lexer::SourcePosition &startPosAmbient);
 
     void ParseArgumentsNewExpression(ArenaVector<ir::Expression *> &arguments, ir::TypeNode *typeReference);
     ir::Identifier *CreateInvokeIdentifier();
