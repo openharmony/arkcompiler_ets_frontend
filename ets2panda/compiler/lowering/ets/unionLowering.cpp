@@ -19,6 +19,14 @@
 
 namespace ark::es2panda::compiler {
 
+static void ReplaceAll(std::string &str, std::string_view substr, std::string_view replacement)
+{
+    for (size_t pos = str.find(substr, 0); pos != std::string::npos; pos = str.find(substr, pos)) {
+        str.replace(pos, substr.size(), replacement);
+        pos += replacement.size();
+    }
+}
+
 static std::string GetAccessClassName(checker::Type *fieldType)
 {
     std::stringstream ss;
@@ -26,6 +34,7 @@ static std::string GetAccessClassName(checker::Type *fieldType)
     fieldType->ToAssemblerTypeWithRank(ss);
     std::string res(ss.str());
     std::replace(res.begin(), res.end(), '.', '-');
+    ReplaceAll(res, "[]", "[$]$");
     return res;
 }
 
