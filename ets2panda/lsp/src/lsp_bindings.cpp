@@ -246,8 +246,8 @@ Napi::Value GetSuggestionDiagnosticsWrapper(const Napi::CallbackInfo &info)
         return env.Null();
     }
 
-    std::vector<FileDiagnostic> result = lsp->getSuggestionDiagnostics(fileName.c_str());
-    return GetSuggestionDiagnosticsToNapiArray(result, env);
+    DiagnosticReferences result = lsp->getSuggestionDiagnostics(fileName.c_str());
+    return DiagnosticReferencesToNapiObject(result, env);
 }
 
 Napi::Object SymbolDisplayPartToNapiObject(const SymbolDisplayPart &info, Napi::Env env)
