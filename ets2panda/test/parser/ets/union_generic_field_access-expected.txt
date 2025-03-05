@@ -830,7 +830,7 @@
                                       "type": "VariableDeclarator",
                                       "id": {
                                         "type": "Identifier",
-                                        "name": "gensym%%_1",
+                                        "name": "gensym%%_5",
                                         "decorators": [],
                                         "loc": {
                                           "start": {
@@ -899,7 +899,7 @@
                                       "operator": "==",
                                       "left": {
                                         "type": "Identifier",
-                                        "name": "gensym%%_1",
+                                        "name": "gensym%%_5",
                                         "decorators": [],
                                         "loc": {
                                           "start": {
@@ -963,7 +963,7 @@
                                       "type": "MemberExpression",
                                       "object": {
                                         "type": "Identifier",
-                                        "name": "gensym%%_1",
+                                        "name": "gensym%%_5",
                                         "decorators": [],
                                         "loc": {
                                           "start": {
