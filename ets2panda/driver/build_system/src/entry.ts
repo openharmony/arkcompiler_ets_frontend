@@ -46,4 +46,6 @@ function main(): void {
   build(projectConfig);
 }
 
-main();
+if (require.main === module) {
+  main();
+}
