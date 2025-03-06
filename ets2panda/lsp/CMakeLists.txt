@@ -20,6 +20,7 @@ set(ES2PANDA_LSP_SRC
   ./src/quick_info.cpp
   ./src/references.cpp
   ./src/get_adjusted_location.cpp
+  ./src/find_rename_locations.cpp
   ./src/find_references.cpp
   ./src/string_completions.cpp
   ./src/rename.cpp

@@ -29,6 +29,7 @@
 #include "public/es2panda_lib.h"
 #include "cancellation_token.h"
 #include "find_references.h"
+#include "find_rename_locations.h"
 #include "completions.h"
 
 #ifdef __cplusplus
@@ -354,9 +355,14 @@ typedef struct LSPAPI {
                                                             const std::vector<std::string> &autoGenerateFolders,
                                                             ark::es2panda::lsp::CancellationToken cancellationToken);
     DocumentHighlightsReferences (*getDocumentHighlights)(char const *fileName, size_t position);
-    FileRefMap (*findReferences)(ark::es2panda::lsp::CancellationToken *tkn,
-                                 const std::vector<ark::es2panda::SourceFile> &srcFiles,
-                                 const ark::es2panda::SourceFile &srcFile, size_t position);
+    std::vector<ark::es2panda::lsp::RenameLocation> (*findRenameLocations)(
+        const std::vector<ark::es2panda::SourceFile> &files, const ark::es2panda::SourceFile &file, size_t position);
+    std::vector<ark::es2panda::lsp::RenameLocation> (*findRenameLocationsWithCancellationToken)(
+        ark::es2panda::lsp::CancellationToken *tkn, const std::vector<ark::es2panda::SourceFile> &files,
+        const ark::es2panda::SourceFile &file, size_t position);
+    std::vector<ark::es2panda::lsp::ReferencedNode> (*findReferences)(
+        ark::es2panda::lsp::CancellationToken *tkn, const std::vector<ark::es2panda::SourceFile> &srcFiles,
+        const ark::es2panda::SourceFile &srcFile, size_t position);
     DiagnosticReferences (*getSuggestionDiagnostics)(char const *fileName);
     ark::es2panda::lsp::CompletionInfo (*getCompletionsAtPosition)(char const *fileName, size_t position);
     std::vector<TextSpan> (*getBraceMatchingAtPosition)(char const *fileName, size_t position);

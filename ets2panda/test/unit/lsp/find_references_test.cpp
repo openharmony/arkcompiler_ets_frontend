@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 #include <gtest/gtest.h>
-#include <algorithm>
 #include <cstddef>
+#include <cstdio>
 #include <string>
 #include <vector>
 
@@ -30,89 +30,19 @@ using ark::es2panda::lsp::FindReferences;
 using std::string;
 using std::vector;
 
-// Simple helper to get the index and line of occurences to a string
-static vector<SourcePosition> GetTokenPositions(string source, string token)
-{
-    vector<SourcePosition> res;
-    auto findLineNumber = [&source](string::size_type index) {
-        string::size_type line = 0;
-        for (size_t i = 0; i < index && i < source.size(); ++i) {
-            if (source[i] == '\n') {
-                ++line;
-            }
-        }
-        return line;
-    };
-    auto pos = source.find(token);
-    if (pos != string::npos)
-        res.push_back({SourcePosition {pos, findLineNumber(pos)}});
-    else {
-        return {};
-    }
-    while (pos != string::npos && pos < source.size()) {
-        pos = source.find(token, pos + 1);
-        if (pos == string::npos) {
-            break;
-        }
-        res.push_back({SourcePosition {pos, findLineNumber(pos)}});
-    }
-    return res;
-}
-
-static FileRefMap getExpectedRefMap(vector<SourceFile> &sourceFiles, string token)
-{
-    FileRefMap expected;
-    for (auto src : sourceFiles) {
-        auto filePath = string {src.filePath};
-        auto fileContent = string {src.source};
-        auto posList = GetTokenPositions(fileContent, token);
-        expected.insert({filePath, posList});
-    }
-    return expected;
-}
-
-static auto testCase(vector<SourceFile> &sourceFiles, SourceFile selectedFile, string token, int tokenIndex,
-                     FileRefMap expectedRefMap = {})
+static auto testCase(vector<SourceFile> &sourceFiles, SourceFile selectedFile, size_t tokenOffset,
+                     std::set<ark::es2panda::lsp::ReferencedNode> expected)
 {
     auto cancellationToken = ark::es2panda::lsp::CancellationToken(123, nullptr);
-    if (expectedRefMap.empty()) {
-        expectedRefMap = getExpectedRefMap(sourceFiles, token);
-    }
-    auto posListSelectedFile = expectedRefMap[string {selectedFile.filePath}];
-    auto selectedTokenPos = posListSelectedFile[tokenIndex].index;
-    auto res = FindReferences(&cancellationToken, sourceFiles, selectedFile, selectedTokenPos);
+    auto res = FindReferences(&cancellationToken, sourceFiles, selectedFile, tokenOffset);
 
-    ASSERT_EQ(res.size(), expectedRefMap.size());
+    (void)res;
 
-    for (auto entry : res) {
-        auto fp = entry.first;
-        auto posList = entry.second;
-        auto expectedPosList = expectedRefMap[fp];
+    ASSERT_EQ(res.size(), expected.size());
 
-        string info;
-        info += "Found References:\n";
-        for (auto pos : posList) {
-            info += "(" + std::to_string(pos.index) + "," + std::to_string(pos.line) + ") ";
-        }
-        info += "\n";
-
-        info += "Expected References:\n";
-        for (auto pos : expectedPosList) {
-            info += "(" + std::to_string(pos.index) + "," + std::to_string(pos.line) + ") ";
-        }
-        info += "\n";
-
-        ASSERT_EQ(posList.size(), expectedPosList.size()) << info;
-        for (auto pos : posList) {
-            // NOTE(muhammet): This is a buggy case, the identifier for import name specifiers returns the wrong
-            // index once the bug is gone we shouldn't skip them anymore
-            auto found =
-                std::find_if(expectedPosList.begin(), expectedPosList.end(), [&pos](const SourcePosition &epos) {
-                    return epos.index == pos.index && epos.line == pos.line;
-                });
-            ASSERT_NE(found, expectedPosList.end())
-                << "Token at position (" << pos.index << ", " << pos.line << "), is not a valid reference in " << fp;
-        }
+    for (const ark::es2panda::lsp::ReferencedNode &reference : res) {
+        auto found = expected.find(reference);
+        ASSERT_NE(found, expected.end());
     }
 }
 
@@ -174,6 +104,38 @@ vector<string> fileContents = {
         console.log(myfoo.name)
     )"};
 
+std::set<ark::es2panda::lsp::ReferencedNode> expected_dummy = {
+    {"/tmp/findReferencesOne.sts", 83, 88, 4, true},     {"/tmp/findReferencesOne.sts", 863, 868, 33, false},
+    {"/tmp/findReferencesOne.sts", 881, 886, 34, false}, {"/tmp/findReferencesTwo.sts", 18, 23, 1, false},
+    {"/tmp/findReferencesTwo.sts", 78, 83, 3, false},    {"/tmp/findReferencesTwo.sts", 96, 101, 4, false},
+};
+
+std::set<ark::es2panda::lsp::ReferencedNode> expected_abc = {
+    {"/tmp/findReferencesOne.sts", 25, 28, 1, true},     {"/tmp/findReferencesOne.sts", 899, 902, 35, false},
+    {"/tmp/findReferencesOne.sts", 915, 918, 36, false}, {"/tmp/findReferencesOne.sts", 931, 934, 37, false},
+    {"/tmp/findReferencesTwo.sts", 25, 28, 1, false},    {"/tmp/findReferencesTwo.sts", 115, 118, 5, false},
+    {"/tmp/findReferencesTwo.sts", 131, 134, 6, false},  {"/tmp/findReferencesTwo.sts", 148, 151, 7, false},
+};
+
+std::set<ark::es2panda::lsp::ReferencedNode> expected_myfoo = {
+    {"/tmp/findReferencesTwo.sts", 171, 176, 9, true},
+    {"/tmp/findReferencesTwo.sts", 280, 285, 12, false},
+    {"/tmp/findReferencesTwo.sts", 337, 342, 14, false},
+};
+
+std::set<ark::es2panda::lsp::ReferencedNode> expected_Foo = {
+    {"/tmp/findReferencesOne.sts", 140, 143, 7, true},
+    {"/tmp/findReferencesTwo.sts", 30, 33, 1, false},
+    {"/tmp/findReferencesTwo.sts", 183, 186, 9, false},
+    {"/tmp/findReferencesTwo.sts", 234, 237, 10, false},
+};
+
+std::set<ark::es2panda::lsp::ReferencedNode> expected_name = {
+    {"/tmp/findReferencesOne.sts", 158, 162, 8, true},
+    {"/tmp/findReferencesOne.sts", 362, 366, 13, false},
+    {"/tmp/findReferencesTwo.sts", 343, 347, 14, false},
+};
+
 class LspFindRefTests : public LSPAPITests {};
 
 TEST_F(LspFindRefTests, FindReferencesMethodDefinition1)
@@ -189,8 +151,8 @@ TEST_F(LspFindRefTests, FindReferencesMethodDefinition1)
     // Case 1: Search for the first occurance of "abc" within "findReferencesOne.sts" which is a method definition
     {
         auto srcIndex = 0;
-        auto tknIndex = 0;
-        testCase(sourceFiles, sourceFiles[srcIndex], "abc", tknIndex);
+        size_t tokenOffset = 25;
+        testCase(sourceFiles, sourceFiles[srcIndex], tokenOffset, expected_abc);
     }
 }
 
@@ -207,8 +169,8 @@ TEST_F(LspFindRefTests, FindReferencesMethodDefinition2)
     // Case 2: Search for the first occurance of "dummy" within "findReferencesOne.sts" which is a method definition
     {
         auto srcIndex = 0;
-        auto tknIndex = 0;
-        testCase(sourceFiles, sourceFiles[srcIndex], "dummy", tknIndex);
+        size_t tokenOffset = 83;
+        testCase(sourceFiles, sourceFiles[srcIndex], tokenOffset, expected_dummy);
     }
 }
 
@@ -225,8 +187,8 @@ TEST_F(LspFindRefTests, FindReferencesImportSpecifier)
     // Case 3: Search for the first occurance of "abc" within "findReferencesTwo.sts" which is an import specifier
     {
         auto srcIndex = 1;
-        auto tknIndex = 0;
-        testCase(sourceFiles, sourceFiles[srcIndex], "abc", tknIndex);
+        size_t tokenOffset = 25;
+        testCase(sourceFiles, sourceFiles[srcIndex], tokenOffset, expected_abc);
     }
 }
 
@@ -244,8 +206,8 @@ TEST_F(LspFindRefTests, FindReferencesCallExpression1)
     // expression
     {
         auto srcIndex = 1;
-        auto tknIndex = 1;
-        testCase(sourceFiles, sourceFiles[srcIndex], "abc", tknIndex);
+        size_t tokenOffset = 115;
+        testCase(sourceFiles, sourceFiles[srcIndex], tokenOffset, expected_abc);
     }
 }
 
@@ -263,8 +225,8 @@ TEST_F(LspFindRefTests, FindReferencesCallExpression2)
     // expression
     {
         auto srcIndex = 1;
-        auto tknIndex = 1;
-        testCase(sourceFiles, sourceFiles[srcIndex], "dummy", tknIndex);
+        size_t tokenOffset = 78;
+        testCase(sourceFiles, sourceFiles[srcIndex], tokenOffset, expected_dummy);
     }
 }
 
@@ -281,8 +243,8 @@ TEST_F(LspFindRefTests, FindReferencesVariableDefinition)
     // Case 6: Search for the first occurance of "myfoo" within "findReferencesTwo.sts" which is a variable definition
     {
         auto srcIndex = 1;
-        auto tknIndex = 0;
-        testCase(sourceFiles, sourceFiles[srcIndex], "myfoo", tknIndex);
+        size_t tokenOffset = 171;
+        testCase(sourceFiles, sourceFiles[srcIndex], tokenOffset, expected_myfoo);
     }
 }
 
@@ -299,8 +261,8 @@ TEST_F(LspFindRefTests, FindReferencesInstanceCreation)
     // Case 7: Search for the first occurance of "Foo" within "findReferencesTwo.sts" which is a class instance creation
     {
         auto srcIndex = 1;
-        auto tknIndex = 0;
-        testCase(sourceFiles, sourceFiles[srcIndex], "Foo", tknIndex);
+        size_t tokenOffset = 30;
+        testCase(sourceFiles, sourceFiles[srcIndex], tokenOffset, expected_Foo);
     }
 }
 
@@ -317,21 +279,9 @@ TEST_F(LspFindRefTests, FindReferencesMemberAccess)
     // Case 7: Search for the first occurance of "name" within "findReferencesTwo.sts" which is a reference to a member
     {
         auto srcIndex = 1;
-        auto tknIndex = 0;
+        size_t tknIndex = 343;
 
-        FileRefMap expectedRefMap;
-        // First file references
-        {
-            auto fp = string {sourceFiles[0].filePath};
-            expectedRefMap[fp] = {SourcePosition {158, 8}, SourcePosition {362, 13}};
-        }
-        // Second file references
-        {
-            auto fp = string {sourceFiles[1].filePath};
-            expectedRefMap[fp] = {SourcePosition {343, 14}};
-        }
-
-        testCase(sourceFiles, sourceFiles[srcIndex], "name", tknIndex, expectedRefMap);
+        testCase(sourceFiles, sourceFiles[srcIndex], tknIndex, expected_name);
     }
 }
 
