@@ -248,7 +248,7 @@ TEST_F(LspRenameInfoTests, RenameInfoGetTextOfNode)
 {
     Initializer initializer = Initializer();
 
-    std::vector<std::string> files = {"export1.sts"};
+    std::vector<std::string> files = {"reanme_export1.sts"};
     std::vector<std::string> texts = {
         R"(export function A(a:number, b:number): number {return a + b;}
         export function B(a:number, b:number): number {return a + b;})"};

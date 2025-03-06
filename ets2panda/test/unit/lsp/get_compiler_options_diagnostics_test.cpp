@@ -72,7 +72,7 @@ public:
 
 TEST_F(LSPGetCompilerOptionsDiagnosticsTests, GetGlobalDiagnostics1)
 {
-    std::vector<std::string> files = {"main.sts"};
+    std::vector<std::string> files = {"get_compiler_options_diagnostics_test_main.sts"};
     std::vector<std::string> texts = {
         R"(
 import { test } from "";
@@ -90,7 +90,7 @@ import { test } from "";
 
 TEST_F(LSPGetCompilerOptionsDiagnosticsTests, GetGlobalDiagnostics2)
 {
-    std::vector<std::string> files = {"main.sts"};
+    std::vector<std::string> files = {"get_compiler_options_diagnostics_test_main.sts"};
     std::vector<std::string> texts = {
         R"(
 import { test } from "@unknown/package";
@@ -108,7 +108,7 @@ import { test } from "@unknown/package";
 
 TEST_F(LSPGetCompilerOptionsDiagnosticsTests, GetGlobalDiagnostics3)
 {
-    std::vector<std::string> files = {"main.sts"};
+    std::vector<std::string> files = {"get_compiler_options_diagnostics_test_main.sts"};
     std::vector<std::string> texts = {
         R"(
 import { test2 } from "./non_existent.sts";
@@ -129,11 +129,13 @@ import { test2 } from "./non_existent.sts";
 
 TEST_F(LSPGetCompilerOptionsDiagnosticsTests, GetGlobalDiagnostics4)
 {
-    std::vector<std::string> files = {"main.sts", "helper.sts", "utils.sts"};
+    std::vector<std::string> files = {"get_compiler_options_diagnostics_test_main.sts",
+                                      "get_compiler_options_diagnostics_test_helper.sts",
+                                      "get_compiler_options_diagnostics_test_utils.sts"};
     std::vector<std::string> texts = {
         R"(
-import { helper } from "./helper.sts";
-import { utils } from "./utils.sts";
+import { helper } from "./get_compiler_options_diagnostics_test_helper.sts";
+import { utils } from "./get_compiler_options_diagnostics_test_utils.sts";
 import { missing } from "./missing.sts";
  
 function main() {
@@ -181,7 +183,7 @@ export const utils = {
 
 TEST_F(LSPGetCompilerOptionsDiagnosticsTests, GetOptionDiagnostics1)
 {
-    std::vector<std::string> files = {"main.sts", "arktsconfig.json"};
+    std::vector<std::string> files = {"get_compiler_options_diagnostics_test_main.sts", "arktsconfig.json"};
     std::vector<std::string> texts = {
         R"(
 function A(a:number, b:number) {
@@ -208,7 +210,7 @@ function A(a:number, b:number) {
 
 TEST_F(LSPGetCompilerOptionsDiagnosticsTests, GetOptionDiagnostics2)
 {
-    std::vector<std::string> files = {"main.sts", "arktsconfig.json"};
+    std::vector<std::string> files = {"get_compiler_options_diagnostics_test_main.sts", "arktsconfig.json"};
     std::vector<std::string> texts = {
         R"(
 function A(a:number, b:number) {
@@ -238,7 +240,7 @@ function A(a:number, b:number) {
 
 TEST_F(LSPGetCompilerOptionsDiagnosticsTests, GetOptionDiagnostics3)
 {
-    std::vector<std::string> files = {"main.sts", "arktsconfig.json"};
+    std::vector<std::string> files = {"get_compiler_options_diagnostics_test_main.sts", "arktsconfig.json"};
     std::vector<std::string> texts = {
         R"(
 function A(a:number, b:number) {
@@ -269,7 +271,7 @@ function A(a:number, b:number) {
 
 TEST_F(LSPGetCompilerOptionsDiagnosticsTests, GetOptionDiagnostics4)
 {
-    std::vector<std::string> files = {"main.sts", "arktsconfig.json"};
+    std::vector<std::string> files = {"get_compiler_options_diagnostics_test_main.sts", "arktsconfig.json"};
     std::vector<std::string> texts = {
         R"(
 function A(a:number, b:number) {
@@ -307,7 +309,7 @@ function A(a:number, b:number) {
 
 TEST_F(LSPGetCompilerOptionsDiagnosticsTests, GetOptionDiagnostics5)
 {
-    std::vector<std::string> files = {"main.sts", "arktsconfig.json"};
+    std::vector<std::string> files = {"get_compiler_options_diagnostics_test_main.sts", "arktsconfig.json"};
     std::vector<std::string> texts = {
         R"(
 function A(a:number, b:number) {
