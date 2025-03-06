@@ -1,17 +1,3 @@
 # Known failures list for test262-other-fastverify-x64-int
 
-#20456
-test262/data/other_tests/language/statements/generators/dstr/dflt-ary-ptrn-elem-id-init-fn-name-arrow.js
-
-#21819
-test262/data/other_tests/built-ins/decodeURIComponent/S15.1.3.2_A2.1_T1.js
-test262/data/other_tests/built-ins/decodeURIComponent/S15.1.3.2_A2.4_T1.js
-test262/data/other_tests/built-ins/encodeURIComponent/S15.1.3.4_A2.3_T1.js
-
-#18547
-test262/data/test_es2021/built-ins/Atomics/sub/bad-range.js
-test262/data/test_es2021/built-ins/String/prototype/trim/15.5.4.20-2-8.js
-
-#20231
-test262/data/other_tests/built-ins/encodeURIComponent/S15.1.3.4_A1.3_T1.js
 
