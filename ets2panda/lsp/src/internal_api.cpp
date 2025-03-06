@@ -15,6 +15,7 @@
 
 #include <cstddef>
 #include <string>
+#include <utility>
 #include <vector>
 #include "api.h"
 #include "internal_api.h"
@@ -611,13 +612,15 @@ size_t GetTokenPosOfNode(const ir::AstNode *astNode)
     return astNode->Start().index;
 }
 
-ir::AstNode *GetDefinitionAtPositionImpl(es2panda_Context *context, size_t pos)
+std::pair<ir::AstNode *, util::StringView> GetDefinitionAtPositionImpl(es2panda_Context *context, size_t pos)
 {
+    std::pair<ir::AstNode *, util::StringView> res;
     auto node = GetTouchingToken(context, pos, false);
     if (node == nullptr || !node->IsIdentifier()) {
-        return nullptr;
+        return res;
     }
-    return compiler::DeclarationFromIdentifier(node->AsIdentifier());
+    res = {compiler::DeclarationFromIdentifier(node->AsIdentifier()), node->AsIdentifier()->Name()};
+    return res;
 }
 
 ArenaVector<ir::AstNode *> RemoveRefDuplicates(const ArenaVector<ir::AstNode *> &nodes, ArenaAllocator *allocator)

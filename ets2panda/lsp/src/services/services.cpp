@@ -36,7 +36,8 @@ std::vector<Location> GetImplementationLocationAtPosition(es2panda_Context *cont
     // function.
 
     auto implementationList = ArenaVector<ir::AstNode *>(ctx->allocator->Adapter());
-    ir::AstNode *implementation = GetDefinitionAtPositionImpl(context, (size_t)position);
+    auto declInfo = GetDefinitionAtPositionImpl(context, (size_t)position);
+    auto implementation = declInfo.first;
     if (implementation != nullptr && IsValidImplementation(implementation)) {
         implementationList.push_back(implementation);
     }

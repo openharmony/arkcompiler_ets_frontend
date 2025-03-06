@@ -36,8 +36,8 @@ A(1, 2);)"};
     size_t const offset = 46;
     auto result = lspApi->getDefinitionAtPosition(filePaths[1].c_str(), offset);
     std::string expectedFileName = filePaths[0];
-    size_t const expectedStart = 7;
-    size_t const expectedLength = 60;
+    size_t const expectedStart = 16;
+    size_t const expectedLength = 1;
     ASSERT_EQ(result.fileName, expectedFileName);
     ASSERT_EQ(result.start, expectedStart);
     ASSERT_EQ(result.length, expectedLength);
@@ -63,8 +63,8 @@ TEST_F(LspGetDefTests, GetDefinitionAtPosition2)
     size_t const offset = 70;
     auto result = lspApi->getDefinitionAtPosition(filePaths[0].c_str(), offset);
     std::string expectedFileName = filePaths[0];
-    size_t const expectedStart = 5;
-    size_t const expectedLength = 60;
+    size_t const expectedStart = 14;
+    size_t const expectedLength = 1;
     ASSERT_EQ(result.fileName, expectedFileName);
     ASSERT_EQ(result.start, expectedStart);
     ASSERT_EQ(result.length, expectedLength);
@@ -72,8 +72,8 @@ TEST_F(LspGetDefTests, GetDefinitionAtPosition2)
     size_t const offset1 = 134;
     auto result1 = lspApi->getDefinitionAtPosition(filePaths[0].c_str(), offset1);
     std::string expectedFileName1 = filePaths[0];
-    size_t const expectedStart1 = 83;
-    size_t const expectedLength1 = 46;
+    size_t const expectedStart1 = 92;
+    size_t const expectedLength1 = 1;
     ASSERT_EQ(result1.fileName, expectedFileName1);
     ASSERT_EQ(result1.start, expectedStart1);
     ASSERT_EQ(result1.length, expectedLength1);
@@ -95,8 +95,8 @@ All.A(1, 2);)"};
     size_t const offset = 55;
     auto result = lspApi->getDefinitionAtPosition(filePaths[1].c_str(), offset);
     std::string expectedFileName = filePaths[0];
-    size_t const expectedStart = 7;
-    size_t const expectedLength = 60;
+    size_t const expectedStart = 16;
+    size_t const expectedLength = 1;
     ASSERT_EQ(result.fileName, expectedFileName);
     ASSERT_EQ(result.start, expectedStart);
     ASSERT_EQ(result.length, expectedLength);
@@ -121,7 +121,7 @@ a.Foo(1, 2);)"};
     auto result = lspApi->getDefinitionAtPosition(filePaths[1].c_str(), offset);
     std::string expectedFileName = filePaths[0];
     size_t const expectedStart = 17;
-    size_t const expectedLength = 53;
+    size_t const expectedLength = 3;
     ASSERT_EQ(result.fileName, expectedFileName);
     ASSERT_EQ(result.start, expectedStart);
     ASSERT_EQ(result.length, expectedLength);
@@ -170,7 +170,7 @@ a.Foo(1, 2);)"};
     auto result = lspApi->getDefinitionAtPosition(filePaths[1].c_str(), offset);
     std::string expectedFileName = filePaths[0];
     size_t const expectedStart = 17;
-    size_t const expectedLength = 53;
+    size_t const expectedLength = 3;
     ASSERT_EQ(result.fileName, expectedFileName);
     ASSERT_EQ(result.start, expectedStart);
     ASSERT_EQ(result.length, expectedLength);
@@ -191,7 +191,7 @@ let b = a;)"};
     auto result = lspApi->getDefinitionAtPosition(filePaths[1].c_str(), offset);
     std::string expectedFileName = filePaths[0];
     size_t const expectedStart = 11;
-    size_t const expectedLength = 5;
+    size_t const expectedLength = 1;
     ASSERT_EQ(result.fileName, expectedFileName);
     ASSERT_EQ(result.start, expectedStart);
     ASSERT_EQ(result.length, expectedLength);
@@ -212,8 +212,8 @@ class A implements All.I {};)"};
     size_t const offset = 8;
     auto result = lspApi->getDefinitionAtPosition(filePaths[1].c_str(), offset);
     std::string expectedFileName = filePaths[0];
-    size_t const expectedStart = 7;
-    size_t const expectedLength = 14;
+    size_t const expectedStart = 17;
+    size_t const expectedLength = 1;
     ASSERT_EQ(result.fileName, expectedFileName);
     ASSERT_EQ(result.start, expectedStart);
     ASSERT_EQ(result.length, expectedLength);
@@ -223,4 +223,38 @@ class A implements All.I {};)"};
     ASSERT_EQ(result.fileName, expectedFileName);
     ASSERT_EQ(result.start, expectedStart);
     ASSERT_EQ(result.length, expectedLength);
+}
+
+TEST_F(LspGetDefTests, GetDefinitionAtPosition9)
+{
+    std::vector<std::string> files = {"getDefinitionAtPosition16.sts", "getDefinitionAtPosition17.sts"};
+    std::vector<std::string> texts = {R"(export class Foo {
+Foo(a:number, b:number): number {
+    return a + b;
+}})",
+                                      R"(import * as All from './getDefinitionAtPosition16';
+let a = new All.Foo();
+a.Foo(1, 2);)"};
+    auto filePaths = CreateTempFile(files, texts);
+    size_t const expectedFileCount = 2;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+
+    LSPAPI const *lspApi = GetImpl();
+    size_t const offset = 68;
+    auto result = lspApi->getDefinitionAtPosition(filePaths[1].c_str(), offset);
+    std::string expectedFileName = filePaths[0];
+    size_t const expectedStart = 13;
+    size_t const expectedLength = 3;
+    ASSERT_EQ(result.fileName, expectedFileName);
+    ASSERT_EQ(result.start, expectedStart);
+    ASSERT_EQ(result.length, expectedLength);
+
+    size_t const offset1 = 77;
+    auto result1 = lspApi->getDefinitionAtPosition(filePaths[1].c_str(), offset1);
+    std::string expectedFileName1 = filePaths[0];
+    size_t const expectedStart1 = 19;
+    size_t const expectedLength1 = 3;
+    ASSERT_EQ(result1.fileName, expectedFileName1);
+    ASSERT_EQ(result1.start, expectedStart1);
+    ASSERT_EQ(result1.length, expectedLength1);
 }
