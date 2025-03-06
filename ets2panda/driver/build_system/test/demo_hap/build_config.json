@@ -11,7 +11,8 @@
         "${absolute_path_to_build_system}/test/demo_hap/harB/indexB.sts"
     ],
 
-    "packageName" : "entry",
+    "packageName": "entry",
+    "moduleType": "shared",
 
     "buildType": "build",
     "buildMode": "Debug",
@@ -20,6 +21,10 @@
 
     "loaderOutPath": "./dist",
     "cachePath": "./dist/cache",
+
+    "enableDeclgenEts2Ts": false,
+    "declgenDeclEtsOutPath": "./dist/declgen/decl_ets",
+    "declgenEtsOutPath": "./dist/declgen/ets",
 
     "buildSdkPath": ".",
 

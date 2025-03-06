@@ -33,7 +33,7 @@ struct DeclgenOptions {
 
 // Consume program after checker stage and generate out_path typescript file with declarations
 bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::parser::Program *program,
-                            const util::Options *options, const DeclgenOptions &declgenOptions);
+                            const DeclgenOptions &declgenOptions);
 
 class TSDeclGen {
 public:

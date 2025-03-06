@@ -25,6 +25,8 @@ import {
   ABC_SUFFIX,
   ARKTSCONFIG_JSON_FILE,
   BUILD_MODE,
+  DECL_ETS_SUFFIX,
+  ETS_SUFFIX,
   LINKER_INPUT_FILE,
   MERGED_ABC_FILE,
   SYSTEM_SDK_PATH_FROM_SDK,
@@ -33,7 +35,7 @@ import {
   changeFileExtension,
   ensurePathExists
 } from '../utils';
-import { BuildConfigType } from '../init/process_build_config';
+import { BuildConfig } from '../init/process_build_config';
 import {
   PluginDriver,
   PluginHook
@@ -59,17 +61,21 @@ interface CompileFileInfo {
   filePath: string,
   dependentFiles: string[],
   abcFilePath: string,
-  arktsConfigFile: string
+  arktsConfigFile: string,
+  moduleInfo: ModuleInfo
 };
 
 interface ModuleInfo {
   isMainModule: boolean,
   packageName: string,
   moduleRootPath: string,
+  moduleType: string,
   sourceRoots: string[],
   entryFile: string,
   arktsConfigFile: string,
   compileFileInfos: CompileFileInfo[],
+  declgenDeclEtsOutPath: string | undefined,
+  declgenEtsOutPath: string | undefined,
   dependencies?: string[]
 }
 
@@ -83,7 +89,7 @@ interface DependentModule {
 }
 
 export abstract class BaseMode {
-  buildConfig: Record<string, BuildConfigType>;
+  buildConfig: BuildConfig;
   entryFiles: Set<string>;
   outputDir: string;
   cacheDir: string;
@@ -92,14 +98,18 @@ export abstract class BaseMode {
   packageName: string;
   sourceRoots: string[];
   moduleRootPath: string;
+  moduleType: string;
   dependentModuleList: DependentModule[];
   moduleInfos: Map<string, ModuleInfo>;
   mergedAbcFile: string;
   abcLinkerCmd: string[];
   logger: Logger;
   isDebug: boolean;
+  enableDeclgenEts2Ts: boolean;
+  declgenDeclEtsOutPath: string | undefined;
+  declgenEtsOutPath: string | undefined;
 
-  constructor(buildConfig: Record<string, BuildConfigType>) {
+  constructor(buildConfig: BuildConfig) {
     this.buildConfig = buildConfig;
     this.entryFiles = new Set<string>(buildConfig.compileFiles as string[]);
     this.outputDir = buildConfig.loaderOutPath as string;
@@ -109,14 +119,52 @@ export abstract class BaseMode {
     this.packageName = buildConfig.packageName as string;
     this.sourceRoots = buildConfig.sourceRoots as string[];
     this.moduleRootPath = buildConfig.moduleRootPath as string;
+    this.moduleType = buildConfig.moduleType as string;
     this.dependentModuleList = buildConfig.dependentModuleList as DependentModule[];
     this.isDebug = buildConfig.buildMode as string === BUILD_MODE.DEBUG;
+
+    this.enableDeclgenEts2Ts = buildConfig.enableDeclgenEts2Ts as boolean;
+    this.declgenDeclEtsOutPath = buildConfig.declgenDeclEtsOutPath as string | undefined;
+    this.declgenEtsOutPath = buildConfig.declgenEtsOutPath as string | undefined;
 
     this.moduleInfos = new Map<string, ModuleInfo>();
     this.mergedAbcFile = path.resolve(this.outputDir, MERGED_ABC_FILE);
     this.abcLinkerCmd = ['"' + this.buildConfig.abcLinkerPath + '"'];
 
     this.logger = Logger.getInstance();
+  }
+
+  public declgen(fileInfo: CompileFileInfo): void {
+    const source = fs.readFileSync(fileInfo.filePath, 'utf8');
+    let filePathFromModuleRoot: string = path.relative(fileInfo.moduleInfo.moduleRootPath, fileInfo.filePath);
+    let declEtsOutputPath: string = changeFileExtension(
+      path.join(fileInfo.moduleInfo.declgenDeclEtsOutPath as string, fileInfo.moduleInfo.packageName, filePathFromModuleRoot),
+      DECL_ETS_SUFFIX
+    );
+    let etsOutputPath: string = changeFileExtension(
+      path.join(fileInfo.moduleInfo.declgenEtsOutPath as string, fileInfo.moduleInfo.packageName, filePathFromModuleRoot),
+      ETS_SUFFIX
+    );
+    ensurePathExists(declEtsOutputPath);
+    ensurePathExists(etsOutputPath);
+    arktsGlobal.config = arkts.createConfig([
+        '_',
+        '--extension',
+        'sts',
+        '--arktsconfig',
+        fileInfo.arktsConfigFile,
+        fileInfo.filePath
+    ]);
+    arktsGlobal.context = arkts.createContextFromString(arktsGlobal.config, source, fileInfo.filePath);
+    arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+    arkts.generateTsDeclarationsFromContext(
+      arktsGlobal.context,
+      declEtsOutputPath,
+      etsOutputPath,
+      false
+    ); // Generate 1.0 declaration files & 1.0 glue code
+    arkts.destroyConfig(arktsGlobal.config);
+    console.log("declaration files generated");
   }
 
   public compile(fileInfo: CompileFileInfo): void {
@@ -306,7 +354,7 @@ export abstract class BaseMode {
     });
   }
 
-  private generateModuleInfos(): void {
+  private collectModuleInfos(): void {
     if (!this.packageName || !this.moduleRootPath || !this.sourceRoots) { // BUILDSYSTEM_MODULE_INFO_NOT_CORRECT_FAIL
       const logData: LogData = LogDataFactory.newInstance(
         ErrorCode.BUILDSYSTEM_MODULE_INFO_NOT_CORRECT_FAIL,
@@ -318,10 +366,13 @@ export abstract class BaseMode {
       isMainModule: true,
       packageName: this.packageName,
       moduleRootPath: this.moduleRootPath,
+      moduleType: this.moduleType,
       sourceRoots: this.sourceRoots,
       entryFile: '',
       arktsConfigFile: path.resolve(this.cacheDir, this.packageName, ARKTSCONFIG_JSON_FILE),
-      compileFileInfos: []
+      compileFileInfos: [],
+      declgenDeclEtsOutPath: this.declgenDeclEtsOutPath,
+      declgenEtsOutPath: this.declgenEtsOutPath
     }
     this.moduleInfos.set(this.moduleRootPath, mainModuleInfo);
     this.dependentModuleList.forEach((module: DependentModule) => {
@@ -336,14 +387,19 @@ export abstract class BaseMode {
         isMainModule: false,
         packageName: module.packageName,
         moduleRootPath: module.modulePath,
+        moduleType: module.moduleType,
         sourceRoots: module.sourceRoots,
         entryFile: module.entryFile,
         arktsConfigFile: path.resolve(this.cacheDir, module.packageName, ARKTSCONFIG_JSON_FILE),
-        compileFileInfos: []
+        compileFileInfos: [],
+        declgenDeclEtsOutPath: undefined,
+        declgenEtsOutPath: undefined
       }
       this.moduleInfos.set(module.modulePath, moduleInfo);
     });
+  }
 
+  private collectEntryFiles(): void {
     this.entryFiles.forEach((file: string) => {
       for (const [modulePath, moduleInfo] of this.moduleInfos) {
         if (file.startsWith(modulePath)) {
@@ -355,7 +411,8 @@ export abstract class BaseMode {
             filePath: file,
             dependentFiles: [],
             abcFilePath: abcFilePath,
-            arktsConfigFile: moduleInfo.arktsConfigFile
+            arktsConfigFile: moduleInfo.arktsConfigFile,
+            moduleInfo: moduleInfo
           };
           moduleInfo.compileFileInfos.push(fileInfo);
           return;
@@ -368,6 +425,28 @@ export abstract class BaseMode {
         file
       );
       this.logger.printError(logData);
+    });
+  }
+
+  private generateModuleInfos(): void {
+    this.collectModuleInfos();
+    this.collectEntryFiles();
+  }
+
+  public generateDeclaration(): void {
+    this.generateModuleInfos();
+    this.generateArkTSConfigForModules();
+
+    this.moduleInfos.forEach((moduleInfo) => {
+      if (
+        moduleInfo.declgenDeclEtsOutPath &&
+        moduleInfo.declgenEtsOutPath &&
+        (moduleInfo.moduleType === 'har' || moduleInfo.moduleType ==='shared')
+      ) {
+        moduleInfo.compileFileInfos.forEach((fileInfo) => {
+          this.declgen(fileInfo);
+        });
+      }
     });
   }
 

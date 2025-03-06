@@ -56,6 +56,7 @@
 #include "util/options.h"
 #include "compiler/lowering/util.h"
 #include "generated/es2panda_lib/es2panda_lib_include.inc"
+#include "declgen_ets2ts/declgenEts2Ts.h"
 
 // NOLINTBEGIN
 
@@ -781,6 +782,22 @@ extern "C" es2panda_AstNode *DeclarationFromIdentifier([[maybe_unused]] es2panda
     return reinterpret_cast<es2panda_AstNode *>(compiler::DeclarationFromIdentifier(E2pNode));
 }
 
+extern "C" __attribute__((unused)) int GenerateTsDeclarationsFromContext(es2panda_Context *ctx,
+                                                                         const char *outputDeclEts,
+                                                                         const char *outputEts, bool exportAll)
+{
+    auto *ctxImpl = reinterpret_cast<Context *>(ctx);
+    auto *checker = reinterpret_cast<ark::es2panda::checker::ETSChecker *>(ctxImpl->checker);
+
+    ark::es2panda::declgen_ets2ts::DeclgenOptions declgenOptions;
+    declgenOptions.exportAll = exportAll;
+    declgenOptions.outputDeclEts = outputDeclEts ? outputDeclEts : "";
+    declgenOptions.outputEts = outputEts ? outputEts : "";
+
+    return ark::es2panda::declgen_ets2ts::GenerateTsDeclarations(checker, ctxImpl->parserProgram, declgenOptions) ? 0
+                                                                                                                  : 1;
+}
+
 es2panda_Impl g_impl = {
     ES2PANDA_LIB_VERSION,
 
@@ -824,6 +841,7 @@ es2panda_Impl g_impl = {
     Es2pandaEnumFromString,
     Es2pandaEnumToString,
     DeclarationFromIdentifier,
+    GenerateTsDeclarationsFromContext,
 
 #include "generated/es2panda_lib/es2panda_lib_list.inc"
 

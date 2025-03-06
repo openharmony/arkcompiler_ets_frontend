@@ -17,18 +17,21 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import {
-  BuildConfigType,
+  BuildConfig,
   processBuildConfig
 } from './init/process_build_config';
 import { BuildMode } from './build/build_mode';
 import { BUILD_TYPE_BUILD } from './pre_define';
 import { Logger } from './logger';
 
-export function build(projectConfig: Record<string, BuildConfigType>): void {
+export function build(projectConfig: BuildConfig): void {
   Logger.getInstance(projectConfig);
-  let buildConfig: Record<string, BuildConfigType> = processBuildConfig(projectConfig);
+  let buildConfig: BuildConfig = processBuildConfig(projectConfig);
 
-  if (projectConfig.buildType === BUILD_TYPE_BUILD) {
+  if (projectConfig.enableDeclgenEts2Ts === true) {
+    let buildMode: BuildMode = new BuildMode(buildConfig);
+    buildMode.generateDeclaration();
+  } else if (projectConfig.buildType === BUILD_TYPE_BUILD) {
     let buildMode: BuildMode = new BuildMode(buildConfig);
     buildMode.run();
   }
@@ -38,7 +41,7 @@ function main(): void {
   console.log(process.argv);
 
   const buildConfigPath: string = path.resolve(process.argv[2]);
-  const projectConfig: Record<string, BuildConfigType> = JSON.parse(fs.readFileSync(buildConfigPath, 'utf-8'));
+  const projectConfig: BuildConfig = JSON.parse(fs.readFileSync(buildConfigPath, 'utf-8'));
 
   build(projectConfig);
 }
