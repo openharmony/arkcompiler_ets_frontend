@@ -20,14 +20,18 @@ import type {IOptions} from '../configs/IOptions';
 import { stringPropsSet, structPropsSet, enumPropsSet } from '../utils/OhsUtil';
 import type { MergedConfig } from '../ArkObfuscator';
 
-export let scanProjectConfig: {
+// The interface of settings for collect while lists
+export interface ScanProjectConfig {
   mPropertyObfuscation?: boolean,
   mKeepStringProperty?: boolean,
   mExportObfuscation?: boolean,
   mkeepFilesAndDependencies?: Set<string>,
-  isHarCompiled?: boolean
-  mStripSystemApiArgs?: boolean;
-} = {};
+  isHarCompiled?: boolean,
+  mStripSystemApiArgs?: boolean
+}
+
+// Settings for collect white lists.
+export let scanProjectConfig: ScanProjectConfig = {};
 
 /**
  * if rename property is not open, api read and extract can be skipped
@@ -109,8 +113,6 @@ export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<s
   } else {
     scanningCommonType = apiType.CONSTRUCTOR_PROPERTY;
   }
-  // The purpose of collecting constructor properties is to avoid generating the same name as the constructor property when obfuscating identifier names.
-  ApiExtractor.mConstructorPropertySet = new Set();
 
   initScanProjectConfig(customProfiles, isHarCompiled);
 

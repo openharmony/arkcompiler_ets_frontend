@@ -189,4 +189,25 @@ export class FileUtils {
         fs.unlinkSync(filePath);
     }
   }
+
+  public static createDirectory(dirPath: string): void {
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
+    }
+  }
+
+  public static deleteFolderRecursive(folderPath: string): void {
+    if (fs.existsSync(folderPath)) {
+      const files = fs.readdirSync(folderPath);
+      for (const file of files) {
+        const curPath = path.join(folderPath, file);
+        if (fs.lstatSync(curPath).isDirectory()) {
+          FileUtils.deleteFolderRecursive(curPath);
+        } else {
+          fs.unlinkSync(curPath);
+        }
+      }
+      fs.rmdirSync(folderPath);
+    }
+  }
 }

@@ -15,9 +15,10 @@
 
 import { ApiExtractor } from '../../../src/common/ApiExtractor';
 import { assert, expect } from 'chai';
-import { initScanProjectConfigByMergeConfig, readProjectPropertiesByCollectedPaths } from '../../../src/common/ApiReader';
+import { initScanProjectConfigByMergeConfig, readProjectPropertiesByCollectedPaths, scanProjectConfig } from '../../../src/common/ApiReader';
 import { NameGeneratorType } from '../../../src/generator/NameFactory';
 import { MergedConfig } from '../../../src/ArkObfuscator';
+import { FileWhiteList, projectWhiteListManager, initProjectWhiteListManager  } from '../../../src/utils/ProjectCollections';
 
 function collectApi(apiPath: string, apiType: ApiExtractor.ApiType): void {
   clearAll();
@@ -639,7 +640,15 @@ describe('test for ApiExtractor', function () {
     it('should collect constructor properties', function () {
       ApiExtractor.mConstructorPropertySet = new Set();
       let constructorPropertyAst: string = 'test/ut/utils/apiTest_visitConstructorProperty/constructorProperty.ts';
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, false);
       collectApi(constructorPropertyAst, ApiExtractor.ApiType.CONSTRUCTOR_PROPERTY);
+      const fileWhiteList: FileWhiteList | undefined = projectWhiteListManager?.getFileWhiteListMap().get(constructorPropertyAst);
+      projectWhiteListManager?.createOrUpdateWhiteListCaches();
+      expect(fileWhiteList!.fileReservedInfo.propertyParams.has('para1')).to.be.true;
+      expect(fileWhiteList!.fileReservedInfo.propertyParams.has('para2')).to.be.true;
+      expect(fileWhiteList!.fileReservedInfo.propertyParams.has('para3')).to.be.true;
+      expect(fileWhiteList!.fileReservedInfo.propertyParams.has('para4')).to.be.true;
       expect(ApiExtractor.mConstructorPropertySet.has('para1')).to.be.true;
       expect(ApiExtractor.mConstructorPropertySet.has('para2')).to.be.true;
       expect(ApiExtractor.mConstructorPropertySet.has('para3')).to.be.true;
@@ -652,7 +661,20 @@ describe('test for ApiExtractor', function () {
   describe('test for visitEnumMembers', function () {
     it('should collect enum members', function () {
       let enumMembersAst: string = 'test/ut/utils/apiTest_visitEnumMembers/enumMembers.ts';
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, false);
       collectApi(enumMembersAst, ApiExtractor.ApiType.PROJECT);
+      const fileWhiteList: FileWhiteList | undefined = projectWhiteListManager?.getFileWhiteListMap().get(enumMembersAst);
+      projectWhiteListManager?.createOrUpdateWhiteListCaches();
+      expect(fileWhiteList!.fileReservedInfo.enumProperties.has('A1')).to.be.false;
+      expect(fileWhiteList!.fileReservedInfo.enumProperties.has('A2')).to.be.false;
+      expect(fileWhiteList!.fileReservedInfo.enumProperties.has('A3')).to.be.false;
+      expect(fileWhiteList!.fileReservedInfo.enumProperties.has('B1')).to.be.true;
+      expect(fileWhiteList!.fileReservedInfo.enumProperties.has('B2')).to.be.true;
+      expect(fileWhiteList!.fileReservedInfo.enumProperties.has('B3')).to.be.true;
+      expect(fileWhiteList!.fileReservedInfo.enumProperties.has('C1')).to.be.true;
+      expect(fileWhiteList!.fileReservedInfo.enumProperties.has('C2')).to.be.true;
+      expect(fileWhiteList!.fileReservedInfo.enumProperties.has('C3')).to.be.true;
       expect(ApiExtractor.mEnumMemberSet.has('A1')).to.be.false;
       expect(ApiExtractor.mEnumMemberSet.has('A2')).to.be.false;
       expect(ApiExtractor.mEnumMemberSet.has('A3')).to.be.false;
@@ -669,6 +691,67 @@ describe('test for ApiExtractor', function () {
       let enumMembersAst: string = 'test/ut/utils/apiTest_visitEnumMembers/enumMembers.js';
       collectApi(enumMembersAst, ApiExtractor.ApiType.PROJECT);
       expect(ApiExtractor.mEnumMemberSet.size === 0).to.be.true;
+    })
+  })
+
+  describe('test collect FileWhiteList', function () {
+    it('should collect structProperties, stringProperties, enumProperties if propertyObf is enabled', function () {
+      let filePath: string = 'test/ut/utils/apiTest_collectFileWhiteList/collectFileWhiteList01.ets';
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, false);
+      scanProjectConfig.mPropertyObfuscation = true;
+      scanProjectConfig.mKeepStringProperty = true;
+      scanProjectConfig.isHarCompiled = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      const fileWhiteList: FileWhiteList = projectWhiteListManager?.getFileWhiteListMap().get(filePath)!;
+      expect(fileWhiteList.fileKeepInfo.enumProperties.has('RED01')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.enumProperties.has('RED02')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.enumProperties.has('BLUE02')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('MyEnum')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('MyClass')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('obj01')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('RED01')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('myProp01')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('objProp')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.stringProperties.has('name')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.stringProperties.has('age')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.structProperties.has('myStructProp')).to.be.true;
+    })
+    it('should not collect stringProperties if mKeepStringProperty is not enabled', function () {
+      let filePath: string = 'test/ut/utils/apiTest_collectFileWhiteList/collectFileWhiteList01.ets';
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, false);
+      scanProjectConfig.mPropertyObfuscation = true;
+      scanProjectConfig.mKeepStringProperty = false;
+      scanProjectConfig.isHarCompiled = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      const fileWhiteList: FileWhiteList = projectWhiteListManager?.getFileWhiteListMap().get(filePath)!;
+      expect(fileWhiteList.fileKeepInfo.enumProperties.has('RED01')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.enumProperties.has('RED02')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.enumProperties.has('BLUE02')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('MyEnum')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('MyClass')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('obj01')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('RED01')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('myProp01')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('objProp')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.stringProperties.has('name')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.stringProperties.has('age')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.structProperties.has('myStructProp')).to.be.true;
+    })
+    it('should not collect structProperties, stringProperties, enumProperties if propertyObf is not enabled', function () {
+      let filePath: string = 'test/ut/utils/apiTest_collectFileWhiteList/collectFileWhiteList01.ets';
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, false);
+      scanProjectConfig.mPropertyObfuscation = false;
+      scanProjectConfig.mKeepStringProperty = true;
+      scanProjectConfig.isHarCompiled = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      const fileWhiteList: FileWhiteList = projectWhiteListManager?.getFileWhiteListMap().get(filePath)!;
+      expect(fileWhiteList.fileKeepInfo.enumProperties.size).to.be.equal(0);
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.size).to.be.equal(0);
+      expect(fileWhiteList.fileKeepInfo.stringProperties.size).to.be.equal(0);
+      expect(fileWhiteList.fileKeepInfo.structProperties.size).to.be.equal(0);
     })
   })
 });

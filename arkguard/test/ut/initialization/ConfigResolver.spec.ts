@@ -34,7 +34,8 @@ import {
   OptionTypeForTest,
   SourceObConfig,
   Obfuscation,
-  printUnobfuscationReasons
+  printUnobfuscationReasons,
+  clearNameCache
 } from '../../../src/initialization/ConfigResolver';
 import { HvigorErrorInfo, PropCollections, renameFileNameModule } from '../../../src/ArkObfuscator';
 import {
@@ -2079,6 +2080,16 @@ describe('test for ConfigResolve', function() {
       expect(keptNamesObj.keptNames['Test2.ets']['abc_test2'][0]).to.equal('lang');
       clearHistoryUnobfuscatedMap();
       clearUnobfuscationNamesObj();
+    });
+  });
+
+  describe('clearNameCache', () => {
+    it('should clear historyMangledTable and nameCacheMap', () => {
+      PropCollections.historyMangledTable.set('name1','name2');
+      nameCacheMap.set('name1','name2');
+      clearNameCache();
+      expect(PropCollections.historyMangledTable.size).to.be.equal(0);
+      expect(nameCacheMap.size).to.be.equal(0);
     });
   });
 });

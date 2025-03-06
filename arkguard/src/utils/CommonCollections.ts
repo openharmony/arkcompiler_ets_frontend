@@ -52,7 +52,7 @@ export namespace UnobfuscationCollections {
   export let reservedExportNameAndProp: Set<string> = new Set();
   export let reservedStrProp: Set<string> = new Set();
   export let reservedEnum: Set<string> = new Set();
-  
+
   // The mapping between the unobfuscated names and their reasons.
   export let unobfuscatedPropMap: Map<string, Set<string>> = new Map();
   export let unobfuscatedNamesMap: Map<string, Set<string>> = new Map();
