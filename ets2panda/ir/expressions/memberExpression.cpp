@@ -189,18 +189,38 @@ std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::Resolve
     }
 }
 
-checker::Type *MemberExpression::TraverseUnionMember(checker::ETSChecker *checker, checker::ETSUnionType *unionType,
-                                                     checker::Type *commonPropType)
+checker::Type *MemberExpression::TraverseUnionMember(checker::ETSChecker *checker, checker::ETSUnionType *unionType)
 
 {
+    checker::Type *commonPropType = nullptr;
+
     auto const addPropType = [this, checker, &commonPropType](checker::Type *memberType) {
-        if ((memberType != nullptr && memberType->IsETSMethodType()) ||
-            (commonPropType != nullptr && !checker->IsTypeIdenticalTo(commonPropType, memberType))) {
-            checker->LogError(diagnostic::MEMBER_TYPE_MISMATCH_ACROSS_UNION, {}, Start());
-        } else {
+        if (commonPropType == nullptr) {
             commonPropType = memberType;
+            return;
         }
+
+        if (memberType == nullptr) {
+            checker->LogError(diagnostic::MEMBER_TYPE_MISMATCH_ACROSS_UNION, {}, Start());
+            return;
+        }
+
+        if (!commonPropType->IsETSMethodType() && !memberType->IsETSMethodType()) {
+            if (!checker->IsTypeIdenticalTo(commonPropType, memberType)) {
+                checker->LogError(diagnostic::MEMBER_TYPE_MISMATCH_ACROSS_UNION, {}, Start());
+            }
+            return;
+        }
+
+        auto newType =
+            checker->IntersectSignatureSets(commonPropType->AsETSFunctionType(), memberType->AsETSFunctionType());
+        if (newType->AsETSFunctionType()->CallSignatures().empty()) {
+            checker->LogError(diagnostic::MEMBER_TYPE_MISMATCH_ACROSS_UNION, {}, Start());
+        }
+
+        commonPropType = newType;
     };
+
     for (auto *const type : unionType->ConstituentTypes()) {
         auto *const apparent = checker->GetApparentType(type);
         if (apparent->IsETSObjectType()) {
@@ -221,7 +241,7 @@ checker::Type *MemberExpression::CheckUnionMember(checker::ETSChecker *checker, 
         checker->LogTypeError("Static union member expression cannot be interpreted.", Start());
         return checker->GlobalTypeError();
     }
-    auto *const commonPropType = TraverseUnionMember(checker, unionType, nullptr);
+    auto *const commonPropType = TraverseUnionMember(checker, unionType);
     SetObjectType(checker->GlobalETSObjectType());
     return commonPropType;
 }

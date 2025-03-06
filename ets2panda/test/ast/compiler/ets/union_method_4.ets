@@ -13,13 +13,25 @@
  * limitations under the License.
  */
 
-
-function main(): void {
-    let s = "str"
-    s.toString()
-    let a: int [] = [1, 2]
-    let b = s ?? a;
-    /* @@ label */b.toString();
+class A {
+    private foo(v: string): void {}
+    private bar(v: string): void {}
 }
 
-/* @@? 22:19 Error TypeError: Type String|int[] is illegal in union member expression. */
+class B {
+    foo(v: string): void {}
+    private bar(v: string): void {}
+}
+
+function foo(x: A|B) {
+    /* @@ label */x.foo("123")
+}
+
+function bar(x: A|B) {
+    /* @@ label2 */x.bar("123")
+}
+
+/* @@@ label Error TypeError: Member type must be the same for all union objects. */
+/* @@@ label Error TypeError: No matching call signature */
+/* @@@ label2 Error TypeError: Signature bar(v: String): void is not visible here. */
+/* @@@ label2 Error TypeError: No matching call signature for bar("123") */

@@ -750,9 +750,19 @@ void ETSCompiler::EmitCall(const ir::CallExpression *expr, compiler::VReg &calle
     }
     if (signature->HasSignatureFlag(checker::SignatureFlags::STATIC)) {
         etsg->CallExact(expr, expr->Signature(), expr->Arguments());
-    } else if ((expr->Callee()->IsMemberExpression() &&
-                expr->Callee()->AsMemberExpression()->Object()->IsSuperExpression())) {
-        etsg->CallExact(expr, signature, calleeReg, expr->Arguments());
+    } else if (expr->Callee()->IsMemberExpression()) {
+        auto me = expr->Callee()->AsMemberExpression();
+        auto obj = me->Object();
+        if (obj->IsSuperExpression()) {
+            etsg->CallExact(expr, signature, calleeReg, expr->Arguments());
+            // NOTE: need to refactor: type of member expression object can be obtained via
+            // me->ObjType() or me->Object()->TsType() and they may differ!!!!
+        } else if (me->ObjType() == etsg->Checker()->GlobalETSObjectType() &&
+                   me->Object()->TsType()->IsETSUnionType()) {
+            etsg->CallByName(expr, signature, calleeReg, expr->Arguments());
+        } else {
+            etsg->CallVirtual(expr, signature, calleeReg, expr->Arguments());
+        }
     } else {
         etsg->CallVirtual(expr, signature, calleeReg, expr->Arguments());
     }

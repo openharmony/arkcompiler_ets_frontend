@@ -1106,3 +1106,7 @@ semantic:
 - name: LOCAL_CLASS_NATIVE_METHOD
   id: 278
   message: "Local class '{}' shouldn't have native methods/constructors"
+
+- name: UNION_METHOD_SIGNATURE
+  id: 279
+  message: "Union constituent types should have only one common method signature."
