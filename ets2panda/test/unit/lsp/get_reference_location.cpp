@@ -30,7 +30,8 @@ class LspGetReferenceLocationTests : public LSPAPITests {};
 TEST_F(LspGetReferenceLocationTests, GetReferenceLocationAtPosition1)
 {
     using ark::es2panda::public_lib::Context;
-    std::vector<std::string> files = {"export1.ts", "export2.ts", "export3.ts", "export4.ts", "<ref-file.sts>"};
+    std::vector<std::string> files = {"ref_loc_export1.ts", "ref_loc_export2.ts", "ref_loc_export3.ts",
+                                      "ref_loc_export4.ts", "<ref-file.sts>"};
     std::vector<std::string> texts = {"function A(a:number, b:number) {\n  return a + b;\n}\nA(1, 2);",
                                       "function A(a:number, b:number) {\n  return a + b;\n}\nA(1, 2);",
                                       "function A(a:number, b:number) {\n  return a + b;\n}\nA(1, 2);",

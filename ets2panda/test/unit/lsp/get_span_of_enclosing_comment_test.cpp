@@ -21,7 +21,7 @@ class LspGetSpanTests : public LSPAPITests {};
 
 TEST_F(LspGetSpanTests, getSpanOfEnclosingComment1)
 {
-    std::vector<std::string> files = {"file1.sts"};
+    std::vector<std::string> files = {"get_span_1.sts"};
     std::vector<std::string> texts = {"function A(a:number, b:number) {\n  return a + b;  // add\n}\nA(1, 2);"};
     auto filePaths = CreateTempFile(files, texts);
     LSPAPI const *lspApi = GetImpl();
@@ -38,7 +38,7 @@ TEST_F(LspGetSpanTests, getSpanOfEnclosingComment1)
 
 TEST_F(LspGetSpanTests, getSpanOfEnclosingComment2)
 {
-    std::vector<std::string> files = {"file2.sts"};
+    std::vector<std::string> files = {"get_span_2.sts"};
     std::vector<std::string> texts = {"function A(a:number, b:number) {\n  return a + b;  // add\n}\nA(1, 2);"};
     auto filePaths = CreateTempFile(files, texts);
     LSPAPI const *lspApi = GetImpl();
@@ -57,7 +57,7 @@ TEST_F(LspGetSpanTests, getSpanOfEnclosingComment2)
 
 TEST_F(LspGetSpanTests, getSpanOfEnclosingComment3)
 {
-    std::vector<std::string> files = {"file3.sts"};
+    std::vector<std::string> files = {"get_span_3.sts"};
     std::vector<std::string> texts = {"function A(a:number, b:number) {\n  return a + b;  /* add */\n}\nA(1, 2);"};
     auto filePaths = CreateTempFile(files, texts);
     LSPAPI const *lspApi = GetImpl();

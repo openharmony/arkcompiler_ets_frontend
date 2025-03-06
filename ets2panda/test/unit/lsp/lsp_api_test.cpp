@@ -236,7 +236,7 @@ TEST_F(LSPAPITests, CreateDiagnosticForNode3)
 TEST_F(LSPAPITests, GetFileReferencesImpl1)
 {
     using ark::es2panda::public_lib::Context;
-    std::vector<std::string> files = {"export1.sts", "ref-file.sts"};
+    std::vector<std::string> files = {"lsp_api_test_export_1.sts", "lsp_api_test_file_1.sts"};
     std::vector<std::string> texts = {
         R"(export function A(a:number, b:number): number {
   return a + b;
@@ -244,8 +244,8 @@ TEST_F(LSPAPITests, GetFileReferencesImpl1)
 export function B(a:number, b:number): number {
   return a + b;
 })",
-        R"(import {A} from "./export1";
-import {B} from "./export1.sts";
+        R"(import {A} from "./lsp_api_test_export_1";
+import {B} from "./lsp_api_test_export_1.sts";
 A(1, 2);
 B(1, 2);)"};
     auto filePaths = CreateTempFile(files, texts);
@@ -269,10 +269,10 @@ B(1, 2);)"};
     ark::es2panda::lsp::GetFileReferencesImpl(ctx1, searchFileName, isPackageModule, &result);
     auto expectedFileName1 = filePaths[1];
     size_t const expectedStartPos1 = 16;
-    size_t const expectedLength1 = 11;
+    size_t const expectedLength1 = 25;
     auto expectedFileName2 = filePaths[1];
-    size_t const expectedStartPos2 = 45;
-    size_t const expectedLength2 = 15;
+    size_t const expectedStartPos2 = 59;
+    size_t const expectedLength2 = 29;
     ASSERT_EQ(result.referenceInfos.at(0).fileName, expectedFileName1);
     ASSERT_EQ(result.referenceInfos.at(0).start, expectedStartPos1);
     ASSERT_EQ(result.referenceInfos.at(0).length, expectedLength1);
@@ -285,7 +285,7 @@ B(1, 2);)"};
 TEST_F(LSPAPITests, GetFileReferencesImpl2)
 {
     using ark::es2panda::public_lib::Context;
-    std::vector<std::string> files = {"export2.ts", "ref-file.sts"};
+    std::vector<std::string> files = {"lsp_api_test_export_2.ts", "lsp_api_test_file_2.sts"};
     std::vector<std::string> texts = {
         R"(export function A(a:number, b:number): number {
   return a + b;
@@ -293,8 +293,8 @@ TEST_F(LSPAPITests, GetFileReferencesImpl2)
 export function B(a:number, b:number): number {
   return a + b;
 })",
-        R"(import {A} from "./export2";
-import {B} from "./export2.ts";
+        R"(import {A} from "./lsp_api_test_export_2";
+import {B} from "./lsp_api_test_export_2.ts";
 A(1, 2);
 B(1, 2);)"};
     auto filePaths = CreateTempFile(files, texts);
@@ -318,10 +318,10 @@ B(1, 2);)"};
     ark::es2panda::lsp::GetFileReferencesImpl(ctx1, searchFileName, isPackageModule, &result);
     auto expectedFileName1 = filePaths[1];
     size_t const expectedStartPos1 = 16;
-    size_t const expectedLength1 = 11;
+    size_t const expectedLength1 = 25;
     auto expectedFileName2 = filePaths[1];
-    size_t const expectedStartPos2 = 45;
-    size_t const expectedLength2 = 14;
+    size_t const expectedStartPos2 = 59;
+    size_t const expectedLength2 = 28;
     ASSERT_EQ(result.referenceInfos.at(0).fileName, expectedFileName1);
     ASSERT_EQ(result.referenceInfos.at(0).start, expectedStartPos1);
     ASSERT_EQ(result.referenceInfos.at(0).length, expectedLength1);

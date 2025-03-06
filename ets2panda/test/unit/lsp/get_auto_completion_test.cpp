@@ -76,10 +76,10 @@ TEST_F(LSPAICTests, GetAutoImportCompletionEntryResolved)
 {
     Initializer initializer = Initializer();
 
-    std::vector<std::string> files = {"main.sts", "helper.sts"};
+    std::vector<std::string> files = {"get_auto_completion_test_main.sts", "get_auto_completion_test_helper.sts"};
     std::vector<std::string> texts = {
         R"(
-         import { helper } from "./helper.sts";
+         import { helper } from "./get_auto_completion_test_helper.sts";
          function main() {
              helper();
          }
