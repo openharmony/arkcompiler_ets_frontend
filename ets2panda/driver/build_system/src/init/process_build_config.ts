@@ -22,7 +22,10 @@ import {
   isWindows,
 } from '../utils';
 import { PluginDriver } from '../plugins/plugins_driver';
-import { PANDA_SDK_PATH_FROM_SDK } from '../pre_define';
+import {
+  KOALA_WRAPPER_PATH_FROM_SDK,
+  PANDA_SDK_PATH_FROM_SDK
+} from '../pre_define';
 import {
   LogData,
   LogDataFactory,
@@ -37,6 +40,8 @@ export interface PluginsConfig {
 export interface BuildBaseConfig {
   buildType: 'build' | 'preview' | 'hotreload' | 'coldreload';
   buildMode: 'Debug' | 'Release';
+  arkts: object;
+  arktsGlobal: object;
 }
 
 export interface ModuleConfig {
@@ -86,7 +91,7 @@ export function processBuildConfig(projectConfig: BuildConfig): BuildConfig {
 
   initPlatformSpecificConfig(buildConfig);
   initBuildEnv(buildConfig);
-
+  initKoalaWrapper(buildConfig);
   PluginDriver.getInstance().initPlugins(buildConfig.plugins as object);
 
   return buildConfig;
@@ -123,4 +128,11 @@ export function initBuildEnv(buildConfig: BuildConfig): void {
 
   process.env.PATH = `${currentPath}${path.delimiter}${pandaLibPath}`;
   logger.printInfo(`Updated PATH: ${process.env.PATH}`);
+}
+
+function initKoalaWrapper(buildConfig: BuildConfig): void {
+  let koalaWrapperPath: string = path.resolve(buildConfig.buildSdkPath as string, KOALA_WRAPPER_PATH_FROM_SDK);
+  const { arkts, arktsGlobal } = require(koalaWrapperPath);
+  buildConfig.arkts = arkts;
+  buildConfig.arktsGlobal = arktsGlobal;
 }

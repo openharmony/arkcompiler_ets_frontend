@@ -15,7 +15,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { 
+import {
   Logger,
   LogData,
   LogDataFactory
@@ -68,9 +68,11 @@ type RawPlugins = {
 
 class PluginContext {
   private ast: object | undefined;
+  private program: object | undefined;
 
   constructor() {
     this.ast = undefined;
+    this.program = undefined;
   }
 
   public setArkTSAst(ast: object): void {
@@ -79,6 +81,14 @@ class PluginContext {
 
   public getArkTSAst(): object | undefined {
     return this.ast;
+  }
+
+  public setArkTSProgram(program: object): void {
+    this.program = program;
+  }
+
+  public getArkTSProgram(): object | undefined {
+    return this.program;
   }
 }
 

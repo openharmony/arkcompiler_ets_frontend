@@ -18,9 +18,6 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as child_process from 'child_process';
 
-// @ts-ignore
-import { arkts, arktsGlobal } from 'libarkts/arkoala-arkts/libarkts/build/src/es2panda';
-
 import {
   ABC_SUFFIX,
   ARKTSCONFIG_JSON_FILE,
@@ -147,6 +144,8 @@ export abstract class BaseMode {
     );
     ensurePathExists(declEtsOutputPath);
     ensurePathExists(etsOutputPath);
+    let arktsGlobal = this.buildConfig.arktsGlobal as any;
+    let arkts = this.buildConfig.arkts as any;
     arktsGlobal.config = arkts.createConfig([
         '_',
         '--extension',
@@ -185,20 +184,36 @@ export abstract class BaseMode {
     }
     ets2pandaCmd.push(fileInfo.filePath);
     this.logger.printInfo('ets2pandaCmd: ' + ets2pandaCmd.join(' '));
+
+    let arktsGlobal = this.buildConfig.arktsGlobal as any;
+    let arkts = this.buildConfig.arkts as any;
     try {
-      arktsGlobal.config = arkts.createConfig(ets2pandaCmd);
+      arktsGlobal.filePath = fileInfo.filePath;
+      arktsGlobal.config = arkts.Config.create(ets2pandaCmd).peer;
       const source = fs.readFileSync(fileInfo.filePath).toString();
-      arktsGlobal.context = arkts.createContextFromString(arktsGlobal.config, source, fileInfo.filePath);
+      arktsGlobal.compilerContext = arkts.Context.createFromString(source);
+      PluginDriver.getInstance().getPluginContext().setArkTSProgram(arktsGlobal.compilerContext.program);
 
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED);
-      this.logger.printInfo('parsed');
+      this.logger.printInfo('es2panda proceedToState parsed');
+      let ast = arkts.EtsScript.fromContext();
+      PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
       PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
+      this.logger.printInfo('plugin parsed finished');
 
+      ast = arkts.EtsScript.fromContext();
+      arkts.Context.destroyAndRecreate(ast);
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+      this.logger.printInfo('es2panda proceedToState checked');
+      ast = arkts.EtsScript.fromContext();
+      PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
       PluginDriver.getInstance().runPluginHook(PluginHook.CHECKED);
+      this.logger.printInfo('plugin checked finished');
 
+      ast = arkts.EtsScript.fromContext();
+      arkts.Context.destroyAndRecreate(ast);
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_BIN_GENERATED);
-      this.logger.printInfo('bin generated');
+      this.logger.printInfo('es2panda bin generated');
     } catch (error) {
       if (error instanceof Error) {
         const logData: LogData = LogDataFactory.newInstance(
@@ -249,7 +264,7 @@ export abstract class BaseMode {
 
   private generateSystemSdkPathSection(pathSection: Record<string, string[]>): void {
     let systemSdkPath: string = path.resolve(this.buildSdkPath, SYSTEM_SDK_PATH_FROM_SDK);
-    function traverse(currentDir: string) {
+    function traverse(currentDir: string, relativePath: string = '', isExcludedDir: boolean = false) {
       const items = fs.readdirSync(currentDir);
       for (const item of items) {
         const itemPath = path.join(currentDir, item);
@@ -257,10 +272,17 @@ export abstract class BaseMode {
 
         if (stat.isFile()) {
           const basename = path.basename(item, '.d.ets');
-          pathSection[basename] = [changeFileExtension(itemPath, '', '.d.ets')];
+          const key = isExcludedDir ? basename : (relativePath ? `${relativePath}.${basename}` : basename);
+          pathSection[key] = [changeFileExtension(itemPath, '', '.d.ets')];
+        }
+        if (stat.isDirectory()) {
+          const isCurrentDirExcluded = path.basename(currentDir) === 'api' && item === 'arkui';
+          const newRelativePath = isCurrentDirExcluded ? '' : (relativePath ? `${relativePath}.${item}` : item);
+          traverse(path.resolve(currentDir, item), newRelativePath, isCurrentDirExcluded || isExcludedDir);
         }
       }
     }
+
     let apiPath: string = path.resolve(systemSdkPath, 'api');
     let arktsPath: string = path.resolve(systemSdkPath, 'arkts');
     let kitsPath: string = path.resolve(systemSdkPath, 'kits');
