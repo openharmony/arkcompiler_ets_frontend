@@ -367,6 +367,7 @@ namespace_tests/namespace_nested.sts
 namespace_tests/namespace_qualified.sts
 namespace_tests/namespace_with_annotations.sts
 namespace_tests/nested_namespace_plus_equal.sts
+namespace_tests/namespace_import_type_test/namespace_import.sts
 non-const-capture.sts
 notNull.sts
 nullableType.sts

@@ -294,8 +294,11 @@ void ETSChecker::SetUpTypeParameterConstraint(ir::TSTypeParameter *const param)
             if (!typeNode->IsETSTypeReference()) {
                 return;
             }
-            const auto typeName = typeNode->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name();
-            auto *const found = scope->FindLocal(typeName, varbinder::ResolveBindingOptions::BINDINGS);
+            // Note: If `typeName` is imported from another files, it will not simply be `Identifier`.
+            const auto typeName = typeNode->AsETSTypeReference()->Part()->Name();
+            auto searchName = typeName->IsIdentifier() ? typeName->AsIdentifier()->Name()
+                                                       : typeName->AsTSQualifiedName()->Right()->AsIdentifier()->Name();
+            auto *const found = scope->FindLocal(searchName, varbinder::ResolveBindingOptions::BINDINGS);
             if (found != nullptr) {
                 SetUpTypeParameterConstraint(found->Declaration()->Node()->AsTSTypeParameter());
             }
