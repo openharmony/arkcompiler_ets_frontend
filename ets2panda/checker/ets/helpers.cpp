@@ -3067,4 +3067,32 @@ void ETSChecker::SetPreferredTypeIfPossible(ir::Expression *const expr, Type *co
     }
 }
 
+checker::ETSFunctionType *ETSChecker::IntersectSignatureSets(const checker::ETSFunctionType *left,
+                                                             const checker::ETSFunctionType *right)
+{
+    auto sameSig = [this](checker::Signature *leftSig, checker::Signature *rightSig) {
+        auto relation = Relation();
+        if (leftSig->Flags() != rightSig->Flags()) {
+            return false;
+        }
+        return relation->SignatureIsIdenticalTo(rightSig, leftSig);
+    };
+
+    if (left->CallSignatures().size() > right->CallSignatures().size()) {
+        std::swap(left, right);
+    }
+
+    ArenaVector<checker::Signature *> intersection {Allocator()->Adapter()};
+
+    for (const auto sig : left->CallSignatures()) {
+        auto found = right->FindSpecificSignature(
+            [sig, &sameSig](checker::Signature *otherSig) { return sameSig(sig, otherSig); });
+        if (found != nullptr) {
+            intersection.push_back(found);
+        }
+    }
+
+    return CreateETSMethodType(left->Name(), std::move(intersection));
+}
+
 }  // namespace ark::es2panda::checker

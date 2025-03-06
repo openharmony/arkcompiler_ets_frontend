@@ -1110,3 +1110,7 @@ semantic:
 - name: TUPLEN_NOT_IMPLEMENTED
   id: 279
   message: "Tuple types with arity >16 are not yet implemented"
+
+- name: UNION_METHOD_SIGNATURE
+  id: 280
+  message: "Union constituent types should have only one common method signature."

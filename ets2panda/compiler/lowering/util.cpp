@@ -251,13 +251,22 @@ void CheckLoweredNode(varbinder::ETSBinder *varBinder, checker::ETSChecker *chec
     auto *scope = NearestScope(node);
     varBinder->ResolveReferencesForScopeWithContext(node, scope);
 
-    auto *containingClass = ContainingClass(node);
-    checker::CheckerStatus newStatus =
-        (containingClass == nullptr) ? checker::CheckerStatus::NO_OPTS : checker::CheckerStatus::IN_CLASS;
+    checker::CheckerStatus newStatus = checker::CheckerStatus::NO_OPTS;
+    auto *containingClass = util::Helpers::GetContainingClassDefinition(node);
+
+    if (containingClass != nullptr) {
+        if (containingClass->IsAbstract()) {
+            newStatus = checker::CheckerStatus::IN_ABSTRACT;
+        } else {
+            newStatus = checker::CheckerStatus::IN_CLASS;
+        }
+    }
+
     if ((checker->Context().Status() & checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK) != 0) {
         newStatus |= checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK;
     }
-    auto checkerCtx = checker::SavedCheckerContext(checker, newStatus, containingClass);
+    auto checkerCtx = checker::SavedCheckerContext(
+        checker, newStatus, containingClass != nullptr ? containingClass->TsType()->AsETSObjectType() : nullptr);
     auto scopeCtx = checker::ScopeContext(checker, scope);
 
     node->Check(checker);

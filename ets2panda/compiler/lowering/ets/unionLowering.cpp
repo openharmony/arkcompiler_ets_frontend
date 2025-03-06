@@ -13,11 +13,16 @@
  * limitations under the License.
  */
 
+#include <algorithm>
 #include "unionLowering.h"
+#include "compiler/lowering/scopesInit/scopesInitPhase.h"
+#include "compiler/lowering/util.h"
 #include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"
 
 namespace ark::es2panda::compiler {
+
+static constexpr std::string_view PREFIX = "$NamedAccessMeta-";
 
 static void ReplaceAll(std::string &str, std::string_view substr, std::string_view replacement)
 {
@@ -27,13 +32,14 @@ static void ReplaceAll(std::string &str, std::string_view substr, std::string_vi
     }
 }
 
-static std::string GetAccessClassName(checker::Type *fieldType)
+static std::string GetAccessClassName(const checker::ETSUnionType *unionType)
 {
     std::stringstream ss;
-    ss << "$NamedAccessMeta-";
-    fieldType->ToAssemblerTypeWithRank(ss);
+    ss << PREFIX;
+    unionType->ToString(ss, false);
     std::string res(ss.str());
     std::replace(res.begin(), res.end(), '.', '-');
+    std::replace(res.begin(), res.end(), '|', '_');
     ReplaceAll(res, "[]", "[$]$");
     return res;
 }
@@ -54,7 +60,7 @@ static ir::ClassDefinition *GetUnionAccessClass(checker::ETSChecker *checker, va
     auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>(varbinder);
     auto *classDef =
         checker->AllocNode<ir::ClassDefinition>(checker->Allocator(), ident, ir::ClassDefinitionModifiers::GLOBAL,
-                                                ir::ModifierFlags::FINAL, Language(Language::Id::ETS));
+                                                ir::ModifierFlags::ABSTRACT, Language(Language::Id::ETS));
     classDef->SetScope(classCtx.GetScope());
     auto *classDecl = checker->AllocNode<ir::ClassDeclaration>(classDef, checker->Allocator());
     classDef->Scope()->BindNode(classDecl->Definition());
@@ -70,21 +76,67 @@ static ir::ClassDefinition *GetUnionAccessClass(checker::ETSChecker *checker, va
     return classDef;
 }
 
+static std::tuple<varbinder::LocalVariable *, checker::Signature *> CreateNamedAccessMethod(
+    checker::ETSChecker *checker, varbinder::VarBinder *varbinder, ir::MemberExpression *expr)
+{
+    auto allocator = checker->Allocator();
+    auto unionType = checker->GetApparentType(checker->GetNonNullishType(expr->Object()->TsType()))->AsETSUnionType();
+    auto *const accessClass = GetUnionAccessClass(checker, varbinder, GetAccessClassName(unionType));
+    auto methodType = expr->TsType()->AsETSFunctionType();
+    auto methodName = methodType->Name();
+
+    // Create method name for synthetic class
+    auto *methodIdent = checker->AllocNode<ir::Identifier>(methodName, allocator);
+
+    // Create the synthetic function node
+    auto *sig = methodType->CallSignatures().front();
+
+    ArenaVector<ir::Expression *> params {allocator->Adapter()};
+    for (auto param : sig->Function()->Params()) {
+        params.emplace_back(param->Clone(allocator, nullptr)->AsETSParameterExpression());
+    }
+    auto returnTypeAnno = sig->Function()->ReturnTypeAnnotation() != nullptr
+                              ? sig->Function()->ReturnTypeAnnotation()->Clone(allocator, nullptr)
+                              : checker->AllocNode<ir::OpaqueTypeNode>(sig->ReturnType(), allocator);
+
+    auto *func = checker->AllocNode<ir::ScriptFunction>(
+        allocator, ir::ScriptFunction::ScriptFunctionData {
+                       // CC-OFFNXT(G.FMT.02-CPP) project code style
+                       nullptr, ir::FunctionSignature(nullptr, std::move(params), returnTypeAnno),
+                       // CC-OFFNXT(G.FMT.02-CPP) project code style
+                       ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::PUBLIC | ir::ModifierFlags::ABSTRACT});
+    func->SetIdent(methodIdent->Clone(allocator, nullptr));
+
+    // Create the synthetic function node
+    auto *funcExpr = checker->AllocNode<ir::FunctionExpression>(func);
+
+    // Create the synthetic method definition node
+    auto *method = checker->AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, methodIdent, funcExpr,
+                                                            ir::ModifierFlags::PUBLIC | ir::ModifierFlags::ABSTRACT,
+                                                            allocator, false);
+    ArenaVector<ir::AstNode *> methodDecl {allocator->Adapter()};
+    methodDecl.push_back(method);
+    accessClass->AddProperties(std::move(methodDecl));
+
+    {
+        auto clsCtx =
+            varbinder::LexicalScope<varbinder::ClassScope>::Enter(varbinder, accessClass->Scope()->AsClassScope());
+        auto boundCtx = varbinder::BoundContext(varbinder->AsETSBinder()->GetRecordTable(), accessClass, true);
+        CheckLoweredNode(varbinder->AsETSBinder(), checker, method);
+    }
+
+    return {method->Id()->Variable()->AsLocalVariable(),
+            method->TsType()->AsETSFunctionType()->CallSignatures().front()};
+}
+
 static varbinder::LocalVariable *CreateNamedAccessProperty(checker::ETSChecker *checker,
-                                                           varbinder::VarBinder *varbinder, checker::Type *fieldType,
-                                                           const util::StringView &propName)
+                                                           varbinder::VarBinder *varbinder, ir::MemberExpression *expr)
 {
     auto *const allocator = checker->Allocator();
-    auto *const accessClass = GetUnionAccessClass(checker, varbinder, GetAccessClassName(fieldType));
-    auto *classScope = accessClass->Scope()->AsClassScope();
-
-    // Enter the union filed class instance field scope
-    auto fieldCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(varbinder, classScope->InstanceFieldScope());
-
-    if (auto *var = classScope->FindLocal(propName, varbinder::ResolveBindingOptions::VARIABLES); var != nullptr) {
-        ES2PANDA_ASSERT(checker->IsTypeIdenticalTo(var->TsType(), fieldType));
-        return var->AsLocalVariable();
-    }
+    auto unionType = checker->GetApparentType(checker->GetNonNullishType(expr->Object()->TsType()))->AsETSUnionType();
+    auto *const accessClass = GetUnionAccessClass(checker, varbinder, GetAccessClassName(unionType));
+    auto propName = expr->Property()->AsIdentifier()->Name();
+    auto fieldType = expr->TsType();
 
     // Create field name for synthetic class
     auto *fieldIdent = checker->AllocNode<ir::Identifier>(propName, allocator);
@@ -107,6 +159,39 @@ static varbinder::LocalVariable *CreateNamedAccessProperty(checker::ETSChecker *
     return var->AsLocalVariable();
 }
 
+static varbinder::LocalVariable *CreateNamedAccess(checker::ETSChecker *checker, varbinder::VarBinder *varbinder,
+                                                   ir::MemberExpression *expr)
+{
+    auto type = expr->TsType();
+    auto name = expr->Property()->AsIdentifier()->Name();
+
+    auto unionType = checker->GetApparentType(checker->GetNonNullishType(expr->Object()->TsType()))->AsETSUnionType();
+    auto *const accessClass = GetUnionAccessClass(checker, varbinder, GetAccessClassName(unionType));
+    auto *classScope = accessClass->Scope()->AsClassScope();
+
+    if (auto *var = classScope->FindLocal(name, varbinder::ResolveBindingOptions::ALL_NON_STATIC); var != nullptr) {
+        return var->AsLocalVariable();
+    }
+
+    // arrow type fields should be processed as property access not method invocation
+    if (type->IsETSMethodType() && !type->IsETSArrowType()) {
+        if (type->AsETSFunctionType()->CallSignatures().size() != 1) {
+            checker->LogError(diagnostic::UNION_METHOD_SIGNATURE, {}, expr->Start());
+        }
+        auto parent = expr->Parent();
+        ES2PANDA_ASSERT(parent->IsCallExpression() && parent->AsCallExpression()->Callee() == expr &&
+                        parent->AsCallExpression()->Signature()->HasFunction());
+        auto [var, sig] = CreateNamedAccessMethod(checker, varbinder, expr);
+        ES2PANDA_ASSERT(parent->IsCallExpression());
+        parent->AsCallExpression()->SetSignature(sig);
+        return var;
+    }
+
+    // Enter the union filed class instance field scope
+    auto fieldCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(varbinder, classScope->InstanceFieldScope());
+    return CreateNamedAccessProperty(checker, varbinder, expr);
+}
+
 static void HandleUnionPropertyAccess(checker::ETSChecker *checker, varbinder::VarBinder *vbind,
                                       ir::MemberExpression *expr)
 {
@@ -115,10 +200,7 @@ static void HandleUnionPropertyAccess(checker::ETSChecker *checker, varbinder::V
     }
 
     [[maybe_unused]] auto const *const parent = expr->Parent();
-    ES2PANDA_ASSERT(!(parent->IsCallExpression() && parent->AsCallExpression()->Callee() == expr &&
-                      !parent->AsCallExpression()->Signature()->HasFunction()));
-    expr->SetPropVar(
-        CreateNamedAccessProperty(checker, vbind, expr->TsType(), expr->Property()->AsIdentifier()->Name()));
+    expr->SetPropVar(CreateNamedAccess(checker, vbind, expr));
     ES2PANDA_ASSERT(expr->PropVar() != nullptr);
 }
 
