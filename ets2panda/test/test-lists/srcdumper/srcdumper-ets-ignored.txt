@@ -20,6 +20,10 @@ runtime/ets/annotation_tests/annotationUsage_scope_check01.sts
 runtime/ets/annotation_tests/annotationUsage_scope_check02.sts
 runtime/ets/annotation_tests/annotationUsage_scope_check03.sts
 runtime/ets/annotation_tests/AnnotationForLambdaExpression.sts
+ast/compiler/ets/async_import_1.sts
+ast/compiler/ets/async_import_2.sts
+ast/compiler/ets/async_import_3.sts
+ast/compiler/ets/async_import_4.sts
 ast/compiler/ets/import_tests/selective_export_tests/namespace_import_wrong_access_name.sts
 ast/parser/ets/InterfacePrivateMethod.sts
 ast/parser/ets/import_tests/enum/import.sts
