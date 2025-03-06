@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,11 +20,22 @@
 
 namespace ark::es2panda::util {
 
+constexpr size_t ALLOWED_EXTENSIONS_SIZE = 8;
+static std::array<std::string, ALLOWED_EXTENSIONS_SIZE> supportedExtensions = {".d.sts", ".sts", ".d.ets", ".ets",
+                                                                               ".d.ts",  ".ts",  ".js",    ".abc"};
 Path::Path() = default;
 
 Path::Path(const util::StringView &absolutePath, ArenaAllocator *allocator)
 {
     Initializer(absolutePath.Mutf8(), allocator);
+}
+
+static bool EndsWith(const std::string &str, const std::string &suffix)
+{
+    if (str.length() < suffix.length()) {
+        return false;
+    }
+    return str.compare(str.length() - suffix.length(), suffix.length(), suffix) == 0;
 }
 
 void Path::Initializer(const std::string &path, ArenaAllocator *allocator)
@@ -55,16 +66,31 @@ void Path::InitializeFileName()
     util::StringView fileName = path_.Substr(position + 1, path_.Length());
     if (GetExtension().Empty()) {
         fileName_ = fileName;
-    } else {
-        int extensionPosition = fileName.Mutf8().find_last_of('.');
-        fileName_ = fileName.Substr(0, extensionPosition);
+        return;
     }
+
+    for (auto &extension : supportedExtensions) {
+        if (EndsWith(fileName.Mutf8(), extension)) {
+            fileName_ = fileName.Substr(0, fileName.Length() - extension.length());
+            return;
+        }
+    }
+
+    int extensionPosition = fileName.Mutf8().find_last_of('.');
+    fileName_ = fileName.Substr(0, extensionPosition);
 }
 
 void Path::InitializeFileExtension()
 {
     if (path_.Empty()) {
         return;
+    }
+
+    for (auto &extension : supportedExtensions) {
+        if (EndsWith(path_.Mutf8(), extension)) {
+            fileExtension_ = util::UString(extension, allocator_).View();
+            return;
+        }
     }
 
     size_t position = path_.Mutf8().find_last_of('.');
