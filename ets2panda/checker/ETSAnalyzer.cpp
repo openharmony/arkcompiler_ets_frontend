@@ -435,21 +435,6 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewArrayInstanceExpression *expr) const
     return expr->TsType();
 }
 
-void ETSAnalyzer::CheckInstantatedClass(ir::ETSNewClassInstanceExpression *expr, ETSObjectType *&calleeObj) const
-{
-    ETSChecker *checker = GetETSChecker();
-    if (calleeObj->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT)) {
-        checker->LogError(diagnostic::ABSTRACT_INSTANTIATION, {calleeObj->Name()}, expr->Start());
-        expr->SetTsType(checker->GlobalTypeError());
-    }
-
-    if (calleeObj->HasObjectFlag(ETSObjectFlags::REQUIRED) &&
-        !expr->HasAstNodeFlags(ir::AstNodeFlags::ALLOW_REQUIRED_INSTANTIATION)) {
-        checker->LogError(diagnostic::NONLITERAL_INSTANTIATION, {}, expr->GetTypeRef()->Start());
-        expr->SetTsType(checker->GlobalTypeError());
-    }
-}
-
 static checker::Type *CheckInstantiatedNewType(ETSChecker *checker, ir::ETSNewClassInstanceExpression *expr)
 {
     checker::Type *calleeType = expr->GetTypeRef()->Check(checker);
@@ -465,6 +450,24 @@ static checker::Type *CheckInstantiatedNewType(ETSChecker *checker, ir::ETSNewCl
     if (!calleeType->IsETSObjectType()) {
         return checker->TypeError(expr->GetTypeRef(), "This expression is not constructible.", expr->Start());
     }
+
+    auto calleeObj = calleeType->AsETSObjectType();
+    if (calleeObj->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT)) {
+        checker->LogError(diagnostic::ABSTRACT_INSTANTIATION, {calleeObj->Name()}, expr->Start());
+        return checker->GlobalTypeError();
+    }
+
+    if (calleeObj->HasObjectFlag(checker::ETSObjectFlags::INTERFACE)) {
+        checker->LogError(diagnostic::INTERFACE_INSTANTIATION, {calleeObj->Name()}, expr->Start());
+        return checker->GlobalTypeError();
+    }
+
+    if (calleeObj->HasObjectFlag(ETSObjectFlags::REQUIRED) &&
+        !expr->HasAstNodeFlags(ir::AstNodeFlags::ALLOW_REQUIRED_INSTANTIATION)) {
+        checker->LogError(diagnostic::NONLITERAL_INSTANTIATION, {}, expr->GetTypeRef()->Start());
+        return checker->GlobalTypeError();
+    }
+
     return calleeType;
 }
 
@@ -480,8 +483,6 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
     }
     auto *calleeObj = calleeType->AsETSObjectType();
     expr->SetTsType(calleeObj);
-
-    CheckInstantatedClass(expr, calleeObj);
 
     if (calleeType->IsETSDynamicType() && !calleeType->AsETSDynamicType()->HasDecl()) {
         auto lang = calleeType->AsETSDynamicType()->Language();
