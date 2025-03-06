@@ -1,6 +1,6 @@
 {
     "copyright": [
-        "Copyright (c) 2022-2024 Huawei Device Co., Ltd.",
+        "Copyright (c) 2022-2025 Huawei Device Co., Ltd.",
         "Licensed under the Apache License, Version 2.0 (the 'License');",
         "you may not use this file except in compliance with the License.",
         "You may obtain a copy of the License at",
@@ -145,6 +145,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 56,
+            "column": 3,
+            "endLine": 56,
+            "endColumn": 4,
+            "problem": "LiteralAsPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
             "line": 57,
             "column": 3,
             "endLine": 57,
@@ -160,6 +170,16 @@
             "endLine": 58,
             "endColumn": 6,
             "problem": "ComputedPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 62,
+            "column": 3,
+            "endLine": 62,
+            "endColumn": 4,
+            "problem": "LiteralAsPropertyName",
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
             "severity": "ERROR"

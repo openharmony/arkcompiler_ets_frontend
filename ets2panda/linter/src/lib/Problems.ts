@@ -148,11 +148,15 @@ export enum FaultID {
   LimitedLiteralType,
   IndexNegative,
   ArrayIndexExprType,
+  AvoidUnionTypes,
   NoTuplesArrays,
   DoubleExclaBindingNotSupported,
   DoubleDollarBindingNotSupported,
   DollarBindingNotSupported,
   ExtendDecoratorNotSupported,
+  MethodOverridingField,
+  ExplicitFunctionType,
+  ClassstaticInitialization,
   // this should always be last enum
   LAST_ID
 }

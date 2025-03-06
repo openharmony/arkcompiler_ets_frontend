@@ -16,7 +16,7 @@
 export const cookBookMsg: string[] = [];
 export const cookBookTag: string[] = [];
 
-for (let i = 0; i <= 237; i++) {
+for (let i = 0; i <= 300; i++) {
   cookBookMsg[i] = '';
 }
 
@@ -243,8 +243,12 @@ cookBookTag[222] = 'Import for side-effect only is prohibited.(arkts-no-side-eff
 cookBookTag[232] = 'Lazy import is not supported(arkts-no-lazy-import)';
 cookBookTag[233] = 'Dynamic import is not supported(arkts-no-dynamic-import)';
 cookBookTag[234] = 'Decorators are not supported(arkts-no-ts-decorators)';
+cookBookTag[235] = 'Avoid using union types (arkts-common-union-member-access)';
+cookBookTag[236] = 'Method cant\'t override filed in interface implemented (arkts-no-method-overriding-field)';
 cookBookTag[237] = 'Array and tuple are different type(arkts-no-tuples-arrays)';
+cookBookTag[238] = 'The static property has no initializer (arkts-class-static-initialization)';
 cookBookTag[251] = '"!!" for bidirectional data binding is not supported (arkui-no-!!-bidirectional-data-binding)';
 cookBookTag[252] = '"$$" for bidirectional data binding is not supported (arkui-no-$$-bidirectional-data-binding)';
 cookBookTag[253] = '"${variable}" for decorator binding is not supported (arkui-link-decorator-passing)';
 cookBookTag[254] = '"@Extend" decorator is not supported (arkui-no-extend-decorator)';
+cookBookTag[300] = 'The function type should be explicit (arkts-no-ts-like-function)';

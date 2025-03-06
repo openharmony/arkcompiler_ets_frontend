@@ -29,6 +29,7 @@ import { Autofixer } from './autofixes/Autofixer';
 import { SYMBOL, SYMBOL_CONSTRUCTOR, TsUtils } from './utils/TsUtils';
 import { FUNCTION_HAS_NO_RETURN_ERROR_CODE } from './utils/consts/FunctionHasNoReturnErrorCode';
 import { LIMITED_STANDARD_UTILITY_TYPES } from './utils/consts/LimitedStandardUtilityTypes';
+import { LIKE_FUNCTION } from './utils/consts/LikeFunction';
 import {
   NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS,
   NON_INITIALIZABLE_PROPERTY_DECORATORS,
@@ -719,6 +720,7 @@ export class TypeScriptLinter {
   private handlePropertyAccessExpression(node: ts.Node): void {
     this.handleDoubleDollar(node);
 
+    this.checkUnionTypes(node as ts.PropertyAccessExpression);
     if (ts.isCallExpression(node.parent) && node === node.parent.expression) {
       return;
     }
@@ -754,13 +756,51 @@ export class TypeScriptLinter {
     }
   }
 
-  private handlePropertyDeclaration(node: ts.PropertyDeclaration): void {
+  checkUnionTypes(propertyAccessNode: ts.PropertyAccessExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const baseExprType = this.tsTypeChecker.getTypeAtLocation(propertyAccessNode.expression);
+    if (!baseExprType.isUnion()) {
+      return;
+    }
+    const allType = baseExprType.types;
+    const commonPropertyType = allType.filter((type) => {
+      return this.tsUtils.findProperty(type, propertyAccessNode.name.getText()) !== undefined;
+    });
+    const typeMap = new Map();
+    if (commonPropertyType.length === allType.length) {
+      allType.forEach((type) => {
+        const propertySymbol = this.tsUtils.findProperty(type, propertyAccessNode.name.getText());
+        if (propertySymbol?.declarations) {
+          const propertyType = this.tsTypeChecker.getTypeOfSymbolAtLocation(
+            propertySymbol,
+            propertySymbol.declarations[0]
+          );
+          typeMap.set(propertyType, propertyAccessNode.name.getText());
+        }
+      });
+      if (typeMap.size > 1) {
+        this.incrementCounters(propertyAccessNode, FaultID.AvoidUnionTypes);
+      }
+    }
+  }
+
+  private handleLiteralAsPropertyName(node: ts.PropertyDeclaration): void {
     const propName = node.name;
-    if (!!propName && ts.isNumericLiteral(propName)) {
+    if (!!propName && (ts.isNumericLiteral(propName) || this.options.arkts2 && ts.isStringLiteral(propName))) {
       const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(propName);
       this.incrementCounters(node.name, FaultID.LiteralAsPropertyName, autofix);
     }
+  }
 
+  private handlePropertyDeclaration(node: ts.PropertyDeclaration): void {
+    const propName = node.name;
+    if (!!propName && (ts.isNumericLiteral(propName) || this.options.arkts2 && ts.isStringLiteral(propName))) {
+      const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(propName);
+      this.incrementCounters(node.name, FaultID.LiteralAsPropertyName, autofix);
+    }
+    this.handleLiteralAsPropertyName(node);
     const decorators = ts.getDecorators(node);
     this.filterOutDecoratorsDiagnostics(
       decorators,
@@ -836,13 +876,70 @@ export class TypeScriptLinter {
     }
   }
 
+  private static getAllClassesFromSourceFile(sourceFile: ts.SourceFile): ts.ClassDeclaration[] {
+    const allClasses: ts.ClassDeclaration[] = [];
+    function visit(node: ts.Node): void {
+      if (ts.isClassDeclaration(node)) {
+        allClasses.push(node);
+      }
+      ts.forEachChild(node, visit);
+    }
+    visit(sourceFile);
+    return allClasses;
+  }
+
   private handlePropertySignature(node: ts.PropertySignature): void {
     const propName = node.name;
-    if (!!propName && ts.isNumericLiteral(propName)) {
+    this.handleInterfaceProperty(node);
+    if (!!propName && (ts.isNumericLiteral(propName) || this.options.arkts2 && ts.isStringLiteral(propName))) {
+      const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(propName);
+      this.incrementCounters(node.name, FaultID.LiteralAsPropertyName, autofix);
+    }
+    if (!!propName && (ts.isNumericLiteral(propName) || this.options.arkts2 && ts.isStringLiteral(propName))) {
       const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(propName);
       this.incrementCounters(node.name, FaultID.LiteralAsPropertyName, autofix);
     }
     this.handleSendableInterfaceProperty(node);
+  }
+
+  private handleInterfaceProperty(node: ts.PropertySignature): void {
+    if (this.options.arkts2 && ts.isInterfaceDeclaration(node.parent)) {
+      if (node.type && ts.isFunctionTypeNode(node.type)) {
+        const interfaceName = node.parent.name.getText();
+        const propertyName = node.name.getText();
+        const allClasses = TypeScriptLinter.getAllClassesFromSourceFile(this.sourceFile!);
+        this.visitClassMembers(allClasses, interfaceName, propertyName);
+      }
+    }
+  }
+
+  private getImplementsClause(classDecl: ts.ClassDeclaration): ts.HeritageClause | undefined {
+    void this;
+    return classDecl.heritageClauses?.find((clause) => {
+      return clause.token === ts.SyntaxKind.ImplementsKeyword;
+    });
+  }
+
+  private checkClassForProperty(classDecl: ts.ClassDeclaration, propertyName: string): void {
+    for (const member of classDecl.members) {
+      if (ts.isMethodDeclaration(member) && member.name.getText() === propertyName) {
+        this.incrementCounters(member, FaultID.MethodOverridingField);
+      }
+    }
+  }
+
+  private visitClassMembers(classes: ts.ClassDeclaration[], interfaceName: string, propertyName: string): void {
+    void this;
+    classes.some((classDecl) => {
+      const implementsClause = this.getImplementsClause(classDecl);
+      if (
+        implementsClause?.types.some((type) => {
+          return type.getText() === interfaceName;
+        })
+      ) {
+        this.checkClassForProperty(classDecl, propertyName);
+      }
+    });
   }
 
   private handleSendableInterfaceProperty(node: ts.PropertySignature): void {
@@ -1322,6 +1419,25 @@ export class TypeScriptLinter {
     this.handleDeclarationInferredType(tsVarDecl);
     this.handleDefiniteAssignmentAssertion(tsVarDecl);
     this.handleLimitedVoidType(tsVarDecl);
+    this.handleExplicitFunctionType(tsVarDecl);
+  }
+
+  private handleExplicitFunctionType(node: ts.VariableDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const type = node.type;
+    const initializer = node.initializer;
+    const isFunctionType = type?.kind === ts.SyntaxKind.FunctionType;
+    const isFunctionLiteral =
+      type?.kind === ts.SyntaxKind.TypeReference &&
+      (type as ts.TypeReferenceNode).typeName?.getText() === LIKE_FUNCTION;
+    const isNewFunctionConstructor =
+      initializer && ts.isNewExpression(initializer) && initializer.expression.getText() === LIKE_FUNCTION;
+
+    if (type && (isFunctionType || isFunctionLiteral) || initializer && isNewFunctionConstructor) {
+      this.incrementCounters(node, FaultID.ExplicitFunctionType);
+    }
   }
 
   private handleDeclarationDestructuring(decl: ts.VariableDeclaration | ts.ParameterDeclaration): void {
@@ -1413,11 +1529,54 @@ export class TypeScriptLinter {
     }
   }
 
+  private handleClassExtends(tsClassDecl: ts.ClassDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const allClasses = TypeScriptLinter.getAllClassesFromSourceFile(this.sourceFile!);
+    const classMap = new Map<string, ts.ClassDeclaration>();
+    allClasses.forEach((classDecl) => {
+      if (classDecl.name && !classDecl.heritageClauses) {
+        classMap.set(classDecl.name.getText(), classDecl);
+      }
+    });
+    if (!tsClassDecl.heritageClauses) {
+      return;
+    }
+    tsClassDecl.heritageClauses.forEach((clause) => {
+      clause.types.forEach((type) => {
+        const baseClassName = type.expression.getText();
+        const baseClass = classMap.get(baseClassName);
+        if (baseClass && ts.isClassDeclaration(baseClass)) {
+          this.checkMembersConsistency(tsClassDecl, baseClass);
+        }
+      });
+    });
+  }
+
+  private checkMembersConsistency(derivedClass: ts.ClassDeclaration, baseClass: ts.ClassDeclaration): void {
+    const baseMethods = new Set<string>();
+    baseClass.members.forEach((member) => {
+      if (ts.isMethodDeclaration(member)) {
+        baseMethods.add(member.name.getText());
+      }
+    });
+    derivedClass.members.forEach((member) => {
+      const memberName = member.name?.getText();
+      if (memberName && baseMethods.has(memberName)) {
+        if (ts.isPropertyDeclaration(member)) {
+          this.incrementCounters(member, FaultID.MethodOverridingField);
+        }
+      }
+    });
+  }
+
   private handleClassDeclaration(node: ts.Node): void {
     // early exit via exception if cancellation was requested
     this.options.cancellationToken?.throwIfCancellationRequested();
 
     const tsClassDecl = node as ts.ClassDeclaration;
+    this.handleClassExtends(tsClassDecl);
     if (tsClassDecl.name) {
       this.countDeclarationsWithDuplicateName(tsClassDecl.name, tsClassDecl);
     }
@@ -1450,6 +1609,7 @@ export class TypeScriptLinter {
     }
 
     this.processClassStaticBlocks(tsClassDecl);
+    this.handleClassStaticPropInit(tsClassDecl);
   }
 
   private handleNotSupportCustomDecorators(decorator: ts.Decorator): void {
@@ -1667,8 +1827,26 @@ export class TypeScriptLinter {
     }
   }
 
+  private checkClassImplementsMethod(classDecl: ts.ClassDeclaration, methodName: string): boolean {
+    for (const member of classDecl.members) {
+      if (member.name?.getText() === methodName) {
+        if (ts.isPropertyDeclaration(member)) {
+          this.incrementCounters(member, FaultID.MethodOverridingField);
+        }
+      }
+    }
+    return false;
+  }
+
   private handleMethodSignature(node: ts.MethodSignature): void {
     const tsMethodSign = node;
+    if (this.options.arkts2 && ts.isInterfaceDeclaration(node.parent)) {
+      const methodName = node.name.getText();
+      const allClasses = TypeScriptLinter.getAllClassesFromSourceFile(this.sourceFile!);
+      allClasses.forEach((classDecl) => {
+        this.checkClassImplementsMethod(classDecl, methodName);
+      });
+    }
     if (!tsMethodSign.type) {
       this.handleMissingReturnType(tsMethodSign);
     }
@@ -1899,6 +2077,12 @@ export class TypeScriptLinter {
     const tsEnumMember = node as ts.EnumMember;
     const tsEnumMemberType = this.tsTypeChecker.getTypeAtLocation(tsEnumMember);
     const constVal = this.tsTypeChecker.getConstantValue(tsEnumMember);
+    const tsEnumMemberName = tsEnumMember.name;
+    if (this.options.arkts2 && ts.isStringLiteral(tsEnumMemberName)) {
+      const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(tsEnumMemberName);
+      this.incrementCounters(node, FaultID.LiteralAsPropertyName, autofix);
+    }
+
     if (tsEnumMember.initializer && !this.tsUtils.isValidEnumMemberInit(tsEnumMember.initializer)) {
       this.incrementCounters(node, FaultID.EnumMemberNonConstInit);
     }
@@ -3302,5 +3486,23 @@ export class TypeScriptLinter {
       const autofix = this.autofixer?.fixExtendDecorator(node);
       this.incrementCounters(node.parent, FaultID.ExtendDecoratorNotSupported, autofix);
     }
+  }
+
+  private handleClassStaticPropInit(classDecl: ts.ClassDeclaration | ts.ClassExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    classDecl.members?.forEach((member) => {
+      if (
+        ts.isPropertyDeclaration(member) &&
+        member.modifiers?.some((modifier) => {
+          return modifier.kind === ts.SyntaxKind.StaticKeyword;
+        })
+      ) {
+        if (!member.initializer) {
+          this.incrementCounters(member, FaultID.ClassstaticInitialization);
+        }
+      }
+    });
   }
 }

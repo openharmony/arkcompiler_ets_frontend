@@ -15,6 +15,12 @@
 
 import { ExportLitAsPropName } from './ignore_files/good';
 
+enum LiteralAsPropertyNameEnum {
+  One = "one",
+  "PrivateTwo" = "_2",
+  Two = "Two"
+}
+
 class LiteralAsPropertyName {
   public one: string = "1111111111";
   private 2: string;
@@ -76,3 +82,7 @@ const int: litAsPropNameIface = {
 };
 
 const imp: ExportLitAsPropName = { 1: 234 };
+
+LiteralAsPropertyNameEnum['One']
+
+LiteralAsPropertyNameEnum['PrivateTwo']
