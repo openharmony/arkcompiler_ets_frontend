@@ -88,7 +88,9 @@ public:
           dynamicLambdaSignatureCache_(Allocator()->Adapter()),
           functionalInterfaceCache_(Allocator()->Adapter()),
           apparentTypes_(Allocator()->Adapter()),
-          dynamicCallNames_ {{DynamicCallNamesMap(Allocator()->Adapter()), DynamicCallNamesMap(Allocator()->Adapter())}}
+          dynamicCallNames_ {
+              {DynamicCallNamesMap(Allocator()->Adapter()), DynamicCallNamesMap(Allocator()->Adapter())}},
+          overloadSigContainer_(Allocator()->Adapter())
     {
     }
 
@@ -466,8 +468,8 @@ public:
     Type *BuildMethodSignature(ir::MethodDefinition *method);
     Signature *CheckEveryAbstractSignatureIsOverridden(ETSFunctionType *target, ETSFunctionType *source);
     static Signature *GetSignatureFromMethodDefinition(const ir::MethodDefinition *methodDef);
-    void CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType *overload,
-                                 const ir::MethodDefinition *currentFunc);
+    bool CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType *overload,
+                                 const ir::MethodDefinition *currentFunc, bool omitSameAsm = false);
     static bool CmpAssemblerTypesWithRank(Signature const *const sig1, Signature const *const sig2) noexcept;
     static bool HasSameAssemblySignature(Signature const *const sig1, Signature const *const sig2) noexcept;
     static bool HasSameAssemblySignatures(ETSFunctionType const *const func1,
@@ -826,6 +828,21 @@ public:
     void LogUnresolvedReferenceError(ir::Identifier *ident);
     void WrongContextErrorClassifyByType(ir::Identifier *ident);
 
+    void CreateOverloadSigContainer(Signature *overloadHelperSig)
+    {
+        if (!overloadSigContainer_.empty()) {
+            overloadSigContainer_.pop_back();
+        }
+        ES2PANDA_ASSERT(overloadSigContainer_.empty());
+        overloadSigContainer_.insert(overloadSigContainer_.end(), overloadHelperSig);
+    }
+
+    ArenaVector<Signature *> &GetOverloadSigContainer()
+    {
+        ES2PANDA_ASSERT(overloadSigContainer_.size() == 1);
+        return overloadSigContainer_;
+    }
+
 private:
     ETSEnumType::Method MakeMethod(ir::TSEnumDeclaration const *const enumDecl, const std::string_view &name,
                                    bool buildPorxyParam, Type *returnType, bool buildProxy = true);
@@ -951,6 +968,7 @@ private:
     std::recursive_mutex mtx_;
     evaluate::ScopedDebugInfoPlugin *debugInfoPlugin_ {nullptr};
     std::unordered_set<ir::TSTypeAliasDeclaration *> elementStack_;
+    ArenaVector<Signature *> overloadSigContainer_;
 };
 
 }  // namespace ark::es2panda::checker

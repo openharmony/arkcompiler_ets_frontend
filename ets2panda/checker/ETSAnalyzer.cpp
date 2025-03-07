@@ -1204,6 +1204,17 @@ static bool ShouldRemoveStaticSignature(ir::CallExpression *expr)
 checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallExpression *expr,
                                                   checker::Type *calleeType) const
 {
+    if (calleeType->IsETSFunctionType() && calleeType->AsETSFunctionType()->HasHelperSignature() &&
+        expr->Signature() != nullptr) {
+        // Note: Only works when rechecking in DeclareOveloadLowering phase
+        auto *helperSignature = calleeType->AsETSFunctionType()->GetHelperSignature();
+        checker->ReportWarning({"Detect duplicate signatures, use '", helperSignature->Function()->Id()->Name(),
+                                helperSignature, "' to replace"},
+                               expr->Start());
+        checker->CreateOverloadSigContainer(helperSignature);
+        return checker->ResolveCallExpressionAndTrailingLambda(checker->GetOverloadSigContainer(), expr, expr->Start());
+    }
+
     if (calleeType->IsETSExtensionFuncHelperType()) {
         auto *signature =
             ResolveCallForETSExtensionFuncHelperType(calleeType->AsETSExtensionFuncHelperType(), checker, expr);
