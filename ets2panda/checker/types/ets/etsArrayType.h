@@ -33,6 +33,11 @@ public:
         return element_;
     }
 
+    void SetElementType(Type *element)
+    {
+        element_ = element;
+    }
+
     std::tuple<bool, bool> ResolveConditionExpr() const override
     {
         return {false, false};

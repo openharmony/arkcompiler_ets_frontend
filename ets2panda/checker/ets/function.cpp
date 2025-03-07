@@ -363,19 +363,22 @@ bool ETSChecker::IsValidRestArgument(ir::Expression *const argument, Signature *
                                      const TypeRelationFlag flags, const std::size_t index)
 {
     const auto argumentType = argument->Check(this);
-    auto *const targetType = substitutedSig->RestVar()->TsType();
+    auto *targetType = substitutedSig->RestVar()->TsType();
     if (targetType->IsETSTupleType()) {
         // NOTE (mmartin): check tuple assignability for rest arguments
         LogTypeError("Tuple types for rest arguments are not yet implemented", argument->Start());
         return false;
     }
 
-    auto const invocationCtx = checker::InvocationContext(
-        Relation(), argument, argumentType, substitutedSig->RestVar()->TsType()->AsETSArrayType()->ElementType(),
-        argument->Start(),
-        {"Type '", argumentType, "' is not compatible with rest parameter type '", targetType, "' at index ",
-         index + 1},
-        flags);
+    targetType = substitutedSig->RestVar()->TsType()->AsETSArrayType()->ElementType();
+    if (substitutedSig->OwnerVar() == nullptr) {
+        targetType = MaybeBoxType(targetType);
+    }
+    auto const invocationCtx =
+        checker::InvocationContext(Relation(), argument, argumentType, targetType, argument->Start(),
+                                   {"Type '", argumentType, "' is not compatible with rest parameter type '",
+                                    targetType, "' at index ", index + 1},
+                                   flags);
 
     return invocationCtx.IsInvocable();
 }

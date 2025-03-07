@@ -44,6 +44,8 @@ struct LambdaClassInvokeInfo {
     ir::ClassDefinition *classDefinition = nullptr;
     checker::Substitution *substitution = nullptr;
     size_t arity = 0;
+    util::StringView restParameterIdentifier = "";
+    util::StringView restArgumentIdentifier = "";
 };
 
 static std::pair<ir::ClassDeclaration *, ir::ScriptFunction *> FindEnclosingClassAndFunction(ir::AstNode *ast)
@@ -177,7 +179,7 @@ ParamsAndVarMap CreateLambdaCalleeParameters(public_lib::Context *ctx, ir::Arrow
     }
 
     for (auto *oldParam : lambda->Function()->Params()) {
-        auto *oldParamType = oldParam->AsETSParameterExpression()->Ident()->TypeAnnotation()->TsType();
+        auto *oldParamType = oldParam->AsETSParameterExpression()->Ident()->TsType();
         auto *newParamType = oldParamType->Substitute(checker->Relation(), substitution);
         auto *newParam = oldParam->AsETSParameterExpression()->Clone(allocator, nullptr);
         if (newParam->IsOptional()) {
@@ -488,8 +490,60 @@ static void CreateLambdaClassConstructor(public_lib::Context *ctx, ir::ClassDefi
     ctor->SetParent(classDefinition);
 }
 
-static ir::CallExpression *CreateCallForLambdaClassInvoke(public_lib::Context *ctx, LambdaInfo const *info,
-                                                          LambdaClassInvokeInfo const *lciInfo, bool wrapToObject)
+static ArenaVector<ark::es2panda::ir::Statement *> CreateRestArgumentsArrayReallocation(
+    public_lib::Context *ctx, LambdaClassInvokeInfo const *lciInfo)
+{
+    auto *allocator = ctx->allocator;
+    auto *parser = ctx->parser->AsETSParser();
+    auto *checker = ctx->checker->AsETSChecker();
+    if (lciInfo->lambdaSignature->HasRestParameter()) {
+        auto *restParameterType = lciInfo->lambdaSignature->RestVar()->TsType();
+        auto *restParameterSubstituteType = restParameterType->Substitute(checker->Relation(), lciInfo->substitution);
+        auto *elementType = restParameterSubstituteType->AsETSArrayType()->ElementType();
+        std::stringstream lengthString;
+        lengthString << "let length :int = @@I1.length;"
+                     << "type elem = @@T2;"
+                     << "let @@I3 :elem[] = new elem[length];"
+                     << "for(let i:int = 0;i < length ;i = i + 1){"
+                     << "@@I4[i] = @@I5[i] as @@T6 as elem;"
+                     << "}";
+        auto *arg = parser->CreateFormattedStatement(
+            lengthString.str(), lciInfo->restParameterIdentifier, elementType, lciInfo->restArgumentIdentifier,
+            lciInfo->restArgumentIdentifier, lciInfo->restParameterIdentifier, checker->MaybeBoxType(elementType));
+        return ArenaVector<ir::Statement *>(std::move(arg->AsBlockStatement()->Statements()));
+    }
+    return ArenaVector<ir::Statement *>(allocator->Adapter());
+}
+
+static void CreateInvokeMethodRestParameter(public_lib::Context *ctx, LambdaClassInvokeInfo *lciInfo,
+                                            ArenaVector<ir::Expression *> *params)
+{
+    auto *allocator = ctx->allocator;
+    auto *checker = ctx->checker->AsETSChecker();
+    auto *anyType = checker->GlobalETSNullishObjectType();
+
+    auto *restIdent = Gensym(allocator);
+    lciInfo->restParameterIdentifier = restIdent->Name();
+    lciInfo->restArgumentIdentifier = GenName(allocator).View();
+    auto *spread = allocator->New<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT, allocator, restIdent);
+    auto *arr = checker->CreateETSArrayType(anyType, false);
+    auto *typeAnnotation = allocator->New<ir::OpaqueTypeNode>(arr, allocator);
+
+    spread->SetTsTypeAnnotation(typeAnnotation);
+    spread->SetTsType(arr);
+    restIdent->SetTsType(arr);
+    auto *param = allocator->New<ir::ETSParameterExpression>(spread, nullptr, allocator);
+
+    restIdent->SetParent(spread);
+    typeAnnotation->SetParent(spread);
+    spread->SetParent(param);
+    params->push_back(param);
+}
+
+static ArenaVector<ir::Expression *> CreateCallArgumentsForLambdaClassInvoke(public_lib::Context *ctx,
+                                                                             LambdaInfo const *info,
+                                                                             LambdaClassInvokeInfo const *lciInfo,
+                                                                             bool wrapToObject)
 {
     auto *allocator = ctx->allocator;
     auto *parser = ctx->parser->AsETSParser();
@@ -514,6 +568,22 @@ static ir::CallExpression *CreateCallForLambdaClassInvoke(public_lib::Context *c
         callArguments.push_back(arg);
     }
 
+    if (lciInfo->lambdaSignature->HasRestParameter()) {
+        auto *restIdent = allocator->New<ir::Identifier>(lciInfo->restArgumentIdentifier, allocator);
+        auto *spread = allocator->New<ir::SpreadElement>(ir::AstNodeType::SPREAD_ELEMENT, allocator, restIdent);
+        restIdent->SetParent(spread);
+        callArguments.push_back(spread);
+    }
+    return callArguments;
+}
+
+static ir::CallExpression *CreateCallForLambdaClassInvoke(public_lib::Context *ctx, LambdaInfo const *info,
+                                                          LambdaClassInvokeInfo const *lciInfo, bool wrapToObject)
+{
+    auto *allocator = ctx->allocator;
+    auto *parser = ctx->parser->AsETSParser();
+
+    auto callArguments = CreateCallArgumentsForLambdaClassInvoke(ctx, info, lciInfo, wrapToObject);
     ir::Expression *calleeReceiver;
     if (info->callReceiver != nullptr) {
         calleeReceiver = parser->CreateFormattedExpression("this.@@I1", "$this");
@@ -551,8 +621,8 @@ static ir::BlockStatement *CreateLambdaClassInvokeBody(public_lib::Context *ctx,
     auto *anyType = checker->GlobalETSNullishObjectType();
 
     auto *call = CreateCallForLambdaClassInvoke(ctx, info, lciInfo, wrapToObject);
+    auto bodyStmts = CreateRestArgumentsArrayReallocation(ctx, lciInfo);
 
-    auto bodyStmts = ArenaVector<ir::Statement *>(allocator->Adapter());
     if (lciInfo->lambdaSignature->ReturnType() == checker->GlobalVoidType()) {
         auto *callStmt = util::NodeAllocator::ForceSetParent<ir::ExpressionStatement>(allocator, call);
         bodyStmts.push_back(callStmt);
@@ -571,7 +641,7 @@ static ir::BlockStatement *CreateLambdaClassInvokeBody(public_lib::Context *ctx,
 }
 
 static void CreateLambdaClassInvokeMethod(public_lib::Context *ctx, LambdaInfo const *info,
-                                          LambdaClassInvokeInfo const *lciInfo, util::StringView methodName,
+                                          LambdaClassInvokeInfo *lciInfo, util::StringView methodName,
                                           bool wrapToObject)
 {
     auto *allocator = ctx->allocator;
@@ -586,6 +656,10 @@ static void CreateLambdaClassInvokeMethod(public_lib::Context *ctx, LambdaInfo c
             allocator, lparam->Name(), allocator->New<ir::OpaqueTypeNode>(type, allocator), allocator);
         auto *param = util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(allocator, id, false, allocator);
         params.push_back(param);
+    }
+
+    if (lciInfo->lambdaSignature->HasRestParameter()) {
+        CreateInvokeMethodRestParameter(ctx, lciInfo, &params);
     }
 
     auto *returnType2 = allocator->New<ir::OpaqueTypeNode>(
@@ -621,8 +695,7 @@ static checker::ETSObjectType *FunctionTypeToLambdaProviderType(checker::ETSChec
                                                                 checker::Signature *signature)
 {
     if (signature->RestVar() != nullptr) {
-        return checker->GlobalBuiltinLambdaType(checker->GlobalBuiltinFunctionTypeVariadicThreshold(), false)
-            ->AsETSObjectType();
+        return checker->GlobalBuiltinLambdaType(signature->ArgCount(), true)->AsETSObjectType();
     }
     // Note: FunctionN is not supported yet
     if (signature->ArgCount() >= checker->GlobalBuiltinFunctionTypeVariadicThreshold()) {
@@ -635,12 +708,12 @@ static checker::ETSObjectType *FunctionTypeToLambdaProviderType(checker::ETSChec
 // first one is the lambdaClass itself and second one is the receiver class,
 // the true `this` of the `invoke` and `invoke0` functionScope is the lambdaClass.
 static void CorrectTheTrueThisForExtensionLambda(public_lib::Context *ctx, ir::ClassDeclaration *lambdaClass,
-                                                 size_t arity)
+                                                 size_t arity, bool hasRestParam)
 {
     auto *checker = ctx->checker->AsETSChecker();
     auto *classScope = lambdaClass->Definition()->Scope();
     ArenaVector<varbinder::Variable *> invokeFuncsOfLambda(checker->Allocator()->Adapter());
-    auto invokeName = checker::FunctionalInterfaceInvokeName(arity, false);
+    auto invokeName = checker::FunctionalInterfaceInvokeName(arity, hasRestParam);
     invokeFuncsOfLambda.emplace_back(
         classScope->FindLocal(compiler::Signatures::LAMBDA_OBJECT_INVOKE, varbinder::ResolveBindingOptions::METHODS));
     invokeFuncsOfLambda.emplace_back(
@@ -743,7 +816,8 @@ static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, checker
     for (size_t arity = signature->MinArgCount(); arity <= signature->ArgCount(); ++arity) {
         lciInfo.arity = arity;
         auto invokeMethodName =
-            util::UString {checker::FunctionalInterfaceInvokeName(arity, false), ctx->allocator}.View();
+            util::UString {checker::FunctionalInterfaceInvokeName(arity, signature->HasRestParameter()), ctx->allocator}
+                .View();
         CreateLambdaClassInvokeMethod(ctx, info, &lciInfo, invokeMethodName, true);
         // NOTE(vpukhov): for optional methods, the required invokeRk k={min, max-1} is not emitted
     }
@@ -752,7 +826,8 @@ static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, checker
     InitScopesPhaseETS::RunExternalNode(classDeclaration, varBinder);
     varBinder->ResolveReferencesForScopeWithContext(classDeclaration, varBinder->TopScope());
     classDeclaration->Check(checker);
-    CorrectTheTrueThisForExtensionLambda(ctx, classDeclaration, signature->MinArgCount());
+    CorrectTheTrueThisForExtensionLambda(ctx, classDeclaration, signature->MinArgCount(),
+                                         signature->HasRestParameter());
     return classDeclaration;
 }
 
@@ -983,7 +1058,10 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
     if (ifaceType->IsETSDynamicType()) {
         return call;
     }
-    auto invokeMethodName = util::UString {checker::FunctionalInterfaceInvokeName(arity, false), allocator}.View();
+    bool hasRestParam =
+        oldType->IsETSFunctionType() && oldType->AsETSFunctionType()->ArrowSignature()->HasRestParameter();
+    util::StringView invokeMethodName =
+        util::UString {checker::FunctionalInterfaceInvokeName(arity, hasRestParam), allocator}.View();
     auto *prop = ifaceType->GetProperty(invokeMethodName, checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD |
                                                               checker::PropertySearchFlags::SEARCH_IN_INTERFACES);
     ASSERT(prop != nullptr);

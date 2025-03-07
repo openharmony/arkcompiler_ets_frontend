@@ -34,8 +34,9 @@ ETSFunctionType::ETSFunctionType(ETSChecker *checker, Signature *signature)
     : Type(TypeFlag::FUNCTION),
       callSignatures_({{signature->ToArrowSignature(checker)}, checker->Allocator()->Adapter()}),
       name_(""),
-      assemblerName_(
-          checker->GlobalBuiltinFunctionType(signature->MinArgCount(), false)->AsETSObjectType()->AssemblerName())
+      assemblerName_(checker->GlobalBuiltinFunctionType(signature->MinArgCount(), signature->HasRestParameter())
+                         ->AsETSObjectType()
+                         ->AssemblerName())
 {
 }
 
@@ -59,12 +60,10 @@ static ETSObjectType *FunctionTypeToFunctionalInterfaceType(ETSChecker *checker,
     bool isExtensionHack = signature->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION);
 
     if (signature->RestVar() != nullptr) {
-        auto *functionN =
-            checker->GlobalBuiltinFunctionType(checker->GlobalBuiltinFunctionTypeVariadicThreshold(), false)
-                ->AsETSObjectType();
+        auto *functionN = checker->GlobalBuiltinFunctionType(arity, true)->AsETSObjectType();
         auto *substitution = checker->NewSubstitution();
         substitution->emplace(functionN->TypeArguments()[0]->AsETSTypeParameter(),
-                              checker->MaybeBoxType(signature->ReturnType()));
+                              checker->MaybeBoxType(signature->RestVar()->TsType()->AsETSArrayType()->ElementType()));
         return functionN->Substitute(checker->Relation(), substitution, true, isExtensionHack);
     }
 
