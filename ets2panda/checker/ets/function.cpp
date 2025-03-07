@@ -2085,7 +2085,7 @@ bool ETSChecker::CmpAssemblerTypesWithRank(Signature const *const sig1, Signatur
 
 bool ETSChecker::HasSameAssemblySignature(Signature const *const sig1, Signature const *const sig2) noexcept
 {
-    if (sig1->MinArgCount() != sig2->MinArgCount()) {
+    if (sig1->ArgCount() != sig2->ArgCount()) {
         return false;
     }
 

@@ -202,49 +202,29 @@ std::string Signature::ToString() const
 static bool MethodSignaturesAreCompatible(TypeRelation *relation, bool checkIdentical, Signature *const super,
                                           Signature *const sub)
 {
-    auto const areCompatible = [relation, checkIdentical](Type *superT, Type *subT) {
-        return checkIdentical ? relation->IsIdenticalTo(superT, subT) : relation->IsSupertypeOf(superT, subT);
-    };
+    ASSERT(!sub->HasRestParameter() || (sub->ArgCount() == sub->MinArgCount()));
+    ASSERT(!super->HasRestParameter() || (super->ArgCount() == super->MinArgCount()));
 
-    if ((sub->MinArgCount() != super->MinArgCount()) && sub->RestVar() == nullptr && super->RestVar() == nullptr) {
-        if ((sub->MinArgCount() == sub->ArgCount() && super->MinArgCount() == super->ArgCount())) {
-            return false;
-        }
-    }
-
-    if (!relation->NoReturnTypeCheck() && !areCompatible(super->ReturnType(), sub->ReturnType())) {
+    if (sub->ArgCount() != super->ArgCount()) {
         return false;
     }
 
-    size_t const requiredArity = std::max(sub->MinArgCount(), super->MinArgCount());
-    size_t const startRestArity = std::min({sub->ArgCount(), super->ArgCount(), requiredArity});
+    if (sub->HasRestParameter() != super->HasRestParameter()) {
+        return false;
+    }
 
-    for (size_t idx = 0; idx < startRestArity; ++idx) {
+    auto const areCompatible = [relation, checkIdentical](Type *superT, Type *subT) {
+        return checkIdentical ? relation->IsIdenticalTo(superT, subT) : relation->IsSupertypeOf(superT, subT);
+    };
+    if (!relation->NoReturnTypeCheck() && !areCompatible(super->ReturnType(), sub->ReturnType())) {
+        return false;
+    }
+    for (size_t idx = 0; idx < sub->ArgCount(); ++idx) {
         if (!areCompatible(sub->Params()[idx]->TsType(), super->Params()[idx]->TsType())) {
             return false;
         }
     }
-
-    if (startRestArity == requiredArity) {
-        return (super->RestVar() == nullptr || sub->RestVar() == nullptr) ||
-               relation->IsIdenticalTo(sub->RestVar()->TsType(), super->RestVar()->TsType());
-    }
-    // NOTE(vpukhov): the subsequent logic is broken, as the subtyping and we should have no compatibility for
-    //                rest and non-rest signatures, kept as is.
-
-    auto const restVar = super->MinArgCount() < sub->MinArgCount() ? super->RestVar() : sub->RestVar();
-    auto const &parameters = super->MinArgCount() < sub->MinArgCount() ? sub->Params() : super->Params();
-    if (restVar == nullptr) {
-        return false;
-    }
-
-    auto const restElement = restVar->TsType()->AsETSArrayType()->ElementType();
-    for (auto idx = startRestArity; idx < requiredArity; ++idx) {
-        if (!areCompatible(parameters[idx]->TsType(), restElement)) {
-            return false;
-        }
-    }
-    return true;
+    return !sub->HasRestParameter() || relation->IsIdenticalTo(sub->RestVar()->TsType(), super->RestVar()->TsType());
 }
 
 void Signature::IsSubtypeOf(TypeRelation *relation, Signature *super)

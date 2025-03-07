@@ -27,5 +27,3 @@ function foo() : int
 {
     return a;
 }
-
-/* @@@ label Error TypeError: Function foo is already declared.  */
