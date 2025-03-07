@@ -1,47 +1,24 @@
 # Known failure list for test262 - fastverify-x64-jit
-#18892
-test262/data/test_es2021/intl402/RelativeTimeFormat/constructor/constructor/locales-valid.js
-
-#21819
-test262/data/test_es2021/intl402/Intl/getCanonicalLocales/invalid-tags.js
-test262/data/test_es2021/language/expressions/optional-chaining/short-circuiting.js
-test262/data/test_es2021/built-ins/RegExp/S15.10.2.15_A1_T41.js
-test262/data/test_es2021/built-ins/TypedArrayConstructors/internals/HasProperty/key-is-not-canonical-index.js
-test262/data/test_es2021/built-ins/TypedArrayConstructors/internal/HasProperty/key-is-not-canonical.js
-test262/data/test/intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-region.js
-test262/data/test/intl402/Segmenter/constructor/constructor/locales-valid.js
-test262/data/test/intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-col-strength.js
-test262/data/test/built-ins/TypedArrayConstructors/from/mapfn-is-not-callable.js
-test262/data/test/intl402/Intl/getCanonicalLocales/transformed-ext-valid.js
-test262/data/test/language/statements/for/S12.6.3_A10.1_T2.js
-test262/data/test/language/statements/for/S12.6.3_A10_T2.js
-test262/data/test/intl402/RelativeTimeFormat/prototype/formatToParts/en-us-numeric-always.js
-test262/data/test_es2021/built-ins/TypedArray/prototype/slice/speciesctor-get-ctor-returns-throws.js
-test262/data/test/intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-calendar.js
-test262/data/test_es2021/language/statements/for/S12.6.3_A10.1_T2.js
-test262/data/test_es2021/language/statements/for/S12.6.3_A10_T2.js
-test262/data/test_es2021/language/statements/async-generator/dstr/ary-ptrn-elem-obj-val-null.js
-# --- end of Issue #21819
-
 #19208
 test262/data/test/language/module-code/instn-iee-err-circular-as.js
 
 #21423
 test262/data/test/built-ins/TypedArray/prototype/slice/results-with-empty-length.js
-test262/data/test/built-ins/TypedArray/prototype/copyWithin/negative-start.js
 
-#21819
+#21819  #23295
 test262/data/test/built-ins/TypedArray/prototype/slice/BigInt/results-with-different-length.js
 test262/data/test/built-ins/TypedArray/prototype/subarray/results-with-empty-length.js
-test262/data/test/built-ins/TypedArray/prototype/filter/result-full-callbackfn-returns-true.js
-test262/data/test/built-ins/TypedArray/prototype/subarray/results-with-different-length.js
-test262/data/test/built-ins/TypedArray/prototype/copyWithin/coerced-values-end.js
 test262/data/test/built-ins/TypedArray/prototype/some/callbackfn-not-callable-throws.js
-test262/data/test/built-ins/TypedArray/prototype/copyWithin/negative-target.js
-test262/data/test/built-ins/TypedArray/prototype/fill/coerced-indexes.js
 test262/data/test/built-ins/TypedArray/prototype/set/array-arg-offset-tointeger.js
 test262/data/test/built-ins/TypedArray/prototype/every/callbackfn-not-callable-throws.js
-test262/data/test/built-ins/TypedArray/prototype/set/typedarray-arg-set-values-diff-buffer-other-type-conversions.js
 test262/data/test/built-ins/TypedArray/prototype/set/typedarray-arg-offset-tointeger.js
-test262/data/test/built-ins/TypedArray/prototype/set/array-arg-primitive-toobject.js
-test262/data/test/built-ins/TypedArray/prototype/copyWithin/BigInt/coerced-values-target.js
+test262/data/test/built-ins/TypedArray/prototype/fill/coerced-indexes.js
+test262/data/test/built-ins/TypedArray/prototype/copyWithin/negative-out-of-bounds-end.js
+test262/data/test/built-ins/TypedArray/prototype/copyWithin/non-negative-out-of-bounds-target-and-start.js
+test262/data/test/built-ins/TypedArray/prototype/lastIndexOf/strict-comparison.js
+test262/data/test/built-ins/TypedArray/prototype/some/returns-false-if-every-cb-returns-false.js
+test262/data/test/built-ins/TypedArray/prototype/copyWithin/coerced-values-start.js
+test262/data/test/built-ins/TypedArray/prototype/subarray/tointeger-end.js
+test262/data/test/built-ins/TypedArray/prototype/slice/results-with-different-length.js
+test262/data/test/built-ins/TypedArray/prototype/copyWithin/BigInt/non-negative-target-and-start.js
+
