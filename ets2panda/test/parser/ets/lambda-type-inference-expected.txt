@@ -1631,8 +1631,8 @@
                                 "type": "BlockStatement",
                                 "statements": [
                                   {
-                                    "type": "ExpressionStatement",
-                                    "expression": {
+                                    "type": "ReturnStatement",
+                                    "argument": {
                                       "type": "TSAsExpression",
                                       "expression": {
                                         "type": "MemberExpression",
@@ -1649,46 +1649,16 @@
                                                 "loc": {
                                                   "start": {
                                                     "line": 37,
-                                                    "column": 13,
+                                                    "column": 20,
                                                     "program": "lambda-type-inference.sts"
                                                   },
                                                   "end": {
                                                     "line": 37,
-                                                    "column": 19,
+                                                    "column": 26,
                                                     "program": "lambda-type-inference.sts"
                                                   }
                                                 }
                                               },
-                                              "loc": {
-                                                "start": {
-                                                  "line": 37,
-                                                  "column": 13,
-                                                  "program": "lambda-type-inference.sts"
-                                                },
-                                                "end": {
-                                                  "line": 37,
-                                                  "column": 20,
-                                                  "program": "lambda-type-inference.sts"
-                                                }
-                                              }
-                                            },
-                                            "loc": {
-                                              "start": {
-                                                "line": 37,
-                                                "column": 13,
-                                                "program": "lambda-type-inference.sts"
-                                              },
-                                              "end": {
-                                                "line": 37,
-                                                "column": 20,
-                                                "program": "lambda-type-inference.sts"
-                                              }
-                                            }
-                                          },
-                                          "arguments": [
-                                            {
-                                              "type": "StringLiteral",
-                                              "value": "hello",
                                               "loc": {
                                                 "start": {
                                                   "line": 37,
@@ -1701,17 +1671,47 @@
                                                   "program": "lambda-type-inference.sts"
                                                 }
                                               }
+                                            },
+                                            "loc": {
+                                              "start": {
+                                                "line": 37,
+                                                "column": 20,
+                                                "program": "lambda-type-inference.sts"
+                                              },
+                                              "end": {
+                                                "line": 37,
+                                                "column": 27,
+                                                "program": "lambda-type-inference.sts"
+                                              }
+                                            }
+                                          },
+                                          "arguments": [
+                                            {
+                                              "type": "StringLiteral",
+                                              "value": "hello",
+                                              "loc": {
+                                                "start": {
+                                                  "line": 37,
+                                                  "column": 27,
+                                                  "program": "lambda-type-inference.sts"
+                                                },
+                                                "end": {
+                                                  "line": 37,
+                                                  "column": 34,
+                                                  "program": "lambda-type-inference.sts"
+                                                }
+                                              }
                                             }
                                           ],
                                           "loc": {
                                             "start": {
                                               "line": 37,
-                                              "column": 9,
+                                              "column": 16,
                                               "program": "lambda-type-inference.sts"
                                             },
                                             "end": {
                                               "line": 37,
-                                              "column": 29,
+                                              "column": 36,
                                               "program": "lambda-type-inference.sts"
                                             }
                                           }
@@ -1723,12 +1723,12 @@
                                           "loc": {
                                             "start": {
                                               "line": 37,
-                                              "column": 29,
+                                              "column": 36,
                                               "program": "lambda-type-inference.sts"
                                             },
                                             "end": {
                                               "line": 37,
-                                              "column": 35,
+                                              "column": 42,
                                               "program": "lambda-type-inference.sts"
                                             }
                                           }
@@ -1738,22 +1738,7 @@
                                         "loc": {
                                           "start": {
                                             "line": 37,
-                                            "column": 9,
-                                            "program": "lambda-type-inference.sts"
-                                          },
-                                          "end": {
-                                            "line": 37,
-                                            "column": 35,
-                                            "program": "lambda-type-inference.sts"
-                                          }
-                                        }
-                                      },
-                                      "typeAnnotation": {
-                                        "type": "ETSPrimitiveType",
-                                        "loc": {
-                                          "start": {
-                                            "line": 37,
-                                            "column": 39,
+                                            "column": 16,
                                             "program": "lambda-type-inference.sts"
                                           },
                                           "end": {
@@ -1763,15 +1748,30 @@
                                           }
                                         }
                                       },
+                                      "typeAnnotation": {
+                                        "type": "ETSPrimitiveType",
+                                        "loc": {
+                                          "start": {
+                                            "line": 37,
+                                            "column": 46,
+                                            "program": "lambda-type-inference.sts"
+                                          },
+                                          "end": {
+                                            "line": 37,
+                                            "column": 49,
+                                            "program": "lambda-type-inference.sts"
+                                          }
+                                        }
+                                      },
                                       "loc": {
                                         "start": {
                                           "line": 37,
-                                          "column": 9,
+                                          "column": 16,
                                           "program": "lambda-type-inference.sts"
                                         },
                                         "end": {
                                           "line": 37,
-                                          "column": 35,
+                                          "column": 42,
                                           "program": "lambda-type-inference.sts"
                                         }
                                       }
@@ -1784,7 +1784,7 @@
                                       },
                                       "end": {
                                         "line": 37,
-                                        "column": 43,
+                                        "column": 50,
                                         "program": "lambda-type-inference.sts"
                                       }
                                     }
@@ -1892,8 +1892,8 @@
                                 "type": "BlockStatement",
                                 "statements": [
                                   {
-                                    "type": "ExpressionStatement",
-                                    "expression": {
+                                    "type": "ReturnStatement",
+                                    "argument": {
                                       "type": "TSAsExpression",
                                       "expression": {
                                         "type": "MemberExpression",
@@ -1910,46 +1910,16 @@
                                                 "loc": {
                                                   "start": {
                                                     "line": 40,
-                                                    "column": 13,
+                                                    "column": 20,
                                                     "program": "lambda-type-inference.sts"
                                                   },
                                                   "end": {
                                                     "line": 40,
-                                                    "column": 19,
+                                                    "column": 26,
                                                     "program": "lambda-type-inference.sts"
                                                   }
                                                 }
                                               },
-                                              "loc": {
-                                                "start": {
-                                                  "line": 40,
-                                                  "column": 13,
-                                                  "program": "lambda-type-inference.sts"
-                                                },
-                                                "end": {
-                                                  "line": 40,
-                                                  "column": 20,
-                                                  "program": "lambda-type-inference.sts"
-                                                }
-                                              }
-                                            },
-                                            "loc": {
-                                              "start": {
-                                                "line": 40,
-                                                "column": 13,
-                                                "program": "lambda-type-inference.sts"
-                                              },
-                                              "end": {
-                                                "line": 40,
-                                                "column": 20,
-                                                "program": "lambda-type-inference.sts"
-                                              }
-                                            }
-                                          },
-                                          "arguments": [
-                                            {
-                                              "type": "StringLiteral",
-                                              "value": "hello",
                                               "loc": {
                                                 "start": {
                                                   "line": 40,
@@ -1962,17 +1932,47 @@
                                                   "program": "lambda-type-inference.sts"
                                                 }
                                               }
+                                            },
+                                            "loc": {
+                                              "start": {
+                                                "line": 40,
+                                                "column": 20,
+                                                "program": "lambda-type-inference.sts"
+                                              },
+                                              "end": {
+                                                "line": 40,
+                                                "column": 27,
+                                                "program": "lambda-type-inference.sts"
+                                              }
+                                            }
+                                          },
+                                          "arguments": [
+                                            {
+                                              "type": "StringLiteral",
+                                              "value": "hello",
+                                              "loc": {
+                                                "start": {
+                                                  "line": 40,
+                                                  "column": 27,
+                                                  "program": "lambda-type-inference.sts"
+                                                },
+                                                "end": {
+                                                  "line": 40,
+                                                  "column": 34,
+                                                  "program": "lambda-type-inference.sts"
+                                                }
+                                              }
                                             }
                                           ],
                                           "loc": {
                                             "start": {
                                               "line": 40,
-                                              "column": 9,
+                                              "column": 16,
                                               "program": "lambda-type-inference.sts"
                                             },
                                             "end": {
                                               "line": 40,
-                                              "column": 29,
+                                              "column": 36,
                                               "program": "lambda-type-inference.sts"
                                             }
                                           }
@@ -1984,12 +1984,12 @@
                                           "loc": {
                                             "start": {
                                               "line": 40,
-                                              "column": 29,
+                                              "column": 36,
                                               "program": "lambda-type-inference.sts"
                                             },
                                             "end": {
                                               "line": 40,
-                                              "column": 35,
+                                              "column": 42,
                                               "program": "lambda-type-inference.sts"
                                             }
                                           }
@@ -1999,22 +1999,7 @@
                                         "loc": {
                                           "start": {
                                             "line": 40,
-                                            "column": 9,
-                                            "program": "lambda-type-inference.sts"
-                                          },
-                                          "end": {
-                                            "line": 40,
-                                            "column": 35,
-                                            "program": "lambda-type-inference.sts"
-                                          }
-                                        }
-                                      },
-                                      "typeAnnotation": {
-                                        "type": "ETSPrimitiveType",
-                                        "loc": {
-                                          "start": {
-                                            "line": 40,
-                                            "column": 39,
+                                            "column": 16,
                                             "program": "lambda-type-inference.sts"
                                           },
                                           "end": {
@@ -2024,15 +2009,30 @@
                                           }
                                         }
                                       },
+                                      "typeAnnotation": {
+                                        "type": "ETSPrimitiveType",
+                                        "loc": {
+                                          "start": {
+                                            "line": 40,
+                                            "column": 46,
+                                            "program": "lambda-type-inference.sts"
+                                          },
+                                          "end": {
+                                            "line": 40,
+                                            "column": 49,
+                                            "program": "lambda-type-inference.sts"
+                                          }
+                                        }
+                                      },
                                       "loc": {
                                         "start": {
                                           "line": 40,
-                                          "column": 9,
+                                          "column": 16,
                                           "program": "lambda-type-inference.sts"
                                         },
                                         "end": {
                                           "line": 40,
-                                          "column": 35,
+                                          "column": 42,
                                           "program": "lambda-type-inference.sts"
                                         }
                                       }
@@ -2045,7 +2045,7 @@
                                       },
                                       "end": {
                                         "line": 40,
-                                        "column": 43,
+                                        "column": 50,
                                         "program": "lambda-type-inference.sts"
                                       }
                                     }

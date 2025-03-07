@@ -20,9 +20,9 @@ function with_param(fn: () => int): void {
 function main(): void {
     const switch_arg = 2
     const aa = 1.0;
-    with_param() {
+    with_param() /* @@ label1 */{
         switch (switch_arg) {
-            /* @@ label */case aa:
+            /* @@ label2 */case aa:
                 break
             case 2:
                 break
@@ -31,4 +31,5 @@ function main(): void {
     }
 }
 
-/* @@@ label Error TypeError: Unexpected type double  */
+/* @@@ label1 Error TypeError: Type 'void' is not compatible with the enclosing method's return type 'int' */
+/* @@@ label2 Error TypeError: Unexpected type double */
