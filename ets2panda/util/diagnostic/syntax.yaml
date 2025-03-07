@@ -971,3 +971,7 @@ syntax:
 - name: PROHIBITED_ACCESS_MODIFIER_IN_AMBIENT_CLASS
   id: 240
   message: Methods or fields should not be decorated with {} in ambient class.
+
+- name: UNEXPECTED_THIS
+  id: 241
+  message: "Unexpected 'this' keyword in non-receiver context."
