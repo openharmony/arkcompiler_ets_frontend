@@ -439,3 +439,6 @@ nestedNameSpaceWithStaticField.sts
 implicit_this_array.sts
 stringInSwitchCase.sts
 DefaultTypeParamWithTypeAlias.sts
+re_export/export/reexport_elements1.sts
+re_export/export/reexport_elements2.sts
+re_export/import.sts

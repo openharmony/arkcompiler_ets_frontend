@@ -166,6 +166,9 @@ runtime/ets/generic-set.sts
 compiler/ets/generic_arrayaslist.sts
 compiler/ets/returnTypeGenericArray.sts
 parser/ets/array_creation_expression.sts
+runtime/ets/re_export/export/reexport_elements1.sts
+runtime/ets/re_export/export/reexport_elements2.sts
+runtime/ets/re_export/import.sts
 
 # FailKind.ES2PANDA_FAIL
 runtime/ets/StringFasta.sts
