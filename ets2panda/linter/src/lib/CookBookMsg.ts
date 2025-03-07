@@ -244,3 +244,7 @@ cookBookTag[232] = 'Lazy import is not supported(arkts-no-lazy-import)';
 cookBookTag[233] = 'Dynamic import is not supported(arkts-no-dynamic-import)';
 cookBookTag[234] = 'Decorators are not supported(arkts-no-ts-decorators)';
 cookBookTag[237] = 'Array and tuple are different type(arkts-no-tuples-arrays)';
+cookBookTag[251] = '"!!" for bidirectional data binding is not supported (arkui-no-!!-bidirectional-data-binding)';
+cookBookTag[252] = '"$$" for bidirectional data binding is not supported (arkui-no-$$-bidirectional-data-binding)';
+cookBookTag[253] = '"${variable}" for decorator binding is not supported (arkui-link-decorator-passing)';
+cookBookTag[254] = '"@Extend" decorator is not supported (arkui-no-extend-decorator)';

@@ -148,3 +148,7 @@ faultDesc[FaultID.LimitedLiteralType] = 'Limited literal type';
 faultDesc[FaultID.IndexNegative] = 'Index negative';
 faultDesc[FaultID.ArrayIndexExprType] = 'Array index expr type';
 faultDesc[FaultID.NoTuplesArrays] = 'No tuples arrays';
+faultDesc[FaultID.DoubleExclaBindingNotSupported] = 'Incorrect bidirectional data binding used "!!"';
+faultDesc[FaultID.DoubleDollarBindingNotSupported] = 'Incorrect bidirectional data binding used "$$"';
+faultDesc[FaultID.DollarBindingNotSupported] = 'Link decorator passing';
+faultDesc[FaultID.ExtendDecoratorNotSupported] = '"@Extend" decorator';

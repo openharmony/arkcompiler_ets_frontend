@@ -149,6 +149,10 @@ export enum FaultID {
   IndexNegative,
   ArrayIndexExprType,
   NoTuplesArrays,
+  DoubleExclaBindingNotSupported,
+  DoubleDollarBindingNotSupported,
+  DollarBindingNotSupported,
+  ExtendDecoratorNotSupported,
   // this should always be last enum
   LAST_ID
 }

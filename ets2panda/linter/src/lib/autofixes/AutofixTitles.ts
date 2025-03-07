@@ -37,5 +37,9 @@ export const cookBookRefToFixTitle: Map<number, string> = new Map([
   [177, 'Add \'Sendable\' decorator'],
   [180, 'Remove the decorator'],
   [193, 'Replace with arrow function'],
-  [206, 'Replace with a special library to call']
+  [206, 'Replace with a special library to call'],
+  [251, 'Transform "!!" to "$$()"'],
+  [252, 'Transform "$$" to "$$()"'],
+  [253, '"$value" transform to "this.value"'],
+  [254, '"@Extend" transform to function with receiver']
 ]);

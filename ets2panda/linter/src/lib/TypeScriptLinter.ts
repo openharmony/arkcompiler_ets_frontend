@@ -72,6 +72,9 @@ import type { LinterOptions } from './LinterOptions';
 import { BUILTIN_GENERIC_CONSTRUCTORS } from './utils/consts/BuiltinGenericConstructor';
 import { DEFAULT_DECORATOR_WHITE_LIST } from './utils/consts/DefaultDecoratorWhitelist';
 
+const EXTEND_DECORATOR_NAME = 'Extend';
+const DOUBLE_DOLLAR_THIS_IDENTIFIER = '$$this';
+
 export class TypeScriptLinter {
   totalVisitedNodes: number = 0;
   nodeCounters: number[] = [];
@@ -210,7 +213,8 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.SwitchStatement, this.handleSwitchStatement],
     [ts.SyntaxKind.UnionType, this.handleUnionType],
     [ts.SyntaxKind.ArrayType, this.handleArrayType],
-    [ts.SyntaxKind.LiteralType, this.handleLimitedLiteralType]
+    [ts.SyntaxKind.LiteralType, this.handleLimitedLiteralType],
+    [ts.SyntaxKind.NonNullExpression, this.handleNonNullExpression]
   ]);
 
   private getLineAndCharacterOfNode(node: ts.Node | ts.CommentRange): ts.LineAndCharacter {
@@ -713,6 +717,8 @@ export class TypeScriptLinter {
   }
 
   private handlePropertyAccessExpression(node: ts.Node): void {
+    this.handleDoubleDollar(node);
+
     if (ts.isCallExpression(node.parent) && node === node.parent.expression) {
       return;
     }
@@ -802,6 +808,8 @@ export class TypeScriptLinter {
   }
 
   private handlePropertyAssignment(node: ts.PropertyAssignment): void {
+    this.handleDollarBind(node);
+
     const propName = node.name;
     if (!(!!propName && ts.isNumericLiteral(propName))) {
       return;
@@ -2991,6 +2999,8 @@ export class TypeScriptLinter {
   }
 
   private handleDecorator(node: ts.Node): void {
+    this.handleExtendDecorator(node);
+
     const decorator: ts.Decorator = node as ts.Decorator;
     if (TsUtils.getDecoratorName(decorator) === SENDABLE_DECORATOR) {
       const parent: ts.Node = decorator.parent;
@@ -3231,6 +3241,66 @@ export class TypeScriptLinter {
       this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple)
     ) {
       this.incrementCounters(node, FaultID.NoTuplesArrays);
+    }
+  }
+
+  private handleNonNullExpression(node: ts.Node): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (ts.isNonNullExpression(node) && ts.isNonNullExpression(node.expression)) {
+      const autofix = this.autofixer?.fixBidirectionalDataBinding(node);
+      this.incrementCounters(node, FaultID.DoubleExclaBindingNotSupported, autofix);
+    }
+  }
+
+  private handleDoubleDollar(node: ts.Node): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (
+      ts.isPropertyAccessExpression(node) &&
+      ts.isIdentifier(node.expression) &&
+      node.expression.escapedText === DOUBLE_DOLLAR_THIS_IDENTIFIER
+    ) {
+      const autofix = this.autofixer?.fixDoubleDollar(node);
+      this.incrementCounters(node, FaultID.DoubleDollarBindingNotSupported, autofix);
+    }
+  }
+
+  private handleDollarBind(node: ts.Node): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (ts.isPropertyAssignment(node)) {
+      const text = node.initializer.getText();
+      if (!(/^\$\w+$/).test(text)) {
+        return;
+      }
+      const autofix = this.autofixer?.fixDollarBind(node);
+      this.incrementCounters(node, FaultID.DollarBindingNotSupported, autofix);
+    }
+  }
+
+  private handleExtendDecorator(node: ts.Node): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (!ts.isFunctionDeclaration(node.parent) || !ts.isDecorator(node)) {
+      return;
+    }
+
+    if (
+      ts.isCallExpression(node.expression) &&
+      ts.isIdentifier(node.expression.expression) &&
+      node.expression.expression.text === EXTEND_DECORATOR_NAME
+    ) {
+      const autofix = this.autofixer?.fixExtendDecorator(node);
+      this.incrementCounters(node.parent, FaultID.ExtendDecoratorNotSupported, autofix);
     }
   }
 }
