@@ -88,6 +88,7 @@ public:
 #undef TYPE_AS_CASTS
 
     bool IsETSStringType() const;
+    bool IsETSCharType() const;
     bool IsETSBigIntType() const;
     bool IsETSArrowType() const;
     bool IsETSMethodType() const;
