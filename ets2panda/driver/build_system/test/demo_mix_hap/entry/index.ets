@@ -13,7 +13,11 @@
  * limitations under the License.
  */
 
+import {getMessageStatic, getMessageDynamic} from 'dynamic_har'
+
 function main() {
-  let a: string = "hello world"
-  console.log(a)
+    let strLocal: string = "hello world!"
+    console.log(strLocal);
+    console.log(getMessageStatic());
+    console.log(getMessageDynamic());
 }

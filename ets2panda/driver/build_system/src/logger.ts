@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { BuildConfig } from './init/process_build_config';
+import { BuildConfig } from './types';
 import {
   ErrorCode,
   SubsystemCode

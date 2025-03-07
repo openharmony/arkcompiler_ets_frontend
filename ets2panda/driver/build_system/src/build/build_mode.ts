@@ -14,14 +14,14 @@
  */
 
 import { BaseMode } from './base_mode';
-import { BuildConfig } from '../init/process_build_config';
+import { BuildConfig } from '../types';
 
 export class BuildMode extends BaseMode {
   constructor(buildConfig: BuildConfig) {
     super(buildConfig);
   }
 
-  public generateDeclaration() : void {
+  public async generateDeclaration(): Promise<void> {
     super.generateDeclaration();
   }
 

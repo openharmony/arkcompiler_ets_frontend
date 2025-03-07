@@ -1,8 +1,4 @@
 {
-    "plugins": {
-        "ArkUI": "${absolute_path_to_build_system}/node_modules/libarkts/arkoala-arkts/libarkts/build/src/koala-plugin"
-    },
-
     "compileFiles": [
         "${absolute_path_to_build_system}/test/demo_hap/entry/b.ets",
         "${absolute_path_to_build_system}/test/demo_hap/entry/c.ets",
@@ -23,10 +19,10 @@
     "cachePath": "./dist/cache",
 
     "enableDeclgenEts2Ts": false,
-    "declgenDeclEtsOutPath": "./dist/declgen/decl_ets",
-    "declgenEtsOutPath": "./dist/declgen/ets",
+    "declgenV1OutPath": "./dist/declgen/decl_ets",
+    "declgenBridgeCodePath": "./dist/declgen/ets",
 
-    "buildSdkPath": ".",
+    "buildSdkPath": "${absolute_path_to_build_system}/test/mock_sdk/",
 
     "dependentModuleList": [
         {
@@ -35,7 +31,8 @@
             "moduleType": "har",
             "modulePath": "${absolute_path_to_build_system}/test/demo_hap/harA",
             "sourceRoots": ["./"],
-            "entryFile": "index.ets"
+            "entryFile": "index.ets",
+            "language": "1.2"
         },
         {
             "packageName": "harB",
@@ -43,7 +40,8 @@
             "moduleType": "har",
             "modulePath": "${absolute_path_to_build_system}/test/demo_hap/harB",
             "sourceRoots": ["./"],
-            "entryFile": "indexB.ets"
+            "entryFile": "indexB.ets",
+            "language": "1.2"
         }
     ]
 }

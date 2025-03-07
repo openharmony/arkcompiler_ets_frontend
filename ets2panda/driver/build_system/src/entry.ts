@@ -16,13 +16,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import {
-  BuildConfig,
-  processBuildConfig
-} from './init/process_build_config';
+import { processBuildConfig } from './init/process_build_config';
 import { BuildMode } from './build/build_mode';
 import { BUILD_TYPE_BUILD } from './pre_define';
 import { Logger } from './logger';
+import { ArkTSConfigGenerator } from './build/generate_arktsconfig';
+import { PluginDriver } from './plugins/plugins_driver';
+import { BuildConfig } from './types';
 
 export function build(projectConfig: BuildConfig): void {
   Logger.getInstance(projectConfig);
@@ -35,6 +35,14 @@ export function build(projectConfig: BuildConfig): void {
     let buildMode: BuildMode = new BuildMode(buildConfig);
     buildMode.run();
   }
+
+  clean();
+}
+
+function clean(): void {
+  Logger.destroyInstance();
+  ArkTSConfigGenerator.destroyInstance();
+  PluginDriver.destroyInstance();
 }
 
 function main(): void {

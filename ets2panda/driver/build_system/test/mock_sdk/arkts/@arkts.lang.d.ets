@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-function main() {
-  let a: string = "hello world"
-  console.log(a)
+export class Lang {
+
 }

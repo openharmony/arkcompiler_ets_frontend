@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-function main() {
-  let a: string = "hello world"
-  console.log(a)
-}
+import { getMessageStatic } from 'static_har';
+
+declare function getMessageDynamic();
+
+export { getMessageStatic, getMessageDynamic };

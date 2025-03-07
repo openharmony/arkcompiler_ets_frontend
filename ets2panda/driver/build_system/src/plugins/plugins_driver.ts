@@ -18,7 +18,7 @@ import {
   LogData,
   LogDataFactory
 } from '../logger';
-import { BuildConfig } from '../init/process_build_config'
+import { BuildConfig } from '../types'
 import { ErrorCode } from '../error_code';
 
 export enum PluginHook {
@@ -128,6 +128,10 @@ export class PluginDriver {
       this.instance = new PluginDriver();
     }
     return this.instance;
+  }
+
+  public static destroyInstance(): void {
+    PluginDriver.instance = undefined;
   }
 
   public initPlugins(projectConfig: BuildConfig): void {
