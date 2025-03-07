@@ -511,6 +511,8 @@ private:
 
     std::pair<ir::ModifierFlags, lexer::SourcePosition> ParseMemberModifiers();
 
+    void SkipInvalidType() const;
+
     bool IsStructKeyword() const;
 
     bool IsExternal() const override

@@ -1369,6 +1369,31 @@ ir::Expression *ETSParser::ParseFunctionReceiver()
     return CreateParameterThis(typeAnnotation);
 }
 
+void ETSParser::SkipInvalidType() const
+{
+    int openParenthesisCount = 1;
+    int openBraceCount = 0;
+    while (Lexer()->GetToken().Type() != lexer::TokenType::EOS &&
+           !(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA && openBraceCount == 0)) {
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+            openBraceCount++;
+        }
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+            openBraceCount--;
+        }
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
+            openParenthesisCount++;
+        }
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+            openParenthesisCount--;
+        }
+        if (openParenthesisCount == 0) {
+            break;
+        }
+        Lexer()->NextToken();
+    }
+}
+
 ir::Expression *ETSParser::ParseFunctionParameter()
 {
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT) {
@@ -1395,7 +1420,11 @@ ir::Expression *ETSParser::ParseFunctionParameter()
     if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
         TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
         ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
-        if (paramIdent->IsRestElement() && !typeAnnotation->IsTSArrayType()) {
+        if (typeAnnotation->IsBrokenTypeNode()) {
+            // the compiler can't process "declare class A { static foo(x: {key: string}[]):void; }" correctly
+            // and resolve "{key: string}" as function body, so skip invalid types
+            SkipInvalidType();
+        } else if (paramIdent->IsRestElement() && !typeAnnotation->IsTSArrayType()) {
             // NOTE (mmartin): implement tuple types for rest parameters
             LogError(diagnostic::ONLY_ARRAY_FOR_REST);
         }
