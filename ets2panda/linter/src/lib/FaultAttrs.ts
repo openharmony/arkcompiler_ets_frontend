@@ -160,3 +160,7 @@ faultsAttrs[FaultID.ImportLazyIdentifier] = new FaultAttributes(232);
 faultsAttrs[FaultID.DynamicImport] = new FaultAttributes(233);
 faultsAttrs[FaultID.DecoratorsNotSupported] = new FaultAttributes(234);
 faultsAttrs[FaultID.NoTuplesArrays] = new FaultAttributes(237);
+faultsAttrs[FaultID.DoubleExclaBindingNotSupported] = new FaultAttributes(251);
+faultsAttrs[FaultID.DoubleDollarBindingNotSupported] = new FaultAttributes(252);
+faultsAttrs[FaultID.DollarBindingNotSupported] = new FaultAttributes(253);
+faultsAttrs[FaultID.ExtendDecoratorNotSupported] = new FaultAttributes(254);
