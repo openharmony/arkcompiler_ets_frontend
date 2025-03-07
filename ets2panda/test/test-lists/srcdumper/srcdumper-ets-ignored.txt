@@ -25,6 +25,8 @@ ast/compiler/ets/async_import_2.sts
 ast/compiler/ets/async_import_3.sts
 ast/compiler/ets/async_import_4.sts
 ast/compiler/ets/import_tests/selective_export_tests/namespace_import_wrong_access_name.sts
+ast/compiler/ets/optionalClassProperty1.sts
+ast/compiler/ets/optionalClassProperty2.sts
 ast/parser/ets/InterfacePrivateMethod.sts
 ast/parser/ets/import_tests/enum/import.sts
 ast/parser/ets/import_tests/export_and_import_class.sts

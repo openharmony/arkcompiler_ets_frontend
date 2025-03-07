@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +20,79 @@
 
 namespace ark::es2panda::compiler {
 
+using InterfacePropertyType = std::unordered_set<std::string>;
+using InterfacePropertyMapType = std::unordered_map<std::string, InterfacePropertyType>;
+
+class OptionalInterfacePropertyCollector {
+public:
+    OptionalInterfacePropertyCollector() = default;
+    ~OptionalInterfacePropertyCollector() = default;
+
+    OptionalInterfacePropertyCollector(const OptionalInterfacePropertyCollector &) = delete;
+    OptionalInterfacePropertyCollector &operator=(const OptionalInterfacePropertyCollector &) = delete;
+
+    std::string &GetInterfaceId()
+    {
+        return interfaceId_;
+    }
+
+    void SetInterfaceId(std::string id)
+    {
+        interfaceId_ = id;
+    }
+
+    InterfacePropertyType &GetInterfaceProperty(const std::string &id)
+    {
+        ES2PANDA_ASSERT(interfaceProperties_.count(id));
+        return interfaceProperties_[id];
+    }
+
+    void InsertInterfaceProperty(std::string property)
+    {
+        ES2PANDA_ASSERT(interfaceId_ != "" && interfaceProperties_.count(interfaceId_));
+        interfaceProperties_[interfaceId_].insert(property);
+    }
+
+    void InitInterfacePropertyMap()
+    {
+        ES2PANDA_ASSERT(interfaceId_ != "");
+        interfaceProperties_.insert({interfaceId_, {}});
+    }
+
+    bool IsInterfaceHasProperty(const std::string &interId)
+    {
+        return interfaceProperties_.count(interId);
+    }
+
+    InterfacePropertyType &GetInterfaceParent(const std::string &id)
+    {
+        ES2PANDA_ASSERT(interfaceParents_.count(id));
+        return interfaceParents_[id];
+    }
+
+    void InsertInterfaceParent(std::string parent)
+    {
+        ES2PANDA_ASSERT(interfaceId_ != "" && interfaceParents_.count(interfaceId_));
+        interfaceParents_[interfaceId_].insert(parent);
+    }
+
+    void InitInterfaceParentMap()
+    {
+        ES2PANDA_ASSERT(interfaceId_ != "");
+        interfaceParents_.insert({interfaceId_, {}});
+    }
+
+    bool IsParentExists(const std::string &interId)
+    {
+        return interfaceParents_.count(interId);
+    }
+
+private:
+    std::string interfaceId_ = "";
+    InterfacePropertyMapType interfaceProperties_ {};
+    InterfacePropertyMapType interfaceParents_ {};
+};
+
 class InterfacePropertyDeclarationsPhase : public PhaseForDeclarations {
 public:
     std::string_view Name() const override
@@ -28,6 +101,37 @@ public:
     }
 
     bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
+
+private:
+    OptionalInterfacePropertyCollector &GetPropCollector()
+    {
+        return propCollector_;
+    }
+
+    void TransformOptionalFieldTypeAnnotation(checker::ETSChecker *const checker, ir::ClassProperty *const field,
+                                              bool isInterface = false);
+
+    ir::FunctionSignature GenerateGetterOrSetterSignature(checker::ETSChecker *const checker,
+                                                          varbinder::ETSBinder *varbinder,
+                                                          ir::ClassProperty *const field, bool isSetter,
+                                                          varbinder::FunctionParamScope *paramScope);
+
+    ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const checker, varbinder::ETSBinder *varbinder,
+                                                 ir::ClassProperty *const field, bool isSetter);
+
+    void CollectPropertiesAndSuperInterfaces(ir::TSInterfaceBody *const interface);
+
+    void HandleInternalGetterOrSetterMethod(ir::AstNode *const ast);
+
+    ir::Expression *UpdateInterfaceProperties(checker::ETSChecker *const checker, varbinder::ETSBinder *varbinder,
+                                              ir::TSInterfaceBody *const interface);
+
+    void CollectSuperInterfaceProperties(InterfacePropertyType &implInterfaceProperties, const std::string &interId);
+
+    void UpdateClassProperties(checker::ETSChecker *const checker, ir::ClassDefinition *const klass);
+
+private:
+    OptionalInterfacePropertyCollector propCollector_;
 };
 
 }  // namespace ark::es2panda::compiler
