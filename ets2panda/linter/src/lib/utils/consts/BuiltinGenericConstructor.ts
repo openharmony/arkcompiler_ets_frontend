@@ -12,21 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-async function getZipFile(name: string, files: File[]): Promise<File> {
-  const zipUtil = await import('create-zip-file');
-  const zipContents = zipUtil.getContentAsBlob(files);
-  return new File(zipContents, name);
-}
-
-import { Data } from './file'
-
-function main(): void {
-  import('./file').then((m) => {
-    console.log(m.Data.name)
-  })
-}
-
-import('./file').then((m) => {
-  console.log(m.Data.name)
-}) 
+export const BUILTIN_GENERIC_CONSTRUCTORS = new Set([
+  'Array',
+  'Map',
+  'Set',
+  'ReadonlyArray',
+  'Promise',
+  'WeakMap',
+  'WeakSet'
+]);

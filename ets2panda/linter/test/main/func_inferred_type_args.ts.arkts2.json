@@ -65,6 +65,16 @@
       "severity": "ERROR"
     },
     {
+      "line": 42,
+      "column": 5,
+      "endLine": 42,
+      "endColumn": 14,
+      "problem": "GenericCallNoTypeArgs",
+      "suggest": "",
+      "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+      "severity": "ERROR"
+    },
+    {
       "line": 46,
       "column": 8,
       "endLine": 46,
@@ -175,6 +185,56 @@
       "severity": "ERROR"
     },
     {
+      "line": 71,
+      "column": 3,
+      "endLine": 71,
+      "endColumn": 10,
+      "problem": "ClassAsObjectError",
+      "suggest": "",
+      "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 72,
+      "column": 3,
+      "endLine": 72,
+      "endColumn": 10,
+      "problem": "ClassAsObjectError",
+      "suggest": "",
+      "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 73,
+      "column": 3,
+      "endLine": 73,
+      "endColumn": 10,
+      "problem": "ClassAsObjectError",
+      "suggest": "",
+      "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 74,
+      "column": 3,
+      "endLine": 74,
+      "endColumn": 10,
+      "problem": "ClassAsObjectError",
+      "suggest": "",
+      "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 77,
+      "column": 1,
+      "endLine": 77,
+      "endColumn": 8,
+      "problem": "ClassAsObjectError",
+      "suggest": "",
+      "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+      "severity": "ERROR"
+    },
+    {
       "line": 79,
       "column": 5,
       "endLine": 79,
@@ -185,6 +245,16 @@
       "severity": "ERROR"
     },
     {
+      "line": 79,
+      "column": 12,
+      "endLine": 79,
+      "endColumn": 23,
+      "problem": "GenericCallNoTypeArgs",
+      "suggest": "",
+      "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+      "severity": "ERROR"
+    },
+    {
       "line": 80,
       "column": 5,
       "endLine": 80,
@@ -202,6 +272,16 @@
       "problem": "AnyType",
       "suggest": "",
       "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 80,
+      "column": 12,
+      "endLine": 80,
+      "endColumn": 21,
+      "problem": "GenericCallNoTypeArgs",
+      "suggest": "",
+      "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
       "severity": "ERROR"
     },
     {
@@ -212,6 +292,26 @@
       "problem": "AnyType",
       "suggest": "",
       "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 81,
+      "column": 24,
+      "endLine": 81,
+      "endColumn": 37,
+      "problem": "DynamicCtorCall",
+      "suggest": "",
+      "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 81,
+      "column": 20,
+      "endLine": 81,
+      "endColumn": 39,
+      "problem": "GenericCallNoTypeArgs",
+      "suggest": "",
+      "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
       "severity": "ERROR"
     },
     {
@@ -242,6 +342,26 @@
       "problem": "AnyType",
       "suggest": "",
       "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 83,
+      "column": 16,
+      "endLine": 83,
+      "endColumn": 29,
+      "problem": "GenericCallNoTypeArgs",
+      "suggest": "",
+      "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 84,
+      "column": 16,
+      "endLine": 84,
+      "endColumn": 29,
+      "problem": "GenericCallNoTypeArgs",
+      "suggest": "",
+      "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)",
       "severity": "ERROR"
     },
     {

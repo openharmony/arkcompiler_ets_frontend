@@ -13,20 +13,18 @@
  * limitations under the License.
  */
 
-async function getZipFile(name: string, files: File[]): Promise<File> {
-  const zipUtil = await import('create-zip-file');
-  const zipContents = zipUtil.getContentAsBlob(files);
-  return new File(zipContents, name);
+function foo(index:number){
+  let an_array = [1,2,3]
+  let a = an_array[index]
+  let a1 = an_array[index + 1]
+  let a2 = an_array[index + 1.1]
+  let b = an_array[1.23]
+  let c = an_array[true]
+  let d = an_array['index']
+  let e = an_array[undefined]
+  let f = an_array[null]
+  let g = an_array[]
+  let h = an_array[12.]
+  let i = an_array[12.0]
+  let j = an_array[0]
 }
-
-import { Data } from './file'
-
-function main(): void {
-  import('./file').then((m) => {
-    console.log(m.Data.name)
-  })
-}
-
-import('./file').then((m) => {
-  console.log(m.Data.name)
-}) 

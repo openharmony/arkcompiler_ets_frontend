@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,20 +13,14 @@
  * limitations under the License.
  */
 
-async function getZipFile(name: string, files: File[]): Promise<File> {
-  const zipUtil = await import('create-zip-file');
-  const zipContents = zipUtil.getContentAsBlob(files);
-  return new File(zipContents, name);
-}
+import "./logger";
+console.log("Main program running...");
+import "./utils/init";
 
-import { Data } from './file'
+import { cookBookTag } from './CookBookMsg';
+import Logger from './logger';
+import * as Utils from './utils';
 
-function main(): void {
-  import('./file').then((m) => {
-    console.log(m.Data.name)
-  })
-}
+import { initApp } from './utils/init';
 
-import('./file').then((m) => {
-  console.log(m.Data.name)
-}) 
+
