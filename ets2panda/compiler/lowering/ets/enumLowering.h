@@ -106,6 +106,8 @@ private:
                                 ir::Identifier *const itemsArrayIdent);
     void CreateUnboxingMethod(ir::TSEnumDeclaration const *const enumDecl, ir::ClassDefinition *const enumClass,
                               ir::Identifier *const itemsArrayIdent);
+    void SetDefaultPositionInUnfilledClassNodes(const ir::ClassDeclaration *enumClassDecl,
+                                                ir::TSEnumDeclaration const *const enumDecl);
 
     ArenaAllocator *Allocator();
 

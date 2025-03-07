@@ -119,6 +119,7 @@ static void ReplaceThisInExtensionMethod(checker::ETSChecker *checker, ir::Scrip
             if (ast->IsThisExpression()) {
                 auto *thisParam = checker->Allocator()->New<ir::Identifier>(
                     varbinder::TypedBinder::MANDATORY_PARAM_THIS, checker->Allocator());
+                thisParam->SetRange(ast->Range());
                 thisParam->SetParent(ast->Parent());
                 thisParam->SetVariable(thisVariable);
                 return static_cast<ir::AstNode *>(thisParam);

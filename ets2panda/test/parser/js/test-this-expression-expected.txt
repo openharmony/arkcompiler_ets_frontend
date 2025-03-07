@@ -10,11 +10,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 1
+              "column": 1,
+              "program": "test-this-expression.js"
             },
             "end": {
               "line": 17,
-              "column": 5
+              "column": 5,
+              "program": "test-this-expression.js"
             }
           }
         },
@@ -25,11 +27,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 6
+              "column": 6,
+              "program": "test-this-expression.js"
             },
             "end": {
               "line": 17,
-              "column": 7
+              "column": 7,
+              "program": "test-this-expression.js"
             }
           }
         },
@@ -38,22 +42,26 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 1
+            "column": 1,
+            "program": "test-this-expression.js"
           },
           "end": {
             "line": 17,
-            "column": 7
+            "column": 7,
+            "program": "test-this-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test-this-expression.js"
         },
         "end": {
           "line": 17,
-          "column": 8
+          "column": 8,
+          "program": "test-this-expression.js"
         }
       }
     },
@@ -66,11 +74,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 1
+              "column": 1,
+              "program": "test-this-expression.js"
             },
             "end": {
               "line": 18,
-              "column": 5
+              "column": 5,
+              "program": "test-this-expression.js"
             }
           }
         },
@@ -81,11 +91,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 6
+              "column": 6,
+              "program": "test-this-expression.js"
             },
             "end": {
               "line": 18,
-              "column": 7
+              "column": 7,
+              "program": "test-this-expression.js"
             }
           }
         },
@@ -94,22 +106,26 @@
         "loc": {
           "start": {
             "line": 18,
-            "column": 1
+            "column": 1,
+            "program": "test-this-expression.js"
           },
           "end": {
             "line": 18,
-            "column": 8
+            "column": 8,
+            "program": "test-this-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 18,
-          "column": 1
+          "column": 1,
+          "program": "test-this-expression.js"
         },
         "end": {
           "line": 18,
-          "column": 9
+          "column": 9,
+          "program": "test-this-expression.js"
         }
       }
     },
@@ -123,11 +139,13 @@
           "loc": {
             "start": {
               "line": 19,
-              "column": 1
+              "column": 1,
+              "program": "test-this-expression.js"
             },
             "end": {
               "line": 19,
-              "column": 5
+              "column": 5,
+              "program": "test-this-expression.js"
             }
           }
         },
@@ -137,33 +155,39 @@
           "loc": {
             "start": {
               "line": 19,
-              "column": 6
+              "column": 6,
+              "program": "test-this-expression.js"
             },
             "end": {
               "line": 19,
-              "column": 7
+              "column": 7,
+              "program": "test-this-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 19,
-            "column": 1
+            "column": 1,
+            "program": "test-this-expression.js"
           },
           "end": {
             "line": 19,
-            "column": 7
+            "column": 7,
+            "program": "test-this-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 19,
-          "column": 1
+          "column": 1,
+          "program": "test-this-expression.js"
         },
         "end": {
           "line": 19,
-          "column": 8
+          "column": 8,
+          "program": "test-this-expression.js"
         }
       }
     },
@@ -177,11 +201,13 @@
           "loc": {
             "start": {
               "line": 20,
-              "column": 1
+              "column": 1,
+              "program": "test-this-expression.js"
             },
             "end": {
               "line": 20,
-              "column": 5
+              "column": 5,
+              "program": "test-this-expression.js"
             }
           }
         },
@@ -190,33 +216,39 @@
           "loc": {
             "start": {
               "line": 20,
-              "column": 9
+              "column": 9,
+              "program": "test-this-expression.js"
             },
             "end": {
               "line": 20,
-              "column": 13
+              "column": 13,
+              "program": "test-this-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 20,
-            "column": 1
+            "column": 1,
+            "program": "test-this-expression.js"
           },
           "end": {
             "line": 20,
-            "column": 13
+            "column": 13,
+            "program": "test-this-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "test-this-expression.js"
         },
         "end": {
           "line": 20,
-          "column": 14
+          "column": 14,
+          "program": "test-this-expression.js"
         }
       }
     }
@@ -224,11 +256,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-this-expression.js"
     },
     "end": {
       "line": 21,
-      "column": 1
+      "column": 1,
+      "program": "test-this-expression.js"
     }
   }
 }

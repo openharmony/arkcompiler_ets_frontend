@@ -49,6 +49,7 @@ void Path::Initializer(const std::string &path, ArenaAllocator *allocator)
 
     absolutePath_ = util::UString(os::GetAbsolutePath(path_.Utf8()), allocator_).View();
 
+    InitializeFileNameWithExtension();
     InitializeFileExtension();
     InitializeFileName();
     InitializeParentFolder();
@@ -61,23 +62,30 @@ void Path::InitializeFileName()
         return;
     }
 
-    int position = path_.Mutf8().find_last_of(PATH_DELIMITER);
-
-    util::StringView fileName = path_.Substr(position + 1, path_.Length());
     if (GetExtension().Empty()) {
-        fileName_ = fileName;
+        fileName_ = fileNameWithExtension_;
         return;
     }
 
     for (auto &extension : supportedExtensions) {
-        if (EndsWith(fileName.Mutf8(), extension)) {
-            fileName_ = fileName.Substr(0, fileName.Length() - extension.length());
+        if (EndsWith(fileNameWithExtension_.Mutf8(), extension)) {
+            fileName_ = fileNameWithExtension_.Substr(0, fileNameWithExtension_.Length() - extension.length());
             return;
         }
     }
 
-    int extensionPosition = fileName.Mutf8().find_last_of('.');
-    fileName_ = fileName.Substr(0, extensionPosition);
+    int extensionPosition = fileNameWithExtension_.Mutf8().find_last_of('.');
+    fileName_ = fileNameWithExtension_.Substr(0, extensionPosition);
+}
+
+void Path::InitializeFileNameWithExtension()
+{
+    if (path_.Empty()) {
+        return;
+    }
+
+    int position = path_.Mutf8().find_last_of(PATH_DELIMITER);
+    fileNameWithExtension_ = path_.Substr(position + 1, path_.Length());
 }
 
 void Path::InitializeFileExtension()
@@ -179,6 +187,11 @@ const util::StringView &Path::GetExtension() const
 const util::StringView &Path::GetFileName() const
 {
     return fileName_;
+}
+
+const util::StringView &Path::GetFileNameWithExtension() const
+{
+    return fileNameWithExtension_;
 }
 
 const util::StringView &Path::GetParentFolder() const

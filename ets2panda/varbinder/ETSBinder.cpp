@@ -1436,7 +1436,7 @@ bool ETSBinder::IsDynamicNamespaceVariable(const Variable *var) const
 
 void ETSBinder::ThrowError(const lexer::SourcePosition &pos, const std::string_view &msg) const
 {
-    GetContext()->diagnosticEngine->LogSemanticError(Program(), msg, pos);
+    GetContext()->diagnosticEngine->LogSemanticError(msg, pos);
 }
 
 }  // namespace ark::es2panda::varbinder

@@ -135,7 +135,7 @@ ir::Statement *ETSParser::ParseEnumDeclaration(bool isConst, bool isStatic)
     auto *declNode = ParseEnumMembers(key, enumStart, isConst, isStatic);
     if (declNode == nullptr) {  // Error processing.
         // Error is logged inside ParseEnumMembers
-        return AllocBrokenStatement();
+        return AllocBrokenStatement(enumStart);
     }
     return declNode;
 }

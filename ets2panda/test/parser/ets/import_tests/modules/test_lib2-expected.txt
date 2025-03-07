@@ -9,11 +9,13 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 19
+            "column": 19,
+            "program": "test_lib2.sts"
           },
           "end": {
             "line": 16,
-            "column": 32
+            "column": 32,
+            "program": "test_lib2.sts"
           }
         }
       },
@@ -27,11 +29,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 10
+                "column": 10,
+                "program": "test_lib2.sts"
               },
               "end": {
                 "line": 16,
-                "column": 11
+                "column": 11,
+                "program": "test_lib2.sts"
               }
             }
           },
@@ -42,22 +46,26 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 10
+                "column": 10,
+                "program": "test_lib2.sts"
               },
               "end": {
                 "line": 16,
-                "column": 11
+                "column": 11,
+                "program": "test_lib2.sts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 16,
-              "column": 10
+              "column": 10,
+              "program": "test_lib2.sts"
             },
             "end": {
               "line": 16,
-              "column": 11
+              "column": 11,
+              "program": "test_lib2.sts"
             }
           }
         }
@@ -65,11 +73,13 @@
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "test_lib2.sts"
         },
         "end": {
           "line": 16,
-          "column": 32
+          "column": 32,
+          "program": "test_lib2.sts"
         }
       }
     },
@@ -83,11 +93,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "test_lib2.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "test_lib2.sts"
             }
           }
         },
@@ -103,11 +115,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -127,11 +141,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -145,33 +161,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -180,11 +202,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "test_lib2.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "test_lib2.sts"
               }
             }
           },
@@ -197,11 +221,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -221,11 +247,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -239,33 +267,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -274,11 +308,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "test_lib2.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "test_lib2.sts"
               }
             }
           },
@@ -291,11 +327,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 17
+                  "column": 17,
+                  "program": "test_lib2.sts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 18
+                  "column": 18,
+                  "program": "test_lib2.sts"
                 }
               }
             },
@@ -315,11 +353,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 17
+                      "column": 17,
+                      "program": "test_lib2.sts"
                     },
                     "end": {
                       "line": 17,
-                      "column": 18
+                      "column": 18,
+                      "program": "test_lib2.sts"
                     }
                   }
                 },
@@ -343,33 +383,39 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 22
+                                "column": 22,
+                                "program": "test_lib2.sts"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 23
+                                "column": 23,
+                                "program": "test_lib2.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 22
+                              "column": 22,
+                              "program": "test_lib2.sts"
                             },
                             "end": {
                               "line": 17,
-                              "column": 24
+                              "column": 24,
+                              "program": "test_lib2.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 22
+                            "column": 22,
+                            "program": "test_lib2.sts"
                           },
                           "end": {
                             "line": 17,
-                            "column": 24
+                            "column": 24,
+                            "program": "test_lib2.sts"
                           }
                         }
                       },
@@ -377,22 +423,26 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 19
+                          "column": 19,
+                          "program": "test_lib2.sts"
                         },
                         "end": {
                           "line": 17,
-                          "column": 24
+                          "column": 24,
+                          "program": "test_lib2.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 17,
-                        "column": 19
+                        "column": 19,
+                        "program": "test_lib2.sts"
                       },
                       "end": {
                         "line": 17,
-                        "column": 24
+                        "column": 24,
+                        "program": "test_lib2.sts"
                       }
                     }
                   }
@@ -403,33 +453,39 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 25
+                      "column": 25,
+                      "program": "test_lib2.sts"
                     },
                     "end": {
                       "line": 17,
-                      "column": 27
+                      "column": 27,
+                      "program": "test_lib2.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 17
+                    "column": 17,
+                    "program": "test_lib2.sts"
                   },
                   "end": {
                     "line": 17,
-                    "column": 27
+                    "column": 27,
+                    "program": "test_lib2.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 17
+                  "column": 17,
+                  "program": "test_lib2.sts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 27
+                  "column": 27,
+                  "program": "test_lib2.sts"
                 }
               }
             },
@@ -438,11 +494,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 8
+                "column": 8,
+                "program": "test_lib2.sts"
               },
               "end": {
                 "line": 17,
-                "column": 27
+                "column": 27,
+                "program": "test_lib2.sts"
               }
             }
           }
@@ -450,22 +508,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "test_lib2.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "test_lib2.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "test_lib2.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "test_lib2.sts"
         }
       }
     }
@@ -473,11 +535,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test_lib2.sts"
     },
     "end": {
       "line": 19,
-      "column": 1
+      "column": 1,
+      "program": "test_lib2.sts"
     }
   }
 }

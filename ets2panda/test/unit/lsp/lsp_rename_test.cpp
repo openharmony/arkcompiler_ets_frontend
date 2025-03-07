@@ -108,11 +108,12 @@ TEST_F(LspRenameInfoTests, RenameInfoNodeReturnTrueIfStartEqualEnd)
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
+    auto program = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx)->parserProgram;
 
     size_t const expectedIndex = 10;
     size_t const expectedLength = 20;
-    auto srcPositionStart = ark::es2panda::lexer::SourcePosition(expectedIndex, expectedLength);
-    auto srcPositionEnd = ark::es2panda::lexer::SourcePosition(expectedIndex, expectedLength);
+    auto srcPositionStart = ark::es2panda::lexer::SourcePosition(expectedIndex, expectedLength, program);
+    auto srcPositionEnd = ark::es2panda::lexer::SourcePosition(expectedIndex, expectedLength, program);
     auto srcRange = ark::es2panda::lexer::SourceRange(srcPositionStart, srcPositionEnd);
 
     ast->SetRange(srcRange);
@@ -129,11 +130,12 @@ TEST_F(LspRenameInfoTests, RenameInfoNodeReturnFalseIfStartNotEqualEnd)
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
+    auto program = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx)->parserProgram;
     size_t const expectedStartIndex = 10;
     size_t const expectedEndIndex = 15;
     size_t const expectedLength = 20;
-    auto srcPositionStart = ark::es2panda::lexer::SourcePosition(expectedStartIndex, expectedLength);
-    auto srcPositionEnd = ark::es2panda::lexer::SourcePosition(expectedEndIndex, expectedLength);
+    auto srcPositionStart = ark::es2panda::lexer::SourcePosition(expectedStartIndex, expectedLength, program);
+    auto srcPositionEnd = ark::es2panda::lexer::SourcePosition(expectedEndIndex, expectedLength, program);
     auto srcRange = ark::es2panda::lexer::SourceRange(srcPositionStart, srcPositionEnd);
 
     ast->SetRange(srcRange);
@@ -152,12 +154,13 @@ TEST_F(LspRenameInfoTests, RenameInfoNodeGetSourceTextOfNodeFromSourceFile)
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
+    auto program = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx)->parserProgram;
     size_t const startIndex = 9;
     size_t const startLength = 5;
     size_t const endIndex = 10;
     size_t const endLength = 5;
-    auto srcPositionStart = ark::es2panda::lexer::SourcePosition(startIndex, startLength);
-    auto srcPositionEnd = ark::es2panda::lexer::SourcePosition(endIndex, endLength);
+    auto srcPositionStart = ark::es2panda::lexer::SourcePosition(startIndex, startLength, program);
+    auto srcPositionEnd = ark::es2panda::lexer::SourcePosition(endIndex, endLength, program);
     auto srcRange = ark::es2panda::lexer::SourceRange(srcPositionStart, srcPositionEnd);
     ast->SetRange(srcRange);
 
@@ -267,12 +270,12 @@ TEST_F(LspRenameInfoTests, RenameInfoGetTextOfNode)
     size_t const endIndex = 17;
     size_t const endLength = 5;
 
-    auto srcPositionStart = ark::es2panda::lexer::SourcePosition(startIndex, startLength);
-    auto srcPositionEnd = ark::es2panda::lexer::SourcePosition(endIndex, endLength);
+    auto program = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx)->parserProgram;
+    auto srcPositionStart = ark::es2panda::lexer::SourcePosition(startIndex, startLength, program);
+    auto srcPositionEnd = ark::es2panda::lexer::SourcePosition(endIndex, endLength, program);
     auto srcRange = ark::es2panda::lexer::SourceRange(srcPositionStart, srcPositionEnd);
     ast->SetRange(srcRange);
 
-    auto program = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx)->parserProgram;
     ASSERT_EQ(ark::es2panda::lsp::GetTextOfNode(ast, program), "A");
     initializer.DestroyContext(ctx);
 }

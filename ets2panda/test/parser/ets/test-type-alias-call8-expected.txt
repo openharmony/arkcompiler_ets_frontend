@@ -9,11 +9,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 31
+            "column": 31,
+            "program": "test-type-alias-call8.sts"
           },
           "end": {
             "line": 17,
-            "column": 56
+            "column": 56,
+            "program": "test-type-alias-call8.sts"
           }
         }
       },
@@ -27,11 +29,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 15
+                "column": 15,
+                "program": "test-type-alias-call8.sts"
               },
               "end": {
                 "line": 17,
-                "column": 23
+                "column": 23,
+                "program": "test-type-alias-call8.sts"
               }
             }
           },
@@ -42,22 +46,26 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 15
+                "column": 15,
+                "program": "test-type-alias-call8.sts"
               },
               "end": {
                 "line": 17,
-                "column": 23
+                "column": 23,
+                "program": "test-type-alias-call8.sts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 17,
-              "column": 15
+              "column": 15,
+              "program": "test-type-alias-call8.sts"
             },
             "end": {
               "line": 17,
-              "column": 23
+              "column": 23,
+              "program": "test-type-alias-call8.sts"
             }
           }
         }
@@ -65,11 +73,13 @@
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test-type-alias-call8.sts"
         },
         "end": {
           "line": 17,
-          "column": 57
+          "column": 57,
+          "program": "test-type-alias-call8.sts"
         }
       }
     },
@@ -83,11 +93,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 7
+              "column": 7,
+              "program": "test-type-alias-call8.sts"
             },
             "end": {
               "line": 18,
-              "column": 8
+              "column": 8,
+              "program": "test-type-alias-call8.sts"
             }
           }
         },
@@ -103,11 +115,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-type-alias-call8.sts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 20
+                  "column": 20,
+                  "program": "test-type-alias-call8.sts"
                 }
               }
             },
@@ -130,11 +144,13 @@
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 37
+                            "column": 37,
+                            "program": "test-type-alias-call8.sts"
                           },
                           "end": {
                             "line": 19,
-                            "column": 40
+                            "column": 40,
+                            "program": "test-type-alias-call8.sts"
                           }
                         }
                       },
@@ -142,22 +158,26 @@
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 34
+                          "column": 34,
+                          "program": "test-type-alias-call8.sts"
                         },
                         "end": {
                           "line": 19,
-                          "column": 40
+                          "column": 40,
+                          "program": "test-type-alias-call8.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 19,
-                        "column": 34
+                        "column": 34,
+                        "program": "test-type-alias-call8.sts"
                       },
                       "end": {
                         "line": 19,
-                        "column": 40
+                        "column": 40,
+                        "program": "test-type-alias-call8.sts"
                       }
                     }
                   }
@@ -173,22 +193,26 @@
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 45
+                            "column": 45,
+                            "program": "test-type-alias-call8.sts"
                           },
                           "end": {
                             "line": 19,
-                            "column": 46
+                            "column": 46,
+                            "program": "test-type-alias-call8.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 1,
-                          "column": 1
+                          "column": 1,
+                          "program": null
                         },
                         "end": {
                           "line": 1,
-                          "column": 1
+                          "column": 1,
+                          "program": null
                         }
                       }
                     }
@@ -196,33 +220,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 33
+                    "column": 33,
+                    "program": "test-type-alias-call8.sts"
                   },
                   "end": {
                     "line": 19,
-                    "column": 46
+                    "column": 46,
+                    "program": "test-type-alias-call8.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 33
+                  "column": 33,
+                  "program": "test-type-alias-call8.sts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 46
+                  "column": 46,
+                  "program": "test-type-alias-call8.sts"
                 }
               }
             },
@@ -243,33 +273,39 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 22
+                      "column": 22,
+                      "program": "test-type-alias-call8.sts"
                     },
                     "end": {
                       "line": 19,
-                      "column": 30
+                      "column": 30,
+                      "program": "test-type-alias-call8.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 22
+                    "column": 22,
+                    "program": "test-type-alias-call8.sts"
                   },
                   "end": {
                     "line": 19,
-                    "column": 32
+                    "column": 32,
+                    "program": "test-type-alias-call8.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 22
+                  "column": 22,
+                  "program": "test-type-alias-call8.sts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 32
+                  "column": 32,
+                  "program": "test-type-alias-call8.sts"
                 }
               }
             },
@@ -278,11 +314,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 12
+                "column": 12,
+                "program": "test-type-alias-call8.sts"
               },
               "end": {
                 "line": 19,
-                "column": 46
+                "column": 46,
+                "program": "test-type-alias-call8.sts"
               }
             }
           },
@@ -295,11 +333,13 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-type-alias-call8.sts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 21
+                  "column": 21,
+                  "program": "test-type-alias-call8.sts"
                 }
               }
             },
@@ -319,11 +359,13 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 12
+                      "column": 12,
+                      "program": "test-type-alias-call8.sts"
                     },
                     "end": {
                       "line": 20,
-                      "column": 21
+                      "column": 21,
+                      "program": "test-type-alias-call8.sts"
                     }
                   }
                 },
@@ -345,11 +387,13 @@
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 9
+                                "column": 9,
+                                "program": "test-type-alias-call8.sts"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 13
+                                "column": 13,
+                                "program": "test-type-alias-call8.sts"
                               }
                             }
                           },
@@ -360,11 +404,13 @@
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 14
+                                "column": 14,
+                                "program": "test-type-alias-call8.sts"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 22
+                                "column": 22,
+                                "program": "test-type-alias-call8.sts"
                               }
                             }
                           },
@@ -373,11 +419,13 @@
                           "loc": {
                             "start": {
                               "line": 21,
-                              "column": 9
+                              "column": 9,
+                              "program": "test-type-alias-call8.sts"
                             },
                             "end": {
                               "line": 21,
-                              "column": 22
+                              "column": 22,
+                              "program": "test-type-alias-call8.sts"
                             }
                           }
                         },
@@ -388,11 +436,13 @@
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 23
+                                "column": 23,
+                                "program": "test-type-alias-call8.sts"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 24
+                                "column": 24,
+                                "program": "test-type-alias-call8.sts"
                               }
                             }
                           }
@@ -401,22 +451,26 @@
                         "loc": {
                           "start": {
                             "line": 21,
-                            "column": 9
+                            "column": 9,
+                            "program": "test-type-alias-call8.sts"
                           },
                           "end": {
                             "line": 21,
-                            "column": 25
+                            "column": 25,
+                            "program": "test-type-alias-call8.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 9
+                          "column": 9,
+                          "program": "test-type-alias-call8.sts"
                         },
                         "end": {
                           "line": 21,
-                          "column": 25
+                          "column": 25,
+                          "program": "test-type-alias-call8.sts"
                         }
                       }
                     }
@@ -424,33 +478,39 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 23
+                      "column": 23,
+                      "program": "test-type-alias-call8.sts"
                     },
                     "end": {
                       "line": 22,
-                      "column": 6
+                      "column": 6,
+                      "program": "test-type-alias-call8.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 21
+                    "column": 21,
+                    "program": "test-type-alias-call8.sts"
                   },
                   "end": {
                     "line": 22,
-                    "column": 6
+                    "column": 6,
+                    "program": "test-type-alias-call8.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 21
+                  "column": 21,
+                  "program": "test-type-alias-call8.sts"
                 },
                 "end": {
                   "line": 22,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-type-alias-call8.sts"
                 }
               }
             },
@@ -459,11 +519,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 5
+                "column": 5,
+                "program": "test-type-alias-call8.sts"
               },
               "end": {
                 "line": 22,
-                "column": 6
+                "column": 6,
+                "program": "test-type-alias-call8.sts"
               }
             }
           },
@@ -475,12 +537,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 18,
+                  "column": 10,
+                  "program": "test-type-alias-call8.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 18,
+                  "column": 10,
+                  "program": "test-type-alias-call8.sts"
                 }
               }
             },
@@ -498,12 +562,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 18,
+                      "column": 10,
+                      "program": "test-type-alias-call8.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 18,
+                      "column": 10,
+                      "program": "test-type-alias-call8.sts"
                     }
                   }
                 },
@@ -516,34 +582,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 18,
+                      "column": 10,
+                      "program": "test-type-alias-call8.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 18,
+                      "column": 10,
+                      "program": "test-type-alias-call8.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 18,
+                    "column": 10,
+                    "program": "test-type-alias-call8.sts"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 18,
+                    "column": 10,
+                    "program": "test-type-alias-call8.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 18,
+                  "column": 10,
+                  "program": "test-type-alias-call8.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 18,
+                  "column": 10,
+                  "program": "test-type-alias-call8.sts"
                 }
               }
             },
@@ -551,12 +623,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 23,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 23,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -564,22 +638,26 @@
         "loc": {
           "start": {
             "line": 18,
-            "column": 9
+            "column": 9,
+            "program": "test-type-alias-call8.sts"
           },
           "end": {
-            "line": 23,
-            "column": 2
+            "line": 24,
+            "column": 1,
+            "program": "test-type-alias-call8.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 18,
-          "column": 1
+          "column": 1,
+          "program": "test-type-alias-call8.sts"
         },
         "end": {
-          "line": 23,
-          "column": 2
+          "line": 24,
+          "column": 1,
+          "program": "test-type-alias-call8.sts"
         }
       }
     },
@@ -593,11 +671,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "test-type-alias-call8.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "test-type-alias-call8.sts"
             }
           }
         },
@@ -613,11 +693,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -637,11 +719,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -655,33 +739,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -690,11 +780,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "test-type-alias-call8.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "test-type-alias-call8.sts"
               }
             }
           },
@@ -707,11 +799,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -731,11 +825,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -749,33 +845,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -784,11 +886,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "test-type-alias-call8.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "test-type-alias-call8.sts"
               }
             }
           }
@@ -796,22 +900,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "test-type-alias-call8.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "test-type-alias-call8.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "test-type-alias-call8.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "test-type-alias-call8.sts"
         }
       }
     }
@@ -819,11 +927,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-type-alias-call8.sts"
     },
     "end": {
       "line": 24,
-      "column": 1
+      "column": 1,
+      "program": "test-type-alias-call8.sts"
     }
   }
 }

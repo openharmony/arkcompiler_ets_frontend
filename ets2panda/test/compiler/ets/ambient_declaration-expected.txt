@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "ambient_declaration.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "ambient_declaration.sts"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +79,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +120,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "ambient_declaration.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "ambient_declaration.sts"
               }
             }
           },
@@ -125,11 +139,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 18
+                  "column": 18,
+                  "program": "ambient_declaration.sts"
                 },
                 "end": {
                   "line": 16,
-                  "column": 21
+                  "column": 21,
+                  "program": "ambient_declaration.sts"
                 }
               }
             },
@@ -149,11 +165,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 18
+                      "column": 18,
+                      "program": "ambient_declaration.sts"
                     },
                     "end": {
                       "line": 16,
-                      "column": 21
+                      "column": 21,
+                      "program": "ambient_declaration.sts"
                     }
                   }
                 },
@@ -171,11 +189,13 @@
                         "loc": {
                           "start": {
                             "line": 16,
-                            "column": 27
+                            "column": 27,
+                            "program": "ambient_declaration.sts"
                           },
                           "end": {
                             "line": 16,
-                            "column": 30
+                            "column": 30,
+                            "program": "ambient_declaration.sts"
                           }
                         }
                       },
@@ -183,22 +203,26 @@
                       "loc": {
                         "start": {
                           "line": 16,
-                          "column": 22
+                          "column": 22,
+                          "program": "ambient_declaration.sts"
                         },
                         "end": {
                           "line": 16,
-                          "column": 30
+                          "column": 30,
+                          "program": "ambient_declaration.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 16,
-                        "column": 22
+                        "column": 22,
+                        "program": "ambient_declaration.sts"
                       },
                       "end": {
                         "line": 16,
-                        "column": 30
+                        "column": 30,
+                        "program": "ambient_declaration.sts"
                       }
                     }
                   },
@@ -218,33 +242,39 @@
                             "loc": {
                               "start": {
                                 "line": 16,
-                                "column": 36
+                                "column": 36,
+                                "program": "ambient_declaration.sts"
                               },
                               "end": {
                                 "line": 16,
-                                "column": 42
+                                "column": 42,
+                                "program": "ambient_declaration.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 16,
-                              "column": 36
+                              "column": 36,
+                              "program": "ambient_declaration.sts"
                             },
                             "end": {
                               "line": 16,
-                              "column": 43
+                              "column": 43,
+                              "program": "ambient_declaration.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 16,
-                            "column": 36
+                            "column": 36,
+                            "program": "ambient_declaration.sts"
                           },
                           "end": {
                             "line": 16,
-                            "column": 43
+                            "column": 43,
+                            "program": "ambient_declaration.sts"
                           }
                         }
                       },
@@ -252,22 +282,26 @@
                       "loc": {
                         "start": {
                           "line": 16,
-                          "column": 32
+                          "column": 32,
+                          "program": "ambient_declaration.sts"
                         },
                         "end": {
                           "line": 16,
-                          "column": 43
+                          "column": 43,
+                          "program": "ambient_declaration.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 16,
-                        "column": 32
+                        "column": 32,
+                        "program": "ambient_declaration.sts"
                       },
                       "end": {
                         "line": 16,
-                        "column": 43
+                        "column": 43,
+                        "program": "ambient_declaration.sts"
                       }
                     }
                   }
@@ -277,11 +311,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 46
+                      "column": 46,
+                      "program": "ambient_declaration.sts"
                     },
                     "end": {
                       "line": 16,
-                      "column": 50
+                      "column": 50,
+                      "program": "ambient_declaration.sts"
                     }
                   }
                 },
@@ -289,22 +325,26 @@
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 18
+                    "column": 18,
+                    "program": "ambient_declaration.sts"
                   },
                   "end": {
                     "line": 16,
-                    "column": 21
+                    "column": 21,
+                    "program": "ambient_declaration.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 18
+                  "column": 18,
+                  "program": "ambient_declaration.sts"
                 },
                 "end": {
                   "line": 16,
-                  "column": 21
+                  "column": 21,
+                  "program": "ambient_declaration.sts"
                 }
               }
             },
@@ -313,11 +353,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 1
+                "column": 1,
+                "program": "ambient_declaration.sts"
               },
               "end": {
                 "line": 16,
-                "column": 21
+                "column": 21,
+                "program": "ambient_declaration.sts"
               }
             }
           },
@@ -330,11 +372,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 10
+                  "column": 10,
+                  "program": "ambient_declaration.sts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 14
+                  "column": 14,
+                  "program": "ambient_declaration.sts"
                 }
               }
             },
@@ -354,11 +398,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 10
+                      "column": 10,
+                      "program": "ambient_declaration.sts"
                     },
                     "end": {
                       "line": 18,
-                      "column": 14
+                      "column": 14,
+                      "program": "ambient_declaration.sts"
                     }
                   }
                 },
@@ -372,33 +418,39 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 17
+                      "column": 17,
+                      "program": "ambient_declaration.sts"
                     },
                     "end": {
                       "line": 19,
-                      "column": 2
+                      "column": 2,
+                      "program": "ambient_declaration.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 10
+                    "column": 10,
+                    "program": "ambient_declaration.sts"
                   },
                   "end": {
                     "line": 19,
-                    "column": 2
+                    "column": 2,
+                    "program": "ambient_declaration.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 10
+                  "column": 10,
+                  "program": "ambient_declaration.sts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 2
+                  "column": 2,
+                  "program": "ambient_declaration.sts"
                 }
               }
             },
@@ -407,11 +459,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 1
+                "column": 1,
+                "program": "ambient_declaration.sts"
               },
               "end": {
                 "line": 19,
-                "column": 2
+                "column": 2,
+                "program": "ambient_declaration.sts"
               }
             }
           }
@@ -419,22 +473,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "ambient_declaration.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "ambient_declaration.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "ambient_declaration.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "ambient_declaration.sts"
         }
       }
     }
@@ -442,11 +500,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "ambient_declaration.sts"
     },
     "end": {
       "line": 20,
-      "column": 1
+      "column": 1,
+      "program": "ambient_declaration.sts"
     }
   }
 }

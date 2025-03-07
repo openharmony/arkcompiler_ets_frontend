@@ -278,12 +278,12 @@ bool TSChecker::IsVariableUsedInBinaryExpressionChain(ir::AstNode *parent, varbi
 
 void TSChecker::ThrowTypeError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)
 {
-    DiagnosticEngine().ThrowSemanticError(Program(), list, pos);
+    DiagnosticEngine().ThrowSemanticError(list, pos);
 }
 
 void TSChecker::ThrowTypeError(std::string_view message, const lexer::SourcePosition &pos)
 {
-    DiagnosticEngine().ThrowSemanticError(Program(), message, pos);
+    DiagnosticEngine().ThrowSemanticError(message, pos);
 }
 
 void TSChecker::ThrowBinaryLikeError(lexer::TokenType op, Type *leftType, Type *rightType,

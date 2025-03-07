@@ -9,11 +9,13 @@
         "loc": {
           "start": {
             "line": 20,
-            "column": 15
+            "column": 15,
+            "program": "test-export-all.js"
           },
           "end": {
             "line": 20,
-            "column": 20
+            "column": 20,
+            "program": "test-export-all.js"
           }
         }
       },
@@ -21,11 +23,13 @@
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "test-export-all.js"
         },
         "end": {
           "line": 20,
-          "column": 20
+          "column": 20,
+          "program": "test-export-all.js"
         }
       }
     },
@@ -37,11 +41,13 @@
         "loc": {
           "start": {
             "line": 21,
-            "column": 15
+            "column": 15,
+            "program": "test-export-all.js"
           },
           "end": {
             "line": 21,
-            "column": 20
+            "column": 20,
+            "program": "test-export-all.js"
           }
         }
       },
@@ -49,11 +55,13 @@
       "loc": {
         "start": {
           "line": 21,
-          "column": 1
+          "column": 1,
+          "program": "test-export-all.js"
         },
         "end": {
           "line": 21,
-          "column": 21
+          "column": 21,
+          "program": "test-export-all.js"
         }
       }
     }
@@ -61,11 +69,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-export-all.js"
     },
     "end": {
       "line": 23,
-      "column": 1
+      "column": 1,
+      "program": "test-export-all.js"
     }
   }
 }

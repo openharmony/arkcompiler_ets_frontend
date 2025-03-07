@@ -14,11 +14,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 9
+                "column": 9,
+                "program": "subpackage_module_1.sts"
               },
               "end": {
                 "line": 16,
-                "column": 21
+                "column": 21,
+                "program": "subpackage_module_1.sts"
               }
             }
           },
@@ -29,22 +31,26 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 22
+                "column": 22,
+                "program": "subpackage_module_1.sts"
               },
               "end": {
                 "line": 16,
-                "column": 30
+                "column": 30,
+                "program": "subpackage_module_1.sts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 16,
-              "column": 9
+              "column": 9,
+              "program": "subpackage_module_1.sts"
             },
             "end": {
               "line": 16,
-              "column": 30
+              "column": 30,
+              "program": "subpackage_module_1.sts"
             }
           }
         },
@@ -55,33 +61,39 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 31
+              "column": 31,
+              "program": "subpackage_module_1.sts"
             },
             "end": {
               "line": 16,
-              "column": 43
+              "column": 43,
+              "program": "subpackage_module_1.sts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 16,
-            "column": 9
+            "column": 9,
+            "program": "subpackage_module_1.sts"
           },
           "end": {
             "line": 16,
-            "column": 44
+            "column": 44,
+            "program": "subpackage_module_1.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "subpackage_module_1.sts"
         },
         "end": {
           "line": 16,
-          "column": 44
+          "column": 44,
+          "program": "subpackage_module_1.sts"
         }
       }
     },
@@ -95,11 +107,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "subpackage_module_1.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "subpackage_module_1.sts"
             }
           }
         },
@@ -115,11 +129,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -139,11 +155,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -166,11 +184,13 @@
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 12
+                              "column": 12,
+                              "program": "subpackage_module_1.sts"
                             },
                             "end": {
                               "line": 19,
-                              "column": 13
+                              "column": 13,
+                              "program": "subpackage_module_1.sts"
                             }
                           }
                         },
@@ -180,33 +200,39 @@
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 24
+                              "column": 24,
+                              "program": "subpackage_module_1.sts"
                             },
                             "end": {
                               "line": 19,
-                              "column": 37
+                              "column": 37,
+                              "program": "subpackage_module_1.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 12
+                            "column": 12,
+                            "program": "subpackage_module_1.sts"
                           },
                           "end": {
                             "line": 19,
-                            "column": 37
+                            "column": 37,
+                            "program": "subpackage_module_1.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 12
+                          "column": 12,
+                          "program": "subpackage_module_1.sts"
                         },
                         "end": {
                           "line": 19,
-                          "column": 37
+                          "column": 37,
+                          "program": "subpackage_module_1.sts"
                         }
                       }
                     },
@@ -222,11 +248,13 @@
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 12
+                              "column": 12,
+                              "program": "subpackage_module_2.sts"
                             },
                             "end": {
                               "line": 19,
-                              "column": 13
+                              "column": 13,
+                              "program": "subpackage_module_2.sts"
                             }
                           }
                         },
@@ -236,33 +264,39 @@
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 24
+                              "column": 24,
+                              "program": "subpackage_module_2.sts"
                             },
                             "end": {
                               "line": 19,
-                              "column": 37
+                              "column": 37,
+                              "program": "subpackage_module_2.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 12
+                            "column": 12,
+                            "program": "subpackage_module_2.sts"
                           },
                           "end": {
                             "line": 19,
-                            "column": 37
+                            "column": 37,
+                            "program": "subpackage_module_2.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 12
+                          "column": 12,
+                          "program": "subpackage_module_2.sts"
                         },
                         "end": {
                           "line": 19,
-                          "column": 37
+                          "column": 37,
+                          "program": "subpackage_module_2.sts"
                         }
                       }
                     }
@@ -270,33 +304,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -305,11 +345,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "subpackage_module_1.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "subpackage_module_1.sts"
               }
             }
           },
@@ -322,11 +364,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 12
+                  "column": 12,
+                  "program": "subpackage_module_1.sts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 13
+                  "column": 13,
+                  "program": "subpackage_module_1.sts"
                 }
               }
             },
@@ -347,33 +391,39 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 15
+                      "column": 15,
+                      "program": "subpackage_module_1.sts"
                     },
                     "end": {
                       "line": 19,
-                      "column": 21
+                      "column": 21,
+                      "program": "subpackage_module_1.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 15
+                    "column": 15,
+                    "program": "subpackage_module_1.sts"
                   },
                   "end": {
                     "line": 19,
-                    "column": 23
+                    "column": 23,
+                    "program": "subpackage_module_1.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 15
+                  "column": 15,
+                  "program": "subpackage_module_1.sts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 23
+                  "column": 23,
+                  "program": "subpackage_module_1.sts"
                 }
               }
             },
@@ -382,11 +432,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 12
+                "column": 12,
+                "program": "subpackage_module_1.sts"
               },
               "end": {
                 "line": 19,
-                "column": 37
+                "column": 37,
+                "program": "subpackage_module_1.sts"
               }
             }
           },
@@ -399,11 +451,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 12
+                  "column": 12,
+                  "program": "subpackage_module_2.sts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 13
+                  "column": 13,
+                  "program": "subpackage_module_2.sts"
                 }
               }
             },
@@ -424,33 +478,39 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 15
+                      "column": 15,
+                      "program": "subpackage_module_2.sts"
                     },
                     "end": {
                       "line": 19,
-                      "column": 21
+                      "column": 21,
+                      "program": "subpackage_module_2.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 15
+                    "column": 15,
+                    "program": "subpackage_module_2.sts"
                   },
                   "end": {
                     "line": 19,
-                    "column": 23
+                    "column": 23,
+                    "program": "subpackage_module_2.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 15
+                  "column": 15,
+                  "program": "subpackage_module_2.sts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 23
+                  "column": 23,
+                  "program": "subpackage_module_2.sts"
                 }
               }
             },
@@ -459,11 +519,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 12
+                "column": 12,
+                "program": "subpackage_module_2.sts"
               },
               "end": {
                 "line": 19,
-                "column": 37
+                "column": 37,
+                "program": "subpackage_module_2.sts"
               }
             }
           }
@@ -471,22 +533,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "subpackage_module_1.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "subpackage_module_1.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "subpackage_module_1.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "subpackage_module_1.sts"
         }
       }
     }
@@ -494,12 +560,14 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "subpackage_module_1.sts"
     },
     "end": {
       "line": 20,
-      "column": 1
+      "column": 1,
+      "program": "subpackage_module_1.sts"
     }
   }
 }
-TypeError: Variable 'a' has already been declared. [subpackage_module_1.sts:19:12]
+TypeError: Variable 'a' has already been declared. [subpackage_module_2.sts:19:12]

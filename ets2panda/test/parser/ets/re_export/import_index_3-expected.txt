@@ -9,11 +9,13 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 28
+            "column": 28,
+            "program": "import_index_3.sts"
           },
           "end": {
             "line": 16,
-            "column": 44
+            "column": 44,
+            "program": "import_index_3.sts"
           }
         }
       },
@@ -27,11 +29,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 9
+                "column": 9,
+                "program": "import_index_3.sts"
               },
               "end": {
                 "line": 16,
-                "column": 14
+                "column": 14,
+                "program": "import_index_3.sts"
               }
             }
           },
@@ -42,22 +46,26 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 9
+                "column": 9,
+                "program": "import_index_3.sts"
               },
               "end": {
                 "line": 16,
-                "column": 14
+                "column": 14,
+                "program": "import_index_3.sts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 16,
-              "column": 9
+              "column": 9,
+              "program": "import_index_3.sts"
             },
             "end": {
               "line": 16,
-              "column": 14
+              "column": 14,
+              "program": "import_index_3.sts"
             }
           }
         },
@@ -70,11 +78,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 16
+                "column": 16,
+                "program": "import_index_3.sts"
               },
               "end": {
                 "line": 16,
-                "column": 21
+                "column": 21,
+                "program": "import_index_3.sts"
               }
             }
           },
@@ -85,22 +95,26 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 16
+                "column": 16,
+                "program": "import_index_3.sts"
               },
               "end": {
                 "line": 16,
-                "column": 21
+                "column": 21,
+                "program": "import_index_3.sts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 16,
-              "column": 16
+              "column": 16,
+              "program": "import_index_3.sts"
             },
             "end": {
               "line": 16,
-              "column": 21
+              "column": 21,
+              "program": "import_index_3.sts"
             }
           }
         }
@@ -108,11 +122,13 @@
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "import_index_3.sts"
         },
         "end": {
           "line": 16,
-          "column": 45
+          "column": 45,
+          "program": "import_index_3.sts"
         }
       }
     },
@@ -126,11 +142,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "import_index_3.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "import_index_3.sts"
             }
           }
         },
@@ -146,11 +164,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -170,11 +190,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -188,33 +210,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -223,11 +251,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "import_index_3.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "import_index_3.sts"
               }
             }
           },
@@ -240,11 +270,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -264,11 +296,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -282,33 +316,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -317,11 +357,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "import_index_3.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "import_index_3.sts"
               }
             }
           }
@@ -329,22 +371,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "import_index_3.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "import_index_3.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "import_index_3.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "import_index_3.sts"
         }
       }
     }
@@ -352,11 +398,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "import_index_3.sts"
     },
     "end": {
       "line": 17,
-      "column": 1
+      "column": 1,
+      "program": "import_index_3.sts"
     }
   }
 }

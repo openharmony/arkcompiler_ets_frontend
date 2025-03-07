@@ -205,9 +205,9 @@ public:
         return diagnosticEngine_;
     }
 
-    std::pair<const parser::Program *, lexer::SourcePosition> GetPositionForDiagnostic() const
+    lexer::SourcePosition GetPositionForDiagnostic() const
     {
-        return {Program(), lexer::SourcePosition {}};
+        return lexer::SourcePosition {Program()};
     }
 
     // NOTE: required only for evaluate.

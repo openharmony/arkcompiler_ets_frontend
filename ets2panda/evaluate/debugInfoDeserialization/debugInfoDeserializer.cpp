@@ -232,6 +232,10 @@ varbinder::Variable *DebugInfoDeserializer::CreateLocalVarDecl(ir::Identifier *i
                                     *varBinder->GetContext()->diagnosticEngine, parser::ParserStatus::NO_OPTS);
 
     auto *varDecl = parser.CreateFormattedStatement(varDeclSource, parser::ParserContext::DEFAULT_SOURCE_FILE);
+
+    // NOTE(kaskov): #23399 It is temporary solution, we clear SourcePosition in generated code
+    compiler::SetSourceRangesRecursively(varDecl, lexer::SourceRange());
+
     ES2PANDA_ASSERT(varDecl != nullptr);
     varDecl->SetParent(topStatement);
     // Declaration will be placed at start of current scope.
@@ -243,6 +247,10 @@ varbinder::Variable *DebugInfoDeserializer::CreateLocalVarDecl(ir::Identifier *i
     auto varUpdateSource = GetVarUpdateSourceCode(identName, regNumber, typeId);
 
     auto *varUpdate = parser.CreateFormattedStatement(varUpdateSource, parser::ParserContext::DEFAULT_SOURCE_FILE);
+
+    // NOTE(kaskov): #23399 It is temporary solution, we clear SourcePosition in generated code
+    compiler::SetSourceRangesRecursively(varUpdate, lexer::SourceRange());
+
     ES2PANDA_ASSERT(varUpdate != nullptr);
     varUpdate->SetParent(topStatement);
     // Can't insert right away until block's statements iteration ends.

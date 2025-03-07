@@ -423,7 +423,7 @@ void ScopesInitPhase::IterateNoTParams(ir::ClassDefinition *classDef)
 
 void ScopesInitPhase::LogSemanticError(std::string_view errorMessage, const lexer::SourcePosition &pos) const
 {
-    ctx_->diagnosticEngine->LogSemanticError(Program(), errorMessage, pos);
+    ctx_->diagnosticEngine->LogSemanticError(errorMessage, pos);
 }
 
 void ScopesInitPhase::CreateFuncDecl(ir::ScriptFunction *func)

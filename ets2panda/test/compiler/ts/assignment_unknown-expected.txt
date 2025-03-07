@@ -14,11 +14,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 15
+                  "column": 15,
+                  "program": "assignment_unknown.ts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 22
+                  "column": 22,
+                  "program": "assignment_unknown.ts"
                 }
               }
             },
@@ -26,11 +28,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "assignment_unknown.ts"
               },
               "end": {
                 "line": 17,
-                "column": 13
+                "column": 13,
+                "program": "assignment_unknown.ts"
               }
             }
           },
@@ -38,11 +42,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 5
+              "column": 5,
+              "program": "assignment_unknown.ts"
             },
             "end": {
               "line": 17,
-              "column": 13
+              "column": 13,
+              "program": "assignment_unknown.ts"
             }
           }
         }
@@ -51,11 +57,13 @@
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "assignment_unknown.ts"
         },
         "end": {
           "line": 17,
-          "column": 23
+          "column": 23,
+          "program": "assignment_unknown.ts"
         }
       }
     },
@@ -71,11 +79,13 @@
           "loc": {
             "start": {
               "line": 19,
-              "column": 1
+              "column": 1,
+              "program": "assignment_unknown.ts"
             },
             "end": {
               "line": 19,
-              "column": 9
+              "column": 9,
+              "program": "assignment_unknown.ts"
             }
           }
         },
@@ -85,33 +95,39 @@
           "loc": {
             "start": {
               "line": 19,
-              "column": 12
+              "column": 12,
+              "program": "assignment_unknown.ts"
             },
             "end": {
               "line": 19,
-              "column": 16
+              "column": 16,
+              "program": "assignment_unknown.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 19,
-            "column": 1
+            "column": 1,
+            "program": "assignment_unknown.ts"
           },
           "end": {
             "line": 19,
-            "column": 16
+            "column": 16,
+            "program": "assignment_unknown.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 19,
-          "column": 1
+          "column": 1,
+          "program": "assignment_unknown.ts"
         },
         "end": {
           "line": 19,
-          "column": 17
+          "column": 17,
+          "program": "assignment_unknown.ts"
         }
       }
     },
@@ -127,11 +143,13 @@
           "loc": {
             "start": {
               "line": 20,
-              "column": 1
+              "column": 1,
+              "program": "assignment_unknown.ts"
             },
             "end": {
               "line": 20,
-              "column": 9
+              "column": 9,
+              "program": "assignment_unknown.ts"
             }
           }
         },
@@ -141,33 +159,39 @@
           "loc": {
             "start": {
               "line": 20,
-              "column": 12
+              "column": 12,
+              "program": "assignment_unknown.ts"
             },
             "end": {
               "line": 20,
-              "column": 16
+              "column": 16,
+              "program": "assignment_unknown.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 20,
-            "column": 1
+            "column": 1,
+            "program": "assignment_unknown.ts"
           },
           "end": {
             "line": 20,
-            "column": 16
+            "column": 16,
+            "program": "assignment_unknown.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "assignment_unknown.ts"
         },
         "end": {
           "line": 20,
-          "column": 17
+          "column": 17,
+          "program": "assignment_unknown.ts"
         }
       }
     },
@@ -183,11 +207,13 @@
           "loc": {
             "start": {
               "line": 21,
-              "column": 1
+              "column": 1,
+              "program": "assignment_unknown.ts"
             },
             "end": {
               "line": 21,
-              "column": 9
+              "column": 9,
+              "program": "assignment_unknown.ts"
             }
           }
         },
@@ -197,33 +223,39 @@
           "loc": {
             "start": {
               "line": 21,
-              "column": 12
+              "column": 12,
+              "program": "assignment_unknown.ts"
             },
             "end": {
               "line": 21,
-              "column": 14
+              "column": 14,
+              "program": "assignment_unknown.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 21,
-            "column": 1
+            "column": 1,
+            "program": "assignment_unknown.ts"
           },
           "end": {
             "line": 21,
-            "column": 14
+            "column": 14,
+            "program": "assignment_unknown.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 21,
-          "column": 1
+          "column": 1,
+          "program": "assignment_unknown.ts"
         },
         "end": {
           "line": 21,
-          "column": 15
+          "column": 15,
+          "program": "assignment_unknown.ts"
         }
       }
     },
@@ -239,11 +271,13 @@
           "loc": {
             "start": {
               "line": 22,
-              "column": 1
+              "column": 1,
+              "program": "assignment_unknown.ts"
             },
             "end": {
               "line": 22,
-              "column": 9
+              "column": 9,
+              "program": "assignment_unknown.ts"
             }
           }
         },
@@ -253,33 +287,39 @@
           "loc": {
             "start": {
               "line": 22,
-              "column": 12
+              "column": 12,
+              "program": "assignment_unknown.ts"
             },
             "end": {
               "line": 22,
-              "column": 25
+              "column": 25,
+              "program": "assignment_unknown.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 22,
-            "column": 1
+            "column": 1,
+            "program": "assignment_unknown.ts"
           },
           "end": {
             "line": 22,
-            "column": 25
+            "column": 25,
+            "program": "assignment_unknown.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 22,
-          "column": 1
+          "column": 1,
+          "program": "assignment_unknown.ts"
         },
         "end": {
           "line": 22,
-          "column": 26
+          "column": 26,
+          "program": "assignment_unknown.ts"
         }
       }
     },
@@ -295,11 +335,13 @@
           "loc": {
             "start": {
               "line": 23,
-              "column": 1
+              "column": 1,
+              "program": "assignment_unknown.ts"
             },
             "end": {
               "line": 23,
-              "column": 9
+              "column": 9,
+              "program": "assignment_unknown.ts"
             }
           }
         },
@@ -309,33 +351,39 @@
           "loc": {
             "start": {
               "line": 23,
-              "column": 12
+              "column": 12,
+              "program": "assignment_unknown.ts"
             },
             "end": {
               "line": 23,
-              "column": 14
+              "column": 14,
+              "program": "assignment_unknown.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 23,
-            "column": 1
+            "column": 1,
+            "program": "assignment_unknown.ts"
           },
           "end": {
             "line": 23,
-            "column": 14
+            "column": 14,
+            "program": "assignment_unknown.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 23,
-          "column": 1
+          "column": 1,
+          "program": "assignment_unknown.ts"
         },
         "end": {
           "line": 23,
-          "column": 15
+          "column": 15,
+          "program": "assignment_unknown.ts"
         }
       }
     },
@@ -351,11 +399,13 @@
           "loc": {
             "start": {
               "line": 24,
-              "column": 1
+              "column": 1,
+              "program": "assignment_unknown.ts"
             },
             "end": {
               "line": 24,
-              "column": 9
+              "column": 9,
+              "program": "assignment_unknown.ts"
             }
           }
         },
@@ -365,33 +415,39 @@
           "loc": {
             "start": {
               "line": 24,
-              "column": 12
+              "column": 12,
+              "program": "assignment_unknown.ts"
             },
             "end": {
               "line": 24,
-              "column": 14
+              "column": 14,
+              "program": "assignment_unknown.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 24,
-            "column": 1
+            "column": 1,
+            "program": "assignment_unknown.ts"
           },
           "end": {
             "line": 24,
-            "column": 14
+            "column": 14,
+            "program": "assignment_unknown.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 24,
-          "column": 1
+          "column": 1,
+          "program": "assignment_unknown.ts"
         },
         "end": {
           "line": 24,
-          "column": 15
+          "column": 15,
+          "program": "assignment_unknown.ts"
         }
       }
     }
@@ -399,11 +455,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "assignment_unknown.ts"
     },
     "end": {
       "line": 25,
-      "column": 1
+      "column": 1,
+      "program": "assignment_unknown.ts"
     }
   }
 }

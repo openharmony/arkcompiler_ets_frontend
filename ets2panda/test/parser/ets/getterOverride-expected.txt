@@ -15,11 +15,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 9
+                  "column": 9,
+                  "program": "getterOverride.sts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 15
+                  "column": 15,
+                  "program": "getterOverride.sts"
                 }
               }
             },
@@ -39,11 +41,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 9
+                      "column": 9,
+                      "program": "getterOverride.sts"
                     },
                     "end": {
                       "line": 18,
-                      "column": 15
+                      "column": 15,
+                      "program": "getterOverride.sts"
                     }
                   }
                 },
@@ -62,55 +66,65 @@
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 19
+                          "column": 19,
+                          "program": "getterOverride.sts"
                         },
                         "end": {
                           "line": 18,
-                          "column": 25
+                          "column": 25,
+                          "program": "getterOverride.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 19
+                        "column": 19,
+                        "program": "getterOverride.sts"
                       },
                       "end": {
                         "line": 18,
-                        "column": 26
+                        "column": 26,
+                        "program": "getterOverride.sts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 19
+                      "column": 19,
+                      "program": "getterOverride.sts"
                     },
                     "end": {
                       "line": 18,
-                      "column": 26
+                      "column": 26,
+                      "program": "getterOverride.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 15
+                    "column": 15,
+                    "program": "getterOverride.sts"
                   },
                   "end": {
                     "line": 18,
-                    "column": 26
+                    "column": 26,
+                    "program": "getterOverride.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 15
+                  "column": 15,
+                  "program": "getterOverride.sts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 26
+                  "column": 26,
+                  "program": "getterOverride.sts"
                 }
               }
             },
@@ -119,11 +133,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 1
+                "column": 1,
+                "program": "getterOverride.sts"
               },
               "end": {
                 "line": 18,
-                "column": 15
+                "column": 15,
+                "program": "getterOverride.sts"
               }
             }
           }
@@ -131,11 +147,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 17
+            "column": 17,
+            "program": "getterOverride.sts"
           },
           "end": {
             "line": 19,
-            "column": 2
+            "column": 2,
+            "program": "getterOverride.sts"
           }
         }
       },
@@ -146,11 +164,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 11
+            "column": 11,
+            "program": "getterOverride.sts"
           },
           "end": {
             "line": 17,
-            "column": 16
+            "column": 16,
+            "program": "getterOverride.sts"
           }
         }
       },
@@ -158,11 +178,13 @@
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "getterOverride.sts"
         },
         "end": {
           "line": 21,
-          "column": 6
+          "column": 6,
+          "program": "getterOverride.sts"
         }
       }
     },
@@ -176,11 +198,13 @@
           "loc": {
             "start": {
               "line": 21,
-              "column": 7
+              "column": 7,
+              "program": "getterOverride.sts"
             },
             "end": {
               "line": 21,
-              "column": 8
+              "column": 8,
+              "program": "getterOverride.sts"
             }
           }
         },
@@ -199,44 +223,52 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 20
+                      "column": 20,
+                      "program": "getterOverride.sts"
                     },
                     "end": {
                       "line": 21,
-                      "column": 25
+                      "column": 25,
+                      "program": "getterOverride.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 20
+                    "column": 20,
+                    "program": "getterOverride.sts"
                   },
                   "end": {
                     "line": 21,
-                    "column": 27
+                    "column": 27,
+                    "program": "getterOverride.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 20
+                  "column": 20,
+                  "program": "getterOverride.sts"
                 },
                 "end": {
                   "line": 21,
-                  "column": 27
+                  "column": 27,
+                  "program": "getterOverride.sts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 21,
-                "column": 20
+                "column": 20,
+                "program": "getterOverride.sts"
               },
               "end": {
                 "line": 21,
-                "column": 27
+                "column": 27,
+                "program": "getterOverride.sts"
               }
             }
           }
@@ -251,11 +283,13 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 18
+                  "column": 18,
+                  "program": "getterOverride.sts"
                 },
                 "end": {
                   "line": 22,
-                  "column": 24
+                  "column": 24,
+                  "program": "getterOverride.sts"
                 }
               }
             },
@@ -275,11 +309,13 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 18
+                      "column": 18,
+                      "program": "getterOverride.sts"
                     },
                     "end": {
                       "line": 22,
-                      "column": 24
+                      "column": 24,
+                      "program": "getterOverride.sts"
                     }
                   }
                 },
@@ -298,33 +334,39 @@
                       "loc": {
                         "start": {
                           "line": 22,
-                          "column": 28
+                          "column": 28,
+                          "program": "getterOverride.sts"
                         },
                         "end": {
                           "line": 22,
-                          "column": 34
+                          "column": 34,
+                          "program": "getterOverride.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 22,
-                        "column": 28
+                        "column": 28,
+                        "program": "getterOverride.sts"
                       },
                       "end": {
                         "line": 22,
-                        "column": 36
+                        "column": 36,
+                        "program": "getterOverride.sts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 28
+                      "column": 28,
+                      "program": "getterOverride.sts"
                     },
                     "end": {
                       "line": 22,
-                      "column": 36
+                      "column": 36,
+                      "program": "getterOverride.sts"
                     }
                   }
                 },
@@ -339,22 +381,26 @@
                         "loc": {
                           "start": {
                             "line": 23,
-                            "column": 16
+                            "column": 16,
+                            "program": "getterOverride.sts"
                           },
                           "end": {
                             "line": 23,
-                            "column": 17
+                            "column": 17,
+                            "program": "getterOverride.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 23,
-                          "column": 9
+                          "column": 9,
+                          "program": "getterOverride.sts"
                         },
                         "end": {
                           "line": 23,
-                          "column": 18
+                          "column": 18,
+                          "program": "getterOverride.sts"
                         }
                       }
                     }
@@ -362,33 +408,39 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 35
+                      "column": 35,
+                      "program": "getterOverride.sts"
                     },
                     "end": {
                       "line": 24,
-                      "column": 6
+                      "column": 6,
+                      "program": "getterOverride.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 24
+                    "column": 24,
+                    "program": "getterOverride.sts"
                   },
                   "end": {
                     "line": 24,
-                    "column": 6
+                    "column": 6,
+                    "program": "getterOverride.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 24
+                  "column": 24,
+                  "program": "getterOverride.sts"
                 },
                 "end": {
                   "line": 24,
-                  "column": 6
+                  "column": 6,
+                  "program": "getterOverride.sts"
                 }
               }
             },
@@ -397,11 +449,13 @@
             "loc": {
               "start": {
                 "line": 22,
-                "column": 24
+                "column": 24,
+                "program": "getterOverride.sts"
               },
               "end": {
                 "line": 24,
-                "column": 6
+                "column": 6,
+                "program": "getterOverride.sts"
               }
             }
           },
@@ -413,12 +467,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 21,
+                  "column": 27,
+                  "program": "getterOverride.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 21,
+                  "column": 27,
+                  "program": "getterOverride.sts"
                 }
               }
             },
@@ -436,12 +492,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 21,
+                      "column": 27,
+                      "program": "getterOverride.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 21,
+                      "column": 27,
+                      "program": "getterOverride.sts"
                     }
                   }
                 },
@@ -454,34 +512,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 21,
+                      "column": 27,
+                      "program": "getterOverride.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 21,
+                      "column": 27,
+                      "program": "getterOverride.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 21,
+                    "column": 27,
+                    "program": "getterOverride.sts"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 21,
+                    "column": 27,
+                    "program": "getterOverride.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 21,
+                  "column": 27,
+                  "program": "getterOverride.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 21,
+                  "column": 27,
+                  "program": "getterOverride.sts"
                 }
               }
             },
@@ -489,12 +553,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 25,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 25,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -502,22 +568,26 @@
         "loc": {
           "start": {
             "line": 21,
-            "column": 26
+            "column": 26,
+            "program": "getterOverride.sts"
           },
           "end": {
             "line": 25,
-            "column": 2
+            "column": 2,
+            "program": "getterOverride.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 21,
-          "column": 1
+          "column": 1,
+          "program": "getterOverride.sts"
         },
         "end": {
           "line": 25,
-          "column": 2
+          "column": 2,
+          "program": "getterOverride.sts"
         }
       }
     },
@@ -531,11 +601,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "getterOverride.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "getterOverride.sts"
             }
           }
         },
@@ -551,11 +623,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -575,11 +649,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -593,33 +669,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -628,11 +710,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "getterOverride.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "getterOverride.sts"
               }
             }
           },
@@ -645,11 +729,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -669,11 +755,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -687,33 +775,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -722,11 +816,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "getterOverride.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "getterOverride.sts"
               }
             }
           }
@@ -734,22 +830,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "getterOverride.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "getterOverride.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "getterOverride.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "getterOverride.sts"
         }
       }
     }
@@ -757,11 +857,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "getterOverride.sts"
     },
     "end": {
       "line": 25,
-      "column": 2
+      "column": 2,
+      "program": "getterOverride.sts"
     }
   }
 }

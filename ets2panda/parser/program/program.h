@@ -62,6 +62,8 @@ public:
     {
     }
 
+    ~Program();
+
     void SetKind(ScriptKind kind)
     {
         kind_ = kind;
@@ -69,8 +71,6 @@ public:
 
     NO_COPY_SEMANTIC(Program);
     DEFAULT_MOVE_SEMANTIC(Program);
-
-    ~Program() = default;
 
     ArenaAllocator *Allocator() const
     {
@@ -120,6 +120,11 @@ public:
     util::StringView FileName() const
     {
         return sourceFile_.GetFileName();
+    }
+
+    util::StringView FileNameWithExtension() const
+    {
+        return sourceFile_.GetFileNameWithExtension();
     }
 
     util::StringView AbsoluteName() const
@@ -266,6 +271,19 @@ public:
     void AddNodeToETSNolintCollection(const ir::AstNode *node, const std::set<ETSWarnings> &warningsCollection);
     bool NodeContainsETSNolint(const ir::AstNode *node, ETSWarnings warning);
 
+    // The name "IsDied", because correct value of canary is a necessary condition for the life of "Program", but
+    // not sufficient
+    bool IsDied() const
+    {
+        // You can't add one method to ignore list of es2panda_lib generation,
+        // so in release mode method is exist, return "false" and is not used anywhere.
+#ifndef NDEBUG
+        return poisonValue_ != POISON_VALUE;
+#else
+        return false;
+#endif
+    }
+
 private:
     struct ModuleInfo {          // NOLINT(cppcoreguidelines-pro-type-member-init)
         ModuleInfo() = default;  // NOLINT(cppcoreguidelines-pro-type-member-init)
@@ -295,6 +313,11 @@ private:
     ModuleInfo moduleInfo_;
     bool isASTchecked_ {};
     lexer::SourcePosition packageStartPosition_ {};
+
+#ifndef NDEBUG
+    const static uint32_t POISON_VALUE {0x12346789};
+    uint32_t poisonValue_ {POISON_VALUE};
+#endif
 };
 }  // namespace ark::es2panda::parser
 

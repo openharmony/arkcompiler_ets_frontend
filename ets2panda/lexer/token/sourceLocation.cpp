@@ -78,7 +78,7 @@ SourceLocation LineIndex::GetLocation(SourcePosition pos) const noexcept
 
     // It can occur during stdlib parsing where entries does not uploaded
     if (line > entries_.size()) {
-        return SourceLocation(line + 1, col + 1);
+        return SourceLocation(line + 1, col + 1, pos.Program());
     }
 
     if (line == entries_.size()) {
@@ -98,7 +98,7 @@ SourceLocation LineIndex::GetLocation(SourcePosition pos) const noexcept
         col += range.cnt;
     }
 
-    return SourceLocation(line + 1, col + 1);
+    return SourceLocation(line + 1, col + 1, pos.Program());
 }
 
 size_t LineIndex::GetOffset(SourceLocation loc) const noexcept
@@ -128,9 +128,25 @@ size_t LineIndex::GetOffset(SourceLocation loc) const noexcept
     return offset;
 }
 
-SourceLocation SourcePosition::ToLocation(const parser::Program *program) const
+SourceLocation SourcePosition::ToLocation() const
 {
-    return lexer::LineIndex(program->SourceCode()).GetLocation(*this);
+    return lexer::LineIndex(Program()->SourceCode()).GetLocation(*this);
+}
+
+const parser::Program *SourcePosition::Program() const
+{
+    if (program_) {
+        ES2PANDA_ASSERT(!program_->IsDied());
+    }
+    return program_;
+}
+
+const parser::Program *SourceLocation::Program() const
+{
+    if (program_) {
+        ES2PANDA_ASSERT(!program_->IsDied());
+    }
+    return program_;
 }
 
 }  // namespace ark::es2panda::lexer

@@ -679,7 +679,8 @@ extern "C" void *AllocMemory(es2panda_Context *context, size_t numberOfElements,
 extern "C" es2panda_SourcePosition *CreateSourcePosition(es2panda_Context *context, size_t index, size_t line)
 {
     auto *allocator = reinterpret_cast<Context *>(context)->allocator;
-    return reinterpret_cast<es2panda_SourcePosition *>(allocator->New<lexer::SourcePosition>(index, line));
+    return reinterpret_cast<es2panda_SourcePosition *>(
+        allocator->New<lexer::SourcePosition>(index, line, reinterpret_cast<Context *>(context)->parserProgram));
 }
 
 extern "C" es2panda_SourceRange *CreateSourceRange(es2panda_Context *context, es2panda_SourcePosition *start,

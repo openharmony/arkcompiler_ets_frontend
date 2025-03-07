@@ -545,7 +545,7 @@ void ParserImpl::ValidateParenthesizedExpression(ir::Expression *lhsExpression)
 ir::Expression *ParserImpl::ParsePrefixAssertionExpression()
 {
     LogUnexpectedToken(lexer_->GetToken());
-    return AllocBrokenExpression();
+    return AllocBrokenExpression(Lexer()->GetToken().Loc());
 }
 
 ir::Expression *ParserImpl::ParseAssignmentExpressionHelper()
@@ -735,8 +735,8 @@ ir::TemplateLiteral *ParserImpl::ParseTemplateLiteral()
         const auto templateStr = lexer_->ScanTemplateString();
         if (templateStr.validSequence) {
             auto *const element = AllocNode<ir::TemplateElement>(templateStr.str.View(), cooked);
-            element->SetRange({lexer::SourcePosition {startPos.Iterator().Index(), startPos.Line()},
-                               lexer::SourcePosition {templateStr.end, lexer_->Line()}});
+            element->SetRange({lexer::SourcePosition {startPos.Iterator().Index(), startPos.Line(), GetProgram()},
+                               lexer::SourcePosition {templateStr.end, lexer_->Line(), GetProgram()}});
             quasis.push_back(element);
         }
 
@@ -999,14 +999,14 @@ ir::Expression *ParserImpl::ParsePrimaryExpressionWithLiterals(ExpressionParseFl
             return ParseStringLiteral();
         default:
             LogUnexpectedToken(lexer_->GetToken());
-            return AllocBrokenExpression();
+            return AllocBrokenExpression(Lexer()->GetToken().Loc());
     }
 }
 
 ir::Expression *ParserImpl::ParseHashMaskOperator()
 {
     if (!ValidatePrivateIdentifier()) {
-        return AllocBrokenExpression();
+        return AllocBrokenExpression(Lexer()->GetToken().Loc());
     }
 
     auto *privateIdent = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
@@ -1027,7 +1027,7 @@ ir::Expression *ParserImpl::ParseClassExpression()
     ir::ClassDefinition *classDefinition = ParseClassDefinition(ir::ClassDefinitionModifiers::ID_REQUIRED);
     if (classDefinition == nullptr) {  // Error processing.
         // Error is logged inside ParseClassDefinition
-        return AllocBrokenExpression();
+        return AllocBrokenExpression(startLoc);
     }
 
     auto *classExpr = AllocNode<ir::ClassExpression>(classDefinition);
@@ -1784,7 +1784,7 @@ ir::Expression *ParserImpl::ParsePatternElement(ExpressionParseFlags flags, bool
         }
         default: {
             LogError(diagnostic::UNEXPECTED_TOKEN);
-            returnNode = AllocBrokenExpression();
+            returnNode = AllocBrokenExpression(Lexer()->GetToken().Loc());
         }
     }
 
@@ -2030,9 +2030,10 @@ ir::Expression *ParserImpl::ParsePropertyKey(ExpressionParseFlags flags)
             return key;
         }
         default: {
+            const auto &rangeToken = Lexer()->GetToken().Loc();
             LogError(diagnostic::UNEXPECTED_TOKEN);
             lexer_->NextToken();
-            return AllocBrokenExpression();
+            return AllocBrokenExpression(rangeToken);
         }
     }
 }

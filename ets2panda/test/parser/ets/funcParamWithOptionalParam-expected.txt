@@ -15,11 +15,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 5
+                  "column": 5,
+                  "program": "funcParamWithOptionalParam.sts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 8
+                  "column": 8,
+                  "program": "funcParamWithOptionalParam.sts"
                 }
               }
             },
@@ -39,11 +41,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 5
+                      "column": 5,
+                      "program": "funcParamWithOptionalParam.sts"
                     },
                     "end": {
                       "line": 17,
-                      "column": 8
+                      "column": 8,
+                      "program": "funcParamWithOptionalParam.sts"
                     }
                   }
                 },
@@ -69,11 +73,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 23
+                                    "column": 23,
+                                    "program": "funcParamWithOptionalParam.sts"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 26
+                                    "column": 26,
+                                    "program": "funcParamWithOptionalParam.sts"
                                   }
                                 }
                               },
@@ -81,22 +87,26 @@
                               "loc": {
                                 "start": {
                                   "line": 17,
-                                  "column": 15
+                                  "column": 15,
+                                  "program": "funcParamWithOptionalParam.sts"
                                 },
                                 "end": {
                                   "line": 17,
-                                  "column": 26
+                                  "column": 26,
+                                  "program": "funcParamWithOptionalParam.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 15
+                                "column": 15,
+                                "program": "funcParamWithOptionalParam.sts"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 26
+                                "column": 26,
+                                "program": "funcParamWithOptionalParam.sts"
                               }
                             }
                           }
@@ -106,22 +116,26 @@
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 31
+                              "column": 31,
+                              "program": "funcParamWithOptionalParam.sts"
                             },
                             "end": {
                               "line": 17,
-                              "column": 34
+                              "column": 34,
+                              "program": "funcParamWithOptionalParam.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 14
+                            "column": 14,
+                            "program": "funcParamWithOptionalParam.sts"
                           },
                           "end": {
                             "line": 17,
-                            "column": 34
+                            "column": 34,
+                            "program": "funcParamWithOptionalParam.sts"
                           }
                         }
                       },
@@ -129,22 +143,26 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 9
+                          "column": 9,
+                          "program": "funcParamWithOptionalParam.sts"
                         },
                         "end": {
                           "line": 17,
-                          "column": 34
+                          "column": 34,
+                          "program": "funcParamWithOptionalParam.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 17,
-                        "column": 9
+                        "column": 9,
+                        "program": "funcParamWithOptionalParam.sts"
                       },
                       "end": {
                         "line": 17,
-                        "column": 34
+                        "column": 34,
+                        "program": "funcParamWithOptionalParam.sts"
                       }
                     }
                   }
@@ -154,33 +172,39 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 37
+                      "column": 37,
+                      "program": "funcParamWithOptionalParam.sts"
                     },
                     "end": {
                       "line": 17,
-                      "column": 41
+                      "column": 41,
+                      "program": "funcParamWithOptionalParam.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 8
+                    "column": 8,
+                    "program": "funcParamWithOptionalParam.sts"
                   },
                   "end": {
                     "line": 17,
-                    "column": 41
+                    "column": 41,
+                    "program": "funcParamWithOptionalParam.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 8
+                  "column": 8,
+                  "program": "funcParamWithOptionalParam.sts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 41
+                  "column": 41,
+                  "program": "funcParamWithOptionalParam.sts"
                 }
               }
             },
@@ -189,11 +213,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "funcParamWithOptionalParam.sts"
               },
               "end": {
                 "line": 17,
-                "column": 41
+                "column": 41,
+                "program": "funcParamWithOptionalParam.sts"
               }
             }
           }
@@ -201,11 +227,13 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 13
+            "column": 13,
+            "program": "funcParamWithOptionalParam.sts"
           },
           "end": {
             "line": 18,
-            "column": 2
+            "column": 2,
+            "program": "funcParamWithOptionalParam.sts"
           }
         }
       },
@@ -216,11 +244,13 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 11
+            "column": 11,
+            "program": "funcParamWithOptionalParam.sts"
           },
           "end": {
             "line": 16,
-            "column": 12
+            "column": 12,
+            "program": "funcParamWithOptionalParam.sts"
           }
         }
       },
@@ -228,11 +258,13 @@
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "funcParamWithOptionalParam.sts"
         },
         "end": {
           "line": 19,
-          "column": 1
+          "column": 1,
+          "program": "funcParamWithOptionalParam.sts"
         }
       }
     },
@@ -246,11 +278,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "funcParamWithOptionalParam.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "funcParamWithOptionalParam.sts"
             }
           }
         },
@@ -266,11 +300,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -290,11 +326,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -308,33 +346,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -343,11 +387,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "funcParamWithOptionalParam.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "funcParamWithOptionalParam.sts"
               }
             }
           },
@@ -360,11 +406,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -384,11 +432,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -402,33 +452,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -437,11 +493,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "funcParamWithOptionalParam.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "funcParamWithOptionalParam.sts"
               }
             }
           }
@@ -449,22 +507,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "funcParamWithOptionalParam.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "funcParamWithOptionalParam.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "funcParamWithOptionalParam.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "funcParamWithOptionalParam.sts"
         }
       }
     }
@@ -472,11 +534,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "funcParamWithOptionalParam.sts"
     },
     "end": {
       "line": 19,
-      "column": 1
+      "column": 1,
+      "program": "funcParamWithOptionalParam.sts"
     }
   }
 }

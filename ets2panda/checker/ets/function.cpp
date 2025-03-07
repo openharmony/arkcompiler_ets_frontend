@@ -1527,7 +1527,7 @@ Signature *ETSChecker::GetSignatureFromMethodDefinition(const ir::MethodDefiniti
     if (methodDef->TsType()->IsTypeError()) {
         return nullptr;
     }
-    ES2PANDA_ASSERT3(methodDef->TsType() && methodDef->TsType()->IsETSFunctionType(), nullptr, methodDef->Start());
+    ES2PANDA_ASSERT3(methodDef->TsType() && methodDef->TsType()->IsETSFunctionType(), methodDef->Start());
     for (auto *it : methodDef->TsType()->AsETSFunctionType()->CallSignatures()) {
         if (it->Function() == methodDef->Function()) {
             return it;
@@ -1678,7 +1678,7 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
     // is parametrized or not to use a proper subtyping check. To be replaced with IsETSPrimitiveType after #19701.
     auto const hasPrimitiveReturnType = [](Signature *s) {
         bool origIsRef = s->Function()->Signature()->ReturnType()->IsETSReferenceType();
-        ES2PANDA_ASSERT3(origIsRef == s->ReturnType()->IsETSReferenceType(), nullptr, s->Function()->Start());
+        ES2PANDA_ASSERT3(origIsRef == s->ReturnType()->IsETSReferenceType(), s->Function()->Start());
         return !origIsRef;
     };
     // - If R1 is a primitive type then R2 is identical to R1.
@@ -1702,7 +1702,7 @@ std::string ETSChecker::GetAsyncImplName(const util::StringView &name)
 std::string ETSChecker::GetAsyncImplName(ir::MethodDefinition *asyncMethod)
 {
     ir::Identifier *asyncName = asyncMethod->Function()->Id();
-    ES2PANDA_ASSERT3(asyncName != nullptr, nullptr, asyncMethod->Start());
+    ES2PANDA_ASSERT3(asyncName != nullptr, asyncMethod->Start());
     return GetAsyncImplName(asyncName->Name());
 }
 

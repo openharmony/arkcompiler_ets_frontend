@@ -25,7 +25,7 @@ using AstNodePtr = ir::AstNode *;
 
 void ConstantExpressionLowering::LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const
 {
-    context_->diagnosticEngine->LogSyntaxError(program_, errorMessage, pos);
+    context_->diagnosticEngine->LogSyntaxError(errorMessage, pos);
 }
 
 static bool IsSupportedLiteralForNumeric(ir::Literal *const node)

@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 7
+              "column": 7,
+              "program": "test_class_method.ts"
             },
             "end": {
               "line": 17,
-              "column": 8
+              "column": 8,
+              "program": "test_class_method.ts"
             }
           }
         },
@@ -29,12 +31,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 17,
+                "column": 10,
+                "program": "test_class_method.ts"
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 17,
+                "column": 10,
+                "program": "test_class_method.ts"
               }
             }
           },
@@ -56,34 +60,40 @@
                 "statements": [],
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 17,
+                    "column": 10,
+                    "program": "test_class_method.ts"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 17,
+                    "column": 10,
+                    "program": "test_class_method.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 17,
+                  "column": 10,
+                  "program": "test_class_method.ts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 17,
+                  "column": 10,
+                  "program": "test_class_method.ts"
                 }
               }
             },
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 17,
+                "column": 10,
+                "program": "test_class_method.ts"
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 17,
+                "column": 10,
+                "program": "test_class_method.ts"
               }
             }
           },
@@ -91,12 +101,14 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 19,
-              "column": 2
+              "line": 1,
+              "column": 1,
+              "program": null
             },
             "end": {
-              "line": 19,
-              "column": 2
+              "line": 1,
+              "column": 1,
+              "program": null
             }
           }
         },
@@ -110,11 +122,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 5
+                  "column": 5,
+                  "program": "test_class_method.ts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 8
+                  "column": 8,
+                  "program": "test_class_method.ts"
                 }
               }
             },
@@ -143,11 +157,13 @@
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 12
+                            "column": 12,
+                            "program": "test_class_method.ts"
                           },
                           "end": {
                             "line": 18,
-                            "column": 15
+                            "column": 15,
+                            "program": "test_class_method.ts"
                           }
                         }
                       },
@@ -155,11 +171,13 @@
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 12
+                          "column": 12,
+                          "program": "test_class_method.ts"
                         },
                         "end": {
                           "line": 18,
-                          "column": 15
+                          "column": 15,
+                          "program": "test_class_method.ts"
                         }
                       }
                     },
@@ -167,11 +185,13 @@
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 9
+                        "column": 9,
+                        "program": "test_class_method.ts"
                       },
                       "end": {
                         "line": 18,
-                        "column": 10
+                        "column": 10,
+                        "program": "test_class_method.ts"
                       }
                     }
                   }
@@ -185,11 +205,13 @@
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 18
+                        "column": 18,
+                        "program": "test_class_method.ts"
                       },
                       "end": {
                         "line": 18,
-                        "column": 21
+                        "column": 21,
+                        "program": "test_class_method.ts"
                       }
                     }
                   },
@@ -197,11 +219,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 18
+                      "column": 18,
+                      "program": "test_class_method.ts"
                     },
                     "end": {
                       "line": 18,
-                      "column": 21
+                      "column": 21,
+                      "program": "test_class_method.ts"
                     }
                   }
                 },
@@ -211,33 +235,39 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 22
+                      "column": 22,
+                      "program": "test_class_method.ts"
                     },
                     "end": {
                       "line": 18,
-                      "column": 25
+                      "column": 25,
+                      "program": "test_class_method.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 8
+                    "column": 8,
+                    "program": "test_class_method.ts"
                   },
                   "end": {
                     "line": 18,
-                    "column": 25
+                    "column": 25,
+                    "program": "test_class_method.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 8
+                  "column": 8,
+                  "program": "test_class_method.ts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 25
+                  "column": 25,
+                  "program": "test_class_method.ts"
                 }
               }
             },
@@ -246,11 +276,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 5
+                "column": 5,
+                "program": "test_class_method.ts"
               },
               "end": {
                 "line": 18,
-                "column": 25
+                "column": 25,
+                "program": "test_class_method.ts"
               }
             }
           }
@@ -258,22 +290,26 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 9
+            "column": 9,
+            "program": "test_class_method.ts"
           },
           "end": {
-            "line": 19,
-            "column": 2
+            "line": 20,
+            "column": 1,
+            "program": "test_class_method.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test_class_method.ts"
         },
         "end": {
-          "line": 19,
-          "column": 2
+          "line": 20,
+          "column": 1,
+          "program": "test_class_method.ts"
         }
       }
     }
@@ -281,11 +317,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test_class_method.ts"
     },
     "end": {
       "line": 20,
-      "column": 1
+      "column": 1,
+      "program": "test_class_method.ts"
     }
   }
 }

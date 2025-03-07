@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 7
+              "column": 7,
+              "program": "this_equality.sts"
             },
             "end": {
               "line": 16,
-              "column": 13
+              "column": 13,
+              "program": "this_equality.sts"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 5
+                  "column": 5,
+                  "program": "this_equality.sts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 9
+                  "column": 9,
+                  "program": "this_equality.sts"
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 5
+                      "column": 5,
+                      "program": "this_equality.sts"
                     },
                     "end": {
                       "line": 17,
-                      "column": 9
+                      "column": 9,
+                      "program": "this_equality.sts"
                     }
                   }
                 },
@@ -72,11 +78,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 13
+                      "column": 13,
+                      "program": "this_equality.sts"
                     },
                     "end": {
                       "line": 17,
-                      "column": 20
+                      "column": 20,
+                      "program": "this_equality.sts"
                     }
                   }
                 },
@@ -93,11 +101,13 @@
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 13
+                              "column": 13,
+                              "program": "this_equality.sts"
                             },
                             "end": {
                               "line": 18,
-                              "column": 17
+                              "column": 17,
+                              "program": "this_equality.sts"
                             }
                           }
                         },
@@ -106,22 +116,26 @@
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 22
+                              "column": 22,
+                              "program": "this_equality.sts"
                             },
                             "end": {
                               "line": 18,
-                              "column": 26
+                              "column": 26,
+                              "program": "this_equality.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 13
+                            "column": 13,
+                            "program": "this_equality.sts"
                           },
                           "end": {
                             "line": 18,
-                            "column": 26
+                            "column": 26,
+                            "program": "this_equality.sts"
                           }
                         }
                       },
@@ -136,22 +150,26 @@
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 20
+                                  "column": 20,
+                                  "program": "this_equality.sts"
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 24
+                                  "column": 24,
+                                  "program": "this_equality.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 13
+                                "column": 13,
+                                "program": "this_equality.sts"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 25
+                                "column": 25,
+                                "program": "this_equality.sts"
                               }
                             }
                           }
@@ -159,11 +177,13 @@
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 28
+                            "column": 28,
+                            "program": "this_equality.sts"
                           },
                           "end": {
                             "line": 20,
-                            "column": 10
+                            "column": 10,
+                            "program": "this_equality.sts"
                           }
                         }
                       },
@@ -171,11 +191,13 @@
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 9
+                          "column": 9,
+                          "program": "this_equality.sts"
                         },
                         "end": {
                           "line": 20,
-                          "column": 10
+                          "column": 10,
+                          "program": "this_equality.sts"
                         }
                       }
                     },
@@ -187,22 +209,26 @@
                         "loc": {
                           "start": {
                             "line": 21,
-                            "column": 16
+                            "column": 16,
+                            "program": "this_equality.sts"
                           },
                           "end": {
                             "line": 21,
-                            "column": 21
+                            "column": 21,
+                            "program": "this_equality.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 9
+                          "column": 9,
+                          "program": "this_equality.sts"
                         },
                         "end": {
                           "line": 21,
-                          "column": 22
+                          "column": 22,
+                          "program": "this_equality.sts"
                         }
                       }
                     }
@@ -210,33 +236,39 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 21
+                      "column": 21,
+                      "program": "this_equality.sts"
                     },
                     "end": {
                       "line": 22,
-                      "column": 6
+                      "column": 6,
+                      "program": "this_equality.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 9
+                    "column": 9,
+                    "program": "this_equality.sts"
                   },
                   "end": {
                     "line": 22,
-                    "column": 6
+                    "column": 6,
+                    "program": "this_equality.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 9
+                  "column": 9,
+                  "program": "this_equality.sts"
                 },
                 "end": {
                   "line": 22,
-                  "column": 6
+                  "column": 6,
+                  "program": "this_equality.sts"
                 }
               }
             },
@@ -245,11 +277,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "this_equality.sts"
               },
               "end": {
                 "line": 22,
-                "column": 6
+                "column": 6,
+                "program": "this_equality.sts"
               }
             }
           },
@@ -261,12 +295,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 15,
+                  "program": "this_equality.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 15,
+                  "program": "this_equality.sts"
                 }
               }
             },
@@ -284,12 +320,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 15,
+                      "program": "this_equality.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 15,
+                      "program": "this_equality.sts"
                     }
                   }
                 },
@@ -302,34 +340,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 15,
+                      "program": "this_equality.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 15,
+                      "program": "this_equality.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 15,
+                    "program": "this_equality.sts"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 15,
+                    "program": "this_equality.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 15,
+                  "program": "this_equality.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 15,
+                  "program": "this_equality.sts"
                 }
               }
             },
@@ -337,12 +381,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 23,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 23,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -350,22 +396,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 14
+            "column": 14,
+            "program": "this_equality.sts"
           },
           "end": {
-            "line": 23,
-            "column": 2
+            "line": 24,
+            "column": 1,
+            "program": "this_equality.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "this_equality.sts"
         },
         "end": {
-          "line": 23,
-          "column": 2
+          "line": 24,
+          "column": 1,
+          "program": "this_equality.sts"
         }
       }
     },
@@ -379,11 +429,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "this_equality.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "this_equality.sts"
             }
           }
         },
@@ -399,11 +451,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -423,11 +477,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -441,33 +497,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -476,11 +538,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "this_equality.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "this_equality.sts"
               }
             }
           },
@@ -493,11 +557,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -517,11 +583,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -535,33 +603,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -570,11 +644,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "this_equality.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "this_equality.sts"
               }
             }
           }
@@ -582,22 +658,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "this_equality.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "this_equality.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "this_equality.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "this_equality.sts"
         }
       }
     }
@@ -605,11 +685,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "this_equality.sts"
     },
     "end": {
       "line": 24,
-      "column": 1
+      "column": 1,
+      "program": "this_equality.sts"
     }
   }
 }

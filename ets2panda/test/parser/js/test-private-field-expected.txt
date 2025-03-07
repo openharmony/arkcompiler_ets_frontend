@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 7
+              "column": 7,
+              "program": "test-private-field.js"
             },
             "end": {
               "line": 16,
-              "column": 8
+              "column": 8,
+              "program": "test-private-field.js"
             }
           }
         },
@@ -29,12 +31,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 16,
+                "column": 10,
+                "program": "test-private-field.js"
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 16,
+                "column": 10,
+                "program": "test-private-field.js"
               }
             }
           },
@@ -56,34 +60,40 @@
                 "statements": [],
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "test-private-field.js"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "test-private-field.js"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "test-private-field.js"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "test-private-field.js"
                 }
               }
             },
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 16,
+                "column": 10,
+                "program": "test-private-field.js"
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 16,
+                "column": 10,
+                "program": "test-private-field.js"
               }
             }
           },
@@ -91,12 +101,14 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 31,
-              "column": 2
+              "line": 1,
+              "column": 1,
+              "program": null
             },
             "end": {
-              "line": 31,
-              "column": 2
+              "line": 1,
+              "column": 1,
+              "program": null
             }
           }
         },
@@ -110,11 +122,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-private-field.js"
                 },
                 "end": {
                   "line": 17,
-                  "column": 7
+                  "column": 7,
+                  "program": "test-private-field.js"
                 }
               }
             },
@@ -128,11 +142,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "test-private-field.js"
               },
               "end": {
                 "line": 17,
-                "column": 7
+                "column": 7,
+                "program": "test-private-field.js"
               }
             }
           },
@@ -145,11 +161,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 13
+                  "column": 13,
+                  "program": "test-private-field.js"
                 },
                 "end": {
                   "line": 18,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-private-field.js"
                 }
               }
             },
@@ -172,33 +190,39 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 17
+                      "column": 17,
+                      "program": "test-private-field.js"
                     },
                     "end": {
                       "line": 18,
-                      "column": 20
+                      "column": 20,
+                      "program": "test-private-field.js"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 14
+                    "column": 14,
+                    "program": "test-private-field.js"
                   },
                   "end": {
                     "line": 18,
-                    "column": 20
+                    "column": 20,
+                    "program": "test-private-field.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-private-field.js"
                 },
                 "end": {
                   "line": 18,
-                  "column": 20
+                  "column": 20,
+                  "program": "test-private-field.js"
                 }
               }
             },
@@ -207,11 +231,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 5
+                "column": 5,
+                "program": "test-private-field.js"
               },
               "end": {
                 "line": 18,
-                "column": 20
+                "column": 20,
+                "program": "test-private-field.js"
               }
             }
           },
@@ -224,11 +250,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 13
+                  "column": 13,
+                  "program": "test-private-field.js"
                 },
                 "end": {
                   "line": 19,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-private-field.js"
                 }
               }
             },
@@ -251,33 +279,39 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 17
+                      "column": 17,
+                      "program": "test-private-field.js"
                     },
                     "end": {
                       "line": 19,
-                      "column": 20
+                      "column": 20,
+                      "program": "test-private-field.js"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 14
+                    "column": 14,
+                    "program": "test-private-field.js"
                   },
                   "end": {
                     "line": 19,
-                    "column": 20
+                    "column": 20,
+                    "program": "test-private-field.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-private-field.js"
                 },
                 "end": {
                   "line": 19,
-                  "column": 20
+                  "column": 20,
+                  "program": "test-private-field.js"
                 }
               }
             },
@@ -286,11 +320,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 5
+                "column": 5,
+                "program": "test-private-field.js"
               },
               "end": {
                 "line": 19,
-                "column": 20
+                "column": 20,
+                "program": "test-private-field.js"
               }
             }
           },
@@ -303,11 +339,13 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 17
+                  "column": 17,
+                  "program": "test-private-field.js"
                 },
                 "end": {
                   "line": 20,
-                  "column": 18
+                  "column": 18,
+                  "program": "test-private-field.js"
                 }
               }
             },
@@ -330,33 +368,39 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 21
+                      "column": 21,
+                      "program": "test-private-field.js"
                     },
                     "end": {
                       "line": 20,
-                      "column": 24
+                      "column": 24,
+                      "program": "test-private-field.js"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 18
+                    "column": 18,
+                    "program": "test-private-field.js"
                   },
                   "end": {
                     "line": 20,
-                    "column": 24
+                    "column": 24,
+                    "program": "test-private-field.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 18
+                  "column": 18,
+                  "program": "test-private-field.js"
                 },
                 "end": {
                   "line": 20,
-                  "column": 24
+                  "column": 24,
+                  "program": "test-private-field.js"
                 }
               }
             },
@@ -365,11 +409,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 5
+                "column": 5,
+                "program": "test-private-field.js"
               },
               "end": {
                 "line": 20,
-                "column": 24
+                "column": 24,
+                "program": "test-private-field.js"
               }
             }
           },
@@ -382,11 +428,13 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 17
+                  "column": 17,
+                  "program": "test-private-field.js"
                 },
                 "end": {
                   "line": 21,
-                  "column": 18
+                  "column": 18,
+                  "program": "test-private-field.js"
                 }
               }
             },
@@ -410,11 +458,13 @@
                     "loc": {
                       "start": {
                         "line": 21,
-                        "column": 19
+                        "column": 19,
+                        "program": "test-private-field.js"
                       },
                       "end": {
                         "line": 21,
-                        "column": 20
+                        "column": 20,
+                        "program": "test-private-field.js"
                       }
                     }
                   }
@@ -425,33 +475,39 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 22
+                      "column": 22,
+                      "program": "test-private-field.js"
                     },
                     "end": {
                       "line": 21,
-                      "column": 25
+                      "column": 25,
+                      "program": "test-private-field.js"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 18
+                    "column": 18,
+                    "program": "test-private-field.js"
                   },
                   "end": {
                     "line": 21,
-                    "column": 25
+                    "column": 25,
+                    "program": "test-private-field.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 18
+                  "column": 18,
+                  "program": "test-private-field.js"
                 },
                 "end": {
                   "line": 21,
-                  "column": 25
+                  "column": 25,
+                  "program": "test-private-field.js"
                 }
               }
             },
@@ -460,11 +516,13 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 5
+                "column": 5,
+                "program": "test-private-field.js"
               },
               "end": {
                 "line": 21,
-                "column": 25
+                "column": 25,
+                "program": "test-private-field.js"
               }
             }
           },
@@ -477,11 +535,13 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-private-field.js"
                 },
                 "end": {
                   "line": 22,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-private-field.js"
                 }
               }
             },
@@ -499,12 +559,14 @@
                     "decorators": [],
                     "loc": {
                       "start": {
-                        "line": 1,
-                        "column": 1
+                        "line": 22,
+                        "column": 16,
+                        "program": "test-private-field.js"
                       },
                       "end": {
-                        "line": 1,
-                        "column": 1
+                        "line": 22,
+                        "column": 16,
+                        "program": "test-private-field.js"
                       }
                     }
                   },
@@ -526,34 +588,40 @@
                         "statements": [],
                         "loc": {
                           "start": {
-                            "line": 1,
-                            "column": 1
+                            "line": 22,
+                            "column": 16,
+                            "program": "test-private-field.js"
                           },
                           "end": {
-                            "line": 1,
-                            "column": 1
+                            "line": 22,
+                            "column": 16,
+                            "program": "test-private-field.js"
                           }
                         }
                       },
                       "loc": {
                         "start": {
-                          "line": 1,
-                          "column": 1
+                          "line": 22,
+                          "column": 16,
+                          "program": "test-private-field.js"
                         },
                         "end": {
-                          "line": 1,
-                          "column": 1
+                          "line": 22,
+                          "column": 16,
+                          "program": "test-private-field.js"
                         }
                       }
                     },
                     "loc": {
                       "start": {
-                        "line": 1,
-                        "column": 1
+                        "line": 22,
+                        "column": 16,
+                        "program": "test-private-field.js"
                       },
                       "end": {
-                        "line": 1,
-                        "column": 1
+                        "line": 22,
+                        "column": 16,
+                        "program": "test-private-field.js"
                       }
                     }
                   },
@@ -561,12 +629,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 30,
-                      "column": 6
+                      "line": 1,
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
-                      "line": 30,
-                      "column": 6
+                      "line": 1,
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -580,11 +650,13 @@
                       "loc": {
                         "start": {
                           "line": 23,
-                          "column": 9
+                          "column": 9,
+                          "program": "test-private-field.js"
                         },
                         "end": {
                           "line": 23,
-                          "column": 10
+                          "column": 10,
+                          "program": "test-private-field.js"
                         }
                       }
                     },
@@ -616,11 +688,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 1,
-                                      "column": 1
+                                      "column": 1,
+                                      "program": null
                                     },
                                     "end": {
                                       "line": 1,
-                                      "column": 1
+                                      "column": 1,
+                                      "program": null
                                     }
                                   }
                                 },
@@ -629,22 +703,26 @@
                                   "loc": {
                                     "start": {
                                       "line": 24,
-                                      "column": 23
+                                      "column": 23,
+                                      "program": "test-private-field.js"
                                     },
                                     "end": {
                                       "line": 24,
-                                      "column": 27
+                                      "column": 27,
+                                      "program": "test-private-field.js"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 1,
-                                    "column": 1
+                                    "column": 1,
+                                    "program": null
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 27
+                                    "column": 27,
+                                    "program": "test-private-field.js"
                                   }
                                 }
                               },
@@ -663,11 +741,13 @@
                                           "loc": {
                                             "start": {
                                               "line": 25,
-                                              "column": 17
+                                              "column": 17,
+                                              "program": "test-private-field.js"
                                             },
                                             "end": {
                                               "line": 25,
-                                              "column": 21
+                                              "column": 21,
+                                              "program": "test-private-field.js"
                                             }
                                           }
                                         },
@@ -678,11 +758,13 @@
                                           "loc": {
                                             "start": {
                                               "line": 25,
-                                              "column": 22
+                                              "column": 22,
+                                              "program": "test-private-field.js"
                                             },
                                             "end": {
                                               "line": 25,
-                                              "column": 24
+                                              "column": 24,
+                                              "program": "test-private-field.js"
                                             }
                                           }
                                         },
@@ -691,11 +773,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 25,
-                                            "column": 17
+                                            "column": 17,
+                                            "program": "test-private-field.js"
                                           },
                                           "end": {
                                             "line": 25,
-                                            "column": 24
+                                            "column": 24,
+                                            "program": "test-private-field.js"
                                           }
                                         }
                                       },
@@ -705,33 +789,39 @@
                                         "loc": {
                                           "start": {
                                             "line": 25,
-                                            "column": 27
+                                            "column": 27,
+                                            "program": "test-private-field.js"
                                           },
                                           "end": {
                                             "line": 25,
-                                            "column": 29
+                                            "column": 29,
+                                            "program": "test-private-field.js"
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
                                           "line": 25,
-                                          "column": 17
+                                          "column": 17,
+                                          "program": "test-private-field.js"
                                         },
                                         "end": {
                                           "line": 25,
-                                          "column": 29
+                                          "column": 29,
+                                          "program": "test-private-field.js"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 25,
-                                        "column": 17
+                                        "column": 17,
+                                        "program": "test-private-field.js"
                                       },
                                       "end": {
                                         "line": 25,
-                                        "column": 30
+                                        "column": 30,
+                                        "program": "test-private-field.js"
                                       }
                                     }
                                   },
@@ -746,11 +836,13 @@
                                           "loc": {
                                             "start": {
                                               "line": 26,
-                                              "column": 17
+                                              "column": 17,
+                                              "program": "test-private-field.js"
                                             },
                                             "end": {
                                               "line": 26,
-                                              "column": 21
+                                              "column": 21,
+                                              "program": "test-private-field.js"
                                             }
                                           }
                                         },
@@ -761,11 +853,13 @@
                                           "loc": {
                                             "start": {
                                               "line": 26,
-                                              "column": 22
+                                              "column": 22,
+                                              "program": "test-private-field.js"
                                             },
                                             "end": {
                                               "line": 26,
-                                              "column": 24
+                                              "column": 24,
+                                              "program": "test-private-field.js"
                                             }
                                           }
                                         },
@@ -774,11 +868,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 26,
-                                            "column": 17
+                                            "column": 17,
+                                            "program": "test-private-field.js"
                                           },
                                           "end": {
                                             "line": 26,
-                                            "column": 24
+                                            "column": 24,
+                                            "program": "test-private-field.js"
                                           }
                                         }
                                       },
@@ -787,22 +883,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 26,
-                                          "column": 17
+                                          "column": 17,
+                                          "program": "test-private-field.js"
                                         },
                                         "end": {
                                           "line": 26,
-                                          "column": 26
+                                          "column": 26,
+                                          "program": "test-private-field.js"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 26,
-                                        "column": 17
+                                        "column": 17,
+                                        "program": "test-private-field.js"
                                       },
                                       "end": {
                                         "line": 26,
-                                        "column": 27
+                                        "column": 27,
+                                        "program": "test-private-field.js"
                                       }
                                     }
                                   }
@@ -810,11 +910,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 24,
-                                    "column": 29
+                                    "column": 29,
+                                    "program": "test-private-field.js"
                                   },
                                   "end": {
                                     "line": 27,
-                                    "column": 14
+                                    "column": 14,
+                                    "program": "test-private-field.js"
                                   }
                                 }
                               },
@@ -822,11 +924,13 @@
                               "loc": {
                                 "start": {
                                   "line": 24,
-                                  "column": 13
+                                  "column": 13,
+                                  "program": "test-private-field.js"
                                 },
                                 "end": {
                                   "line": 27,
-                                  "column": 14
+                                  "column": 14,
+                                  "program": "test-private-field.js"
                                 }
                               }
                             }
@@ -834,33 +938,39 @@
                           "loc": {
                             "start": {
                               "line": 23,
-                              "column": 13
+                              "column": 13,
+                              "program": "test-private-field.js"
                             },
                             "end": {
                               "line": 28,
-                              "column": 10
+                              "column": 10,
+                              "program": "test-private-field.js"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 23,
-                            "column": 10
+                            "column": 10,
+                            "program": "test-private-field.js"
                           },
                           "end": {
                             "line": 28,
-                            "column": 10
+                            "column": 10,
+                            "program": "test-private-field.js"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 23,
-                          "column": 10
+                          "column": 10,
+                          "program": "test-private-field.js"
                         },
                         "end": {
                           "line": 28,
-                          "column": 10
+                          "column": 10,
+                          "program": "test-private-field.js"
                         }
                       }
                     },
@@ -869,11 +979,13 @@
                     "loc": {
                       "start": {
                         "line": 23,
-                        "column": 9
+                        "column": 9,
+                        "program": "test-private-field.js"
                       },
                       "end": {
                         "line": 28,
-                        "column": 10
+                        "column": 10,
+                        "program": "test-private-field.js"
                       }
                     }
                   },
@@ -886,11 +998,13 @@
                       "loc": {
                         "start": {
                           "line": 29,
-                          "column": 10
+                          "column": 10,
+                          "program": "test-private-field.js"
                         },
                         "end": {
                           "line": 29,
-                          "column": 11
+                          "column": 11,
+                          "program": "test-private-field.js"
                         }
                       }
                     },
@@ -913,33 +1027,39 @@
                           "loc": {
                             "start": {
                               "line": 29,
-                              "column": 14
+                              "column": 14,
+                              "program": "test-private-field.js"
                             },
                             "end": {
                               "line": 29,
-                              "column": 17
+                              "column": 17,
+                              "program": "test-private-field.js"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 29,
-                            "column": 11
+                            "column": 11,
+                            "program": "test-private-field.js"
                           },
                           "end": {
                             "line": 29,
-                            "column": 17
+                            "column": 17,
+                            "program": "test-private-field.js"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 29,
-                          "column": 11
+                          "column": 11,
+                          "program": "test-private-field.js"
                         },
                         "end": {
                           "line": 29,
-                          "column": 17
+                          "column": 17,
+                          "program": "test-private-field.js"
                         }
                       }
                     },
@@ -948,11 +1068,13 @@
                     "loc": {
                       "start": {
                         "line": 29,
-                        "column": 9
+                        "column": 9,
+                        "program": "test-private-field.js"
                       },
                       "end": {
                         "line": 29,
-                        "column": 17
+                        "column": 17,
+                        "program": "test-private-field.js"
                       }
                     }
                   }
@@ -960,22 +1082,26 @@
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 15
+                    "column": 15,
+                    "program": "test-private-field.js"
                   },
                   "end": {
-                    "line": 30,
-                    "column": 6
+                    "line": 31,
+                    "column": 2,
+                    "program": "test-private-field.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 9
+                  "column": 9,
+                  "program": "test-private-field.js"
                 },
                 "end": {
-                  "line": 30,
-                  "column": 6
+                  "line": 31,
+                  "column": 2,
+                  "program": "test-private-field.js"
                 }
               }
             },
@@ -989,11 +1115,13 @@
             "loc": {
               "start": {
                 "line": 22,
-                "column": 5
+                "column": 5,
+                "program": "test-private-field.js"
               },
               "end": {
-                "line": 30,
-                "column": 6
+                "line": 31,
+                "column": 2,
+                "program": "test-private-field.js"
               }
             }
           }
@@ -1001,22 +1129,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 9
+            "column": 9,
+            "program": "test-private-field.js"
           },
           "end": {
-            "line": 31,
-            "column": 2
+            "line": 32,
+            "column": 1,
+            "program": "test-private-field.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "test-private-field.js"
         },
         "end": {
-          "line": 31,
-          "column": 2
+          "line": 32,
+          "column": 1,
+          "program": "test-private-field.js"
         }
       }
     }
@@ -1024,11 +1156,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-private-field.js"
     },
     "end": {
       "line": 32,
-      "column": 1
+      "column": 1,
+      "program": "test-private-field.js"
     }
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -58,15 +58,15 @@ enum MissingLeftBrace
 }
 
 
-/* @@? 1:1 Error SyntaxError: Invalid enum initialization value */
-/* @@? 1:1 Error SyntaxError: Only constant expression is expected in the field */
 /* @@? 16:5 Error SyntaxError: Variable declaration expected. */
 /* @@? 22:22 Error SyntaxError: Unexpected token, expected '{'. */
 /* @@? 32:1 Error SyntaxError: Unexpected token ']'. */
 /* @@? 32:1 Error SyntaxError: Unexpected token, expected ',' or '}'. */
-/* @@? 37:10 Error SyntaxError: Only constant expression is expected in the field */
 /* @@? 37:10 Error SyntaxError: Invalid enum initialization value */
+/* @@? 37:10 Error SyntaxError: Only constant expression is expected in the field */
 /* @@? 38:1 Error SyntaxError: Unexpected token '}'. */
+/* @@? 43:10 Error SyntaxError: Invalid enum initialization value */
+/* @@? 43:10 Error SyntaxError: Only constant expression is expected in the field */
 /* @@? 43:10 Error SyntaxError: Unexpected token '?'. */
 /* @@? 44:1 Error SyntaxError: Unexpected token '}'. */
 /* @@? 44:1 Error SyntaxError: Unexpected token, expected ':'. */

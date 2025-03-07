@@ -27,11 +27,13 @@ class SameName {
       "loc": {
         "start": {
           "line": 18,
-          "column": 34
+          "column": 34,
+          "program": "same_name_fields.sts"
         },
         "end": {
           "line": 18,
-          "column": 35
+          "column": 35,
+          "program": "same_name_fields.sts"
         }
       }
     },
@@ -41,11 +43,13 @@ class SameName {
       "loc": {
         "start": {
           "line": 18,
-          "column": 43
+          "column": 43,
+          "program": "same_name_fields.sts"
         },
         "end": {
           "line": 18,
-          "column": 45
+          "column": 45,
+          "program": "same_name_fields.sts"
         }
       }
     },
@@ -66,11 +70,13 @@ class SameName {
       "loc": {
         "start": {
           "line": 17,
-          "column": 38
+          "column": 38,
+          "program": "same_name_fields.sts"
         },
         "end": {
           "line": 17,
-          "column": 39
+          "column": 39,
+          "program": "same_name_fields.sts"
         }
       }
     },
@@ -80,11 +86,13 @@ class SameName {
       "loc": {
         "start": {
           "line": 17,
-          "column": 47
+          "column": 47,
+          "program": "same_name_fields.sts"
         },
         "end": {
           "line": 17,
-          "column": 49
+          "column": 49,
+          "program": "same_name_fields.sts"
         }
       }
     },
@@ -109,12 +117,14 @@ class DiffTypes {
       "decorators": [],
       "loc": {
         "start": {
-          "line": 100,
-          "column": 23
+          "line": 108,
+          "column": 23,
+          "program": "same_name_fields.sts"
         },
         "end": {
-          "line": 100,
-          "column": 24
+          "line": 108,
+          "column": 24,
+          "program": "same_name_fields.sts"
         }
       }
     },
@@ -123,12 +133,14 @@ class DiffTypes {
       "value": 7,
       "loc": {
         "start": {
-          "line": 100,
-          "column": 32
+          "line": 108,
+          "column": 32,
+          "program": "same_name_fields.sts"
         },
         "end": {
-          "line": 100,
-          "column": 33
+          "line": 108,
+          "column": 33,
+          "program": "same_name_fields.sts"
         }
       }
     },
@@ -148,12 +160,14 @@ class DiffTypes {
       "decorators": [],
       "loc": {
         "start": {
-          "line": 101,
-          "column": 30
+          "line": 109,
+          "column": 30,
+          "program": "same_name_fields.sts"
         },
         "end": {
-          "line": 101,
-          "column": 31
+          "line": 109,
+          "column": 31,
+          "program": "same_name_fields.sts"
         }
       }
     },
@@ -162,12 +176,14 @@ class DiffTypes {
       "value": "a",
       "loc": {
         "start": {
-          "line": 101,
-          "column": 42
+          "line": 109,
+          "column": 42,
+          "program": "same_name_fields.sts"
         },
         "end": {
-          "line": 101,
-          "column": 45
+          "line": 109,
+          "column": 45,
+          "program": "same_name_fields.sts"
         }
       }
     },

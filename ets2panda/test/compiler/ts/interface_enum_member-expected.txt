@@ -10,11 +10,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 6
+            "column": 6,
+            "program": "interface_enum_member.ts"
           },
           "end": {
             "line": 17,
-            "column": 7
+            "column": 7,
+            "program": "interface_enum_member.ts"
           }
         }
       },
@@ -28,22 +30,26 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 5
+                "column": 5,
+                "program": "interface_enum_member.ts"
               },
               "end": {
                 "line": 18,
-                "column": 6
+                "column": 6,
+                "program": "interface_enum_member.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 19,
-              "column": 1
+              "column": 1,
+              "program": "interface_enum_member.ts"
             },
             "end": {
               "line": 19,
-              "column": 2
+              "column": 2,
+              "program": "interface_enum_member.ts"
             }
           }
         }
@@ -53,11 +59,13 @@
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "interface_enum_member.ts"
         },
         "end": {
           "line": 19,
-          "column": 2
+          "column": 2,
+          "program": "interface_enum_member.ts"
         }
       }
     },
@@ -78,11 +86,13 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 5
+                  "column": 5,
+                  "program": "interface_enum_member.ts"
                 },
                 "end": {
                   "line": 22,
-                  "column": 6
+                  "column": 6,
+                  "program": "interface_enum_member.ts"
                 }
               }
             },
@@ -97,11 +107,13 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 8
+                      "column": 8,
+                      "program": "interface_enum_member.ts"
                     },
                     "end": {
                       "line": 22,
-                      "column": 9
+                      "column": 9,
+                      "program": "interface_enum_member.ts"
                     }
                   }
                 },
@@ -112,44 +124,52 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 10
+                      "column": 10,
+                      "program": "interface_enum_member.ts"
                     },
                     "end": {
                       "line": 22,
-                      "column": 11
+                      "column": 11,
+                      "program": "interface_enum_member.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 8
+                    "column": 8,
+                    "program": "interface_enum_member.ts"
                   },
                   "end": {
                     "line": 23,
-                    "column": 2
+                    "column": 2,
+                    "program": "interface_enum_member.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 8
+                  "column": 8,
+                  "program": "interface_enum_member.ts"
                 },
                 "end": {
                   "line": 23,
-                  "column": 2
+                  "column": 2,
+                  "program": "interface_enum_member.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 22,
-                "column": 5
+                "column": 5,
+                "program": "interface_enum_member.ts"
               },
               "end": {
                 "line": 23,
-                "column": 2
+                "column": 2,
+                "program": "interface_enum_member.ts"
               }
             }
           }
@@ -157,11 +177,13 @@
         "loc": {
           "start": {
             "line": 21,
-            "column": 13
+            "column": 13,
+            "program": "interface_enum_member.ts"
           },
           "end": {
             "line": 23,
-            "column": 2
+            "column": 2,
+            "program": "interface_enum_member.ts"
           }
         }
       },
@@ -172,11 +194,13 @@
         "loc": {
           "start": {
             "line": 21,
-            "column": 11
+            "column": 11,
+            "program": "interface_enum_member.ts"
           },
           "end": {
             "line": 21,
-            "column": 12
+            "column": 12,
+            "program": "interface_enum_member.ts"
           }
         }
       },
@@ -184,11 +208,13 @@
       "loc": {
         "start": {
           "line": 21,
-          "column": 1
+          "column": 1,
+          "program": "interface_enum_member.ts"
         },
         "end": {
           "line": 23,
-          "column": 2
+          "column": 2,
+          "program": "interface_enum_member.ts"
         }
       }
     }
@@ -196,11 +222,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "interface_enum_member.ts"
     },
     "end": {
       "line": 24,
-      "column": 1
+      "column": 1,
+      "program": "interface_enum_member.ts"
     }
   }
 }

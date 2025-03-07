@@ -279,7 +279,7 @@ bool ETSParser::ValidateForInStatement()
 ir::Statement *ETSParser::ParseDebuggerStatement()
 {
     LogUnexpectedToken(lexer::TokenType::KEYW_DEBUGGER);
-    return AllocBrokenStatement();
+    return AllocBrokenStatement(Lexer()->GetToken().Loc());
 }
 
 ir::Statement *ETSParser::ParseFunctionStatement(const StatementParsingFlags flags)
@@ -287,7 +287,7 @@ ir::Statement *ETSParser::ParseFunctionStatement(const StatementParsingFlags fla
     ES2PANDA_ASSERT((flags & StatementParsingFlags::GLOBAL) == 0);
     LogError(diagnostic::NESTED_FUNCTIONS_NOT_ALLOWED);
     ParserImpl::ParseFunctionStatement(flags);  // Try to parse function body but skip result.
-    return AllocBrokenStatement();
+    return AllocBrokenStatement(Lexer()->GetToken().Loc());
 }
 
 ir::Statement *ETSParser::ParseAssertStatement()
@@ -362,11 +362,12 @@ ir::Statement *ETSParser::ParseClassStatement([[maybe_unused]] StatementParsingF
 ir::Statement *ETSParser::ParseStructStatement([[maybe_unused]] StatementParsingFlags flags,
                                                ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags modFlags)
 {
-    LogError(diagnostic::ILLEGAL_START_STRUCT, {}, Lexer()->GetToken().Start());
+    const auto &rangeStruct = Lexer()->GetToken().Loc();
+    LogError(diagnostic::ILLEGAL_START_STRUCT, {}, rangeStruct.start);
     ParseClassDeclaration(modifiers | ir::ClassDefinitionModifiers::ID_REQUIRED |
                               ir::ClassDefinitionModifiers::CLASS_DECL | ir::ClassDefinitionModifiers::LOCAL,
                           modFlags);  // Try to parse struct and drop the result.
-    return AllocBrokenStatement();
+    return AllocBrokenStatement(rangeStruct);
 }
 
 }  // namespace ark::es2panda::parser

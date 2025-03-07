@@ -30,7 +30,7 @@ ETSParameterExpression::ETSParameterExpression(AnnotatedExpression *const identO
 
     ASSERT(identOrSpread != nullptr);
     identOrSpread->SetParent(this);
-
+    SetRange(identOrSpread->Range());
     if (identOrSpread->IsIdentifier()) {
         ident_ = identOrSpread->AsIdentifier();
     } else if (identOrSpread->IsRestElement()) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,10 +17,5 @@ package mypackage;
 
 let exist_but_checker_fails_in_file: number = 8;
 let wong_type: string = /* @@ label */9;
-
-// If it's clear that a file belongs to a package, but contains type error, compilation is aborted
-//
-// NOTE (mmartin): error message will always mark the main compiled file, but it's not the correct place
-//                 of the error. Modify this when other error messages will be improved.
 
 /* @@@ label Error TypeError: Type 'int' cannot be assigned to type 'String'  */

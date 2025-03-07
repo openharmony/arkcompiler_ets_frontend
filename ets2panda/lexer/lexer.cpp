@@ -27,6 +27,9 @@ Lexer::Lexer(const parser::ParserContext *parserContext, util::DiagnosticEngine 
       pos_(source_),
       diagnosticEngine_(diagnosticEngine)
 {
+    // It is necessary to set the position of the first token manually, because by default it is filled with an empty
+    // value
+    pos_.token_.loc_.start = SourcePosition {Iterator().Index(), pos_.line_, parserContext_->GetProgram()};
     if (startLexer) {
         SkipWhiteSpaces();
     }
@@ -214,8 +217,8 @@ void Lexer::SkipSingleLineComment()
 
 void Lexer::LogSyntaxError(std::string_view const errorMessage) const
 {
-    diagnosticEngine_.LogSyntaxError(parserContext_->GetProgram(), errorMessage,
-                                     SourcePosition(Iterator().Index(), pos_.line_));
+    diagnosticEngine_.LogSyntaxError(errorMessage,
+                                     SourcePosition(Iterator().Index(), pos_.line_, parserContext_->GetProgram()));
 }
 
 void Lexer::LogUnexpectedToken(lexer::TokenType const tokenType) const
@@ -1246,13 +1249,13 @@ void Lexer::SetTokenStart()
         GetToken().flags_ = TokenFlags::NONE;
     }
 
-    pos_.token_.loc_.start = SourcePosition {Iterator().Index(), pos_.line_};
+    pos_.token_.loc_.start = SourcePosition {Iterator().Index(), pos_.line_, parserContext_->GetProgram()};
     GetToken().keywordType_ = TokenType::EOS;
 }
 
 void Lexer::SetTokenEnd()
 {
-    pos_.token_.loc_.end = SourcePosition {Iterator().Index(), pos_.line_};
+    pos_.token_.loc_.end = SourcePosition {Iterator().Index(), pos_.line_, parserContext_->GetProgram()};
 }
 
 bool Lexer::SkipWhiteSpacesHelperSlash(char32_t *cp)

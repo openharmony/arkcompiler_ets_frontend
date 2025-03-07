@@ -16,5 +16,5 @@
 import * as all from "import_tests/packages/var-duplication";
 
 // Throw error: "a" is defined twice in this package.
-/* @@ label */
-/* @@@ label Error TypeError: Variable 'a' has already been declared.  */
+
+/* @@? subpackage_module_2.sts:19:12 Error TypeError: Variable 'a' has already been declared.  */

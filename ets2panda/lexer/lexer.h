@@ -239,9 +239,9 @@ public:
 
     util::StringView SourceView(size_t begin, size_t end) const;
 
-    std::pair<const parser::Program *, lexer::SourcePosition> GetPositionForDiagnostic() const
+    lexer::SourcePosition GetPositionForDiagnostic() const
     {
-        return {GetProgram(), GetToken().Start()};
+        return GetToken().Start();
     }
 
 protected:

@@ -472,8 +472,7 @@ ir::TypeNode *ETSParser::ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingO
     if (typeAnnotation == nullptr) {
         if (reportError) {
             LogError(diagnostic::INVALID_TYPE);
-            auto typeNode = AllocBrokenType();
-            typeNode->SetRange({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
+            auto typeNode = AllocBrokenType({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
             return typeNode;
         }
         return nullptr;

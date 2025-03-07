@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 7
+              "column": 7,
+              "program": "lambda_infer_type_has_return.sts"
             },
             "end": {
               "line": 16,
-              "column": 8
+              "column": 8,
+              "program": "lambda_infer_type_has_return.sts"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 5
+                  "column": 5,
+                  "program": "lambda_infer_type_has_return.sts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 9
+                  "column": 9,
+                  "program": "lambda_infer_type_has_return.sts"
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 5
+                      "column": 5,
+                      "program": "lambda_infer_type_has_return.sts"
                     },
                     "end": {
                       "line": 17,
-                      "column": 9
+                      "column": 9,
+                      "program": "lambda_infer_type_has_return.sts"
                     }
                   }
                 },
@@ -82,11 +88,13 @@
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 13
+                                "column": 13,
+                                "program": "lambda_infer_type_has_return.sts"
                               },
                               "end": {
                                 "line": 18,
-                                "column": 14
+                                "column": 14,
+                                "program": "lambda_infer_type_has_return.sts"
                               }
                             }
                           },
@@ -121,33 +129,39 @@
                                                 "loc": {
                                                   "start": {
                                                     "line": 19,
-                                                    "column": 20
+                                                    "column": 20,
+                                                    "program": "lambda_infer_type_has_return.sts"
                                                   },
                                                   "end": {
                                                     "line": 19,
-                                                    "column": 21
+                                                    "column": 21,
+                                                    "program": "lambda_infer_type_has_return.sts"
                                                   }
                                                 }
                                               },
                                               "loc": {
                                                 "start": {
                                                   "line": 19,
-                                                  "column": 20
+                                                  "column": 20,
+                                                  "program": "lambda_infer_type_has_return.sts"
                                                 },
                                                 "end": {
                                                   "line": 19,
-                                                  "column": 23
+                                                  "column": 23,
+                                                  "program": "lambda_infer_type_has_return.sts"
                                                 }
                                               }
                                             },
                                             "loc": {
                                               "start": {
                                                 "line": 19,
-                                                "column": 20
+                                                "column": 20,
+                                                "program": "lambda_infer_type_has_return.sts"
                                               },
                                               "end": {
                                                 "line": 19,
-                                                "column": 23
+                                                "column": 23,
+                                                "program": "lambda_infer_type_has_return.sts"
                                               }
                                             }
                                           },
@@ -155,11 +169,13 @@
                                           "loc": {
                                             "start": {
                                               "line": 19,
-                                              "column": 16
+                                              "column": 16,
+                                              "program": "lambda_infer_type_has_return.sts"
                                             },
                                             "end": {
                                               "line": 19,
-                                              "column": 17
+                                              "column": 17,
+                                              "program": "lambda_infer_type_has_return.sts"
                                             }
                                           }
                                         },
@@ -176,33 +192,39 @@
                                                 "loc": {
                                                   "start": {
                                                     "line": 19,
-                                                    "column": 28
+                                                    "column": 28,
+                                                    "program": "lambda_infer_type_has_return.sts"
                                                   },
                                                   "end": {
                                                     "line": 19,
-                                                    "column": 29
+                                                    "column": 29,
+                                                    "program": "lambda_infer_type_has_return.sts"
                                                   }
                                                 }
                                               },
                                               "loc": {
                                                 "start": {
                                                   "line": 19,
-                                                  "column": 28
+                                                  "column": 28,
+                                                  "program": "lambda_infer_type_has_return.sts"
                                                 },
                                                 "end": {
                                                   "line": 19,
-                                                  "column": 30
+                                                  "column": 30,
+                                                  "program": "lambda_infer_type_has_return.sts"
                                                 }
                                               }
                                             },
                                             "loc": {
                                               "start": {
                                                 "line": 19,
-                                                "column": 28
+                                                "column": 28,
+                                                "program": "lambda_infer_type_has_return.sts"
                                               },
                                               "end": {
                                                 "line": 19,
-                                                "column": 30
+                                                "column": 30,
+                                                "program": "lambda_infer_type_has_return.sts"
                                               }
                                             }
                                           },
@@ -210,22 +232,26 @@
                                           "loc": {
                                             "start": {
                                               "line": 19,
-                                              "column": 24
+                                              "column": 24,
+                                              "program": "lambda_infer_type_has_return.sts"
                                             },
                                             "end": {
                                               "line": 20,
-                                              "column": 18
+                                              "column": 18,
+                                              "program": "lambda_infer_type_has_return.sts"
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 19,
-                                            "column": 16
+                                            "column": 16,
+                                            "program": "lambda_infer_type_has_return.sts"
                                           },
                                           "end": {
                                             "line": 20,
-                                            "column": 18
+                                            "column": 18,
+                                            "program": "lambda_infer_type_has_return.sts"
                                           }
                                         }
                                       }
@@ -234,11 +260,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 19,
-                                        "column": 12
+                                        "column": 12,
+                                        "program": "lambda_infer_type_has_return.sts"
                                       },
                                       "end": {
                                         "line": 20,
-                                        "column": 18
+                                        "column": 18,
+                                        "program": "lambda_infer_type_has_return.sts"
                                       }
                                     }
                                   },
@@ -251,22 +279,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 20,
-                                          "column": 19
+                                          "column": 19,
+                                          "program": "lambda_infer_type_has_return.sts"
                                         },
                                         "end": {
                                           "line": 20,
-                                          "column": 20
+                                          "column": 20,
+                                          "program": "lambda_infer_type_has_return.sts"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 20,
-                                        "column": 12
+                                        "column": 12,
+                                        "program": "lambda_infer_type_has_return.sts"
                                       },
                                       "end": {
                                         "line": 20,
-                                        "column": 20
+                                        "column": 20,
+                                        "program": "lambda_infer_type_has_return.sts"
                                       }
                                     }
                                   }
@@ -274,44 +306,52 @@
                                 "loc": {
                                   "start": {
                                     "line": 18,
-                                    "column": 21
+                                    "column": 21,
+                                    "program": "lambda_infer_type_has_return.sts"
                                   },
                                   "end": {
                                     "line": 21,
-                                    "column": 10
+                                    "column": 10,
+                                    "program": "lambda_infer_type_has_return.sts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 18,
-                                  "column": 17
+                                  "column": 17,
+                                  "program": "lambda_infer_type_has_return.sts"
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 10
+                                  "column": 10,
+                                  "program": "lambda_infer_type_has_return.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 17
+                                "column": 17,
+                                "program": "lambda_infer_type_has_return.sts"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 10
+                                "column": 10,
+                                "program": "lambda_infer_type_has_return.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 13
+                              "column": 13,
+                              "program": "lambda_infer_type_has_return.sts"
                             },
                             "end": {
                               "line": 21,
-                              "column": 10
+                              "column": 10,
+                              "program": "lambda_infer_type_has_return.sts"
                             }
                           }
                         }
@@ -320,11 +360,13 @@
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 9
+                          "column": 9,
+                          "program": "lambda_infer_type_has_return.sts"
                         },
                         "end": {
                           "line": 21,
-                          "column": 10
+                          "column": 10,
+                          "program": "lambda_infer_type_has_return.sts"
                         }
                       }
                     },
@@ -350,44 +392,52 @@
                                     "loc": {
                                       "start": {
                                         "line": 22,
-                                        "column": 30
+                                        "column": 30,
+                                        "program": "lambda_infer_type_has_return.sts"
                                       },
                                       "end": {
                                         "line": 22,
-                                        "column": 31
+                                        "column": 31,
+                                        "program": "lambda_infer_type_has_return.sts"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 22,
-                                      "column": 30
+                                      "column": 30,
+                                      "program": "lambda_infer_type_has_return.sts"
                                     },
                                     "end": {
                                       "line": 22,
-                                      "column": 33
+                                      "column": 33,
+                                      "program": "lambda_infer_type_has_return.sts"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 22,
-                                    "column": 30
+                                    "column": 30,
+                                    "program": "lambda_infer_type_has_return.sts"
                                   },
                                   "end": {
                                     "line": 22,
-                                    "column": 33
+                                    "column": 33,
+                                    "program": "lambda_infer_type_has_return.sts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 22,
-                                  "column": 24
+                                  "column": 24,
+                                  "program": "lambda_infer_type_has_return.sts"
                                 },
                                 "end": {
                                   "line": 22,
-                                  "column": 33
+                                  "column": 33,
+                                  "program": "lambda_infer_type_has_return.sts"
                                 }
                               }
                             },
@@ -395,11 +445,13 @@
                             "loc": {
                               "start": {
                                 "line": 22,
-                                "column": 13
+                                "column": 13,
+                                "program": "lambda_infer_type_has_return.sts"
                               },
                               "end": {
                                 "line": 22,
-                                "column": 21
+                                "column": 21,
+                                "program": "lambda_infer_type_has_return.sts"
                               }
                             }
                           },
@@ -410,22 +462,26 @@
                             "loc": {
                               "start": {
                                 "line": 22,
-                                "column": 34
+                                "column": 34,
+                                "program": "lambda_infer_type_has_return.sts"
                               },
                               "end": {
                                 "line": 22,
-                                "column": 35
+                                "column": 35,
+                                "program": "lambda_infer_type_has_return.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 22,
-                              "column": 13
+                              "column": 13,
+                              "program": "lambda_infer_type_has_return.sts"
                             },
                             "end": {
                               "line": 22,
-                              "column": 35
+                              "column": 35,
+                              "program": "lambda_infer_type_has_return.sts"
                             }
                           }
                         }
@@ -434,11 +490,13 @@
                       "loc": {
                         "start": {
                           "line": 22,
-                          "column": 9
+                          "column": 9,
+                          "program": "lambda_infer_type_has_return.sts"
                         },
                         "end": {
                           "line": 22,
-                          "column": 35
+                          "column": 35,
+                          "program": "lambda_infer_type_has_return.sts"
                         }
                       }
                     }
@@ -446,33 +504,39 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 13
+                      "column": 13,
+                      "program": "lambda_infer_type_has_return.sts"
                     },
                     "end": {
                       "line": 23,
-                      "column": 6
+                      "column": 6,
+                      "program": "lambda_infer_type_has_return.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 10
+                    "column": 10,
+                    "program": "lambda_infer_type_has_return.sts"
                   },
                   "end": {
                     "line": 23,
-                    "column": 6
+                    "column": 6,
+                    "program": "lambda_infer_type_has_return.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 10
+                  "column": 10,
+                  "program": "lambda_infer_type_has_return.sts"
                 },
                 "end": {
                   "line": 23,
-                  "column": 6
+                  "column": 6,
+                  "program": "lambda_infer_type_has_return.sts"
                 }
               }
             },
@@ -481,11 +545,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "lambda_infer_type_has_return.sts"
               },
               "end": {
                 "line": 23,
-                "column": 6
+                "column": 6,
+                "program": "lambda_infer_type_has_return.sts"
               }
             }
           },
@@ -497,12 +563,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "lambda_infer_type_has_return.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "lambda_infer_type_has_return.sts"
                 }
               }
             },
@@ -520,12 +588,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "lambda_infer_type_has_return.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "lambda_infer_type_has_return.sts"
                     }
                   }
                 },
@@ -538,34 +608,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "lambda_infer_type_has_return.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "lambda_infer_type_has_return.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "lambda_infer_type_has_return.sts"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "lambda_infer_type_has_return.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "lambda_infer_type_has_return.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "lambda_infer_type_has_return.sts"
                 }
               }
             },
@@ -573,12 +649,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 24,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 24,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -586,22 +664,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 9
+            "column": 9,
+            "program": "lambda_infer_type_has_return.sts"
           },
           "end": {
-            "line": 24,
-            "column": 2
+            "line": 25,
+            "column": 1,
+            "program": "lambda_infer_type_has_return.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "lambda_infer_type_has_return.sts"
         },
         "end": {
-          "line": 24,
-          "column": 2
+          "line": 25,
+          "column": 1,
+          "program": "lambda_infer_type_has_return.sts"
         }
       }
     },
@@ -615,11 +697,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "lambda_infer_type_has_return.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "lambda_infer_type_has_return.sts"
             }
           }
         },
@@ -635,11 +719,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -659,11 +745,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -677,33 +765,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -712,11 +806,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "lambda_infer_type_has_return.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "lambda_infer_type_has_return.sts"
               }
             }
           },
@@ -729,11 +825,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -753,11 +851,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -771,33 +871,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -806,11 +912,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "lambda_infer_type_has_return.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "lambda_infer_type_has_return.sts"
               }
             }
           }
@@ -818,22 +926,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "lambda_infer_type_has_return.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "lambda_infer_type_has_return.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "lambda_infer_type_has_return.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "lambda_infer_type_has_return.sts"
         }
       }
     }
@@ -841,11 +953,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "lambda_infer_type_has_return.sts"
     },
     "end": {
       "line": 25,
-      "column": 1
+      "column": 1,
+      "program": "lambda_infer_type_has_return.sts"
     }
   }
 }

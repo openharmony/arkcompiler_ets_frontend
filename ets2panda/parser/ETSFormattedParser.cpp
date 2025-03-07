@@ -69,8 +69,9 @@ ir::Expression *ETSParser::ParseExpressionFormatPlaceholder()
 {
     if (insertingNodes_.empty()) {
         LogUnexpectedToken(lexer::TokenType::PUNCTUATOR_FORMAT);
+        const auto &rangeToken = Lexer()->GetToken().Loc();
         Lexer()->NextToken();
-        return AllocBrokenType();
+        return AllocBrokenType(rangeToken);
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
@@ -505,12 +506,9 @@ ir::Expression *ETSParser::CreateExpression(std::string_view const sourceCode, E
     auto const isp = InnerSourceParser(this);
     auto const lexer = InitLexer({GetContext().FormattingFileName(), source.View().Utf8()});
 
-    lexer::SourcePosition const startLoc = lexer->GetToken().Start();
     lexer->NextToken();
 
     ir::Expression *returnExpression = ParseExpression(flags);
-    returnExpression->SetRange({startLoc, lexer->GetToken().End()});
-
     return returnExpression;
 }
 

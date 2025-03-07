@@ -31,15 +31,25 @@ class SourceLocation;
 class SourcePosition {
 public:
     explicit SourcePosition() noexcept = default;
-    explicit SourcePosition(size_t i, size_t l) noexcept : index(i), line(l) {}
+    explicit SourcePosition(const parser::Program *prog) noexcept : program_(prog) {}
+    explicit SourcePosition(size_t i, size_t l, const parser::Program *prog) noexcept
+        : index(i), line(l), program_(prog)
+    {
+    }
+
     DEFAULT_COPY_SEMANTIC(SourcePosition);
     DEFAULT_MOVE_SEMANTIC(SourcePosition);
     ~SourcePosition() = default;
-    SourceLocation ToLocation(const parser::Program *program) const;
+    SourceLocation ToLocation() const;
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     size_t index {};
     size_t line {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
+
+    const parser::Program *Program() const;
+
+private:
+    const parser::Program *program_ {};
 };
 
 class SourceRange {
@@ -59,7 +69,9 @@ public:
 class SourceLocation {
 public:
     explicit SourceLocation() noexcept = default;
-    explicit SourceLocation(size_t l, size_t c) noexcept : line(l), col(c) {}
+    explicit SourceLocation(size_t l, size_t c, const parser::Program *prog) noexcept : line(l), col(c), program_(prog)
+    {
+    }
     DEFAULT_COPY_SEMANTIC(SourceLocation);
     DEFAULT_MOVE_SEMANTIC(SourceLocation);
     ~SourceLocation() = default;
@@ -68,6 +80,11 @@ public:
     size_t line {};
     size_t col {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
+
+    const parser::Program *Program() const;
+
+private:
+    const parser::Program *program_ {};
 };
 
 class Range {

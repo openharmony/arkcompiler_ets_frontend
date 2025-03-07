@@ -16,7 +16,7 @@
    let a = 1;
    a/* @@ label */~!/* @@ label1 */;
   }
-/* @@? 1:1 Error TypeError: Bad operand type, the type of the operand must be boolean type. */
 /* @@? 17:19 Error SyntaxError: Unexpected token '~'. */
 /* @@? 17:20 Error TypeError: Bad operand type, the type of the operand must be numeric type. */
 /* @@? 17:36 Error SyntaxError: Unexpected token ';'. */
+/* @@? 17:36 Error TypeError: Bad operand type, the type of the operand must be boolean type. */

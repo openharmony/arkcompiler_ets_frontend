@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 7
+              "column": 7,
+              "program": "arrowFunctionCapture.sts"
             },
             "end": {
               "line": 16,
-              "column": 8
+              "column": 8,
+              "program": "arrowFunctionCapture.sts"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 5
+                  "column": 5,
+                  "program": "arrowFunctionCapture.sts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 8
+                  "column": 8,
+                  "program": "arrowFunctionCapture.sts"
                 }
               }
             },
@@ -55,11 +59,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 5
+                      "column": 5,
+                      "program": "arrowFunctionCapture.sts"
                     },
                     "end": {
                       "line": 17,
-                      "column": 8
+                      "column": 8,
+                      "program": "arrowFunctionCapture.sts"
                     }
                   }
                 },
@@ -72,11 +78,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 12
+                      "column": 12,
+                      "program": "arrowFunctionCapture.sts"
                     },
                     "end": {
                       "line": 17,
-                      "column": 16
+                      "column": 16,
+                      "program": "arrowFunctionCapture.sts"
                     }
                   }
                 },
@@ -86,33 +94,39 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 16
+                      "column": 16,
+                      "program": "arrowFunctionCapture.sts"
                     },
                     "end": {
                       "line": 17,
-                      "column": 18
+                      "column": 18,
+                      "program": "arrowFunctionCapture.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 8
+                    "column": 8,
+                    "program": "arrowFunctionCapture.sts"
                   },
                   "end": {
                     "line": 17,
-                    "column": 18
+                    "column": 18,
+                    "program": "arrowFunctionCapture.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 8
+                  "column": 8,
+                  "program": "arrowFunctionCapture.sts"
                 },
                 "end": {
                   "line": 17,
-                  "column": 18
+                  "column": 18,
+                  "program": "arrowFunctionCapture.sts"
                 }
               }
             },
@@ -121,11 +135,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "arrowFunctionCapture.sts"
               },
               "end": {
                 "line": 17,
-                "column": 18
+                "column": 18,
+                "program": "arrowFunctionCapture.sts"
               }
             }
           },
@@ -138,11 +154,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 5
+                  "column": 5,
+                  "program": "arrowFunctionCapture.sts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 8
+                  "column": 8,
+                  "program": "arrowFunctionCapture.sts"
                 }
               }
             },
@@ -162,11 +180,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 5
+                      "column": 5,
+                      "program": "arrowFunctionCapture.sts"
                     },
                     "end": {
                       "line": 18,
-                      "column": 8
+                      "column": 8,
+                      "program": "arrowFunctionCapture.sts"
                     }
                   }
                 },
@@ -184,11 +204,13 @@
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 13
+                            "column": 13,
+                            "program": "arrowFunctionCapture.sts"
                           },
                           "end": {
                             "line": 18,
-                            "column": 16
+                            "column": 16,
+                            "program": "arrowFunctionCapture.sts"
                           }
                         }
                       },
@@ -196,22 +218,26 @@
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 9
+                          "column": 9,
+                          "program": "arrowFunctionCapture.sts"
                         },
                         "end": {
                           "line": 18,
-                          "column": 16
+                          "column": 16,
+                          "program": "arrowFunctionCapture.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 9
+                        "column": 9,
+                        "program": "arrowFunctionCapture.sts"
                       },
                       "end": {
                         "line": 18,
-                        "column": 16
+                        "column": 16,
+                        "program": "arrowFunctionCapture.sts"
                       }
                     }
                   }
@@ -221,11 +247,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 19
+                      "column": 19,
+                      "program": "arrowFunctionCapture.sts"
                     },
                     "end": {
                       "line": 18,
-                      "column": 23
+                      "column": 23,
+                      "program": "arrowFunctionCapture.sts"
                     }
                   }
                 },
@@ -253,11 +281,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 19,
-                                          "column": 24
+                                          "column": 24,
+                                          "program": "arrowFunctionCapture.sts"
                                         },
                                         "end": {
                                           "line": 19,
-                                          "column": 27
+                                          "column": 27,
+                                          "program": "arrowFunctionCapture.sts"
                                         }
                                       }
                                     },
@@ -265,22 +295,26 @@
                                     "loc": {
                                       "start": {
                                         "line": 19,
-                                        "column": 20
+                                        "column": 20,
+                                        "program": "arrowFunctionCapture.sts"
                                       },
                                       "end": {
                                         "line": 19,
-                                        "column": 27
+                                        "column": 27,
+                                        "program": "arrowFunctionCapture.sts"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 19,
-                                      "column": 20
+                                      "column": 20,
+                                      "program": "arrowFunctionCapture.sts"
                                     },
                                     "end": {
                                       "line": 19,
-                                      "column": 27
+                                      "column": 27,
+                                      "program": "arrowFunctionCapture.sts"
                                     }
                                   }
                                 }
@@ -290,22 +324,26 @@
                                 "loc": {
                                   "start": {
                                     "line": 19,
-                                    "column": 32
+                                    "column": 32,
+                                    "program": "arrowFunctionCapture.sts"
                                   },
                                   "end": {
                                     "line": 19,
-                                    "column": 36
+                                    "column": 36,
+                                    "program": "arrowFunctionCapture.sts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 19
+                                  "column": 19,
+                                  "program": "arrowFunctionCapture.sts"
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 36
+                                  "column": 36,
+                                  "program": "arrowFunctionCapture.sts"
                                 }
                               }
                             },
@@ -313,11 +351,13 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 13
+                                "column": 13,
+                                "program": "arrowFunctionCapture.sts"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 17
+                                "column": 17,
+                                "program": "arrowFunctionCapture.sts"
                               }
                             }
                           },
@@ -340,11 +380,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 19,
-                                          "column": 44
+                                          "column": 44,
+                                          "program": "arrowFunctionCapture.sts"
                                         },
                                         "end": {
                                           "line": 19,
-                                          "column": 47
+                                          "column": 47,
+                                          "program": "arrowFunctionCapture.sts"
                                         }
                                       }
                                     },
@@ -352,22 +394,26 @@
                                     "loc": {
                                       "start": {
                                         "line": 19,
-                                        "column": 40
+                                        "column": 40,
+                                        "program": "arrowFunctionCapture.sts"
                                       },
                                       "end": {
                                         "line": 19,
-                                        "column": 47
+                                        "column": 47,
+                                        "program": "arrowFunctionCapture.sts"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 19,
-                                      "column": 40
+                                      "column": 40,
+                                      "program": "arrowFunctionCapture.sts"
                                     },
                                     "end": {
                                       "line": 19,
-                                      "column": 47
+                                      "column": 47,
+                                      "program": "arrowFunctionCapture.sts"
                                     }
                                   }
                                 }
@@ -377,11 +423,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 19,
-                                    "column": 50
+                                    "column": 50,
+                                    "program": "arrowFunctionCapture.sts"
                                   },
                                   "end": {
                                     "line": 19,
-                                    "column": 54
+                                    "column": 54,
+                                    "program": "arrowFunctionCapture.sts"
                                   }
                                 }
                               },
@@ -397,22 +445,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 20,
-                                          "column": 13
+                                          "column": 13,
+                                          "program": "arrowFunctionCapture.sts"
                                         },
                                         "end": {
                                           "line": 20,
-                                          "column": 15
+                                          "column": 15,
+                                          "program": "arrowFunctionCapture.sts"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 20,
-                                        "column": 13
+                                        "column": 13,
+                                        "program": "arrowFunctionCapture.sts"
                                       },
                                       "end": {
                                         "line": 20,
-                                        "column": 16
+                                        "column": 16,
+                                        "program": "arrowFunctionCapture.sts"
                                       }
                                     }
                                   },
@@ -425,22 +477,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 21,
-                                          "column": 13
+                                          "column": 13,
+                                          "program": "arrowFunctionCapture.sts"
                                         },
                                         "end": {
                                           "line": 21,
-                                          "column": 15
+                                          "column": 15,
+                                          "program": "arrowFunctionCapture.sts"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 21,
-                                        "column": 13
+                                        "column": 13,
+                                        "program": "arrowFunctionCapture.sts"
                                       },
                                       "end": {
                                         "line": 21,
-                                        "column": 16
+                                        "column": 16,
+                                        "program": "arrowFunctionCapture.sts"
                                       }
                                     }
                                   },
@@ -455,11 +511,13 @@
                                           "loc": {
                                             "start": {
                                               "line": 22,
-                                              "column": 13
+                                              "column": 13,
+                                              "program": "arrowFunctionCapture.sts"
                                             },
                                             "end": {
                                               "line": 22,
-                                              "column": 17
+                                              "column": 17,
+                                              "program": "arrowFunctionCapture.sts"
                                             }
                                           }
                                         },
@@ -470,11 +528,13 @@
                                           "loc": {
                                             "start": {
                                               "line": 22,
-                                              "column": 18
+                                              "column": 18,
+                                              "program": "arrowFunctionCapture.sts"
                                             },
                                             "end": {
                                               "line": 22,
-                                              "column": 21
+                                              "column": 21,
+                                              "program": "arrowFunctionCapture.sts"
                                             }
                                           }
                                         },
@@ -483,11 +543,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 22,
-                                            "column": 13
+                                            "column": 13,
+                                            "program": "arrowFunctionCapture.sts"
                                           },
                                           "end": {
                                             "line": 22,
-                                            "column": 21
+                                            "column": 21,
+                                            "program": "arrowFunctionCapture.sts"
                                           }
                                         }
                                       },
@@ -496,22 +558,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 22,
-                                          "column": 13
+                                          "column": 13,
+                                          "program": "arrowFunctionCapture.sts"
                                         },
                                         "end": {
                                           "line": 22,
-                                          "column": 23
+                                          "column": 23,
+                                          "program": "arrowFunctionCapture.sts"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 22,
-                                        "column": 13
+                                        "column": 13,
+                                        "program": "arrowFunctionCapture.sts"
                                       },
                                       "end": {
                                         "line": 22,
-                                        "column": 24
+                                        "column": 24,
+                                        "program": "arrowFunctionCapture.sts"
                                       }
                                     }
                                   }
@@ -519,44 +585,52 @@
                                 "loc": {
                                   "start": {
                                     "line": 19,
-                                    "column": 58
+                                    "column": 58,
+                                    "program": "arrowFunctionCapture.sts"
                                   },
                                   "end": {
                                     "line": 23,
-                                    "column": 10
+                                    "column": 10,
+                                    "program": "arrowFunctionCapture.sts"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 39
+                                  "column": 39,
+                                  "program": "arrowFunctionCapture.sts"
                                 },
                                 "end": {
                                   "line": 23,
-                                  "column": 10
+                                  "column": 10,
+                                  "program": "arrowFunctionCapture.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 39
+                                "column": 39,
+                                "program": "arrowFunctionCapture.sts"
                               },
                               "end": {
                                 "line": 23,
-                                "column": 10
+                                "column": 10,
+                                "program": "arrowFunctionCapture.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 13
+                              "column": 13,
+                              "program": "arrowFunctionCapture.sts"
                             },
                             "end": {
                               "line": 23,
-                              "column": 10
+                              "column": 10,
+                              "program": "arrowFunctionCapture.sts"
                             }
                           }
                         }
@@ -565,11 +639,13 @@
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 9
+                          "column": 9,
+                          "program": "arrowFunctionCapture.sts"
                         },
                         "end": {
                           "line": 23,
-                          "column": 10
+                          "column": 10,
+                          "program": "arrowFunctionCapture.sts"
                         }
                       }
                     },
@@ -584,11 +660,13 @@
                           "loc": {
                             "start": {
                               "line": 25,
-                              "column": 9
+                              "column": 9,
+                              "program": "arrowFunctionCapture.sts"
                             },
                             "end": {
                               "line": 25,
-                              "column": 13
+                              "column": 13,
+                              "program": "arrowFunctionCapture.sts"
                             }
                           }
                         },
@@ -599,11 +677,13 @@
                             "loc": {
                               "start": {
                                 "line": 25,
-                                "column": 14
+                                "column": 14,
+                                "program": "arrowFunctionCapture.sts"
                               },
                               "end": {
                                 "line": 25,
-                                "column": 15
+                                "column": 15,
+                                "program": "arrowFunctionCapture.sts"
                               }
                             }
                           }
@@ -612,22 +692,26 @@
                         "loc": {
                           "start": {
                             "line": 25,
-                            "column": 9
+                            "column": 9,
+                            "program": "arrowFunctionCapture.sts"
                           },
                           "end": {
                             "line": 25,
-                            "column": 16
+                            "column": 16,
+                            "program": "arrowFunctionCapture.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 25,
-                          "column": 9
+                          "column": 9,
+                          "program": "arrowFunctionCapture.sts"
                         },
                         "end": {
                           "line": 25,
-                          "column": 17
+                          "column": 17,
+                          "program": "arrowFunctionCapture.sts"
                         }
                       }
                     }
@@ -635,33 +719,39 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 23
+                      "column": 23,
+                      "program": "arrowFunctionCapture.sts"
                     },
                     "end": {
                       "line": 26,
-                      "column": 6
+                      "column": 6,
+                      "program": "arrowFunctionCapture.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 8
+                    "column": 8,
+                    "program": "arrowFunctionCapture.sts"
                   },
                   "end": {
                     "line": 26,
-                    "column": 6
+                    "column": 6,
+                    "program": "arrowFunctionCapture.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 8
+                  "column": 8,
+                  "program": "arrowFunctionCapture.sts"
                 },
                 "end": {
                   "line": 26,
-                  "column": 6
+                  "column": 6,
+                  "program": "arrowFunctionCapture.sts"
                 }
               }
             },
@@ -670,11 +760,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 5
+                "column": 5,
+                "program": "arrowFunctionCapture.sts"
               },
               "end": {
                 "line": 26,
-                "column": 6
+                "column": 6,
+                "program": "arrowFunctionCapture.sts"
               }
             }
           },
@@ -686,12 +778,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "arrowFunctionCapture.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "arrowFunctionCapture.sts"
                 }
               }
             },
@@ -709,12 +803,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "arrowFunctionCapture.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "arrowFunctionCapture.sts"
                     }
                   }
                 },
@@ -727,34 +823,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "arrowFunctionCapture.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "arrowFunctionCapture.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "arrowFunctionCapture.sts"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "arrowFunctionCapture.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "arrowFunctionCapture.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "arrowFunctionCapture.sts"
                 }
               }
             },
@@ -762,12 +864,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 27,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 27,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -775,22 +879,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 9
+            "column": 9,
+            "program": "arrowFunctionCapture.sts"
           },
           "end": {
-            "line": 27,
-            "column": 2
+            "line": 28,
+            "column": 1,
+            "program": "arrowFunctionCapture.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "arrowFunctionCapture.sts"
         },
         "end": {
-          "line": 27,
-          "column": 2
+          "line": 28,
+          "column": 1,
+          "program": "arrowFunctionCapture.sts"
         }
       }
     },
@@ -804,11 +912,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "arrowFunctionCapture.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "arrowFunctionCapture.sts"
             }
           }
         },
@@ -824,11 +934,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -848,11 +960,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -866,33 +980,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -901,11 +1021,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "arrowFunctionCapture.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "arrowFunctionCapture.sts"
               }
             }
           },
@@ -918,11 +1040,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -942,11 +1066,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -960,33 +1086,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -995,11 +1127,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "arrowFunctionCapture.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "arrowFunctionCapture.sts"
               }
             }
           }
@@ -1007,22 +1141,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "arrowFunctionCapture.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "arrowFunctionCapture.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "arrowFunctionCapture.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "arrowFunctionCapture.sts"
         }
       }
     }
@@ -1030,11 +1168,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "arrowFunctionCapture.sts"
     },
     "end": {
       "line": 28,
-      "column": 1
+      "column": 1,
+      "program": "arrowFunctionCapture.sts"
     }
   }
 }

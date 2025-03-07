@@ -9,11 +9,13 @@
         "loc": {
           "start": {
             "line": 20,
-            "column": 24
+            "column": 24,
+            "program": "instanceof_x_dyndecl.sts"
           },
           "end": {
             "line": 20,
-            "column": 49
+            "column": 49,
+            "program": "instanceof_x_dyndecl.sts"
           }
         }
       },
@@ -27,11 +29,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 10
+                "column": 10,
+                "program": "instanceof_x_dyndecl.sts"
               },
               "end": {
                 "line": 20,
-                "column": 16
+                "column": 16,
+                "program": "instanceof_x_dyndecl.sts"
               }
             }
           },
@@ -42,22 +46,26 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 10
+                "column": 10,
+                "program": "instanceof_x_dyndecl.sts"
               },
               "end": {
                 "line": 20,
-                "column": 16
+                "column": 16,
+                "program": "instanceof_x_dyndecl.sts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 20,
-              "column": 10
+              "column": 10,
+              "program": "instanceof_x_dyndecl.sts"
             },
             "end": {
               "line": 20,
-              "column": 16
+              "column": 16,
+              "program": "instanceof_x_dyndecl.sts"
             }
           }
         }
@@ -65,11 +73,13 @@
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "instanceof_x_dyndecl.sts"
         },
         "end": {
           "line": 20,
-          "column": 49
+          "column": 49,
+          "program": "instanceof_x_dyndecl.sts"
         }
       }
     },
@@ -81,11 +91,13 @@
         "loc": {
           "start": {
             "line": 21,
-            "column": 38
+            "column": 38,
+            "program": "instanceof_x_dyndecl.sts"
           },
           "end": {
             "line": 21,
-            "column": 79
+            "column": 79,
+            "program": "instanceof_x_dyndecl.sts"
           }
         }
       },
@@ -99,11 +111,13 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 10
+                "column": 10,
+                "program": "instanceof_x_dyndecl.sts"
               },
               "end": {
                 "line": 21,
-                "column": 19
+                "column": 19,
+                "program": "instanceof_x_dyndecl.sts"
               }
             }
           },
@@ -114,22 +128,26 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 10
+                "column": 10,
+                "program": "instanceof_x_dyndecl.sts"
               },
               "end": {
                 "line": 21,
-                "column": 19
+                "column": 19,
+                "program": "instanceof_x_dyndecl.sts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 21,
-              "column": 10
+              "column": 10,
+              "program": "instanceof_x_dyndecl.sts"
             },
             "end": {
               "line": 21,
-              "column": 19
+              "column": 19,
+              "program": "instanceof_x_dyndecl.sts"
             }
           }
         },
@@ -142,11 +160,13 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 21
+                "column": 21,
+                "program": "instanceof_x_dyndecl.sts"
               },
               "end": {
                 "line": 21,
-                "column": 30
+                "column": 30,
+                "program": "instanceof_x_dyndecl.sts"
               }
             }
           },
@@ -157,22 +177,26 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 21
+                "column": 21,
+                "program": "instanceof_x_dyndecl.sts"
               },
               "end": {
                 "line": 21,
-                "column": 30
+                "column": 30,
+                "program": "instanceof_x_dyndecl.sts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 21,
-              "column": 21
+              "column": 21,
+              "program": "instanceof_x_dyndecl.sts"
             },
             "end": {
               "line": 21,
-              "column": 30
+              "column": 30,
+              "program": "instanceof_x_dyndecl.sts"
             }
           }
         }
@@ -180,11 +204,13 @@
       "loc": {
         "start": {
           "line": 21,
-          "column": 1
+          "column": 1,
+          "program": "instanceof_x_dyndecl.sts"
         },
         "end": {
           "line": 21,
-          "column": 79
+          "column": 79,
+          "program": "instanceof_x_dyndecl.sts"
         }
       }
     },
@@ -198,11 +224,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "instanceof_x_dyndecl.sts"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "instanceof_x_dyndecl.sts"
             }
           }
         },
@@ -218,11 +246,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -242,11 +272,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -260,33 +292,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -295,11 +333,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_x_dyndecl.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_x_dyndecl.sts"
               }
             }
           },
@@ -312,11 +352,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -336,11 +378,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -354,33 +398,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -389,11 +439,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_x_dyndecl.sts"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_x_dyndecl.sts"
               }
             }
           },
@@ -406,11 +458,13 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 10
+                  "column": 10,
+                  "program": "instanceof_x_dyndecl.sts"
                 },
                 "end": {
                   "line": 25,
-                  "column": 19
+                  "column": 19,
+                  "program": "instanceof_x_dyndecl.sts"
                 }
               }
             },
@@ -430,11 +484,13 @@
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 10
+                      "column": 10,
+                      "program": "instanceof_x_dyndecl.sts"
                     },
                     "end": {
                       "line": 25,
-                      "column": 19
+                      "column": 19,
+                      "program": "instanceof_x_dyndecl.sts"
                     }
                   }
                 },
@@ -458,33 +514,39 @@
                             "loc": {
                               "start": {
                                 "line": 25,
-                                "column": 23
+                                "column": 23,
+                                "program": "instanceof_x_dyndecl.sts"
                               },
                               "end": {
                                 "line": 25,
-                                "column": 29
+                                "column": 29,
+                                "program": "instanceof_x_dyndecl.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 25,
-                              "column": 23
+                              "column": 23,
+                              "program": "instanceof_x_dyndecl.sts"
                             },
                             "end": {
                               "line": 25,
-                              "column": 30
+                              "column": 30,
+                              "program": "instanceof_x_dyndecl.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 25,
-                            "column": 23
+                            "column": 23,
+                            "program": "instanceof_x_dyndecl.sts"
                           },
                           "end": {
                             "line": 25,
-                            "column": 30
+                            "column": 30,
+                            "program": "instanceof_x_dyndecl.sts"
                           }
                         }
                       },
@@ -492,22 +554,26 @@
                       "loc": {
                         "start": {
                           "line": 25,
-                          "column": 20
+                          "column": 20,
+                          "program": "instanceof_x_dyndecl.sts"
                         },
                         "end": {
                           "line": 25,
-                          "column": 30
+                          "column": 30,
+                          "program": "instanceof_x_dyndecl.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 25,
-                        "column": 20
+                        "column": 20,
+                        "program": "instanceof_x_dyndecl.sts"
                       },
                       "end": {
                         "line": 25,
-                        "column": 30
+                        "column": 30,
+                        "program": "instanceof_x_dyndecl.sts"
                       }
                     }
                   }
@@ -517,11 +583,13 @@
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 32
+                      "column": 32,
+                      "program": "instanceof_x_dyndecl.sts"
                     },
                     "end": {
                       "line": 25,
-                      "column": 39
+                      "column": 39,
+                      "program": "instanceof_x_dyndecl.sts"
                     }
                   }
                 },
@@ -540,11 +608,13 @@
                           "loc": {
                             "start": {
                               "line": 26,
-                              "column": 12
+                              "column": 12,
+                              "program": "instanceof_x_dyndecl.sts"
                             },
                             "end": {
                               "line": 26,
-                              "column": 13
+                              "column": 13,
+                              "program": "instanceof_x_dyndecl.sts"
                             }
                           }
                         },
@@ -559,55 +629,65 @@
                               "loc": {
                                 "start": {
                                   "line": 26,
-                                  "column": 25
+                                  "column": 25,
+                                  "program": "instanceof_x_dyndecl.sts"
                                 },
                                 "end": {
                                   "line": 26,
-                                  "column": 34
+                                  "column": 34,
+                                  "program": "instanceof_x_dyndecl.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 26,
-                                "column": 25
+                                "column": 25,
+                                "program": "instanceof_x_dyndecl.sts"
                               },
                               "end": {
                                 "line": 26,
-                                "column": 35
+                                "column": 35,
+                                "program": "instanceof_x_dyndecl.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 26,
-                              "column": 25
+                              "column": 25,
+                              "program": "instanceof_x_dyndecl.sts"
                             },
                             "end": {
                               "line": 26,
-                              "column": 35
+                              "column": 35,
+                              "program": "instanceof_x_dyndecl.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 26,
-                            "column": 12
+                            "column": 12,
+                            "program": "instanceof_x_dyndecl.sts"
                           },
                           "end": {
                             "line": 26,
-                            "column": 35
+                            "column": 35,
+                            "program": "instanceof_x_dyndecl.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 26,
-                          "column": 5
+                          "column": 5,
+                          "program": "instanceof_x_dyndecl.sts"
                         },
                         "end": {
                           "line": 26,
-                          "column": 35
+                          "column": 35,
+                          "program": "instanceof_x_dyndecl.sts"
                         }
                       }
                     }
@@ -615,33 +695,39 @@
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 40
+                      "column": 40,
+                      "program": "instanceof_x_dyndecl.sts"
                     },
                     "end": {
                       "line": 27,
-                      "column": 2
+                      "column": 2,
+                      "program": "instanceof_x_dyndecl.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 25,
-                    "column": 10
+                    "column": 10,
+                    "program": "instanceof_x_dyndecl.sts"
                   },
                   "end": {
                     "line": 27,
-                    "column": 2
+                    "column": 2,
+                    "program": "instanceof_x_dyndecl.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 10
+                  "column": 10,
+                  "program": "instanceof_x_dyndecl.sts"
                 },
                 "end": {
                   "line": 27,
-                  "column": 2
+                  "column": 2,
+                  "program": "instanceof_x_dyndecl.sts"
                 }
               }
             },
@@ -650,11 +736,13 @@
             "loc": {
               "start": {
                 "line": 25,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_x_dyndecl.sts"
               },
               "end": {
                 "line": 27,
-                "column": 2
+                "column": 2,
+                "program": "instanceof_x_dyndecl.sts"
               }
             }
           },
@@ -667,11 +755,13 @@
               "loc": {
                 "start": {
                   "line": 29,
-                  "column": 10
+                  "column": 10,
+                  "program": "instanceof_x_dyndecl.sts"
                 },
                 "end": {
                   "line": 29,
-                  "column": 23
+                  "column": 23,
+                  "program": "instanceof_x_dyndecl.sts"
                 }
               }
             },
@@ -691,11 +781,13 @@
                   "loc": {
                     "start": {
                       "line": 29,
-                      "column": 10
+                      "column": 10,
+                      "program": "instanceof_x_dyndecl.sts"
                     },
                     "end": {
                       "line": 29,
-                      "column": 23
+                      "column": 23,
+                      "program": "instanceof_x_dyndecl.sts"
                     }
                   }
                 },
@@ -719,33 +811,39 @@
                             "loc": {
                               "start": {
                                 "line": 29,
-                                "column": 27
+                                "column": 27,
+                                "program": "instanceof_x_dyndecl.sts"
                               },
                               "end": {
                                 "line": 29,
-                                "column": 28
+                                "column": 28,
+                                "program": "instanceof_x_dyndecl.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 29,
-                              "column": 27
+                              "column": 27,
+                              "program": "instanceof_x_dyndecl.sts"
                             },
                             "end": {
                               "line": 29,
-                              "column": 29
+                              "column": 29,
+                              "program": "instanceof_x_dyndecl.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 29,
-                            "column": 27
+                            "column": 27,
+                            "program": "instanceof_x_dyndecl.sts"
                           },
                           "end": {
                             "line": 29,
-                            "column": 29
+                            "column": 29,
+                            "program": "instanceof_x_dyndecl.sts"
                           }
                         }
                       },
@@ -753,22 +851,26 @@
                       "loc": {
                         "start": {
                           "line": 29,
-                          "column": 24
+                          "column": 24,
+                          "program": "instanceof_x_dyndecl.sts"
                         },
                         "end": {
                           "line": 29,
-                          "column": 29
+                          "column": 29,
+                          "program": "instanceof_x_dyndecl.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 29,
-                        "column": 24
+                        "column": 24,
+                        "program": "instanceof_x_dyndecl.sts"
                       },
                       "end": {
                         "line": 29,
-                        "column": 29
+                        "column": 29,
+                        "program": "instanceof_x_dyndecl.sts"
                       }
                     }
                   }
@@ -778,11 +880,13 @@
                   "loc": {
                     "start": {
                       "line": 29,
-                      "column": 31
+                      "column": 31,
+                      "program": "instanceof_x_dyndecl.sts"
                     },
                     "end": {
                       "line": 29,
-                      "column": 38
+                      "column": 38,
+                      "program": "instanceof_x_dyndecl.sts"
                     }
                   }
                 },
@@ -801,11 +905,13 @@
                           "loc": {
                             "start": {
                               "line": 30,
-                              "column": 12
+                              "column": 12,
+                              "program": "instanceof_x_dyndecl.sts"
                             },
                             "end": {
                               "line": 30,
-                              "column": 13
+                              "column": 13,
+                              "program": "instanceof_x_dyndecl.sts"
                             }
                           }
                         },
@@ -820,55 +926,65 @@
                               "loc": {
                                 "start": {
                                   "line": 30,
-                                  "column": 25
+                                  "column": 25,
+                                  "program": "instanceof_x_dyndecl.sts"
                                 },
                                 "end": {
                                   "line": 30,
-                                  "column": 34
+                                  "column": 34,
+                                  "program": "instanceof_x_dyndecl.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 30,
-                                "column": 25
+                                "column": 25,
+                                "program": "instanceof_x_dyndecl.sts"
                               },
                               "end": {
                                 "line": 30,
-                                "column": 35
+                                "column": 35,
+                                "program": "instanceof_x_dyndecl.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 30,
-                              "column": 25
+                              "column": 25,
+                              "program": "instanceof_x_dyndecl.sts"
                             },
                             "end": {
                               "line": 30,
-                              "column": 35
+                              "column": 35,
+                              "program": "instanceof_x_dyndecl.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 30,
-                            "column": 12
+                            "column": 12,
+                            "program": "instanceof_x_dyndecl.sts"
                           },
                           "end": {
                             "line": 30,
-                            "column": 35
+                            "column": 35,
+                            "program": "instanceof_x_dyndecl.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 30,
-                          "column": 5
+                          "column": 5,
+                          "program": "instanceof_x_dyndecl.sts"
                         },
                         "end": {
                           "line": 30,
-                          "column": 35
+                          "column": 35,
+                          "program": "instanceof_x_dyndecl.sts"
                         }
                       }
                     }
@@ -876,33 +992,39 @@
                   "loc": {
                     "start": {
                       "line": 29,
-                      "column": 39
+                      "column": 39,
+                      "program": "instanceof_x_dyndecl.sts"
                     },
                     "end": {
                       "line": 31,
-                      "column": 2
+                      "column": 2,
+                      "program": "instanceof_x_dyndecl.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 29,
-                    "column": 10
+                    "column": 10,
+                    "program": "instanceof_x_dyndecl.sts"
                   },
                   "end": {
                     "line": 31,
-                    "column": 2
+                    "column": 2,
+                    "program": "instanceof_x_dyndecl.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 29,
-                  "column": 10
+                  "column": 10,
+                  "program": "instanceof_x_dyndecl.sts"
                 },
                 "end": {
                   "line": 31,
-                  "column": 2
+                  "column": 2,
+                  "program": "instanceof_x_dyndecl.sts"
                 }
               }
             },
@@ -911,11 +1033,13 @@
             "loc": {
               "start": {
                 "line": 29,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_x_dyndecl.sts"
               },
               "end": {
                 "line": 31,
-                "column": 2
+                "column": 2,
+                "program": "instanceof_x_dyndecl.sts"
               }
             }
           },
@@ -928,11 +1052,13 @@
               "loc": {
                 "start": {
                   "line": 33,
-                  "column": 10
+                  "column": 10,
+                  "program": "instanceof_x_dyndecl.sts"
                 },
                 "end": {
                   "line": 33,
-                  "column": 20
+                  "column": 20,
+                  "program": "instanceof_x_dyndecl.sts"
                 }
               }
             },
@@ -952,11 +1078,13 @@
                   "loc": {
                     "start": {
                       "line": 33,
-                      "column": 10
+                      "column": 10,
+                      "program": "instanceof_x_dyndecl.sts"
                     },
                     "end": {
                       "line": 33,
-                      "column": 20
+                      "column": 20,
+                      "program": "instanceof_x_dyndecl.sts"
                     }
                   }
                 },
@@ -980,33 +1108,39 @@
                             "loc": {
                               "start": {
                                 "line": 33,
-                                "column": 24
+                                "column": 24,
+                                "program": "instanceof_x_dyndecl.sts"
                               },
                               "end": {
                                 "line": 33,
-                                "column": 31
+                                "column": 31,
+                                "program": "instanceof_x_dyndecl.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 33,
-                              "column": 24
+                              "column": 24,
+                              "program": "instanceof_x_dyndecl.sts"
                             },
                             "end": {
                               "line": 33,
-                              "column": 32
+                              "column": 32,
+                              "program": "instanceof_x_dyndecl.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 33,
-                            "column": 24
+                            "column": 24,
+                            "program": "instanceof_x_dyndecl.sts"
                           },
                           "end": {
                             "line": 33,
-                            "column": 32
+                            "column": 32,
+                            "program": "instanceof_x_dyndecl.sts"
                           }
                         }
                       },
@@ -1014,22 +1148,26 @@
                       "loc": {
                         "start": {
                           "line": 33,
-                          "column": 21
+                          "column": 21,
+                          "program": "instanceof_x_dyndecl.sts"
                         },
                         "end": {
                           "line": 33,
-                          "column": 32
+                          "column": 32,
+                          "program": "instanceof_x_dyndecl.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 33,
-                        "column": 21
+                        "column": 21,
+                        "program": "instanceof_x_dyndecl.sts"
                       },
                       "end": {
                         "line": 33,
-                        "column": 32
+                        "column": 32,
+                        "program": "instanceof_x_dyndecl.sts"
                       }
                     }
                   }
@@ -1039,11 +1177,13 @@
                   "loc": {
                     "start": {
                       "line": 33,
-                      "column": 34
+                      "column": 34,
+                      "program": "instanceof_x_dyndecl.sts"
                     },
                     "end": {
                       "line": 33,
-                      "column": 41
+                      "column": 41,
+                      "program": "instanceof_x_dyndecl.sts"
                     }
                   }
                 },
@@ -1062,11 +1202,13 @@
                           "loc": {
                             "start": {
                               "line": 34,
-                              "column": 12
+                              "column": 12,
+                              "program": "instanceof_x_dyndecl.sts"
                             },
                             "end": {
                               "line": 34,
-                              "column": 13
+                              "column": 13,
+                              "program": "instanceof_x_dyndecl.sts"
                             }
                           }
                         },
@@ -1081,55 +1223,65 @@
                               "loc": {
                                 "start": {
                                   "line": 34,
-                                  "column": 25
+                                  "column": 25,
+                                  "program": "instanceof_x_dyndecl.sts"
                                 },
                                 "end": {
                                   "line": 34,
-                                  "column": 34
+                                  "column": 34,
+                                  "program": "instanceof_x_dyndecl.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 34,
-                                "column": 25
+                                "column": 25,
+                                "program": "instanceof_x_dyndecl.sts"
                               },
                               "end": {
                                 "line": 34,
-                                "column": 35
+                                "column": 35,
+                                "program": "instanceof_x_dyndecl.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 34,
-                              "column": 25
+                              "column": 25,
+                              "program": "instanceof_x_dyndecl.sts"
                             },
                             "end": {
                               "line": 34,
-                              "column": 35
+                              "column": 35,
+                              "program": "instanceof_x_dyndecl.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 34,
-                            "column": 12
+                            "column": 12,
+                            "program": "instanceof_x_dyndecl.sts"
                           },
                           "end": {
                             "line": 34,
-                            "column": 35
+                            "column": 35,
+                            "program": "instanceof_x_dyndecl.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 34,
-                          "column": 5
+                          "column": 5,
+                          "program": "instanceof_x_dyndecl.sts"
                         },
                         "end": {
                           "line": 34,
-                          "column": 35
+                          "column": 35,
+                          "program": "instanceof_x_dyndecl.sts"
                         }
                       }
                     }
@@ -1137,33 +1289,39 @@
                   "loc": {
                     "start": {
                       "line": 33,
-                      "column": 42
+                      "column": 42,
+                      "program": "instanceof_x_dyndecl.sts"
                     },
                     "end": {
                       "line": 35,
-                      "column": 2
+                      "column": 2,
+                      "program": "instanceof_x_dyndecl.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 33,
-                    "column": 10
+                    "column": 10,
+                    "program": "instanceof_x_dyndecl.sts"
                   },
                   "end": {
                     "line": 35,
-                    "column": 2
+                    "column": 2,
+                    "program": "instanceof_x_dyndecl.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 33,
-                  "column": 10
+                  "column": 10,
+                  "program": "instanceof_x_dyndecl.sts"
                 },
                 "end": {
                   "line": 35,
-                  "column": 2
+                  "column": 2,
+                  "program": "instanceof_x_dyndecl.sts"
                 }
               }
             },
@@ -1172,11 +1330,13 @@
             "loc": {
               "start": {
                 "line": 33,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_x_dyndecl.sts"
               },
               "end": {
                 "line": 35,
-                "column": 2
+                "column": 2,
+                "program": "instanceof_x_dyndecl.sts"
               }
             }
           },
@@ -1189,11 +1349,13 @@
               "loc": {
                 "start": {
                   "line": 37,
-                  "column": 10
+                  "column": 10,
+                  "program": "instanceof_x_dyndecl.sts"
                 },
                 "end": {
                   "line": 37,
-                  "column": 22
+                  "column": 22,
+                  "program": "instanceof_x_dyndecl.sts"
                 }
               }
             },
@@ -1213,11 +1375,13 @@
                   "loc": {
                     "start": {
                       "line": 37,
-                      "column": 10
+                      "column": 10,
+                      "program": "instanceof_x_dyndecl.sts"
                     },
                     "end": {
                       "line": 37,
-                      "column": 22
+                      "column": 22,
+                      "program": "instanceof_x_dyndecl.sts"
                     }
                   }
                 },
@@ -1241,33 +1405,39 @@
                             "loc": {
                               "start": {
                                 "line": 37,
-                                "column": 26
+                                "column": 26,
+                                "program": "instanceof_x_dyndecl.sts"
                               },
                               "end": {
                                 "line": 37,
-                                "column": 32
+                                "column": 32,
+                                "program": "instanceof_x_dyndecl.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 37,
-                              "column": 26
+                              "column": 26,
+                              "program": "instanceof_x_dyndecl.sts"
                             },
                             "end": {
                               "line": 37,
-                              "column": 33
+                              "column": 33,
+                              "program": "instanceof_x_dyndecl.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 37,
-                            "column": 26
+                            "column": 26,
+                            "program": "instanceof_x_dyndecl.sts"
                           },
                           "end": {
                             "line": 37,
-                            "column": 33
+                            "column": 33,
+                            "program": "instanceof_x_dyndecl.sts"
                           }
                         }
                       },
@@ -1275,22 +1445,26 @@
                       "loc": {
                         "start": {
                           "line": 37,
-                          "column": 23
+                          "column": 23,
+                          "program": "instanceof_x_dyndecl.sts"
                         },
                         "end": {
                           "line": 37,
-                          "column": 33
+                          "column": 33,
+                          "program": "instanceof_x_dyndecl.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 37,
-                        "column": 23
+                        "column": 23,
+                        "program": "instanceof_x_dyndecl.sts"
                       },
                       "end": {
                         "line": 37,
-                        "column": 33
+                        "column": 33,
+                        "program": "instanceof_x_dyndecl.sts"
                       }
                     }
                   }
@@ -1300,11 +1474,13 @@
                   "loc": {
                     "start": {
                       "line": 37,
-                      "column": 35
+                      "column": 35,
+                      "program": "instanceof_x_dyndecl.sts"
                     },
                     "end": {
                       "line": 37,
-                      "column": 42
+                      "column": 42,
+                      "program": "instanceof_x_dyndecl.sts"
                     }
                   }
                 },
@@ -1323,11 +1499,13 @@
                           "loc": {
                             "start": {
                               "line": 38,
-                              "column": 12
+                              "column": 12,
+                              "program": "instanceof_x_dyndecl.sts"
                             },
                             "end": {
                               "line": 38,
-                              "column": 13
+                              "column": 13,
+                              "program": "instanceof_x_dyndecl.sts"
                             }
                           }
                         },
@@ -1342,55 +1520,65 @@
                               "loc": {
                                 "start": {
                                   "line": 38,
-                                  "column": 25
+                                  "column": 25,
+                                  "program": "instanceof_x_dyndecl.sts"
                                 },
                                 "end": {
                                   "line": 38,
-                                  "column": 34
+                                  "column": 34,
+                                  "program": "instanceof_x_dyndecl.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 38,
-                                "column": 25
+                                "column": 25,
+                                "program": "instanceof_x_dyndecl.sts"
                               },
                               "end": {
                                 "line": 38,
-                                "column": 35
+                                "column": 35,
+                                "program": "instanceof_x_dyndecl.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 38,
-                              "column": 25
+                              "column": 25,
+                              "program": "instanceof_x_dyndecl.sts"
                             },
                             "end": {
                               "line": 38,
-                              "column": 35
+                              "column": 35,
+                              "program": "instanceof_x_dyndecl.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 38,
-                            "column": 12
+                            "column": 12,
+                            "program": "instanceof_x_dyndecl.sts"
                           },
                           "end": {
                             "line": 38,
-                            "column": 35
+                            "column": 35,
+                            "program": "instanceof_x_dyndecl.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 38,
-                          "column": 5
+                          "column": 5,
+                          "program": "instanceof_x_dyndecl.sts"
                         },
                         "end": {
                           "line": 38,
-                          "column": 35
+                          "column": 35,
+                          "program": "instanceof_x_dyndecl.sts"
                         }
                       }
                     }
@@ -1398,33 +1586,39 @@
                   "loc": {
                     "start": {
                       "line": 37,
-                      "column": 43
+                      "column": 43,
+                      "program": "instanceof_x_dyndecl.sts"
                     },
                     "end": {
                       "line": 39,
-                      "column": 2
+                      "column": 2,
+                      "program": "instanceof_x_dyndecl.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 37,
-                    "column": 10
+                    "column": 10,
+                    "program": "instanceof_x_dyndecl.sts"
                   },
                   "end": {
                     "line": 39,
-                    "column": 2
+                    "column": 2,
+                    "program": "instanceof_x_dyndecl.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 37,
-                  "column": 10
+                  "column": 10,
+                  "program": "instanceof_x_dyndecl.sts"
                 },
                 "end": {
                   "line": 39,
-                  "column": 2
+                  "column": 2,
+                  "program": "instanceof_x_dyndecl.sts"
                 }
               }
             },
@@ -1433,11 +1627,13 @@
             "loc": {
               "start": {
                 "line": 37,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_x_dyndecl.sts"
               },
               "end": {
                 "line": 39,
-                "column": 2
+                "column": 2,
+                "program": "instanceof_x_dyndecl.sts"
               }
             }
           },
@@ -1450,11 +1646,13 @@
               "loc": {
                 "start": {
                   "line": 41,
-                  "column": 10
+                  "column": 10,
+                  "program": "instanceof_x_dyndecl.sts"
                 },
                 "end": {
                   "line": 41,
-                  "column": 21
+                  "column": 21,
+                  "program": "instanceof_x_dyndecl.sts"
                 }
               }
             },
@@ -1474,11 +1672,13 @@
                   "loc": {
                     "start": {
                       "line": 41,
-                      "column": 10
+                      "column": 10,
+                      "program": "instanceof_x_dyndecl.sts"
                     },
                     "end": {
                       "line": 41,
-                      "column": 21
+                      "column": 21,
+                      "program": "instanceof_x_dyndecl.sts"
                     }
                   }
                 },
@@ -1502,33 +1702,39 @@
                             "loc": {
                               "start": {
                                 "line": 41,
-                                "column": 25
+                                "column": 25,
+                                "program": "instanceof_x_dyndecl.sts"
                               },
                               "end": {
                                 "line": 41,
-                                "column": 34
+                                "column": 34,
+                                "program": "instanceof_x_dyndecl.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 41,
-                              "column": 25
+                              "column": 25,
+                              "program": "instanceof_x_dyndecl.sts"
                             },
                             "end": {
                               "line": 41,
-                              "column": 35
+                              "column": 35,
+                              "program": "instanceof_x_dyndecl.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 41,
-                            "column": 25
+                            "column": 25,
+                            "program": "instanceof_x_dyndecl.sts"
                           },
                           "end": {
                             "line": 41,
-                            "column": 35
+                            "column": 35,
+                            "program": "instanceof_x_dyndecl.sts"
                           }
                         }
                       },
@@ -1536,22 +1742,26 @@
                       "loc": {
                         "start": {
                           "line": 41,
-                          "column": 22
+                          "column": 22,
+                          "program": "instanceof_x_dyndecl.sts"
                         },
                         "end": {
                           "line": 41,
-                          "column": 35
+                          "column": 35,
+                          "program": "instanceof_x_dyndecl.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 41,
-                        "column": 22
+                        "column": 22,
+                        "program": "instanceof_x_dyndecl.sts"
                       },
                       "end": {
                         "line": 41,
-                        "column": 35
+                        "column": 35,
+                        "program": "instanceof_x_dyndecl.sts"
                       }
                     }
                   }
@@ -1561,11 +1771,13 @@
                   "loc": {
                     "start": {
                       "line": 41,
-                      "column": 37
+                      "column": 37,
+                      "program": "instanceof_x_dyndecl.sts"
                     },
                     "end": {
                       "line": 41,
-                      "column": 44
+                      "column": 44,
+                      "program": "instanceof_x_dyndecl.sts"
                     }
                   }
                 },
@@ -1584,11 +1796,13 @@
                           "loc": {
                             "start": {
                               "line": 42,
-                              "column": 12
+                              "column": 12,
+                              "program": "instanceof_x_dyndecl.sts"
                             },
                             "end": {
                               "line": 42,
-                              "column": 13
+                              "column": 13,
+                              "program": "instanceof_x_dyndecl.sts"
                             }
                           }
                         },
@@ -1603,55 +1817,65 @@
                               "loc": {
                                 "start": {
                                   "line": 42,
-                                  "column": 25
+                                  "column": 25,
+                                  "program": "instanceof_x_dyndecl.sts"
                                 },
                                 "end": {
                                   "line": 42,
-                                  "column": 34
+                                  "column": 34,
+                                  "program": "instanceof_x_dyndecl.sts"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 42,
-                                "column": 25
+                                "column": 25,
+                                "program": "instanceof_x_dyndecl.sts"
                               },
                               "end": {
                                 "line": 42,
-                                "column": 35
+                                "column": 35,
+                                "program": "instanceof_x_dyndecl.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 42,
-                              "column": 25
+                              "column": 25,
+                              "program": "instanceof_x_dyndecl.sts"
                             },
                             "end": {
                               "line": 42,
-                              "column": 35
+                              "column": 35,
+                              "program": "instanceof_x_dyndecl.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 42,
-                            "column": 12
+                            "column": 12,
+                            "program": "instanceof_x_dyndecl.sts"
                           },
                           "end": {
                             "line": 42,
-                            "column": 35
+                            "column": 35,
+                            "program": "instanceof_x_dyndecl.sts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 42,
-                          "column": 5
+                          "column": 5,
+                          "program": "instanceof_x_dyndecl.sts"
                         },
                         "end": {
                           "line": 42,
-                          "column": 35
+                          "column": 35,
+                          "program": "instanceof_x_dyndecl.sts"
                         }
                       }
                     }
@@ -1659,33 +1883,39 @@
                   "loc": {
                     "start": {
                       "line": 41,
-                      "column": 45
+                      "column": 45,
+                      "program": "instanceof_x_dyndecl.sts"
                     },
                     "end": {
                       "line": 43,
-                      "column": 2
+                      "column": 2,
+                      "program": "instanceof_x_dyndecl.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 41,
-                    "column": 10
+                    "column": 10,
+                    "program": "instanceof_x_dyndecl.sts"
                   },
                   "end": {
                     "line": 43,
-                    "column": 2
+                    "column": 2,
+                    "program": "instanceof_x_dyndecl.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 41,
-                  "column": 10
+                  "column": 10,
+                  "program": "instanceof_x_dyndecl.sts"
                 },
                 "end": {
                   "line": 43,
-                  "column": 2
+                  "column": 2,
+                  "program": "instanceof_x_dyndecl.sts"
                 }
               }
             },
@@ -1694,11 +1924,13 @@
             "loc": {
               "start": {
                 "line": 41,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_x_dyndecl.sts"
               },
               "end": {
                 "line": 43,
-                "column": 2
+                "column": 2,
+                "program": "instanceof_x_dyndecl.sts"
               }
             }
           }
@@ -1706,22 +1938,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "instanceof_x_dyndecl.sts"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "instanceof_x_dyndecl.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "instanceof_x_dyndecl.sts"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "instanceof_x_dyndecl.sts"
         }
       }
     },
@@ -1735,11 +1971,13 @@
           "loc": {
             "start": {
               "line": 23,
-              "column": 7
+              "column": 7,
+              "program": "instanceof_x_dyndecl.sts"
             },
             "end": {
               "line": 23,
-              "column": 8
+              "column": 8,
+              "program": "instanceof_x_dyndecl.sts"
             }
           }
         },
@@ -1754,12 +1992,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 23,
+                  "column": 10,
+                  "program": "instanceof_x_dyndecl.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 23,
+                  "column": 10,
+                  "program": "instanceof_x_dyndecl.sts"
                 }
               }
             },
@@ -1777,12 +2017,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 23,
+                      "column": 10,
+                      "program": "instanceof_x_dyndecl.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 23,
+                      "column": 10,
+                      "program": "instanceof_x_dyndecl.sts"
                     }
                   }
                 },
@@ -1795,34 +2037,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 23,
+                      "column": 10,
+                      "program": "instanceof_x_dyndecl.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 23,
+                      "column": 10,
+                      "program": "instanceof_x_dyndecl.sts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 23,
+                    "column": 10,
+                    "program": "instanceof_x_dyndecl.sts"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 23,
+                    "column": 10,
+                    "program": "instanceof_x_dyndecl.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 23,
+                  "column": 10,
+                  "program": "instanceof_x_dyndecl.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 23,
+                  "column": 10,
+                  "program": "instanceof_x_dyndecl.sts"
                 }
               }
             },
@@ -1830,12 +2078,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 23,
-                "column": 11
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 23,
-                "column": 11
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -1843,22 +2093,26 @@
         "loc": {
           "start": {
             "line": 23,
-            "column": 9
+            "column": 9,
+            "program": "instanceof_x_dyndecl.sts"
           },
           "end": {
-            "line": 23,
-            "column": 11
+            "line": 25,
+            "column": 9,
+            "program": "instanceof_x_dyndecl.sts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 23,
-          "column": 1
+          "column": 1,
+          "program": "instanceof_x_dyndecl.sts"
         },
         "end": {
-          "line": 23,
-          "column": 11
+          "line": 25,
+          "column": 9,
+          "program": "instanceof_x_dyndecl.sts"
         }
       }
     },
@@ -1872,11 +2126,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": null
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": null
             }
           }
         },
@@ -1892,11 +2148,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1911,11 +2169,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1924,60 +2184,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": null
               },
               "end": {
                 "line": 1,
-                "column": 1
-              }
-            }
-          },
-          {
-            "type": "ClassProperty",
-            "key": {
-              "type": "Identifier",
-              "name": "dynamic_import_tests_modules_instanceof1",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1
-                }
-              }
-            },
-            "accessibility": "public",
-            "static": true,
-            "readonly": true,
-            "declare": false,
-            "optional": false,
-            "computed": false,
-            "typeAnnotation": {
-              "type": "OpaqueType",
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1
-                }
-              }
-            },
-            "definite": false,
-            "decorators": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1
-              },
-              "end": {
-                "line": 1,
-                "column": 1
+                "column": 1,
+                "program": null
               }
             }
           },
@@ -1994,11 +2207,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -2023,11 +2238,13 @@
                             "loc": {
                               "start": {
                                 "line": 1,
-                                "column": 1
+                                "column": 1,
+                                "program": null
                               },
                               "end": {
                                 "line": 1,
-                                "column": 1
+                                "column": 1,
+                                "program": null
                               }
                             }
                           },
@@ -2038,11 +2255,13 @@
                             "loc": {
                               "start": {
                                 "line": 1,
-                                "column": 1
+                                "column": 1,
+                                "program": null
                               },
                               "end": {
                                 "line": 1,
-                                "column": 1
+                                "column": 1,
+                                "program": null
                               }
                             }
                           },
@@ -2051,11 +2270,13 @@
                           "loc": {
                             "start": {
                               "line": 1,
-                              "column": 1
+                              "column": 1,
+                              "program": null
                             },
                             "end": {
                               "line": 1,
-                              "column": 1
+                              "column": 1,
+                              "program": null
                             }
                           }
                         },
@@ -2070,11 +2291,13 @@
                               "loc": {
                                 "start": {
                                   "line": 1,
-                                  "column": 1
+                                  "column": 1,
+                                  "program": null
                                 },
                                 "end": {
                                   "line": 1,
-                                  "column": 1
+                                  "column": 1,
+                                  "program": null
                                 }
                               }
                             },
@@ -2085,11 +2308,13 @@
                               "loc": {
                                 "start": {
                                   "line": 1,
-                                  "column": 1
+                                  "column": 1,
+                                  "program": null
                                 },
                                 "end": {
                                   "line": 1,
-                                  "column": 1
+                                  "column": 1,
+                                  "program": null
                                 }
                               }
                             },
@@ -2098,11 +2323,13 @@
                             "loc": {
                               "start": {
                                 "line": 1,
-                                "column": 1
+                                "column": 1,
+                                "program": null
                               },
                               "end": {
                                 "line": 1,
-                                "column": 1
+                                "column": 1,
+                                "program": null
                               }
                             }
                           },
@@ -2113,11 +2340,13 @@
                               "loc": {
                                 "start": {
                                   "line": 1,
-                                  "column": 1
+                                  "column": 1,
+                                  "program": null
                                 },
                                 "end": {
                                   "line": 1,
-                                  "column": 1
+                                  "column": 1,
+                                  "program": null
                                 }
                               }
                             }
@@ -2126,180 +2355,39 @@
                           "loc": {
                             "start": {
                               "line": 1,
-                              "column": 1
+                              "column": 1,
+                              "program": null
                             },
                             "end": {
                               "line": 1,
-                              "column": 1
+                              "column": 1,
+                              "program": null
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 1,
-                            "column": 1
+                            "column": 1,
+                            "program": null
                           },
                           "end": {
                             "line": 1,
-                            "column": 1
+                            "column": 1,
+                            "program": null
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 1,
-                          "column": 1
+                          "column": 1,
+                          "program": null
                         },
                         "end": {
                           "line": 1,
-                          "column": 1
-                        }
-                      }
-                    },
-                    {
-                      "type": "ExpressionStatement",
-                      "expression": {
-                        "type": "AssignmentExpression",
-                        "operator": "=",
-                        "left": {
-                          "type": "MemberExpression",
-                          "object": {
-                            "type": "Identifier",
-                            "name": "$dynmodule",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 1
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 1
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "dynamic_import_tests_modules_instanceof1",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 1
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 1
-                              }
-                            }
-                          },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 1,
-                              "column": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 1
-                            }
-                          }
-                        },
-                        "right": {
-                          "type": "CallExpression",
-                          "callee": {
-                            "type": "MemberExpression",
-                            "object": {
-                              "type": "Identifier",
-                              "name": "JSRuntime",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 1
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 1
-                                }
-                              }
-                            },
-                            "property": {
-                              "type": "Identifier",
-                              "name": "loadModule",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 1
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 1
-                                }
-                              }
-                            },
-                            "computed": false,
-                            "optional": false,
-                            "loc": {
-                              "start": {
-                                "line": 1,
-                                "column": 1
-                              },
-                              "end": {
-                                "line": 1,
-                                "column": 1
-                              }
-                            }
-                          },
-                          "arguments": [
-                            {
-                              "type": "StringLiteral",
-                              "value": "/home/kaskov/Documents/panda/ets_frontend/ets2panda/test/parser/ets/dynamic_import_tests/modules/instanceof",
-                              "loc": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 1
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 1
-                                }
-                              }
-                            }
-                          ],
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 1,
-                              "column": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 1
-                            }
-                          }
-                        },
-                        "loc": {
-                          "start": {
-                            "line": 1,
-                            "column": 1
-                          },
-                          "end": {
-                            "line": 1,
-                            "column": 1
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 1,
-                          "column": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 1
+                          "column": 1,
+                          "program": null
                         }
                       }
                     }
@@ -2307,44 +2395,52 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": null
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": null
               }
             }
           },
@@ -2357,11 +2453,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -2381,11 +2479,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -2398,11 +2498,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -2412,33 +2514,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -2447,11 +2555,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": null
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -2459,22 +2569,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": null
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": null
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": null
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": null
         }
       }
     }
@@ -2482,11 +2596,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "instanceof_x_dyndecl.sts"
     },
     "end": {
       "line": 44,
-      "column": 1
+      "column": 1,
+      "program": "instanceof_x_dyndecl.sts"
     }
   }
 }

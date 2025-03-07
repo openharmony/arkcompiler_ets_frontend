@@ -587,7 +587,7 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
         case lexer::TokenType::KEYW_PROTECTED: {
             LogError(diagnostic::ACCESS_BEFORE_FIELD_METHOD);
             Lexer()->NextToken();
-            return AllocBrokenStatement();
+            return AllocBrokenStatement(delcStartLoc);
         }
         default: {
             result = ParseInnerRest(properties, modifiers, memberModifiers, startLoc);
@@ -888,7 +888,7 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         LogError(diagnostic::EXPECTED_PARAM_GOT_PARAM,
                  {"method name", lexer::TokenToString(Lexer()->GetToken().Type())});
-        name = AllocBrokenExpression();
+        name = AllocBrokenExpression(Lexer()->GetToken().Loc());
     } else {
         name = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
         name->SetRange(Lexer()->GetToken().Loc());
@@ -992,7 +992,7 @@ ir::AstNode *ETSParser::ParseTypeLiteralOrInterfaceMember()
     ir::ModifierFlags modfiers = ParseInterfaceMethodModifiers();
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         LogError(diagnostic::ID_EXPECTED);
-        return AllocBrokenExpression();
+        return AllocBrokenExpression(Lexer()->GetToken().Loc());
     }
 
     char32_t nextCp = Lexer()->Lookahead();

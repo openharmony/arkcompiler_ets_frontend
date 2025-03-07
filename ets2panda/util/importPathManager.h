@@ -52,7 +52,7 @@ public:
         bool isImplicitPackageImported = false;
     };
 
-    ImportPathManager(ark::ArenaAllocator *allocator, const util::Options &options, const parser::Program *program,
+    ImportPathManager(ark::ArenaAllocator *allocator, const util::Options &options,
                       util::DiagnosticEngine &diagnosticEngine)
         : allocator_(allocator),
           arktsConfig_(options.ArkTSConfig()),
@@ -60,7 +60,6 @@ public:
               options.GetEtsPath().empty() ? "" : util::Path(options.GetEtsPath(), allocator_).GetAbsolutePath()),
           stdLib_(options.GetStdlib()),
           parseList_(allocator->Adapter()),
-          program_(program),
           diagnosticEngine_ {diagnosticEngine}
     {
     }
@@ -100,7 +99,6 @@ private:
     std::string absoluteEtsPath_;
     std::string stdLib_;
     ArenaVector<ParseInfo> parseList_;
-    const parser::Program *program_;
     util::DiagnosticEngine &diagnosticEngine_;
     std::string_view pathDelimiter_ {ark::os::file::File::GetPathDelim()};
 };

@@ -171,34 +171,34 @@ const char *DiagnosticTypeToString(DiagnosticType type)
     }
 }
 
-DiagnosticBase::DiagnosticBase(const parser::Program *program, const lexer::SourcePosition &pos)
+DiagnosticBase::DiagnosticBase(const lexer::SourcePosition &pos)
 {
-    if (program != nullptr) {
-        lexer::SourceLocation loc = pos.ToLocation(program);
-        file_ = program->SourceFilePath().Utf8();
+    if (pos.Program() != nullptr) {
+        lexer::SourceLocation loc = pos.ToLocation();
+        file_ = pos.Program()->SourceFilePath().Utf8();
         line_ = loc.line;
         offset_ = loc.col;
     }
 }
 
-DiagnosticBase::DiagnosticBase(const parser::Program *program, const lexer::SourceLocation &loc)
+DiagnosticBase::DiagnosticBase(const lexer::SourceLocation &loc)
 {
-    if (program != nullptr) {
-        file_ = program->SourceFilePath().Utf8();
+    if (loc.Program() != nullptr) {
+        file_ = loc.Program()->SourceFilePath().Utf8();
         line_ = loc.line;
         offset_ = loc.col;
     }
 }
 
-ThrowableDiagnostic::ThrowableDiagnostic(DiagnosticType type, const parser::Program *program,
-                                         DiagnosticMessageParams params, const lexer::SourceLocation &loc)
-    : DiagnosticBase(program, loc), type_(type), message_(Format(params))
+ThrowableDiagnostic::ThrowableDiagnostic(DiagnosticType type, DiagnosticMessageParams params,
+                                         const lexer::SourceLocation &loc)
+    : DiagnosticBase(loc), type_(type), message_(Format(params))
 {
 }
 
-ThrowableDiagnostic::ThrowableDiagnostic(DiagnosticType type, const parser::Program *program,
-                                         DiagnosticMessageParams params, const lexer::SourcePosition &poc)
-    : DiagnosticBase(program, poc), type_(type), message_(Format(params))
+ThrowableDiagnostic::ThrowableDiagnostic(DiagnosticType type, DiagnosticMessageParams params,
+                                         const lexer::SourcePosition &poc)
+    : DiagnosticBase(poc), type_(type), message_(Format(params))
 {
 }
 
@@ -210,26 +210,20 @@ ThrowableDiagnostic::ThrowableDiagnostic(DiagnosticType type, DiagnosticMessageP
 
 ThrowableDiagnostic::ThrowableDiagnostic(const DiagnosticType type, const diagnostic::DiagnosticKind &diagnosticKind,
                                          const util::DiagnosticMessageParams &diagnosticParams,
-                                         const std::string_view file, const lexer::SourceLocation &loc)
-    : DiagnosticBase(file, loc.line, loc.col),
-      type_(type),
-      message_(Format(diagnosticKind.Message(), FormatParams(diagnosticParams)))
+                                         const lexer::SourcePosition &poc)
+    : DiagnosticBase(poc), type_(type), message_(Format(diagnosticKind.Message(), FormatParams(diagnosticParams)))
 {
 }
 
 Diagnostic::Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
-                       const util::DiagnosticMessageParams &diagnosticParams, std::string_view file, size_t line,
-                       size_t offset)
-    : DiagnosticBase(file, line, offset),
-      diagnosticKind_(&diagnosticKind),
-      diagnosticParams_(FormatParams(diagnosticParams))
+                       const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &poc)
+    : DiagnosticBase(poc), diagnosticKind_(&diagnosticKind), diagnosticParams_(FormatParams(diagnosticParams))
 {
 }
 
 Diagnostic::Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
-                       const util::DiagnosticMessageParams &diagnosticParams, const parser::Program *program,
-                       const lexer::SourcePosition &poc)
-    : DiagnosticBase(program, poc), diagnosticKind_(&diagnosticKind), diagnosticParams_(FormatParams(diagnosticParams))
+                       const util::DiagnosticMessageParams &diagnosticParams)
+    : Diagnostic(diagnosticKind, diagnosticParams, lexer::SourcePosition())
 {
 }
 

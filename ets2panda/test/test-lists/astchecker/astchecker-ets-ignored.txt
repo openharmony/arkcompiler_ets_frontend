@@ -54,9 +54,6 @@ ast/parser/ts/InvalidLexer.ts
 ast/compiler/ets/expression/this_expression/undefined_class_for_this_1.sts
 ast/compiler/ets/expression/this_expression/undefined_class_for_this_2.sts
 
-# Issue #18241
-ast/compiler/ets/implicit_package_import/package_test_5/package_module_1.sts
-
 # Issue: #22662
 ast/parser/ets/recordKeyTypeCheck04.sts
 ast/compiler/ets/recordWithLambdaFunction1.sts
