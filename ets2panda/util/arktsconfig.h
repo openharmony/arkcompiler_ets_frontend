@@ -160,6 +160,10 @@ public:
     {
         return files_;
     }
+    const bool &UseUrl() const
+    {
+        return useUrl_;
+    }
     const PathsMap &Paths() const
     {
         return paths_;
@@ -204,6 +208,7 @@ private:
     static constexpr const char *EXCLUDE = "exclude";
     static constexpr const char *EXTENDS = "extends";
     static constexpr const char *FILES = "files";
+    static constexpr const char *USE_EMPTY_PACKAGE = "useEmptyPackage";  // CC-OFF(G.NAM.03-CPP) project code style
     static constexpr const char *INCLUDE = "include";
     static constexpr const char *OUT_DIR = "outDir";
     static constexpr const char *ROOT_DIR = "rootDir";
@@ -217,6 +222,7 @@ private:
 
     std::string package_ {};
     std::string baseUrl_ {};
+    bool useUrl_ = false;
     std::string outDir_ {};
     std::string rootDir_ {};
     std::string entry_ {};

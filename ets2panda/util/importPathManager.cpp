@@ -372,7 +372,8 @@ util::StringView ImportPathManager::FormModuleName(const util::Path &path, const
     if (!absoluteEtsPath_.empty()) {
         return FormModuleNameSolelyByAbsolutePath(path, srcPos);
     }
-    if (arktsConfig_->Package().empty()) {
+
+    if (arktsConfig_->Package().empty() && !arktsConfig_->UseUrl()) {
         return path.GetFileName();
     }
 
@@ -385,7 +386,8 @@ util::StringView ImportPathManager::FormModuleName(const util::Path &path, const
             return std::nullopt;
         }
         auto relativePath = FormRelativeModuleName(filePath.substr(unitPath.size()));
-        return FormUnitName(unitName) + (relativePath.empty() ? "" : ("." + relativePath));
+        return FormUnitName(unitName) +
+               (relativePath.empty() || FormUnitName(unitName).empty() ? relativePath : ("." + relativePath));
     };
 
     for (auto const &[unitName, unitPath] : arktsConfig_->Entries()) {
