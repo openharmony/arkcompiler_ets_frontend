@@ -83,9 +83,12 @@ parser/ets/class_init.sts
 parser/ets/class_static_initializer.sts
 parser/ets/conversions.sts
 parser/ets/declare_namespace.sts
+runtime/ets/namespace_tests/namespace_import_type_test/namespace_export.sts
 parser/ets/declare_namespace_2.sts
 parser/ets/declare_namespace_3.sts
 parser/ets/declare_namespace_4.sts
+ast/compiler/ets/namespace_tests/declare_namespace.sts
+ast/compiler/ets/namespace_tests/Import_ambient_namespace.sts
 parser/ets/import_tests/diamond/test1.sts
 parser/ets/import_tests/diamond/test2.sts
 parser/ets/import_tests/diamond/test3.sts
