@@ -13,27 +13,45 @@
  * limitations under the License.
  */
 
-import { KNativePointer as KPtr, KInt } from "./InteropTypes"
+import { KNativePointer as KPtr, KInt, KUInt } from "./InteropTypes"
 import { loadNativeModuleLibrary, registerNativeModuleLibraryName } from "./loadLibraries"
 import { throwError } from "./utils"
 
 export class InteropNativeModule {
+
   _StringLength(ptr: KPtr): KInt {
     throw new Error("Not implemented")
   }
+
   _StringData(ptr: KPtr, buffer: KPtr, length: KInt): void {
     throw new Error("Not implemented")
   }
+
   _GetStringFinalizer(): KPtr {
     throw new Error("Not implemented")
   }
+
   _InvokeFinalizer(ptr: KPtr, finalizer: KPtr): void {
     throw new Error("Not implemented")
   }
+
   _GetPtrVectorSize(ptr: KPtr): KInt {
     throw new Error("Not implemented")
   }
+
   _GetPtrVectorElement(ptr: KPtr, index: KInt): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getTypeOfVariant(ptr: KPtr): KUInt {
+    throw new Error("Not implemented")
+  }
+
+  _getIntFromVariant(ptr: KPtr): KUInt {
+    throw new Error("Not implemented")
+  }
+
+  _getStringFromVariant(ptr: KPtr): KPtr {
     throw new Error("Not implemented")
   }
 }
@@ -43,9 +61,7 @@ export function initInterop(): InteropNativeModule {
   if (libPath == undefined) {
     throwError("Cannot find env variable $BINDINGS_PATH")
   }
-  // registerNativeModuleLibraryName("NativeModule", "/home/nojpg/projects/panda/runtime_core/static_core/build/lib/bindings/ts_bindings.node")
-  registerNativeModuleLibraryName("NativeModule", libPath + "/ts_bindings.node")
-  // registerNativeModuleLibraryName("InteropNativeModule", "/home/nojpg/projects/panda/runtime_core/static_core/build/lib/bindings/ts_bindings.node")
+  registerNativeModuleLibraryName("InteropNativeModule", libPath + "/ts_bindings.node")
   const instance = new InteropNativeModule()
   loadNativeModuleLibrary("InteropNativeModule", instance)
   return instance

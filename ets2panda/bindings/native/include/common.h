@@ -22,7 +22,7 @@
 #include <iostream>
 #include <vector>
 
-std::string getString(KStringPtr ptr);
+std::string GetString(KStringPtr ptr);
 
 char *GetStringCopy(KStringPtr &ptr);
 

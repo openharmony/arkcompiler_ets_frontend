@@ -15,8 +15,10 @@
 #ifndef INTEROP_LOGGING_H
 #define INTEROP_LOGGING_H
 
-#include <stdio.h>
-#include <stdint.h>
+#include <cstdio>
+#include <cstdint>
+
+// NOLINTBEGIN
 
 // CC-OFFNXT(G.PRE.09) code generation
 #define LOG(msg) fprintf(stdout, msg "\n");
@@ -28,26 +30,12 @@
 #define LOGE0(msg) fprintf(stderr, msg "\n");
 #define LOG_PUBLIC ""
 
-#if defined(TS_WINDOWS)
+#if defined(PANDA_TARGET_WINDOWS)
 #define INTEROP_API_EXPORT __declspec(dllexport)
 #else
 #define INTEROP_API_EXPORT __attribute__((visibility("default")))
 #endif
 
-// Grouped logs. Keep consistent with type in ServiceGroupLogger
-typedef struct GroupLogger {
-    // CC-OFFNXT(G.NAM.01) false positive
-    void (*StartGroupedLog)(int kind);
-    // CC-OFFNXT(G.NAM.01) false positive
-    void (*StopGroupedLog)(int kind);
-    // CC-OFFNXT(G.NAM.01) false positive
-    void (*AppendGroupedLog)(int kind, const char *str);
-    // CC-OFFNXT(G.NAM.01) false positive
-    const char *(*GetGroupedLog)(int kind);
-    // CC-OFFNXT(G.NAM.01) false positive
-    int (*NeedGroupedLog)(int kind);
-} GroupLogger;
-
-const GroupLogger *GetDefaultLogger();
+// NOLINTEND
 
 #endif  // INTEROP_LOGGING_H

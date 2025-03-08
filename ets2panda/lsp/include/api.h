@@ -370,11 +370,7 @@ typedef struct LSPAPI {
     ark::es2panda::lsp::LineAndCharacter (*toLineColumnOffset)(char const *fileName, size_t position);
 } LSPAPI;
 
-#ifdef _WIN32
-LSPAPI __declspec(dllexport) const *GetImpl();
-#else
-LSPAPI const *GetImpl();
-#endif
+CAPI_EXPORT LSPAPI const *GetImpl();
 
 // NOLINTEND
 

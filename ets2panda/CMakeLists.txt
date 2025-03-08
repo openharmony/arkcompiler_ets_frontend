@@ -680,16 +680,15 @@ if(NOT PANDA_USE_PREBUILT_TARGETS AND NOT PANDA_SANITIZERS_LIST)
 endif()
 
 SET(ES2PANDA_LIB_DIR public)
-SET(LSP_LIB "es2panda_lsp")
 add_subdirectory(${ES2PANDA_LIB_DIR})
 
 add_subdirectory(aot)
 add_subdirectory(declgen_ets2ts)
-add_subdirectory(lsp)
 add_subdirectory(driver/dependency_analyzer)
 
-if(PANDA_TS_BINDINGS)
-  # Due to installing node js deps, maybe later should be added on lsp and driver too
+if(PANDA_TARGET_LINUX OR PANDA_TARGET_WINDOWS)
+  SET(LSP_LIB "es2panda_lsp")
+  add_subdirectory(lsp)
   set(ES2PANDA_NAPI_LIB_DIR "bindings")
   add_subdirectory(${ES2PANDA_NAPI_LIB_DIR})
 endif()

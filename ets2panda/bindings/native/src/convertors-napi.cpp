@@ -20,6 +20,8 @@
 #include "interop-logging.h"
 #include "convertors-napi.h"
 
+// NOLINTBEGIN
+
 // Adapter for NAPI_MODULE
 #define NODE_API_MODULE_ADAPTER(modname, regfunc)                        \
     static napi_value __napi_##regfunc(napi_env env, napi_value exports) \
@@ -61,7 +63,7 @@ KInt getInt32(napi_env env, napi_value value)
         napi_throw_error(env, nullptr, "Expected Number");
         return 0;
     }
-    int32_t result = false;
+    int32_t result = 0;
     napi_get_value_int32(env, value, &result);
     return static_cast<KInt>(result);
 }
@@ -72,7 +74,7 @@ KUInt getUInt32(napi_env env, napi_value value)
         napi_throw_error(env, nullptr, "Expected Number");
         return 0;
     }
-    uint32_t result = false;
+    uint32_t result = 0U;
     napi_get_value_uint32(env, value, &result);
     return static_cast<KUInt>(result);
 }
@@ -81,9 +83,9 @@ KFloat getFloat32(napi_env env, napi_value value)
 {
     if (getValueTypeChecked(env, value) != napi_valuetype::napi_number) {
         napi_throw_error(env, nullptr, "Expected Number");
-        return 0.0f;
+        return 0.0F;
     }
-    double result = false;
+    double result = 0.0;
     napi_get_value_double(env, value, &result);
     return static_cast<KFloat>(static_cast<float>(result));
 }
@@ -94,7 +96,7 @@ KDouble getFloat64(napi_env env, napi_value value)
         napi_throw_error(env, nullptr, "Expected Number");
         return 0.0;
     }
-    double result = false;
+    double result = 0.0;
     napi_get_value_double(env, value, &result);
     return static_cast<KDouble>(result);
 }
@@ -114,10 +116,12 @@ KStringPtr getString(napi_env env, napi_value value)
 
     size_t length = 0;
     napi_status status = napi_get_value_string_utf8(env, value, nullptr, 0, &length);
-    if (status != 0)
+    if (status != 0) {
         return result;
+    }
     result.resize(length);
     status = napi_get_value_string_utf8(env, value, result.data(), length + 1, nullptr);
+    TS_NAPI_THROW_IF_FAILED(env, status, nullptr);
     return result;
 }
 
@@ -337,7 +341,7 @@ ModuleRegisterCallback ProvideModuleRegisterCallback(ModuleRegisterCallback valu
     static ModuleRegisterCallback curCallback = DEFAULT_CB;
 
     ModuleRegisterCallback prevCallback = curCallback;
-    curCallback = value ? value : DEFAULT_CB;
+    curCallback = value != nullptr ? value : DEFAULT_CB;
     return prevCallback;
 }
 
@@ -369,3 +373,5 @@ static napi_value InitModule(napi_env env, napi_value exports)
 }
 
 NAPI_MODULE(INTEROP_LIBRARY_NAME, InitModule)
+
+// NOLINTEND

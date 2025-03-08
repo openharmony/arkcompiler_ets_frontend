@@ -321,7 +321,7 @@ ark::es2panda::lsp::CompletionInfo GetCompletionsAtPosition(char const *fileName
     return result;
 }
 
-extern "C" std::vector<Location> GetImplementationLocationAtPositionWrapper(es2panda_Context *context, int position)
+std::vector<Location> GetImplementationLocationAtPositionWrapper(es2panda_Context *context, int position)
 {
     return GetImplementationLocationAtPosition(context, position);
 }
@@ -358,11 +358,7 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     ToLineColumnOffsetWrapper};
 }  // namespace ark::es2panda::lsp
 
-#ifdef _WIN32
-LSPAPI __declspec(dllexport) const *GetImpl()
-#else
-LSPAPI const *GetImpl()
-#endif
+CAPI_EXPORT LSPAPI const *GetImpl()
 {
     return &ark::es2panda::lsp::g_lspImpl;
 }

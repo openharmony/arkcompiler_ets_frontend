@@ -16,12 +16,13 @@
 #ifndef TS_TYPES_H
 #define TS_TYPES_H
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdint>
+#include <cstdlib>
 #include <cmath>
 #include <cstring>
 #include "securec.h"
+
+// NOLINTBEGIN
 
 struct KStringPtrImpl {
     KStringPtrImpl(const char *str) : value(nullptr), owned(true)
@@ -254,5 +255,7 @@ KNativePointer fnPtr(void (*pointer)(T *))
 {
     return reinterpret_cast<KNativePointer>(pointer);
 }
+
+// NOLINTEND
 
 #endif /* TS_TYPES_H */

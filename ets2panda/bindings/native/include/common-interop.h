@@ -20,6 +20,8 @@
 
 #include "panda_types.h"
 
+// NOLINTBEGIN
+
 #define TS_INTEROP_PROFILER 0
 #define TS_INTEROP_TRACER 0
 
@@ -56,5 +58,7 @@ std::vector<KStringPtr> MakeStringVector(KStringArray strArray);
 std::vector<KStringPtr> MakeStringVector(KNativePointerArray arr, KInt size);
 
 #include "convertors-napi.h"
+
+// NOLINTEND
 
 #endif  // COMMON_INTEROP_BASE_H

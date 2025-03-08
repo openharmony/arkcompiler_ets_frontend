@@ -19,6 +19,8 @@
 #include <vector>
 #include "interop-types.h"
 
+// NOLINTBEGIN
+
 class CallbackResourceHolder {
 private:
     std::vector<InteropCallbackResource> heldResources;
@@ -56,5 +58,7 @@ void EnqueueCallback(const CallbackBuffer *event);
 void HoldManagedCallbackResource(InteropInt32 resourceId);
 // CC-OFFNXT(G.NAM.01) false positive
 void ReleaseManagedCallbackResource(InteropInt32 resourceId);
+
+// NOLINTEND
 
 #endif

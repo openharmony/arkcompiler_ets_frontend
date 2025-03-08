@@ -15,18 +15,21 @@
 
 #include <cstddef>
 #include <string>
+#include <variant>
 #include <vector>
 #include <map>
 #include <securec.h>
+
+// NOLINTBEGIN
 
 #ifdef TS_INTEROP_MODULE
 #undef TS_INTEROP_MODULE
 #endif
 
 #define TS_INTEROP_MODULE InteropNativeModule
+#include "interop-logging.h"
 #include "convertors-napi.h"
 #include "common-interop.h"
-#include "interop-logging.h"
 
 #if TS_INTEROP_PROFILER
 #include "profiler.h"
@@ -41,6 +44,33 @@ using std::string;
 // Let's keep platform-specific parts of the code together
 
 typedef void (*HoldT)(KInt);
+
+KUInt impl_getTypeOfVariant(KNativePointer varPtr)
+{
+    auto *var = reinterpret_cast<std::variant<int, std::string> *>(varPtr);
+    if (std::get_if<int>(var) != nullptr) {
+        return 0;
+    } else {
+        return 1;
+    }
+}
+TS_INTEROP_1(getTypeOfVariant, KUInt, KNativePointer)
+
+KNativePointer impl_getStringFromVariant(KNativePointer varPtr)
+{
+    auto *var = reinterpret_cast<std::variant<int, std::string> *>(varPtr);
+    auto *res = new std::string(*std::get_if<std::string>(var));
+    return res;
+}
+TS_INTEROP_1(getStringFromVariant, KNativePointer, KNativePointer)
+
+KInt impl_getIntFromVariant(KNativePointer varPtr)
+{
+    auto *var = reinterpret_cast<std::variant<int, std::string> *>(varPtr);
+    auto res = *std::get_if<int>(var);
+    return res;
+}
+TS_INTEROP_1(getIntFromVariant, KInt, KNativePointer)
 
 KInteropBuffer impl_MaterializeBuffer(KNativePointer data, KLong length, KInt resourceId, KNativePointer holdPtr,
                                       KNativePointer releasePtr)
@@ -60,16 +90,17 @@ TS_INTEROP_1(GetNativeBufferPointer, KNativePointer, KInteropBuffer)
 
 KInt impl_StringLength(KNativePointer ptr)
 {
-    string *s = reinterpret_cast<string *>(ptr);
+    auto *s = reinterpret_cast<string *>(ptr);
     return s->length();
 }
 TS_INTEROP_1(StringLength, KInt, KNativePointer)
 
 void impl_StringData(KNativePointer ptr, KByte *bytes, KUInt size)
 {
-    string *s = reinterpret_cast<string *>(ptr);
-    if (s)
+    auto *s = reinterpret_cast<string *>(ptr);
+    if (s != nullptr) {
         memcpy_s(bytes, size, s->c_str(), size);
+    }
 }
 TS_INTEROP_V3(StringData, KNativePointer, KByte *, KUInt)
 
@@ -80,10 +111,10 @@ KNativePointer impl_StringMake(const KStringPtr &str)
 TS_INTEROP_1(StringMake, KNativePointer, KStringPtr)
 
 // For slow runtimes w/o fast encoders.
-KInt impl_ManagedStringWrite(const KStringPtr &string, KByte *buffer, KInt offset)
+KInt impl_ManagedStringWrite(const KStringPtr &str, KByte *buffer, KInt offset)
 {
-    memcpy_s(buffer + offset, string.length() + 1, string.c_str(), string.length() + 1);
-    return string.length() + 1;
+    memcpy_s(buffer + offset, str.length() + 1, str.c_str(), str.length() + 1);
+    return str.length() + 1;
 }
 TS_INTEROP_3(ManagedStringWrite, KInt, KStringPtr, KByte *, KInt)
 
@@ -99,14 +130,15 @@ TS_INTEROP_0(GetStringFinalizer, KNativePointer)
 
 void impl_InvokeFinalizer(KNativePointer obj, KNativePointer finalizer)
 {
-    auto finalizer_f = reinterpret_cast<void (*)(KNativePointer)>(finalizer);
-    finalizer_f(obj);
+    auto finalizerF = reinterpret_cast<void (*)(KNativePointer)>(finalizer);
+    finalizerF(obj);
 }
 TS_INTEROP_V2(InvokeFinalizer, KNativePointer, KNativePointer)
 
 KInt impl_GetPtrVectorSize(KNativePointer ptr)
 {
-    return reinterpret_cast<std::vector<void *> *>(ptr)->size();
+    auto *vec = reinterpret_cast<std::vector<void *> *>(ptr);
+    return vec->size();
 }
 TS_INTEROP_1(GetPtrVectorSize, KInt, KNativePointer)
 
@@ -114,7 +146,7 @@ KNativePointer impl_GetPtrVectorElement(KNativePointer ptr, KInt index)
 {
     auto vector = reinterpret_cast<std::vector<void *> *>(ptr);
     auto element = vector->at(index);
-    return NativePtr(element);
+    return element;
 }
 TS_INTEROP_2(GetPtrVectorElement, KNativePointer, KNativePointer, KInt)
 
@@ -154,38 +186,6 @@ std::vector<KStringPtr> MakeStringVector(KNativePointerArray arr, KInt length)
     }
 }
 
-KNativePointer impl_GetGroupedLog(KInt index)
-{
-    return new std::string(GetDefaultLogger()->GetGroupedLog(index));
-}
-TS_INTEROP_1(GetGroupedLog, KNativePointer, KInt)
-
-void impl_StartGroupedLog(KInt index)
-{
-    GetDefaultLogger()->StartGroupedLog(index);
-}
-TS_INTEROP_V1(StartGroupedLog, KInt)
-
-void impl_StopGroupedLog(KInt index)
-{
-    GetDefaultLogger()->StopGroupedLog(index);
-}
-TS_INTEROP_V1(StopGroupedLog, KInt)
-
-void impl_AppendGroupedLog(KInt index, const KStringPtr &message)
-{
-    if (GetDefaultLogger()->NeedGroupedLog(index))
-        GetDefaultLogger()->AppendGroupedLog(index, message.c_str());
-}
-TS_INTEROP_V2(AppendGroupedLog, KInt, KStringPtr)
-
-void impl_PrintGroupedLog(KInt index)
-{
-    fprintf(stdout, "%s\n", GetDefaultLogger()->GetGroupedLog(index));
-    fflush(stdout);
-}
-TS_INTEROP_V1(PrintGroupedLog, KInt)
-
 typedef KInt (*LoadVirtualMachine_t)(KInt vmKind, const char *classPath, const char *libraryPath,
                                      void *currentVMContext);
 typedef KNativePointer (*StartApplication_t)(const char *appUrl, const char *appParams);
@@ -200,7 +200,7 @@ void setCallbackCaller(CallbackCallert callbackCaller)
 
 void impl_CallCallback(KInt callbackKind, KByte *args, KInt argsSize)
 {
-    if (g_callbackCaller) {
+    if (g_callbackCaller != nullptr) {
         g_callbackCaller(callbackKind, args, argsSize);
     }
 }
@@ -318,8 +318,8 @@ TS_INTEROP_CTX_3(Utf8ToString, KStringPtr, KByte *, KInt, KInt)
 
 KStringPtr impl_StdStringToString([[maybe_unused]] KVMContext vmContext, KNativePointer stringPtr)
 {
-    std::string *string = reinterpret_cast<std::string *>(stringPtr);
-    KStringPtr result(string->c_str(), string->size(), false);
+    auto *str = reinterpret_cast<std::string *>(stringPtr);
+    KStringPtr result(str->c_str(), str->size(), false);
     return result;
 }
 TS_INTEROP_CTX_1(StdStringToString, KStringPtr, KNativePointer)
@@ -332,3 +332,5 @@ KInteropReturnBuffer impl_RawReturnData([[maybe_unused]] KVMContext vmContext, K
     return buffer;
 }
 TS_INTEROP_CTX_2(RawReturnData, KInteropReturnBuffer, KInt, KInt)
+
+// NOLINTEND

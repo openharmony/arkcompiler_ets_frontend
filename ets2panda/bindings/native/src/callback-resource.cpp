@@ -20,6 +20,8 @@
 #include <algorithm>
 #include <stdexcept>
 
+// NOLINTBEGIN
+
 static bool needReleaseFront = false;
 static std::deque<CallbackEventKind> callbackEventsQueue;
 static std::deque<CallbackBuffer> callbackCallSubqueue;
@@ -95,3 +97,5 @@ void impl_HoldCallbackResource(InteropInt32 resourceId)
     HoldManagedCallbackResource(resourceId);
 }
 TS_INTEROP_V1(HoldCallbackResource, KInt)
+
+// NOLINTEND
