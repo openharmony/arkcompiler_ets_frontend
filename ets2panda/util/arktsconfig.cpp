@@ -361,6 +361,11 @@ bool ArkTsConfig::ParseCompilerOptions(std::string &arktsConfigDir, std::unorder
         entry_ = MakeAbsolute(ValueOrEmptyString(compilerOptions, ENTRY), baseUrl_);
     }
 
+    // Parse "useUrl"
+    if (compilerOptions->get()->HasKey(USE_EMPTY_PACKAGE)) {
+        useUrl_ = *(compilerOptions->get()->GetValue<JsonObject::BoolT>(USE_EMPTY_PACKAGE));
+    }
+
     // Parse "dependencies"
     auto concatPath = [this](const auto &val) { return MakeAbsolute(val, baseUrl_); };
     std::vector<std::string> dependencyPaths;
