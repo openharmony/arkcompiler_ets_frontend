@@ -189,23 +189,17 @@ void AssignAnalyzer::Analyze(const ir::AstNode *node)
 
     firstNonGlobalAdr_ = nextAdr_;
     AnalyzeNodes(node);
-    if (numErrors_ > 0) {
-        checker_->LogError(diagnostic::ANALYSIS_ERRORS, {(size_t)numErrors_}, lastWarningPos_);
-        lastWarningPos_ = lexer::SourcePosition();
-    }
 }
 
 void AssignAnalyzer::Warning(const std::string_view message, const lexer::SourcePosition &pos)
 {
     ++numErrors_;
-    lastWarningPos_ = pos;
     checker_->Warning(message, pos);
 }
 
 void AssignAnalyzer::Warning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)
 {
     ++numErrors_;
-    lastWarningPos_ = pos;
     checker_->ReportWarning(list, pos);
 }
 
@@ -1440,11 +1434,6 @@ void AssignAnalyzer::CheckInit(const ir::AstNode *node)
     if (declNode->IsClassProperty()) {
         if (!CHECK_ALL_PROPERTIES && !declNode->IsConst()) {
             // non readonly property
-            return;
-        }
-
-        if (declNode->Parent() == globalClass_) {
-            // NOTE(pantos) dont check global variable accesses
             return;
         }
 

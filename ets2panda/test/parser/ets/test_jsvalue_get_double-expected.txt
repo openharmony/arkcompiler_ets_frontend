@@ -485,3 +485,4 @@
     }
   }
 }
+Warning: Variable 'v' is used before being assigned. [test_jsvalue_get_double.sts:17:21]

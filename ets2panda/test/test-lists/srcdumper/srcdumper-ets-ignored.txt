@@ -194,5 +194,8 @@ ast/compiler/ets/namespace_tests/namespace_ambient_export02.sts
 ast/compiler/ets/namespace_tests/namespace_ambient_export03.sts
 runtime/ets/namespace_tests/namespace_import_type_test/namespace_import.sts
 
+# #21051 should be log warnings, but there aren't
+ast/compiler/ets/not_initialized_variable/import_types.sts
+
 #Issue 22182
 ast/compiler/ets/implicit_package_import/package_test_5/package_module_1.sts

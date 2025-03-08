@@ -13,17 +13,8 @@
  * limitations under the License.
  */
 
-class A<T> {}
-declare function foo(a:A<number>):void
-declare function foo(a:A<string>):number
-declare function foo(a:int, b:int):void
-declare function foo(a:double):void
-declare function foo(...args:string[]):void
-let b :A<number>
-foo(b)
-foo(1,2)
-foo(1.1)
+import {car, animal, mutant, jsvalue, plug} from "./complex_types"
 
-/* @@? 17:1 Warning Warning: Function foo with this assembly signature already declared.  */
-/* @@? 23:1 Warning Warning: Detect duplicate signatures, use 'foo(..._: (Object|null|undefined)[]): void' to replace  */
-/* @@? 23:5 Warning Warning: Variable 'b' is used before being assigned. */
+console.log(car, animal, mutant, jsvalue, plug)
+
+// HERE SHOULD BE WARNINGS, BUT THERE AREN'T
