@@ -24,5 +24,3 @@ class A {
 }
 
 /* @@? 22:28 Error TypeError: Unresolved reference $$this */
-/* @@? 22:45 Error TypeError: Unresolved reference $$this */
-/* @@? 22:62 Error TypeError: Unresolved reference $$this */

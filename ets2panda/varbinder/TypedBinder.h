@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,13 +23,14 @@ class TypedBinder : public VarBinder {
 public:
     explicit TypedBinder(ArenaAllocator *allocator) : VarBinder(allocator) {}
 
+    TypedBinder() = delete;
     NO_COPY_SEMANTIC(TypedBinder);
     NO_MOVE_SEMANTIC(TypedBinder);
     ~TypedBinder() override = default;
 
 protected:
     void HandleCustomNodes(ir::AstNode *childNode) override;
-    void BuildSignatureDeclarationBaseParams([[maybe_unused]] ir::AstNode *typeNode) override;
+    void BuildSignatureDeclarationBaseParams(ir::AstNode *typeNode) override;
 };
 }  // namespace ark::es2panda::varbinder
 

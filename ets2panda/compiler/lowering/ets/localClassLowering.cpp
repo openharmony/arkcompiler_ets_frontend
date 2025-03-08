@@ -26,8 +26,7 @@ std::string_view LocalClassConstructionPhase::Name() const
 }
 
 static ir::ClassProperty *CreateCapturedField(checker::ETSChecker *checker, const varbinder::Variable *capturedVar,
-                                              varbinder::ClassScope *scope, size_t &idx,
-                                              const lexer::SourcePosition &pos)
+                                              varbinder::ClassScope *scope, size_t &idx)
 {
     auto *allocator = checker->Allocator();
     auto *varBinder = checker->VarBinder();
@@ -47,7 +46,7 @@ static ir::ClassProperty *CreateCapturedField(checker::ETSChecker *checker, cons
     fieldIdent->SetParent(field);
 
     // Add the declaration to the scope, and set the type based on the captured variable's scope
-    auto [decl, var] = varBinder->NewVarDecl<varbinder::LetDecl>(pos, fieldIdent->Name());
+    auto [decl, var] = varBinder->NewVarDecl<varbinder::LetDecl>(fieldIdent->Start(), fieldIdent->Name());
     var->SetScope(scope->InstanceFieldScope());
     var->AddFlag(varbinder::VariableFlags::PROPERTY);
     var->SetTsType(capturedVar->TsType());
@@ -88,8 +87,8 @@ void LocalClassConstructionPhase::CreateClassPropertiesForCapturedVariables(
     ArenaVector<ir::AstNode *> properties(ctx->allocator->Adapter());
     for (auto var : capturedVars) {
         ES2PANDA_ASSERT(classDef->Scope()->Type() == varbinder::ScopeType::CLASS);
-        auto *property = CreateCapturedField(checker, var, reinterpret_cast<varbinder::ClassScope *>(classDef->Scope()),
-                                             idx, classDef->Start());
+        auto *property =
+            CreateCapturedField(checker, var, reinterpret_cast<varbinder::ClassScope *>(classDef->Scope()), idx);
         LOG(DEBUG, ES2PANDA) << "  - Creating property (" << property->Id()->Name()
                              << ") for captured variable: " << var->Name();
         properties.push_back(property);
@@ -110,7 +109,7 @@ ir::ETSParameterExpression *LocalClassConstructionPhase::CreateParam(checker::ET
     newParam->Ident()->SetTsType(type);
     auto paramCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(checker->VarBinder(), scope, false);
 
-    auto *paramVar = std::get<1>(checker->VarBinder()->AddParamDecl(newParam));
+    auto *paramVar = checker->VarBinder()->AddParamDecl(newParam);
     paramVar->SetTsType(newParam->TsType());
     newParam->Ident()->SetVariable(paramVar);
     return newParam;
@@ -170,8 +169,10 @@ void LocalClassConstructionPhase::ModifyConstructorParameters(
             initStatement->SetParent(body);
             initStatements.push_back(initStatement);
         }
-        auto &statements = body->AsBlockStatement()->Statements();
-        statements.insert(statements.begin(), initStatements.begin(), initStatements.end());
+        if (body != nullptr && body->IsBlockStatement()) {
+            auto &statements = body->AsBlockStatement()->Statements();
+            statements.insert(statements.begin(), initStatements.begin(), initStatements.end());
+        }
     }
 }
 
@@ -206,7 +207,9 @@ void LocalClassConstructionPhase::RemapReferencesFromCapturedVariablesToClassPro
     for (auto *signature : classType->ConstructSignatures()) {
         auto *constructor = signature->Function();
         LOG(DEBUG, ES2PANDA) << "  - Rebinding variable rerferences in: " << constructor->Id()->Name();
-        constructor->Body()->IterateRecursively(remapCapturedVariables);
+        if (constructor->Body() != nullptr) {
+            constructor->Body()->IterateRecursively(remapCapturedVariables);
+        }
     }
 }
 

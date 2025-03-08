@@ -853,7 +853,6 @@ private:
     void ValidateCallExpressionIdentifier(ir::Identifier *const ident, Type *const type);
     void ValidateNewClassInstanceIdentifier(ir::Identifier *const ident);
     void ValidateMemberIdentifier(ir::Identifier *const ident);
-    void ValidatePropertyOrDeclaratorIdentifier(ir::Identifier *const ident);
     void ValidateAssignmentIdentifier(ir::Identifier *const ident, Type *const type);
     bool ValidateBinaryExpressionIdentifier(ir::Identifier *const ident, Type *const type);
     void ValidateGetterSetter(const ir::MemberExpression *const memberExpr, const varbinder::LocalVariable *const prop,

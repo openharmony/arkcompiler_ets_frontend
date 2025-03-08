@@ -121,6 +121,10 @@ checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *co
         return HandlePartialType(checker, ident);
     }
 
+    if (ident->IsErrorPlaceHolder()) {
+        return checker->GlobalTypeError();
+    }
+
     return nullptr;
 }
 

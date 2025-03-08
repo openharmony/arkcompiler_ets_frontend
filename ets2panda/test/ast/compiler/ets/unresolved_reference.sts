@@ -38,9 +38,4 @@ function main() {
 }
 
 /* @@? 28:13 Error TypeError: Unresolved reference b */
-/* @@? 28:13 Error TypeError: Unresolved reference b */
-/* @@? 16:13 Error TypeError: Unresolved reference b */
-/* @@? 20:13 Error TypeError: Unresolved reference b */
-/* @@? 24:18 Error TypeError: Unresolved reference b */
-/* @@? 32:17 Error TypeError: Unresolved reference b */
 /* @@? 37:21 Error TypeError: Property 'b' does not exist on type 'A' */

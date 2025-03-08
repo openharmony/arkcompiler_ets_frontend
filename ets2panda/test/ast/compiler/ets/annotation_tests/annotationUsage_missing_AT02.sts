@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,8 +15,8 @@
 @interface MyAnno {
 }
 
-MyAnno
+/* @@ label */MyAnno
 function foo(): void {}
 
-/* @@? 18:1 Error TypeError: Annotation missing '@' symbol before annotation name.  */
-/* @@? 18:1 Error TypeError: Unresolved reference MyAnno   */
+/* @@@ label Error TypeError: Annotation missing '@' symbol before annotation name. */
+/* @@@ label Error TypeError: Annotation name 'MyAnno' used in the wrong context */

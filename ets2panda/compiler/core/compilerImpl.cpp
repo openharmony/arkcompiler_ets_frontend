@@ -148,10 +148,6 @@ static bool RunVerifierAndPhases(public_lib::Context &context, const std::vector
             return false;
         }
 
-        if (name == compiler::ScopesInitPhase::NAME && context.diagnosticEngine->IsAnyError()) {
-            verifier.Suppress();
-        }
-
         if (verifierEachPhase || options.HasVerifierPhase(name)) {
             verifier.Verify(name);
         }

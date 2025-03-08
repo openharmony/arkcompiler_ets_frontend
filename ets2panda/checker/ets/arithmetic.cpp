@@ -1148,7 +1148,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
     Type *unboxedR =
         isLogicalExtendedOperator ? MaybeUnboxConditionalInRelation(rightType) : MaybeUnboxInRelation(rightType);
 
-    ASSERT(operationType != lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    ES2PANDA_ASSERT(operationType != lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
     bool isEqualOp = lexer::Token::IsBinaryLvalueToken(operationType) && !forcePromotion;
 
     if (CheckBinaryOperatorForBigInt(leftType, rightType, operationType)) {

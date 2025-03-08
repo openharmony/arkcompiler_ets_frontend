@@ -146,15 +146,15 @@ public:
     static compiler::Literal ToConstantLiteral(const ir::Expression *expr);
     static bool IsBindingPattern(const ir::AstNode *node);
     static bool IsPattern(const ir::AstNode *node);
-    static std::vector<ir::Identifier *> CollectBindingNames(ir::AstNode *node);
+    static std::vector<ir::Identifier *> CollectBindingNames(ir::Expression *node);
     static util::StringView FunctionName(ArenaAllocator *allocator, const ir::ScriptFunction *func);
     static void CheckImportedName(const ArenaVector<ir::ImportSpecifier *> &specifiers,
                                   const ir::ImportSpecifier *specifier, const std::string &fileName);
     static void CheckDefaultImportedName(const ArenaVector<ir::ImportDefaultSpecifier *> &specifiers,
                                          const ir::ImportDefaultSpecifier *specifier, const std::string &fileName);
     static void CheckDefaultImport(const ArenaVector<ir::ETSImportDeclaration *> &statements);
-    static std::tuple<util::StringView, bool> ParamName(ArenaAllocator *allocator, const ir::AstNode *param,
-                                                        uint32_t index);
+    static std::tuple<util::StringView, bool> ParamName(ArenaAllocator *allocator, const ir::Expression *param,
+                                                        std::uint32_t index);
 
     template <typename T, typename V>
     static ArenaVector<T *> ConvertVector(const ArenaVector<V *> &src)

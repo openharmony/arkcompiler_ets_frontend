@@ -65,9 +65,6 @@ ast/compiler/ets/implicit_this_method_trailing.sts
 ast/compiler/ets/recordWithLambdaFunction2.sts
 ast/compiler/ets/extension_accessor_tests/extensionGetterInWrongUsage.sts
 
-# Issue: ##22719
-ast/parser/ets/forOfType.sts
-
 # Checked only as imported modules. If these files are parsed directly, there will be
 # errors located in other files (import_type_error_in_class.sts/import_type_error_top_level.sts),
 # and such case cannot be checked in astchecker

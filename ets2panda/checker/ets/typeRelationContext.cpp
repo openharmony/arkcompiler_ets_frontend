@@ -82,7 +82,7 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
                 checker_->Relation()->SetNode(it);
 
                 auto *const boxedTypeArg = checker_->MaybeBoxInRelation(paramType);
-                ASSERT(boxedTypeArg);
+                ASSERT(boxedTypeArg != nullptr);
                 paramType = boxedTypeArg->Instantiate(checker_->Allocator(), checker_->Relation(),
                                                       checker_->GetGlobalTypesHolder());
             }

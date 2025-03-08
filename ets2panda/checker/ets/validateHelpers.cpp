@@ -55,18 +55,20 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, T
 {
     if (ident->Variable()->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) &&
         ident->Parent()->AsCallExpression()->Callee() != ident) {
-        std::ignore = TypeError(ident->Variable(),
-                                {"Class or interface '", ident->Name(), "' cannot be used as object"}, ident->Start());
+        std::ignore =
+            TypeError(ident->Variable(), {"Class or interface '", ident->ToString(), "' cannot be used as object"},
+                      ident->Start());
     }
 
     if (ident->Parent()->AsCallExpression()->Callee() != ident) {
         return;
     }
-    if (ident->Variable() != nullptr &&  // It should always be true!
-        ident->Variable()->Declaration()->Node() != nullptr &&
+
+    ES2PANDA_ASSERT(ident->Variable() != nullptr);
+    if (ident->Variable()->Declaration()->Node() != nullptr &&
         ident->Variable()->Declaration()->Node()->IsImportNamespaceSpecifier()) {
-        std::ignore = TypeError(ident->Variable(), {"Namespace style identifier ", ident->Name(), " is not callable."},
-                                ident->Start());
+        std::ignore = TypeError(
+            ident->Variable(), {"Namespace style identifier ", ident->ToString(), " is not callable."}, ident->Start());
     }
     if (type->IsETSFunctionType() || type->IsETSDynamicType()) {
         return;
@@ -82,10 +84,11 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, T
 void ETSChecker::ValidateNewClassInstanceIdentifier(ir::Identifier *const ident)
 {
     auto const resolved = ident->Variable();
-    if (ident->Parent()->AsETSNewClassInstanceExpression()->GetTypeRef() == ident && (resolved != nullptr) &&
-        !resolved->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE)) {
-        LogUnresolvedReferenceError(ident);
-        return;
+    ES2PANDA_ASSERT(resolved != nullptr);
+
+    if (ident->Parent()->AsETSNewClassInstanceExpression()->GetTypeRef() == ident &&
+        !resolved->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) && !resolved->TsType()->IsTypeError()) {
+        LogTypeError({"Invalid reference '", ident->Name(), "'."}, ident->Start());
     }
 }
 
@@ -100,19 +103,6 @@ void ETSChecker::ValidateMemberIdentifier(ir::Identifier *const ident)
         if ((resolved != nullptr) && !resolved->Declaration()->PossibleTDZ()) {
             WrongContextErrorClassifyByType(ident);
         }
-        return;
-    }
-}
-
-void ETSChecker::ValidatePropertyOrDeclaratorIdentifier(ir::Identifier *const ident)
-{
-    auto const resolved = ident->Variable();
-    if ((resolved != nullptr) && resolved->TsType() != nullptr && resolved->TsType()->IsETSFunctionType()) {
-        return;
-    }
-
-    if ((resolved != nullptr) && !resolved->Declaration()->PossibleTDZ()) {
-        LogUnresolvedReferenceError(ident);
         return;
     }
 }
@@ -181,10 +171,6 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident)
                 WrongContextErrorClassifyByType(ident);
             }
             break;
-        case ir::AstNodeType::CLASS_PROPERTY:
-        case ir::AstNodeType::VARIABLE_DECLARATOR:
-            ValidatePropertyOrDeclaratorIdentifier(ident);
-            break;
         case ir::AstNodeType::ASSIGNMENT_EXPRESSION:
             ValidateAssignmentIdentifier(ident, resolvedType);
             break;
@@ -212,7 +198,7 @@ bool ETSChecker::ValidateAnnotationPropertyType(checker::Type *type)
 
 void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)
 {
-    if (variable == nullptr || IsVariableGetterSetter(variable) || variable->Declaration() == nullptr) {
+    if (IsVariableGetterSetter(variable)) {
         return;
     }
 

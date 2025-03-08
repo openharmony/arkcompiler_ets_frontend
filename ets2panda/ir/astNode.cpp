@@ -210,7 +210,7 @@ AstNode *AstNode::FindChild(const NodePredicate &cb) const
     return found;
 }
 
-varbinder::Scope *AstNode::EnclosingScope(const ir::AstNode *expr)
+varbinder::Scope *AstNode::EnclosingScope(const ir::AstNode *expr) noexcept
 {
     while (expr != nullptr && !expr->IsScopeBearer()) {
         expr = expr->Parent();

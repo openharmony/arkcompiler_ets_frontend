@@ -1068,9 +1068,7 @@ void AssignAnalyzer::AnalyzeId(const ir::Identifier *id)
         }
     }
 
-    if (id->Variable() != nullptr) {
-        CheckInit(id);
-    }
+    CheckInit(id);
 }
 
 static bool IsIdentOrThisDotIdent(const ir::AstNode *node)
@@ -1342,11 +1340,8 @@ const ir::AstNode *AssignAnalyzer::GetDeclaringNode(const ir::AstNode *node)
             }
         }
     } else if (node->IsIdentifier()) {
-        const ir::Identifier *id = node->AsIdentifier();
-        if (id->Variable() != nullptr) {
-            if (id->Variable()->Declaration() != nullptr) {
-                ret = id->Variable()->Declaration()->Node();
-            }
+        if (auto *const variable = node->Variable(); variable != nullptr) {
+            ret = variable->Declaration()->Node();
         }
     }
 
@@ -1372,9 +1367,8 @@ bool AssignAnalyzer::VariableHasDefaultValue(const ir::AstNode *node)
         isNonReadonlyField = !node->IsReadonly();  // NOTE(pantos) readonly is true, const is not set?
     } else if (node->IsVariableDeclarator()) {
         varbinder::Variable *variable = GetBoundVariable(node);
-        if (variable != nullptr) {
-            type = variable->TsType();
-        }
+        ES2PANDA_ASSERT(variable != nullptr);
+        type = variable->TsType();
     } else {
         UNREACHABLE();
     }

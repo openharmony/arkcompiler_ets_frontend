@@ -15,8 +15,6 @@
 
 #include "checkStructDeclaration.h"
 
-#include "ir/statements/blockStatement.h"
-
 namespace ark::es2panda::compiler::ast_verifier {
 
 CheckResult CheckStructDeclaration::operator()(const ir::AstNode *ast)

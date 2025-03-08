@@ -22,11 +22,11 @@ let b: [number, /* @@ label */,number, number,] = [1, 2, 3,];
 /* @@? 17:18 Error SyntaxError: Unexpected token ':'. */
 /* @@? 17:18 Error SyntaxError: Unexpected token ':'. */
 /* @@? 17:18 Error SyntaxError: Unexpected token, expected ',' or ']'. */
-/* @@? 17:20 Error TypeError: Unresolved reference number */
+/* @@? 17:20 Error TypeError: Type name 'number' used in the wrong context */
 /* @@? 17:26 Error SyntaxError: Unexpected token ','. */
 /* @@? 17:26 Error SyntaxError: Unexpected token ','. */
 /* @@? 17:26 Error SyntaxError: Unexpected token ','. */
-/* @@? 17:28 Error TypeError: Unresolved reference number */
+/* @@? 17:28 Error TypeError: Type name 'number' used in the wrong context */
 /* @@? 17:34 Error SyntaxError: Unexpected token ','. */
 /* @@? 17:34 Error SyntaxError: Unexpected token ','. */
 /* @@? 17:34 Error SyntaxError: Unexpected token ','. */

@@ -14,7 +14,7 @@
  */
 
 class A<T> {}
-declare function foo(a:A<number>):void 
+declare function foo(a:A<number>):void
 declare function foo(a:A<string>):number
 declare function foo(a:int, b:int):void
 declare function foo(a:double):void
@@ -25,4 +25,4 @@ foo(1,2)
 foo(1.1)
 
 /* @@? 17:1 Warning Warning: Function foo with this assembly signature already declared.  */
-/* @@? 23:1 Warning Warning: Detect duplicate signatures, use 'foo(...gensym%%_1: (Object|null|undefined)[]): void' to replace  */
+/* @@? 23:1 Warning Warning: Detect duplicate signatures, use 'foo(..._: (Object|null|undefined)[]): void' to replace  */

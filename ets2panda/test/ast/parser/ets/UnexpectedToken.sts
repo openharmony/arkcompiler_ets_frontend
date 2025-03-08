@@ -28,7 +28,7 @@ function main(): void {
 /* @@? 18:38 Error TypeError: Cannot find type 'A'. */
 /* @@? 18:68 Error TypeError: Cannot find type 'A'. */
 /* @@? 18:70 Error SyntaxError: Expected ')', got ';'. */
-/* @@? 18:72 Error TypeError: Unresolved reference f */
+/* @@? 18:72 Error TypeError: This expression is not callable. */
 /* @@? 18:78 Error TypeError: Cannot find type 'A'. */
 /* @@? 19:1 Error SyntaxError: Unexpected token ')'. */
 /* @@? 19:4 Error TypeError: Unresolved reference i */

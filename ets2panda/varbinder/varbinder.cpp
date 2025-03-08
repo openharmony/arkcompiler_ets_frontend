@@ -29,61 +29,52 @@ void VarBinder::InitTopScope()
     varScope_ = topScope_;
 }
 
-std::tuple<ParameterDecl *, Variable *> VarBinder::AddParamDecl(ir::AstNode *param)
+Variable *VarBinder::AddParamDecl(ir::Expression *param)
 {
     ES2PANDA_ASSERT(scope_->IsFunctionParamScope() || scope_->IsCatchParamScope());
-    auto [decl, node, var] = static_cast<ParamScope *>(scope_)->AddParamDecl(Allocator(), param);
+
+    auto [var, node] = static_cast<ParamScope *>(scope_)->AddParamDecl(Allocator(), param);
+    ES2PANDA_ASSERT(var != nullptr);
 
     if (node != nullptr) {
-        ThrowRedeclaration(node->Start(), decl->Name());
+        ThrowRedeclaration(node->Start(), var->Name());
     }
-    return {decl, var};
+
+    return var;
 }
 
 void VarBinder::ThrowRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
-    std::stringstream ss;
-    ss << "Variable '" << name << "' has already been declared.";
-    ThrowError(pos, ss.str());
-}
-
-void VarBinder::ThrowUnresolvableVariable(const lexer::SourcePosition &pos, const util::StringView &name) const
-{
-    std::stringstream ss;
-    ss << "Cannot find variable '" << name << "'.";
-    ThrowError(pos, ss.str());
+    auto const str = std::string {"Variable '"}.append(name.Utf8()).append("' has already been declared.");
+    ThrowError(pos, str);
 }
 
 void VarBinder::ThrowUnresolvableType(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
-    std::stringstream ss;
-    ss << "Cannot find type '" << name << "'.";
-    ThrowError(pos, ss.str());
+    auto const str = std::string {"Cannot find type '"}.append(name.Utf8()).append("'.");
+    ThrowError(pos, str);
 }
 
 void VarBinder::ThrowTDZ(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
-    std::stringstream ss;
-    ss << "Variable '" << name << "' is accessed before it's initialization.";
-    ThrowError(pos, ss.str());
+    auto const str = std::string {"Variable '"}.append(name.Utf8()).append("' is accessed before it's initialization.");
+    ThrowError(pos, str);
 }
 
 void VarBinder::ThrowInvalidCapture(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
-    std::stringstream ss;
-    ss << "Cannot capture variable'" << name << "'.";
-    ThrowError(pos, ss.str());
+    auto const str = std::string {"Cannot capture variable '"}.append(name.Utf8()).append("'.");
+    ThrowError(pos, str);
 }
 
 void VarBinder::ThrowPrivateFieldMismatch(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
-    std::stringstream ss;
-    ss << "Private field '" << name << "' must be declared in an enclosing class";
-
-    ThrowError(pos, ss.str());
+    auto const str =
+        std::string {"Private field '"}.append(name.Utf8()).append("' must be declared in an enclosing class");
+    ThrowError(pos, str);
 }
 
-void VarBinder::ThrowError(const lexer::SourcePosition &pos, const std::string_view &msg) const
+void VarBinder::ThrowError(const lexer::SourcePosition &pos, const std::string_view msg) const
 {
     lexer::LineIndex index(program_->SourceCode());
     lexer::SourceLocation loc = index.GetLocation(pos);
@@ -124,13 +115,12 @@ bool VarBinder::InstantiateArgumentsImpl(Scope **scope, Scope *iter, const ir::A
     if (node->AsScriptFunction()->IsArrow()) {
         return false;
     }
-    auto *argumentsVariable =
-        (*scope)->AddDecl<ConstDecl, LocalVariable>(Allocator(), FUNCTION_ARGUMENTS, VariableFlags::INITIALIZED);
-    if (iter->IsFunctionParamScope()) {
-        if (argumentsVariable == nullptr) {
-            return true;
-        }
 
+    auto [argumentsVariable, exists] =
+        (*scope)->AddDecl<ConstDecl, LocalVariable>(Allocator(), FUNCTION_ARGUMENTS, VariableFlags::INITIALIZED);
+    if (exists && Extension() != ScriptExtension::JS) {
+        ThrowRedeclaration(node->Start(), FUNCTION_ARGUMENTS);
+    } else if (iter->IsFunctionParamScope()) {
         *scope = iter->AsFunctionParamScope()->GetFunctionScope();
         (*scope)->InsertBinding(argumentsVariable->Name(), argumentsVariable);
     }

@@ -91,7 +91,6 @@ interface I1 {
 /* @@? 27:5 Error TypeError: Non abstract class has abstract method. */
 /* @@? 27:20 Error SyntaxError: Abstract method cannot be async. */
 /* @@? 35:5 Error SyntaxError: Only one static block is allowed. */
-/* @@? 35:5 Error TypeError: Variable '<cctor>' has already been declared. */
 /* @@? 38:10 Error SyntaxError: Duplicated modifier is not allowed. */
 /* @@? 41:5 Error SyntaxError: The special predefined method '$_get' should have exactly one required parameter. */
 /* @@? 41:5 Error SyntaxError: The special predefined method '$_get' cannot be asynchronous. */
@@ -99,8 +98,8 @@ interface I1 {
 /* @@? 45:5 Error SyntaxError: The special predefined method '$_set' should have exactly two required parameter. */
 /* @@? 45:5 Error SyntaxError: The special predefined method '$_set' cannot be asynchronous. */
 /* @@? 45:16 Error TypeError: Only abstract or native methods can't have body. */
-/* @@? 47:5 Error SyntaxError: The special predefined method '$_iterator' should not have parameters. */
 /* @@? 47:5 Error SyntaxError: The special predefined method '$_iterator' cannot be asynchronous. */
+/* @@? 47:5 Error SyntaxError: The special predefined method '$_iterator' should not have parameters. */
 /* @@? 47:21 Error TypeError: The return type of '$_iterator' must be a type that implements Iterator interface. */
 /* @@? 47:21 Error TypeError: Return type of async function must be 'Promise'. */
 /* @@? 54:21 Error TypeError: Initializers are not allowed in ambient contexts: x */
@@ -117,8 +116,8 @@ interface I1 {
 /* @@? 66:9 Error SyntaxError: Local class or interface declaration members can not have access modifies. */
 /* @@? 66:18 Error SyntaxError: Private interface methods must have body. */
 /* @@? 67:9 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
-/* @@? 67:16 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
 /* @@? 67:16 Error SyntaxError: Unexpected token, expected ','. */
+/* @@? 67:16 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
 /* @@? 67:16 Error SyntaxError: Identifier expected. */
 /* @@? 67:24 Error SyntaxError: Private interface methods must have body. */
 /* @@? 72:5 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
@@ -128,6 +127,6 @@ interface I1 {
 /* @@? 74:14 Error TypeError: Extension function can only defined for class, interface or array. */
 /* @@? 74:25 Error SyntaxError: Extension Accessor must have a receiver. */
 /* @@? 78:8 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 78:8 Error TypeError: Unresolved reference number */
+/* @@? 78:8 Error TypeError: Type name 'number' used in the wrong context */
 /* @@? 79:1 Error SyntaxError: Unexpected token '}'. */
 /* @@? 79:1 Error SyntaxError: Unexpected token '}'. */

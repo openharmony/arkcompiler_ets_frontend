@@ -15,10 +15,10 @@
 
 class A {
     fld: number[];
-    constructor(...p: number[]/* @@ label */, x: int/* @@ label1 */) /* @@ label2 */{
-        /* @@ label3 */this/* @@ label4 */.fld = p;
+    constructor(...p: number[], x: int) {
+        this.fld = p;
     }
-/* @@ label5 */}
+}
 
 let nums: number[] = [1.0, 2.0, 3.0];
 
@@ -27,10 +27,12 @@ function main() {
 }
 
 /* @@? 18:16 Error TypeError: Only abstract or native methods can't have body. */
-/* @@? 18:45 Error SyntaxError: Rest parameter must be the last formal parameter. */
-/* @@? 18:68 Error SyntaxError: Unexpected token ')'. */
-/* @@? 18:85 Error SyntaxError: Unexpected token '{'. */
-/* @@? 19:24 Error SyntaxError: Unexpected token 'this'. */
-/* @@? 19:43 Error SyntaxError: Unexpected token '.'. */
-/* @@? 19:44 Error TypeError: Variable 'fld' has already been declared. */
-/* @@? 21:16 Error SyntaxError: Unexpected token '}'. */
+/* @@? 18:31 Error SyntaxError: Rest parameter must be the last formal parameter. */
+/* @@? 18:39 Error SyntaxError: Unexpected token ')'. */
+/* @@? 18:41 Error SyntaxError: Unexpected token '{'. */
+/* @@? 19:9 Error SyntaxError: Unexpected token 'this'. */
+/* @@? 19:13 Error SyntaxError: Unexpected token '.'. */
+/* @@? 19:14 Error TypeError: Variable 'fld' has already been declared. */
+/* @@? 19:14 Error TypeError: Property 'fld' must be accessed through 'this' */
+/* @@? 19:20 Error TypeError: Unresolved reference p */
+/* @@? 21:1 Error SyntaxError: Unexpected token '}'. */

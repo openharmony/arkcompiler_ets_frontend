@@ -28,12 +28,15 @@ export class MathSpectralNorm {
 /* @@? 19:16 Error TypeError: Unresolved reference i */
 /* @@? 19:18 Error SyntaxError: Unexpected token '='. */
 /* @@? 19:23 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
-/* @@? 19:23 Error TypeError: Unresolved reference i */
 /* @@? 19:29 Error SyntaxError: Expected ';', got ':'. */
 /* @@? 19:29 Error SyntaxError: Unexpected token ':'. */
 /* @@? 19:29 Error SyntaxError: Expected ')', got ':'. */
 /* @@? 19:29 Error SyntaxError: Unexpected token ':'. */
-/* @@? 19:31 Error TypeError: Unresolved reference i */
+/* @@? 19:29 Error SyntaxError: Unexpected token ':'. */
+/* @@? 19:29 Error SyntaxError: Unexpected token ':'. */
+/* @@? 19:29 Error SyntaxError: Unexpected token ':'. */
+/* @@? 19:34 Error SyntaxError: Unexpected token ')'. */
+/* @@? 19:34 Error SyntaxError: Unexpected token ')'. */
 /* @@? 19:34 Error SyntaxError: Unexpected token ')'. */
 /* @@? 20:7 Error TypeError: Unresolved reference vbv */
 /* @@? 20:14 Error TypeError: Unresolved reference u */
@@ -41,9 +44,5 @@ export class MathSpectralNorm {
 /* @@? 20:21 Error TypeError: Unresolved reference v */
 /* @@? 20:21 Error TypeError: Indexed access is not supported for such expression type. */
 /* @@? 21:7 Error TypeError: Unresolved reference vv */
-/* @@? 21:14 Error TypeError: Unresolved reference v */
 /* @@? 21:14 Error TypeError: Indexed access is not supported for such expression type. */
-/* @@? 21:21 Error TypeError: Unresolved reference v */
 /* @@? 21:21 Error TypeError: Indexed access is not supported for such expression type. */
-/* @@? 24:17 Error TypeError: Unresolved reference vbv */
-/* @@? 24:23 Error TypeError: Unresolved reference vv */

@@ -13,15 +13,14 @@
  * limitations under the License.
  */
 
+#include "checker/ETSchecker.h"
+
+#include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsTupleType.h"
 #include "checker/ets/typeRelationContext.h"
-#include "checker/ETSchecker.h"
-#include "checker/types/globalTypesHolder.h"
 #include "evaluate/scopedDebugInfoPlugin.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
-
-#include <checker/ETSAnalyzerHelpers.h>
 
 namespace ark::es2panda::checker {
 varbinder::Variable *ETSChecker::FindVariableInFunctionScope(const util::StringView name,
@@ -76,34 +75,52 @@ void ETSChecker::LogUnresolvedReferenceError(ir::Identifier *const ident)
 
 void ETSChecker::WrongContextErrorClassifyByType(ir::Identifier *ident)
 {
-    std::string identCategoryName;
+    if (ident->IsErrorPlaceHolder()) {
+        return;
+    }
+
+    std::string identCategoryName {};
     switch (static_cast<varbinder::VariableFlags>(
         ident->Variable()->Flags() &
-        (varbinder::VariableFlags::CLASS_OR_INTERFACE_OR_ENUM | varbinder::VariableFlags::METHOD))) {
-        case varbinder::VariableFlags::CLASS: {
+        (varbinder::VariableFlags::CLASS_OR_INTERFACE_OR_ENUM | varbinder::VariableFlags::METHOD |
+         varbinder::VariableFlags::NAMESPACE | varbinder::VariableFlags::ANNOTATIONDECL |
+         varbinder::VariableFlags::ANNOTATIONUSAGE | varbinder::VariableFlags::TYPE_ALIAS |
+         varbinder::VariableFlags::TYPE))) {
+        case varbinder::VariableFlags::CLASS:
             identCategoryName = "Class";
             break;
-        }
-        case varbinder::VariableFlags::NAMESPACE: {
+
+        case varbinder::VariableFlags::NAMESPACE:
             identCategoryName = "Namespace";
             break;
-        }
-        case varbinder::VariableFlags::METHOD: {
+
+        case varbinder::VariableFlags::METHOD:
             identCategoryName = "Function";
             break;
-        }
-        case varbinder::VariableFlags::INTERFACE: {
+
+        case varbinder::VariableFlags::INTERFACE:
             identCategoryName = "Interface";
             break;
-        }
-        case varbinder::VariableFlags::ENUM_LITERAL: {
+
+        case varbinder::VariableFlags::ENUM_LITERAL:
             identCategoryName = "Enum";
             break;
-        }
-        default: {
-            LogUnresolvedReferenceError(ident);
+
+        case varbinder::VariableFlags::ANNOTATIONDECL:
+            [[fallthrough]];
+        case varbinder::VariableFlags::ANNOTATIONUSAGE:
+            identCategoryName = "Annotation";
+            break;
+
+        case varbinder::VariableFlags::TYPE:
+            [[fallthrough]];
+        case varbinder::VariableFlags::TYPE_ALIAS:
+            identCategoryName = "Type";
+            break;
+
+        default:
+            LogTypeError({"Identifier '", ident->Name(), "' is used in wrong context."}, ident->Start());
             return;
-        }
     }
     LogError(diagnostic::ID_IN_WRONG_CTX, {identCategoryName.c_str(), ident->Name()}, ident->Start());
 }
@@ -264,7 +281,12 @@ Type *ETSChecker::ResolveIdentifier(ir::Identifier *ident)
     if (resolved == nullptr) {
         resolved = ExtraCheckForResolvedError(ident);
         if (resolved == nullptr) {
-            return GlobalTypeError();
+            auto [decl, var] = VarBinder()->NewVarDecl<varbinder::LetDecl>(
+                ident->Start(), !ident->IsErrorPlaceHolder() ? ident->Name() : compiler::GenName(Allocator()).View());
+            var->SetScope(VarBinder()->GetScope());
+            ident->SetVariable(var);
+            decl->BindNode(ident);
+            return ident->SetTsType(var->SetTsType(GlobalTypeError()));
         }
         ident->SetVariable(resolved);
         return GetTypeOfVariable(resolved);
@@ -653,8 +675,7 @@ static bool NeedWidening(ir::Expression *e)
     if (e->IsUnaryExpression()) {
         return NeedWidening(e->AsUnaryExpression()->Argument());
     }
-    const bool isConstInit =
-        e->IsIdentifier() && e->Variable() != nullptr && e->Variable()->Declaration()->IsConstDecl();
+    const bool isConstInit = e->IsIdentifier() && e->Variable()->Declaration()->IsConstDecl();
 
     return e->IsConditionalExpression() || e->IsLiteral() || isConstInit;
 }
@@ -778,6 +799,11 @@ checker::Type *ETSChecker::ResolveSmartType(checker::Type *sourceType, checker::
     //  For left-hand variable of tuple type leave it as is.
     if (targetType->IsETSTupleType()) {
         return targetType;
+    }
+
+    //  For left-hand invalid variable set smart type to right-hand type.
+    if (targetType->IsTypeError()) {
+        return sourceType;
     }
 
     //  For left-hand variable of builtin type leave it as is.
@@ -1395,8 +1421,9 @@ Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)
     ES2PANDA_ASSERT(name->IsIdentifier());
 
     auto *const var = name->AsIdentifier()->Variable();
-    if (var == nullptr) {
-        ES2PANDA_ASSERT(IsAnyError());
+    ES2PANDA_ASSERT(var != nullptr);
+
+    if (var->TsType() != nullptr && var->TsType()->IsTypeError()) {
         return name->SetTsType(GlobalTypeError());
     }
 
@@ -1619,8 +1646,15 @@ std::optional<const ir::AstNode *> ETSChecker::FindJumpTarget(ir::AstNode *node)
     // Look for label
     auto label = isContinue ? node->AsContinueStatement()->Ident() : node->AsBreakStatement()->Ident();
     if (label != nullptr) {
-        auto var = label->Variable();
-        if (var != nullptr && var->Declaration()->IsLabelDecl()) {
+        if (auto var = label->Variable(); var == nullptr) {
+            varbinder::LetDecl *decl;
+            std::tie(decl, var) = VarBinder()->NewVarDecl<varbinder::LetDecl>(
+                label->Start(), !label->IsErrorPlaceHolder() ? label->Name() : compiler::GenName(Allocator()).View());
+            var->SetScope(VarBinder()->GetScope());
+            label->SetVariable(var);
+            decl->BindNode(label);
+            label->SetTsType(var->SetTsType(GlobalTypeError()));
+        } else if (var->Declaration()->IsLabelDecl()) {
             return var->Declaration()->Node();
         }
 
@@ -2317,9 +2351,7 @@ ir::ClassProperty *ETSChecker::ClassPropToImplementationProp(ir::ClassProperty *
 
     auto fieldVar = scope->InstanceFieldScope()->AddDecl(Allocator(), fieldDecl, ScriptExtension::STS);
     fieldVar->AddFlag(varbinder::VariableFlags::PROPERTY);
-
     classProp->Key()->SetVariable(fieldVar);
-    classProp->Key()->AsIdentifier()->SetVariable(fieldVar);
     fieldVar->SetTsType(classProp->TsType());
 
     auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>::Enter(VarBinder(), scope);
@@ -2375,12 +2407,15 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent, false, Allocator());
     paramExpression->SetRange(paramIdent->Range());
-    auto *const paramVar = std::get<2>(paramScope->AddParamDecl(Allocator(), paramExpression));
-    paramExpression->SetVariable(paramVar);
 
+    auto [paramVar, node] = paramScope->AddParamDecl(Allocator(), paramExpression);
+    if (node != nullptr) {
+        VarBinder()->ThrowRedeclaration(node->Start(), paramVar->Name());
+    }
+
+    paramExpression->SetVariable(paramVar);
     params.push_back(paramExpression);
 
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *assignmentExpression = AllocNode<ir::AssignmentExpression>(
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         memberExpression, paramExpression->Clone(Allocator(), nullptr), lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
@@ -2546,8 +2581,8 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
 
     auto *const methodScope = scope->InstanceMethodScope();
     auto *const decl = Allocator()->New<varbinder::FunctionDecl>(Allocator(), name, getter);
-    auto *var = methodScope->AddDecl(Allocator(), decl, ScriptExtension::STS);
 
+    auto *var = methodScope->AddDecl(Allocator(), decl, ScriptExtension::STS);
     if (var == nullptr) {
         auto *const prevDecl = methodScope->FindDecl(name);
         for (const auto &method : {getter, setter}) {
@@ -2556,8 +2591,9 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
             }
         }
         var = methodScope->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS);
+        var->AddFlag(varbinder::VariableFlags::METHOD);
     }
-    var->AddFlag(varbinder::VariableFlags::METHOD);
+
     getter->Function()->Id()->SetVariable(var);
 
     SetupGetterSetterFlags(originalProp, classType, getter, setter, HasStatus(CheckerStatus::IN_EXTERNAL));

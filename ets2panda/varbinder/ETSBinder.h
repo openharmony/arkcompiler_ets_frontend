@@ -71,51 +71,52 @@ public:
         InitImplicitThisParam();
     }
 
+    ETSBinder() = delete;
     NO_COPY_SEMANTIC(ETSBinder);
     NO_MOVE_SEMANTIC(ETSBinder);
     ~ETSBinder() override = default;
 
-    ScriptExtension Extension() const override
+    [[nodiscard]] ScriptExtension Extension() const noexcept override
     {
         return ScriptExtension::STS;
     }
 
-    ResolveBindingOptions BindingOptions() const override
+    [[nodiscard]] ResolveBindingOptions BindingOptions() const noexcept override
     {
         return ResolveBindingOptions::BINDINGS;
     }
 
-    RecordTable *GetRecordTable()
+    [[nodiscard]] RecordTable *GetRecordTable() noexcept
     {
         return recordTable_;
     }
 
-    const RecordTable *GetRecordTable() const
+    [[nodiscard]] const RecordTable *GetRecordTable() const noexcept
     {
         return recordTable_;
     }
 
-    void SetRecordTable(RecordTable *table)
+    void SetRecordTable(RecordTable *table) noexcept
     {
         recordTable_ = table;
     }
 
-    RecordTable *GetGlobalRecordTable()
+    [[nodiscard]] RecordTable *GetGlobalRecordTable() noexcept
     {
         return &globalRecordTable_;
     }
 
-    const RecordTable *GetGlobalRecordTable() const
+    [[nodiscard]] const RecordTable *GetGlobalRecordTable() const noexcept
     {
         return &globalRecordTable_;
     }
 
-    ArenaMap<parser::Program *, RecordTable *> &GetExternalRecordTable()
+    [[nodiscard]] ArenaMap<parser::Program *, RecordTable *> &GetExternalRecordTable() noexcept
     {
         return externalRecordTable_;
     }
 
-    const ArenaMap<parser::Program *, RecordTable *> &GetExternalRecordTable() const
+    [[nodiscard]] const ArenaMap<parser::Program *, RecordTable *> &GetExternalRecordTable() const noexcept
     {
         return externalRecordTable_;
     }
@@ -128,11 +129,11 @@ public:
     void BuildETSTypeReference(ir::ETSTypeReference *typeRef);
     void BuildClassProperty(const ir::ClassProperty *prop) override;
     void LookupIdentReference(ir::Identifier *ident) override;
-    bool BuildInternalName(ir::ScriptFunction *scriptFunc) override;
+    [[nodiscard]] bool BuildInternalName(ir::ScriptFunction *scriptFunc) override;
     void AddCompilableFunction(ir::ScriptFunction *func) override;
 
-    bool HandleDynamicVariables(ir::Identifier *ident, Variable *variable, bool allowDynamicNamespaces);
-    bool LookupInDebugInfoPlugin(ir::Identifier *ident);
+    [[nodiscard]] bool HandleDynamicVariables(ir::Identifier *ident, Variable *variable, bool allowDynamicNamespaces);
+    [[nodiscard]] bool LookupInDebugInfoPlugin(ir::Identifier *ident);
     void LookupTypeReference(ir::Identifier *ident, bool allowDynamicNamespaces);
     void LookupTypeArgumentReferences(ir::ETSTypeReference *typeRef);
     void BuildInterfaceDeclaration(ir::TSInterfaceDeclaration *decl);
@@ -143,17 +144,18 @@ public:
     void BuildImportDeclaration(ir::ETSImportDeclaration *decl);
     void ValidateReexportDeclaration(ir::ETSReExportDeclaration *decl);
     void ValidateReexports();
-    bool ReexportPathMatchesImportPath(const ir::ETSReExportDeclaration *const reexport,
-                                       const ir::ETSImportDeclaration *const import) const;
+    [[nodiscard]] bool ReexportPathMatchesImportPath(const ir::ETSReExportDeclaration *const reexport,
+                                                     const ir::ETSImportDeclaration *const import) const;
     Variable *ValidateImportSpecifier(const ir::ImportSpecifier *const specifier,
                                       const ir::ETSImportDeclaration *const import,
                                       std::vector<ir::ETSImportDeclaration *> viewedReExport);
     void BuildETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *classInstance);
-    bool DetectNameConflict(const util::StringView localName, Variable *const var, Variable *const otherVar,
-                            const ir::StringLiteral *const importPath, bool overloadAllowed);
+    [[nodiscard]] bool DetectNameConflict(const util::StringView localName, Variable *const var,
+                                          Variable *const otherVar, const ir::StringLiteral *const importPath,
+                                          bool overloadAllowed);
     void AddSpecifiersToTopBindings(ir::AstNode *specifier, const ir::ETSImportDeclaration *import);
-    ArenaVector<parser::Program *> GetExternalProgram(const util::StringView &sourceName,
-                                                      const ir::StringLiteral *importPath);
+    [[nodiscard]] ArenaVector<parser::Program *> GetExternalProgram(const util::StringView &sourceName,
+                                                                    const ir::StringLiteral *importPath);
     bool AddImportNamespaceSpecifiersToTopBindings(ir::AstNode *specifier,
                                                    const varbinder::Scope::VariableMap &globalBindings,
                                                    const parser::Program *importProgram,
@@ -191,59 +193,59 @@ public:
     void BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containingClassName, bool isExternal);
     void AddFunctionThisParam(ir::ScriptFunction *func);
 
-    void ThrowError(const lexer::SourcePosition &pos, const std::string_view &msg) const override;
+    void ThrowError(const lexer::SourcePosition &pos, const std::string_view msg) const override;
 
-    void SetDefaultImports(ArenaVector<ir::ETSImportDeclaration *> defaultImports)
+    void SetDefaultImports(ArenaVector<ir::ETSImportDeclaration *> defaultImports) noexcept
     {
         defaultImports_ = std::move(defaultImports);
     }
 
     void AddDynamicImport(ir::ETSImportDeclaration *import);
 
-    const ArenaVector<ir::ETSImportDeclaration *> &DynamicImports() const
+    [[nodiscard]] const ArenaVector<ir::ETSImportDeclaration *> &DynamicImports() const noexcept
     {
         return dynamicImports_;
     }
 
-    void AddReExportImport(ir::ETSReExportDeclaration *reExport)
+    void AddReExportImport(ir::ETSReExportDeclaration *reExport) noexcept
     {
         reExportImports_.push_back(reExport);
     }
 
-    const ArenaVector<ir::ETSReExportDeclaration *> &ReExportImports() const
+    [[nodiscard]] const ArenaVector<ir::ETSReExportDeclaration *> &ReExportImports() const noexcept
     {
         return reExportImports_;
     }
 
-    const DynamicImportVariables &DynamicImportVars() const
+    [[nodiscard]] const DynamicImportVariables &DynamicImportVars() const noexcept
     {
         return dynamicImportVars_;
     }
 
-    const ir::AstNode *DefaultExport()
+    [[nodiscard]] const ir::AstNode *DefaultExport() noexcept
     {
         return defaultExport_;
     }
 
-    void SetDefaultExport(ir::AstNode *defaultExport)
+    void SetDefaultExport(ir::AstNode *defaultExport) noexcept
     {
         defaultExport_ = defaultExport;
     }
 
     /* Returns the list of programs belonging to the same compilation unit based on a program path */
-    ArenaVector<parser::Program *> GetProgramList(const util::StringView &path) const;
+    [[nodiscard]] ArenaVector<parser::Program *> GetProgramList(const util::StringView &path) const noexcept;
 
-    bool IsDynamicModuleVariable(const Variable *var) const;
-    bool IsDynamicNamespaceVariable(const Variable *var) const;
-    const DynamicImportData *DynamicImportDataForVar(const Variable *var) const;
+    [[nodiscard]] bool IsDynamicModuleVariable(const Variable *var) const noexcept;
+    [[nodiscard]] bool IsDynamicNamespaceVariable(const Variable *var) const noexcept;
+    [[nodiscard]] const DynamicImportData *DynamicImportDataForVar(const Variable *var) const noexcept;
 
     void ResolveReferenceForScope(ir::AstNode *node, Scope *scope);
     void ResolveReferencesForScope(ir::AstNode const *parent, Scope *scope);
 
     void ResolveReferencesForScopeWithContext(ir::AstNode *node, Scope *scope);
 
-    bool AddSelectiveExportAlias(util::StringView const &path, util::StringView const &key,
-                                 util::StringView const &value, ir::AstNode const *decl);
+    [[nodiscard]] bool AddSelectiveExportAlias(util::StringView const &path, util::StringView const &key,
+                                               util::StringView const &value, ir::AstNode const *decl) noexcept;
 
     [[nodiscard]] const ModulesToExportedNamesWithAliases &GetSelectiveExportAliasMultimap() const noexcept
     {

@@ -618,15 +618,16 @@ checker::Type *GetIteratorType(ETSChecker *checker, checker::Type *elemType, ir:
 
     checker::Type *iterType = nullptr;
     if (left->IsIdentifier()) {
-        if (auto *const variable = left->AsIdentifier()->Variable(); variable != nullptr) {
-            auto *decl = variable->Declaration();
-            if (decl->IsConstDecl() || decl->IsReadonlyDecl()) {
-                const auto errorMsg = decl->IsConstDecl() ? diagnostic::INVALID_CONST_ASSIGNMENT
-                                                          : diagnostic::INVALID_READONLY_ASSIGNMENT;
-                // NOTE(pronaip): see memory corruption issue in 23053, replace with LogError once resolved
-                checker->LogTypeError({errorMsg.Message().substr(0, errorMsg.Message().size() - 2), variable->Name()},
-                                      decl->Node()->Start());
-            }
+        auto *const variable = left->Variable();
+        ES2PANDA_ASSERT(variable != nullptr && variable->Declaration() != nullptr);
+
+        auto *decl = variable->Declaration();
+        if (decl->IsConstDecl() || decl->IsReadonlyDecl()) {
+            const auto errorMsg =
+                decl->IsConstDecl() ? diagnostic::INVALID_CONST_ASSIGNMENT : diagnostic::INVALID_READONLY_ASSIGNMENT;
+            // NOTE(pronaip): see memory corruption issue in 23053, replace with LogError once resolved
+            checker->LogTypeError({errorMsg.Message().substr(0, errorMsg.Message().size() - 2), variable->Name()},
+                                  decl->Node()->Start());
         }
         iterType = left->AsIdentifier()->TsType();
     } else if (left->IsVariableDeclaration()) {
