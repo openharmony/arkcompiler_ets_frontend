@@ -40,6 +40,8 @@ export interface INameObfuscationOption {
   mReservedToplevelNames?: string[];
 
   mUniversalReservedToplevelNames?: RegExp[];
+
+  readonly mEnableAtKeep?: boolean;
 }
 
 export interface IFileNameObfuscationOption {

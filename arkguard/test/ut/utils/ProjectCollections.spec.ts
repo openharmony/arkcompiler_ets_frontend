@@ -26,7 +26,7 @@ import {
   FileWhiteList,
   FileContent
 } from '../../../src/utils/ProjectCollections';
-import { UnobfuscationCollections } from '../../../src/utils/CommonCollections';
+import { AtKeepCollections, UnobfuscationCollections } from '../../../src/utils/CommonCollections';
 import { ApiExtractor } from '../../../src/common/ApiExtractor'
 import { FileUtils } from '../../../src/utils/FileUtils';
 import * as fs from 'fs';
@@ -251,6 +251,10 @@ describe('test for CommonCollections', function () {
         let projectWhiteLists_expected = path.join(__dirname,'obfuscation/projectWhiteList_expected01.json');
         expect(compareFiles(fileWhiteLists, fileWhiteLists_expected)).to.be.true;
         expect(compareFiles(projectWhiteLists, projectWhiteLists_expected)).to.be.true;
+        expect(AtKeepCollections.keepSymbol.globalNames.size==0).to.be.true;
+        expect(AtKeepCollections.keepSymbol.propertyNames.size==0).to.be.true;
+        expect(AtKeepCollections.keepAsConsumer.globalNames.size==0).to.be.true;
+        expect(AtKeepCollections.keepAsConsumer.propertyNames.size==0).to.be.true;
         expect(UnobfuscationCollections.reservedStruct.size==0).to.be.true;
         expect(UnobfuscationCollections.reservedEnum.size==0).to.be.true;
         expect(UnobfuscationCollections.reservedExportName.size==0).to.be.true;
@@ -292,6 +296,11 @@ describe('test for CommonCollections', function () {
         expect(compareFiles(fileWhiteLists, fileWhiteLists_expected)).to.be.true;
         expect(compareFiles(projectWhiteLists, projectWhiteLists_expected)).to.be.true;
         expect(projectWhiteListManager.getShouldReObfuscate()).to.be.true;
+        expect(AtKeepCollections.keepSymbol.globalNames.has('test1')).to.be.true;
+        expect(AtKeepCollections.keepSymbol.propertyNames.has('test2')).to.be.true;
+        expect(AtKeepCollections.keepAsConsumer.globalNames.has('test3')).to.be.true;
+        expect(AtKeepCollections.keepAsConsumer.propertyNames.has('test4')).to.be.true;
+        expect(AtKeepCollections.keepSymbol.globalNames.has('test32')).to.be.true;
         expect(UnobfuscationCollections.reservedStruct.has('test01')).to.be.true;
         expect(UnobfuscationCollections.reservedEnum.has('test02')).to.be.true;
         expect(UnobfuscationCollections.reservedStruct.has('test5')).to.be.true;

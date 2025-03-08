@@ -15,7 +15,7 @@
 
 import { ApiExtractor } from '../common/ApiExtractor';
 import { FileUtils } from './FileUtils';
-import { UnobfuscationCollections } from './CommonCollections';
+import { AtKeepCollections, UnobfuscationCollections } from './CommonCollections';
 import * as crypto from 'crypto';
 import * as ts from 'typescript';
 import fs from 'fs';
@@ -504,6 +504,12 @@ export class ProjectWhiteListManager {
   // This should be called in incremental compliation after we updated file white list.
   private updateUnobfuscationCollections(): void {
     this.fileWhiteListMap.forEach((fileWhiteList) => {
+      if (this.enableAtKeep) {
+        addToSet(AtKeepCollections.keepSymbol.propertyNames, fileWhiteList.fileKeepInfo.keepSymbol.propertyNames);
+        addToSet(AtKeepCollections.keepSymbol.globalNames, fileWhiteList.fileKeepInfo.keepSymbol.globalNames);
+        addToSet(AtKeepCollections.keepAsConsumer.propertyNames, fileWhiteList.fileKeepInfo.keepAsConsumer.propertyNames);
+        addToSet(AtKeepCollections.keepAsConsumer.globalNames, fileWhiteList.fileKeepInfo.keepAsConsumer.globalNames);
+      }
       addToSet(UnobfuscationCollections.reservedStruct, fileWhiteList.fileKeepInfo.structProperties);
       addToSet(UnobfuscationCollections.reservedEnum, fileWhiteList.fileKeepInfo.enumProperties);
       addToSet(UnobfuscationCollections.reservedExportName, fileWhiteList.fileKeepInfo.exported.globalNames);

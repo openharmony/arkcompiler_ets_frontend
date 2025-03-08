@@ -103,12 +103,14 @@ import {performancePrinter, ArkObfuscator, cleanFileMangledNames} from '../../Ar
 import { EventList, endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
 import { isViewPUBasedClass } from '../../utils/OhsUtil';
 import {
+  AtKeepCollections,
+  LocalVariableCollections,
   PropCollections,
-  UnobfuscationCollections,
-  LocalVariableCollections
+  UnobfuscationCollections
 } from '../../utils/CommonCollections';
 import { MemoryDottingDefine } from '../../utils/MemoryDottingDefine';
 import { shouldKeepCurFileParamerters, shouldKeepParameter } from '../../utils/KeepParameterUtils';
+import { addToSet } from '../../utils/ProjectCollections';
 
 namespace secharmony {
   /**
@@ -831,6 +833,9 @@ namespace secharmony {
           PropCollections.reservedProperties.add(item);
         });
         PropCollections.globalMangledNamesInCache = new Set(PropCollections.historyMangledTable?.values());
+        addToSet(PropCollections.reservedProperties, AtKeepCollections.keepSymbol.propertyNames);
+        addToSet(PropCollections.reservedProperties, AtKeepCollections.keepAsConsumer.propertyNames);
+
         if (profile?.mUniversalReservedProperties) {
           PropCollections.universalReservedProperties = [...profile.mUniversalReservedProperties];
         }
@@ -846,6 +851,8 @@ namespace secharmony {
       }
       LocalVariableCollections.reservedConfig = new Set(profile?.mReservedNames ?? []);
       profile?.mReservedToplevelNames?.forEach(item => PropCollections.reservedProperties.add(item));
+      addToSet(PropCollections.reservedProperties, AtKeepCollections.keepSymbol.globalNames);
+      addToSet(PropCollections.reservedProperties, AtKeepCollections.keepAsConsumer.globalNames);
       profile?.mUniversalReservedToplevelNames?.forEach(item => PropCollections.universalReservedProperties.push(item));
       isInitializedReservedList = true;
     }
