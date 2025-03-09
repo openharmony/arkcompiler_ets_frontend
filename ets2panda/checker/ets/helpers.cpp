@@ -21,6 +21,7 @@
 #include "evaluate/scopedDebugInfoPlugin.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::checker {
 varbinder::Variable *ETSChecker::FindVariableInFunctionScope(const util::StringView name,
@@ -2428,6 +2429,18 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
     stmts.push_back(Allocator()->New<ir::ReturnStatement>(nullptr));
 }
 
+static ir::BlockStatement *GenGetterSetterBodyHelper(ETSChecker *checker, ArenaVector<ir::Statement *> &stmts,
+                                                     ir::ClassProperty *const property,
+                                                     varbinder::FunctionScope *functionScope)
+{
+    if (property->IsDeclare()) {
+        return nullptr;
+    }
+    auto *body = checker->AllocNode<ir::BlockStatement>(checker->Allocator(), std::move(stmts));
+    body->SetScope(functionScope);
+    return body;
+}
+
 ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty *const property,
                                                               ir::ClassProperty *const field,
                                                               varbinder::ClassScope *classScope, bool isSetter,
@@ -2444,24 +2457,25 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     checker->GenerateGetterSetterBody(stmts, params, field, paramScope, isSetter);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *body = checker->AllocNode<ir::BlockStatement>(checker->Allocator(), std::move(stmts));
-    auto funcFlags = isSetter ? ir::ScriptFunctionFlags::SETTER : ir::ScriptFunctionFlags::GETTER;
+    auto funcFlags = isSetter ? ir::ScriptFunctionFlags::SETTER
+                              : ir::ScriptFunctionFlags::GETTER | ir::ScriptFunctionFlags::HAS_RETURN;
     auto *const returnTypeAnn = isSetter || field->TypeAnnotation() == nullptr
                                     ? nullptr
                                     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
                                     : field->TypeAnnotation()->Clone(checker->Allocator(), nullptr);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    ir::ModifierFlags modifierFlag =
+        (ir::ModifierFlags::PUBLIC |
+         static_cast<ir::ModifierFlags>(property->Modifiers() & ir::ModifierFlags::DECLARE) |
+         (isSetter ? ir::ModifierFlags::SETTER : ir::ModifierFlags::GETTER));
     auto *func = checker->AllocNode<ir::ScriptFunction>(
         checker->Allocator(),
-        ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), returnTypeAnn),
-                                                funcFlags, ir::ModifierFlags::PUBLIC});
+        ir::ScriptFunction::ScriptFunctionData {GenGetterSetterBodyHelper(checker, stmts, property, functionScope),
+                                                ir::FunctionSignature(nullptr, std::move(params), returnTypeAnn),
+                                                funcFlags, modifierFlag});
 
-    if (!isSetter) {
-        func->AddFlag(ir::ScriptFunctionFlags::HAS_RETURN);
-    }
     func->SetRange(field->Range());
     func->SetScope(functionScope);
-    body->SetScope(functionScope);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *methodIdent = property->Key()->AsIdentifier()->Clone(checker->Allocator(), nullptr);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
@@ -2469,9 +2483,9 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
     funcExpr->SetRange(func->Range());
     func->AddFlag(ir::ScriptFunctionFlags::METHOD);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *method = checker->AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, methodIdent, funcExpr,
-                                                            ir::ModifierFlags::PUBLIC, checker->Allocator(), false);
 
+    auto *method = checker->AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, methodIdent, funcExpr,
+                                                            modifierFlag, checker->Allocator(), false);
     auto *decl = checker->Allocator()->New<varbinder::FunctionDecl>(checker->Allocator(),
                                                                     property->Key()->AsIdentifier()->Name(), method);
     auto *var = checker->Allocator()->New<varbinder::LocalVariable>(decl, varbinder::VariableFlags::VAR);
@@ -2545,6 +2559,12 @@ static void SetupGetterSetterFlags(ir::ClassProperty *originalProp, ETSObjectTyp
         if (inExternal) {
             method->Function()->AddFlag(ir::ScriptFunctionFlags::EXTERNAL);
         }
+
+        if (originalProp->IsDeclare()) {
+            method->AddModifier(ir::ModifierFlags::DECLARE);
+            method->Function()->AddModifier(ir::ModifierFlags::DECLARE);
+        }
+
         method->SetParent(classDef);
         classType->AddProperty<checker::PropertyType::INSTANCE_METHOD>(method->Variable()->AsLocalVariable());
     }
