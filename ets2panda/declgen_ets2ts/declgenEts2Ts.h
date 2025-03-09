@@ -43,7 +43,8 @@ public:
           diagnosticEngine_(checker->DiagnosticEngine()),
           allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
           indirectDependencyObjects_(allocator_.Adapter()),
-          typeAliasMap_(allocator_.Adapter())
+          typeAliasMap_(allocator_.Adapter()),
+          paramDefaultMap_(allocator_.Adapter())
     {
     }
 
@@ -78,11 +79,13 @@ private:
                     const lexer::SourcePosition &pos);
 
     const ir::Identifier *GetKeyIdent(const ir::Expression *key);
+    const checker::Signature *GetFuncSignature(const checker::ETSFunctionType *etsFunctionType,
+                                               const ir::MethodDefinition *methodDef);
 
     void GenType(const checker::Type *checkerType);
     void GenFunctionType(const checker::ETSFunctionType *functionType, const ir::MethodDefinition *methodDef = nullptr);
     void GenObjectType(const checker::ETSObjectType *objectType);
-    void GenEnumType(const checker::ETSIntEnumType *enumType);
+    void GenEnumType(const checker::ETSEnumType *enumType);
     void GenUnionType(const checker::ETSUnionType *unionType);
     void GenTupleType(const checker::ETSTupleType *tupleType);
 
@@ -100,6 +103,7 @@ private:
     template <class T>
     void GenModifier(const T *node, bool isProp = false);
     void GenTypeParameters(const ir::TSTypeParameterDeclaration *typeParams);
+    void GenTypeParameters(const ir::TSTypeParameterInstantiation *typeParams);
     void GenExport(const ir::Identifier *symbol);
     void GenExport(const ir::Identifier *symbol, const std::string &alias);
     void GenDefaultExport(const ir::Identifier *symbol);
@@ -112,6 +116,9 @@ private:
     bool ShouldSkipClassDeclaration(const std::string_view &className) const;
     void HandleClassDeclarationTypeInfo(const ir::ClassDefinition *classDef, const std::string_view &className);
     void ProcessClassBody(const ir::ClassDefinition *classDef);
+    void ProcessParamDefaultToMap(const ir::Statement *stmt);
+    void ProcessFuncParameter(varbinder::LocalVariable *param);
+    void ProcessFuncParameters(const checker::Signature *sig);
     std::string ReplaceETSGLOBAL(const std::string &typeName);
     std::string GetIndent() const;
     void ProcessIndent();
@@ -130,6 +137,16 @@ private:
     void EmitClassGlueCode(const ir::ClassDefinition *classDef, const std::string &className);
     void EmitMethodGlueCode(const std::string &methodName, const ir::Identifier *methodIdentifier);
     void EmitPropGlueCode(const ir::ClassProperty *classProp, const std::string &propName);
+
+    bool HandleBasicTypes(const checker::Type *checkerType);
+    void HandleFunctionType(const checker::Type *checkerType);
+    bool HandleETSSpecificTypes(const checker::Type *checkerType);
+    bool HandleObjectType(const checker::Type *checkerType);
+    void HandleArrayType(const checker::Type *checkerType);
+
+    void ProcessInterfaceBody(const ir::TSInterfaceBody *body);
+    void ProcessMethodDefinition(const ir::MethodDefinition *methodDef,
+                                 std::unordered_set<std::string> &processedMethods);
 
     void OutDts() {}
 
@@ -170,6 +187,7 @@ private:
         bool inGlobalClass {false};
         bool inNamespace {false};
         std::string currentClassDescriptor {};
+        std::stack<bool> inUnionBodyStack {};
     } state_ {};
 
     struct ClassNode {
@@ -177,6 +195,10 @@ private:
         bool isIndirect {false};
         size_t indentLevel {1};
     } classNode_ {};
+
+    const std::unordered_set<std::string_view> numberTypes_ = {"Long",  "Float", "Double", "Byte",
+                                                               "Short", "Int",   "Number"};
+    const std::unordered_set<std::string_view> stringTypes_ = {"Char", "String"};
 
     std::stringstream outputDts_;
     std::stringstream outputTs_;
@@ -188,6 +210,7 @@ private:
     DeclgenOptions declgenOptions_ {};
     std::string globalDesc_;
     ArenaMap<std::string, std::string> typeAliasMap_;
+    ArenaMap<util::StringView, util::StringView> paramDefaultMap_;
 };
 }  // namespace ark::es2panda::declgen_ets2ts
 
