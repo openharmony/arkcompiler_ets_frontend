@@ -68,6 +68,7 @@ public:
         }
     }
 
+    explicit TryStatement(TryStatement const &other, ArenaAllocator *allocator);
     friend class checker::TSAnalyzer;
     friend class checker::ETSAnalyzer;
     friend class compiler::JSCompiler;
@@ -126,6 +127,8 @@ public:
     {
         v->Accept(this);
     }
+
+    [[nodiscard]] TryStatement *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
 private:
     BlockStatement *block_;

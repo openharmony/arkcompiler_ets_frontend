@@ -29,7 +29,7 @@ public:
         : TypedStatement(AstNodeType::CATCH_CLAUSE), param_(param), body_(body)
     {
     }
-
+    explicit CatchClause(CatchClause const &other, ArenaAllocator *allocator);
     Expression *Param()
     {
         return param_;
@@ -85,6 +85,7 @@ public:
     {
         v->Accept(this);
     }
+    [[nodiscard]] CatchClause *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
 private:
     varbinder::CatchScope *scope_ {nullptr};
