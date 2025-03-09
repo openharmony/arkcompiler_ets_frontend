@@ -904,7 +904,12 @@ export class Autofixer {
       }
 
       let autofix: Autofix[] | undefined;
-      if (ts.isPropertyDeclaration(node) || ts.isPropertyAssignment(node) || ts.isPropertySignature(node)) {
+      if (
+        ts.isPropertyDeclaration(node) ||
+        ts.isPropertyAssignment(node) ||
+        ts.isPropertySignature(node) ||
+        ts.isEnumMember(node)
+      ) {
         autofix = Autofixer.renamePropertyName(node.name, newName);
       } else if (ts.isElementAccessExpression(node)) {
         autofix = Autofixer.renameElementAccessExpression(node, newName);

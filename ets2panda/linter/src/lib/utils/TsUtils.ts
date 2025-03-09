@@ -2574,7 +2574,8 @@ export class TsUtils {
       if (
         !ts.isPropertyDeclaration(propDecl) &&
         !ts.isPropertyAssignment(propDecl) &&
-        !ts.isPropertySignature(propDecl)
+        !ts.isPropertySignature(propDecl) &&
+        !ts.isEnumMember(propDecl)
       ) {
         return undefined;
       }
@@ -2594,11 +2595,15 @@ export class TsUtils {
     }
 
     for (const propDecl of symbol.declarations) {
-      if (!ts.isPropertyDeclaration(propDecl) && !ts.isPropertySignature(propDecl)) {
+      if (!ts.isPropertyDeclaration(propDecl) && !ts.isPropertySignature(propDecl) && !ts.isEnumMember(propDecl)) {
         return false;
       }
 
-      if (!ts.isClassDeclaration(propDecl.parent) && !ts.isInterfaceDeclaration(propDecl.parent)) {
+      if (
+        !ts.isClassDeclaration(propDecl.parent) &&
+        !ts.isInterfaceDeclaration(propDecl.parent) &&
+        !ts.isEnumDeclaration(propDecl.parent)
+      ) {
         return false;
       }
 

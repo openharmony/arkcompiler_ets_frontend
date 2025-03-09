@@ -1,6 +1,6 @@
 {
     "copyright": [
-        "Copyright (c) 2023-2024 Huawei Device Co., Ltd.",
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
         "Licensed under the Apache License, Version 2.0 (the 'License');",
         "you may not use this file except in compliance with the License.",
         "You may obtain a copy of the License at",
@@ -20,18 +20,6 @@
         "endLine": 20,
         "endColumn": 22,
         "problem": "LiteralAsPropertyName",
-        "autofix": [
-            {
-                "replacementText": "PrivateTwo",
-                "start": 720,
-                "end": 732
-            },
-            {
-                "replacementText": "LiteralAsPropertyNameEnum.PrivateTwo",
-                "start": 1918,
-                "end": 1957
-            }
-        ],
         "suggest": "",
         "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
         "severity": "ERROR"
@@ -42,23 +30,6 @@
         "endLine": 26,
         "endColumn": 12,
         "problem": "LiteralAsPropertyName",
-        "autofix": [
-            {
-                "replacementText": "__2",
-                "start": 835,
-                "end": 836
-            },
-            {
-                "replacementText": "__2",
-                "start": 927,
-                "end": 928
-            },
-            {
-                "replacementText": "litAsPropName.__2",
-                "start": 1000,
-                "end": 1016
-            }
-        ],
         "suggest": "",
         "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
         "severity": "ERROR"
@@ -69,23 +40,6 @@
         "endLine": 26,
         "endColumn": 12,
         "problem": "LiteralAsPropertyName",
-        "autofix": [
-            {
-                "replacementText": "__2",
-                "start": 835,
-                "end": 836
-            },
-            {
-                "replacementText": "__2",
-                "start": 927,
-                "end": 928
-            },
-            {
-                "replacementText": "litAsPropName.__2",
-                "start": 1000,
-                "end": 1016
-            }
-        ],
         "suggest": "",
         "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
         "severity": "ERROR"
@@ -96,23 +50,6 @@
         "endLine": 27,
         "endColumn": 8,
         "problem": "LiteralAsPropertyName",
-        "autofix": [
-            {
-                "replacementText": "Two",
-                "start": 848,
-                "end": 853
-            },
-            {
-                "replacementText": "Two",
-                "start": 939,
-                "end": 944
-            },
-            {
-                "replacementText": "litAsPropName.Two",
-                "start": 1031,
-                "end": 1051
-            }
-        ],
         "suggest": "",
         "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
         "severity": "ERROR"
@@ -123,23 +60,6 @@
         "endLine": 27,
         "endColumn": 8,
         "problem": "LiteralAsPropertyName",
-        "autofix": [
-            {
-                "replacementText": "Two",
-                "start": 848,
-                "end": 853
-            },
-            {
-                "replacementText": "Two",
-                "start": 939,
-                "end": 944
-            },
-            {
-                "replacementText": "litAsPropName.Two",
-                "start": 1031,
-                "end": 1051
-            }
-        ],
         "suggest": "",
         "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
         "severity": "ERROR"
@@ -170,23 +90,6 @@
         "endLine": 32,
         "endColumn": 4,
         "problem": "LiteralAsPropertyName",
-        "autofix": [
-            {
-                "replacementText": "__2",
-                "start": 835,
-                "end": 836
-            },
-            {
-                "replacementText": "__2",
-                "start": 927,
-                "end": 928
-            },
-            {
-                "replacementText": "litAsPropName.__2",
-                "start": 1000,
-                "end": 1016
-            }
-        ],
         "suggest": "",
         "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
         "severity": "ERROR"
@@ -197,13 +100,6 @@
         "endLine": 36,
         "endColumn": 33,
         "problem": "PropertyAccessByIndex",
-        "autofix": [
-            {
-                "replacementText": "litAsPropName.one",
-                "start": 965,
-                "end": 985
-            }
-        ],
         "suggest": "",
         "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
         "severity": "ERROR"
@@ -214,23 +110,6 @@
         "endLine": 37,
         "endColumn": 29,
         "problem": "PropertyAccessByIndex",
-        "autofix": [
-            {
-                "replacementText": "__2",
-                "start": 835,
-                "end": 836
-            },
-            {
-                "replacementText": "__2",
-                "start": 927,
-                "end": 928
-            },
-            {
-                "replacementText": "litAsPropName.__2",
-                "start": 1000,
-                "end": 1016
-            }
-        ],
         "suggest": "",
         "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
         "severity": "ERROR"
@@ -241,23 +120,6 @@
         "endLine": 38,
         "endColumn": 33,
         "problem": "PropertyAccessByIndex",
-        "autofix": [
-            {
-                "replacementText": "Two",
-                "start": 848,
-                "end": 853
-            },
-            {
-                "replacementText": "Two",
-                "start": 939,
-                "end": 944
-            },
-            {
-                "replacementText": "litAsPropName.Two",
-                "start": 1031,
-                "end": 1051
-            }
-        ],
         "suggest": "",
         "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
         "severity": "ERROR"
@@ -268,18 +130,6 @@
         "endLine": 57,
         "endColumn": 10,
         "problem": "ObjectLiteralNoContextType",
-        "autofix": [
-            {
-                "start": 1415,
-                "end": 1415,
-                "replacementText": "interface GeneratedObjectLiteralInterface_1 {\n    \"name\": number;\n    2: number;\n}\n"
-            },
-            {
-                "start": 1420,
-                "end": 1420,
-                "replacementText": ": GeneratedObjectLiteralInterface_1"
-            }
-        ],
         "suggest": "",
         "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
         "severity": "ERROR"
@@ -340,18 +190,6 @@
         "endLine": 67,
         "endColumn": 14,
         "problem": "ObjectLiteralNoContextType",
-        "autofix": [
-            {
-                "start": 1555,
-                "end": 1555,
-                "replacementText": "interface GeneratedObjectLiteralInterface_2 {\n    name: number;\n    _2: number;\n}\n"
-            },
-            {
-                "start": 1564,
-                "end": 1564,
-                "replacementText": ": GeneratedObjectLiteralInterface_2"
-            }
-        ],
         "suggest": "",
         "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
         "severity": "ERROR"
@@ -362,18 +200,6 @@
         "endLine": 75,
         "endColumn": 4,
         "problem": "LiteralAsPropertyName",
-        "autofix": [
-            {
-                "replacementText": "___2",
-                "start": 1725,
-                "end": 1726
-            },
-            {
-                "replacementText": "___2",
-                "start": 1807,
-                "end": 1808
-            }
-        ],
         "suggest": "",
         "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
         "severity": "ERROR"
@@ -384,18 +210,6 @@
         "endLine": 75,
         "endColumn": 4,
         "problem": "LiteralAsPropertyName",
-        "autofix": [
-            {
-                "replacementText": "___2",
-                "start": 1725,
-                "end": 1726
-            },
-            {
-                "replacementText": "___2",
-                "start": 1807,
-                "end": 1808
-            }
-        ],
         "suggest": "",
         "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
         "severity": "ERROR"
@@ -406,18 +220,6 @@
         "endLine": 76,
         "endColumn": 8,
         "problem": "LiteralAsPropertyName",
-        "autofix": [
-            {
-                "replacementText": "__2",
-                "start": 1738,
-                "end": 1743
-            },
-            {
-                "replacementText": "__2",
-                "start": 1823,
-                "end": 1828
-            }
-        ],
         "suggest": "",
         "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
         "severity": "ERROR"
@@ -428,18 +230,6 @@
         "endLine": 76,
         "endColumn": 8,
         "problem": "LiteralAsPropertyName",
-        "autofix": [
-            {
-                "replacementText": "__2",
-                "start": 1738,
-                "end": 1743
-            },
-            {
-                "replacementText": "__2",
-                "start": 1823,
-                "end": 1828
-            }
-        ],
         "suggest": "",
         "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
         "severity": "ERROR"
@@ -470,18 +260,6 @@
         "endLine": 80,
         "endColumn": 4,
         "problem": "LiteralAsPropertyName",
-        "autofix": [
-            {
-                "replacementText": "___2",
-                "start": 1725,
-                "end": 1726
-            },
-            {
-                "replacementText": "___2",
-                "start": 1807,
-                "end": 1808
-            }
-        ],
         "suggest": "",
         "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
         "severity": "ERROR"

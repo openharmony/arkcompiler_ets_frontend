@@ -84,7 +84,7 @@ interface RunTestFileOptions {
 interface TestModeProperties {
   resultFileExt: string;
   mode: TestMode;
-  modeOpts: LinterOptions /* Options that enable specific mode */;
+  modeOpts: LinterOptions;
 }
 
 const DEFAULT_MODE_PROPERTIES: TestModeProperties = {
