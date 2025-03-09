@@ -18,6 +18,7 @@
 #include "ir/astNode.h"
 #include "util/diagnosticEngine.h"
 #include <gtest/gtest.h>
+#include <cstddef>
 
 using ark::es2panda::checker::ETSChecker;
 using ark::es2panda::compiler::ast_verifier::GetterSetterValidation;
@@ -39,7 +40,7 @@ TEST_F(ASTVerifierTest, ValidateGetterReturnTypeAnnotation)
                 return this._value
             }
 
-            set value(v: number): void {
+            set value(v: number) {
                 this._value = v
             }
         }
@@ -76,7 +77,7 @@ TEST_F(ASTVerifierTest, ValidateGetterHasReturnStatement)
                 return this._value
             }
 
-            set value(v: number): void {
+            set value(v: number) {
                 this._value = v
             }
         }
@@ -114,7 +115,7 @@ TEST_F(ASTVerifierTest, ValidateGetterVoidReturnStatement)
                 return this._value
             }
 
-            set value(v: number): void {
+            set value(v: number) {
                 this._value = v
             }
         }
@@ -152,7 +153,7 @@ TEST_F(ASTVerifierTest, ValidateGetterArguments)
                 return this._value
             }
 
-            set value(v: number): void {
+            set value(v: number) {
                 this._value = v
             }
         }
@@ -190,7 +191,7 @@ TEST_F(ASTVerifierTest, ValidateSetterReturnType)
         R"(
         class A {
             private _value: number = 0;
-            set value(v: number): void {
+            set value(v: number) {
                 this._value = v
             }
 
@@ -204,8 +205,12 @@ TEST_F(ASTVerifierTest, ValidateSetterReturnType)
             auto *const method = child->AsMethodDefinition();
             if (method->Kind() == MethodDefinitionKind::SET && method->Value()->IsFunctionExpression()) {
                 auto *const function = method->Value()->AsFunctionExpression()->Function();
-                ASSERT_NE(function->ReturnTypeAnnotation(), nullptr);
-                function->ReturnTypeAnnotation()->SetTsType(checker.GlobalIntType());
+                ASSERT_EQ(function->ReturnTypeAnnotation(), nullptr);
+                auto *const thisType = function->Signature()->Params()[0]->TsType();
+                auto *const thisTypeAnnotation =
+                    function->Params()[0]->AsETSParameterExpression()->Ident()->TypeAnnotation();
+                function->Signature()->SetReturnType(thisType);
+                function->SetReturnTypeAnnotation(thisTypeAnnotation->Clone(checker.Allocator(), function));
             }
         }
     };
@@ -214,7 +219,7 @@ TEST_F(ASTVerifierTest, ValidateSetterReturnType)
     {
         // Change setter return type
         GetAst()->IterateRecursively(cb);
-        EXPECT_TRUE(Verify<GetterSetterValidation>(ExpectVerifierMessage {"SETTER METHOD HAS NON-VOID RETURN TYPE"}));
+        EXPECT_TRUE(Verify<GetterSetterValidation>(ExpectVerifierMessage {"SETTER METHOD MUST NOT HAVE RETURN TYPE"}));
     }
 }
 
@@ -227,7 +232,7 @@ TEST_F(ASTVerifierTest, ValidateSetterArguments)
         R"(
         class A {
             private _value: number = 0;
-            set value(v: number): void {
+            set value(v: number) {
                 this._value = v
             }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,20 +13,13 @@
  * limitations under the License.
  */
 
-interface inter <T>{
-	get value(): Double;
-	set value(value: Double);
+export declare class Class1 {
+    set setX(x: string)
 }
 
-class A <T>{}
-
-class B <T> extends A <T> implements inter <T> {
-	value: Double = 1.0;
-}
-
-function foo(i: Partial<inter<String>>, a: Partial<A<String>>): void {}
-
-
-function foa(b: Partial<B<String>>): void {
-	foo(b, b);
+class Class2 {
+    set setX(x: string) {
+        this.x = x
+    }
+    x: string = "s"
 }

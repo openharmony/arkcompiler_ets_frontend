@@ -33,7 +33,7 @@ TEST_F(ASTVerifierTest, ValidateCorrectGetterSetter)
         R"(
         class A {
             private _value: number = 0;
-            set value(v: number): void {
+            set value(v: number) {
                 this._value = v
             }
 
@@ -78,7 +78,7 @@ TEST_F(ASTVerifierTest, ValidateAmbientGettersSetters)
         R"(
         declare class A {
             get foo(): int
-            set foo(x: int): void
+            set foo(x: int)
         }
     )";
 

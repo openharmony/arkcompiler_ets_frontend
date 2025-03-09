@@ -1956,6 +1956,9 @@ ir::FunctionDeclaration *ETSParser::ParseAccessorWithReceiver(ir::ModifierFlags 
         if (setterValidParamCount != paramCount) {
             LogError(diagnostic::EXTENSION_SETTER_WRONG_PARAM, {}, startLoc);
         }
+        if (func->ReturnTypeAnnotation() != nullptr) {
+            LogError(diagnostic::SETTER_NO_RETURN_TYPE, {}, startLoc);
+        }
     }
 
     func->SetIdent(funcIdentNode);

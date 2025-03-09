@@ -17,8 +17,8 @@ class A{
     field_: int;
 }
 
-set /* @@ label */field(this: A, a:int): int{
+/* @@ label */set field(this: A, a:int): int{
     return this.field_
 }
 
-/* @@@ label Error TypeError: Setter must have void return type  */
+/* @@@ label Error SyntaxError: Setter must not have return type even if it is void.  */

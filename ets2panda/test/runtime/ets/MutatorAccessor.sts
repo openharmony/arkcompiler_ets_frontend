@@ -24,7 +24,7 @@ class A {
     return this._field;
   }
 
-  set field(a: int): void {
+  set field(a: int) {
     this._field = a;
   }
 
@@ -32,7 +32,7 @@ class A {
     return this._bfield;
   }
 
-  set bfield(b: boolean): void {
+  set bfield(b: boolean) {
     this._bfield = b;
   }
 }

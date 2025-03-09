@@ -373,33 +373,18 @@
                         }
                       }
                     ],
-                    "returnType": {
-                      "type": "ETSPrimitiveType",
-                      "loc": {
-                        "start": {
-                          "line": 18,
-                          "column": 27,
-                          "program": "generic_class_getter_setter.sts"
-                        },
-                        "end": {
-                          "line": 18,
-                          "column": 31,
-                          "program": "generic_class_getter_setter.sts"
-                        }
-                      }
-                    },
                     "body": {
                       "type": "BlockStatement",
                       "statements": [],
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 32,
+                          "column": 26,
                           "program": "generic_class_getter_setter.sts"
                         },
                         "end": {
                           "line": 18,
-                          "column": 34,
+                          "column": 28,
                           "program": "generic_class_getter_setter.sts"
                         }
                       }
@@ -412,7 +397,7 @@
                       },
                       "end": {
                         "line": 18,
-                        "column": 34,
+                        "column": 28,
                         "program": "generic_class_getter_setter.sts"
                       }
                     }
@@ -425,7 +410,7 @@
                     },
                     "end": {
                       "line": 18,
-                      "column": 34,
+                      "column": 28,
                       "program": "generic_class_getter_setter.sts"
                     }
                   }
@@ -440,7 +425,7 @@
                   },
                   "end": {
                     "line": 18,
-                    "column": 34,
+                    "column": 28,
                     "program": "generic_class_getter_setter.sts"
                   }
                 }

@@ -428,6 +428,9 @@ void ParserImpl::ValidateClassSetter([[maybe_unused]] ClassElementDescriptor *de
                                      [[maybe_unused]] ir::Expression *propName, ir::ScriptFunction *func)
 {
     ValidateGetterSetter(ir::MethodDefinitionKind::SET, func->Params().size());
+    if (func->ReturnTypeAnnotation() != nullptr) {
+        LogError(diagnostic::SETTER_NO_RETURN_TYPE);
+    }
 }
 
 void ParserImpl::ValidateClassGetter([[maybe_unused]] ClassElementDescriptor *desc,

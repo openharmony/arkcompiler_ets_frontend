@@ -22,8 +22,8 @@
             "problem": "SendableDecoratorLimited",
             "autofix": [
                 {
-                    "start": 751,
-                    "end": 760,
+                    "start": 756,
+                    "end": 765,
                     "replacementText": ""
                 }
             ],
@@ -39,8 +39,8 @@
             "problem": "SendableDecoratorLimited",
             "autofix": [
                 {
-                    "start": 821,
-                    "end": 830,
+                    "start": 826,
+                    "end": 835,
                     "replacementText": ""
                 }
             ],
@@ -56,8 +56,8 @@
             "problem": "SendableDecoratorLimited",
             "autofix": [
                 {
-                    "start": 868,
-                    "end": 877,
+                    "start": 873,
+                    "end": 882,
                     "replacementText": ""
                 }
             ],
@@ -73,8 +73,8 @@
             "problem": "SendableDecoratorLimited",
             "autofix": [
                 {
-                    "start": 917,
-                    "end": 926,
+                    "start": 922,
+                    "end": 931,
                     "replacementText": ""
                 }
             ],
@@ -90,8 +90,8 @@
             "problem": "SendableDecoratorLimited",
             "autofix": [
                 {
-                    "start": 961,
-                    "end": 970,
+                    "start": 966,
+                    "end": 975,
                     "replacementText": ""
                 }
             ],
@@ -107,8 +107,8 @@
             "problem": "SendableDecoratorLimited",
             "autofix": [
                 {
-                    "start": 1023,
-                    "end": 1032,
+                    "start": 1028,
+                    "end": 1037,
                     "replacementText": ""
                 }
             ],

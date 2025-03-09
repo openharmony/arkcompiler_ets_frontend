@@ -975,3 +975,7 @@ syntax:
 - name: UNEXPECTED_THIS
   id: 241
   message: "Unexpected 'this' keyword in non-receiver context."
+
+- name: SETTER_NO_RETURN_TYPE
+  id: 242
+  message: "Setter must not have return type even if it is void."

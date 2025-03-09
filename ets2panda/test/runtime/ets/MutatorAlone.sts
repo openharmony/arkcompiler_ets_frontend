@@ -18,7 +18,7 @@ class A {
 
     constructor() { }
 
-    set field(a: int): void {
+    set field(a: int) {
         this._field = a;
     }
 }
