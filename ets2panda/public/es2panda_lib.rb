@@ -1361,21 +1361,22 @@ module Es2pandaLibApi
     data.macros&.each do |macros|
       case macros.name
       when 'AST_NODE_MAPPING'
-        @ast_nodes.merge(Set.new(macros.values&.map { |x| x[1] }))
-        @ast_node_mapping = macros.values
+        @ast_nodes.merge(Set.new(macros.values.map { |x| x[1] }))
+        @ast_node_mapping.concat(macros.values)
       when 'AST_NODE_REINTERPRET_MAPPING'
-        @ast_nodes.merge(Set.new(macros.values&.map { |x| x[2..3] }&.flatten))
+        @ast_nodes.merge(Set.new(macros.values.flat_map { |x| x[2..3] }))
+        @ast_node_mapping.concat(macros.values.flat_map { |x| [[x[0], x[2]], [x[1], x[3]]] })
       when 'TYPE_MAPPING'
-        @ast_types.merge(Set.new(macros.values&.map { |x| x[1] }&.flatten))
+        @ast_types.merge(Set.new(macros.values.flat_map { |x| x[1] }))
       end
     end
 
     data.varbinder&.macros&.each do |macros|
       case macros.name
       when 'SCOPE_TYPES'
-        @scopes.merge(Set.new(macros.values&.map { |x| x[1] }))
+        @scopes.merge(Set.new(macros.values.map { |x| x[1] }))
       when 'DECLARATION_KINDS'
-        @declarations.merge(Set.new(macros.values&.map { |x| x[1] }))
+        @declarations.merge(Set.new(macros.values.map { |x| x[1] }))
       end
     end
 
