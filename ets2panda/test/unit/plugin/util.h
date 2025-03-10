@@ -17,6 +17,7 @@
 #define ES2PANDA_TEST_UNIT_PLUGIN_UTIL_H
 
 #include <iostream>
+#include <string_view>
 
 #include "os/library_loader.h"
 
@@ -34,5 +35,11 @@ constexpr int NULLPTR_CONTEXT_ERROR_CODE = 6;
 es2panda_Impl *GetImpl();
 
 void CheckForErrors(const std::string &stateName, es2panda_Context *context);
+
+es2panda_AstNode *CreateIdentifierFromString(es2panda_Context *context, const std::string_view &name);
+
+void AppendStatementToProgram(es2panda_Context *context, es2panda_AstNode *program, es2panda_AstNode *newStatement);
+
+void PrependStatementToProgram(es2panda_Context *context, es2panda_AstNode *program, es2panda_AstNode *newStatement);
 
 #endif

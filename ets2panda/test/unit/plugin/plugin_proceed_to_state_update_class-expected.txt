@@ -1,0 +1,26 @@
+LOAD SUCCESS
+PROCEED TO PARSE SUCCESS
+SRC DUMP AFTER UPDATE CLASS:
+
+class A {
+  public x: int = 10;
+  
+  public bar() {}
+  
+  public constructor() {}
+  
+  public foo(): void {}
+  
+}
+
+final class B {
+  public foo(): void {}
+  
+}
+
+
+PROCEED TO BOUND SUCCESS
+PROCEED TO CHECKED SUCCESS
+PROCEED TO LOWERED SUCCESS
+PROCEED TO ASM SUCCESS
+PROCEED TO BIN SUCCESS
