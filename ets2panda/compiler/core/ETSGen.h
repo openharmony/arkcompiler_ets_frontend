@@ -422,26 +422,6 @@ public:
         CallDynamicImpl<CallShort, Call, CallRange>(data, param3, signature, arguments);
     }
 
-#ifdef PANDA_WITH_ETS
-    // The functions below use ETS specific instructions.
-    // Compilation of es2panda fails if ETS plugin is disabled
-    void LaunchExact(const ir::AstNode *node, checker::Signature *signature,
-                     const ArenaVector<ir::Expression *> &arguments)
-    {
-        CallImpl<EtsLaunchShort, EtsLaunch, EtsLaunchRange>(node, signature, arguments);
-    }
-
-    void LaunchVirtual(const ir::AstNode *const node, checker::Signature *const signature, const VReg athis,
-                       const ArenaVector<ir::Expression *> &arguments)
-    {
-        if (IsDevirtualizedSignature(signature)) {
-            CallArgStart<EtsLaunchShort, EtsLaunch, EtsLaunchRange>(node, signature, athis, arguments);
-        } else {
-            CallArgStart<EtsLaunchVirtShort, EtsLaunchVirt, EtsLaunchVirtRange>(node, signature, athis, arguments);
-        }
-    }
-#endif  // PANDA_WITH_ETS
-
     // until a lowering for implicit super is available
     void CallRangeFillUndefined(const ir::AstNode *const node, checker::Signature *const signature, const VReg thisReg);
 

@@ -78,8 +78,7 @@ private:
                 return;
             }
         }
-        bool acceptVoid =
-            parent->IsExpressionStatement() || parent->IsReturnStatement() || parent->IsETSLaunchExpression();
+        bool acceptVoid = parent->IsExpressionStatement() || parent->IsReturnStatement();
         if (!acceptVoid) {
             checker->LogError(diagnostic::VOID_VALUE, {}, expr->Start());
         }

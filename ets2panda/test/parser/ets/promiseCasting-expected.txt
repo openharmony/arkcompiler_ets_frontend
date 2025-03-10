@@ -2,6 +2,281 @@
   "type": "Program",
   "statements": [
     {
+      "type": "ImportDeclaration",
+      "source": {
+        "type": "StringLiteral",
+        "value": "std/concurrency",
+        "loc": {
+          "start": {
+            "line": 16,
+            "column": 22,
+            "program": "promiseCasting.ets"
+          },
+          "end": {
+            "line": 16,
+            "column": 39,
+            "program": "promiseCasting.ets"
+          }
+        }
+      },
+      "specifiers": [
+        {
+          "type": "ImportSpecifier",
+          "local": {
+            "type": "Identifier",
+            "name": "launch",
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 9,
+                "program": "promiseCasting.ets"
+              },
+              "end": {
+                "line": 16,
+                "column": 15,
+                "program": "promiseCasting.ets"
+              }
+            }
+          },
+          "imported": {
+            "type": "Identifier",
+            "name": "launch",
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 9,
+                "program": "promiseCasting.ets"
+              },
+              "end": {
+                "line": 16,
+                "column": 15,
+                "program": "promiseCasting.ets"
+              }
+            }
+          },
+          "loc": {
+            "start": {
+              "line": 16,
+              "column": 9,
+              "program": "promiseCasting.ets"
+            },
+            "end": {
+              "line": 16,
+              "column": 15,
+              "program": "promiseCasting.ets"
+            }
+          }
+        }
+      ],
+      "loc": {
+        "start": {
+          "line": 16,
+          "column": 1,
+          "program": "promiseCasting.ets"
+        },
+        "end": {
+          "line": 16,
+          "column": 39,
+          "program": "promiseCasting.ets"
+        }
+      }
+    },
+    {
+      "type": "ImportDeclaration",
+      "source": {
+        "type": "StringLiteral",
+        "value": "std/core",
+        "loc": {
+          "start": {
+            "line": 17,
+            "column": 19,
+            "program": "promiseCasting.ets"
+          },
+          "end": {
+            "line": 17,
+            "column": 29,
+            "program": "promiseCasting.ets"
+          }
+        }
+      },
+      "specifiers": [
+        {
+          "type": "ImportSpecifier",
+          "local": {
+            "type": "Identifier",
+            "name": "Job",
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 17,
+                "column": 9,
+                "program": "promiseCasting.ets"
+              },
+              "end": {
+                "line": 17,
+                "column": 12,
+                "program": "promiseCasting.ets"
+              }
+            }
+          },
+          "imported": {
+            "type": "Identifier",
+            "name": "Job",
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 17,
+                "column": 9,
+                "program": "promiseCasting.ets"
+              },
+              "end": {
+                "line": 17,
+                "column": 12,
+                "program": "promiseCasting.ets"
+              }
+            }
+          },
+          "loc": {
+            "start": {
+              "line": 17,
+              "column": 9,
+              "program": "promiseCasting.ets"
+            },
+            "end": {
+              "line": 17,
+              "column": 12,
+              "program": "promiseCasting.ets"
+            }
+          }
+        }
+      ],
+      "loc": {
+        "start": {
+          "line": 17,
+          "column": 1,
+          "program": "promiseCasting.ets"
+        },
+        "end": {
+          "line": 17,
+          "column": 29,
+          "program": "promiseCasting.ets"
+        }
+      }
+    },
+    {
+      "type": "TSTypeAliasDeclaration",
+      "id": {
+        "type": "Identifier",
+        "name": "Cb",
+        "decorators": [],
+        "loc": {
+          "start": {
+            "line": 19,
+            "column": 6,
+            "program": "promiseCasting.ets"
+          },
+          "end": {
+            "line": 19,
+            "column": 8,
+            "program": "promiseCasting.ets"
+          }
+        }
+      },
+      "typeAnnotation": {
+        "type": "ETSFunctionType",
+        "params": [
+          {
+            "type": "ETSParameterExpression",
+            "name": {
+              "type": "Identifier",
+              "name": "p",
+              "typeAnnotation": {
+                "type": "ETSPrimitiveType",
+                "loc": {
+                  "start": {
+                    "line": 19,
+                    "column": 15,
+                    "program": "promiseCasting.ets"
+                  },
+                  "end": {
+                    "line": 19,
+                    "column": 18,
+                    "program": "promiseCasting.ets"
+                  }
+                }
+              },
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 19,
+                  "column": 12,
+                  "program": "promiseCasting.ets"
+                },
+                "end": {
+                  "line": 19,
+                  "column": 18,
+                  "program": "promiseCasting.ets"
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 19,
+                "column": 12,
+                "program": "promiseCasting.ets"
+              },
+              "end": {
+                "line": 19,
+                "column": 18,
+                "program": "promiseCasting.ets"
+              }
+            }
+          }
+        ],
+        "returnType": {
+          "type": "ETSPrimitiveType",
+          "loc": {
+            "start": {
+              "line": 19,
+              "column": 23,
+              "program": "promiseCasting.ets"
+            },
+            "end": {
+              "line": 19,
+              "column": 26,
+              "program": "promiseCasting.ets"
+            }
+          }
+        },
+        "loc": {
+          "start": {
+            "line": 19,
+            "column": 11,
+            "program": "promiseCasting.ets"
+          },
+          "end": {
+            "line": 19,
+            "column": 26,
+            "program": "promiseCasting.ets"
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 19,
+          "column": 1,
+          "program": "promiseCasting.ets"
+        },
+        "end": {
+          "line": 19,
+          "column": 27,
+          "program": "promiseCasting.ets"
+        }
+      }
+    },
+    {
       "type": "ClassDeclaration",
       "definition": {
         "id": {
@@ -75,7 +350,72 @@
                 "params": [],
                 "body": {
                   "type": "BlockStatement",
-                  "statements": [],
+                  "statements": [
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "AssignmentExpression",
+                        "operator": "=",
+                        "left": {
+                          "type": "Identifier",
+                          "name": "fs",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 21,
+                              "column": 5,
+                              "program": "promiseCasting.ets"
+                            },
+                            "end": {
+                              "line": 21,
+                              "column": 7,
+                              "program": "promiseCasting.ets"
+                            }
+                          }
+                        },
+                        "right": {
+                          "type": "ArrayExpression",
+                          "elements": [],
+                          "loc": {
+                            "start": {
+                              "line": 21,
+                              "column": 16,
+                              "program": "promiseCasting.ets"
+                            },
+                            "end": {
+                              "line": 21,
+                              "column": 18,
+                              "program": "promiseCasting.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 21,
+                            "column": 5,
+                            "program": "promiseCasting.ets"
+                          },
+                          "end": {
+                            "line": 21,
+                            "column": 18,
+                            "program": "promiseCasting.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 21,
+                          "column": 5,
+                          "program": "promiseCasting.ets"
+                        },
+                        "end": {
+                          "line": 21,
+                          "column": 18,
+                          "program": "promiseCasting.ets"
+                        }
+                      }
+                    }
+                  ],
                   "loc": {
                     "start": {
                       "line": 1,
@@ -138,12 +478,12 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 16,
+                  "line": 21,
                   "column": 5,
                   "program": "promiseCasting.ets"
                 },
                 "end": {
-                  "line": 16,
+                  "line": 21,
                   "column": 7,
                   "program": "promiseCasting.ets"
                 }
@@ -158,80 +498,48 @@
             "typeAnnotation": {
               "type": "TSArrayType",
               "elementType": {
-                "type": "ETSFunctionType",
-                "params": [
-                  {
-                    "type": "ETSParameterExpression",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "p",
-                      "typeAnnotation": {
-                        "type": "ETSPrimitiveType",
-                        "loc": {
-                          "start": {
-                            "line": 16,
-                            "column": 14,
-                            "program": "promiseCasting.ets"
-                          },
-                          "end": {
-                            "line": 16,
-                            "column": 17,
-                            "program": "promiseCasting.ets"
-                          }
-                        }
-                      },
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 16,
-                          "column": 11,
-                          "program": "promiseCasting.ets"
-                        },
-                        "end": {
-                          "line": 16,
-                          "column": 17,
-                          "program": "promiseCasting.ets"
-                        }
-                      }
-                    },
+                "type": "ETSTypeReference",
+                "part": {
+                  "type": "ETSTypeReferencePart",
+                  "name": {
+                    "type": "Identifier",
+                    "name": "Cb",
+                    "decorators": [],
                     "loc": {
                       "start": {
-                        "line": 16,
-                        "column": 11,
+                        "line": 21,
+                        "column": 9,
                         "program": "promiseCasting.ets"
                       },
                       "end": {
-                        "line": 16,
-                        "column": 17,
+                        "line": 21,
+                        "column": 11,
                         "program": "promiseCasting.ets"
                       }
                     }
-                  }
-                ],
-                "returnType": {
-                  "type": "ETSPrimitiveType",
+                  },
                   "loc": {
                     "start": {
-                      "line": 16,
-                      "column": 22,
+                      "line": 21,
+                      "column": 9,
                       "program": "promiseCasting.ets"
                     },
                     "end": {
-                      "line": 16,
-                      "column": 25,
+                      "line": 21,
+                      "column": 12,
                       "program": "promiseCasting.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 16,
+                    "line": 21,
                     "column": 9,
                     "program": "promiseCasting.ets"
                   },
                   "end": {
-                    "line": 16,
-                    "column": 25,
+                    "line": 21,
+                    "column": 12,
                     "program": "promiseCasting.ets"
                   }
                 }
@@ -239,13 +547,13 @@
               "annotations": [],
               "loc": {
                 "start": {
-                  "line": 16,
-                  "column": 26,
+                  "line": 21,
+                  "column": 11,
                   "program": "promiseCasting.ets"
                 },
                 "end": {
-                  "line": 16,
-                  "column": 28,
+                  "line": 21,
+                  "column": 13,
                   "program": "promiseCasting.ets"
                 }
               }
@@ -254,13 +562,13 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 16,
+                "line": 21,
                 "column": 5,
                 "program": "promiseCasting.ets"
               },
               "end": {
-                "line": 16,
-                "column": 7,
+                "line": 21,
+                "column": 18,
                 "program": "promiseCasting.ets"
               }
             }
@@ -273,12 +581,12 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 18,
+                  "line": 23,
                   "column": 10,
                   "program": "promiseCasting.ets"
                 },
                 "end": {
-                  "line": 18,
+                  "line": 23,
                   "column": 13,
                   "program": "promiseCasting.ets"
                 }
@@ -299,12 +607,12 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 18,
+                      "line": 23,
                       "column": 10,
                       "program": "promiseCasting.ets"
                     },
                     "end": {
-                      "line": 18,
+                      "line": 23,
                       "column": 13,
                       "program": "promiseCasting.ets"
                     }
@@ -323,12 +631,12 @@
                         "type": "ETSPrimitiveType",
                         "loc": {
                           "start": {
-                            "line": 18,
+                            "line": 23,
                             "column": 17,
                             "program": "promiseCasting.ets"
                           },
                           "end": {
-                            "line": 18,
+                            "line": 23,
                             "column": 20,
                             "program": "promiseCasting.ets"
                           }
@@ -337,12 +645,12 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 18,
+                          "line": 23,
                           "column": 14,
                           "program": "promiseCasting.ets"
                         },
                         "end": {
-                          "line": 18,
+                          "line": 23,
                           "column": 20,
                           "program": "promiseCasting.ets"
                         }
@@ -350,12 +658,12 @@
                     },
                     "loc": {
                       "start": {
-                        "line": 18,
+                        "line": 23,
                         "column": 14,
                         "program": "promiseCasting.ets"
                       },
                       "end": {
-                        "line": 18,
+                        "line": 23,
                         "column": 20,
                         "program": "promiseCasting.ets"
                       }
@@ -363,80 +671,48 @@
                   }
                 ],
                 "returnType": {
-                  "type": "ETSFunctionType",
-                  "params": [
-                    {
-                      "type": "ETSParameterExpression",
-                      "name": {
-                        "type": "Identifier",
-                        "name": "p",
-                        "typeAnnotation": {
-                          "type": "ETSPrimitiveType",
-                          "loc": {
-                            "start": {
-                              "line": 18,
-                              "column": 28,
-                              "program": "promiseCasting.ets"
-                            },
-                            "end": {
-                              "line": 18,
-                              "column": 31,
-                              "program": "promiseCasting.ets"
-                            }
-                          }
-                        },
-                        "decorators": [],
-                        "loc": {
-                          "start": {
-                            "line": 18,
-                            "column": 25,
-                            "program": "promiseCasting.ets"
-                          },
-                          "end": {
-                            "line": 18,
-                            "column": 31,
-                            "program": "promiseCasting.ets"
-                          }
-                        }
-                      },
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "Cb",
+                      "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 18,
-                          "column": 25,
+                          "line": 23,
+                          "column": 23,
                           "program": "promiseCasting.ets"
                         },
                         "end": {
-                          "line": 18,
-                          "column": 31,
+                          "line": 23,
+                          "column": 25,
                           "program": "promiseCasting.ets"
                         }
                       }
-                    }
-                  ],
-                  "returnType": {
-                    "type": "ETSPrimitiveType",
+                    },
                     "loc": {
                       "start": {
-                        "line": 18,
-                        "column": 36,
+                        "line": 23,
+                        "column": 23,
                         "program": "promiseCasting.ets"
                       },
                       "end": {
-                        "line": 18,
-                        "column": 39,
+                        "line": 23,
+                        "column": 27,
                         "program": "promiseCasting.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
-                      "line": 18,
+                      "line": 23,
                       "column": 23,
                       "program": "promiseCasting.ets"
                     },
                     "end": {
-                      "line": 18,
-                      "column": 39,
+                      "line": 23,
+                      "column": 27,
                       "program": "promiseCasting.ets"
                     }
                   }
@@ -454,12 +730,12 @@
                           "decorators": [],
                           "loc": {
                             "start": {
-                              "line": 19,
+                              "line": 24,
                               "column": 12,
                               "program": "promiseCasting.ets"
                             },
                             "end": {
-                              "line": 19,
+                              "line": 24,
                               "column": 14,
                               "program": "promiseCasting.ets"
                             }
@@ -471,12 +747,12 @@
                           "decorators": [],
                           "loc": {
                             "start": {
-                              "line": 19,
+                              "line": 24,
                               "column": 15,
                               "program": "promiseCasting.ets"
                             },
                             "end": {
-                              "line": 19,
+                              "line": 24,
                               "column": 16,
                               "program": "promiseCasting.ets"
                             }
@@ -486,12 +762,12 @@
                         "optional": false,
                         "loc": {
                           "start": {
-                            "line": 19,
+                            "line": 24,
                             "column": 12,
                             "program": "promiseCasting.ets"
                           },
                           "end": {
-                            "line": 19,
+                            "line": 24,
                             "column": 17,
                             "program": "promiseCasting.ets"
                           }
@@ -499,12 +775,12 @@
                       },
                       "loc": {
                         "start": {
-                          "line": 19,
+                          "line": 24,
                           "column": 5,
                           "program": "promiseCasting.ets"
                         },
                         "end": {
-                          "line": 19,
+                          "line": 24,
                           "column": 17,
                           "program": "promiseCasting.ets"
                         }
@@ -513,12 +789,12 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 18,
-                      "column": 41,
+                      "line": 23,
+                      "column": 26,
                       "program": "promiseCasting.ets"
                     },
                     "end": {
-                      "line": 20,
+                      "line": 25,
                       "column": 2,
                       "program": "promiseCasting.ets"
                     }
@@ -526,12 +802,12 @@
                 },
                 "loc": {
                   "start": {
-                    "line": 18,
+                    "line": 23,
                     "column": 10,
                     "program": "promiseCasting.ets"
                   },
                   "end": {
-                    "line": 20,
+                    "line": 25,
                     "column": 2,
                     "program": "promiseCasting.ets"
                   }
@@ -539,12 +815,12 @@
               },
               "loc": {
                 "start": {
-                  "line": 18,
+                  "line": 23,
                   "column": 10,
                   "program": "promiseCasting.ets"
                 },
                 "end": {
-                  "line": 20,
+                  "line": 25,
                   "column": 2,
                   "program": "promiseCasting.ets"
                 }
@@ -554,12 +830,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 18,
+                "line": 23,
                 "column": 1,
                 "program": "promiseCasting.ets"
               },
               "end": {
-                "line": 20,
+                "line": 25,
                 "column": 2,
                 "program": "promiseCasting.ets"
               }
@@ -573,12 +849,12 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 22,
+                  "line": 27,
                   "column": 10,
                   "program": "promiseCasting.ets"
                 },
                 "end": {
-                  "line": 22,
+                  "line": 27,
                   "column": 14,
                   "program": "promiseCasting.ets"
                 }
@@ -599,12 +875,12 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 22,
+                      "line": 27,
                       "column": 10,
                       "program": "promiseCasting.ets"
                     },
                     "end": {
-                      "line": 22,
+                      "line": 27,
                       "column": 14,
                       "program": "promiseCasting.ets"
                     }
@@ -628,12 +904,12 @@
                           "decorators": [],
                           "loc": {
                             "start": {
-                              "line": 23,
+                              "line": 28,
                               "column": 5,
                               "program": "promiseCasting.ets"
                             },
                             "end": {
-                              "line": 23,
+                              "line": 28,
                               "column": 7,
                               "program": "promiseCasting.ets"
                             }
@@ -660,12 +936,12 @@
                                         "type": "ETSPrimitiveType",
                                         "loc": {
                                           "start": {
-                                            "line": 24,
+                                            "line": 29,
                                             "column": 13,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 24,
+                                            "line": 29,
                                             "column": 16,
                                             "program": "promiseCasting.ets"
                                           }
@@ -674,12 +950,12 @@
                                       "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 24,
+                                          "line": 29,
                                           "column": 10,
                                           "program": "promiseCasting.ets"
                                         },
                                         "end": {
-                                          "line": 24,
+                                          "line": 29,
                                           "column": 16,
                                           "program": "promiseCasting.ets"
                                         }
@@ -687,12 +963,12 @@
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 24,
+                                        "line": 29,
                                         "column": 10,
                                         "program": "promiseCasting.ets"
                                       },
                                       "end": {
-                                        "line": 24,
+                                        "line": 29,
                                         "column": 16,
                                         "program": "promiseCasting.ets"
                                       }
@@ -703,12 +979,12 @@
                                   "type": "ETSPrimitiveType",
                                   "loc": {
                                     "start": {
-                                      "line": 24,
+                                      "line": 29,
                                       "column": 19,
                                       "program": "promiseCasting.ets"
                                     },
                                     "end": {
-                                      "line": 24,
+                                      "line": 29,
                                       "column": 22,
                                       "program": "promiseCasting.ets"
                                     }
@@ -728,12 +1004,12 @@
                                           "decorators": [],
                                           "loc": {
                                             "start": {
-                                              "line": 24,
+                                              "line": 29,
                                               "column": 26,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 24,
+                                              "line": 29,
                                               "column": 27,
                                               "program": "promiseCasting.ets"
                                             }
@@ -744,12 +1020,12 @@
                                           "value": 1,
                                           "loc": {
                                             "start": {
-                                              "line": 24,
+                                              "line": 29,
                                               "column": 30,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 24,
+                                              "line": 29,
                                               "column": 31,
                                               "program": "promiseCasting.ets"
                                             }
@@ -757,12 +1033,12 @@
                                         },
                                         "loc": {
                                           "start": {
-                                            "line": 24,
+                                            "line": 29,
                                             "column": 26,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 24,
+                                            "line": 29,
                                             "column": 31,
                                             "program": "promiseCasting.ets"
                                           }
@@ -797,12 +1073,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 24,
+                                    "line": 29,
                                     "column": 9,
                                     "program": "promiseCasting.ets"
                                   },
                                   "end": {
-                                    "line": 24,
+                                    "line": 29,
                                     "column": 31,
                                     "program": "promiseCasting.ets"
                                   }
@@ -810,12 +1086,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 24,
+                                  "line": 29,
                                   "column": 9,
                                   "program": "promiseCasting.ets"
                                 },
                                 "end": {
-                                  "line": 24,
+                                  "line": 29,
                                   "column": 31,
                                   "program": "promiseCasting.ets"
                                 }
@@ -839,12 +1115,12 @@
                                         "type": "ETSPrimitiveType",
                                         "loc": {
                                           "start": {
-                                            "line": 25,
+                                            "line": 30,
                                             "column": 13,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 25,
+                                            "line": 30,
                                             "column": 16,
                                             "program": "promiseCasting.ets"
                                           }
@@ -853,12 +1129,12 @@
                                       "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 25,
+                                          "line": 30,
                                           "column": 10,
                                           "program": "promiseCasting.ets"
                                         },
                                         "end": {
-                                          "line": 25,
+                                          "line": 30,
                                           "column": 16,
                                           "program": "promiseCasting.ets"
                                         }
@@ -866,12 +1142,12 @@
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 25,
+                                        "line": 30,
                                         "column": 10,
                                         "program": "promiseCasting.ets"
                                       },
                                       "end": {
-                                        "line": 25,
+                                        "line": 30,
                                         "column": 16,
                                         "program": "promiseCasting.ets"
                                       }
@@ -882,12 +1158,12 @@
                                   "type": "ETSPrimitiveType",
                                   "loc": {
                                     "start": {
-                                      "line": 25,
+                                      "line": 30,
                                       "column": 19,
                                       "program": "promiseCasting.ets"
                                     },
                                     "end": {
-                                      "line": 25,
+                                      "line": 30,
                                       "column": 22,
                                       "program": "promiseCasting.ets"
                                     }
@@ -907,12 +1183,12 @@
                                           "decorators": [],
                                           "loc": {
                                             "start": {
-                                              "line": 25,
+                                              "line": 30,
                                               "column": 26,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 25,
+                                              "line": 30,
                                               "column": 27,
                                               "program": "promiseCasting.ets"
                                             }
@@ -923,12 +1199,12 @@
                                           "value": 2,
                                           "loc": {
                                             "start": {
-                                              "line": 25,
+                                              "line": 30,
                                               "column": 30,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 25,
+                                              "line": 30,
                                               "column": 31,
                                               "program": "promiseCasting.ets"
                                             }
@@ -936,12 +1212,12 @@
                                         },
                                         "loc": {
                                           "start": {
-                                            "line": 25,
+                                            "line": 30,
                                             "column": 26,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 25,
+                                            "line": 30,
                                             "column": 31,
                                             "program": "promiseCasting.ets"
                                           }
@@ -976,12 +1252,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 25,
+                                    "line": 30,
                                     "column": 9,
                                     "program": "promiseCasting.ets"
                                   },
                                   "end": {
-                                    "line": 25,
+                                    "line": 30,
                                     "column": 31,
                                     "program": "promiseCasting.ets"
                                   }
@@ -989,12 +1265,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 25,
+                                  "line": 30,
                                   "column": 9,
                                   "program": "promiseCasting.ets"
                                 },
                                 "end": {
-                                  "line": 25,
+                                  "line": 30,
                                   "column": 31,
                                   "program": "promiseCasting.ets"
                                 }
@@ -1018,12 +1294,12 @@
                                         "type": "ETSPrimitiveType",
                                         "loc": {
                                           "start": {
-                                            "line": 26,
+                                            "line": 31,
                                             "column": 13,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 26,
+                                            "line": 31,
                                             "column": 16,
                                             "program": "promiseCasting.ets"
                                           }
@@ -1032,12 +1308,12 @@
                                       "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 26,
+                                          "line": 31,
                                           "column": 10,
                                           "program": "promiseCasting.ets"
                                         },
                                         "end": {
-                                          "line": 26,
+                                          "line": 31,
                                           "column": 16,
                                           "program": "promiseCasting.ets"
                                         }
@@ -1045,12 +1321,12 @@
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 26,
+                                        "line": 31,
                                         "column": 10,
                                         "program": "promiseCasting.ets"
                                       },
                                       "end": {
-                                        "line": 26,
+                                        "line": 31,
                                         "column": 16,
                                         "program": "promiseCasting.ets"
                                       }
@@ -1061,12 +1337,12 @@
                                   "type": "ETSPrimitiveType",
                                   "loc": {
                                     "start": {
-                                      "line": 26,
+                                      "line": 31,
                                       "column": 19,
                                       "program": "promiseCasting.ets"
                                     },
                                     "end": {
-                                      "line": 26,
+                                      "line": 31,
                                       "column": 22,
                                       "program": "promiseCasting.ets"
                                     }
@@ -1086,12 +1362,12 @@
                                           "decorators": [],
                                           "loc": {
                                             "start": {
-                                              "line": 26,
+                                              "line": 31,
                                               "column": 26,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 26,
+                                              "line": 31,
                                               "column": 27,
                                               "program": "promiseCasting.ets"
                                             }
@@ -1102,12 +1378,12 @@
                                           "value": 3,
                                           "loc": {
                                             "start": {
-                                              "line": 26,
+                                              "line": 31,
                                               "column": 30,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 26,
+                                              "line": 31,
                                               "column": 31,
                                               "program": "promiseCasting.ets"
                                             }
@@ -1115,12 +1391,12 @@
                                         },
                                         "loc": {
                                           "start": {
-                                            "line": 26,
+                                            "line": 31,
                                             "column": 26,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 26,
+                                            "line": 31,
                                             "column": 31,
                                             "program": "promiseCasting.ets"
                                           }
@@ -1155,12 +1431,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 26,
+                                    "line": 31,
                                     "column": 9,
                                     "program": "promiseCasting.ets"
                                   },
                                   "end": {
-                                    "line": 26,
+                                    "line": 31,
                                     "column": 31,
                                     "program": "promiseCasting.ets"
                                   }
@@ -1168,12 +1444,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 26,
+                                  "line": 31,
                                   "column": 9,
                                   "program": "promiseCasting.ets"
                                 },
                                 "end": {
-                                  "line": 26,
+                                  "line": 31,
                                   "column": 31,
                                   "program": "promiseCasting.ets"
                                 }
@@ -1197,12 +1473,12 @@
                                         "type": "ETSPrimitiveType",
                                         "loc": {
                                           "start": {
-                                            "line": 27,
+                                            "line": 32,
                                             "column": 13,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 27,
+                                            "line": 32,
                                             "column": 16,
                                             "program": "promiseCasting.ets"
                                           }
@@ -1211,12 +1487,12 @@
                                       "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 27,
+                                          "line": 32,
                                           "column": 10,
                                           "program": "promiseCasting.ets"
                                         },
                                         "end": {
-                                          "line": 27,
+                                          "line": 32,
                                           "column": 16,
                                           "program": "promiseCasting.ets"
                                         }
@@ -1224,12 +1500,12 @@
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 27,
+                                        "line": 32,
                                         "column": 10,
                                         "program": "promiseCasting.ets"
                                       },
                                       "end": {
-                                        "line": 27,
+                                        "line": 32,
                                         "column": 16,
                                         "program": "promiseCasting.ets"
                                       }
@@ -1240,12 +1516,12 @@
                                   "type": "ETSPrimitiveType",
                                   "loc": {
                                     "start": {
-                                      "line": 27,
+                                      "line": 32,
                                       "column": 19,
                                       "program": "promiseCasting.ets"
                                     },
                                     "end": {
-                                      "line": 27,
+                                      "line": 32,
                                       "column": 22,
                                       "program": "promiseCasting.ets"
                                     }
@@ -1265,12 +1541,12 @@
                                           "decorators": [],
                                           "loc": {
                                             "start": {
-                                              "line": 27,
+                                              "line": 32,
                                               "column": 26,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 27,
+                                              "line": 32,
                                               "column": 27,
                                               "program": "promiseCasting.ets"
                                             }
@@ -1281,12 +1557,12 @@
                                           "value": 4,
                                           "loc": {
                                             "start": {
-                                              "line": 27,
+                                              "line": 32,
                                               "column": 30,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 27,
+                                              "line": 32,
                                               "column": 31,
                                               "program": "promiseCasting.ets"
                                             }
@@ -1294,12 +1570,12 @@
                                         },
                                         "loc": {
                                           "start": {
-                                            "line": 27,
+                                            "line": 32,
                                             "column": 26,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 27,
+                                            "line": 32,
                                             "column": 31,
                                             "program": "promiseCasting.ets"
                                           }
@@ -1334,12 +1610,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 27,
+                                    "line": 32,
                                     "column": 9,
                                     "program": "promiseCasting.ets"
                                   },
                                   "end": {
-                                    "line": 27,
+                                    "line": 32,
                                     "column": 31,
                                     "program": "promiseCasting.ets"
                                   }
@@ -1347,12 +1623,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 27,
+                                  "line": 32,
                                   "column": 9,
                                   "program": "promiseCasting.ets"
                                 },
                                 "end": {
-                                  "line": 27,
+                                  "line": 32,
                                   "column": 31,
                                   "program": "promiseCasting.ets"
                                 }
@@ -1376,12 +1652,12 @@
                                         "type": "ETSPrimitiveType",
                                         "loc": {
                                           "start": {
-                                            "line": 28,
+                                            "line": 33,
                                             "column": 13,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 28,
+                                            "line": 33,
                                             "column": 16,
                                             "program": "promiseCasting.ets"
                                           }
@@ -1390,12 +1666,12 @@
                                       "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 28,
+                                          "line": 33,
                                           "column": 10,
                                           "program": "promiseCasting.ets"
                                         },
                                         "end": {
-                                          "line": 28,
+                                          "line": 33,
                                           "column": 16,
                                           "program": "promiseCasting.ets"
                                         }
@@ -1403,12 +1679,12 @@
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 28,
+                                        "line": 33,
                                         "column": 10,
                                         "program": "promiseCasting.ets"
                                       },
                                       "end": {
-                                        "line": 28,
+                                        "line": 33,
                                         "column": 16,
                                         "program": "promiseCasting.ets"
                                       }
@@ -1419,12 +1695,12 @@
                                   "type": "ETSPrimitiveType",
                                   "loc": {
                                     "start": {
-                                      "line": 28,
+                                      "line": 33,
                                       "column": 19,
                                       "program": "promiseCasting.ets"
                                     },
                                     "end": {
-                                      "line": 28,
+                                      "line": 33,
                                       "column": 22,
                                       "program": "promiseCasting.ets"
                                     }
@@ -1444,12 +1720,12 @@
                                           "decorators": [],
                                           "loc": {
                                             "start": {
-                                              "line": 28,
+                                              "line": 33,
                                               "column": 26,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 28,
+                                              "line": 33,
                                               "column": 27,
                                               "program": "promiseCasting.ets"
                                             }
@@ -1460,12 +1736,12 @@
                                           "value": 5,
                                           "loc": {
                                             "start": {
-                                              "line": 28,
+                                              "line": 33,
                                               "column": 30,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 28,
+                                              "line": 33,
                                               "column": 31,
                                               "program": "promiseCasting.ets"
                                             }
@@ -1473,12 +1749,12 @@
                                         },
                                         "loc": {
                                           "start": {
-                                            "line": 28,
+                                            "line": 33,
                                             "column": 26,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 28,
+                                            "line": 33,
                                             "column": 31,
                                             "program": "promiseCasting.ets"
                                           }
@@ -1513,12 +1789,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 28,
+                                    "line": 33,
                                     "column": 9,
                                     "program": "promiseCasting.ets"
                                   },
                                   "end": {
-                                    "line": 28,
+                                    "line": 33,
                                     "column": 31,
                                     "program": "promiseCasting.ets"
                                   }
@@ -1526,12 +1802,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 28,
+                                  "line": 33,
                                   "column": 9,
                                   "program": "promiseCasting.ets"
                                 },
                                 "end": {
-                                  "line": 28,
+                                  "line": 33,
                                   "column": 31,
                                   "program": "promiseCasting.ets"
                                 }
@@ -1555,12 +1831,12 @@
                                         "type": "ETSPrimitiveType",
                                         "loc": {
                                           "start": {
-                                            "line": 29,
+                                            "line": 34,
                                             "column": 13,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 29,
+                                            "line": 34,
                                             "column": 16,
                                             "program": "promiseCasting.ets"
                                           }
@@ -1569,12 +1845,12 @@
                                       "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 29,
+                                          "line": 34,
                                           "column": 10,
                                           "program": "promiseCasting.ets"
                                         },
                                         "end": {
-                                          "line": 29,
+                                          "line": 34,
                                           "column": 16,
                                           "program": "promiseCasting.ets"
                                         }
@@ -1582,12 +1858,12 @@
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 29,
+                                        "line": 34,
                                         "column": 10,
                                         "program": "promiseCasting.ets"
                                       },
                                       "end": {
-                                        "line": 29,
+                                        "line": 34,
                                         "column": 16,
                                         "program": "promiseCasting.ets"
                                       }
@@ -1598,12 +1874,12 @@
                                   "type": "ETSPrimitiveType",
                                   "loc": {
                                     "start": {
-                                      "line": 29,
+                                      "line": 34,
                                       "column": 19,
                                       "program": "promiseCasting.ets"
                                     },
                                     "end": {
-                                      "line": 29,
+                                      "line": 34,
                                       "column": 22,
                                       "program": "promiseCasting.ets"
                                     }
@@ -1623,12 +1899,12 @@
                                           "decorators": [],
                                           "loc": {
                                             "start": {
-                                              "line": 29,
+                                              "line": 34,
                                               "column": 26,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 29,
+                                              "line": 34,
                                               "column": 27,
                                               "program": "promiseCasting.ets"
                                             }
@@ -1639,12 +1915,12 @@
                                           "value": 6,
                                           "loc": {
                                             "start": {
-                                              "line": 29,
+                                              "line": 34,
                                               "column": 30,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 29,
+                                              "line": 34,
                                               "column": 31,
                                               "program": "promiseCasting.ets"
                                             }
@@ -1652,12 +1928,12 @@
                                         },
                                         "loc": {
                                           "start": {
-                                            "line": 29,
+                                            "line": 34,
                                             "column": 26,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 29,
+                                            "line": 34,
                                             "column": 31,
                                             "program": "promiseCasting.ets"
                                           }
@@ -1692,12 +1968,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 29,
+                                    "line": 34,
                                     "column": 9,
                                     "program": "promiseCasting.ets"
                                   },
                                   "end": {
-                                    "line": 29,
+                                    "line": 34,
                                     "column": 31,
                                     "program": "promiseCasting.ets"
                                   }
@@ -1705,12 +1981,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 29,
+                                  "line": 34,
                                   "column": 9,
                                   "program": "promiseCasting.ets"
                                 },
                                 "end": {
-                                  "line": 29,
+                                  "line": 34,
                                   "column": 31,
                                   "program": "promiseCasting.ets"
                                 }
@@ -1734,12 +2010,12 @@
                                         "type": "ETSPrimitiveType",
                                         "loc": {
                                           "start": {
-                                            "line": 30,
+                                            "line": 35,
                                             "column": 13,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 30,
+                                            "line": 35,
                                             "column": 16,
                                             "program": "promiseCasting.ets"
                                           }
@@ -1748,12 +2024,12 @@
                                       "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 30,
+                                          "line": 35,
                                           "column": 10,
                                           "program": "promiseCasting.ets"
                                         },
                                         "end": {
-                                          "line": 30,
+                                          "line": 35,
                                           "column": 16,
                                           "program": "promiseCasting.ets"
                                         }
@@ -1761,12 +2037,12 @@
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 30,
+                                        "line": 35,
                                         "column": 10,
                                         "program": "promiseCasting.ets"
                                       },
                                       "end": {
-                                        "line": 30,
+                                        "line": 35,
                                         "column": 16,
                                         "program": "promiseCasting.ets"
                                       }
@@ -1777,12 +2053,12 @@
                                   "type": "ETSPrimitiveType",
                                   "loc": {
                                     "start": {
-                                      "line": 30,
+                                      "line": 35,
                                       "column": 19,
                                       "program": "promiseCasting.ets"
                                     },
                                     "end": {
-                                      "line": 30,
+                                      "line": 35,
                                       "column": 22,
                                       "program": "promiseCasting.ets"
                                     }
@@ -1802,12 +2078,12 @@
                                           "decorators": [],
                                           "loc": {
                                             "start": {
-                                              "line": 30,
+                                              "line": 35,
                                               "column": 26,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 30,
+                                              "line": 35,
                                               "column": 27,
                                               "program": "promiseCasting.ets"
                                             }
@@ -1818,12 +2094,12 @@
                                           "value": 7,
                                           "loc": {
                                             "start": {
-                                              "line": 30,
+                                              "line": 35,
                                               "column": 30,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 30,
+                                              "line": 35,
                                               "column": 31,
                                               "program": "promiseCasting.ets"
                                             }
@@ -1831,12 +2107,12 @@
                                         },
                                         "loc": {
                                           "start": {
-                                            "line": 30,
+                                            "line": 35,
                                             "column": 26,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 30,
+                                            "line": 35,
                                             "column": 31,
                                             "program": "promiseCasting.ets"
                                           }
@@ -1871,12 +2147,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 30,
+                                    "line": 35,
                                     "column": 9,
                                     "program": "promiseCasting.ets"
                                   },
                                   "end": {
-                                    "line": 30,
+                                    "line": 35,
                                     "column": 31,
                                     "program": "promiseCasting.ets"
                                   }
@@ -1884,12 +2160,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 30,
+                                  "line": 35,
                                   "column": 9,
                                   "program": "promiseCasting.ets"
                                 },
                                 "end": {
-                                  "line": 30,
+                                  "line": 35,
                                   "column": 31,
                                   "program": "promiseCasting.ets"
                                 }
@@ -1913,12 +2189,12 @@
                                         "type": "ETSPrimitiveType",
                                         "loc": {
                                           "start": {
-                                            "line": 31,
+                                            "line": 36,
                                             "column": 13,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 31,
+                                            "line": 36,
                                             "column": 16,
                                             "program": "promiseCasting.ets"
                                           }
@@ -1927,12 +2203,12 @@
                                       "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 31,
+                                          "line": 36,
                                           "column": 10,
                                           "program": "promiseCasting.ets"
                                         },
                                         "end": {
-                                          "line": 31,
+                                          "line": 36,
                                           "column": 16,
                                           "program": "promiseCasting.ets"
                                         }
@@ -1940,12 +2216,12 @@
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 31,
+                                        "line": 36,
                                         "column": 10,
                                         "program": "promiseCasting.ets"
                                       },
                                       "end": {
-                                        "line": 31,
+                                        "line": 36,
                                         "column": 16,
                                         "program": "promiseCasting.ets"
                                       }
@@ -1956,12 +2232,12 @@
                                   "type": "ETSPrimitiveType",
                                   "loc": {
                                     "start": {
-                                      "line": 31,
+                                      "line": 36,
                                       "column": 19,
                                       "program": "promiseCasting.ets"
                                     },
                                     "end": {
-                                      "line": 31,
+                                      "line": 36,
                                       "column": 22,
                                       "program": "promiseCasting.ets"
                                     }
@@ -1981,12 +2257,12 @@
                                           "decorators": [],
                                           "loc": {
                                             "start": {
-                                              "line": 31,
+                                              "line": 36,
                                               "column": 26,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 31,
+                                              "line": 36,
                                               "column": 27,
                                               "program": "promiseCasting.ets"
                                             }
@@ -1997,12 +2273,12 @@
                                           "value": 8,
                                           "loc": {
                                             "start": {
-                                              "line": 31,
+                                              "line": 36,
                                               "column": 30,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 31,
+                                              "line": 36,
                                               "column": 31,
                                               "program": "promiseCasting.ets"
                                             }
@@ -2010,12 +2286,12 @@
                                         },
                                         "loc": {
                                           "start": {
-                                            "line": 31,
+                                            "line": 36,
                                             "column": 26,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 31,
+                                            "line": 36,
                                             "column": 31,
                                             "program": "promiseCasting.ets"
                                           }
@@ -2050,12 +2326,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 31,
+                                    "line": 36,
                                     "column": 9,
                                     "program": "promiseCasting.ets"
                                   },
                                   "end": {
-                                    "line": 31,
+                                    "line": 36,
                                     "column": 31,
                                     "program": "promiseCasting.ets"
                                   }
@@ -2063,12 +2339,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 31,
+                                  "line": 36,
                                   "column": 9,
                                   "program": "promiseCasting.ets"
                                 },
                                 "end": {
-                                  "line": 31,
+                                  "line": 36,
                                   "column": 31,
                                   "program": "promiseCasting.ets"
                                 }
@@ -2092,12 +2368,12 @@
                                         "type": "ETSPrimitiveType",
                                         "loc": {
                                           "start": {
-                                            "line": 32,
+                                            "line": 37,
                                             "column": 13,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 32,
+                                            "line": 37,
                                             "column": 16,
                                             "program": "promiseCasting.ets"
                                           }
@@ -2106,12 +2382,12 @@
                                       "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 32,
+                                          "line": 37,
                                           "column": 10,
                                           "program": "promiseCasting.ets"
                                         },
                                         "end": {
-                                          "line": 32,
+                                          "line": 37,
                                           "column": 16,
                                           "program": "promiseCasting.ets"
                                         }
@@ -2119,12 +2395,12 @@
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 32,
+                                        "line": 37,
                                         "column": 10,
                                         "program": "promiseCasting.ets"
                                       },
                                       "end": {
-                                        "line": 32,
+                                        "line": 37,
                                         "column": 16,
                                         "program": "promiseCasting.ets"
                                       }
@@ -2135,12 +2411,12 @@
                                   "type": "ETSPrimitiveType",
                                   "loc": {
                                     "start": {
-                                      "line": 32,
+                                      "line": 37,
                                       "column": 19,
                                       "program": "promiseCasting.ets"
                                     },
                                     "end": {
-                                      "line": 32,
+                                      "line": 37,
                                       "column": 22,
                                       "program": "promiseCasting.ets"
                                     }
@@ -2160,12 +2436,12 @@
                                           "decorators": [],
                                           "loc": {
                                             "start": {
-                                              "line": 32,
+                                              "line": 37,
                                               "column": 26,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 32,
+                                              "line": 37,
                                               "column": 27,
                                               "program": "promiseCasting.ets"
                                             }
@@ -2176,12 +2452,12 @@
                                           "value": 9,
                                           "loc": {
                                             "start": {
-                                              "line": 32,
+                                              "line": 37,
                                               "column": 30,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 32,
+                                              "line": 37,
                                               "column": 31,
                                               "program": "promiseCasting.ets"
                                             }
@@ -2189,12 +2465,12 @@
                                         },
                                         "loc": {
                                           "start": {
-                                            "line": 32,
+                                            "line": 37,
                                             "column": 26,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 32,
+                                            "line": 37,
                                             "column": 31,
                                             "program": "promiseCasting.ets"
                                           }
@@ -2229,12 +2505,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 32,
+                                    "line": 37,
                                     "column": 9,
                                     "program": "promiseCasting.ets"
                                   },
                                   "end": {
-                                    "line": 32,
+                                    "line": 37,
                                     "column": 31,
                                     "program": "promiseCasting.ets"
                                   }
@@ -2242,12 +2518,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 32,
+                                  "line": 37,
                                   "column": 9,
                                   "program": "promiseCasting.ets"
                                 },
                                 "end": {
-                                  "line": 32,
+                                  "line": 37,
                                   "column": 31,
                                   "program": "promiseCasting.ets"
                                 }
@@ -2271,12 +2547,12 @@
                                         "type": "ETSPrimitiveType",
                                         "loc": {
                                           "start": {
-                                            "line": 33,
+                                            "line": 38,
                                             "column": 13,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 33,
+                                            "line": 38,
                                             "column": 16,
                                             "program": "promiseCasting.ets"
                                           }
@@ -2285,12 +2561,12 @@
                                       "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 33,
+                                          "line": 38,
                                           "column": 10,
                                           "program": "promiseCasting.ets"
                                         },
                                         "end": {
-                                          "line": 33,
+                                          "line": 38,
                                           "column": 16,
                                           "program": "promiseCasting.ets"
                                         }
@@ -2298,12 +2574,12 @@
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 33,
+                                        "line": 38,
                                         "column": 10,
                                         "program": "promiseCasting.ets"
                                       },
                                       "end": {
-                                        "line": 33,
+                                        "line": 38,
                                         "column": 16,
                                         "program": "promiseCasting.ets"
                                       }
@@ -2314,12 +2590,12 @@
                                   "type": "ETSPrimitiveType",
                                   "loc": {
                                     "start": {
-                                      "line": 33,
+                                      "line": 38,
                                       "column": 19,
                                       "program": "promiseCasting.ets"
                                     },
                                     "end": {
-                                      "line": 33,
+                                      "line": 38,
                                       "column": 22,
                                       "program": "promiseCasting.ets"
                                     }
@@ -2339,12 +2615,12 @@
                                           "decorators": [],
                                           "loc": {
                                             "start": {
-                                              "line": 33,
+                                              "line": 38,
                                               "column": 26,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 33,
+                                              "line": 38,
                                               "column": 27,
                                               "program": "promiseCasting.ets"
                                             }
@@ -2355,12 +2631,12 @@
                                           "value": 0,
                                           "loc": {
                                             "start": {
-                                              "line": 33,
+                                              "line": 38,
                                               "column": 30,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
-                                              "line": 33,
+                                              "line": 38,
                                               "column": 31,
                                               "program": "promiseCasting.ets"
                                             }
@@ -2368,12 +2644,12 @@
                                         },
                                         "loc": {
                                           "start": {
-                                            "line": 33,
+                                            "line": 38,
                                             "column": 26,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
-                                            "line": 33,
+                                            "line": 38,
                                             "column": 31,
                                             "program": "promiseCasting.ets"
                                           }
@@ -2408,12 +2684,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 33,
+                                    "line": 38,
                                     "column": 9,
                                     "program": "promiseCasting.ets"
                                   },
                                   "end": {
-                                    "line": 33,
+                                    "line": 38,
                                     "column": 31,
                                     "program": "promiseCasting.ets"
                                   }
@@ -2421,12 +2697,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 33,
+                                  "line": 38,
                                   "column": 9,
                                   "program": "promiseCasting.ets"
                                 },
                                 "end": {
-                                  "line": 33,
+                                  "line": 38,
                                   "column": 31,
                                   "program": "promiseCasting.ets"
                                 }
@@ -2435,12 +2711,12 @@
                           ],
                           "loc": {
                             "start": {
-                              "line": 23,
+                              "line": 28,
                               "column": 10,
                               "program": "promiseCasting.ets"
                             },
                             "end": {
-                              "line": 34,
+                              "line": 39,
                               "column": 6,
                               "program": "promiseCasting.ets"
                             }
@@ -2448,12 +2724,12 @@
                         },
                         "loc": {
                           "start": {
-                            "line": 23,
+                            "line": 28,
                             "column": 5,
                             "program": "promiseCasting.ets"
                           },
                           "end": {
-                            "line": 34,
+                            "line": 39,
                             "column": 6,
                             "program": "promiseCasting.ets"
                           }
@@ -2461,12 +2737,12 @@
                       },
                       "loc": {
                         "start": {
-                          "line": 23,
+                          "line": 28,
                           "column": 5,
                           "program": "promiseCasting.ets"
                         },
                         "end": {
-                          "line": 34,
+                          "line": 39,
                           "column": 6,
                           "program": "promiseCasting.ets"
                         }
@@ -2492,12 +2768,12 @@
                                     "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 37,
+                                        "line": 42,
                                         "column": 13,
                                         "program": "promiseCasting.ets"
                                       },
                                       "end": {
-                                        "line": 37,
+                                        "line": 42,
                                         "column": 19,
                                         "program": "promiseCasting.ets"
                                       }
@@ -2505,12 +2781,12 @@
                                   },
                                   "loc": {
                                     "start": {
-                                      "line": 37,
+                                      "line": 42,
                                       "column": 13,
                                       "program": "promiseCasting.ets"
                                     },
                                     "end": {
-                                      "line": 37,
+                                      "line": 42,
                                       "column": 20,
                                       "program": "promiseCasting.ets"
                                     }
@@ -2518,12 +2794,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 37,
+                                    "line": 42,
                                     "column": 13,
                                     "program": "promiseCasting.ets"
                                   },
                                   "end": {
-                                    "line": 37,
+                                    "line": 42,
                                     "column": 20,
                                     "program": "promiseCasting.ets"
                                   }
@@ -2532,12 +2808,12 @@
                               "annotations": [],
                               "loc": {
                                 "start": {
-                                  "line": 37,
+                                  "line": 42,
                                   "column": 19,
                                   "program": "promiseCasting.ets"
                                 },
                                 "end": {
-                                  "line": 37,
+                                  "line": 42,
                                   "column": 21,
                                   "program": "promiseCasting.ets"
                                 }
@@ -2546,12 +2822,12 @@
                             "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 37,
+                                "line": 42,
                                 "column": 9,
                                 "program": "promiseCasting.ets"
                               },
                               "end": {
-                                "line": 37,
+                                "line": 42,
                                 "column": 11,
                                 "program": "promiseCasting.ets"
                               }
@@ -2569,12 +2845,12 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 37,
+                                      "line": 42,
                                       "column": 28,
                                       "program": "promiseCasting.ets"
                                     },
                                     "end": {
-                                      "line": 37,
+                                      "line": 42,
                                       "column": 34,
                                       "program": "promiseCasting.ets"
                                     }
@@ -2582,12 +2858,12 @@
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 37,
+                                    "line": 42,
                                     "column": 28,
                                     "program": "promiseCasting.ets"
                                   },
                                   "end": {
-                                    "line": 37,
+                                    "line": 42,
                                     "column": 35,
                                     "program": "promiseCasting.ets"
                                   }
@@ -2595,12 +2871,12 @@
                               },
                               "loc": {
                                 "start": {
-                                  "line": 37,
+                                  "line": 42,
                                   "column": 28,
                                   "program": "promiseCasting.ets"
                                 },
                                 "end": {
-                                  "line": 37,
+                                  "line": 42,
                                   "column": 35,
                                   "program": "promiseCasting.ets"
                                 }
@@ -2611,12 +2887,12 @@
                               "value": 10,
                               "loc": {
                                 "start": {
-                                  "line": 37,
+                                  "line": 42,
                                   "column": 35,
                                   "program": "promiseCasting.ets"
                                 },
                                 "end": {
-                                  "line": 37,
+                                  "line": 42,
                                   "column": 37,
                                   "program": "promiseCasting.ets"
                                 }
@@ -2624,12 +2900,12 @@
                             },
                             "loc": {
                               "start": {
-                                "line": 37,
+                                "line": 42,
                                 "column": 24,
                                 "program": "promiseCasting.ets"
                               },
                               "end": {
-                                "line": 37,
+                                "line": 42,
                                 "column": 38,
                                 "program": "promiseCasting.ets"
                               }
@@ -2637,12 +2913,12 @@
                           },
                           "loc": {
                             "start": {
-                              "line": 37,
+                              "line": 42,
                               "column": 9,
                               "program": "promiseCasting.ets"
                             },
                             "end": {
-                              "line": 37,
+                              "line": 42,
                               "column": 38,
                               "program": "promiseCasting.ets"
                             }
@@ -2652,12 +2928,12 @@
                       "kind": "let",
                       "loc": {
                         "start": {
-                          "line": 37,
+                          "line": 42,
                           "column": 5,
                           "program": "promiseCasting.ets"
                         },
                         "end": {
-                          "line": 37,
+                          "line": 42,
                           "column": 38,
                           "program": "promiseCasting.ets"
                         }
@@ -2676,12 +2952,12 @@
                               "decorators": [],
                               "loc": {
                                 "start": {
-                                  "line": 38,
+                                  "line": 43,
                                   "column": 14,
                                   "program": "promiseCasting.ets"
                                 },
                                 "end": {
-                                  "line": 38,
+                                  "line": 43,
                                   "column": 15,
                                   "program": "promiseCasting.ets"
                                 }
@@ -2692,12 +2968,12 @@
                               "value": 0,
                               "loc": {
                                 "start": {
-                                  "line": 38,
+                                  "line": 43,
                                   "column": 18,
                                   "program": "promiseCasting.ets"
                                 },
                                 "end": {
-                                  "line": 38,
+                                  "line": 43,
                                   "column": 19,
                                   "program": "promiseCasting.ets"
                                 }
@@ -2705,12 +2981,12 @@
                             },
                             "loc": {
                               "start": {
-                                "line": 38,
+                                "line": 43,
                                 "column": 14,
                                 "program": "promiseCasting.ets"
                               },
                               "end": {
-                                "line": 38,
+                                "line": 43,
                                 "column": 19,
                                 "program": "promiseCasting.ets"
                               }
@@ -2720,12 +2996,12 @@
                         "kind": "let",
                         "loc": {
                           "start": {
-                            "line": 38,
+                            "line": 43,
                             "column": 10,
                             "program": "promiseCasting.ets"
                           },
                           "end": {
-                            "line": 38,
+                            "line": 43,
                             "column": 19,
                             "program": "promiseCasting.ets"
                           }
@@ -2740,12 +3016,12 @@
                           "decorators": [],
                           "loc": {
                             "start": {
-                              "line": 38,
+                              "line": 43,
                               "column": 21,
                               "program": "promiseCasting.ets"
                             },
                             "end": {
-                              "line": 38,
+                              "line": 43,
                               "column": 22,
                               "program": "promiseCasting.ets"
                             }
@@ -2756,12 +3032,12 @@
                           "value": 10,
                           "loc": {
                             "start": {
-                              "line": 38,
+                              "line": 43,
                               "column": 25,
                               "program": "promiseCasting.ets"
                             },
                             "end": {
-                              "line": 38,
+                              "line": 43,
                               "column": 27,
                               "program": "promiseCasting.ets"
                             }
@@ -2769,12 +3045,12 @@
                         },
                         "loc": {
                           "start": {
-                            "line": 38,
+                            "line": 43,
                             "column": 21,
                             "program": "promiseCasting.ets"
                           },
                           "end": {
-                            "line": 38,
+                            "line": 43,
                             "column": 27,
                             "program": "promiseCasting.ets"
                           }
@@ -2790,12 +3066,12 @@
                           "decorators": [],
                           "loc": {
                             "start": {
-                              "line": 38,
+                              "line": 43,
                               "column": 29,
                               "program": "promiseCasting.ets"
                             },
                             "end": {
-                              "line": 38,
+                              "line": 43,
                               "column": 30,
                               "program": "promiseCasting.ets"
                             }
@@ -2803,12 +3079,12 @@
                         },
                         "loc": {
                           "start": {
-                            "line": 38,
+                            "line": 43,
                             "column": 29,
                             "program": "promiseCasting.ets"
                           },
                           "end": {
-                            "line": 38,
+                            "line": 43,
                             "column": 32,
                             "program": "promiseCasting.ets"
                           }
@@ -2830,12 +3106,12 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 39,
+                                      "line": 44,
                                       "column": 9,
                                       "program": "promiseCasting.ets"
                                     },
                                     "end": {
-                                      "line": 39,
+                                      "line": 44,
                                       "column": 11,
                                       "program": "promiseCasting.ets"
                                     }
@@ -2847,12 +3123,12 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 39,
+                                      "line": 44,
                                       "column": 12,
                                       "program": "promiseCasting.ets"
                                     },
                                     "end": {
-                                      "line": 39,
+                                      "line": 44,
                                       "column": 13,
                                       "program": "promiseCasting.ets"
                                     }
@@ -2862,375 +3138,13 @@
                                 "optional": false,
                                 "loc": {
                                   "start": {
-                                    "line": 39,
+                                    "line": 44,
                                     "column": 9,
                                     "program": "promiseCasting.ets"
                                   },
                                   "end": {
-                                    "line": 39,
+                                    "line": 44,
                                     "column": 14,
-                                    "program": "promiseCasting.ets"
-                                  }
-                                }
-                              },
-                              "right": {
-                                "type": "ETSLaunchExpression",
-                                "expr": {
-                                  "type": "CallExpression",
-                                  "callee": {
-                                    "type": "Identifier",
-                                    "name": "foo",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 39,
-                                        "column": 24,
-                                        "program": "promiseCasting.ets"
-                                      },
-                                      "end": {
-                                        "line": 39,
-                                        "column": 27,
-                                        "program": "promiseCasting.ets"
-                                      }
-                                    }
-                                  },
-                                  "arguments": [
-                                    {
-                                      "type": "Identifier",
-                                      "name": "i",
-                                      "decorators": [],
-                                      "loc": {
-                                        "start": {
-                                          "line": 39,
-                                          "column": 28,
-                                          "program": "promiseCasting.ets"
-                                        },
-                                        "end": {
-                                          "line": 39,
-                                          "column": 29,
-                                          "program": "promiseCasting.ets"
-                                        }
-                                      }
-                                    }
-                                  ],
-                                  "optional": false,
-                                  "loc": {
-                                    "start": {
-                                      "line": 39,
-                                      "column": 24,
-                                      "program": "promiseCasting.ets"
-                                    },
-                                    "end": {
-                                      "line": 39,
-                                      "column": 30,
-                                      "program": "promiseCasting.ets"
-                                    }
-                                  }
-                                },
-                                "loc": {
-                                  "start": {
-                                    "line": 39,
-                                    "column": 17,
-                                    "program": "promiseCasting.ets"
-                                  },
-                                  "end": {
-                                    "line": 39,
-                                    "column": 30,
-                                    "program": "promiseCasting.ets"
-                                  }
-                                }
-                              },
-                              "loc": {
-                                "start": {
-                                  "line": 39,
-                                  "column": 9,
-                                  "program": "promiseCasting.ets"
-                                },
-                                "end": {
-                                  "line": 39,
-                                  "column": 30,
-                                  "program": "promiseCasting.ets"
-                                }
-                              }
-                            },
-                            "loc": {
-                              "start": {
-                                "line": 39,
-                                "column": 9,
-                                "program": "promiseCasting.ets"
-                              },
-                              "end": {
-                                "line": 39,
-                                "column": 30,
-                                "program": "promiseCasting.ets"
-                              }
-                            }
-                          }
-                        ],
-                        "loc": {
-                          "start": {
-                            "line": 38,
-                            "column": 34,
-                            "program": "promiseCasting.ets"
-                          },
-                          "end": {
-                            "line": 40,
-                            "column": 6,
-                            "program": "promiseCasting.ets"
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 38,
-                          "column": 5,
-                          "program": "promiseCasting.ets"
-                        },
-                        "end": {
-                          "line": 40,
-                          "column": 6,
-                          "program": "promiseCasting.ets"
-                        }
-                      }
-                    },
-                    {
-                      "type": "VariableDeclaration",
-                      "declarations": [
-                        {
-                          "type": "VariableDeclarator",
-                          "id": {
-                            "type": "Identifier",
-                            "name": "cnt",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 42,
-                                "column": 9,
-                                "program": "promiseCasting.ets"
-                              },
-                              "end": {
-                                "line": 42,
-                                "column": 12,
-                                "program": "promiseCasting.ets"
-                              }
-                            }
-                          },
-                          "init": {
-                            "type": "NumberLiteral",
-                            "value": 0,
-                            "loc": {
-                              "start": {
-                                "line": 42,
-                                "column": 15,
-                                "program": "promiseCasting.ets"
-                              },
-                              "end": {
-                                "line": 42,
-                                "column": 16,
-                                "program": "promiseCasting.ets"
-                              }
-                            }
-                          },
-                          "loc": {
-                            "start": {
-                              "line": 42,
-                              "column": 9,
-                              "program": "promiseCasting.ets"
-                            },
-                            "end": {
-                              "line": 42,
-                              "column": 16,
-                              "program": "promiseCasting.ets"
-                            }
-                          }
-                        }
-                      ],
-                      "kind": "let",
-                      "loc": {
-                        "start": {
-                          "line": 42,
-                          "column": 5,
-                          "program": "promiseCasting.ets"
-                        },
-                        "end": {
-                          "line": 42,
-                          "column": 16,
-                          "program": "promiseCasting.ets"
-                        }
-                      }
-                    },
-                    {
-                      "type": "ForUpdateStatement",
-                      "init": {
-                        "type": "VariableDeclaration",
-                        "declarations": [
-                          {
-                            "type": "VariableDeclarator",
-                            "id": {
-                              "type": "Identifier",
-                              "name": "i",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 43,
-                                  "column": 14,
-                                  "program": "promiseCasting.ets"
-                                },
-                                "end": {
-                                  "line": 43,
-                                  "column": 15,
-                                  "program": "promiseCasting.ets"
-                                }
-                              }
-                            },
-                            "init": {
-                              "type": "NumberLiteral",
-                              "value": 9,
-                              "loc": {
-                                "start": {
-                                  "line": 43,
-                                  "column": 18,
-                                  "program": "promiseCasting.ets"
-                                },
-                                "end": {
-                                  "line": 43,
-                                  "column": 19,
-                                  "program": "promiseCasting.ets"
-                                }
-                              }
-                            },
-                            "loc": {
-                              "start": {
-                                "line": 43,
-                                "column": 14,
-                                "program": "promiseCasting.ets"
-                              },
-                              "end": {
-                                "line": 43,
-                                "column": 19,
-                                "program": "promiseCasting.ets"
-                              }
-                            }
-                          }
-                        ],
-                        "kind": "let",
-                        "loc": {
-                          "start": {
-                            "line": 43,
-                            "column": 10,
-                            "program": "promiseCasting.ets"
-                          },
-                          "end": {
-                            "line": 43,
-                            "column": 19,
-                            "program": "promiseCasting.ets"
-                          }
-                        }
-                      },
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": ">=",
-                        "left": {
-                          "type": "Identifier",
-                          "name": "i",
-                          "decorators": [],
-                          "loc": {
-                            "start": {
-                              "line": 43,
-                              "column": 21,
-                              "program": "promiseCasting.ets"
-                            },
-                            "end": {
-                              "line": 43,
-                              "column": 22,
-                              "program": "promiseCasting.ets"
-                            }
-                          }
-                        },
-                        "right": {
-                          "type": "NumberLiteral",
-                          "value": 0,
-                          "loc": {
-                            "start": {
-                              "line": 43,
-                              "column": 26,
-                              "program": "promiseCasting.ets"
-                            },
-                            "end": {
-                              "line": 43,
-                              "column": 27,
-                              "program": "promiseCasting.ets"
-                            }
-                          }
-                        },
-                        "loc": {
-                          "start": {
-                            "line": 43,
-                            "column": 21,
-                            "program": "promiseCasting.ets"
-                          },
-                          "end": {
-                            "line": 43,
-                            "column": 27,
-                            "program": "promiseCasting.ets"
-                          }
-                        }
-                      },
-                      "update": {
-                        "type": "UpdateExpression",
-                        "operator": "--",
-                        "prefix": false,
-                        "argument": {
-                          "type": "Identifier",
-                          "name": "i",
-                          "decorators": [],
-                          "loc": {
-                            "start": {
-                              "line": 43,
-                              "column": 29,
-                              "program": "promiseCasting.ets"
-                            },
-                            "end": {
-                              "line": 43,
-                              "column": 30,
-                              "program": "promiseCasting.ets"
-                            }
-                          }
-                        },
-                        "loc": {
-                          "start": {
-                            "line": 43,
-                            "column": 29,
-                            "program": "promiseCasting.ets"
-                          },
-                          "end": {
-                            "line": 43,
-                            "column": 32,
-                            "program": "promiseCasting.ets"
-                          }
-                        }
-                      },
-                      "body": {
-                        "type": "BlockStatement",
-                        "statements": [
-                          {
-                            "type": "ExpressionStatement",
-                            "expression": {
-                              "type": "AssignmentExpression",
-                              "operator": "+=",
-                              "left": {
-                                "type": "Identifier",
-                                "name": "cnt",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 44,
-                                    "column": 9,
-                                    "program": "promiseCasting.ets"
-                                  },
-                                  "end": {
-                                    "line": 44,
-                                    "column": 12,
                                     "program": "promiseCasting.ets"
                                   }
                                 }
@@ -3238,36 +3152,87 @@
                               "right": {
                                 "type": "CallExpression",
                                 "callee": {
-                                  "type": "AwaitExpression",
-                                  "argument": {
-                                    "type": "TSAsExpression",
-                                    "expression": {
-                                      "type": "MemberExpression",
-                                      "object": {
-                                        "type": "Identifier",
-                                        "name": "ps",
-                                        "decorators": [],
-                                        "loc": {
-                                          "start": {
-                                            "line": 44,
-                                            "column": 23,
-                                            "program": "promiseCasting.ets"
-                                          },
-                                          "end": {
-                                            "line": 44,
-                                            "column": 25,
-                                            "program": "promiseCasting.ets"
-                                          }
-                                        }
+                                  "type": "Identifier",
+                                  "name": "launch",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 44,
+                                      "column": 17,
+                                      "program": "promiseCasting.ets"
+                                    },
+                                    "end": {
+                                      "line": 44,
+                                      "column": 23,
+                                      "program": "promiseCasting.ets"
+                                    }
+                                  }
+                                },
+                                "arguments": [
+                                  {
+                                    "type": "Identifier",
+                                    "name": "foo",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 44,
+                                        "column": 44,
+                                        "program": "promiseCasting.ets"
                                       },
-                                      "property": {
-                                        "type": "Identifier",
-                                        "name": "i",
-                                        "decorators": [],
+                                      "end": {
+                                        "line": 44,
+                                        "column": 47,
+                                        "program": "promiseCasting.ets"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "Identifier",
+                                    "name": "i",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 44,
+                                        "column": 49,
+                                        "program": "promiseCasting.ets"
+                                      },
+                                      "end": {
+                                        "line": 44,
+                                        "column": 50,
+                                        "program": "promiseCasting.ets"
+                                      }
+                                    }
+                                  }
+                                ],
+                                "optional": false,
+                                "typeParameters": {
+                                  "type": "TSTypeParameterInstantiation",
+                                  "params": [
+                                    {
+                                      "type": "ETSTypeReference",
+                                      "part": {
+                                        "type": "ETSTypeReferencePart",
+                                        "name": {
+                                          "type": "Identifier",
+                                          "name": "Cb",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 44,
+                                              "column": 24,
+                                              "program": "promiseCasting.ets"
+                                            },
+                                            "end": {
+                                              "line": 44,
+                                              "column": 26,
+                                              "program": "promiseCasting.ets"
+                                            }
+                                          }
+                                        },
                                         "loc": {
                                           "start": {
                                             "line": 44,
-                                            "column": 26,
+                                            "column": 24,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
@@ -3277,134 +3242,100 @@
                                           }
                                         }
                                       },
-                                      "computed": true,
-                                      "optional": false,
                                       "loc": {
                                         "start": {
                                           "line": 44,
-                                          "column": 23,
+                                          "column": 24,
                                           "program": "promiseCasting.ets"
                                         },
                                         "end": {
                                           "line": 44,
-                                          "column": 28,
+                                          "column": 27,
                                           "program": "promiseCasting.ets"
                                         }
                                       }
                                     },
-                                    "typeAnnotation": {
-                                      "type": "ETSTypeReference",
-                                      "part": {
-                                        "type": "ETSTypeReferencePart",
-                                        "name": {
-                                          "type": "Identifier",
-                                          "name": "Promise",
-                                          "decorators": [],
-                                          "loc": {
-                                            "start": {
-                                              "line": 44,
-                                              "column": 32,
-                                              "program": "promiseCasting.ets"
-                                            },
-                                            "end": {
-                                              "line": 44,
-                                              "column": 39,
-                                              "program": "promiseCasting.ets"
-                                            }
-                                          }
-                                        },
-                                        "typeParams": {
-                                          "type": "TSTypeParameterInstantiation",
-                                          "params": [
-                                            {
-                                              "type": "ETSFunctionType",
-                                              "params": [
-                                                {
-                                                  "type": "ETSParameterExpression",
-                                                  "name": {
-                                                    "type": "Identifier",
-                                                    "name": "p",
-                                                    "typeAnnotation": {
-                                                      "type": "ETSPrimitiveType",
-                                                      "loc": {
-                                                        "start": {
-                                                          "line": 44,
-                                                          "column": 44,
-                                                          "program": "promiseCasting.ets"
-                                                        },
-                                                        "end": {
-                                                          "line": 44,
-                                                          "column": 47,
-                                                          "program": "promiseCasting.ets"
-                                                        }
-                                                      }
-                                                    },
-                                                    "decorators": [],
-                                                    "loc": {
-                                                      "start": {
-                                                        "line": 44,
-                                                        "column": 41,
-                                                        "program": "promiseCasting.ets"
-                                                      },
-                                                      "end": {
-                                                        "line": 44,
-                                                        "column": 47,
-                                                        "program": "promiseCasting.ets"
-                                                      }
-                                                    }
-                                                  },
-                                                  "loc": {
-                                                    "start": {
-                                                      "line": 44,
-                                                      "column": 41,
-                                                      "program": "promiseCasting.ets"
-                                                    },
-                                                    "end": {
-                                                      "line": 44,
-                                                      "column": 47,
-                                                      "program": "promiseCasting.ets"
-                                                    }
-                                                  }
-                                                }
-                                              ],
-                                              "returnType": {
-                                                "type": "ETSPrimitiveType",
-                                                "loc": {
-                                                  "start": {
-                                                    "line": 44,
-                                                    "column": 52,
-                                                    "program": "promiseCasting.ets"
-                                                  },
-                                                  "end": {
-                                                    "line": 44,
-                                                    "column": 55,
-                                                    "program": "promiseCasting.ets"
-                                                  }
-                                                }
-                                              },
+                                    {
+                                      "type": "ETSFunctionType",
+                                      "params": [
+                                        {
+                                          "type": "ETSParameterExpression",
+                                          "name": {
+                                            "type": "Identifier",
+                                            "name": "i",
+                                            "typeAnnotation": {
+                                              "type": "ETSPrimitiveType",
                                               "loc": {
                                                 "start": {
                                                   "line": 44,
-                                                  "column": 40,
+                                                  "column": 32,
                                                   "program": "promiseCasting.ets"
                                                 },
                                                 "end": {
                                                   "line": 44,
-                                                  "column": 55,
+                                                  "column": 35,
                                                   "program": "promiseCasting.ets"
                                                 }
                                               }
+                                            },
+                                            "decorators": [],
+                                            "loc": {
+                                              "start": {
+                                                "line": 44,
+                                                "column": 29,
+                                                "program": "promiseCasting.ets"
+                                              },
+                                              "end": {
+                                                "line": 44,
+                                                "column": 35,
+                                                "program": "promiseCasting.ets"
+                                              }
                                             }
-                                          ],
+                                          },
                                           "loc": {
                                             "start": {
                                               "line": 44,
-                                              "column": 39,
+                                              "column": 29,
                                               "program": "promiseCasting.ets"
                                             },
                                             "end": {
                                               "line": 44,
-                                              "column": 56,
+                                              "column": 35,
+                                              "program": "promiseCasting.ets"
+                                            }
+                                          }
+                                        }
+                                      ],
+                                      "returnType": {
+                                        "type": "ETSTypeReference",
+                                        "part": {
+                                          "type": "ETSTypeReferencePart",
+                                          "name": {
+                                            "type": "Identifier",
+                                            "name": "Cb",
+                                            "decorators": [],
+                                            "loc": {
+                                              "start": {
+                                                "line": 44,
+                                                "column": 40,
+                                                "program": "promiseCasting.ets"
+                                              },
+                                              "end": {
+                                                "line": 44,
+                                                "column": 42,
+                                                "program": "promiseCasting.ets"
+                                              }
+                                            }
+                                          },
+                                          "loc": {
+                                            "start": {
+                                              "line": 44,
+                                              "column": 40,
+                                              "program": "promiseCasting.ets"
+                                            },
+                                            "end": {
+                                              "line": 44,
+                                              "column": 43,
                                               "program": "promiseCasting.ets"
                                             }
                                           }
@@ -3412,12 +3343,12 @@
                                         "loc": {
                                           "start": {
                                             "line": 44,
-                                            "column": 32,
+                                            "column": 40,
                                             "program": "promiseCasting.ets"
                                           },
                                           "end": {
                                             "line": 44,
-                                            "column": 57,
+                                            "column": 43,
                                             "program": "promiseCasting.ets"
                                           }
                                         }
@@ -3425,71 +3356,39 @@
                                       "loc": {
                                         "start": {
                                           "line": 44,
-                                          "column": 32,
+                                          "column": 28,
                                           "program": "promiseCasting.ets"
                                         },
                                         "end": {
                                           "line": 44,
-                                          "column": 57,
+                                          "column": 43,
                                           "program": "promiseCasting.ets"
                                         }
                                       }
-                                    },
-                                    "loc": {
-                                      "start": {
-                                        "line": 44,
-                                        "column": 23,
-                                        "program": "promiseCasting.ets"
-                                      },
-                                      "end": {
-                                        "line": 44,
-                                        "column": 28,
-                                        "program": "promiseCasting.ets"
-                                      }
                                     }
-                                  },
+                                  ],
                                   "loc": {
                                     "start": {
                                       "line": 44,
-                                      "column": 16,
+                                      "column": 23,
                                       "program": "promiseCasting.ets"
                                     },
                                     "end": {
                                       "line": 44,
-                                      "column": 57,
+                                      "column": 43,
                                       "program": "promiseCasting.ets"
                                     }
                                   }
                                 },
-                                "arguments": [
-                                  {
-                                    "type": "Identifier",
-                                    "name": "i",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 44,
-                                        "column": 58,
-                                        "program": "promiseCasting.ets"
-                                      },
-                                      "end": {
-                                        "line": 44,
-                                        "column": 59,
-                                        "program": "promiseCasting.ets"
-                                      }
-                                    }
-                                  }
-                                ],
-                                "optional": false,
                                 "loc": {
                                   "start": {
                                     "line": 44,
-                                    "column": 16,
+                                    "column": 17,
                                     "program": "promiseCasting.ets"
                                   },
                                   "end": {
                                     "line": 44,
-                                    "column": 60,
+                                    "column": 51,
                                     "program": "promiseCasting.ets"
                                   }
                                 }
@@ -3502,7 +3401,7 @@
                                 },
                                 "end": {
                                   "line": 44,
-                                  "column": 60,
+                                  "column": 51,
                                   "program": "promiseCasting.ets"
                                 }
                               }
@@ -3515,7 +3414,7 @@
                               },
                               "end": {
                                 "line": 44,
-                                "column": 60,
+                                "column": 51,
                                 "program": "promiseCasting.ets"
                               }
                             }
@@ -3548,6 +3447,564 @@
                       }
                     },
                     {
+                      "type": "VariableDeclaration",
+                      "declarations": [
+                        {
+                          "type": "VariableDeclarator",
+                          "id": {
+                            "type": "Identifier",
+                            "name": "cnt",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 47,
+                                "column": 9,
+                                "program": "promiseCasting.ets"
+                              },
+                              "end": {
+                                "line": 47,
+                                "column": 12,
+                                "program": "promiseCasting.ets"
+                              }
+                            }
+                          },
+                          "init": {
+                            "type": "NumberLiteral",
+                            "value": 0,
+                            "loc": {
+                              "start": {
+                                "line": 47,
+                                "column": 15,
+                                "program": "promiseCasting.ets"
+                              },
+                              "end": {
+                                "line": 47,
+                                "column": 16,
+                                "program": "promiseCasting.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 47,
+                              "column": 9,
+                              "program": "promiseCasting.ets"
+                            },
+                            "end": {
+                              "line": 47,
+                              "column": 16,
+                              "program": "promiseCasting.ets"
+                            }
+                          }
+                        }
+                      ],
+                      "kind": "let",
+                      "loc": {
+                        "start": {
+                          "line": 47,
+                          "column": 5,
+                          "program": "promiseCasting.ets"
+                        },
+                        "end": {
+                          "line": 47,
+                          "column": 16,
+                          "program": "promiseCasting.ets"
+                        }
+                      }
+                    },
+                    {
+                      "type": "ForUpdateStatement",
+                      "init": {
+                        "type": "VariableDeclaration",
+                        "declarations": [
+                          {
+                            "type": "VariableDeclarator",
+                            "id": {
+                              "type": "Identifier",
+                              "name": "i",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 48,
+                                  "column": 14,
+                                  "program": "promiseCasting.ets"
+                                },
+                                "end": {
+                                  "line": 48,
+                                  "column": 15,
+                                  "program": "promiseCasting.ets"
+                                }
+                              }
+                            },
+                            "init": {
+                              "type": "NumberLiteral",
+                              "value": 9,
+                              "loc": {
+                                "start": {
+                                  "line": 48,
+                                  "column": 18,
+                                  "program": "promiseCasting.ets"
+                                },
+                                "end": {
+                                  "line": 48,
+                                  "column": 19,
+                                  "program": "promiseCasting.ets"
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 48,
+                                "column": 14,
+                                "program": "promiseCasting.ets"
+                              },
+                              "end": {
+                                "line": 48,
+                                "column": 19,
+                                "program": "promiseCasting.ets"
+                              }
+                            }
+                          }
+                        ],
+                        "kind": "let",
+                        "loc": {
+                          "start": {
+                            "line": 48,
+                            "column": 10,
+                            "program": "promiseCasting.ets"
+                          },
+                          "end": {
+                            "line": 48,
+                            "column": 19,
+                            "program": "promiseCasting.ets"
+                          }
+                        }
+                      },
+                      "test": {
+                        "type": "BinaryExpression",
+                        "operator": ">=",
+                        "left": {
+                          "type": "Identifier",
+                          "name": "i",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 48,
+                              "column": 21,
+                              "program": "promiseCasting.ets"
+                            },
+                            "end": {
+                              "line": 48,
+                              "column": 22,
+                              "program": "promiseCasting.ets"
+                            }
+                          }
+                        },
+                        "right": {
+                          "type": "NumberLiteral",
+                          "value": 0,
+                          "loc": {
+                            "start": {
+                              "line": 48,
+                              "column": 26,
+                              "program": "promiseCasting.ets"
+                            },
+                            "end": {
+                              "line": 48,
+                              "column": 27,
+                              "program": "promiseCasting.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 48,
+                            "column": 21,
+                            "program": "promiseCasting.ets"
+                          },
+                          "end": {
+                            "line": 48,
+                            "column": 27,
+                            "program": "promiseCasting.ets"
+                          }
+                        }
+                      },
+                      "update": {
+                        "type": "UpdateExpression",
+                        "operator": "--",
+                        "prefix": false,
+                        "argument": {
+                          "type": "Identifier",
+                          "name": "i",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 48,
+                              "column": 29,
+                              "program": "promiseCasting.ets"
+                            },
+                            "end": {
+                              "line": 48,
+                              "column": 30,
+                              "program": "promiseCasting.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 48,
+                            "column": 29,
+                            "program": "promiseCasting.ets"
+                          },
+                          "end": {
+                            "line": 48,
+                            "column": 32,
+                            "program": "promiseCasting.ets"
+                          }
+                        }
+                      },
+                      "body": {
+                        "type": "BlockStatement",
+                        "statements": [
+                          {
+                            "type": "ExpressionStatement",
+                            "expression": {
+                              "type": "AssignmentExpression",
+                              "operator": "+=",
+                              "left": {
+                                "type": "Identifier",
+                                "name": "cnt",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 49,
+                                    "column": 9,
+                                    "program": "promiseCasting.ets"
+                                  },
+                                  "end": {
+                                    "line": 49,
+                                    "column": 12,
+                                    "program": "promiseCasting.ets"
+                                  }
+                                }
+                              },
+                              "right": {
+                                "type": "CallExpression",
+                                "callee": {
+                                  "type": "CallExpression",
+                                  "callee": {
+                                    "type": "MemberExpression",
+                                    "object": {
+                                      "type": "TSAsExpression",
+                                      "expression": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                          "type": "Identifier",
+                                          "name": "ps",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 49,
+                                              "column": 18,
+                                              "program": "promiseCasting.ets"
+                                            },
+                                            "end": {
+                                              "line": 49,
+                                              "column": 20,
+                                              "program": "promiseCasting.ets"
+                                            }
+                                          }
+                                        },
+                                        "property": {
+                                          "type": "Identifier",
+                                          "name": "i",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 49,
+                                              "column": 21,
+                                              "program": "promiseCasting.ets"
+                                            },
+                                            "end": {
+                                              "line": 49,
+                                              "column": 22,
+                                              "program": "promiseCasting.ets"
+                                            }
+                                          }
+                                        },
+                                        "computed": true,
+                                        "optional": false,
+                                        "loc": {
+                                          "start": {
+                                            "line": 49,
+                                            "column": 18,
+                                            "program": "promiseCasting.ets"
+                                          },
+                                          "end": {
+                                            "line": 49,
+                                            "column": 23,
+                                            "program": "promiseCasting.ets"
+                                          }
+                                        }
+                                      },
+                                      "typeAnnotation": {
+                                        "type": "ETSTypeReference",
+                                        "part": {
+                                          "type": "ETSTypeReferencePart",
+                                          "name": {
+                                            "type": "Identifier",
+                                            "name": "Job",
+                                            "decorators": [],
+                                            "loc": {
+                                              "start": {
+                                                "line": 49,
+                                                "column": 27,
+                                                "program": "promiseCasting.ets"
+                                              },
+                                              "end": {
+                                                "line": 49,
+                                                "column": 30,
+                                                "program": "promiseCasting.ets"
+                                              }
+                                            }
+                                          },
+                                          "typeParams": {
+                                            "type": "TSTypeParameterInstantiation",
+                                            "params": [
+                                              {
+                                                "type": "ETSTypeReference",
+                                                "part": {
+                                                  "type": "ETSTypeReferencePart",
+                                                  "name": {
+                                                    "type": "Identifier",
+                                                    "name": "Cb",
+                                                    "decorators": [],
+                                                    "loc": {
+                                                      "start": {
+                                                        "line": 49,
+                                                        "column": 31,
+                                                        "program": "promiseCasting.ets"
+                                                      },
+                                                      "end": {
+                                                        "line": 49,
+                                                        "column": 33,
+                                                        "program": "promiseCasting.ets"
+                                                      }
+                                                    }
+                                                  },
+                                                  "loc": {
+                                                    "start": {
+                                                      "line": 49,
+                                                      "column": 31,
+                                                      "program": "promiseCasting.ets"
+                                                    },
+                                                    "end": {
+                                                      "line": 49,
+                                                      "column": 34,
+                                                      "program": "promiseCasting.ets"
+                                                    }
+                                                  }
+                                                },
+                                                "loc": {
+                                                  "start": {
+                                                    "line": 49,
+                                                    "column": 31,
+                                                    "program": "promiseCasting.ets"
+                                                  },
+                                                  "end": {
+                                                    "line": 49,
+                                                    "column": 34,
+                                                    "program": "promiseCasting.ets"
+                                                  }
+                                                }
+                                              }
+                                            ],
+                                            "loc": {
+                                              "start": {
+                                                "line": 49,
+                                                "column": 30,
+                                                "program": "promiseCasting.ets"
+                                              },
+                                              "end": {
+                                                "line": 49,
+                                                "column": 34,
+                                                "program": "promiseCasting.ets"
+                                              }
+                                            }
+                                          },
+                                          "loc": {
+                                            "start": {
+                                              "line": 49,
+                                              "column": 27,
+                                              "program": "promiseCasting.ets"
+                                            },
+                                            "end": {
+                                              "line": 49,
+                                              "column": 35,
+                                              "program": "promiseCasting.ets"
+                                            }
+                                          }
+                                        },
+                                        "loc": {
+                                          "start": {
+                                            "line": 49,
+                                            "column": 27,
+                                            "program": "promiseCasting.ets"
+                                          },
+                                          "end": {
+                                            "line": 49,
+                                            "column": 35,
+                                            "program": "promiseCasting.ets"
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 49,
+                                          "column": 17,
+                                          "program": "promiseCasting.ets"
+                                        },
+                                        "end": {
+                                          "line": 49,
+                                          "column": 35,
+                                          "program": "promiseCasting.ets"
+                                        }
+                                      }
+                                    },
+                                    "property": {
+                                      "type": "Identifier",
+                                      "name": "Await",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 49,
+                                          "column": 36,
+                                          "program": "promiseCasting.ets"
+                                        },
+                                        "end": {
+                                          "line": 49,
+                                          "column": 41,
+                                          "program": "promiseCasting.ets"
+                                        }
+                                      }
+                                    },
+                                    "computed": false,
+                                    "optional": false,
+                                    "loc": {
+                                      "start": {
+                                        "line": 49,
+                                        "column": 17,
+                                        "program": "promiseCasting.ets"
+                                      },
+                                      "end": {
+                                        "line": 49,
+                                        "column": 41,
+                                        "program": "promiseCasting.ets"
+                                      }
+                                    }
+                                  },
+                                  "arguments": [],
+                                  "optional": false,
+                                  "loc": {
+                                    "start": {
+                                      "line": 49,
+                                      "column": 16,
+                                      "program": "promiseCasting.ets"
+                                    },
+                                    "end": {
+                                      "line": 49,
+                                      "column": 44,
+                                      "program": "promiseCasting.ets"
+                                    }
+                                  }
+                                },
+                                "arguments": [
+                                  {
+                                    "type": "Identifier",
+                                    "name": "i",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 49,
+                                        "column": 45,
+                                        "program": "promiseCasting.ets"
+                                      },
+                                      "end": {
+                                        "line": 49,
+                                        "column": 46,
+                                        "program": "promiseCasting.ets"
+                                      }
+                                    }
+                                  }
+                                ],
+                                "optional": false,
+                                "loc": {
+                                  "start": {
+                                    "line": 49,
+                                    "column": 16,
+                                    "program": "promiseCasting.ets"
+                                  },
+                                  "end": {
+                                    "line": 49,
+                                    "column": 47,
+                                    "program": "promiseCasting.ets"
+                                  }
+                                }
+                              },
+                              "loc": {
+                                "start": {
+                                  "line": 49,
+                                  "column": 9,
+                                  "program": "promiseCasting.ets"
+                                },
+                                "end": {
+                                  "line": 49,
+                                  "column": 47,
+                                  "program": "promiseCasting.ets"
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 49,
+                                "column": 9,
+                                "program": "promiseCasting.ets"
+                              },
+                              "end": {
+                                "line": 49,
+                                "column": 47,
+                                "program": "promiseCasting.ets"
+                              }
+                            }
+                          }
+                        ],
+                        "loc": {
+                          "start": {
+                            "line": 48,
+                            "column": 34,
+                            "program": "promiseCasting.ets"
+                          },
+                          "end": {
+                            "line": 50,
+                            "column": 6,
+                            "program": "promiseCasting.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 48,
+                          "column": 5,
+                          "program": "promiseCasting.ets"
+                        },
+                        "end": {
+                          "line": 50,
+                          "column": 6,
+                          "program": "promiseCasting.ets"
+                        }
+                      }
+                    },
+                    {
                       "type": "ExpressionStatement",
                       "expression": {
                         "type": "CallExpression",
@@ -3557,12 +4014,12 @@
                           "decorators": [],
                           "loc": {
                             "start": {
-                              "line": 46,
+                              "line": 51,
                               "column": 5,
                               "program": "promiseCasting.ets"
                             },
                             "end": {
-                              "line": 46,
+                              "line": 51,
                               "column": 13,
                               "program": "promiseCasting.ets"
                             }
@@ -3575,12 +4032,12 @@
                             "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 46,
+                                "line": 51,
                                 "column": 14,
                                 "program": "promiseCasting.ets"
                               },
                               "end": {
-                                "line": 46,
+                                "line": 51,
                                 "column": 17,
                                 "program": "promiseCasting.ets"
                               }
@@ -3591,12 +4048,12 @@
                             "value": 90,
                             "loc": {
                               "start": {
-                                "line": 46,
+                                "line": 51,
                                 "column": 19,
                                 "program": "promiseCasting.ets"
                               },
                               "end": {
-                                "line": 46,
+                                "line": 51,
                                 "column": 21,
                                 "program": "promiseCasting.ets"
                               }
@@ -3606,12 +4063,12 @@
                         "optional": false,
                         "loc": {
                           "start": {
-                            "line": 46,
+                            "line": 51,
                             "column": 5,
                             "program": "promiseCasting.ets"
                           },
                           "end": {
-                            "line": 46,
+                            "line": 51,
                             "column": 22,
                             "program": "promiseCasting.ets"
                           }
@@ -3619,12 +4076,12 @@
                       },
                       "loc": {
                         "start": {
-                          "line": 46,
+                          "line": 51,
                           "column": 5,
                           "program": "promiseCasting.ets"
                         },
                         "end": {
-                          "line": 46,
+                          "line": 51,
                           "column": 23,
                           "program": "promiseCasting.ets"
                         }
@@ -3633,12 +4090,12 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 22,
+                      "line": 27,
                       "column": 17,
                       "program": "promiseCasting.ets"
                     },
                     "end": {
-                      "line": 47,
+                      "line": 52,
                       "column": 2,
                       "program": "promiseCasting.ets"
                     }
@@ -3646,12 +4103,12 @@
                 },
                 "loc": {
                   "start": {
-                    "line": 22,
+                    "line": 27,
                     "column": 10,
                     "program": "promiseCasting.ets"
                   },
                   "end": {
-                    "line": 47,
+                    "line": 52,
                     "column": 2,
                     "program": "promiseCasting.ets"
                   }
@@ -3659,12 +4116,12 @@
               },
               "loc": {
                 "start": {
-                  "line": 22,
+                  "line": 27,
                   "column": 10,
                   "program": "promiseCasting.ets"
                 },
                 "end": {
-                  "line": 47,
+                  "line": 52,
                   "column": 2,
                   "program": "promiseCasting.ets"
                 }
@@ -3674,12 +4131,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 22,
+                "line": 27,
                 "column": 1,
                 "program": "promiseCasting.ets"
               },
               "end": {
-                "line": 47,
+                "line": 52,
                 "column": 2,
                 "program": "promiseCasting.ets"
               }
@@ -3720,10 +4177,9 @@
       "program": "promiseCasting.ets"
     },
     "end": {
-      "line": 48,
+      "line": 53,
       "column": 1,
       "program": "promiseCasting.ets"
     }
   }
 }
-Warning: Variable 'fs' is used before being assigned. [promiseCasting.ets:19:12]

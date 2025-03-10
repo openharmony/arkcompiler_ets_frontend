@@ -104,39 +104,6 @@ void ETSCompiler::Compile(const ir::ETSFunctionType *node) const
     etsg->LoadAccumulatorPoison(node, node->TsType());
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::ETSLaunchExpression *expr) const
-{
-#ifdef PANDA_WITH_ETS
-    ETSGen *etsg = GetETSGen();
-    compiler::RegScope rs(etsg);
-    compiler::VReg calleeReg = etsg->AllocReg();
-    checker::Signature *signature = expr->expr_->Signature();
-    bool isStatic = signature->HasSignatureFlag(checker::SignatureFlags::STATIC);
-    if (expr->expr_->Callee()->IsIdentifier()) {
-        if (!isStatic) {
-            etsg->LoadThis(expr->expr_);
-            etsg->StoreAccumulator(expr, calleeReg);
-        }
-    } else if (expr->expr_->Callee()->IsMemberExpression()) {
-        if (!isStatic) {
-            expr->expr_->Callee()->AsMemberExpression()->Object()->Compile(etsg);
-            etsg->StoreAccumulator(expr, calleeReg);
-        }
-    } else {
-        expr->expr_->Callee()->Compile(etsg);
-        etsg->StoreAccumulator(expr, calleeReg);
-    }
-
-    if (isStatic) {
-        etsg->LaunchExact(expr, signature, expr->expr_->Arguments());
-    } else {
-        etsg->LaunchVirtual(expr, signature, calleeReg, expr->expr_->Arguments());
-    }
-
-    etsg->SetAccumulatorType(expr->TsType());
-#endif  // PANDA_WITH_ETS
-}
-
 void ETSCompiler::Compile(const ir::ETSNewArrayInstanceExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();

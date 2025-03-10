@@ -13,11 +13,13 @@
 * limitations under the License.
 */
 
+import {launch} from "std/concurrency"
+
 let count = 2
 let n = 9
 let a: int[] = new int[count];
 let v: int[] = new int[count];
-type P = Promise<Int> | undefined
+type P = Job<Int> | undefined
 function assert_eq(value1: int, value2: int): void {
     if (value1 == value2) {
         return;
@@ -31,11 +33,11 @@ function ufib(n: int) : Int {
     }
     let p: P[] = new P[count]
     for (let i = 0; i < count; ++i) {
-        p[i] = launch ufib(n-1-i);
+        p[i] = launch<Int, (i: int) => Int>(ufib, n-1-i);
     }
     let result = 0
     for (let i = 0; i < count; ++i) {
-        result = result + p[i]!.awaitResolution() * a[i];
+        result = result + p[i]!.Await() * a[i];
     }
     return result;
 }
@@ -55,8 +57,8 @@ export function main(): int {
     a[1] = 2;
     v[1] = 7;
     let seq_result = ufib_seq(n);
-    let p = launch ufib(n);
-    let co_result = p.awaitResolution();
+    let p = launch<Int, (i: int) => Int>(ufib, n);
+    let co_result = p.Await();
     assert_eq(co_result as int, seq_result);
     return 0;
 }

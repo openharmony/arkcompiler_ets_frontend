@@ -39,7 +39,6 @@
 #include "ir/ets/etsFunctionType.h"
 #include "ir/ets/etsImportDeclaration.h"
 #include "ir/ets/etsKeyofType.h"
-#include "ir/ets/etsLaunchExpression.h"
 #include "ir/ets/etsNewArrayInstanceExpression.h"
 #include "ir/ets/etsNewClassInstanceExpression.h"
 #include "ir/ets/etsNewMultiDimArrayInstanceExpression.h"

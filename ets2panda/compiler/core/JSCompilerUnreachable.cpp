@@ -118,11 +118,6 @@ void JSCompiler::Compile([[maybe_unused]] const ir::ETSReExportDeclaration *node
     ES2PANDA_UNREACHABLE();
 }
 
-void JSCompiler::Compile([[maybe_unused]] const ir::ETSLaunchExpression *expr) const
-{
-    ES2PANDA_UNREACHABLE();
-}
-
 void JSCompiler::Compile([[maybe_unused]] const ir::ETSNewArrayInstanceExpression *expr) const
 {
     ES2PANDA_UNREACHABLE();
