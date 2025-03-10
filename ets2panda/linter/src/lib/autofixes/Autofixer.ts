@@ -2160,8 +2160,8 @@ export class Autofixer {
 
     const newCall = ts.factory.createCallExpression(
       ts.factory.createPropertyAccessExpression(
-        ts.factory.createIdentifier(Autofixer.SPECIAL_LIB_NAME),
-        ts.factory.createIdentifier('mathPow')
+        ts.factory.createIdentifier('Math'),
+        ts.factory.createIdentifier('pow')
       ),
       undefined,
       callArgs
