@@ -157,7 +157,6 @@ faultDesc[FaultID.DoubleDollarBindingNotSupported] = 'Incorrect bidirectional da
 faultDesc[FaultID.DollarBindingNotSupported] = 'Link decorator passing';
 faultDesc[FaultID.ExtendDecoratorNotSupported] = '"@Extend" decorator';
 faultDesc[FaultID.MethodOverridingField] = '"Method overriding field" to keep style consistent';
-faultDesc[FaultID.ExplicitFunctionType] = 'Explicit function type';
 faultDesc[FaultID.ClassstaticInitialization] = 'The static properties of a class need to have initial values';
 faultDesc[FaultID.AvoidUnionTypes] = 'Union types';
 faultDesc[FaultID.TaggedTemplates] = 'Tagged template';

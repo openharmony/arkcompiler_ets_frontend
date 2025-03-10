@@ -888,6 +888,7 @@ export class TypeScriptLinter {
     this.handleSendableClassProperty(node);
     this.checkAssignmentNumericSemanticslyPro(node);
     this.handleInvalidIdentifier(node);
+    this.handleExplicitFunctionType(node)
   }
 
   private handleSendableClassProperty(node: ts.PropertyDeclaration): void {
@@ -975,6 +976,7 @@ export class TypeScriptLinter {
     }
     this.handleSendableInterfaceProperty(node);
     this.handleInvalidIdentifier(node);
+    this.handleExplicitFunctionType(node);
   }
 
   private handleInterfaceProperty(node: ts.PropertySignature): void {
@@ -1650,21 +1652,22 @@ export class TypeScriptLinter {
     this.checkAssignmentNumericSemanticsly(tsVarDecl);
   }
 
-  private handleExplicitFunctionType(node: ts.VariableDeclaration): void {
+  private handleExplicitFunctionType(
+    node: ts.VariableDeclaration | ts.PropertyDeclaration | ts.PropertySignature
+  ): void {
     if (!this.options.arkts2) {
       return;
     }
     const type = node.type;
     const initializer = node.initializer;
-    const isFunctionType = type?.kind === ts.SyntaxKind.FunctionType;
     const isFunctionLiteral =
       type?.kind === ts.SyntaxKind.TypeReference &&
       (type as ts.TypeReferenceNode).typeName?.getText() === LIKE_FUNCTION;
     const isNewFunctionConstructor =
       initializer && ts.isNewExpression(initializer) && initializer.expression.getText() === LIKE_FUNCTION;
 
-    if (type && (isFunctionType || isFunctionLiteral) || initializer && isNewFunctionConstructor) {
-      this.incrementCounters(node, FaultID.ExplicitFunctionType);
+    if (type && isFunctionLiteral || initializer && isNewFunctionConstructor) {
+      this.incrementCounters(node, FaultID.LimitedStdLibApi);
     }
   }
 

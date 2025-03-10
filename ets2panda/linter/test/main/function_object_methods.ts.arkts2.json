@@ -15,6 +15,26 @@
     ],
     "result": [
         {
+            "line": 19,
+            "column": 3,
+            "endLine": 19,
+            "endColumn": 25,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 3,
+            "endLine": 20,
+            "endColumn": 23,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "severity": "ERROR"
+        },
+        {
             "line": 29,
             "column": 5,
             "endLine": 29,
@@ -129,9 +149,9 @@
             "column": 9,
             "endLine": 75,
             "endColumn": 70,
-            "problem": "ExplicitFunctionType",
+            "problem": "LimitedStdLibApi",
             "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
             "severity": "ERROR"
         },
         {
@@ -149,9 +169,9 @@
             "column": 9,
             "endLine": 78,
             "endColumn": 61,
-            "problem": "ExplicitFunctionType",
+            "problem": "LimitedStdLibApi",
             "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
             "severity": "ERROR"
         },
         {
@@ -239,9 +259,9 @@
             "column": 9,
             "endLine": 101,
             "endColumn": 64,
-            "problem": "ExplicitFunctionType",
+            "problem": "LimitedStdLibApi",
             "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
             "severity": "ERROR"
         },
         {
@@ -259,9 +279,9 @@
             "column": 9,
             "endLine": 104,
             "endColumn": 55,
-            "problem": "ExplicitFunctionType",
+            "problem": "LimitedStdLibApi",
             "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
             "severity": "ERROR"
         },
         {

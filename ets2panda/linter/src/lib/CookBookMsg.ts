@@ -262,5 +262,4 @@ cookBookTag[254] = '"@Extend" decorator is not supported (arkui-no-extend-decora
 cookBookTag[255] = 'Extends or implemetns expression are not supported(arkts-no-extends-expression)';
 cookBookTag[257] =
   '"@AnimatableExtend" decorator should be transformed to use receiver (arkui-animatableextend-use-receiver)';
-cookBookTag[300] = 'The function type should be explicit (arkts-no-ts-like-function)';
 cookBookTag[304] = 'Duplicate function name in namespace are not allowed (arkts-no-duplicate-function-name)';
