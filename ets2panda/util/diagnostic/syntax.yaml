@@ -780,9 +780,9 @@ syntax:
   id: 192
   message: "Rest parameter cannot have the default value."
 
-- name: ONLY_ARRAY_FOR_REST
+- name: ONLY_ARRAY_OR_TUPLE_FOR_REST
   id: 193
-  message: "Rest parameter should be of an array type."
+  message: "Rest parameter should be either array or tuple type."
 
 - name: EXPLICIT_PARAM_TYPE
   id: 194
