@@ -344,6 +344,9 @@ builtins:
   - name: DoubleBox
     package: PKG_STD_CORE
     ref: BUILTIN_DOUBLE_BOX
+  - name: Function
+    package: PKG_STD_CORE
+    ref: BUILTIN_FUNCTION
 
   - name: Function0
     package: PKG_STD_CORE

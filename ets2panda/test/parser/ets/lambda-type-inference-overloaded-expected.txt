@@ -1644,3 +1644,5 @@
   }
 }
 TypeError: Reference to foo is ambiguous [lambda-type-inference-overloaded.ets:28:5]
+TypeError: The type of parameter 'x' cannot be inferred [lambda-type-inference-overloaded.ets:31:10]
+TypeError: The type of parameter 'y' cannot be inferred [lambda-type-inference-overloaded.ets:31:13]

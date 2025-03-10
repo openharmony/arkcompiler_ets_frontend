@@ -167,6 +167,7 @@ void GlobalTypesHolder::AddEtsSpecificBuiltinTypes()
     builtinNameMappings_.emplace("Type", GlobalTypeId::ETS_TYPE_BUILTIN);
     builtinNameMappings_.emplace("Types", GlobalTypeId::ETS_TYPES_BUILTIN);
     builtinNameMappings_.emplace("Promise", GlobalTypeId::ETS_PROMISE_BUILTIN);
+    builtinNameMappings_.emplace("Function", GlobalTypeId::ETS_FUNCTION_BUILTIN);
     builtinNameMappings_.emplace("Box", GlobalTypeId::ETS_BOX_BUILTIN);
     builtinNameMappings_.emplace("BooleanBox", GlobalTypeId::ETS_BOOLEAN_BOX_BUILTIN);
     builtinNameMappings_.emplace("ByteBox", GlobalTypeId::ETS_BYTE_BOX_BUILTIN);
@@ -564,6 +565,11 @@ Type *GlobalTypesHolder::GlobalTypesBuiltinType()
 Type *GlobalTypesHolder::GlobalPromiseBuiltinType()
 {
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_PROMISE_BUILTIN));
+}
+
+Type *GlobalTypesHolder::GlobalFunctionBuiltinType()
+{
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_FUNCTION_BUILTIN));
 }
 
 Type *GlobalTypesHolder::GlobalRegExpBuiltinType()

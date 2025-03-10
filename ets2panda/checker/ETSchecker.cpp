@@ -477,6 +477,11 @@ ETSObjectType *ETSChecker::GlobalBuiltinPromiseType() const
     return AsETSObjectType(&GlobalTypesHolder::GlobalPromiseBuiltinType);
 }
 
+ETSObjectType *ETSChecker::GlobalBuiltinFunctionType() const
+{
+    return AsETSObjectType(&GlobalTypesHolder::GlobalFunctionBuiltinType);
+}
+
 ETSObjectType *ETSChecker::GlobalBuiltinJSRuntimeType() const
 {
     return AsETSObjectType(&GlobalTypesHolder::GlobalJSRuntimeBuiltinType);

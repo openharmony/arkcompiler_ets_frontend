@@ -277,10 +277,7 @@ bool ETSChecker::CheckOptionalLambdaFunction(ir::Expression *argument, Signature
 
         if (ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
             CheckLambdaAssignable(substitutedSig->Function()->Params()[index], lambda)) {
-            if (arrowFuncExpr->TsType() != nullptr) {
-                arrowFuncExpr->Check(this);
-                return true;
-            }
+            return true;
         }
     }
 

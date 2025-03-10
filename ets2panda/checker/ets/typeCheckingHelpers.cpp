@@ -1295,11 +1295,14 @@ bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction
     }
 
     if (!typeAnn->IsETSFunctionType()) {
+        // the surrounding function is made so we can *bypass* the typecheck in the "inference" context,
+        // however the body of the function has to be checked in any case
+        lambda->Parent()->Check(this);
         if (typeAnn->IsETSUnionType()) {
             return CheckLambdaAssignableUnion(typeAnn, lambda);
         }
         Type *paramType = param->AsETSParameterExpression()->Ident()->TsType();
-        return paramType->IsETSObjectType() && paramType->AsETSObjectType()->IsGlobalETSObjectType();
+        return paramType->IsETSObjectType() && Relation()->IsSupertypeOf(paramType, GlobalBuiltinFunctionType());
     }
 
     ir::ETSFunctionType *calleeType = typeAnn->AsETSFunctionType();
