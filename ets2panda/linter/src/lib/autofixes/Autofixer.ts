@@ -2055,6 +2055,77 @@ export class Autofixer {
     return [{ start: debuggerStmt.getStart(), end: debuggerStmt.getEnd(), replacementText: text }];
   }
 
+  /*
+   * "unsafe" (result is not common subset) autofixes
+   */
+
+  // to use special lib functions it's need to import it
+  static SPECIAL_LIB_NAME = 'specialAutofixLib';
+  private hasSpecialLibImport: boolean = false;
+
+  private createSpecialLibImort(): Autofix {
+    // this fix is dummy, create actual after special lib be ready
+    const specialLibImport: Autofix = {
+      replacementText: '',
+      start: 0,
+      end: 0
+    };
+    this.hasSpecialLibImport = true;
+    return specialLibImport;
+  }
+
+  // autofix for '**', '**=' operations and 'math.pow()' call
+  fixExponent(exponentNode: ts.Node): Autofix[] | undefined {
+    let autofix: Autofix[] = [];
+    let replaceText: Autofix = { replacementText: '', start: 0, end: 0 };
+
+    // ts.BinaryExpression
+    let callArgs: ts.Expression[] | undefined;
+    if (exponentNode.kind === ts.SyntaxKind.CallExpression) {
+      callArgs = [...(exponentNode as ts.CallExpression).arguments];
+    } else if (exponentNode.kind === ts.SyntaxKind.BinaryExpression) {
+      callArgs = [(exponentNode as ts.BinaryExpression).left, (exponentNode as ts.BinaryExpression).right];
+    } else {
+      // if we get here - it was an error!
+      return undefined;
+    }
+
+    const newCall = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(Autofixer.SPECIAL_LIB_NAME),
+        ts.factory.createIdentifier('mathPow')
+      ),
+      undefined,
+      callArgs
+    );
+
+    if (
+      exponentNode.kind === ts.SyntaxKind.BinaryExpression &&
+      (exponentNode as ts.BinaryExpression).operatorToken.kind === ts.SyntaxKind.AsteriskAsteriskEqualsToken
+    ) {
+      const newAssignment = ts.factory.createAssignment((exponentNode as ts.BinaryExpression).left, newCall);
+      replaceText = {
+        replacementText: this.printer.printNode(ts.EmitHint.Unspecified, newAssignment, exponentNode.getSourceFile()),
+        start: exponentNode.getStart(),
+        end: exponentNode.getEnd()
+      };
+    } else {
+      replaceText = {
+        replacementText: this.printer.printNode(ts.EmitHint.Unspecified, newCall, exponentNode.getSourceFile()),
+        start: exponentNode.getStart(),
+        end: exponentNode.getEnd()
+      };
+    }
+
+    autofix = [replaceText];
+
+    if (!this.hasSpecialLibImport) {
+      autofix = [...autofix, this.createSpecialLibImort()];
+    }
+
+    return autofix;
+  }
+
   fixBidirectionalDataBinding(twoWayExpr: ts.NonNullExpression): Autofix[] | undefined {
     if (ts.isNonNullExpression(twoWayExpr.expression)) {
       const originalExpr = twoWayExpr.expression.expression;

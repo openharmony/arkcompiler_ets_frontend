@@ -230,9 +230,12 @@ cookBookTag[183] = 'Object literal properties can only contain name-value pairs 
 cookBookTag[184] = 'Optional methods are not supported (arkts-optional-methods)';
 cookBookTag[185] = 'syntax for import type is disabled (arkts-import-types)';
 cookBookTag[186] = '"new" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)';
+cookBookTag[187] =
+  'function "Math.pow()" behavior for ArkTS differs from Typescript version (arkts-math-pow-standard-diff)';
 cookBookTag[192] = 'Type "void" has no instances.(arkts-limited-void-type)';
 cookBookTag[193] = '"void" operator is not supported (arkts-no-void-operator)';
 cookBookTag[202] = 'Literal types are restricted(arkts-limited-literal-types)';
+cookBookTag[203] = 'exponent opartions "**" and "**=" are disabled (arkts-no-exponent-op)';
 cookBookTag[206] = '"debugger" is not supported (arkts-no-debugger-stmt)';
 cookBookTag[207] = 'Special arguments object inside functions are not supported (arkts-no-arguments-obj)';
 cookBookTag[209] = 'The index expression must be of a numeric type (arkts-array-index-expr-type)';
@@ -252,3 +255,4 @@ cookBookTag[252] = '"$$" for bidirectional data binding is not supported (arkui-
 cookBookTag[253] = '"${variable}" for decorator binding is not supported (arkui-link-decorator-passing)';
 cookBookTag[254] = '"@Extend" decorator is not supported (arkui-no-extend-decorator)';
 cookBookTag[300] = 'The function type should be explicit (arkts-no-ts-like-function)';
+
