@@ -238,7 +238,7 @@ static void ConvertRestArguments(checker::ETSChecker *const checker, const ir::E
 
         if (i < argumentCount && expr->GetArguments()[i]->IsSpreadElement()) {
             arguments[i] = expr->GetArguments()[i]->AsSpreadElement()->Argument();
-        } else {
+        } else if (!expr->GetSignature()->RestVar()->TsType()->IsETSTupleType()) {
             ArenaVector<ir::Expression *> elements(checker->Allocator()->Adapter());
             for (; i < argumentCount; ++i) {
                 elements.emplace_back(expr->GetArguments()[i]);
@@ -684,7 +684,7 @@ static void ConvertRestArguments(checker::ETSChecker *const checker, const ir::C
         } else if (i < argumentCount && expr->Arguments()[i]->IsTSAsExpression() &&
                    expr->Arguments()[i]->AsTSAsExpression()->Expr()->Type() == ir::AstNodeType::SPREAD_ELEMENT) {
             arguments[i] = expr->Arguments()[i]->AsTSAsExpression()->Expr()->AsSpreadElement()->Argument();
-        } else {
+        } else if (!signature->RestVar()->TsType()->IsETSTupleType()) {
             ArenaVector<ir::Expression *> elements(checker->Allocator()->Adapter());
             for (; i < argumentCount; ++i) {
                 elements.emplace_back(expr->Arguments()[i]);

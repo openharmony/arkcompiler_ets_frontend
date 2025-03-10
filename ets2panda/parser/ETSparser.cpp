@@ -1419,9 +1419,8 @@ ir::Expression *ETSParser::ParseFunctionParameter()
             // and resolve "{key: string}" as function body, so skip invalid types
             SkipInvalidType();
         } else if (paramIdent->IsRestElement() && !typeAnnotation->IsTSArrayType() &&
-                   !IsFixedArrayTypeNode(typeAnnotation)) {
-            // NOTE (mmartin): implement tuple types for rest parameters
-            LogError(diagnostic::ONLY_ARRAY_FOR_REST);
+                   !IsFixedArrayTypeNode(typeAnnotation) && !typeAnnotation->IsETSTuple()) {
+            LogError(diagnostic::ONLY_ARRAY_OR_TUPLE_FOR_REST);
         }
         typeAnnotation->SetParent(paramIdent);
         paramIdent->SetTsTypeAnnotation(typeAnnotation);

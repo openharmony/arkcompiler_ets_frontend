@@ -28,6 +28,7 @@
 #include "compiler/lowering/ets/defaultParametersLowering.h"
 #include "compiler/lowering/ets/enumLowering.h"
 #include "compiler/lowering/ets/enumPostCheckLowering.h"
+#include "compiler/lowering/ets/restTupleLowering.h"
 #include "compiler/lowering/ets/expandBrackets.h"
 #include "compiler/lowering/ets/expressionLambdaLowering.h"
 #include "compiler/lowering/ets/extensionAccessorLowering.h"
@@ -78,6 +79,7 @@ static ConstStringToCharLowering g_constStringToCharLowering;
 static InterfacePropertyDeclarationsPhase g_interfacePropDeclPhase;  // NOLINT(fuchsia-statically-constructed-objects)
 static EnumLoweringPhase g_enumLoweringPhase;
 static EnumPostCheckLoweringPhase g_enumPostCheckLoweringPhase;
+static RestTupleConstructionPhase g_restTupleConstructionPhase;
 static SpreadConstructionPhase g_spreadConstructionPhase;
 static ExtensionAccessorPhase g_extensionAccessorPhase;
 static ExpressionLambdaConstructionPhase g_expressionLambdaConstructionPhase;
@@ -142,6 +144,7 @@ std::vector<Phase *> GetRecheckPhase()
 std::vector<Phase *> GetETSPhaseList()
 {
     // clang-format off
+    // NOLINTBEGIN
     return {
         &g_pluginsAfterParse,
         &g_stringConstantsLowering,
@@ -151,6 +154,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_defaultParametersInConstructorLowering,
         &g_defaultParametersLowering,
         &g_ambientLowering,
+        &g_restTupleConstructionPhase,
         &g_initScopesPhaseEts,
         &g_optionalLowering,
         &g_promiseVoidInferencePhase,
@@ -191,6 +195,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_genericBridgesLowering,
         &g_pluginsAfterLowerings,  // pluginsAfterLowerings has to come at the very end, nothing should go after it
     };
+    // NOLINTEND
     // clang-format on
 }
 
