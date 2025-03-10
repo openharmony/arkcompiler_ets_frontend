@@ -29,8 +29,3 @@ function main(): void {
     let o: JImpl = new JImpl()
     assertEQ(o.$_hashCode(), 4);
 }
-
-/* @@? 17:13 Error TypeError: Cannot override non-private method of the class Object from an interface.  */
-/* @@? 17:13 Error TypeError: Method toString(): String in J not overriding any method  */
-/* @@? 20:15 Error TypeError: Cannot override non-private method of the class Object from an interface.  */
-/* @@? 20:15 Error TypeError: Method $_hashCode(): int in J not overriding any method  */

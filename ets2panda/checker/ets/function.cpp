@@ -1480,13 +1480,6 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
             return false;
         }
 
-        if (signature->Owner()->HasObjectFlag(ETSObjectFlags::INTERFACE) &&
-            Relation()->IsIdenticalTo(itSubst->Owner(), GlobalETSObjectType()) &&
-            !itSubst->HasSignatureFlag(SignatureFlags::PRIVATE)) {
-            LogError(diagnostic::INTERFACE_OVERRIDES_OBJECT, {}, signature->Function()->Start());
-            return false;
-        }
-
         isOverridingAnySignature = true;
     }
 
