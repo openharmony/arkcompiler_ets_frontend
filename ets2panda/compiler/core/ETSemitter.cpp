@@ -927,9 +927,16 @@ ir::MethodDefinition *ETSEmitter::FindAsyncImpl(ir::ScriptFunction *asyncFunc)
     const ir::ClassDefinition *classDef = ownerNode->AsClassDefinition();
     ES2PANDA_ASSERT(classDef != nullptr);
 
-    auto it = std::find_if(classDef->Body().rbegin(), classDef->Body().rend(), [&implName](ir::AstNode *node) {
-        return node->IsMethodDefinition() && node->AsMethodDefinition()->Id()->Name().Utf8() == implName;
-    });
+    auto it =
+        std::find_if(classDef->Body().rbegin(), classDef->Body().rend(), [&implName, &asyncFunc](ir::AstNode *node) {
+            if (!node->IsMethodDefinition()) {
+                return false;
+            }
+            bool isSameName = node->AsMethodDefinition()->Id()->Name().Utf8() == implName;
+            bool isBothStaticOrInstance =
+                (node->Modifiers() & ir::ModifierFlags::STATIC) == (asyncFunc->Modifiers() & ir::ModifierFlags::STATIC);
+            return isSameName && isBothStaticOrInstance;
+        });
     if (it == classDef->Body().rend()) {
         return nullptr;
     }
