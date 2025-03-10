@@ -1888,7 +1888,10 @@ export class TsUtils {
       (!this.options.useRtLogic && TsUtils.hasModifier(modifiers, ts.SyntaxKind.ReadonlyKeyword) ||
         TsUtils.hasModifier(modifiers, ts.SyntaxKind.PublicKeyword) ||
         TsUtils.hasModifier(modifiers, ts.SyntaxKind.ProtectedKeyword) ||
-        TsUtils.hasModifier(modifiers, ts.SyntaxKind.PrivateKeyword))
+        TsUtils.hasModifier(modifiers, ts.SyntaxKind.PrivateKeyword) ||
+        !!this.options.arkts2 &&
+          (TsUtils.hasModifier(modifiers, ts.SyntaxKind.ReadonlyKeyword) ||
+            TsUtils.hasModifier(modifiers, ts.SyntaxKind.OverrideKeyword)))
     );
   }
 

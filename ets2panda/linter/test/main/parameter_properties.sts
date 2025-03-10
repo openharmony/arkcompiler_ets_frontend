@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -45,4 +45,47 @@ class C {
 
 class D {
   constructor(public a: number, private b: {x: string}) {} // not fixable
+}
+
+class E {
+  b: number = 0;
+  c: number = 0;
+  
+  constructor(readonly a: number) {}
+}
+
+class F extends E {
+  constructor(
+    readonly aa: number,
+    override b: number,
+    public override c: number
+  ){
+    super(aa);
+  }
+}
+
+class F2 extends E {
+  constructor(readonly aa: number) {
+    let f2: number = 1;
+    console.log('before super() call');
+    super(aa);
+  }
+}
+
+class F3 extends E {
+  constructor(readonly aa: number) {
+    super(aa);
+    let f3: number = 1;
+    console.log('after super() call');
+  }
+}
+
+class F4 extends E {
+  constructor(readonly aa: number) {
+    let f4: number = 1;
+    console.log('before super() call');
+    super(aa);
+    console.log('after super() call');
+    let f5: number = 1;
+  }
 }
