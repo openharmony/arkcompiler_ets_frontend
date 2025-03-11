@@ -500,5 +500,51 @@ bool ImportPathManager::ImportMetadata::IsValid() const
     return resolvedSource != ERROR_LITERAL;
 }
 
+util::StringView ImportPathManager::FormRelativePath(const util::Path &path)
+{
+    std::string filePath(path.GetAbsolutePath());
+    auto const tryFormRelativePath = [&filePath](std::string const &basePath,
+                                                 std::string const &prefix) -> std::optional<std::string> {
+        if (filePath.rfind(basePath, 0) != 0) {
+            return std::nullopt;
+        }
+        return filePath.replace(0, basePath.size(), prefix);
+    };
+
+    if (!absoluteEtsPath_.empty()) {
+        if (auto res = tryFormRelativePath(absoluteEtsPath_ + pathDelimiter_.data(), ""); res) {
+            return util::UString(res.value(), allocator_).View();
+        }
+    }
+
+    if (arktsConfig_->Package().empty() && !arktsConfig_->UseUrl()) {
+        return path.GetFileNameWithExtension();
+    }
+
+    for (auto const &[unitName, unitPath] : arktsConfig_->Entries()) {
+        if (unitPath == filePath) {
+            return util::UString(unitName, allocator_).View();
+        }
+    }
+
+    if (auto res = tryFormRelativePath(arktsConfig_->BaseUrl(), arktsConfig_->Package()); res) {
+        return util::UString(res.value(), allocator_).View();
+    }
+
+    for (auto const &[unitName, unitPath] : arktsConfig_->Paths()) {
+        if (auto res = tryFormRelativePath(unitPath[0], unitName); res) {
+            return util::UString(res.value(), allocator_).View();
+        }
+    }
+
+    for (auto const &[unitName, unitPath] : arktsConfig_->DynamicPaths()) {
+        if (auto res = tryFormRelativePath(unitName, unitName); res) {
+            return util::UString(res.value(), allocator_).View();
+        }
+    }
+
+    return path.GetFileNameWithExtension();
+}
+
 }  // namespace ark::es2panda::util
 #undef USE_UNIX_SYSCALL

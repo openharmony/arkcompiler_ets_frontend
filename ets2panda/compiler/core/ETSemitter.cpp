@@ -429,8 +429,7 @@ void ETSEmitter::GenInterfaceRecord(const ir::TSInterfaceDeclaration *interfaceD
 
     interfaceRecord.metadata->SetAnnotations(GenCustomAnnotations(interfaceDecl->Annotations(), interfaceRecord.name));
     interfaceRecord.metadata->SetAccessFlags(accessFlags);
-    interfaceRecord.sourceFile =
-        Context()->parserProgram->VarBinder()->Program()->SourceFile().GetAbsolutePath().Mutf8();
+    interfaceRecord.sourceFile = std::string {Context()->parserProgram->VarBinder()->Program()->RelativeFilePath()};
     interfaceRecord.metadata->SetAttributeValue(Signatures::EXTENDS_ATTRIBUTE, Signatures::BUILTIN_OBJECT);
 
     for (auto *it : baseType->Interfaces()) {
@@ -511,7 +510,7 @@ void ETSEmitter::GenClassRecord(const ir::ClassDefinition *classDef, bool extern
     classRecord.metadata->SetAnnotations(GenCustomAnnotations(classDef->Annotations(), classRecord.name));
     uint32_t accessFlags = GetAccessFlags(classDef);
     classRecord.metadata->SetAccessFlags(accessFlags);
-    classRecord.sourceFile = Context()->parserProgram->VarBinder()->Program()->SourceFile().GetAbsolutePath().Mutf8();
+    classRecord.sourceFile = std::string {Context()->parserProgram->VarBinder()->Program()->RelativeFilePath()};
 
     auto *baseType = classDef->TsType()->AsETSObjectType();
     if (baseType->SuperType() != nullptr) {
@@ -745,7 +744,7 @@ void ETSEmitter::GenCustomAnnotationRecord(const ir::AnnotationDeclaration *anno
 
     uint32_t accessFlags = ACC_PUBLIC | ACC_ABSTRACT | ACC_ANNOTATION;
     annoRecord.metadata->SetAccessFlags(accessFlags);
-    annoRecord.sourceFile = Context()->parserProgram->VarBinder()->Program()->SourceFile().GetAbsolutePath().Mutf8();
+    annoRecord.sourceFile = std::string {Context()->parserProgram->VarBinder()->Program()->RelativeFilePath()};
     for (auto *it : annoDecl->Properties()) {
         GenCustomAnnotationProp(it->AsClassProperty(), baseName, annoRecord, external);
     }

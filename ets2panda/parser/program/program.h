@@ -133,6 +133,17 @@ public:
         return resolvedFilePath_;
     }
 
+    util::StringView RelativeFilePath() const
+    {
+        // for js source files, just return file name.
+        return relativeFilePath_.Empty() ? FileNameWithExtension() : relativeFilePath_;
+    }
+
+    void SetRelativeFilePath(const util::StringView &relPath)
+    {
+        relativeFilePath_ = relPath;
+    }
+
     ir::BlockStatement *Ast()
     {
         return ast_;
@@ -300,6 +311,7 @@ private:
     util::Path sourceFile_ {};
     util::StringView sourceFileFolder_ {};
     util::StringView resolvedFilePath_ {};
+    util::StringView relativeFilePath_ {};
     ExternalSource externalSources_;
     DirectExternalSource directExternalSources_;
     ScriptKind kind_ {};

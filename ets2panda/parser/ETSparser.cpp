@@ -110,6 +110,7 @@ void ETSParser::ParseProgram(ScriptKind kind)
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
     Lexer()->NextToken();
     GetProgram()->SetKind(kind);
+    GetProgram()->SetRelativeFilePath(importPathManager_->FormRelativePath(GetProgram()->SourceFile()));
 
     if (GetProgram()->SourceFilePath().Utf8()[0] == '@') {
         // NOTE(user): handle multiple sourceFiles
@@ -1988,7 +1989,8 @@ InnerSourceParser::InnerSourceParser(ETSParser *parser)
       savedLexer_(parser_->Lexer()),
       savedSourceCode_(parser_->GetProgram()->SourceCode()),
       savedSourceFile_(parser_->GetProgram()->SourceFilePath()),
-      savedSourceFilePath_(parser_->GetProgram()->SourceFileFolder())
+      savedSourceFilePath_(parser_->GetProgram()->SourceFileFolder()),
+      savedRelativeFilePath_(parser_->GetProgram()->RelativeFilePath())
 {
 }
 
@@ -1996,5 +1998,6 @@ InnerSourceParser::~InnerSourceParser()
 {
     parser_->SetLexer(savedLexer_);
     parser_->GetProgram()->SetSource(savedSourceCode_, savedSourceFile_, savedSourceFilePath_);
+    parser_->GetProgram()->SetRelativeFilePath(savedRelativeFilePath_);
 }
 }  // namespace ark::es2panda::parser

@@ -133,6 +133,7 @@ public:
     util::StringView ResolvePathAPI(StringView curModulePath, ir::StringLiteral *importPath) const;
 
     void MarkAsParsed(StringView path);
+    util::StringView FormRelativePath(const util::Path &path);
 
 private:
     util::StringView FormModuleNameSolelyByAbsolutePath(const util::Path &path);
