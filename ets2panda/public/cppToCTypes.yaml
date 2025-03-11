@@ -240,7 +240,6 @@ change_types:
             \t\tapiRes[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
-
   - es2panda_arg:
       name: '|arg_name|'
       type:
@@ -378,7 +377,6 @@ change_types:
             \t\tapiRes[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
-
   - es2panda_arg:
       name: '|arg_name|'
       type:
@@ -471,7 +469,6 @@ change_types:
             \t\tres[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
-
   - es2panda_arg:
       name: '|arg_name|'
       type:
@@ -528,7 +525,6 @@ change_types:
             \t\t(*|return_args.0.name|)[i] = |reverse_template_nested_expression_2_start|(value)|reverse_template_nested_expression_2_end|;\n
             \t\t++i;\n
             \t}"
-
 
   - es2panda_arg:
       name: '|arg_name|'
@@ -646,7 +642,6 @@ change_types:
             \t\t(*|return_args.0.name|)[i] = |reverse_template_nested_expression_2_start|(value)|reverse_template_nested_expression_2_end|;\n
             \t\t++i;\n
             \t}"
-
 
   - es2panda_arg:
       name: '|arg_name|'
@@ -2561,7 +2556,6 @@ change_types:
         expression: ''
         var_name: 'std::forward<ir::SrcDumper>(*reinterpret_cast<ir::SrcDumper *>(|arg_name|))'
 
-
   - es2panda_arg:
       name: '|arg_name|'
       type:
@@ -3857,7 +3851,6 @@ change_types:
         end: )
       var_name: "|arg_name|E2p"
 
-
   - es2panda_arg:
       name: '|arg_name|'
       type:
@@ -3887,3 +3880,34 @@ change_types:
         |arg_name|E2p.isSetter = |arg_name|isSetter;\n
         |arg_name|E2p.isExternal = |arg_name|isExternal;\n"
       var_name: "|arg_name|E2p"
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: 'ImportPathManager'
+      min_ptr_depth: 1
+    new_args:
+    - type:
+        name: 'es2panda_ImportPathManager'
+        ptr_depth: '|es2panda_arg.type.ptr_depth_int|'
+      name: '|arg_name|'
+    cast:
+        expression: >-
+          auto |es2panda_arg.type.ptr_depth||arg_name|E2p =
+          reinterpret_cast<util::ImportPathManager |es2panda_arg.type.ptr_depth|>(|arg_name|);
+        reverse_cast:
+          start: >-
+            reinterpret_cast<?const? es2panda_ImportPathManager |es2panda_arg.type.ptr_depth|>
+        call_cast:
+          call_var:
+            name: classInstance
+            type:
+              name: es2panda_ImportPathManager
+              ptr_depth: 1
+          start: >-
+            (reinterpret_cast<?const? util::ImportPathManager *>(classInstance))->
+        constructor_cast:
+          start: >-
+            ctxAllocator->New<util::ImportPathManager>(
+          end: )
+        var_name: '|arg_name|E2p'

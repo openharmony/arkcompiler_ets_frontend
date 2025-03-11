@@ -37,6 +37,7 @@ ignored_list:
       - name: Program
       - name: NumberLiteral
       - name: VerifiedType
+      - name: ImportPathManager
 
 
   # Which methods should not be generated
@@ -104,8 +105,7 @@ ignored_list:
     - name: ScriptExtension
     - name: function
       namespace: std
-    - name: Result
-      namespace: 'compiler::ast_verifier::'
+    - name: ImportData
 
 
   # Method and constructors will not be generated if c++ postfix contains any element listed below
@@ -182,8 +182,8 @@ ignored_list:
       name: function
       namespace: std
   - type:
-      name: Result
-      namespace: 'compiler::ast_verifier::'
+      name: Path
+      namespace: 'util'
   - type:
       name: T
   - type:

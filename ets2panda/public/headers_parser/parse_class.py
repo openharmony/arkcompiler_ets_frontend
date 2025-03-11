@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 #
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -40,10 +40,7 @@ def parse_class(data: str, start: int = 0, namespace: str = "", parent_class_nam
     # Inheritance
     colon_pos = find_first_of_characters(":", data, start, start_of_body)
 
-    # Exctract class name
-    start_of_name = data.find("class ", start) + len("class ")
-    end_of_name = find_first_of_characters(" :{", data, start_of_name)
-    class_name = data[start_of_name:end_of_name].strip(" \n")
+    class_name = extract_class_name(data, data.find("class ", start) + len("class "))
 
     from cpp_parser import CppParser  # pylint: disable=C0415
 
@@ -61,6 +58,20 @@ def parse_class(data: str, start: int = 0, namespace: str = "", parent_class_nam
     parsed_class["name"] = class_name
 
     return end_of_body, parsed_class
+
+
+def extract_class_name(data: str, pos: int) -> str:
+    name = ""
+    while not name or name.isupper():
+        start_of_name = find_first_not_restricted_character(" :{\n", data, pos)
+        pos = find_first_of_characters(" :{\n", data, start_of_name)
+
+        if start_of_name == len(data) or pos == len(data):
+            raise RuntimeError("Error while extracting class name")
+
+        name = data[start_of_name:pos]
+
+    return data[start_of_name:pos]
 
 
 def parse_template_prefix(data: str, start: int) -> Tuple[int, str]:

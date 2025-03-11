@@ -91,7 +91,8 @@ module Es2pandaLibApi
 
     def unsupported_type_msg()
       ptr_depth = @es2panda_arg['type'].ptr_depth || 0
-      "'#{@es2panda_arg['type'].namespace + '::' || ''}"\
+      namespace = @es2panda_arg['type'].namespace
+      "'#{namespace ? "#{namespace}::" : ''}"\
       "#{@es2panda_arg['type'].name}"\
       "#{' ' * [1, ptr_depth].min + '*' * (ptr_depth)}'"
     end
@@ -1092,10 +1093,10 @@ module Es2pandaLibApi
       type = 'Varbinder manipulation'
     elsif class_base_namespace == 'parser'
       type = 'Parser manipulation'
-    elsif class_base_namespace == 'es2panda'
-      type = 'Getters for compiler options'
     elsif class_base_namespace == 'compiler::ast_verifier'
       type = 'AST Verifier functions'
+    elsif class_base_namespace == 'util'
+      type = 'Import path manager'
     else
       raise "Unsupported class type for stats class name: \"" +
       class_name + "\" class namespace: \"" + class_base_namespace + "\""
@@ -1205,12 +1206,7 @@ module Es2pandaLibApi
       ASTVerifier
       CheckMessage
       Program
-    ]
-  end
-
-  def structs_to_generate
-    %w[
-      CompilerOptions
+      ImportPathManager
     ]
   end
 
@@ -1273,7 +1269,6 @@ module Es2pandaLibApi
       es2panda_Signature
       es2panda_SignatureInfo
       es2panda_CheckerContext
-      es2panda_CompilerOptions
       es2panda_ResolveResult
       es2panda_ValidationInfo
       es2panda_Type
@@ -1310,6 +1305,7 @@ module Es2pandaLibApi
       es2panda_VerificationContext
       es2panda_AstVerifier
       es2panda_VerifierMessage
+      es2panda_ImportPathManager
     ]
   end
 
@@ -1447,6 +1443,17 @@ module Es2pandaLibApi
       end
     end
 
+    @classes['util'] = {} unless @classes['util']
+    data['util']&.class_definitions&.each do |class_definition|
+      if additional_classes_to_generate.include?(class_definition.name)
+        class_data = ClassData.new(class_definition&.public)
+        class_data.class_base_namespace = 'util'
+        class_data.extends_classname = extends_to_idl(class_definition.extends)
+        class_data.template_extends = []
+        @classes['util'][class_definition.name] = class_data
+      end
+    end
+
     @classes['ast_verifier'] = {} unless @classes['ast_verifier']
     data['ast_verifier']&.class_definitions&.each do |class_definition|
       if additional_classes_to_generate.include?(class_definition.name)
@@ -1456,22 +1463,13 @@ module Es2pandaLibApi
         @classes['ast_verifier'][class_definition.name] = class_data
       end
     end
-
-    data['es2panda']&.structs&.each do |struct|
-      if structs_to_generate.include?(struct.name)
-        struct_data = ClassData.new(struct)
-        struct_data.template_extends = []
-        struct_data.class_base_namespace = 'es2panda'
-        @structs[struct.name] = struct_data
-      end
-    end
   end
 
   module_function :wrap_data, :classes, :ast_nodes, :includes, :change_types, :enums, :ast_types, :check_fit, :log,
                   :stat_add_constructor, :stat_add_method, :print_stats, :ignored_info, :allowed_info, :primitive_types,
                   :stat_add_class, :stat_add_unsupported_type, :ast_node_additional_children, :code_gen_children,
                   :additional_classes_to_generate, :ast_type_additional_children, :scopes, :ast_variables, :deep_to_h,
-                  :no_usings_replace_info, :declarations, :check_template_type_presents, :structs, :structs_to_generate,
+                  :no_usings_replace_info, :declarations, :check_template_type_presents, :structs,
                   :additional_containers, :stat_add_constructor_type, :stat_add_method_type, :check_class_type,
                   :extends_to_idl, :template_extends, :template_extends_classes
 end
