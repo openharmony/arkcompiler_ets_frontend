@@ -384,6 +384,40 @@
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "optional_chaining_object_property.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "optional_chaining_object_property.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "optional_chaining_object_property.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "optional_chaining_object_property.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",

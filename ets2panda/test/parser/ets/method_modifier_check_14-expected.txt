@@ -283,6 +283,40 @@
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "method_modifier_check_14.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "method_modifier_check_14.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "method_modifier_check_14.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "method_modifier_check_14.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",

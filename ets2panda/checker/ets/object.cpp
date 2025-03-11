@@ -1076,6 +1076,7 @@ void ETSChecker::CheckLocalClass(ir::ClassDefinition *classDef, CheckerStatus &c
     }
 }
 
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP) solid logic
 void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
 {
     classDef->SetClassDefinitionChecked();
@@ -1130,11 +1131,16 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
     TransformProperties(classType);
     CheckClassElement(classDef);
 
-    if (classDef->IsGlobal() || classType->SuperType() == nullptr) {
+    if (classType->SuperType() == nullptr) {
         return;
     }
 
     CheckClassAnnotations(classDef);
+
+    if (classDef->IsGlobal()) {
+        return;
+    }
+
     CheckConstructors(classDef, classType);
     CheckValidInheritance(classType, classDef);
     CheckConstFields(classType);

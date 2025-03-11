@@ -11,6 +11,16 @@
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": []
+            },
+            "properties": []
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",
@@ -605,6 +615,16 @@
     },
     "superClass": null,
     "implements": [],
+    "annotations": [
+      {
+        "expr_": {
+          "type": "Identifier",
+          "name": "Module",
+          "decorators": []
+        },
+        "properties": []
+      }
+    ],
     "body": [
       {
         "type": "MethodDefinition",

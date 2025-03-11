@@ -137,13 +137,18 @@ void AsmTest::CheckRecordAnnotations(ark::pandasm::Program *program, const std::
     }
 }
 
-void AsmTest::CheckRecordWithoutAnnotations(ark::pandasm::Program *program, const std::string &recordName)
+void AsmTest::CheckRecordWithoutAnnotations(ark::pandasm::Program *program, const std::string &recordName,
+                                            bool isModule)
 {
     const auto &recordTable = program->recordTable;
     ASSERT_FALSE(recordTable.empty()) << "No records found in the program.";
     auto found = recordTable.find(recordName);
     ASSERT_NE(found, recordTable.end());
-    ASSERT(found->second.metadata->GetAnnotations().empty());
+    if (isModule) {
+        ASSERT_EQ(found->second.metadata->GetAnnotations().size(), 1);
+    } else {
+        ASSERT(found->second.metadata->GetAnnotations().empty());
+    }
 }
 
 void AsmTest::CheckFunctionAnnotations(ark::pandasm::Program *program, const std::string &functionName, bool isStatic,

@@ -49,6 +49,16 @@ void GlobalClassHandler::AddStaticBlockToClass(ir::AstNode *node)
     }
 }
 
+ir::AnnotationUsage *GlobalClassHandler::CreateModuleAnnotation(const lexer::SourceRange &range)
+{
+    auto *identModule = NodeAllocator::Alloc<ir::Identifier>(allocator_, Signatures::MODULE_ANNOTATION, allocator_);
+    identModule->SetRange(range);
+    auto *annotationModule = NodeAllocator::Alloc<ir::AnnotationUsage>(allocator_, identModule, allocator_);
+    annotationModule->AddModifier(ir::ModifierFlags::ANNOTATION_USAGE);
+    annotationModule->SetRange(range);
+    return annotationModule;
+}
+
 ir::ClassDeclaration *GlobalClassHandler::CreateTransformedClass(ir::ETSModule *ns)
 {
     auto className = ns->Ident()->Name();
@@ -68,6 +78,9 @@ ir::ClassDeclaration *GlobalClassHandler::CreateTransformedClass(ir::ETSModule *
         auto clone = anno->Clone(allocator_, classDef);
         annotations.push_back(clone);
     }
+
+    annotations.push_back(CreateModuleAnnotation(ns->Range()));
+
     classDef->SetAnnotations(std::move(annotations));
     return classDecl;
 }
@@ -437,7 +450,7 @@ ArenaVector<ArenaVector<ir::Statement *>> GlobalClassHandler::CollectProgramGlob
     }
     classDef->AddProperties(util::Helpers::ConvertVector<ir::AstNode>(statements.classProperties));
     /*
-    initializers_ consists of two parts:
+    initializers consists of two parts:
     immediate initializers and initializer blocks, the former should be executed firstly.
 
     Example code:
@@ -468,6 +481,11 @@ ir::ClassDeclaration *GlobalClassHandler::CreateGlobalClass(const parser::Progra
     classDef->SetRange(rangeToStartOfFile);
     auto *classDecl = NodeAllocator::Alloc<ir::ClassDeclaration>(allocator_, classDef, allocator_);
     classDecl->SetRange(rangeToStartOfFile);
+
+    auto *annotationModule = CreateModuleAnnotation(classDef->Range());
+    annotationModule->SetParent(classDef);
+    classDef->Annotations().push_back(annotationModule);
+
     return classDecl;
 }
 

@@ -66,6 +66,9 @@ defines:
   - name: ets.debug.export
     ref: DEBUG_EXPORT_ATTRIBUTE
     comment: ETS annotation type
+  - name: Module
+    ref: MODULE_ANNOTATION
+    comment: ETS annotation
   - name: value
     ref: ANNOTATION_KEY_VALUE
     comment: ETS annotation key

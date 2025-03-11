@@ -4,7 +4,7 @@ SRC DUMP AFTER ADD ANNOTATION:
 
 @interface Component {}
 
-@Component()class A {
+@Component() class A {
   public constructor() {}
   
 }

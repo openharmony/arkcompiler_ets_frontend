@@ -1074,6 +1074,40 @@
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "generics_type_param_constraint_12.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "generics_type_param_constraint_12.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "generics_type_param_constraint_12.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "generics_type_param_constraint_12.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",

@@ -1320,6 +1320,7 @@ void InitScopesPhaseETS::ParseGlobalClass(ir::ClassDefinition *global)
         }
         CallNode(decl);
     }
+    CallNode(global->Annotations());
     FilterOverloads(global->Body());
 }
 

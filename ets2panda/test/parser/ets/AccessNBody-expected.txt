@@ -17130,6 +17130,40 @@
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "AccessNBody.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "AccessNBody.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "AccessNBody.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "AccessNBody.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",
