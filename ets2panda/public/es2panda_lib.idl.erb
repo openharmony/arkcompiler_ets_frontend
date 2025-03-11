@@ -56,6 +56,9 @@ typedef (String or f64 or boolean) es2panda_variantDoubleCharArrayBool;
 [Entity=Class] interface es2panda_IRNode {};
 [Entity=Class] interface es2panda_ErrorLogger {};
 [Entity=Class] interface es2panda_VerificationContext {};
+[Entity=Class] interface es2panda_ImportPathManager {};
+[Entity=Class] interface es2panda_Path {};
+[Entity=Class] interface es2panda_Options {};
 
 
 interface NodeTraverser {
@@ -102,6 +105,15 @@ interface es2panda_DynamicImportData {
     attribute Variable variable;
 };
 
+interface es2panda_OverloadInfo {
+    attribute u32 minArg;
+    attribute u32 maxArg;
+    attribute boolean needHelperOverload;
+    attribute boolean isDeclare;
+    attribute boolean hasRestVar;
+    attribute boolean returnVoid;
+};
+
 dictionary es2panda_ContextState {
     i32 ES2PANDA_STATE_NEW = 0;
     i32 ES2PANDA_STATE_PARSED = 1;
@@ -138,6 +150,7 @@ typedef u64 Es2panda<%= name %>;
 interface es2panda_Impl {
     es2panda_Config CreateConfig(i32 argc, sequence<String> argv);
     void DestroyConfig(es2panda_Config config);
+    const es2panda_Options ConfigGetOptions(es2panda_Config config);
 
     es2panda_Context CreateContextFromFile(es2panda_Config config, String source_file_name);
     es2panda_Context CreateContextFromString(es2panda_Config config, String source, String file_name);
