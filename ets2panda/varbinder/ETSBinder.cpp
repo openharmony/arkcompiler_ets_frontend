@@ -746,6 +746,13 @@ Variable *ETSBinder::FindImportSpecifiersVariable(const util::StringView &import
     return foundVar->second;
 }
 
+static bool IsExportedVariable(varbinder::Variable *const var)
+{
+    return var != nullptr &&
+           (var->Declaration()->Node()->IsExported() || var->Declaration()->Node()->IsExportedType() ||
+            var->Declaration()->Node()->IsDefaultExported());
+}
+
 ir::ETSImportDeclaration *ETSBinder::FindImportDeclInReExports(const ir::ETSImportDeclaration *const import,
                                                                std::vector<ir::ETSImportDeclaration *> &viewedReExport,
                                                                const util::StringView &imported,
@@ -774,7 +781,7 @@ ir::ETSImportDeclaration *ETSBinder::FindImportDeclInReExports(const ir::ETSImpo
                 continue;
             }
             auto *const var = FindImportSpecifiersVariable(imported, record.front()->GlobalScope()->Bindings(), record);
-            if (var != nullptr) {
+            if (IsExportedVariable(var)) {
                 implDecl = item->GetETSImportDeclarations();
                 continue;
             }
