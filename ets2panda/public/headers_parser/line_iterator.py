@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 #
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -61,9 +61,10 @@ class LineIterator:  # pylint: disable=C0115
 
     def is_skip_line(self) -> bool:
         return (
-            self.current_line.find("#ifndef") != -1
+            self.current_line.find("#if") != -1 # if, ifdef, ifndef
+            or self.current_line.find("#el") != -1 # else, elif
             or self.current_line.find("#undef") != -1
-            or self.current_line.find("#endif") != -1
+            or self.current_line.find("#end") != -1
         )
 
     def is_template(self) -> bool:
@@ -79,7 +80,11 @@ class LineIterator:  # pylint: disable=C0115
         return self.current_line.find("struct ") != -1
 
     def is_using(self) -> bool:
-        return self.current_line.find("using ") != -1
+        return (
+            self.current_line.find("using ") != -1
+            or self.current_line.find("namespace ") != -1
+            and self.current_line.find("=") != -1
+        )
 
     def is_define_macro(self) -> bool:
         return self.current_line.find("#define ") != -1

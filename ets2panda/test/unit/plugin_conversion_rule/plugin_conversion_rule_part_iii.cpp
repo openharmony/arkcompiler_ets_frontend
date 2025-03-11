@@ -198,7 +198,7 @@ TEST_F(PluginConversionRuleUnitTest, SourcePositionInputParameter)
     extern "C" void AstNodeSetStart([[maybe_unused]] es2panda_Context *context, es2panda_AstNode *classInstance,
     [[maybe_unused]] es2panda_SourcePosition *start/*return_args:*/)
     {
-        auto startE2p = *reinterpret_cast<lexer::SourcePosition *>(start);
+        auto &startE2p = *reinterpret_cast<lexer::SourcePosition *>(start);
         ((reinterpret_cast< ir::AstNode *>(classInstance))->SetStart(startE2p));
     })"};
 
@@ -247,7 +247,7 @@ TEST_F(PluginConversionRuleUnitTest, VRegInputParameter)
     [[maybe_unused]] es2panda_VReg *objReg/*return_args:*/)
     {
         auto *pgE2p = reinterpret_cast<compiler::PandaGen *>(pg);
-        auto objRegE2p = *reinterpret_cast<compiler::VReg *>(objReg);
+        auto &objRegE2p = *reinterpret_cast<compiler::VReg *>(objReg);
         ((reinterpret_cast<const ir::MemberExpression *>(classInstance))->CompileToReg(pgE2p, objRegE2p));
     })"};
 

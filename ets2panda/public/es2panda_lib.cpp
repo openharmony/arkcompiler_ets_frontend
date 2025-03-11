@@ -151,7 +151,7 @@ __attribute__((unused)) es2panda_variantDoubleCharArrayBool EnumMemberResultToEs
     // NOLINTEND(cppcoreguidelines-pro-type-union-access)
 }
 
-__attribute__((unused)) es2panda_DynamicImportData *DynamicImportDataToE2p(
+__attribute__((unused)) es2panda_DynamicImportData *DynamicImportDataToE2pPtr(
     ArenaAllocator *allocator, const varbinder::DynamicImportData *dynamicImportData)
 {
     auto import = reinterpret_cast<const es2panda_AstNode *>(dynamicImportData->import);
@@ -175,6 +175,31 @@ __attribute__((unused)) es2panda_DynamicImportData DynamicImportDataToE2p(
     es2pandaDynamicImportData.specifier = specifier;
     es2pandaDynamicImportData.variable = variable;
     return es2pandaDynamicImportData;
+}
+
+__attribute__((unused)) es2panda_OverloadInfo *OverloadInfoToE2pPtr(ArenaAllocator *allocator,
+                                                                    const ir::OverloadInfo *overloadInfo)
+{
+    auto es2pandaOverloadInfo = allocator->New<es2panda_OverloadInfo>();
+    es2pandaOverloadInfo->minArg = overloadInfo->minArg;
+    es2pandaOverloadInfo->maxArg = overloadInfo->maxArg;
+    es2pandaOverloadInfo->needHelperOverload = overloadInfo->needHelperOverload;
+    es2pandaOverloadInfo->isDeclare = overloadInfo->isDeclare;
+    es2pandaOverloadInfo->hasRestVar = overloadInfo->hasRestVar;
+    es2pandaOverloadInfo->returnVoid = overloadInfo->returnVoid;
+    return es2pandaOverloadInfo;
+}
+
+__attribute__((unused)) es2panda_OverloadInfo OverloadInfoToE2p(const ir::OverloadInfo overloadInfo)
+{
+    es2panda_OverloadInfo es2pandaOverloadInfo;
+    es2pandaOverloadInfo.minArg = overloadInfo.minArg;
+    es2pandaOverloadInfo.maxArg = overloadInfo.maxArg;
+    es2pandaOverloadInfo.needHelperOverload = overloadInfo.needHelperOverload;
+    es2pandaOverloadInfo.isDeclare = overloadInfo.isDeclare;
+    es2pandaOverloadInfo.hasRestVar = overloadInfo.hasRestVar;
+    es2pandaOverloadInfo.returnVoid = overloadInfo.returnVoid;
+    return es2pandaOverloadInfo;
 }
 
 __attribute__((unused)) char const *ArenaStrdup(ArenaAllocator *allocator, char const *src)
@@ -221,6 +246,12 @@ extern "C" void DestroyConfig(es2panda_Config *config)
     delete cfg->options;
     delete cfg->diagnosticEngine;
     delete cfg;
+}
+
+extern "C" const es2panda_Options *ConfigGetOptions(es2panda_Config *config)
+{
+    auto options = reinterpret_cast<ConfigImpl *>(config)->options;
+    return reinterpret_cast<const es2panda_Options *>(options);
 }
 
 static void CompileJob(public_lib::Context *context, varbinder::FunctionScope *scope,
@@ -912,6 +943,7 @@ es2panda_Impl g_impl = {
 
     CreateConfig,
     DestroyConfig,
+    ConfigGetOptions,
     CreateContextFromFile,
     CreateContextFromString,
     ProceedToState,

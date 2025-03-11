@@ -27,6 +27,7 @@ set(ES2PANDA_API
 set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/varbinder/variableFlags.h
     ${GENERATED_DIR}/options.h
+    ${ES2PANDA_ROOT}/util/options.h
     ${ES2PANDA_ROOT}/lexer/regexp/regexp.h
     ${ES2PANDA_ROOT}/util/language.h
     ${GENERATED_DIR}/tokenType.h
@@ -289,11 +290,14 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/es2panda.h
     ${ES2PANDA_ROOT}/ast_verifier/ASTVerifier.h
     ${ES2PANDA_ROOT}/util/importPathManager.h
+    ${ES2PANDA_ROOT}/util/path.h
+    ${ES2PANDA_ROOT}/util/arktsconfig.h
 )
 
 set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/checker/types/typeMapping.yaml
     ${LIBGEN_DIR}/gen/headers/options.yaml
+    ${LIBGEN_DIR}/gen/headers/util/options.yaml
     ${LIBGEN_DIR}/gen/headers/ir/astNodeMapping.yaml
     ${LIBGEN_DIR}/gen/headers/varbinder/variableFlags.yaml
     ${LIBGEN_DIR}/gen/headers/ir/typed.yaml
@@ -556,6 +560,8 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/parser/program/program.yaml
     ${LIBGEN_DIR}/gen/headers/ast_verifier/ASTVerifier.yaml
     ${LIBGEN_DIR}/gen/headers/util/importPathManager.yaml
+    ${LIBGEN_DIR}/gen/headers/util/path.yaml
+    ${LIBGEN_DIR}/gen/headers/util/arktsconfig.yaml
     )
 
 
