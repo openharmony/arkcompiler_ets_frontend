@@ -238,6 +238,7 @@ cookBookTag[202] = 'Literal types are restricted(arkts-limited-literal-types)';
 cookBookTag[203] = 'exponent opartions "**" and "**=" are disabled (arkts-no-exponent-op)';
 cookBookTag[206] = '"debugger" is not supported (arkts-no-debugger-stmt)';
 cookBookTag[207] = 'Special arguments object inside functions are not supported (arkts-no-arguments-obj)';
+cookBookTag[208] = 'Tagged templates are not supported (arkts-no-tagged-templates)';
 cookBookTag[209] = 'The index expression must be of a numeric type (arkts-array-index-expr-type)';
 cookBookTag[210] = 'The switch expression type must be of type number,string or enum (arkts-switch-expr)';
 cookBookTag[211] = 'No two case constant expressions have identical values.(arkts-case-expr)';
@@ -255,4 +256,3 @@ cookBookTag[252] = '"$$" for bidirectional data binding is not supported (arkui-
 cookBookTag[253] = '"${variable}" for decorator binding is not supported (arkui-link-decorator-passing)';
 cookBookTag[254] = '"@Extend" decorator is not supported (arkui-no-extend-decorator)';
 cookBookTag[300] = 'The function type should be explicit (arkts-no-ts-like-function)';
-

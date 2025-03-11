@@ -158,4 +158,4 @@ faultDesc[FaultID.MethodOverridingField] = '"Method overriding field" to keep st
 faultDesc[FaultID.ExplicitFunctionType] = 'Explicit function type';
 faultDesc[FaultID.ClassstaticInitialization] = 'The static properties of a class need to have initial values';
 faultDesc[FaultID.AvoidUnionTypes] = 'Union types';
-
+faultDesc[FaultID.TaggedTemplates] = 'Tagged template';

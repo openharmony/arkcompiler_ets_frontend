@@ -217,7 +217,8 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.UnionType, this.handleUnionType],
     [ts.SyntaxKind.ArrayType, this.handleArrayType],
     [ts.SyntaxKind.LiteralType, this.handleLimitedLiteralType],
-    [ts.SyntaxKind.NonNullExpression, this.handleNonNullExpression]
+    [ts.SyntaxKind.NonNullExpression, this.handleNonNullExpression],
+    [ts.SyntaxKind.TaggedTemplateExpression, this.handleTaggedTemplatesExpression]
   ]);
 
   private getLineAndCharacterOfNode(node: ts.Node | ts.CommentRange): ts.LineAndCharacter {
@@ -3524,5 +3525,12 @@ export class TypeScriptLinter {
         }
       }
     });
+  }
+
+  private handleTaggedTemplatesExpression(node: ts.Node): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    this.incrementCounters(node, FaultID.TaggedTemplates);
   }
 }
