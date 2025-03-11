@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,10 +13,16 @@
  * limitations under the License.
  */
 
-function foo (p: String){}
-function foo (p: number){}
+function apply(fp: (n: int) => void) { 
+    fp(33) 
+}
 
-let cb = foo;
+class C {
+   private f(n: int) {}
 
-/* @@? 19:10 Error TypeError: Overloaded method is used as value */
-/* @@? 19:10 Error TypeError: Overloaded method is used as value */
+   test() {
+       apply(this./* @@ label */f)
+   }
+}
+
+/* @@@ label Error TypeError: Private method is used as value  */
