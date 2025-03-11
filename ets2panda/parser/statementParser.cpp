@@ -1089,8 +1089,10 @@ ir::Statement *ParserImpl::ParseLabelledStatement(const lexer::LexerPosition &po
 
 ir::Statement *ParserImpl::ParseReturnStatement()
 {
+    bool inClassInitializer =
+        (context_.Status() & ParserStatus::IN_CLASS_BODY) != 0 && (context_.Status() & ParserStatus::STATIC_BLOCK) != 0;
     if ((context_.Status() & ParserStatus::FUNCTION) == 0 &&
-        (context_.Status() & ParserStatus::PARSE_TRAILING_BLOCK) == 0) {
+        (context_.Status() & ParserStatus::PARSE_TRAILING_BLOCK) == 0 && !(inClassInitializer && IsETSParser())) {
         LogError(diagnostic::RETURN_IN_FUN_BODY);
     }
 
@@ -1105,6 +1107,9 @@ ir::Statement *ParserImpl::ParseReturnStatement()
     ir::ReturnStatement *returnStatement = nullptr;
 
     if (hasArgument) {
+        if (inClassInitializer) {
+            LogError(diagnostic::RETURN_WITH_VALUE);
+        }
         ir::Expression *expression = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
         if (expression != nullptr) {  // Error processing.
             endLoc = expression->End();

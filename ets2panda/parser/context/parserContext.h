@@ -72,6 +72,8 @@ enum class ParserStatus : uint64_t {
     PARSE_TRAILING_BLOCK = 1ULL << 38ULL,
 
     DEPENDENCY_ANALYZER_MODE = 1ULL << 39ULL,
+
+    STATIC_BLOCK = 1ULL << 40ULL
 };
 
 }  // namespace ark::es2panda::parser
