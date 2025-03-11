@@ -50,7 +50,7 @@ std::pair<varbinder::Variable *, const ETSObjectType *> ETSChecker::FindVariable
 varbinder::Variable *ETSChecker::FindVariableInGlobal(const ir::Identifier *const identifier,
                                                       const varbinder::ResolveBindingOptions options)
 {
-    return Scope()->FindInGlobal(identifier->Name(), options).variable;
+    return Scope() != nullptr ? Scope()->FindInGlobal(identifier->Name(), options).variable : nullptr;
 }
 
 bool ETSChecker::IsVariableStatic(const varbinder::Variable *var)
@@ -2351,6 +2351,8 @@ ir::ClassProperty *ETSChecker::ClassPropToImplementationProp(ir::ClassProperty *
 
     auto fieldVar = scope->InstanceFieldScope()->AddDecl(Allocator(), fieldDecl, ScriptExtension::STS);
     fieldVar->AddFlag(varbinder::VariableFlags::PROPERTY);
+    fieldVar->SetScope(scope->InstanceFieldScope());
+
     classProp->Key()->SetVariable(fieldVar);
     fieldVar->SetTsType(classProp->TsType());
 
