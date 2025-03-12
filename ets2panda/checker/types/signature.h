@@ -236,6 +236,11 @@ public:
         return 0;
     }
 
+    [[nodiscard]] bool HasProtectionFlagInternal() const noexcept
+    {
+        return (flags_ & SignatureFlags::INTERNAL) != 0;
+    }
+
     [[nodiscard]] SignatureFlags Flags() const noexcept
     {
         return flags_;
