@@ -535,12 +535,13 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
             return parseClassMethod(ident);
         }
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
+            const auto startPosAmbient = Lexer()->GetToken().Start();
             auto const savePos = Lexer()->Save();
             Lexer()->NextToken();
             if (Lexer()->GetToken().Ident().Is("Symbol")) {
                 Lexer()->Rewind(savePos);
             } else {
-                return ParseAmbientSignature();
+                return ParseAmbientSignature(startPosAmbient);
             }
         }
     }
@@ -1699,10 +1700,8 @@ ir::ModifierFlags ETSParser::ParseTypeVarianceModifier(TypeAnnotationParsingOpti
     }
 }
 
-ir::AstNode *ETSParser::ParseAmbientSignature()
+ir::AstNode *ETSParser::ParseAmbientSignature(const lexer::SourcePosition &startPos)
 {
-    auto const startPos = Lexer()->GetToken().Start();
-
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         // ambient_indexer_9.sts
         LogUnexpectedToken(Lexer()->GetToken());

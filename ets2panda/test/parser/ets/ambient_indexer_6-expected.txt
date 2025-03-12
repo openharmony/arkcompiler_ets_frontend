@@ -137,13 +137,13 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1,
+                  "line": 17,
+                  "column": 5,
                   "program": "ambient_indexer_6.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 3,
+                  "line": 17,
+                  "column": 29,
                   "program": "ambient_indexer_6.sts"
                 }
               }
@@ -163,13 +163,13 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1,
+                      "line": 17,
+                      "column": 5,
                       "program": "ambient_indexer_6.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 3,
+                      "line": 17,
+                      "column": 29,
                       "program": "ambient_indexer_6.sts"
                     }
                   }
@@ -193,39 +193,39 @@
                             "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 1,
-                                "column": 3,
+                                "line": 17,
+                                "column": 5,
                                 "program": "ambient_indexer_6.sts"
                               },
                               "end": {
-                                "line": 1,
-                                "column": 3,
+                                "line": 17,
+                                "column": 29,
                                 "program": "ambient_indexer_6.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
-                              "line": 1,
-                              "column": 3,
+                              "line": 17,
+                              "column": 5,
                               "program": "ambient_indexer_6.sts"
                             },
                             "end": {
-                              "line": 1,
-                              "column": 3,
+                              "line": 17,
+                              "column": 29,
                               "program": "ambient_indexer_6.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
-                            "line": 1,
-                            "column": 3,
+                            "line": 17,
+                            "column": 5,
                             "program": "ambient_indexer_6.sts"
                           },
                           "end": {
-                            "line": 1,
-                            "column": 3,
+                            "line": 17,
+                            "column": 29,
                             "program": "ambient_indexer_6.sts"
                           }
                         }
@@ -233,26 +233,26 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 1,
-                          "column": 3,
+                          "line": 17,
+                          "column": 5,
                           "program": "ambient_indexer_6.sts"
                         },
                         "end": {
-                          "line": 1,
-                          "column": 3,
+                          "line": 17,
+                          "column": 29,
                           "program": "ambient_indexer_6.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
-                        "line": 1,
-                        "column": 3,
+                        "line": 17,
+                        "column": 5,
                         "program": "ambient_indexer_6.sts"
                       },
                       "end": {
-                        "line": 1,
-                        "column": 3,
+                        "line": 17,
+                        "column": 29,
                         "program": "ambient_indexer_6.sts"
                       }
                     }
@@ -272,39 +272,39 @@
                             "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 1,
-                                "column": 3,
+                                "line": 17,
+                                "column": 5,
                                 "program": "ambient_indexer_6.sts"
                               },
                               "end": {
-                                "line": 1,
-                                "column": 3,
+                                "line": 17,
+                                "column": 29,
                                 "program": "ambient_indexer_6.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
-                              "line": 1,
-                              "column": 3,
+                              "line": 17,
+                              "column": 5,
                               "program": "ambient_indexer_6.sts"
                             },
                             "end": {
-                              "line": 1,
-                              "column": 3,
+                              "line": 17,
+                              "column": 29,
                               "program": "ambient_indexer_6.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
-                            "line": 1,
-                            "column": 3,
+                            "line": 17,
+                            "column": 5,
                             "program": "ambient_indexer_6.sts"
                           },
                           "end": {
-                            "line": 1,
-                            "column": 3,
+                            "line": 17,
+                            "column": 29,
                             "program": "ambient_indexer_6.sts"
                           }
                         }
@@ -312,26 +312,26 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 1,
-                          "column": 3,
+                          "line": 17,
+                          "column": 5,
                           "program": "ambient_indexer_6.sts"
                         },
                         "end": {
-                          "line": 1,
-                          "column": 3,
+                          "line": 17,
+                          "column": 29,
                           "program": "ambient_indexer_6.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
-                        "line": 1,
-                        "column": 3,
+                        "line": 17,
+                        "column": 5,
                         "program": "ambient_indexer_6.sts"
                       },
                       "end": {
-                        "line": 1,
-                        "column": 3,
+                        "line": 17,
+                        "column": 29,
                         "program": "ambient_indexer_6.sts"
                       }
                     }
@@ -341,13 +341,13 @@
                   "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 3,
+                      "line": 17,
+                      "column": 5,
                       "program": "ambient_indexer_6.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 3,
+                      "line": 17,
+                      "column": 29,
                       "program": "ambient_indexer_6.sts"
                     }
                   }
@@ -355,26 +355,26 @@
                 "declare": true,
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 3,
+                    "line": 17,
+                    "column": 5,
                     "program": "ambient_indexer_6.sts"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 3,
+                    "line": 17,
+                    "column": 29,
                     "program": "ambient_indexer_6.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 3,
+                  "line": 17,
+                  "column": 5,
                   "program": "ambient_indexer_6.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 3,
+                  "line": 17,
+                  "column": 29,
                   "program": "ambient_indexer_6.sts"
                 }
               }
@@ -384,7 +384,7 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 6,
+                "column": 5,
                 "program": "ambient_indexer_6.sts"
               },
               "end": {
@@ -402,13 +402,13 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1,
+                  "line": 17,
+                  "column": 5,
                   "program": "ambient_indexer_6.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 3,
+                  "line": 17,
+                  "column": 29,
                   "program": "ambient_indexer_6.sts"
                 }
               }
@@ -428,13 +428,13 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1,
+                      "line": 17,
+                      "column": 5,
                       "program": "ambient_indexer_6.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 3,
+                      "line": 17,
+                      "column": 29,
                       "program": "ambient_indexer_6.sts"
                     }
                   }
@@ -458,39 +458,39 @@
                             "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 1,
-                                "column": 3,
+                                "line": 17,
+                                "column": 5,
                                 "program": "ambient_indexer_6.sts"
                               },
                               "end": {
-                                "line": 1,
-                                "column": 3,
+                                "line": 17,
+                                "column": 29,
                                 "program": "ambient_indexer_6.sts"
                               }
                             }
                           },
                           "loc": {
                             "start": {
-                              "line": 1,
-                              "column": 3,
+                              "line": 17,
+                              "column": 5,
                               "program": "ambient_indexer_6.sts"
                             },
                             "end": {
-                              "line": 1,
-                              "column": 3,
+                              "line": 17,
+                              "column": 29,
                               "program": "ambient_indexer_6.sts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
-                            "line": 1,
-                            "column": 3,
+                            "line": 17,
+                            "column": 5,
                             "program": "ambient_indexer_6.sts"
                           },
                           "end": {
-                            "line": 1,
-                            "column": 3,
+                            "line": 17,
+                            "column": 29,
                             "program": "ambient_indexer_6.sts"
                           }
                         }
@@ -498,26 +498,26 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 1,
-                          "column": 3,
+                          "line": 17,
+                          "column": 5,
                           "program": "ambient_indexer_6.sts"
                         },
                         "end": {
-                          "line": 1,
-                          "column": 3,
+                          "line": 17,
+                          "column": 29,
                           "program": "ambient_indexer_6.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
-                        "line": 1,
-                        "column": 3,
+                        "line": 17,
+                        "column": 5,
                         "program": "ambient_indexer_6.sts"
                       },
                       "end": {
-                        "line": 1,
-                        "column": 3,
+                        "line": 17,
+                        "column": 29,
                         "program": "ambient_indexer_6.sts"
                       }
                     }
@@ -533,39 +533,39 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 1,
-                          "column": 3,
+                          "line": 17,
+                          "column": 5,
                           "program": "ambient_indexer_6.sts"
                         },
                         "end": {
-                          "line": 1,
-                          "column": 3,
+                          "line": 17,
+                          "column": 29,
                           "program": "ambient_indexer_6.sts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
-                        "line": 1,
-                        "column": 3,
+                        "line": 17,
+                        "column": 5,
                         "program": "ambient_indexer_6.sts"
                       },
                       "end": {
-                        "line": 1,
-                        "column": 3,
+                        "line": 17,
+                        "column": 29,
                         "program": "ambient_indexer_6.sts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 3,
+                      "line": 17,
+                      "column": 5,
                       "program": "ambient_indexer_6.sts"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 3,
+                      "line": 17,
+                      "column": 29,
                       "program": "ambient_indexer_6.sts"
                     }
                   }
@@ -573,26 +573,26 @@
                 "declare": true,
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 3,
+                    "line": 17,
+                    "column": 5,
                     "program": "ambient_indexer_6.sts"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 3,
+                    "line": 17,
+                    "column": 29,
                     "program": "ambient_indexer_6.sts"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 3,
+                  "line": 17,
+                  "column": 5,
                   "program": "ambient_indexer_6.sts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 3,
+                  "line": 17,
+                  "column": 29,
                   "program": "ambient_indexer_6.sts"
                 }
               }
@@ -602,7 +602,7 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 6,
+                "column": 5,
                 "program": "ambient_indexer_6.sts"
               },
               "end": {

@@ -18,6 +18,7 @@
 
 #include "ir/expressions/dummyNode.h"
 #include "ir/astNode.h"
+#include "compiler/lowering/util.h"
 
 namespace ark::es2panda::compiler {
 std::string_view AmbientLowering::Name() const
@@ -73,7 +74,9 @@ ir::MethodDefinition *CreateMethodFunctionDefinition(ir::DummyNode *node, public
 
     auto methodDefinition = parser->CreateFormattedClassMethodDefinition(sourceCode);
 
-    methodDefinition->SetRange(node->Range());
+    // NOTE(kaskov): #23399 It is temporary solution, we set default SourcePosition in all nodes in generated code
+    compiler::SetSourceRangesRecursively(methodDefinition, node->Range());
+
     methodDefinition->SetParent(node->Parent());
     methodDefinition->AddModifier(ir::ModifierFlags::DECLARE);
     methodDefinition->AsMethodDefinition()->Function()->AddModifier(ir::ModifierFlags::DECLARE);
