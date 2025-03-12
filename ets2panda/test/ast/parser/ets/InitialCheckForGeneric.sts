@@ -28,4 +28,3 @@ function main(): void {
 
 /* @@@ label Warning Warning: Variable 'u' is used before being assigned.  */
 /* @@@ label1 Warning Warning: Variable 'v' is used before being assigned.  */
-/* @@@ label1 Error TypeError: There were errors during assign analysis (2)  */

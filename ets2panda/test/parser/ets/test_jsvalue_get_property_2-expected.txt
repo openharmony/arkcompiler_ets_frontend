@@ -585,3 +585,4 @@
     }
   }
 }
+Warning: Variable 'v' is used before being assigned. [test_jsvalue_get_property_2.sts:17:21]

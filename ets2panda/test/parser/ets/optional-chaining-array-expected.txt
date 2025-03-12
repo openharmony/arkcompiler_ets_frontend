@@ -1959,3 +1959,4 @@
     }
   }
 }
+Warning: Variable 'arr2' is used before being assigned. [optional-chaining-array.sts:20:13]

@@ -113,6 +113,9 @@ ast/parser/ets/lambda-type-inference-neg2.sts
 # after the fix the test fails to detect another type error
 ast/parser/ets/unexpected_token_51.sts
 
+# #21051 should be log warnings, but there aren't
+ast/compiler/ets/not_initialized_variable/import_types.sts
+
 # Issue: #23134
 # Can't insert "/* TypeError: Postcondition check failed for DefaultParametersLowering */" test directive
 ast/parser/ets/InvalidExpressions.sts

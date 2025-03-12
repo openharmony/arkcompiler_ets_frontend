@@ -806,3 +806,4 @@
     }
   }
 }
+Warning: Variable 'func' is used before being assigned. [FunctionType2.sts:23:11]

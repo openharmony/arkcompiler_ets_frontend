@@ -3726,3 +3726,4 @@
     }
   }
 }
+Warning: Variable 'fs' is used before being assigned. [promiseCasting.sts:19:12]

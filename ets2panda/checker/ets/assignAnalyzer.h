@@ -176,7 +176,6 @@ private:
     bool hasTryFinallyBlock_ {};
     NodeIdMap nodeIdMap_;
     int numErrors_ {};
-    lexer::SourcePosition lastWarningPos_ {};
     ArenaSet<const ir::AstNode *> foundErrors_;
 };
 
