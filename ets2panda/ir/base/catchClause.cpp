@@ -93,4 +93,22 @@ checker::VerifiedType CatchClause::Check(checker::ETSChecker *checker)
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+CatchClause::CatchClause(CatchClause const &other, ArenaAllocator *allocator) : TypedStatement(other)
+{
+    param_ = other.param_ == nullptr ? nullptr : other.param_->Clone(allocator, this)->AsExpression();
+    body_ = other.body_ == nullptr ? nullptr : other.body_->Clone(allocator, this)->AsBlockStatement();
+}
+
+CatchClause *CatchClause::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const clone = allocator->New<CatchClause>(*this, allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    clone->SetRange(Range());
+    return clone;
+}
+
 }  // namespace ark::es2panda::ir

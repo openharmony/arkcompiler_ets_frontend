@@ -119,4 +119,31 @@ checker::VerifiedType TryStatement::Check([[maybe_unused]] checker::ETSChecker *
     return {this, checker->GetAnalyzer()->Check(this)};
 }
 
+TryStatement::TryStatement(TryStatement const &other, ArenaAllocator *allocator)
+    : Statement(other),
+      catchClauses_(allocator->Adapter()),
+      finalizerInsertions_(allocator->Adapter()),
+      finallyCanCompleteNormally_(other.finallyCanCompleteNormally_)
+{
+    block_ = other.block_ == nullptr ? nullptr : other.block_->Clone(allocator, this)->AsBlockStatement();
+    for (auto &cc : other.catchClauses_) {
+        catchClauses_.push_back(cc == nullptr ? nullptr : cc->Clone(allocator, this)->AsCatchClause());
+    }
+    finalizer_ = other.finalizer_ == nullptr ? nullptr : other.finalizer_->Clone(allocator, this)->AsBlockStatement();
+    for (auto &[label, st] : other.finalizerInsertions_) {
+        finalizerInsertions_.emplace_back(label, st);
+    }
+}
+
+TryStatement *TryStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const clone = allocator->New<TryStatement>(*this, allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    clone->SetRange(Range());
+    return clone;
+}
+
 }  // namespace ark::es2panda::ir
