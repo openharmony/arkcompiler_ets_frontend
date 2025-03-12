@@ -1,0 +1,1 @@
+SyntaxError: Expected a ')' [test-rest-parameter.js:17:9]
