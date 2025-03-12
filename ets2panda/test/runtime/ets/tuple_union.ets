@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,12 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- function main(){
-  let a:number|undefined = undefined;
-  a!++;
- }
 
- /* @@? 17:3 Warning Warning: Bad operand type, the operand of the non-nullish expression is 'null' or 'undefined'. */
- /* @@? 17:3 Error TypeError: Cannot cast 'null' or 'undefined' to non-nullish type. */
- /* @@? 17:3 Error TypeError: Type 'Double' cannot be assigned to type 'undefined' */
+
+let v: [string]|null = ["A"]
 
