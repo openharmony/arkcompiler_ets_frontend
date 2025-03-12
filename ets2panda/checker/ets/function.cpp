@@ -319,7 +319,8 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
             ES2PANDA_ASSERT(argument->IsArrowFunctionExpression());
             auto *const arrowFuncExpr = argument->AsArrowFunctionExpression();
             ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
-            if (CheckLambdaAssignable(substitutedSig->Function()->Params()[index], lambda)) {
+            if (CheckLambdaAssignable(substitutedSig->Function()->Params()[index], lambda) ||
+                ValidateSignatureInvocationContext(substitutedSig, argument, index, flags)) {
                 continue;
             }
             return false;

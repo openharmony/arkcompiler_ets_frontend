@@ -1,0 +1,1208 @@
+{
+  "type": "Program",
+  "statements": [
+    {
+      "type": "ClassDeclaration",
+      "definition": {
+        "id": {
+          "type": "Identifier",
+          "name": "a",
+          "decorators": [],
+          "loc": {
+            "start": {
+              "line": 1,
+              "column": 7,
+              "program": "objectMatchArrowFunction.sts"
+            },
+            "end": {
+              "line": 1,
+              "column": 8,
+              "program": "objectMatchArrowFunction.sts"
+            }
+          }
+        },
+        "superClass": null,
+        "implements": [],
+        "body": [
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "on",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 2,
+                  "column": 12,
+                  "program": "objectMatchArrowFunction.sts"
+                },
+                "end": {
+                  "line": 2,
+                  "column": 14,
+                  "program": "objectMatchArrowFunction.sts"
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": false,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "on",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 2,
+                      "column": 12,
+                      "program": "objectMatchArrowFunction.sts"
+                    },
+                    "end": {
+                      "line": 2,
+                      "column": 14,
+                      "program": "objectMatchArrowFunction.sts"
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [
+                  {
+                    "type": "ETSParameterExpression",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "event",
+                      "typeAnnotation": {
+                        "type": "ETSTypeReference",
+                        "part": {
+                          "type": "ETSTypeReferencePart",
+                          "name": {
+                            "type": "Identifier",
+                            "name": "string",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 2,
+                                "column": 21,
+                                "program": "objectMatchArrowFunction.sts"
+                              },
+                              "end": {
+                                "line": 2,
+                                "column": 27,
+                                "program": "objectMatchArrowFunction.sts"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 2,
+                              "column": 21,
+                              "program": "objectMatchArrowFunction.sts"
+                            },
+                            "end": {
+                              "line": 2,
+                              "column": 28,
+                              "program": "objectMatchArrowFunction.sts"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 2,
+                            "column": 21,
+                            "program": "objectMatchArrowFunction.sts"
+                          },
+                          "end": {
+                            "line": 2,
+                            "column": 28,
+                            "program": "objectMatchArrowFunction.sts"
+                          }
+                        }
+                      },
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 2,
+                          "column": 15,
+                          "program": "objectMatchArrowFunction.sts"
+                        },
+                        "end": {
+                          "line": 2,
+                          "column": 28,
+                          "program": "objectMatchArrowFunction.sts"
+                        }
+                      }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 2,
+                        "column": 15,
+                        "program": "objectMatchArrowFunction.sts"
+                      },
+                      "end": {
+                        "line": 2,
+                        "column": 28,
+                        "program": "objectMatchArrowFunction.sts"
+                      }
+                    }
+                  },
+                  {
+                    "type": "ETSParameterExpression",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "callback",
+                      "typeAnnotation": {
+                        "type": "ETSTypeReference",
+                        "part": {
+                          "type": "ETSTypeReferencePart",
+                          "name": {
+                            "type": "Identifier",
+                            "name": "object",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 2,
+                                "column": 39,
+                                "program": "objectMatchArrowFunction.sts"
+                              },
+                              "end": {
+                                "line": 2,
+                                "column": 45,
+                                "program": "objectMatchArrowFunction.sts"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 2,
+                              "column": 39,
+                              "program": "objectMatchArrowFunction.sts"
+                            },
+                            "end": {
+                              "line": 2,
+                              "column": 46,
+                              "program": "objectMatchArrowFunction.sts"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 2,
+                            "column": 39,
+                            "program": "objectMatchArrowFunction.sts"
+                          },
+                          "end": {
+                            "line": 2,
+                            "column": 46,
+                            "program": "objectMatchArrowFunction.sts"
+                          }
+                        }
+                      },
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 2,
+                          "column": 29,
+                          "program": "objectMatchArrowFunction.sts"
+                        },
+                        "end": {
+                          "line": 2,
+                          "column": 46,
+                          "program": "objectMatchArrowFunction.sts"
+                        }
+                      }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 2,
+                        "column": 29,
+                        "program": "objectMatchArrowFunction.sts"
+                      },
+                      "end": {
+                        "line": 2,
+                        "column": 46,
+                        "program": "objectMatchArrowFunction.sts"
+                      }
+                    }
+                  }
+                ],
+                "returnType": {
+                  "type": "ETSPrimitiveType",
+                  "loc": {
+                    "start": {
+                      "line": 2,
+                      "column": 48,
+                      "program": "objectMatchArrowFunction.sts"
+                    },
+                    "end": {
+                      "line": 2,
+                      "column": 52,
+                      "program": "objectMatchArrowFunction.sts"
+                    }
+                  }
+                },
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 2,
+                      "column": 52,
+                      "program": "objectMatchArrowFunction.sts"
+                    },
+                    "end": {
+                      "line": 2,
+                      "column": 54,
+                      "program": "objectMatchArrowFunction.sts"
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 2,
+                    "column": 14,
+                    "program": "objectMatchArrowFunction.sts"
+                  },
+                  "end": {
+                    "line": 2,
+                    "column": 54,
+                    "program": "objectMatchArrowFunction.sts"
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 2,
+                  "column": 14,
+                  "program": "objectMatchArrowFunction.sts"
+                },
+                "end": {
+                  "line": 2,
+                  "column": 54,
+                  "program": "objectMatchArrowFunction.sts"
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 2,
+                "column": 5,
+                "program": "objectMatchArrowFunction.sts"
+              },
+              "end": {
+                "line": 2,
+                "column": 54,
+                "program": "objectMatchArrowFunction.sts"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "constructor",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 10,
+                  "program": "objectMatchArrowFunction.sts"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 10,
+                  "program": "objectMatchArrowFunction.sts"
+                }
+              }
+            },
+            "kind": "constructor",
+            "static": false,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "constructor",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 10,
+                      "program": "objectMatchArrowFunction.sts"
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 10,
+                      "program": "objectMatchArrowFunction.sts"
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 10,
+                      "program": "objectMatchArrowFunction.sts"
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 10,
+                      "program": "objectMatchArrowFunction.sts"
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 10,
+                    "program": "objectMatchArrowFunction.sts"
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 10,
+                    "program": "objectMatchArrowFunction.sts"
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 10,
+                  "program": "objectMatchArrowFunction.sts"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 10,
+                  "program": "objectMatchArrowFunction.sts"
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": null
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": null
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 1,
+            "column": 9,
+            "program": "objectMatchArrowFunction.sts"
+          },
+          "end": {
+            "line": 4,
+            "column": 4,
+            "program": "objectMatchArrowFunction.sts"
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 1,
+          "program": "objectMatchArrowFunction.sts"
+        },
+        "end": {
+          "line": 4,
+          "column": 4,
+          "program": "objectMatchArrowFunction.sts"
+        }
+      }
+    },
+    {
+      "type": "ClassDeclaration",
+      "definition": {
+        "id": {
+          "type": "Identifier",
+          "name": "ETSGLOBAL",
+          "decorators": [],
+          "loc": {
+            "start": {
+              "line": 1,
+              "column": 1,
+              "program": "objectMatchArrowFunction.sts"
+            },
+            "end": {
+              "line": 1,
+              "column": 1,
+              "program": "objectMatchArrowFunction.sts"
+            }
+          }
+        },
+        "superClass": null,
+        "implements": [],
+        "body": [
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "objectMatchArrowFunction.sts"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "objectMatchArrowFunction.sts"
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "_$init$_",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "_$init$_",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "AssignmentExpression",
+                        "operator": "=",
+                        "left": {
+                          "type": "Identifier",
+                          "name": "temp",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 4,
+                              "column": 5,
+                              "program": "objectMatchArrowFunction.sts"
+                            },
+                            "end": {
+                              "line": 4,
+                              "column": 9,
+                              "program": "objectMatchArrowFunction.sts"
+                            }
+                          }
+                        },
+                        "right": {
+                          "type": "ETSNewClassInstanceExpression",
+                          "typeReference": {
+                            "type": "ETSTypeReference",
+                            "part": {
+                              "type": "ETSTypeReferencePart",
+                              "name": {
+                                "type": "Identifier",
+                                "name": "a",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 4,
+                                    "column": 18,
+                                    "program": "objectMatchArrowFunction.sts"
+                                  },
+                                  "end": {
+                                    "line": 4,
+                                    "column": 19,
+                                    "program": "objectMatchArrowFunction.sts"
+                                  }
+                                }
+                              },
+                              "loc": {
+                                "start": {
+                                  "line": 4,
+                                  "column": 18,
+                                  "program": "objectMatchArrowFunction.sts"
+                                },
+                                "end": {
+                                  "line": 4,
+                                  "column": 20,
+                                  "program": "objectMatchArrowFunction.sts"
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 4,
+                                "column": 18,
+                                "program": "objectMatchArrowFunction.sts"
+                              },
+                              "end": {
+                                "line": 4,
+                                "column": 20,
+                                "program": "objectMatchArrowFunction.sts"
+                              }
+                            }
+                          },
+                          "arguments": [],
+                          "loc": {
+                            "start": {
+                              "line": 4,
+                              "column": 14,
+                              "program": "objectMatchArrowFunction.sts"
+                            },
+                            "end": {
+                              "line": 4,
+                              "column": 22,
+                              "program": "objectMatchArrowFunction.sts"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 4,
+                            "column": 5,
+                            "program": "objectMatchArrowFunction.sts"
+                          },
+                          "end": {
+                            "line": 4,
+                            "column": 22,
+                            "program": "objectMatchArrowFunction.sts"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 4,
+                          "column": 5,
+                          "program": "objectMatchArrowFunction.sts"
+                        },
+                        "end": {
+                          "line": 4,
+                          "column": 22,
+                          "program": "objectMatchArrowFunction.sts"
+                        }
+                      }
+                    },
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "temp",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 5,
+                                "column": 1,
+                                "program": "objectMatchArrowFunction.sts"
+                              },
+                              "end": {
+                                "line": 5,
+                                "column": 5,
+                                "program": "objectMatchArrowFunction.sts"
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "on",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 5,
+                                "column": 6,
+                                "program": "objectMatchArrowFunction.sts"
+                              },
+                              "end": {
+                                "line": 5,
+                                "column": 8,
+                                "program": "objectMatchArrowFunction.sts"
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
+                          "loc": {
+                            "start": {
+                              "line": 5,
+                              "column": 1,
+                              "program": "objectMatchArrowFunction.sts"
+                            },
+                            "end": {
+                              "line": 5,
+                              "column": 8,
+                              "program": "objectMatchArrowFunction.sts"
+                            }
+                          }
+                        },
+                        "arguments": [
+                          {
+                            "type": "StringLiteral",
+                            "value": "qqqqq",
+                            "loc": {
+                              "start": {
+                                "line": 5,
+                                "column": 9,
+                                "program": "objectMatchArrowFunction.sts"
+                              },
+                              "end": {
+                                "line": 5,
+                                "column": 16,
+                                "program": "objectMatchArrowFunction.sts"
+                              }
+                            }
+                          },
+                          {
+                            "type": "ArrowFunctionExpression",
+                            "function": {
+                              "type": "ScriptFunction",
+                              "id": null,
+                              "generator": false,
+                              "async": false,
+                              "expression": false,
+                              "params": [
+                                {
+                                  "type": "ETSParameterExpression",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "args",
+                                    "typeAnnotation": {
+                                      "type": "ETSTypeReference",
+                                      "part": {
+                                        "type": "ETSTypeReferencePart",
+                                        "name": {
+                                          "type": "Identifier",
+                                          "name": "Array",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 5,
+                                              "column": 23,
+                                              "program": "objectMatchArrowFunction.sts"
+                                            },
+                                            "end": {
+                                              "line": 5,
+                                              "column": 28,
+                                              "program": "objectMatchArrowFunction.sts"
+                                            }
+                                          }
+                                        },
+                                        "typeParams": {
+                                          "type": "TSTypeParameterInstantiation",
+                                          "params": [
+                                            {
+                                              "type": "ETSTypeReference",
+                                              "part": {
+                                                "type": "ETSTypeReferencePart",
+                                                "name": {
+                                                  "type": "Identifier",
+                                                  "name": "Object",
+                                                  "decorators": [],
+                                                  "loc": {
+                                                    "start": {
+                                                      "line": 5,
+                                                      "column": 29,
+                                                      "program": "objectMatchArrowFunction.sts"
+                                                    },
+                                                    "end": {
+                                                      "line": 5,
+                                                      "column": 35,
+                                                      "program": "objectMatchArrowFunction.sts"
+                                                    }
+                                                  }
+                                                },
+                                                "loc": {
+                                                  "start": {
+                                                    "line": 5,
+                                                    "column": 29,
+                                                    "program": "objectMatchArrowFunction.sts"
+                                                  },
+                                                  "end": {
+                                                    "line": 5,
+                                                    "column": 36,
+                                                    "program": "objectMatchArrowFunction.sts"
+                                                  }
+                                                }
+                                              },
+                                              "loc": {
+                                                "start": {
+                                                  "line": 5,
+                                                  "column": 29,
+                                                  "program": "objectMatchArrowFunction.sts"
+                                                },
+                                                "end": {
+                                                  "line": 5,
+                                                  "column": 36,
+                                                  "program": "objectMatchArrowFunction.sts"
+                                                }
+                                              }
+                                            }
+                                          ],
+                                          "loc": {
+                                            "start": {
+                                              "line": 5,
+                                              "column": 28,
+                                              "program": "objectMatchArrowFunction.sts"
+                                            },
+                                            "end": {
+                                              "line": 5,
+                                              "column": 36,
+                                              "program": "objectMatchArrowFunction.sts"
+                                            }
+                                          }
+                                        },
+                                        "loc": {
+                                          "start": {
+                                            "line": 5,
+                                            "column": 23,
+                                            "program": "objectMatchArrowFunction.sts"
+                                          },
+                                          "end": {
+                                            "line": 5,
+                                            "column": 37,
+                                            "program": "objectMatchArrowFunction.sts"
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 5,
+                                          "column": 23,
+                                          "program": "objectMatchArrowFunction.sts"
+                                        },
+                                        "end": {
+                                          "line": 5,
+                                          "column": 37,
+                                          "program": "objectMatchArrowFunction.sts"
+                                        }
+                                      }
+                                    },
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 5,
+                                        "column": 18,
+                                        "program": "objectMatchArrowFunction.sts"
+                                      },
+                                      "end": {
+                                        "line": 5,
+                                        "column": 37,
+                                        "program": "objectMatchArrowFunction.sts"
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 5,
+                                      "column": 18,
+                                      "program": "objectMatchArrowFunction.sts"
+                                    },
+                                    "end": {
+                                      "line": 5,
+                                      "column": 37,
+                                      "program": "objectMatchArrowFunction.sts"
+                                    }
+                                  }
+                                }
+                              ],
+                              "body": {
+                                "type": "BlockStatement",
+                                "statements": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 5,
+                                    "column": 41,
+                                    "program": "objectMatchArrowFunction.sts"
+                                  },
+                                  "end": {
+                                    "line": 5,
+                                    "column": 43,
+                                    "program": "objectMatchArrowFunction.sts"
+                                  }
+                                }
+                              },
+                              "loc": {
+                                "start": {
+                                  "line": 5,
+                                  "column": 17,
+                                  "program": "objectMatchArrowFunction.sts"
+                                },
+                                "end": {
+                                  "line": 5,
+                                  "column": 43,
+                                  "program": "objectMatchArrowFunction.sts"
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 5,
+                                "column": 17,
+                                "program": "objectMatchArrowFunction.sts"
+                              },
+                              "end": {
+                                "line": 5,
+                                "column": 43,
+                                "program": "objectMatchArrowFunction.sts"
+                              }
+                            }
+                          }
+                        ],
+                        "optional": false,
+                        "loc": {
+                          "start": {
+                            "line": 5,
+                            "column": 1,
+                            "program": "objectMatchArrowFunction.sts"
+                          },
+                          "end": {
+                            "line": 5,
+                            "column": 44,
+                            "program": "objectMatchArrowFunction.sts"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 5,
+                          "column": 1,
+                          "program": "objectMatchArrowFunction.sts"
+                        },
+                        "end": {
+                          "line": 5,
+                          "column": 45,
+                          "program": "objectMatchArrowFunction.sts"
+                        }
+                      }
+                    }
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "objectMatchArrowFunction.sts"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "objectMatchArrowFunction.sts"
+              }
+            }
+          },
+          {
+            "type": "ClassProperty",
+            "key": {
+              "type": "Identifier",
+              "name": "temp",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 4,
+                  "column": 5,
+                  "program": "objectMatchArrowFunction.sts"
+                },
+                "end": {
+                  "line": 4,
+                  "column": 9,
+                  "program": "objectMatchArrowFunction.sts"
+                }
+              }
+            },
+            "accessibility": "public",
+            "static": true,
+            "readonly": false,
+            "declare": false,
+            "optional": false,
+            "computed": false,
+            "typeAnnotation": {
+              "type": "ETSTypeReference",
+              "part": {
+                "type": "ETSTypeReferencePart",
+                "name": {
+                  "type": "Identifier",
+                  "name": "a",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 4,
+                      "column": 10,
+                      "program": "objectMatchArrowFunction.sts"
+                    },
+                    "end": {
+                      "line": 4,
+                      "column": 11,
+                      "program": "objectMatchArrowFunction.sts"
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 4,
+                    "column": 10,
+                    "program": "objectMatchArrowFunction.sts"
+                  },
+                  "end": {
+                    "line": 4,
+                    "column": 13,
+                    "program": "objectMatchArrowFunction.sts"
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 4,
+                  "column": 10,
+                  "program": "objectMatchArrowFunction.sts"
+                },
+                "end": {
+                  "line": 4,
+                  "column": 13,
+                  "program": "objectMatchArrowFunction.sts"
+                }
+              }
+            },
+            "definite": false,
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 4,
+                "column": 5,
+                "program": "objectMatchArrowFunction.sts"
+              },
+              "end": {
+                "line": 4,
+                "column": 22,
+                "program": "objectMatchArrowFunction.sts"
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 1,
+            "column": 1,
+            "program": "objectMatchArrowFunction.sts"
+          },
+          "end": {
+            "line": 1,
+            "column": 1,
+            "program": "objectMatchArrowFunction.sts"
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 1,
+          "program": "objectMatchArrowFunction.sts"
+        },
+        "end": {
+          "line": 1,
+          "column": 1,
+          "program": "objectMatchArrowFunction.sts"
+        }
+      }
+    }
+  ],
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 1,
+      "program": "objectMatchArrowFunction.sts"
+    },
+    "end": {
+      "line": 5,
+      "column": 45,
+      "program": "objectMatchArrowFunction.sts"
+    }
+  }
+}

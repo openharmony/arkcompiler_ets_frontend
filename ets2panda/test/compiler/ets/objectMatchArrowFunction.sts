@@ -1,0 +1,5 @@
+class a {
+    public on(event:string, callback: object) :void{}
+}
+let temp:a = new a();
+temp.on("qqqqq",(args:Array<Object>) => {});
