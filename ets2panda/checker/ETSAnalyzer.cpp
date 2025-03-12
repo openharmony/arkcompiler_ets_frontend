@@ -1030,6 +1030,26 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
     return expr->SetTsType(smartType);
 }
 
+static checker::Type *HandleSubstitution(ETSChecker *checker, ir::AssignmentExpression *expr, Type *const leftType)
+{
+    bool possibleInferredTypeOfArray =
+        leftType->IsETSArrayType() || leftType->IsETSTupleType() || leftType->IsETSUnionType();
+    if (expr->Right()->IsArrayExpression() && possibleInferredTypeOfArray) {
+        checker->ModifyPreferredType(expr->Right()->AsArrayExpression(), leftType);
+    }
+
+    if (expr->Right()->IsObjectExpression()) {
+        expr->Right()->AsObjectExpression()->SetPreferredType(leftType);
+    }
+
+    if (expr->Right()->IsArrowFunctionExpression() && leftType->IsETSArrowType() &&
+        !leftType->AsETSFunctionType()->CallSignaturesOfMethodOrArrow().empty()) {
+        checker->TryInferTypeForLambdaTypeAlias(expr, leftType->AsETSFunctionType());
+    }
+
+    return expr->Right()->Check(checker);
+}
+
 std::tuple<Type *, ir::Expression *> ETSAnalyzer::CheckAssignmentExprOperatorType(ir::AssignmentExpression *expr,
                                                                                   Type *const leftType) const
 {
@@ -1059,24 +1079,7 @@ std::tuple<Type *, ir::Expression *> ETSAnalyzer::CheckAssignmentExprOperatorTyp
             break;
         }
         case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {
-            if (leftType->IsETSArrayType() && expr->Right()->IsArrayExpression()) {
-                checker->ModifyPreferredType(expr->Right()->AsArrayExpression(), leftType);
-            }
-
-            if (leftType->IsETSTupleType() && expr->Right()->IsArrayExpression()) {
-                checker->ModifyPreferredType(expr->Right()->AsArrayExpression(), leftType);
-            }
-
-            if (expr->Right()->IsObjectExpression()) {
-                expr->Right()->AsObjectExpression()->SetPreferredType(leftType);
-            }
-
-            if (expr->Right()->IsArrowFunctionExpression() && leftType->IsETSArrowType() &&
-                !leftType->AsETSFunctionType()->CallSignaturesOfMethodOrArrow().empty()) {
-                checker->TryInferTypeForLambdaTypeAlias(expr, leftType->AsETSFunctionType());
-            }
-
-            sourceType = expr->Right()->Check(checker);
+            sourceType = HandleSubstitution(checker, expr, leftType);
             break;
         }
         default: {
@@ -2989,8 +2992,19 @@ checker::Type *ETSAnalyzer::Check(ir::TSNonNullExpression *expr) const
         checker->ReportWarning(
             {"Bad operand type, the operand of the non-nullish expression is 'null' or 'undefined'."},
             expr->Expr()->Start());
+
+        if (expr->expr_->IsIdentifier()) {
+            ES2PANDA_ASSERT(expr->expr_->AsIdentifier()->Variable() != nullptr);
+            auto originalType = expr->expr_->AsIdentifier()->Variable()->TsType();
+            if (originalType != nullptr) {
+                expr->SetTsType(checker->GetNonNullishType(originalType));
+            }
+        }
     }
-    expr->SetTsType(checker->GetNonNullishType(exprType));
+
+    if (expr->TsType() == nullptr) {
+        expr->SetTsType(checker->GetNonNullishType(exprType));
+    }
     expr->SetOriginalType(expr->TsType());
     return expr->TsType();
 }
