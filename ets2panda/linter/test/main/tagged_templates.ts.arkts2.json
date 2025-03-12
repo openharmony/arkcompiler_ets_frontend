@@ -15,16 +15,6 @@
     ],
     "result": [
         {
-            "line": 17,
-            "column": 1,
-            "endLine": 17,
-            "endColumn": 51,
-            "problem": "TaggedTemplates",
-            "suggest": "",
-            "rule": "Tagged templates are not supported (arkts-no-tagged-templates)",
-            "severity": "ERROR"
-        },
-        {
             "line": 19,
             "column": 7,
             "endLine": 19,
@@ -36,12 +26,12 @@
         },
         {
             "line": 19,
-            "column": 17,
+            "column": 7,
             "endLine": 19,
             "endColumn": 81,
-            "problem": "TaggedTemplates",
+            "problem": "NumericSemantics",
             "suggest": "",
-            "rule": "Tagged templates are not supported (arkts-no-tagged-templates)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -56,12 +46,12 @@
         },
         {
             "line": 21,
-            "column": 18,
+            "column": 7,
             "endLine": 21,
             "endColumn": 52,
-            "problem": "TaggedTemplates",
+            "problem": "NumericSemantics",
             "suggest": "",
-            "rule": "Tagged templates are not supported (arkts-no-tagged-templates)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -76,12 +66,12 @@
         },
         {
             "line": 23,
-            "column": 16,
+            "column": 7,
             "endLine": 23,
             "endColumn": 85,
-            "problem": "TaggedTemplates",
+            "problem": "NumericSemantics",
             "suggest": "",
-            "rule": "Tagged templates are not supported (arkts-no-tagged-templates)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -96,12 +86,12 @@
         },
         {
             "line": 25,
-            "column": 16,
+            "column": 7,
             "endLine": 25,
             "endColumn": 37,
-            "problem": "TaggedTemplates",
+            "problem": "NumericSemantics",
             "suggest": "",
-            "rule": "Tagged templates are not supported (arkts-no-tagged-templates)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

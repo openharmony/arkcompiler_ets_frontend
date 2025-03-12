@@ -16,12 +16,32 @@
     "result": [
         {
             "line": 16,
+            "column": 5,
+            "endLine": 16,
+            "endColumn": 14,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 16,
             "column": 9,
             "endLine": 16,
             "endColumn": 10,
             "problem": "LimitedLiteralType",
             "suggest": "",
             "rule": "Literal types are restricted(arkts-limited-literal-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 5,
+            "endLine": 17,
+            "endColumn": 18,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -36,12 +56,92 @@
         },
         {
             "line": 18,
+            "column": 5,
+            "endLine": 18,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
             "column": 8,
             "endLine": 18,
             "endColumn": 12,
             "problem": "LimitedLiteralType",
             "suggest": "",
             "rule": "Literal types are restricted(arkts-limited-literal-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 5,
+            "endLine": 19,
+            "endColumn": 12,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 5,
+            "endLine": 20,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 5,
+            "endLine": 21,
+            "endColumn": 29,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 5,
+            "endLine": 22,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 5,
+            "endLine": 23,
+            "endColumn": 17,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 5,
+            "endLine": 24,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 5,
+            "endLine": 25,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -52,6 +152,26 @@
             "problem": "LimitedLiteralType",
             "suggest": "",
             "rule": "Literal types are restricted(arkts-limited-literal-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 5,
+            "endLine": 35,
+            "endColumn": 14,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 5,
+            "endLine": 36,
+            "endColumn": 45,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

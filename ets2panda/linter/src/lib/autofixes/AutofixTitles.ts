@@ -36,10 +36,13 @@ export const cookBookRefToFixTitle: Map<number, string> = new Map([
   [171, 'Add type annotation'],
   [177, 'Add \'Sendable\' decorator'],
   [180, 'Remove the decorator'],
+  [189, 'Add type annotations to numerical variables'],
+  [190, 'warp up with arrow function'],
   [193, 'Replace with arrow function'],
   [206, 'Replace with a special library to call'],
   [251, 'Transform "!!" to "$$()"'],
   [252, 'Transform "$$" to "$$()"'],
   [253, '"$value" transform to "this.value"'],
-  [254, '"@Extend" transform to function with receiver']
+  [254, '"@Extend" transform to function with receiver'],
+  [257, '"@AnimatableExtend" transform to function with receiver']
 ]);

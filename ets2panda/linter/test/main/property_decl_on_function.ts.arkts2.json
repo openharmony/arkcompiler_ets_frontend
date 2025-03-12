@@ -15,6 +15,16 @@
     ],
     "result": [
         {
+            "line": 16,
+            "column": 1,
+            "endLine": 18,
+            "endColumn": 2,
+            "problem": "TsOverload",
+            "suggest": "",
+            "rule": "Class TS overloading is not supported(arkts-no-ts-overload)",
+            "severity": "ERROR"
+        },
+        {
             "line": 20,
             "column": 1,
             "endLine": 20,

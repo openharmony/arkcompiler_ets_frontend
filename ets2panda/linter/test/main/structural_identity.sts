@@ -603,4 +603,12 @@ const arrB_20: B_20[] = [a_20, b_20];
 class C_20 {
   a: A_20 = new B_20();
   b: B_20 = new A_20();
-} 
+}
+
+class A {
+  v: number = 0
+ }
+class B {
+  v: number = 0
+}
+let a: A = new B() as A

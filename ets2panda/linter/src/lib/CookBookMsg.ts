@@ -232,8 +232,11 @@ cookBookTag[185] = 'syntax for import type is disabled (arkts-import-types)';
 cookBookTag[186] = '"new" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)';
 cookBookTag[187] =
   'function "Math.pow()" behavior for ArkTS differs from Typescript version (arkts-math-pow-standard-diff)';
+cookBookTag[189] = 'Numeric semantics is different for integer values (arkts-numeric-semantic)';
+cookBookTag[190] = 'Stricter assignments into variables of function type (arkts-incompatible-function-types)';
 cookBookTag[192] = 'Type "void" has no instances.(arkts-limited-void-type)';
 cookBookTag[193] = '"void" operator is not supported (arkts-no-void-operator)';
+cookBookTag[198] = 'Class TS overloading is not supported(arkts-no-ts-overload)';
 cookBookTag[202] = 'Literal types are restricted(arkts-limited-literal-types)';
 cookBookTag[203] = 'exponent opartions "**" and "**=" are disabled (arkts-no-exponent-op)';
 cookBookTag[206] = '"debugger" is not supported (arkts-no-debugger-stmt)';
@@ -251,8 +254,13 @@ cookBookTag[235] = 'Avoid using union types (arkts-common-union-member-access)';
 cookBookTag[236] = 'Method cant\'t override filed in interface implemented (arkts-no-method-overriding-field)';
 cookBookTag[237] = 'Array and tuple are different type(arkts-no-tuples-arrays)';
 cookBookTag[238] = 'The static property has no initializer (arkts-class-static-initialization)';
+cookBookTag[239] = 'This keyword cannot be used as identifiers (arkts-invalid-identifier)';
 cookBookTag[251] = '"!!" for bidirectional data binding is not supported (arkui-no-!!-bidirectional-data-binding)';
 cookBookTag[252] = '"$$" for bidirectional data binding is not supported (arkui-no-$$-bidirectional-data-binding)';
 cookBookTag[253] = '"${variable}" for decorator binding is not supported (arkui-link-decorator-passing)';
 cookBookTag[254] = '"@Extend" decorator is not supported (arkui-no-extend-decorator)';
+cookBookTag[255] = 'Extends or implemetns expression are not supported(arkts-no-extends-expression)';
+cookBookTag[257] =
+  '"@AnimatableExtend" decorator should be transformed to use receiver (arkui-animatableextend-use-receiver)';
 cookBookTag[300] = 'The function type should be explicit (arkts-no-ts-like-function)';
+cookBookTag[304] = 'Duplicate function name in namespace are not allowed (arkts-no-duplicate-function-name)';

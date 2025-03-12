@@ -1272,7 +1272,8 @@ export class TsUtils {
     [FaultID.ObjectTypeLiteral, TsUtils.getObjectTypeLiteralHighlightRange],
     [FaultID.StructuralIdentity, TsUtils.getStructuralIdentityHighlightRange],
     [FaultID.VoidOperator, TsUtils.getVoidOperatorHighlightRange],
-    [FaultID.ImportLazyIdentifier, TsUtils.getImportLazyHighlightRange]
+    [FaultID.ImportLazyIdentifier, TsUtils.getImportLazyHighlightRange],
+    [FaultID.IncompationbleFunctionType, TsUtils.getIncompationbleFunctionTypeHighlightRange]
   ]);
 
   static getKeywordHighlightRange(nodeOrComment: ts.Node | ts.CommentRange, keyword: string): [number, number] {
@@ -1424,6 +1425,21 @@ export class TsUtils {
     }
 
     return undefined;
+  }
+
+  static getIncompationbleFunctionTypeHighlightRange(
+    nodeOrComment: ts.Node | ts.CommentRange
+  ): [number, number] | undefined {
+    const node = nodeOrComment as ts.Node;
+    if (ts.isArrowFunction(node)) {
+      const parameters = node.parameters;
+      if (parameters.length > 0) {
+        const firstParamStart = parameters[0].getStart();
+        const lastParamEnd = parameters[parameters.length - 1].getEnd();
+        return [firstParamStart, lastParamEnd];
+      }
+    }
+    return [node.getStart(), node.getEnd()];
   }
 
   static getVoidOperatorHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
@@ -1814,6 +1830,103 @@ export class TsUtils {
       (this.isStdFunctionType(lhsType) || TsUtils.isFunctionalType(lhsType)) &&
       (this.isStdFunctionType(rhsType) || TsUtils.isFunctionalType(rhsType))
     );
+  }
+
+  isIncompatibleFunctionals(lhsTypeNode: ts.TypeNode, rhsExpr: ts.Expression): boolean {
+    if (ts.isUnionTypeNode(lhsTypeNode)) {
+      for (let i = 0; i < lhsTypeNode.types.length; i++) {
+        if (!this.isIncompatibleFunctional(lhsTypeNode.types[i], rhsExpr)) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return this.isIncompatibleFunctional(lhsTypeNode, rhsExpr);
+  }
+
+  private isIncompatibleFunctional(lhsTypeNode: ts.TypeNode, rhsExpr: ts.Expression): boolean {
+    const lhsType = this.tsTypeChecker.getTypeAtLocation(lhsTypeNode);
+    const rhsType = this.tsTypeChecker.getTypeAtLocation(rhsExpr);
+    const lhsParams = this.getLhsFunctionParameters(lhsTypeNode);
+    const rhsParams = this.getRhsFunctionParameters(rhsExpr);
+
+    if (lhsParams !== rhsParams) {
+      return false;
+    }
+
+    if (TsUtils.isFunctionalType(lhsType)) {
+      const lhsFunctionReturnType = this.getFunctionType(lhsTypeNode);
+      const rhsReturnType = this.getReturnTypeFromExpression(rhsType);
+      if (lhsFunctionReturnType && rhsReturnType) {
+        return TsUtils.isVoidType(lhsFunctionReturnType) && !TsUtils.isVoidType(rhsReturnType);
+      }
+    }
+    return false;
+  }
+
+  static isVoidType(tsType: ts.Type): boolean {
+    return (tsType.getFlags() & ts.TypeFlags.Void) !== 0;
+  }
+
+  private getRhsFunctionParameters(expr: ts.Expression): number {
+    const type = this.tsTypeChecker.getTypeAtLocation(expr);
+    const signatures = this.tsTypeChecker.getSignaturesOfType(type, ts.SignatureKind.Call);
+    if (signatures.length > 0) {
+      const signature = signatures[0];
+      return signature.parameters.length;
+    }
+    return 0;
+  }
+
+  private getLhsFunctionParameters(typeNode: ts.TypeNode): number {
+    let current: ts.TypeNode = typeNode;
+    while (ts.isTypeReferenceNode(current)) {
+      const symbol = this.tsTypeChecker.getSymbolAtLocation(current.typeName);
+      if (!symbol) {
+        break;
+      }
+
+      const declaration = symbol.declarations?.[0];
+      if (!declaration || !ts.isTypeAliasDeclaration(declaration)) {
+        break;
+      }
+
+      current = declaration.type;
+    }
+    if (ts.isFunctionTypeNode(current)) {
+      return current.parameters.length;
+    }
+    return 0;
+  }
+
+  private getFunctionType(typeNode: ts.TypeNode): ts.Type | undefined {
+    let current: ts.TypeNode = typeNode;
+    while (ts.isTypeReferenceNode(current)) {
+      const symbol = this.tsTypeChecker.getSymbolAtLocation(current.typeName);
+      if (!symbol) {
+        break;
+      }
+
+      const declaration = symbol.declarations?.[0];
+      if (!declaration || !ts.isTypeAliasDeclaration(declaration)) {
+        break;
+      }
+
+      current = declaration.type;
+    }
+    if (ts.isFunctionTypeNode(current)) {
+      return this.tsTypeChecker.getTypeAtLocation(current.type);
+    }
+    return undefined;
+  }
+
+  private getReturnTypeFromExpression(type: ts.Type): ts.Type | undefined {
+    const signatures = this.tsTypeChecker.getSignaturesOfType(type, ts.SignatureKind.Call);
+    if (signatures.length > 0) {
+      const returnType = this.tsTypeChecker.getReturnTypeOfSignature(signatures[0]);
+      return returnType;
+    }
+    return undefined;
   }
 
   private static isFunctionalType(type: ts.Type): boolean {
@@ -3069,5 +3182,70 @@ export class TsUtils {
       return false;
     }
     return true;
+  }
+
+  isBuiltinClassHeritageClause(node: ts.HeritageClause): boolean {
+    const typeNode = node.types[0].expression;
+    if (!typeNode) {
+      return false;
+    }
+
+    const symbol = this.tsTypeChecker.getSymbolAtLocation(typeNode);
+    return !!symbol && !isStdLibrarySymbol(symbol);
+  }
+
+  isIntegerVariable(sym: ts.Symbol | undefined): boolean {
+    if (!sym) {
+      return false;
+    }
+    const decl = TsUtils.getDeclaration(sym);
+    if (!decl || !ts.isVariableDeclaration(decl) && !ts.isPropertyDeclaration(decl) || decl.type) {
+      return false;
+    }
+    const init = decl.initializer;
+    return !!init && ts.isNumericLiteral(init) && this.isIntegerConstantValue(init);
+  }
+
+  isIntegerValue(expr: ts.Expression): boolean {
+    if (ts.isParenthesizedExpression(expr)) {
+      return this.isIntegerValue(expr.expression);
+    } else if (ts.isBinaryExpression(expr) && TsUtils.isArithmeticOperator(expr.operatorToken)) {
+      return this.isIntegerValue(expr.left) && this.isIntegerValue(expr.right);
+    } else if (
+      (ts.isPrefixUnaryExpression(expr) || ts.isPostfixUnaryExpression(expr)) &&
+      TsUtils.isUnaryArithmeticOperator(expr.operator)
+    ) {
+      return this.isIntegerValue(expr.operand);
+    }
+
+    return (
+      ts.isNumericLiteral(expr) && this.isIntegerConstantValue(expr) ||
+      this.isIntegerVariable(this.tsTypeChecker.getSymbolAtLocation(expr))
+    );
+  }
+
+  static isArithmeticOperator(op: ts.BinaryOperatorToken): boolean {
+    switch (op.kind) {
+      case ts.SyntaxKind.PlusToken:
+      case ts.SyntaxKind.MinusToken:
+      case ts.SyntaxKind.AsteriskToken:
+      case ts.SyntaxKind.SlashToken:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  static isUnaryArithmeticOperator(op: ts.SyntaxKind): boolean {
+    switch (op) {
+      case ts.SyntaxKind.PlusToken:
+      case ts.SyntaxKind.MinusToken:
+      case ts.SyntaxKind.PlusPlusToken:
+      case ts.SyntaxKind.MinusMinusToken:
+      case ts.SyntaxKind.TildeToken:
+        return true;
+      default:
+        return false;
+    }
   }
 }

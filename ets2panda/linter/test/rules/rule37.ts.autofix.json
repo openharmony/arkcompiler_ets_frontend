@@ -2,6 +2,16 @@
     "result": [
         {
             "line": 16,
+            "column": 6,
+            "endLine": 16,
+            "endColumn": 28,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 16,
             "column": 22,
             "endLine": 16,
             "endColumn": 28,
@@ -15,6 +25,26 @@
             ],
             "suggest": "",
             "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 6,
+            "endLine": 18,
+            "endColumn": 41,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 8,
+            "endLine": 20,
+            "endColumn": 82,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -35,6 +65,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 21,
+            "column": 8,
+            "endLine": 21,
+            "endColumn": 102,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 6,
+            "endLine": 23,
+            "endColumn": 31,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 23,
             "column": 23,
             "endLine": 23,
@@ -49,6 +99,26 @@
             ],
             "suggest": "",
             "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 6,
+            "endLine": 25,
+            "endColumn": 47,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 6,
+            "endLine": 27,
+            "endColumn": 47,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -69,6 +139,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 29,
+            "column": 6,
+            "endLine": 29,
+            "endColumn": 63,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 6,
+            "endLine": 31,
+            "endColumn": 28,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 31,
             "column": 23,
             "endLine": 31,
@@ -83,6 +173,16 @@
             ],
             "suggest": "",
             "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 33,
+            "column": 6,
+            "endLine": 33,
+            "endColumn": 43,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -121,6 +221,16 @@
         },
         {
             "line": 43,
+            "column": 14,
+            "endLine": 43,
+            "endColumn": 28,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
             "column": 22,
             "endLine": 43,
             "endColumn": 28,
@@ -134,6 +244,26 @@
             ],
             "suggest": "",
             "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 14,
+            "endLine": 47,
+            "endColumn": 50,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 14,
+            "endLine": 51,
+            "endColumn": 28,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -154,6 +284,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 55,
+            "column": 14,
+            "endLine": 55,
+            "endColumn": 50,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 59,
             "column": 17,
             "endLine": 59,
@@ -168,6 +308,16 @@
             ],
             "suggest": "",
             "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 63,
+            "column": 8,
+            "endLine": 63,
+            "endColumn": 93,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

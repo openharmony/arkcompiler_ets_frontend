@@ -35,6 +35,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 28,
+            "column": 7,
+            "endLine": 28,
+            "endColumn": 18,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 32,
             "column": 3,
             "endLine": 32,
@@ -52,6 +62,16 @@
             "problem": "ClassstaticInitialization",
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 40,
+            "column": 7,
+            "endLine": 40,
+            "endColumn": 18,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]
