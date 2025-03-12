@@ -839,13 +839,35 @@ ir::Expression *ParserImpl::ParseTsTypeOperatorOrTypeReference(bool throwError)
     TypeAnnotationParsingOptions options = throwError ?
         TypeAnnotationParsingOptions::THROW_ERROR : TypeAnnotationParsingOptions::NO_OPTS;
 
+    switch (lexer_->GetToken().KeywordType()) {
+        case lexer::TokenType::KEYW_READONLY:
+        case lexer::TokenType::KEYW_KEYOF:
+        case lexer::TokenType::KEYW_UNIQUE: {
+            return ParseTsTypeOperator();
+        }
+        case lexer::TokenType::KEYW_INFER: {
+            return ParseTsInferType();
+        }
+        default: {
+            return ParseTsIdentifierReference(options);
+        }
+    }
+}
+
+ir::Expression *ParserImpl::ParseTsTypeOperator()
+{
+    /*
+     * When processing each type operator (readonly, keyof, unique),
+     * the function expects a type to modify or apply the operator to.
+     */
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+
     if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_READONLY) {
         lexer::SourcePosition typeOperatorStart = lexer_->GetToken().Start();
         lexer_->NextToken();
 
         options |= TypeAnnotationParsingOptions::IN_MODIFIER;
         ir::Expression *type = ParseTsTypeAnnotation(&options);
-        ASSERT(type != nullptr);
 
         if (!type->IsTSArrayType() && !type->IsTSTupleType()) {
             ThrowSyntaxError(
@@ -866,7 +888,6 @@ ir::Expression *ParserImpl::ParseTsTypeOperatorOrTypeReference(bool throwError)
 
         options |= TypeAnnotationParsingOptions::IN_MODIFIER;
         ir::Expression *type = ParseTsTypeAnnotation(&options);
-        ASSERT(type != nullptr);
 
         auto *typeOperator = AllocNode<ir::TSTypeOperator>(type, ir::TSOperatorType::KEYOF);
 
@@ -880,7 +901,6 @@ ir::Expression *ParserImpl::ParseTsTypeOperatorOrTypeReference(bool throwError)
         lexer_->NextToken();
 
         ir::Expression *type = ParseTsTypeAnnotation(&options);
-        ASSERT(type != nullptr);
 
         auto *typeOperator = AllocNode<ir::TSTypeOperator>(type, ir::TSOperatorType::UNIQUE);
 
@@ -889,26 +909,27 @@ ir::Expression *ParserImpl::ParseTsTypeOperatorOrTypeReference(bool throwError)
         return typeOperator;
     }
 
-    if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_INFER) {
-        if (!(context_.Status() & ParserStatus::IN_EXTENDS)) {
+    return nullptr;
+}
+
+ir::Expression *ParserImpl::ParseTsInferType()
+{
+    if (!(context_.Status() & ParserStatus::IN_EXTENDS)) {
             ThrowSyntaxError(
                 "'infer' declarations are only permitted in the "
                 "'extends' clause of a conditional type.");
         }
 
-        lexer::SourcePosition inferStart = lexer_->GetToken().Start();
-        lexer_->NextToken();
+    lexer::SourcePosition inferStart = lexer_->GetToken().Start();
+    lexer_->NextToken();
 
-        ir::TSTypeParameter *typeParam = ParseTsTypeParameter(true);
+    ir::TSTypeParameter *typeParam = ParseTsTypeParameter(true);
 
-        auto *inferType = AllocNode<ir::TSInferType>(typeParam);
+    auto *inferType = AllocNode<ir::TSInferType>(typeParam);
+    
+    inferType->SetRange({inferStart, lexer_->GetToken().End()});
 
-        inferType->SetRange({inferStart, lexer_->GetToken().End()});
-
-        return inferType;
-    }
-
-    return ParseTsIdentifierReference(options);
+    return inferType;
 }
 
 bool ParserImpl::IsTSNamedTupleMember()
@@ -1894,6 +1915,9 @@ ir::Expression *ParserImpl::ParseTsParenthesizedOrFunctionType(ir::Expression *t
     lexer_->NextToken();  // eat '('
 
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::NO_OPTS;
+    if (throwError) {
+        options |= TypeAnnotationParsingOptions::THROW_ERROR;
+    }
     ir::Expression *type = ParseTsTypeAnnotation(&options);
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
@@ -4019,7 +4043,7 @@ ir::SpreadElement *ParserImpl::ParseSpreadElement(ExpressionParseFlags flags)
 
     ir::Expression *typeAnnotation = nullptr;
 
-    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON && Extension() == ScriptExtension::TS) {
         lexer_->NextToken();  // eat ':'
         TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
         typeAnnotation = ParseTsTypeAnnotation(&options);
