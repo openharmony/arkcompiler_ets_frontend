@@ -2451,11 +2451,13 @@ static bool ValidateAndProcessIteratorType(ETSChecker *checker, Type *elemType, 
     if (iterType->IsTypeError()) {
         return false;
     }
+
+    const auto ident = st->Left()->IsVariableDeclaration()
+                           ? st->Left()->AsVariableDeclaration()->Declarators().front()->Id()->AsIdentifier()
+                           : st->Left()->AsIdentifier();
     auto *const relation = checker->Relation();
     relation->SetFlags(checker::TypeRelationFlag::ASSIGNMENT_CONTEXT);
-    relation->SetNode(st->Left()->IsVariableDeclaration()
-                          ? st->Left()->AsVariableDeclaration()->Declarators().front()->Id()
-                          : st->Left()->AsIdentifier());
+    relation->SetNode(ident);
 
     if (!relation->IsAssignableTo(elemType, iterType)) {
         checker->LogError(diagnostic::ITERATOR_ELEMENT_TYPE_MISMATCH, {elemType, iterType}, st->Start());
@@ -2464,6 +2466,13 @@ static bool ValidateAndProcessIteratorType(ETSChecker *checker, Type *elemType, 
 
     relation->SetNode(nullptr);
     relation->SetFlags(checker::TypeRelationFlag::NONE);
+
+    const auto variable = ident->Variable();
+    if (variable != nullptr) {
+        // Set smart type for variable of 'for-of' statement
+        const auto smartType = checker->ResolveSmartType(elemType, variable->TsType());
+        checker->Context().SetSmartCast(variable, smartType);
+    }
 
     return true;
 }
