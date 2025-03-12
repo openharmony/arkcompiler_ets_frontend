@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -19,7 +19,7 @@
 /ets2panda/ @igelhaus @Prof1983
 /ets2panda/ast_verifier @mbolshov ^igelhaus ^Prof1983
 /ets2panda/bindings ^igelhaus ^Prof1983 @dreamdoomwalker @Ascnbio ^muhammet-fevzi-bayiroglu @utkugursel
-/ets2panda/lexer @chernykhsergey @igelhaus @zelentsovdmitry @Prof1983
+/ets2panda/lexer @chernykhsergey @igelhaus ^zelentsovdmitry @Prof1983
 /ets2panda/lsp ^igelhaus ^Prof1983 @dreamdoomwalker @Ascnbio ^muhammet-fevzi-bayiroglu @utkugursel
 /ets2panda/parser @chernykhsergey ^igelhaus ^Prof1983
 /ets2panda/public @mbolshov ^igelhaus ^Prof1983
@@ -55,8 +55,7 @@
 /ets2panda/checker/types/signature.* ^vpukhov ^igelhaus ^Prof1983 @zelentsovdmitry
 /ets2panda/checker/types/typeFlag.h ^vpukhov ^igelhaus ^Prof1983  @zelentsovdmitry
 /ets2panda/checker/types/typeRelation.* ^vpukhov ^igelhaus ^Prof1983  @zelentsovdmitry
-/ets2panda/compiler/core/ETSCompiler.cpp ^vpukhov ^igelhaus ^Prof1983 @zelentsovdmitry
-/ets2panda/compiler/core/ETSGen.* @zelentsovdmitry ^igelhaus ^Prof1983 @zelentsovdmitry
+/ets2panda/compiler/core/ @zelentsovdmitry ^vpukhov ^igelhaus ^Prof1983
 /ets2panda/test/test-lists/astchecker @chernykhsergey ^igelhaus ^Prof1983
 /ets2panda/test/test-lists/parser @chernykhsergey ^igelhaus ^Prof1983
 /ets2panda/test/unit/lsp ^igelhaus ^Prof1983 @dreamdoomwalker @Ascnbio ^muhammet-fevzi-bayiroglu @utkugursel
@@ -66,7 +65,7 @@
 /ets2panda/checker/types/ets/etsTypeParameter.* ^vpukhov @gogabr ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/etsUnionType.* @akmaevaleksey ^vpukhov @gogabr ^igelhaus ^Prof1983
 /ets2panda/checker/types/ets/wildcardType.* ^vpukhov @gogabr ^igelhaus ^Prof1983
-/ets2panda/compiler/lowering/ets/ @akmaevaleksey ^igelhaus ^Prof1983 @zelentsovdmitry
+/ets2panda/compiler/lowering/ets/ @akmaevaleksey ^igelhaus ^Prof1983 ^zelentsovdmitry
 /ets2panda/compiler/lowering/ets/lambdaLowering.cpp ^vpukhov @akmaevaleksey @gogabr ^igelhaus ^Prof1983
 /ets2panda/compiler/lowering/ets/localClassLowering.cpp  @gogabr ^igelhaus ^Prof1983
 /ets2panda/compiler/lowering/ets/optionalLowering.cpp ^vpukhov @akmaevaleksey ^igelhaus ^Prof1983
