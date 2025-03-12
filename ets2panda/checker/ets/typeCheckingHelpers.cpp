@@ -1368,6 +1368,11 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
     }
     auto *const lambdaReturnTypeAnnotation = lambda->ReturnTypeAnnotation();
 
+    Type *const argumentType = arrowFuncExpr->Check(this);
+    if (Relation()->IsSupertypeOf(parameterType, argumentType)) {
+        return true;
+    }
+
     ES2PANDA_ASSERT(parameterType->AsETSUnionType()->ConstituentTypes().size() ==
                     typeAnnotation->AsETSUnionType()->Types().size());
     const auto typeAnnsOfUnion = typeAnnotation->AsETSUnionType()->Types();
