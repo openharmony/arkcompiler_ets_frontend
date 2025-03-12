@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "test_jsvalue_get_property_2.sts"
+              "program": "test_jsvalue_get_property_2.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "test_jsvalue_get_property_2.sts"
+              "program": "test_jsvalue_get_property_2.ets"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "test_jsvalue_get_property_2.sts"
+                "program": "test_jsvalue_get_property_2.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "test_jsvalue_get_property_2.sts"
+                "program": "test_jsvalue_get_property_2.ets"
               }
             }
           },
@@ -195,12 +195,12 @@
                             "start": {
                               "line": 17,
                               "column": 5,
-                              "program": "test_jsvalue_get_property_2.sts"
+                              "program": "test_jsvalue_get_property_2.ets"
                             },
                             "end": {
                               "line": 17,
                               "column": 9,
-                              "program": "test_jsvalue_get_property_2.sts"
+                              "program": "test_jsvalue_get_property_2.ets"
                             }
                           }
                         },
@@ -216,12 +216,12 @@
                                 "start": {
                                   "line": 17,
                                   "column": 21,
-                                  "program": "test_jsvalue_get_property_2.sts"
+                                  "program": "test_jsvalue_get_property_2.ets"
                                 },
                                 "end": {
                                   "line": 17,
                                   "column": 22,
-                                  "program": "test_jsvalue_get_property_2.sts"
+                                  "program": "test_jsvalue_get_property_2.ets"
                                 }
                               }
                             },
@@ -233,12 +233,12 @@
                                 "start": {
                                   "line": 17,
                                   "column": 23,
-                                  "program": "test_jsvalue_get_property_2.sts"
+                                  "program": "test_jsvalue_get_property_2.ets"
                                 },
                                 "end": {
                                   "line": 17,
                                   "column": 34,
-                                  "program": "test_jsvalue_get_property_2.sts"
+                                  "program": "test_jsvalue_get_property_2.ets"
                                 }
                               }
                             },
@@ -248,12 +248,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 21,
-                                "program": "test_jsvalue_get_property_2.sts"
+                                "program": "test_jsvalue_get_property_2.ets"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 34,
-                                "program": "test_jsvalue_get_property_2.sts"
+                                "program": "test_jsvalue_get_property_2.ets"
                               }
                             }
                           },
@@ -265,12 +265,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 35,
-                                "program": "test_jsvalue_get_property_2.sts"
+                                "program": "test_jsvalue_get_property_2.ets"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 46,
-                                "program": "test_jsvalue_get_property_2.sts"
+                                "program": "test_jsvalue_get_property_2.ets"
                               }
                             }
                           },
@@ -280,12 +280,12 @@
                             "start": {
                               "line": 17,
                               "column": 21,
-                              "program": "test_jsvalue_get_property_2.sts"
+                              "program": "test_jsvalue_get_property_2.ets"
                             },
                             "end": {
                               "line": 17,
                               "column": 46,
-                              "program": "test_jsvalue_get_property_2.sts"
+                              "program": "test_jsvalue_get_property_2.ets"
                             }
                           }
                         },
@@ -293,12 +293,12 @@
                           "start": {
                             "line": 17,
                             "column": 5,
-                            "program": "test_jsvalue_get_property_2.sts"
+                            "program": "test_jsvalue_get_property_2.ets"
                           },
                           "end": {
                             "line": 17,
                             "column": 46,
-                            "program": "test_jsvalue_get_property_2.sts"
+                            "program": "test_jsvalue_get_property_2.ets"
                           }
                         }
                       },
@@ -306,12 +306,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "test_jsvalue_get_property_2.sts"
+                          "program": "test_jsvalue_get_property_2.ets"
                         },
                         "end": {
                           "line": 17,
                           "column": 46,
-                          "program": "test_jsvalue_get_property_2.sts"
+                          "program": "test_jsvalue_get_property_2.ets"
                         }
                       }
                     }
@@ -361,12 +361,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "test_jsvalue_get_property_2.sts"
+                "program": "test_jsvalue_get_property_2.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "test_jsvalue_get_property_2.sts"
+                "program": "test_jsvalue_get_property_2.ets"
               }
             }
           },
@@ -380,12 +380,12 @@
                 "start": {
                   "line": 16,
                   "column": 5,
-                  "program": "test_jsvalue_get_property_2.sts"
+                  "program": "test_jsvalue_get_property_2.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 6,
-                  "program": "test_jsvalue_get_property_2.sts"
+                  "program": "test_jsvalue_get_property_2.ets"
                 }
               }
             },
@@ -407,12 +407,12 @@
                     "start": {
                       "line": 16,
                       "column": 8,
-                      "program": "test_jsvalue_get_property_2.sts"
+                      "program": "test_jsvalue_get_property_2.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 15,
-                      "program": "test_jsvalue_get_property_2.sts"
+                      "program": "test_jsvalue_get_property_2.ets"
                     }
                   }
                 },
@@ -420,12 +420,12 @@
                   "start": {
                     "line": 16,
                     "column": 8,
-                    "program": "test_jsvalue_get_property_2.sts"
+                    "program": "test_jsvalue_get_property_2.ets"
                   },
                   "end": {
                     "line": 16,
                     "column": 16,
-                    "program": "test_jsvalue_get_property_2.sts"
+                    "program": "test_jsvalue_get_property_2.ets"
                   }
                 }
               },
@@ -433,12 +433,12 @@
                 "start": {
                   "line": 16,
                   "column": 8,
-                  "program": "test_jsvalue_get_property_2.sts"
+                  "program": "test_jsvalue_get_property_2.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 16,
-                  "program": "test_jsvalue_get_property_2.sts"
+                  "program": "test_jsvalue_get_property_2.ets"
                 }
               }
             },
@@ -448,12 +448,12 @@
               "start": {
                 "line": 16,
                 "column": 5,
-                "program": "test_jsvalue_get_property_2.sts"
+                "program": "test_jsvalue_get_property_2.ets"
               },
               "end": {
                 "line": 16,
                 "column": 6,
-                "program": "test_jsvalue_get_property_2.sts"
+                "program": "test_jsvalue_get_property_2.ets"
               }
             }
           },
@@ -467,12 +467,12 @@
                 "start": {
                   "line": 17,
                   "column": 5,
-                  "program": "test_jsvalue_get_property_2.sts"
+                  "program": "test_jsvalue_get_property_2.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 9,
-                  "program": "test_jsvalue_get_property_2.sts"
+                  "program": "test_jsvalue_get_property_2.ets"
                 }
               }
             },
@@ -494,12 +494,12 @@
                     "start": {
                       "line": 17,
                       "column": 11,
-                      "program": "test_jsvalue_get_property_2.sts"
+                      "program": "test_jsvalue_get_property_2.ets"
                     },
                     "end": {
                       "line": 17,
                       "column": 18,
-                      "program": "test_jsvalue_get_property_2.sts"
+                      "program": "test_jsvalue_get_property_2.ets"
                     }
                   }
                 },
@@ -507,12 +507,12 @@
                   "start": {
                     "line": 17,
                     "column": 11,
-                    "program": "test_jsvalue_get_property_2.sts"
+                    "program": "test_jsvalue_get_property_2.ets"
                   },
                   "end": {
                     "line": 17,
                     "column": 20,
-                    "program": "test_jsvalue_get_property_2.sts"
+                    "program": "test_jsvalue_get_property_2.ets"
                   }
                 }
               },
@@ -520,12 +520,12 @@
                 "start": {
                   "line": 17,
                   "column": 11,
-                  "program": "test_jsvalue_get_property_2.sts"
+                  "program": "test_jsvalue_get_property_2.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 20,
-                  "program": "test_jsvalue_get_property_2.sts"
+                  "program": "test_jsvalue_get_property_2.ets"
                 }
               }
             },
@@ -535,12 +535,12 @@
               "start": {
                 "line": 17,
                 "column": 5,
-                "program": "test_jsvalue_get_property_2.sts"
+                "program": "test_jsvalue_get_property_2.ets"
               },
               "end": {
                 "line": 17,
                 "column": 46,
-                "program": "test_jsvalue_get_property_2.sts"
+                "program": "test_jsvalue_get_property_2.ets"
               }
             }
           }
@@ -549,12 +549,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "test_jsvalue_get_property_2.sts"
+            "program": "test_jsvalue_get_property_2.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "test_jsvalue_get_property_2.sts"
+            "program": "test_jsvalue_get_property_2.ets"
           }
         }
       },
@@ -562,12 +562,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "test_jsvalue_get_property_2.sts"
+          "program": "test_jsvalue_get_property_2.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "test_jsvalue_get_property_2.sts"
+          "program": "test_jsvalue_get_property_2.ets"
         }
       }
     }
@@ -576,13 +576,13 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "test_jsvalue_get_property_2.sts"
+      "program": "test_jsvalue_get_property_2.ets"
     },
     "end": {
       "line": 18,
       "column": 1,
-      "program": "test_jsvalue_get_property_2.sts"
+      "program": "test_jsvalue_get_property_2.ets"
     }
   }
 }
-Warning: Variable 'v' is used before being assigned. [test_jsvalue_get_property_2.sts:17:21]
+Warning: Variable 'v' is used before being assigned. [test_jsvalue_get_property_2.ets:17:21]

@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "instanceof_etsobject_jsvalue.sts"
+              "program": "instanceof_etsobject_jsvalue.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "instanceof_etsobject_jsvalue.sts"
+              "program": "instanceof_etsobject_jsvalue.ets"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "instanceof_etsobject_jsvalue.sts"
+                "program": "instanceof_etsobject_jsvalue.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "instanceof_etsobject_jsvalue.sts"
+                "program": "instanceof_etsobject_jsvalue.ets"
               }
             }
           },
@@ -227,12 +227,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "instanceof_etsobject_jsvalue.sts"
+                "program": "instanceof_etsobject_jsvalue.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "instanceof_etsobject_jsvalue.sts"
+                "program": "instanceof_etsobject_jsvalue.ets"
               }
             }
           },
@@ -246,12 +246,12 @@
                 "start": {
                   "line": 22,
                   "column": 10,
-                  "program": "instanceof_etsobject_jsvalue.sts"
+                  "program": "instanceof_etsobject_jsvalue.ets"
                 },
                 "end": {
                   "line": 22,
                   "column": 12,
-                  "program": "instanceof_etsobject_jsvalue.sts"
+                  "program": "instanceof_etsobject_jsvalue.ets"
                 }
               }
             },
@@ -272,12 +272,12 @@
                     "start": {
                       "line": 22,
                       "column": 10,
-                      "program": "instanceof_etsobject_jsvalue.sts"
+                      "program": "instanceof_etsobject_jsvalue.ets"
                     },
                     "end": {
                       "line": 22,
                       "column": 12,
-                      "program": "instanceof_etsobject_jsvalue.sts"
+                      "program": "instanceof_etsobject_jsvalue.ets"
                     }
                   }
                 },
@@ -302,12 +302,12 @@
                               "start": {
                                 "line": 22,
                                 "column": 16,
-                                "program": "instanceof_etsobject_jsvalue.sts"
+                                "program": "instanceof_etsobject_jsvalue.ets"
                               },
                               "end": {
                                 "line": 22,
                                 "column": 17,
-                                "program": "instanceof_etsobject_jsvalue.sts"
+                                "program": "instanceof_etsobject_jsvalue.ets"
                               }
                             }
                           },
@@ -315,12 +315,12 @@
                             "start": {
                               "line": 22,
                               "column": 16,
-                              "program": "instanceof_etsobject_jsvalue.sts"
+                              "program": "instanceof_etsobject_jsvalue.ets"
                             },
                             "end": {
                               "line": 22,
                               "column": 18,
-                              "program": "instanceof_etsobject_jsvalue.sts"
+                              "program": "instanceof_etsobject_jsvalue.ets"
                             }
                           }
                         },
@@ -328,12 +328,12 @@
                           "start": {
                             "line": 22,
                             "column": 16,
-                            "program": "instanceof_etsobject_jsvalue.sts"
+                            "program": "instanceof_etsobject_jsvalue.ets"
                           },
                           "end": {
                             "line": 22,
                             "column": 18,
-                            "program": "instanceof_etsobject_jsvalue.sts"
+                            "program": "instanceof_etsobject_jsvalue.ets"
                           }
                         }
                       },
@@ -342,12 +342,12 @@
                         "start": {
                           "line": 22,
                           "column": 13,
-                          "program": "instanceof_etsobject_jsvalue.sts"
+                          "program": "instanceof_etsobject_jsvalue.ets"
                         },
                         "end": {
                           "line": 22,
                           "column": 18,
-                          "program": "instanceof_etsobject_jsvalue.sts"
+                          "program": "instanceof_etsobject_jsvalue.ets"
                         }
                       }
                     },
@@ -355,12 +355,12 @@
                       "start": {
                         "line": 22,
                         "column": 13,
-                        "program": "instanceof_etsobject_jsvalue.sts"
+                        "program": "instanceof_etsobject_jsvalue.ets"
                       },
                       "end": {
                         "line": 22,
                         "column": 18,
-                        "program": "instanceof_etsobject_jsvalue.sts"
+                        "program": "instanceof_etsobject_jsvalue.ets"
                       }
                     }
                   }
@@ -371,12 +371,12 @@
                     "start": {
                       "line": 22,
                       "column": 20,
-                      "program": "instanceof_etsobject_jsvalue.sts"
+                      "program": "instanceof_etsobject_jsvalue.ets"
                     },
                     "end": {
                       "line": 22,
                       "column": 27,
-                      "program": "instanceof_etsobject_jsvalue.sts"
+                      "program": "instanceof_etsobject_jsvalue.ets"
                     }
                   }
                 },
@@ -396,12 +396,12 @@
                             "start": {
                               "line": 23,
                               "column": 12,
-                              "program": "instanceof_etsobject_jsvalue.sts"
+                              "program": "instanceof_etsobject_jsvalue.ets"
                             },
                             "end": {
                               "line": 23,
                               "column": 13,
-                              "program": "instanceof_etsobject_jsvalue.sts"
+                              "program": "instanceof_etsobject_jsvalue.ets"
                             }
                           }
                         },
@@ -417,12 +417,12 @@
                                 "start": {
                                   "line": 23,
                                   "column": 25,
-                                  "program": "instanceof_etsobject_jsvalue.sts"
+                                  "program": "instanceof_etsobject_jsvalue.ets"
                                 },
                                 "end": {
                                   "line": 23,
                                   "column": 32,
-                                  "program": "instanceof_etsobject_jsvalue.sts"
+                                  "program": "instanceof_etsobject_jsvalue.ets"
                                 }
                               }
                             },
@@ -430,12 +430,12 @@
                               "start": {
                                 "line": 23,
                                 "column": 25,
-                                "program": "instanceof_etsobject_jsvalue.sts"
+                                "program": "instanceof_etsobject_jsvalue.ets"
                               },
                               "end": {
                                 "line": 23,
                                 "column": 33,
-                                "program": "instanceof_etsobject_jsvalue.sts"
+                                "program": "instanceof_etsobject_jsvalue.ets"
                               }
                             }
                           },
@@ -443,12 +443,12 @@
                             "start": {
                               "line": 23,
                               "column": 25,
-                              "program": "instanceof_etsobject_jsvalue.sts"
+                              "program": "instanceof_etsobject_jsvalue.ets"
                             },
                             "end": {
                               "line": 23,
                               "column": 33,
-                              "program": "instanceof_etsobject_jsvalue.sts"
+                              "program": "instanceof_etsobject_jsvalue.ets"
                             }
                           }
                         },
@@ -456,12 +456,12 @@
                           "start": {
                             "line": 23,
                             "column": 12,
-                            "program": "instanceof_etsobject_jsvalue.sts"
+                            "program": "instanceof_etsobject_jsvalue.ets"
                           },
                           "end": {
                             "line": 23,
                             "column": 33,
-                            "program": "instanceof_etsobject_jsvalue.sts"
+                            "program": "instanceof_etsobject_jsvalue.ets"
                           }
                         }
                       },
@@ -469,12 +469,12 @@
                         "start": {
                           "line": 23,
                           "column": 5,
-                          "program": "instanceof_etsobject_jsvalue.sts"
+                          "program": "instanceof_etsobject_jsvalue.ets"
                         },
                         "end": {
                           "line": 23,
                           "column": 33,
-                          "program": "instanceof_etsobject_jsvalue.sts"
+                          "program": "instanceof_etsobject_jsvalue.ets"
                         }
                       }
                     }
@@ -483,12 +483,12 @@
                     "start": {
                       "line": 22,
                       "column": 28,
-                      "program": "instanceof_etsobject_jsvalue.sts"
+                      "program": "instanceof_etsobject_jsvalue.ets"
                     },
                     "end": {
                       "line": 24,
                       "column": 2,
-                      "program": "instanceof_etsobject_jsvalue.sts"
+                      "program": "instanceof_etsobject_jsvalue.ets"
                     }
                   }
                 },
@@ -496,12 +496,12 @@
                   "start": {
                     "line": 22,
                     "column": 10,
-                    "program": "instanceof_etsobject_jsvalue.sts"
+                    "program": "instanceof_etsobject_jsvalue.ets"
                   },
                   "end": {
                     "line": 24,
                     "column": 2,
-                    "program": "instanceof_etsobject_jsvalue.sts"
+                    "program": "instanceof_etsobject_jsvalue.ets"
                   }
                 }
               },
@@ -509,12 +509,12 @@
                 "start": {
                   "line": 22,
                   "column": 10,
-                  "program": "instanceof_etsobject_jsvalue.sts"
+                  "program": "instanceof_etsobject_jsvalue.ets"
                 },
                 "end": {
                   "line": 24,
                   "column": 2,
-                  "program": "instanceof_etsobject_jsvalue.sts"
+                  "program": "instanceof_etsobject_jsvalue.ets"
                 }
               }
             },
@@ -524,12 +524,12 @@
               "start": {
                 "line": 22,
                 "column": 1,
-                "program": "instanceof_etsobject_jsvalue.sts"
+                "program": "instanceof_etsobject_jsvalue.ets"
               },
               "end": {
                 "line": 24,
                 "column": 2,
-                "program": "instanceof_etsobject_jsvalue.sts"
+                "program": "instanceof_etsobject_jsvalue.ets"
               }
             }
           }
@@ -538,12 +538,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "instanceof_etsobject_jsvalue.sts"
+            "program": "instanceof_etsobject_jsvalue.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "instanceof_etsobject_jsvalue.sts"
+            "program": "instanceof_etsobject_jsvalue.ets"
           }
         }
       },
@@ -551,12 +551,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "instanceof_etsobject_jsvalue.sts"
+          "program": "instanceof_etsobject_jsvalue.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "instanceof_etsobject_jsvalue.sts"
+          "program": "instanceof_etsobject_jsvalue.ets"
         }
       }
     },
@@ -571,12 +571,12 @@
             "start": {
               "line": 20,
               "column": 7,
-              "program": "instanceof_etsobject_jsvalue.sts"
+              "program": "instanceof_etsobject_jsvalue.ets"
             },
             "end": {
               "line": 20,
               "column": 8,
-              "program": "instanceof_etsobject_jsvalue.sts"
+              "program": "instanceof_etsobject_jsvalue.ets"
             }
           }
         },
@@ -593,12 +593,12 @@
                 "start": {
                   "line": 20,
                   "column": 10,
-                  "program": "instanceof_etsobject_jsvalue.sts"
+                  "program": "instanceof_etsobject_jsvalue.ets"
                 },
                 "end": {
                   "line": 20,
                   "column": 10,
-                  "program": "instanceof_etsobject_jsvalue.sts"
+                  "program": "instanceof_etsobject_jsvalue.ets"
                 }
               }
             },
@@ -618,12 +618,12 @@
                     "start": {
                       "line": 20,
                       "column": 10,
-                      "program": "instanceof_etsobject_jsvalue.sts"
+                      "program": "instanceof_etsobject_jsvalue.ets"
                     },
                     "end": {
                       "line": 20,
                       "column": 10,
-                      "program": "instanceof_etsobject_jsvalue.sts"
+                      "program": "instanceof_etsobject_jsvalue.ets"
                     }
                   }
                 },
@@ -638,12 +638,12 @@
                     "start": {
                       "line": 20,
                       "column": 10,
-                      "program": "instanceof_etsobject_jsvalue.sts"
+                      "program": "instanceof_etsobject_jsvalue.ets"
                     },
                     "end": {
                       "line": 20,
                       "column": 10,
-                      "program": "instanceof_etsobject_jsvalue.sts"
+                      "program": "instanceof_etsobject_jsvalue.ets"
                     }
                   }
                 },
@@ -651,12 +651,12 @@
                   "start": {
                     "line": 20,
                     "column": 10,
-                    "program": "instanceof_etsobject_jsvalue.sts"
+                    "program": "instanceof_etsobject_jsvalue.ets"
                   },
                   "end": {
                     "line": 20,
                     "column": 10,
-                    "program": "instanceof_etsobject_jsvalue.sts"
+                    "program": "instanceof_etsobject_jsvalue.ets"
                   }
                 }
               },
@@ -664,12 +664,12 @@
                 "start": {
                   "line": 20,
                   "column": 10,
-                  "program": "instanceof_etsobject_jsvalue.sts"
+                  "program": "instanceof_etsobject_jsvalue.ets"
                 },
                 "end": {
                   "line": 20,
                   "column": 10,
-                  "program": "instanceof_etsobject_jsvalue.sts"
+                  "program": "instanceof_etsobject_jsvalue.ets"
                 }
               }
             },
@@ -693,12 +693,12 @@
           "start": {
             "line": 20,
             "column": 9,
-            "program": "instanceof_etsobject_jsvalue.sts"
+            "program": "instanceof_etsobject_jsvalue.ets"
           },
           "end": {
             "line": 22,
             "column": 9,
-            "program": "instanceof_etsobject_jsvalue.sts"
+            "program": "instanceof_etsobject_jsvalue.ets"
           }
         }
       },
@@ -706,12 +706,12 @@
         "start": {
           "line": 20,
           "column": 1,
-          "program": "instanceof_etsobject_jsvalue.sts"
+          "program": "instanceof_etsobject_jsvalue.ets"
         },
         "end": {
           "line": 22,
           "column": 9,
-          "program": "instanceof_etsobject_jsvalue.sts"
+          "program": "instanceof_etsobject_jsvalue.ets"
         }
       }
     }
@@ -720,13 +720,13 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "instanceof_etsobject_jsvalue.sts"
+      "program": "instanceof_etsobject_jsvalue.ets"
     },
     "end": {
       "line": 25,
       "column": 1,
-      "program": "instanceof_etsobject_jsvalue.sts"
+      "program": "instanceof_etsobject_jsvalue.ets"
     }
   }
 }
-TypeError: Right-hand side of instanceof expression must represent a type. [instanceof_etsobject_jsvalue.sts:23:12]
+TypeError: Right-hand side of instanceof expression must represent a type. [instanceof_etsobject_jsvalue.ets:23:12]

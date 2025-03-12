@@ -12,12 +12,12 @@
             "start": {
               "line": 16,
               "column": 7,
-              "program": "localClassIsPermitted.sts"
+              "program": "localClassIsPermitted.ets"
             },
             "end": {
               "line": 16,
               "column": 12,
-              "program": "localClassIsPermitted.sts"
+              "program": "localClassIsPermitted.ets"
             }
           }
         },
@@ -65,12 +65,12 @@
                             "start": {
                               "line": 18,
                               "column": 15,
-                              "program": "localClassIsPermitted.sts"
+                              "program": "localClassIsPermitted.ets"
                             },
                             "end": {
                               "line": 18,
                               "column": 20,
-                              "program": "localClassIsPermitted.sts"
+                              "program": "localClassIsPermitted.ets"
                             }
                           }
                         },
@@ -87,12 +87,12 @@
                                 "start": {
                                   "line": 18,
                                   "column": 22,
-                                  "program": "localClassIsPermitted.sts"
+                                  "program": "localClassIsPermitted.ets"
                                 },
                                 "end": {
                                   "line": 18,
                                   "column": 22,
-                                  "program": "localClassIsPermitted.sts"
+                                  "program": "localClassIsPermitted.ets"
                                 }
                               }
                             },
@@ -112,12 +112,12 @@
                                     "start": {
                                       "line": 18,
                                       "column": 22,
-                                      "program": "localClassIsPermitted.sts"
+                                      "program": "localClassIsPermitted.ets"
                                     },
                                     "end": {
                                       "line": 18,
                                       "column": 22,
-                                      "program": "localClassIsPermitted.sts"
+                                      "program": "localClassIsPermitted.ets"
                                     }
                                   }
                                 },
@@ -132,12 +132,12 @@
                                     "start": {
                                       "line": 18,
                                       "column": 22,
-                                      "program": "localClassIsPermitted.sts"
+                                      "program": "localClassIsPermitted.ets"
                                     },
                                     "end": {
                                       "line": 18,
                                       "column": 22,
-                                      "program": "localClassIsPermitted.sts"
+                                      "program": "localClassIsPermitted.ets"
                                     }
                                   }
                                 },
@@ -145,12 +145,12 @@
                                   "start": {
                                     "line": 18,
                                     "column": 22,
-                                    "program": "localClassIsPermitted.sts"
+                                    "program": "localClassIsPermitted.ets"
                                   },
                                   "end": {
                                     "line": 18,
                                     "column": 22,
-                                    "program": "localClassIsPermitted.sts"
+                                    "program": "localClassIsPermitted.ets"
                                   }
                                 }
                               },
@@ -158,12 +158,12 @@
                                 "start": {
                                   "line": 18,
                                   "column": 22,
-                                  "program": "localClassIsPermitted.sts"
+                                  "program": "localClassIsPermitted.ets"
                                 },
                                 "end": {
                                   "line": 18,
                                   "column": 22,
-                                  "program": "localClassIsPermitted.sts"
+                                  "program": "localClassIsPermitted.ets"
                                 }
                               }
                             },
@@ -187,12 +187,12 @@
                           "start": {
                             "line": 18,
                             "column": 21,
-                            "program": "localClassIsPermitted.sts"
+                            "program": "localClassIsPermitted.ets"
                           },
                           "end": {
                             "line": 21,
                             "column": 6,
-                            "program": "localClassIsPermitted.sts"
+                            "program": "localClassIsPermitted.ets"
                           }
                         }
                       },
@@ -200,12 +200,12 @@
                         "start": {
                           "line": 18,
                           "column": 9,
-                          "program": "localClassIsPermitted.sts"
+                          "program": "localClassIsPermitted.ets"
                         },
                         "end": {
                           "line": 21,
                           "column": 6,
-                          "program": "localClassIsPermitted.sts"
+                          "program": "localClassIsPermitted.ets"
                         }
                       }
                     }
@@ -253,12 +253,12 @@
               "start": {
                 "line": 21,
                 "column": 5,
-                "program": "localClassIsPermitted.sts"
+                "program": "localClassIsPermitted.ets"
               },
               "end": {
                 "line": 21,
                 "column": 6,
-                "program": "localClassIsPermitted.sts"
+                "program": "localClassIsPermitted.ets"
               }
             }
           },
@@ -272,12 +272,12 @@
                 "start": {
                   "line": 16,
                   "column": 14,
-                  "program": "localClassIsPermitted.sts"
+                  "program": "localClassIsPermitted.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 14,
-                  "program": "localClassIsPermitted.sts"
+                  "program": "localClassIsPermitted.ets"
                 }
               }
             },
@@ -297,12 +297,12 @@
                     "start": {
                       "line": 16,
                       "column": 14,
-                      "program": "localClassIsPermitted.sts"
+                      "program": "localClassIsPermitted.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 14,
-                      "program": "localClassIsPermitted.sts"
+                      "program": "localClassIsPermitted.ets"
                     }
                   }
                 },
@@ -317,12 +317,12 @@
                     "start": {
                       "line": 16,
                       "column": 14,
-                      "program": "localClassIsPermitted.sts"
+                      "program": "localClassIsPermitted.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 14,
-                      "program": "localClassIsPermitted.sts"
+                      "program": "localClassIsPermitted.ets"
                     }
                   }
                 },
@@ -330,12 +330,12 @@
                   "start": {
                     "line": 16,
                     "column": 14,
-                    "program": "localClassIsPermitted.sts"
+                    "program": "localClassIsPermitted.ets"
                   },
                   "end": {
                     "line": 16,
                     "column": 14,
-                    "program": "localClassIsPermitted.sts"
+                    "program": "localClassIsPermitted.ets"
                   }
                 }
               },
@@ -343,12 +343,12 @@
                 "start": {
                   "line": 16,
                   "column": 14,
-                  "program": "localClassIsPermitted.sts"
+                  "program": "localClassIsPermitted.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 14,
-                  "program": "localClassIsPermitted.sts"
+                  "program": "localClassIsPermitted.ets"
                 }
               }
             },
@@ -372,12 +372,12 @@
           "start": {
             "line": 16,
             "column": 13,
-            "program": "localClassIsPermitted.sts"
+            "program": "localClassIsPermitted.ets"
           },
           "end": {
             "line": 23,
             "column": 1,
-            "program": "localClassIsPermitted.sts"
+            "program": "localClassIsPermitted.ets"
           }
         }
       },
@@ -385,12 +385,12 @@
         "start": {
           "line": 16,
           "column": 1,
-          "program": "localClassIsPermitted.sts"
+          "program": "localClassIsPermitted.ets"
         },
         "end": {
           "line": 23,
           "column": 1,
-          "program": "localClassIsPermitted.sts"
+          "program": "localClassIsPermitted.ets"
         }
       }
     },
@@ -405,12 +405,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "localClassIsPermitted.sts"
+              "program": "localClassIsPermitted.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "localClassIsPermitted.sts"
+              "program": "localClassIsPermitted.ets"
             }
           }
         },
@@ -514,12 +514,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "localClassIsPermitted.sts"
+                "program": "localClassIsPermitted.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "localClassIsPermitted.sts"
+                "program": "localClassIsPermitted.ets"
               }
             }
           },
@@ -620,12 +620,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "localClassIsPermitted.sts"
+                "program": "localClassIsPermitted.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "localClassIsPermitted.sts"
+                "program": "localClassIsPermitted.ets"
               }
             }
           }
@@ -634,12 +634,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "localClassIsPermitted.sts"
+            "program": "localClassIsPermitted.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "localClassIsPermitted.sts"
+            "program": "localClassIsPermitted.ets"
           }
         }
       },
@@ -647,12 +647,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "localClassIsPermitted.sts"
+          "program": "localClassIsPermitted.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "localClassIsPermitted.sts"
+          "program": "localClassIsPermitted.ets"
         }
       }
     }
@@ -661,12 +661,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "localClassIsPermitted.sts"
+      "program": "localClassIsPermitted.ets"
     },
     "end": {
       "line": 23,
       "column": 1,
-      "program": "localClassIsPermitted.sts"
+      "program": "localClassIsPermitted.ets"
     }
   }
 }

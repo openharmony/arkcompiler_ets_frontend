@@ -52,7 +52,7 @@ public:
             return nullptr;
         }
         auto dynamicType = Allocator()->New<checker::ETSDynamicType>(
-            Allocator(), std::make_tuple("test", "test", Language::FromString("sts").value()),
+            Allocator(), std::make_tuple("test", "test", Language::FromString("ets").value()),
             std::make_tuple(obj, checker::ETSObjectFlags::NO_OPTS, nullptr), false);
         if (obj->IsETSTypeReference()) {
             obj = obj->AsETSTypeReference()->Part()->Name();

@@ -112,7 +112,7 @@ public:
 
     bool IsDynamic() const
     {
-        return extension_ != ScriptExtension::STS;
+        return extension_ != ScriptExtension::ETS;
     }
 
     const auto &GetAstVerifierWarnings() const

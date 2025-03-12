@@ -11,12 +11,12 @@
           "start": {
             "line": 16,
             "column": 6,
-            "program": "union_generic_field_access.sts"
+            "program": "union_generic_field_access.ets"
           },
           "end": {
             "line": 16,
             "column": 16,
-            "program": "union_generic_field_access.sts"
+            "program": "union_generic_field_access.ets"
           }
         }
       },
@@ -35,12 +35,12 @@
                   "start": {
                     "line": 17,
                     "column": 5,
-                    "program": "union_generic_field_access.sts"
+                    "program": "union_generic_field_access.ets"
                   },
                   "end": {
                     "line": 17,
                     "column": 14,
-                    "program": "union_generic_field_access.sts"
+                    "program": "union_generic_field_access.ets"
                   }
                 }
               },
@@ -48,12 +48,12 @@
                 "start": {
                   "line": 17,
                   "column": 5,
-                  "program": "union_generic_field_access.sts"
+                  "program": "union_generic_field_access.ets"
                 },
                 "end": {
                   "line": 18,
                   "column": 6,
-                  "program": "union_generic_field_access.sts"
+                  "program": "union_generic_field_access.ets"
                 }
               }
             },
@@ -61,12 +61,12 @@
               "start": {
                 "line": 17,
                 "column": 5,
-                "program": "union_generic_field_access.sts"
+                "program": "union_generic_field_access.ets"
               },
               "end": {
                 "line": 18,
                 "column": 6,
-                "program": "union_generic_field_access.sts"
+                "program": "union_generic_field_access.ets"
               }
             }
           },
@@ -82,12 +82,12 @@
                   "start": {
                     "line": 18,
                     "column": 7,
-                    "program": "union_generic_field_access.sts"
+                    "program": "union_generic_field_access.ets"
                   },
                   "end": {
                     "line": 18,
                     "column": 17,
-                    "program": "union_generic_field_access.sts"
+                    "program": "union_generic_field_access.ets"
                   }
                 }
               },
@@ -95,12 +95,12 @@
                 "start": {
                   "line": 18,
                   "column": 7,
-                  "program": "union_generic_field_access.sts"
+                  "program": "union_generic_field_access.ets"
                 },
                 "end": {
                   "line": 19,
                   "column": 6,
-                  "program": "union_generic_field_access.sts"
+                  "program": "union_generic_field_access.ets"
                 }
               }
             },
@@ -108,12 +108,12 @@
               "start": {
                 "line": 18,
                 "column": 7,
-                "program": "union_generic_field_access.sts"
+                "program": "union_generic_field_access.ets"
               },
               "end": {
                 "line": 19,
                 "column": 6,
-                "program": "union_generic_field_access.sts"
+                "program": "union_generic_field_access.ets"
               }
             }
           },
@@ -129,12 +129,12 @@
                   "start": {
                     "line": 19,
                     "column": 7,
-                    "program": "union_generic_field_access.sts"
+                    "program": "union_generic_field_access.ets"
                   },
                   "end": {
                     "line": 19,
                     "column": 17,
-                    "program": "union_generic_field_access.sts"
+                    "program": "union_generic_field_access.ets"
                   }
                 }
               },
@@ -142,12 +142,12 @@
                 "start": {
                   "line": 19,
                   "column": 7,
-                  "program": "union_generic_field_access.sts"
+                  "program": "union_generic_field_access.ets"
                 },
                 "end": {
                   "line": 20,
                   "column": 6,
-                  "program": "union_generic_field_access.sts"
+                  "program": "union_generic_field_access.ets"
                 }
               }
             },
@@ -155,12 +155,12 @@
               "start": {
                 "line": 19,
                 "column": 7,
-                "program": "union_generic_field_access.sts"
+                "program": "union_generic_field_access.ets"
               },
               "end": {
                 "line": 20,
                 "column": 6,
-                "program": "union_generic_field_access.sts"
+                "program": "union_generic_field_access.ets"
               }
             }
           },
@@ -176,12 +176,12 @@
                   "start": {
                     "line": 20,
                     "column": 7,
-                    "program": "union_generic_field_access.sts"
+                    "program": "union_generic_field_access.ets"
                   },
                   "end": {
                     "line": 20,
                     "column": 19,
-                    "program": "union_generic_field_access.sts"
+                    "program": "union_generic_field_access.ets"
                   }
                 }
               },
@@ -189,12 +189,12 @@
                 "start": {
                   "line": 20,
                   "column": 7,
-                  "program": "union_generic_field_access.sts"
+                  "program": "union_generic_field_access.ets"
                 },
                 "end": {
                   "line": 21,
                   "column": 6,
-                  "program": "union_generic_field_access.sts"
+                  "program": "union_generic_field_access.ets"
                 }
               }
             },
@@ -202,12 +202,12 @@
               "start": {
                 "line": 20,
                 "column": 7,
-                "program": "union_generic_field_access.sts"
+                "program": "union_generic_field_access.ets"
               },
               "end": {
                 "line": 21,
                 "column": 6,
-                "program": "union_generic_field_access.sts"
+                "program": "union_generic_field_access.ets"
               }
             }
           },
@@ -223,12 +223,12 @@
                   "start": {
                     "line": 21,
                     "column": 7,
-                    "program": "union_generic_field_access.sts"
+                    "program": "union_generic_field_access.ets"
                   },
                   "end": {
                     "line": 21,
                     "column": 19,
-                    "program": "union_generic_field_access.sts"
+                    "program": "union_generic_field_access.ets"
                   }
                 }
               },
@@ -236,12 +236,12 @@
                 "start": {
                   "line": 21,
                   "column": 7,
-                  "program": "union_generic_field_access.sts"
+                  "program": "union_generic_field_access.ets"
                 },
                 "end": {
                   "line": 24,
                   "column": 9,
-                  "program": "union_generic_field_access.sts"
+                  "program": "union_generic_field_access.ets"
                 }
               }
             },
@@ -249,12 +249,12 @@
               "start": {
                 "line": 21,
                 "column": 7,
-                "program": "union_generic_field_access.sts"
+                "program": "union_generic_field_access.ets"
               },
               "end": {
                 "line": 24,
                 "column": 9,
-                "program": "union_generic_field_access.sts"
+                "program": "union_generic_field_access.ets"
               }
             }
           }
@@ -263,12 +263,12 @@
           "start": {
             "line": 17,
             "column": 5,
-            "program": "union_generic_field_access.sts"
+            "program": "union_generic_field_access.ets"
           },
           "end": {
             "line": 24,
             "column": 9,
-            "program": "union_generic_field_access.sts"
+            "program": "union_generic_field_access.ets"
           }
         }
       },
@@ -276,12 +276,12 @@
         "start": {
           "line": 16,
           "column": 1,
-          "program": "union_generic_field_access.sts"
+          "program": "union_generic_field_access.ets"
         },
         "end": {
           "line": 24,
           "column": 9,
-          "program": "union_generic_field_access.sts"
+          "program": "union_generic_field_access.ets"
         }
       }
     },
@@ -296,12 +296,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "union_generic_field_access.sts"
+              "program": "union_generic_field_access.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "union_generic_field_access.sts"
+              "program": "union_generic_field_access.ets"
             }
           }
         },
@@ -405,12 +405,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "union_generic_field_access.sts"
+                "program": "union_generic_field_access.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "union_generic_field_access.sts"
+                "program": "union_generic_field_access.ets"
               }
             }
           },
@@ -511,12 +511,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "union_generic_field_access.sts"
+                "program": "union_generic_field_access.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "union_generic_field_access.sts"
+                "program": "union_generic_field_access.ets"
               }
             }
           },
@@ -530,12 +530,12 @@
                 "start": {
                   "line": 24,
                   "column": 10,
-                  "program": "union_generic_field_access.sts"
+                  "program": "union_generic_field_access.ets"
                 },
                 "end": {
                   "line": 24,
                   "column": 19,
-                  "program": "union_generic_field_access.sts"
+                  "program": "union_generic_field_access.ets"
                 }
               }
             },
@@ -556,12 +556,12 @@
                     "start": {
                       "line": 24,
                       "column": 10,
-                      "program": "union_generic_field_access.sts"
+                      "program": "union_generic_field_access.ets"
                     },
                     "end": {
                       "line": 24,
                       "column": 19,
-                      "program": "union_generic_field_access.sts"
+                      "program": "union_generic_field_access.ets"
                     }
                   }
                 },
@@ -589,12 +589,12 @@
                                   "start": {
                                     "line": 24,
                                     "column": 48,
-                                    "program": "union_generic_field_access.sts"
+                                    "program": "union_generic_field_access.ets"
                                   },
                                   "end": {
                                     "line": 24,
                                     "column": 49,
-                                    "program": "union_generic_field_access.sts"
+                                    "program": "union_generic_field_access.ets"
                                   }
                                 }
                               },
@@ -602,12 +602,12 @@
                                 "start": {
                                   "line": 24,
                                   "column": 48,
-                                  "program": "union_generic_field_access.sts"
+                                  "program": "union_generic_field_access.ets"
                                 },
                                 "end": {
                                   "line": 24,
                                   "column": 51,
-                                  "program": "union_generic_field_access.sts"
+                                  "program": "union_generic_field_access.ets"
                                 }
                               }
                             },
@@ -615,12 +615,12 @@
                               "start": {
                                 "line": 24,
                                 "column": 48,
-                                "program": "union_generic_field_access.sts"
+                                "program": "union_generic_field_access.ets"
                               },
                               "end": {
                                 "line": 24,
                                 "column": 51,
-                                "program": "union_generic_field_access.sts"
+                                "program": "union_generic_field_access.ets"
                               }
                             }
                           },
@@ -630,12 +630,12 @@
                               "start": {
                                 "line": 24,
                                 "column": 52,
-                                "program": "union_generic_field_access.sts"
+                                "program": "union_generic_field_access.ets"
                               },
                               "end": {
                                 "line": 24,
                                 "column": 61,
-                                "program": "union_generic_field_access.sts"
+                                "program": "union_generic_field_access.ets"
                               }
                             }
                           }
@@ -644,12 +644,12 @@
                           "start": {
                             "line": 24,
                             "column": 48,
-                            "program": "union_generic_field_access.sts"
+                            "program": "union_generic_field_access.ets"
                           },
                           "end": {
                             "line": 24,
                             "column": 61,
-                            "program": "union_generic_field_access.sts"
+                            "program": "union_generic_field_access.ets"
                           }
                         }
                       },
@@ -658,12 +658,12 @@
                         "start": {
                           "line": 24,
                           "column": 42,
-                          "program": "union_generic_field_access.sts"
+                          "program": "union_generic_field_access.ets"
                         },
                         "end": {
                           "line": 24,
                           "column": 61,
-                          "program": "union_generic_field_access.sts"
+                          "program": "union_generic_field_access.ets"
                         }
                       }
                     },
@@ -671,12 +671,12 @@
                       "start": {
                         "line": 24,
                         "column": 42,
-                        "program": "union_generic_field_access.sts"
+                        "program": "union_generic_field_access.ets"
                       },
                       "end": {
                         "line": 24,
                         "column": 61,
-                        "program": "union_generic_field_access.sts"
+                        "program": "union_generic_field_access.ets"
                       }
                     }
                   }
@@ -687,12 +687,12 @@
                     "start": {
                       "line": 24,
                       "column": 64,
-                      "program": "union_generic_field_access.sts"
+                      "program": "union_generic_field_access.ets"
                     },
                     "end": {
                       "line": 24,
                       "column": 71,
-                      "program": "union_generic_field_access.sts"
+                      "program": "union_generic_field_access.ets"
                     }
                   }
                 },
@@ -709,12 +709,12 @@
                           "start": {
                             "line": 24,
                             "column": 20,
-                            "program": "union_generic_field_access.sts"
+                            "program": "union_generic_field_access.ets"
                           },
                           "end": {
                             "line": 24,
                             "column": 21,
-                            "program": "union_generic_field_access.sts"
+                            "program": "union_generic_field_access.ets"
                           }
                         }
                       },
@@ -730,12 +730,12 @@
                               "start": {
                                 "line": 24,
                                 "column": 30,
-                                "program": "union_generic_field_access.sts"
+                                "program": "union_generic_field_access.ets"
                               },
                               "end": {
                                 "line": 24,
                                 "column": 40,
-                                "program": "union_generic_field_access.sts"
+                                "program": "union_generic_field_access.ets"
                               }
                             }
                           },
@@ -743,12 +743,12 @@
                             "start": {
                               "line": 24,
                               "column": 30,
-                              "program": "union_generic_field_access.sts"
+                              "program": "union_generic_field_access.ets"
                             },
                             "end": {
                               "line": 24,
                               "column": 41,
-                              "program": "union_generic_field_access.sts"
+                              "program": "union_generic_field_access.ets"
                             }
                           }
                         },
@@ -756,12 +756,12 @@
                           "start": {
                             "line": 24,
                             "column": 30,
-                            "program": "union_generic_field_access.sts"
+                            "program": "union_generic_field_access.ets"
                           },
                           "end": {
                             "line": 24,
                             "column": 41,
-                            "program": "union_generic_field_access.sts"
+                            "program": "union_generic_field_access.ets"
                           }
                         }
                       },
@@ -769,12 +769,12 @@
                         "start": {
                           "line": 24,
                           "column": 20,
-                          "program": "union_generic_field_access.sts"
+                          "program": "union_generic_field_access.ets"
                         },
                         "end": {
                           "line": 24,
                           "column": 41,
-                          "program": "union_generic_field_access.sts"
+                          "program": "union_generic_field_access.ets"
                         }
                       }
                     }
@@ -783,12 +783,12 @@
                     "start": {
                       "line": 24,
                       "column": 19,
-                      "program": "union_generic_field_access.sts"
+                      "program": "union_generic_field_access.ets"
                     },
                     "end": {
                       "line": 24,
                       "column": 41,
-                      "program": "union_generic_field_access.sts"
+                      "program": "union_generic_field_access.ets"
                     }
                   }
                 },
@@ -808,12 +808,12 @@
                               "start": {
                                 "line": 25,
                                 "column": 9,
-                                "program": "union_generic_field_access.sts"
+                                "program": "union_generic_field_access.ets"
                               },
                               "end": {
                                 "line": 25,
                                 "column": 12,
-                                "program": "union_generic_field_access.sts"
+                                "program": "union_generic_field_access.ets"
                               }
                             }
                           },
@@ -836,12 +836,12 @@
                                           "start": {
                                             "line": 1,
                                             "column": 3,
-                                            "program": "union_generic_field_access.sts"
+                                            "program": "union_generic_field_access.ets"
                                           },
                                           "end": {
                                             "line": 1,
                                             "column": 3,
-                                            "program": "union_generic_field_access.sts"
+                                            "program": "union_generic_field_access.ets"
                                           }
                                         }
                                       },
@@ -853,12 +853,12 @@
                                           "start": {
                                             "line": 25,
                                             "column": 15,
-                                            "program": "union_generic_field_access.sts"
+                                            "program": "union_generic_field_access.ets"
                                           },
                                           "end": {
                                             "line": 25,
                                             "column": 19,
-                                            "program": "union_generic_field_access.sts"
+                                            "program": "union_generic_field_access.ets"
                                           }
                                         }
                                       },
@@ -866,12 +866,12 @@
                                         "start": {
                                           "line": 1,
                                           "column": 3,
-                                          "program": "union_generic_field_access.sts"
+                                          "program": "union_generic_field_access.ets"
                                         },
                                         "end": {
                                           "line": 1,
                                           "column": 3,
-                                          "program": "union_generic_field_access.sts"
+                                          "program": "union_generic_field_access.ets"
                                         }
                                       }
                                     }
@@ -881,12 +881,12 @@
                                     "start": {
                                       "line": 25,
                                       "column": 15,
-                                      "program": "union_generic_field_access.sts"
+                                      "program": "union_generic_field_access.ets"
                                     },
                                     "end": {
                                       "line": 25,
                                       "column": 32,
-                                      "program": "union_generic_field_access.sts"
+                                      "program": "union_generic_field_access.ets"
                                     }
                                   }
                                 },
@@ -905,12 +905,12 @@
                                           "start": {
                                             "line": 1,
                                             "column": 3,
-                                            "program": "union_generic_field_access.sts"
+                                            "program": "union_generic_field_access.ets"
                                           },
                                           "end": {
                                             "line": 1,
                                             "column": 3,
-                                            "program": "union_generic_field_access.sts"
+                                            "program": "union_generic_field_access.ets"
                                           }
                                         }
                                       },
@@ -921,12 +921,12 @@
                                           "start": {
                                             "line": 1,
                                             "column": 3,
-                                            "program": "union_generic_field_access.sts"
+                                            "program": "union_generic_field_access.ets"
                                           },
                                           "end": {
                                             "line": 1,
                                             "column": 3,
-                                            "program": "union_generic_field_access.sts"
+                                            "program": "union_generic_field_access.ets"
                                           }
                                         }
                                       },
@@ -934,12 +934,12 @@
                                         "start": {
                                           "line": 1,
                                           "column": 3,
-                                          "program": "union_generic_field_access.sts"
+                                          "program": "union_generic_field_access.ets"
                                         },
                                         "end": {
                                           "line": 1,
                                           "column": 3,
-                                          "program": "union_generic_field_access.sts"
+                                          "program": "union_generic_field_access.ets"
                                         }
                                       }
                                     },
@@ -950,12 +950,12 @@
                                         "start": {
                                           "line": 1,
                                           "column": 3,
-                                          "program": "union_generic_field_access.sts"
+                                          "program": "union_generic_field_access.ets"
                                         },
                                         "end": {
                                           "line": 1,
                                           "column": 3,
-                                          "program": "union_generic_field_access.sts"
+                                          "program": "union_generic_field_access.ets"
                                         }
                                       }
                                     },
@@ -969,12 +969,12 @@
                                           "start": {
                                             "line": 25,
                                             "column": 15,
-                                            "program": "union_generic_field_access.sts"
+                                            "program": "union_generic_field_access.ets"
                                           },
                                           "end": {
                                             "line": 25,
                                             "column": 27,
-                                            "program": "union_generic_field_access.sts"
+                                            "program": "union_generic_field_access.ets"
                                           }
                                         }
                                       },
@@ -986,12 +986,12 @@
                                           "start": {
                                             "line": 25,
                                             "column": 21,
-                                            "program": "union_generic_field_access.sts"
+                                            "program": "union_generic_field_access.ets"
                                           },
                                           "end": {
                                             "line": 25,
                                             "column": 27,
-                                            "program": "union_generic_field_access.sts"
+                                            "program": "union_generic_field_access.ets"
                                           }
                                         }
                                       },
@@ -1001,12 +1001,12 @@
                                         "start": {
                                           "line": 25,
                                           "column": 15,
-                                          "program": "union_generic_field_access.sts"
+                                          "program": "union_generic_field_access.ets"
                                         },
                                         "end": {
                                           "line": 25,
                                           "column": 27,
-                                          "program": "union_generic_field_access.sts"
+                                          "program": "union_generic_field_access.ets"
                                         }
                                       }
                                     },
@@ -1014,12 +1014,12 @@
                                       "start": {
                                         "line": 1,
                                         "column": 3,
-                                        "program": "union_generic_field_access.sts"
+                                        "program": "union_generic_field_access.ets"
                                       },
                                       "end": {
                                         "line": 1,
                                         "column": 3,
-                                        "program": "union_generic_field_access.sts"
+                                        "program": "union_generic_field_access.ets"
                                       }
                                     }
                                   },
@@ -1027,12 +1027,12 @@
                                     "start": {
                                       "line": 1,
                                       "column": 3,
-                                      "program": "union_generic_field_access.sts"
+                                      "program": "union_generic_field_access.ets"
                                     },
                                     "end": {
                                       "line": 1,
                                       "column": 3,
-                                      "program": "union_generic_field_access.sts"
+                                      "program": "union_generic_field_access.ets"
                                     }
                                   }
                                 }
@@ -1041,12 +1041,12 @@
                                 "start": {
                                   "line": 25,
                                   "column": 15,
-                                  "program": "union_generic_field_access.sts"
+                                  "program": "union_generic_field_access.ets"
                                 },
                                 "end": {
                                   "line": 25,
                                   "column": 32,
-                                  "program": "union_generic_field_access.sts"
+                                  "program": "union_generic_field_access.ets"
                                 }
                               }
                             },
@@ -1057,12 +1057,12 @@
                                 "start": {
                                   "line": 25,
                                   "column": 31,
-                                  "program": "union_generic_field_access.sts"
+                                  "program": "union_generic_field_access.ets"
                                 },
                                 "end": {
                                   "line": 25,
                                   "column": 32,
-                                  "program": "union_generic_field_access.sts"
+                                  "program": "union_generic_field_access.ets"
                                 }
                               }
                             },
@@ -1070,12 +1070,12 @@
                               "start": {
                                 "line": 25,
                                 "column": 15,
-                                "program": "union_generic_field_access.sts"
+                                "program": "union_generic_field_access.ets"
                               },
                               "end": {
                                 "line": 25,
                                 "column": 32,
-                                "program": "union_generic_field_access.sts"
+                                "program": "union_generic_field_access.ets"
                               }
                             }
                           },
@@ -1083,12 +1083,12 @@
                             "start": {
                               "line": 25,
                               "column": 9,
-                              "program": "union_generic_field_access.sts"
+                              "program": "union_generic_field_access.ets"
                             },
                             "end": {
                               "line": 25,
                               "column": 32,
-                              "program": "union_generic_field_access.sts"
+                              "program": "union_generic_field_access.ets"
                             }
                           }
                         }
@@ -1098,12 +1098,12 @@
                         "start": {
                           "line": 25,
                           "column": 5,
-                          "program": "union_generic_field_access.sts"
+                          "program": "union_generic_field_access.ets"
                         },
                         "end": {
                           "line": 25,
                           "column": 33,
-                          "program": "union_generic_field_access.sts"
+                          "program": "union_generic_field_access.ets"
                         }
                       }
                     },
@@ -1116,12 +1116,12 @@
                           "start": {
                             "line": 26,
                             "column": 12,
-                            "program": "union_generic_field_access.sts"
+                            "program": "union_generic_field_access.ets"
                           },
                           "end": {
                             "line": 26,
                             "column": 16,
-                            "program": "union_generic_field_access.sts"
+                            "program": "union_generic_field_access.ets"
                           }
                         }
                       },
@@ -1129,12 +1129,12 @@
                         "start": {
                           "line": 26,
                           "column": 5,
-                          "program": "union_generic_field_access.sts"
+                          "program": "union_generic_field_access.ets"
                         },
                         "end": {
                           "line": 26,
                           "column": 17,
-                          "program": "union_generic_field_access.sts"
+                          "program": "union_generic_field_access.ets"
                         }
                       }
                     }
@@ -1143,12 +1143,12 @@
                     "start": {
                       "line": 24,
                       "column": 72,
-                      "program": "union_generic_field_access.sts"
+                      "program": "union_generic_field_access.ets"
                     },
                     "end": {
                       "line": 27,
                       "column": 2,
-                      "program": "union_generic_field_access.sts"
+                      "program": "union_generic_field_access.ets"
                     }
                   }
                 },
@@ -1156,12 +1156,12 @@
                   "start": {
                     "line": 24,
                     "column": 10,
-                    "program": "union_generic_field_access.sts"
+                    "program": "union_generic_field_access.ets"
                   },
                   "end": {
                     "line": 27,
                     "column": 2,
-                    "program": "union_generic_field_access.sts"
+                    "program": "union_generic_field_access.ets"
                   }
                 }
               },
@@ -1169,12 +1169,12 @@
                 "start": {
                   "line": 24,
                   "column": 10,
-                  "program": "union_generic_field_access.sts"
+                  "program": "union_generic_field_access.ets"
                 },
                 "end": {
                   "line": 27,
                   "column": 2,
-                  "program": "union_generic_field_access.sts"
+                  "program": "union_generic_field_access.ets"
                 }
               }
             },
@@ -1184,12 +1184,12 @@
               "start": {
                 "line": 24,
                 "column": 1,
-                "program": "union_generic_field_access.sts"
+                "program": "union_generic_field_access.ets"
               },
               "end": {
                 "line": 27,
                 "column": 2,
-                "program": "union_generic_field_access.sts"
+                "program": "union_generic_field_access.ets"
               }
             }
           }
@@ -1198,12 +1198,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "union_generic_field_access.sts"
+            "program": "union_generic_field_access.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "union_generic_field_access.sts"
+            "program": "union_generic_field_access.ets"
           }
         }
       },
@@ -1211,12 +1211,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "union_generic_field_access.sts"
+          "program": "union_generic_field_access.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "union_generic_field_access.sts"
+          "program": "union_generic_field_access.ets"
         }
       }
     }
@@ -1225,12 +1225,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "union_generic_field_access.sts"
+      "program": "union_generic_field_access.ets"
     },
     "end": {
       "line": 27,
       "column": 2,
-      "program": "union_generic_field_access.sts"
+      "program": "union_generic_field_access.ets"
     }
   }
 }

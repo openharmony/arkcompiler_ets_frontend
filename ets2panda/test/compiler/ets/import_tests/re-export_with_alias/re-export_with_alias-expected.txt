@@ -12,12 +12,12 @@
             "start": {
               "line": 16,
               "column": 39,
-              "program": "re-export_with_alias.sts"
+              "program": "re-export_with_alias.ets"
             },
             "end": {
               "line": 16,
               "column": 49,
-              "program": "re-export_with_alias.sts"
+              "program": "re-export_with_alias.ets"
             }
           }
         },
@@ -32,12 +32,12 @@
                 "start": {
                   "line": 16,
                   "column": 21,
-                  "program": "re-export_with_alias.sts"
+                  "program": "re-export_with_alias.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 32,
-                  "program": "re-export_with_alias.sts"
+                  "program": "re-export_with_alias.ets"
                 }
               }
             },
@@ -49,12 +49,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "re-export_with_alias.sts"
+                  "program": "re-export_with_alias.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 17,
-                  "program": "re-export_with_alias.sts"
+                  "program": "re-export_with_alias.ets"
                 }
               }
             },
@@ -62,12 +62,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "re-export_with_alias.sts"
+                "program": "re-export_with_alias.ets"
               },
               "end": {
                 "line": 16,
                 "column": 32,
-                "program": "re-export_with_alias.sts"
+                "program": "re-export_with_alias.ets"
               }
             }
           }
@@ -76,12 +76,12 @@
           "start": {
             "line": 16,
             "column": 8,
-            "program": "re-export_with_alias.sts"
+            "program": "re-export_with_alias.ets"
           },
           "end": {
             "line": 16,
             "column": 50,
-            "program": "re-export_with_alias.sts"
+            "program": "re-export_with_alias.ets"
           }
         }
       },
@@ -109,12 +109,12 @@
             "start": {
               "line": 17,
               "column": 68,
-              "program": "re-export_with_alias.sts"
+              "program": "re-export_with_alias.ets"
             },
             "end": {
               "line": 17,
               "column": 78,
-              "program": "re-export_with_alias.sts"
+              "program": "re-export_with_alias.ets"
             }
           }
         },
@@ -129,12 +129,12 @@
                 "start": {
                   "line": 17,
                   "column": 22,
-                  "program": "re-export_with_alias.sts"
+                  "program": "re-export_with_alias.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 34,
-                  "program": "re-export_with_alias.sts"
+                  "program": "re-export_with_alias.ets"
                 }
               }
             },
@@ -146,12 +146,12 @@
                 "start": {
                   "line": 17,
                   "column": 9,
-                  "program": "re-export_with_alias.sts"
+                  "program": "re-export_with_alias.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 18,
-                  "program": "re-export_with_alias.sts"
+                  "program": "re-export_with_alias.ets"
                 }
               }
             },
@@ -159,12 +159,12 @@
               "start": {
                 "line": 17,
                 "column": 9,
-                "program": "re-export_with_alias.sts"
+                "program": "re-export_with_alias.ets"
               },
               "end": {
                 "line": 17,
                 "column": 34,
-                "program": "re-export_with_alias.sts"
+                "program": "re-export_with_alias.ets"
               }
             }
           },
@@ -178,12 +178,12 @@
                 "start": {
                   "line": 17,
                   "column": 49,
-                  "program": "re-export_with_alias.sts"
+                  "program": "re-export_with_alias.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 61,
-                  "program": "re-export_with_alias.sts"
+                  "program": "re-export_with_alias.ets"
                 }
               }
             },
@@ -195,12 +195,12 @@
                 "start": {
                   "line": 17,
                   "column": 36,
-                  "program": "re-export_with_alias.sts"
+                  "program": "re-export_with_alias.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 45,
-                  "program": "re-export_with_alias.sts"
+                  "program": "re-export_with_alias.ets"
                 }
               }
             },
@@ -208,12 +208,12 @@
               "start": {
                 "line": 17,
                 "column": 36,
-                "program": "re-export_with_alias.sts"
+                "program": "re-export_with_alias.ets"
               },
               "end": {
                 "line": 17,
                 "column": 61,
-                "program": "re-export_with_alias.sts"
+                "program": "re-export_with_alias.ets"
               }
             }
           }
@@ -222,12 +222,12 @@
           "start": {
             "line": 17,
             "column": 8,
-            "program": "re-export_with_alias.sts"
+            "program": "re-export_with_alias.ets"
           },
           "end": {
             "line": 17,
             "column": 79,
-            "program": "re-export_with_alias.sts"
+            "program": "re-export_with_alias.ets"
           }
         }
       },
@@ -255,12 +255,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "re-export_with_alias.sts"
+              "program": "re-export_with_alias.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "re-export_with_alias.sts"
+              "program": "re-export_with_alias.ets"
             }
           }
         },
@@ -364,12 +364,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "re-export_with_alias.sts"
+                "program": "re-export_with_alias.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "re-export_with_alias.sts"
+                "program": "re-export_with_alias.ets"
               }
             }
           },
@@ -470,12 +470,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "re-export_with_alias.sts"
+                "program": "re-export_with_alias.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "re-export_with_alias.sts"
+                "program": "re-export_with_alias.ets"
               }
             }
           }
@@ -484,12 +484,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "re-export_with_alias.sts"
+            "program": "re-export_with_alias.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "re-export_with_alias.sts"
+            "program": "re-export_with_alias.ets"
           }
         }
       },
@@ -497,12 +497,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "re-export_with_alias.sts"
+          "program": "re-export_with_alias.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "re-export_with_alias.sts"
+          "program": "re-export_with_alias.ets"
         }
       }
     }
@@ -511,12 +511,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "re-export_with_alias.sts"
+      "program": "re-export_with_alias.ets"
     },
     "end": {
       "line": 18,
       "column": 1,
-      "program": "re-export_with_alias.sts"
+      "program": "re-export_with_alias.ets"
     }
   }
 }

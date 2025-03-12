@@ -698,7 +698,7 @@ Type *ETSChecker::CreatePartialTypeInterfaceDecl(ir::TSInterfaceDeclaration *con
         if (prop->IsMethodDefinition() && prop->AsMethodDefinition()->Function()->IsGetter()) {
             auto *decl = Allocator()->New<varbinder::FunctionDecl>(
                 Allocator(), prop->AsMethodDefinition()->Key()->AsIdentifier()->Name(), prop);
-            methodscope->AddDecl(Allocator(), decl, ScriptExtension::STS);
+            methodscope->AddDecl(Allocator(), decl, ScriptExtension::ETS);
         }
     }
 

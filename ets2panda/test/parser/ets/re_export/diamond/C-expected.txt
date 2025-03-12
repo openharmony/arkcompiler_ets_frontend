@@ -12,12 +12,12 @@
             "start": {
               "line": 16,
               "column": 26,
-              "program": "C.sts"
+              "program": "C.ets"
             },
             "end": {
               "line": 16,
               "column": 31,
-              "program": "C.sts"
+              "program": "C.ets"
             }
           }
         },
@@ -32,12 +32,12 @@
                 "start": {
                   "line": 16,
                   "column": 16,
-                  "program": "C.sts"
+                  "program": "C.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 19,
-                  "program": "C.sts"
+                  "program": "C.ets"
                 }
               }
             },
@@ -49,12 +49,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "C.sts"
+                  "program": "C.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 12,
-                  "program": "C.sts"
+                  "program": "C.ets"
                 }
               }
             },
@@ -62,12 +62,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "C.sts"
+                "program": "C.ets"
               },
               "end": {
                 "line": 16,
                 "column": 19,
-                "program": "C.sts"
+                "program": "C.ets"
               }
             }
           }
@@ -76,12 +76,12 @@
           "start": {
             "line": 16,
             "column": 8,
-            "program": "C.sts"
+            "program": "C.ets"
           },
           "end": {
             "line": 16,
             "column": 31,
-            "program": "C.sts"
+            "program": "C.ets"
           }
         }
       },
@@ -109,12 +109,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "C.sts"
+              "program": "C.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "C.sts"
+              "program": "C.ets"
             }
           }
         },
@@ -218,12 +218,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "C.sts"
+                "program": "C.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "C.sts"
+                "program": "C.ets"
               }
             }
           },
@@ -324,12 +324,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "C.sts"
+                "program": "C.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "C.sts"
+                "program": "C.ets"
               }
             }
           }
@@ -338,12 +338,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "C.sts"
+            "program": "C.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "C.sts"
+            "program": "C.ets"
           }
         }
       },
@@ -351,12 +351,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "C.sts"
+          "program": "C.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "C.sts"
+          "program": "C.ets"
         }
       }
     }
@@ -365,12 +365,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "C.sts"
+      "program": "C.ets"
     },
     "end": {
       "line": 17,
       "column": 1,
-      "program": "C.sts"
+      "program": "C.ets"
     }
   }
 }

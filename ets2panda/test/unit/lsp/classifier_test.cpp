@@ -25,7 +25,7 @@ class LspClassificationTests : public LSPAPITests {};
 TEST_F(LspClassificationTests, GetSyntacticClassifications1)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("class-name.sts", ES2PANDA_STATE_PARSED, R"(class A {};)");
+    es2panda_Context *ctx = initializer.CreateContext("class-name.ets", ES2PANDA_STATE_PARSED, R"(class A {};)");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     size_t const start = 6;
@@ -44,7 +44,7 @@ TEST_F(LspClassificationTests, GetSyntacticClassifications2)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("enum-name.sts", ES2PANDA_STATE_PARSED, R"(enum Color {Red, Blue, Green};)");
+        initializer.CreateContext("enum-name.ets", ES2PANDA_STATE_PARSED, R"(enum Color {Red, Blue, Green};)");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     size_t const start = 5;
@@ -63,7 +63,7 @@ TEST_F(LspClassificationTests, GetSyntacticClassifications3)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("interface-name.sts", ES2PANDA_STATE_PARSED, R"(interface I {};)");
+        initializer.CreateContext("interface-name.ets", ES2PANDA_STATE_PARSED, R"(interface I {};)");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     size_t const start = 10;
@@ -82,7 +82,7 @@ TEST_F(LspClassificationTests, GetSyntacticClassifications4)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("type-parameter-name.sts", ES2PANDA_STATE_PARSED, R"(class Foo<T> {};)");
+        initializer.CreateContext("type-parameter-name.ets", ES2PANDA_STATE_PARSED, R"(class Foo<T> {};)");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     size_t const start = 10;
@@ -101,7 +101,7 @@ TEST_F(LspClassificationTests, GetSyntacticClassifications5)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("type-alias-name.sts", ES2PANDA_STATE_PARSED, R"(type tmp = Long|null;)");
+        initializer.CreateContext("type-alias-name.ets", ES2PANDA_STATE_PARSED, R"(type tmp = Long|null;)");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     size_t const start = 5;
@@ -120,7 +120,7 @@ TEST_F(LspClassificationTests, GetSyntacticClassifications6)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("parameter-name.sts", ES2PANDA_STATE_PARSED, R"(function A(a:number) {};)");
+        initializer.CreateContext("parameter-name.ets", ES2PANDA_STATE_PARSED, R"(function A(a:number) {};)");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     size_t const start = 11;
@@ -138,7 +138,7 @@ TEST_F(LspClassificationTests, GetSyntacticClassifications6)
 TEST_F(LspClassificationTests, GetSyntacticClassifications7)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("number-type.sts", ES2PANDA_STATE_PARSED, R"(let num = 1;)");
+    es2panda_Context *ctx = initializer.CreateContext("number-type.ets", ES2PANDA_STATE_PARSED, R"(let num = 1;)");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     size_t const start = 10;
@@ -156,7 +156,7 @@ TEST_F(LspClassificationTests, GetSyntacticClassifications7)
 TEST_F(LspClassificationTests, GetSyntacticClassifications8)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("string-type.sts", ES2PANDA_STATE_PARSED, R"(let str = "123";)");
+    es2panda_Context *ctx = initializer.CreateContext("string-type.ets", ES2PANDA_STATE_PARSED, R"(let str = "123";)");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     size_t const start = 10;
@@ -174,7 +174,7 @@ TEST_F(LspClassificationTests, GetSyntacticClassifications8)
 TEST_F(LspClassificationTests, GetSyntacticClassifications9)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("boolean-type.sts", ES2PANDA_STATE_PARSED, R"(let a = true;
+    es2panda_Context *ctx = initializer.CreateContext("boolean-type.ets", ES2PANDA_STATE_PARSED, R"(let a = true;
 let b = false;)");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
@@ -202,7 +202,7 @@ let b = false;)");
 TEST_F(LspClassificationTests, GetSyntacticClassifications10)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("null-type.sts", ES2PANDA_STATE_PARSED, R"(type tmp = null;)");
+    es2panda_Context *ctx = initializer.CreateContext("null-type.ets", ES2PANDA_STATE_PARSED, R"(type tmp = null;)");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     size_t const start = 0;
@@ -229,7 +229,7 @@ TEST_F(LspClassificationTests, GetSyntacticClassifications11)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext(
-        "punctuator-type1.sts", ES2PANDA_STATE_PARSED,
+        "punctuator-type1.ets", ES2PANDA_STATE_PARSED,
         "let a = 1;\nlet b = 2;\nclass C {foo(){}};\nlet c = new C();\na + b;\na & b;\na += b;\na |= b;\na &= b;\na < "
         "b;\nc?.foo;\na - b;\na | b;\na -= b;\na ^= b;\na && b;\na > b;\n!a;\na * b;\na ^ b;\na *= b;\na <<= b;\na || "
         "b;\n");
@@ -282,7 +282,7 @@ TEST_F(LspClassificationTests, GetSyntacticClassifications12)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext(
-        "punctuator-type2.sts", ES2PANDA_STATE_PARSED,
+        "punctuator-type2.ets", ES2PANDA_STATE_PARSED,
         "a === b;\na <= b;\na / b;\na >> b;\na /= b;\na >>= b;\na++;\na == b;\na >= b;\na % b;\na << b;\na %= "
         "b;\na >>>= b;\na--;\na = b;\nlet var1: [number[]];\n(a);\nlet d:[];\n{a};\nc??b;\na != b;\na !== b;\n");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
@@ -332,7 +332,7 @@ TEST_F(LspClassificationTests, GetSemanticClassifications1)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("class-name.sts", ES2PANDA_STATE_CHECKED, "class Foo{};\nlet a:Foo = new Foo();");
+        initializer.CreateContext("class-name.ets", ES2PANDA_STATE_CHECKED, "class Foo{};\nlet a:Foo = new Foo();");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     size_t const start = 19;
@@ -352,7 +352,7 @@ TEST_F(LspClassificationTests, GetSemanticClassifications2)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("class-name.sts", ES2PANDA_STATE_CHECKED, "class Foo{};\nlet a:Foo = new Foo();");
+        initializer.CreateContext("class-name.ets", ES2PANDA_STATE_CHECKED, "class Foo{};\nlet a:Foo = new Foo();");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     size_t const start = 29;
@@ -371,7 +371,7 @@ TEST_F(LspClassificationTests, GetSemanticClassifications2)
 TEST_F(LspClassificationTests, GetSemanticClassifications3)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("enum-name.sts", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("enum-name.ets", ES2PANDA_STATE_CHECKED,
                                                       "enum Color {Red, Blue, Green};\nlet a:Color");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
@@ -392,7 +392,7 @@ TEST_F(LspClassificationTests, GetSemanticClassifications4)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("interface-name.sts", ES2PANDA_STATE_CHECKED, "interface I {};\nlet a:I");
+        initializer.CreateContext("interface-name.ets", ES2PANDA_STATE_CHECKED, "interface I {};\nlet a:I");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     size_t const start = 22;
@@ -411,7 +411,7 @@ TEST_F(LspClassificationTests, GetSemanticClassifications5)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("type-alias-name.sts", ES2PANDA_STATE_CHECKED, "type tmp = Long|null;\nlet a:tmp");
+        initializer.CreateContext("type-alias-name.ets", ES2PANDA_STATE_CHECKED, "type tmp = Long|null;\nlet a:tmp");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     size_t const start = 28;

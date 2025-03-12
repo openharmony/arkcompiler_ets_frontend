@@ -1,7 +1,7 @@
 # TypeScript linter
 
 Typescript linter ( further mentioned as 'linter' ) is a tool to check typescript sources and find language elements
-and constructions which are deprecated to use in a purpose to migrate sources to STS.
+and constructions which are deprecated to use in a purpose to migrate sources to ETS.
 The linter is currently under development.
 
 ## Prerequisits

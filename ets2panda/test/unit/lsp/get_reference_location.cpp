@@ -31,7 +31,7 @@ TEST_F(LspGetReferenceLocationTests, GetReferenceLocationAtPosition1)
 {
     using ark::es2panda::public_lib::Context;
     std::vector<std::string> files = {"ref_loc_export1.ts", "ref_loc_export2.ts", "ref_loc_export3.ts",
-                                      "ref_loc_export4.ts", "<ref-file.sts>"};
+                                      "ref_loc_export4.ts", "<ref-file.ets>"};
     std::vector<std::string> texts = {"function A(a:number, b:number) {\n  return a + b;\n}\nA(1, 2);",
                                       "function A(a:number, b:number) {\n  return a + b;\n}\nA(1, 2);",
                                       "function A(a:number, b:number) {\n  return a + b;\n}\nA(1, 2);",
@@ -48,15 +48,15 @@ TEST_F(LspGetReferenceLocationTests, GetReferenceLocationAtPosition1)
 TEST_F(LspGetReferenceLocationTests, GetReferenceLocationAtPosition2)
 {
     using ark::es2panda::public_lib::Context;
-    std::vector<std::string> fileNames = {"firstFile.sts", "secondFile.sts", "thirdFile.sts"};
+    std::vector<std::string> fileNames = {"firstFile.ets", "secondFile.ets", "thirdFile.ets"};
     std::vector<std::string> fileContents = {
         "export function abc(x: number): void {\n}\n\nexport function dummy(x: number): void {\n}\n"
         "\nexport class Foo {\nname: string = \"unassigned\";\nx: number = 1;\ny: number = 2;\nz: number = 3;"
         "\nconstructor(name: string, x: number, y: number, z: number) {\nthis.name = name;\nthis.x = x;\nthis.y = "
         "y;\nthis.z = z;\n}\n};",
-        "import {dummy, abc} from \"./firstFile.sts\";\n\ndummy(123);\ndummy(1992);\nabc(1);\nabc(2);",
+        "import {dummy, abc} from \"./firstFile.ets\";\n\ndummy(123);\ndummy(1992);\nabc(1);\nabc(2);",
         "import { dummy, abc } from "
-        "\"./firstFile.sts\";\n\ndummy(123);\ndummy(1992);\nabc(3);\nabc(4);\nabc(5);\n"};
+        "\"./firstFile.ets\";\n\ndummy(123);\ndummy(1992);\nabc(3);\nabc(4);\nabc(5);\n"};
     auto filePaths = CreateTempFile(fileNames, fileContents);
     ASSERT_TRUE(filePaths.size() == fileContents.size());
     Initializer initializer = Initializer();
@@ -87,15 +87,15 @@ TEST_F(LspGetReferenceLocationTests, GetReferenceLocationAtPosition2)
 TEST_F(LspGetReferenceLocationTests, GetReferenceLocationAtPosition3)
 {
     using ark::es2panda::public_lib::Context;
-    std::vector<std::string> fileNames = {"firstFile.sts", "secondFile.sts", "thirdFile.sts"};
+    std::vector<std::string> fileNames = {"firstFile.ets", "secondFile.ets", "thirdFile.ets"};
     std::vector<std::string> fileContents = {
         "export function abc(x: number): void {\n}\n\nexport function dummy(x: number): void {\n}\n"
         "\nexport class Foo {\nname: string = \"unassigned\";\nx: number = 1;\ny: number = 2;\nz: number = 3;"
         "\nconstructor(name: string, x: number, y: number, z: number) {\nthis.name = name;\nthis.x = x;\nthis.y = "
         "y;\nthis.z = z;\n}\n};",
-        "import {dummy, abc} from \"./firstFile.sts\";\n\ndummy(123);\ndummy(1992);\nabc(1);\nabc(2);",
+        "import {dummy, abc} from \"./firstFile.ets\";\n\ndummy(123);\ndummy(1992);\nabc(1);\nabc(2);",
         "import { dummy, abc } from "
-        "\"./firstFile.sts\";\n\ndummy(123);\ndummy(1992);\nabc(3);\nabc(4);\nabc(5);\n"};
+        "\"./firstFile.ets\";\n\ndummy(123);\ndummy(1992);\nabc(3);\nabc(4);\nabc(5);\n"};
     auto filePaths = CreateTempFile(fileNames, fileContents);
     ASSERT_TRUE(filePaths.size() == fileContents.size());
     Initializer initializer = Initializer();
@@ -127,15 +127,15 @@ TEST_F(LspGetReferenceLocationTests, GetReferenceLocationAtPosition3)
 TEST_F(LspGetReferenceLocationTests, GetReferenceLocationAtPosition4)
 {
     using ark::es2panda::public_lib::Context;
-    std::vector<std::string> fileNames = {"firstFile.sts", "secondFile.sts", "thirdFile.sts"};
+    std::vector<std::string> fileNames = {"firstFile.ets", "secondFile.ets", "thirdFile.ets"};
     std::vector<std::string> fileContents = {
         "export function abc(x: number): void {\n}\n\nexport function dummy(x: number): void {\n}\n"
         "\nexport class Foo {\nname: string = \"unassigned\";\nx: number = 1;\ny: number = 2;\nz: number = 3;"
         "\nconstructor(name: string, x: number, y: number, z: number) {\nthis.name = name;\nthis.x = x;\nthis.y = "
         "y;\nthis.z = z;\n}\n};",
-        "import {dummy, abc} from \"./firstFile.sts\";\n\ndummy(123);\ndummy(1992);\nabc(1);\nabc(2);",
+        "import {dummy, abc} from \"./firstFile.ets\";\n\ndummy(123);\ndummy(1992);\nabc(1);\nabc(2);",
         "import { dummy, abc } from "
-        "\"./firstFile.sts\";\n\ndummy(123);\ndummy(1992);\nabc(3);\nabc(4);\nabc(5);\n"};
+        "\"./firstFile.ets\";\n\ndummy(123);\ndummy(1992);\nabc(3);\nabc(4);\nabc(5);\n"};
     auto filePaths = CreateTempFile(fileNames, fileContents);
     ASSERT_TRUE(filePaths.size() == fileContents.size());
     Initializer initializer = Initializer();

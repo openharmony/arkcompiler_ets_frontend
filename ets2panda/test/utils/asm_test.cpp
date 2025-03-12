@@ -251,7 +251,7 @@ void AsmTest::SetCurrentProgram(std::string_view src)
 {
     int argc = 1;
     const char *argv = "../../../../bin/es2panda";  // NOLINT(modernize-avoid-c-arrays)
-    static constexpr std::string_view FILE_NAME = "dummy.sts";
+    static constexpr std::string_view FILE_NAME = "dummy.ets";
 
     program_ = GetProgram(argc, &argv, FILE_NAME, src);
     ASSERT_NE(program_.get(), nullptr);
@@ -259,7 +259,7 @@ void AsmTest::SetCurrentProgram(std::string_view src)
 
 std::unique_ptr<ark::pandasm::Program> AsmTest::GetCurrentProgram(std::string_view src)
 {
-    static constexpr std::string_view FILE_NAME = "annotation.sts";
+    static constexpr std::string_view FILE_NAME = "annotation.ets";
     std::array<char const *, 2> args = {"../../../../../bin/es2panda",
                                         "--ets-unnamed"};  // NOLINT(modernize-avoid-c-arrays)
 

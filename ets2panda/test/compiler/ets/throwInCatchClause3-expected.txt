@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "throwInCatchClause3.sts"
+              "program": "throwInCatchClause3.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "throwInCatchClause3.sts"
+              "program": "throwInCatchClause3.ets"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "throwInCatchClause3.sts"
+                "program": "throwInCatchClause3.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "throwInCatchClause3.sts"
+                "program": "throwInCatchClause3.ets"
               }
             }
           },
@@ -227,12 +227,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "throwInCatchClause3.sts"
+                "program": "throwInCatchClause3.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "throwInCatchClause3.sts"
+                "program": "throwInCatchClause3.ets"
               }
             }
           },
@@ -246,12 +246,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "throwInCatchClause3.sts"
+                  "program": "throwInCatchClause3.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 18,
-                  "program": "throwInCatchClause3.sts"
+                  "program": "throwInCatchClause3.ets"
                 }
               }
             },
@@ -272,12 +272,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "throwInCatchClause3.sts"
+                      "program": "throwInCatchClause3.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 18,
-                      "program": "throwInCatchClause3.sts"
+                      "program": "throwInCatchClause3.ets"
                     }
                   }
                 },
@@ -291,12 +291,12 @@
                     "start": {
                       "line": 16,
                       "column": 22,
-                      "program": "throwInCatchClause3.sts"
+                      "program": "throwInCatchClause3.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 26,
-                      "program": "throwInCatchClause3.sts"
+                      "program": "throwInCatchClause3.ets"
                     }
                   }
                 },
@@ -329,12 +329,12 @@
                                             "start": {
                                               "line": 19,
                                               "column": 23,
-                                              "program": "throwInCatchClause3.sts"
+                                              "program": "throwInCatchClause3.ets"
                                             },
                                             "end": {
                                               "line": 19,
                                               "column": 32,
-                                              "program": "throwInCatchClause3.sts"
+                                              "program": "throwInCatchClause3.ets"
                                             }
                                           }
                                         },
@@ -342,12 +342,12 @@
                                           "start": {
                                             "line": 19,
                                             "column": 23,
-                                            "program": "throwInCatchClause3.sts"
+                                            "program": "throwInCatchClause3.ets"
                                           },
                                           "end": {
                                             "line": 19,
                                             "column": 33,
-                                            "program": "throwInCatchClause3.sts"
+                                            "program": "throwInCatchClause3.ets"
                                           }
                                         }
                                       },
@@ -355,12 +355,12 @@
                                         "start": {
                                           "line": 19,
                                           "column": 23,
-                                          "program": "throwInCatchClause3.sts"
+                                          "program": "throwInCatchClause3.ets"
                                         },
                                         "end": {
                                           "line": 19,
                                           "column": 33,
-                                          "program": "throwInCatchClause3.sts"
+                                          "program": "throwInCatchClause3.ets"
                                         }
                                       }
                                     },
@@ -369,12 +369,12 @@
                                       "start": {
                                         "line": 19,
                                         "column": 19,
-                                        "program": "throwInCatchClause3.sts"
+                                        "program": "throwInCatchClause3.ets"
                                       },
                                       "end": {
                                         "line": 19,
                                         "column": 35,
-                                        "program": "throwInCatchClause3.sts"
+                                        "program": "throwInCatchClause3.ets"
                                       }
                                     }
                                   },
@@ -382,12 +382,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 13,
-                                      "program": "throwInCatchClause3.sts"
+                                      "program": "throwInCatchClause3.ets"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 35,
-                                      "program": "throwInCatchClause3.sts"
+                                      "program": "throwInCatchClause3.ets"
                                     }
                                   }
                                 }
@@ -396,12 +396,12 @@
                                 "start": {
                                   "line": 18,
                                   "column": 13,
-                                  "program": "throwInCatchClause3.sts"
+                                  "program": "throwInCatchClause3.ets"
                                 },
                                 "end": {
                                   "line": 20,
                                   "column": 10,
-                                  "program": "throwInCatchClause3.sts"
+                                  "program": "throwInCatchClause3.ets"
                                 }
                               }
                             },
@@ -423,12 +423,12 @@
                                             "start": {
                                               "line": 21,
                                               "column": 19,
-                                              "program": "throwInCatchClause3.sts"
+                                              "program": "throwInCatchClause3.ets"
                                             },
                                             "end": {
                                               "line": 21,
                                               "column": 20,
-                                              "program": "throwInCatchClause3.sts"
+                                              "program": "throwInCatchClause3.ets"
                                             }
                                           }
                                         },
@@ -444,12 +444,12 @@
                                                 "start": {
                                                   "line": 21,
                                                   "column": 24,
-                                                  "program": "throwInCatchClause3.sts"
+                                                  "program": "throwInCatchClause3.ets"
                                                 },
                                                 "end": {
                                                   "line": 21,
                                                   "column": 33,
-                                                  "program": "throwInCatchClause3.sts"
+                                                  "program": "throwInCatchClause3.ets"
                                                 }
                                               }
                                             },
@@ -457,12 +457,12 @@
                                               "start": {
                                                 "line": 21,
                                                 "column": 24,
-                                                "program": "throwInCatchClause3.sts"
+                                                "program": "throwInCatchClause3.ets"
                                               },
                                               "end": {
                                                 "line": 21,
                                                 "column": 34,
-                                                "program": "throwInCatchClause3.sts"
+                                                "program": "throwInCatchClause3.ets"
                                               }
                                             }
                                           },
@@ -470,12 +470,12 @@
                                             "start": {
                                               "line": 21,
                                               "column": 24,
-                                              "program": "throwInCatchClause3.sts"
+                                              "program": "throwInCatchClause3.ets"
                                             },
                                             "end": {
                                               "line": 21,
                                               "column": 34,
-                                              "program": "throwInCatchClause3.sts"
+                                              "program": "throwInCatchClause3.ets"
                                             }
                                           }
                                         },
@@ -483,12 +483,12 @@
                                           "start": {
                                             "line": 21,
                                             "column": 19,
-                                            "program": "throwInCatchClause3.sts"
+                                            "program": "throwInCatchClause3.ets"
                                           },
                                           "end": {
                                             "line": 21,
                                             "column": 20,
-                                            "program": "throwInCatchClause3.sts"
+                                            "program": "throwInCatchClause3.ets"
                                           }
                                         }
                                       },
@@ -496,12 +496,12 @@
                                         "start": {
                                           "line": 21,
                                           "column": 13,
-                                          "program": "throwInCatchClause3.sts"
+                                          "program": "throwInCatchClause3.ets"
                                         },
                                         "end": {
                                           "line": 21,
                                           "column": 34,
-                                          "program": "throwInCatchClause3.sts"
+                                          "program": "throwInCatchClause3.ets"
                                         }
                                       }
                                     }
@@ -510,12 +510,12 @@
                                     "start": {
                                       "line": 20,
                                       "column": 21,
-                                      "program": "throwInCatchClause3.sts"
+                                      "program": "throwInCatchClause3.ets"
                                     },
                                     "end": {
                                       "line": 22,
                                       "column": 10,
-                                      "program": "throwInCatchClause3.sts"
+                                      "program": "throwInCatchClause3.ets"
                                     }
                                   }
                                 },
@@ -527,12 +527,12 @@
                                     "start": {
                                       "line": 20,
                                       "column": 18,
-                                      "program": "throwInCatchClause3.sts"
+                                      "program": "throwInCatchClause3.ets"
                                     },
                                     "end": {
                                       "line": 20,
                                       "column": 19,
-                                      "program": "throwInCatchClause3.sts"
+                                      "program": "throwInCatchClause3.ets"
                                     }
                                   }
                                 },
@@ -540,12 +540,12 @@
                                   "start": {
                                     "line": 20,
                                     "column": 11,
-                                    "program": "throwInCatchClause3.sts"
+                                    "program": "throwInCatchClause3.ets"
                                   },
                                   "end": {
                                     "line": 22,
                                     "column": 10,
-                                    "program": "throwInCatchClause3.sts"
+                                    "program": "throwInCatchClause3.ets"
                                   }
                                 }
                               }
@@ -555,12 +555,12 @@
                               "start": {
                                 "line": 18,
                                 "column": 9,
-                                "program": "throwInCatchClause3.sts"
+                                "program": "throwInCatchClause3.ets"
                               },
                               "end": {
                                 "line": 22,
                                 "column": 10,
-                                "program": "throwInCatchClause3.sts"
+                                "program": "throwInCatchClause3.ets"
                               }
                             }
                           }
@@ -569,12 +569,12 @@
                           "start": {
                             "line": 17,
                             "column": 9,
-                            "program": "throwInCatchClause3.sts"
+                            "program": "throwInCatchClause3.ets"
                           },
                           "end": {
                             "line": 23,
                             "column": 6,
-                            "program": "throwInCatchClause3.sts"
+                            "program": "throwInCatchClause3.ets"
                           }
                         }
                       },
@@ -588,12 +588,12 @@
                               "start": {
                                 "line": 23,
                                 "column": 17,
-                                "program": "throwInCatchClause3.sts"
+                                "program": "throwInCatchClause3.ets"
                               },
                               "end": {
                                 "line": 25,
                                 "column": 6,
-                                "program": "throwInCatchClause3.sts"
+                                "program": "throwInCatchClause3.ets"
                               }
                             }
                           },
@@ -605,12 +605,12 @@
                               "start": {
                                 "line": 23,
                                 "column": 14,
-                                "program": "throwInCatchClause3.sts"
+                                "program": "throwInCatchClause3.ets"
                               },
                               "end": {
                                 "line": 23,
                                 "column": 15,
-                                "program": "throwInCatchClause3.sts"
+                                "program": "throwInCatchClause3.ets"
                               }
                             }
                           },
@@ -618,12 +618,12 @@
                             "start": {
                               "line": 23,
                               "column": 7,
-                              "program": "throwInCatchClause3.sts"
+                              "program": "throwInCatchClause3.ets"
                             },
                             "end": {
                               "line": 25,
                               "column": 6,
-                              "program": "throwInCatchClause3.sts"
+                              "program": "throwInCatchClause3.ets"
                             }
                           }
                         }
@@ -633,12 +633,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "throwInCatchClause3.sts"
+                          "program": "throwInCatchClause3.ets"
                         },
                         "end": {
                           "line": 25,
                           "column": 6,
-                          "program": "throwInCatchClause3.sts"
+                          "program": "throwInCatchClause3.ets"
                         }
                       }
                     }
@@ -647,12 +647,12 @@
                     "start": {
                       "line": 16,
                       "column": 27,
-                      "program": "throwInCatchClause3.sts"
+                      "program": "throwInCatchClause3.ets"
                     },
                     "end": {
                       "line": 26,
                       "column": 2,
-                      "program": "throwInCatchClause3.sts"
+                      "program": "throwInCatchClause3.ets"
                     }
                   }
                 },
@@ -660,12 +660,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "throwInCatchClause3.sts"
+                    "program": "throwInCatchClause3.ets"
                   },
                   "end": {
                     "line": 26,
                     "column": 2,
-                    "program": "throwInCatchClause3.sts"
+                    "program": "throwInCatchClause3.ets"
                   }
                 }
               },
@@ -673,12 +673,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "throwInCatchClause3.sts"
+                  "program": "throwInCatchClause3.ets"
                 },
                 "end": {
                   "line": 26,
                   "column": 2,
-                  "program": "throwInCatchClause3.sts"
+                  "program": "throwInCatchClause3.ets"
                 }
               }
             },
@@ -688,12 +688,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "throwInCatchClause3.sts"
+                "program": "throwInCatchClause3.ets"
               },
               "end": {
                 "line": 26,
                 "column": 2,
-                "program": "throwInCatchClause3.sts"
+                "program": "throwInCatchClause3.ets"
               }
             }
           }
@@ -702,12 +702,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "throwInCatchClause3.sts"
+            "program": "throwInCatchClause3.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "throwInCatchClause3.sts"
+            "program": "throwInCatchClause3.ets"
           }
         }
       },
@@ -715,12 +715,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "throwInCatchClause3.sts"
+          "program": "throwInCatchClause3.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "throwInCatchClause3.sts"
+          "program": "throwInCatchClause3.ets"
         }
       }
     }
@@ -729,12 +729,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "throwInCatchClause3.sts"
+      "program": "throwInCatchClause3.ets"
     },
     "end": {
       "line": 27,
       "column": 1,
-      "program": "throwInCatchClause3.sts"
+      "program": "throwInCatchClause3.ets"
     }
   }
 }

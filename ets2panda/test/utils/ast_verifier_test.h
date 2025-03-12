@@ -80,7 +80,7 @@ public:
     }
 
     struct ContextFromStringExtractor {
-        ContextFromStringExtractor(AstVerifierTest *fixture, char const *source, char const *fileName = "dummy.sts")
+        ContextFromStringExtractor(AstVerifierTest *fixture, char const *source, char const *fileName = "dummy.ets")
         {
             ASSERT(fixture->ctx_ == nullptr);
             fixture->ctx_ = fixture->impl_->CreateContextFromString(fixture->cfg_, source, fileName);

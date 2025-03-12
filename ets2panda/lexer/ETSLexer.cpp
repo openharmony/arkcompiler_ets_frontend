@@ -96,7 +96,7 @@ void ETSLexer::CheckNumberLiteralEnd()
 bool ETSLexer::CheckUtf16Compatible(char32_t cp) const
 {
     if (cp >= util::StringView::Constants::CELESTIAL_OFFSET) {
-        // lexer_invalid_characters.sts
+        // lexer_invalid_characters.ets
         LogSyntaxError("Unsupported character literal");
         return false;
     }

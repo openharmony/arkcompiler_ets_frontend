@@ -13,5 +13,26 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "result": []
+    "result": [
+        {
+            "line": 28,
+            "column": 9,
+            "endLine": 28,
+            "endColumn": 31,
+            "problem": "StrictDiagnostic",
+            "suggest": "Object is possibly 'undefined'.",
+            "rule": "Object is possibly 'undefined'.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 21,
+            "endLine": 28,
+            "endColumn": 30,
+            "problem": "StrictDiagnostic",
+            "suggest": "No overload matches this call.\n  Overload 1 of 2, '(id: number, name?: string | undefined): Promise<void> | undefined', gave the following error.\n    Argument of type 'undefined' is not assignable to parameter of type 'number'.\n  Overload 2 of 2, '(id: number): void | undefined', gave the following error.\n    Argument of type 'undefined' is not assignable to parameter of type 'number'.",
+            "rule": "No overload matches this call.\n  Overload 1 of 2, '(id: number, name?: string | undefined): Promise<void> | undefined', gave the following error.\n    Argument of type 'undefined' is not assignable to parameter of type 'number'.\n  Overload 2 of 2, '(id: number): void | undefined', gave the following error.\n    Argument of type 'undefined' is not assignable to parameter of type 'number'.",
+            "severity": "ERROR"
+        }
+    ]
 }

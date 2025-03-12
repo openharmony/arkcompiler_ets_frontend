@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "launch_function_returning_void.sts"
+              "program": "launch_function_returning_void.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "launch_function_returning_void.sts"
+              "program": "launch_function_returning_void.ets"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "launch_function_returning_void.sts"
+                "program": "launch_function_returning_void.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "launch_function_returning_void.sts"
+                "program": "launch_function_returning_void.ets"
               }
             }
           },
@@ -140,12 +140,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "launch_function_returning_void.sts"
+                  "program": "launch_function_returning_void.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 13,
-                  "program": "launch_function_returning_void.sts"
+                  "program": "launch_function_returning_void.ets"
                 }
               }
             },
@@ -166,12 +166,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "launch_function_returning_void.sts"
+                      "program": "launch_function_returning_void.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 13,
-                      "program": "launch_function_returning_void.sts"
+                      "program": "launch_function_returning_void.ets"
                     }
                   }
                 },
@@ -186,12 +186,12 @@
                     "start": {
                       "line": 16,
                       "column": 15,
-                      "program": "launch_function_returning_void.sts"
+                      "program": "launch_function_returning_void.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 17,
-                      "program": "launch_function_returning_void.sts"
+                      "program": "launch_function_returning_void.ets"
                     }
                   }
                 },
@@ -199,12 +199,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "launch_function_returning_void.sts"
+                    "program": "launch_function_returning_void.ets"
                   },
                   "end": {
                     "line": 16,
                     "column": 17,
-                    "program": "launch_function_returning_void.sts"
+                    "program": "launch_function_returning_void.ets"
                   }
                 }
               },
@@ -212,12 +212,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "launch_function_returning_void.sts"
+                  "program": "launch_function_returning_void.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 17,
-                  "program": "launch_function_returning_void.sts"
+                  "program": "launch_function_returning_void.ets"
                 }
               }
             },
@@ -227,12 +227,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "launch_function_returning_void.sts"
+                "program": "launch_function_returning_void.ets"
               },
               "end": {
                 "line": 16,
                 "column": 17,
-                "program": "launch_function_returning_void.sts"
+                "program": "launch_function_returning_void.ets"
               }
             }
           },
@@ -246,12 +246,12 @@
                 "start": {
                   "line": 18,
                   "column": 10,
-                  "program": "launch_function_returning_void.sts"
+                  "program": "launch_function_returning_void.ets"
                 },
                 "end": {
                   "line": 18,
                   "column": 14,
-                  "program": "launch_function_returning_void.sts"
+                  "program": "launch_function_returning_void.ets"
                 }
               }
             },
@@ -272,12 +272,12 @@
                     "start": {
                       "line": 18,
                       "column": 10,
-                      "program": "launch_function_returning_void.sts"
+                      "program": "launch_function_returning_void.ets"
                     },
                     "end": {
                       "line": 18,
                       "column": 14,
-                      "program": "launch_function_returning_void.sts"
+                      "program": "launch_function_returning_void.ets"
                     }
                   }
                 },
@@ -308,12 +308,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 12,
-                                      "program": "launch_function_returning_void.sts"
+                                      "program": "launch_function_returning_void.ets"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 19,
-                                      "program": "launch_function_returning_void.sts"
+                                      "program": "launch_function_returning_void.ets"
                                     }
                                   }
                                 },
@@ -326,12 +326,12 @@
                                         "start": {
                                           "line": 19,
                                           "column": 20,
-                                          "program": "launch_function_returning_void.sts"
+                                          "program": "launch_function_returning_void.ets"
                                         },
                                         "end": {
                                           "line": 19,
                                           "column": 24,
-                                          "program": "launch_function_returning_void.sts"
+                                          "program": "launch_function_returning_void.ets"
                                         }
                                       }
                                     }
@@ -340,12 +340,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 19,
-                                      "program": "launch_function_returning_void.sts"
+                                      "program": "launch_function_returning_void.ets"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 25,
-                                      "program": "launch_function_returning_void.sts"
+                                      "program": "launch_function_returning_void.ets"
                                     }
                                   }
                                 },
@@ -353,12 +353,12 @@
                                   "start": {
                                     "line": 19,
                                     "column": 12,
-                                    "program": "launch_function_returning_void.sts"
+                                    "program": "launch_function_returning_void.ets"
                                   },
                                   "end": {
                                     "line": 19,
                                     "column": 27,
-                                    "program": "launch_function_returning_void.sts"
+                                    "program": "launch_function_returning_void.ets"
                                   }
                                 }
                               },
@@ -366,12 +366,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 12,
-                                  "program": "launch_function_returning_void.sts"
+                                  "program": "launch_function_returning_void.ets"
                                 },
                                 "end": {
                                   "line": 19,
                                   "column": 27,
-                                  "program": "launch_function_returning_void.sts"
+                                  "program": "launch_function_returning_void.ets"
                                 }
                               }
                             },
@@ -380,12 +380,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 9,
-                                "program": "launch_function_returning_void.sts"
+                                "program": "launch_function_returning_void.ets"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 10,
-                                "program": "launch_function_returning_void.sts"
+                                "program": "launch_function_returning_void.ets"
                               }
                             }
                           },
@@ -401,12 +401,12 @@
                                   "start": {
                                     "line": 19,
                                     "column": 35,
-                                    "program": "launch_function_returning_void.sts"
+                                    "program": "launch_function_returning_void.ets"
                                   },
                                   "end": {
                                     "line": 19,
                                     "column": 38,
-                                    "program": "launch_function_returning_void.sts"
+                                    "program": "launch_function_returning_void.ets"
                                   }
                                 }
                               },
@@ -416,12 +416,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 35,
-                                  "program": "launch_function_returning_void.sts"
+                                  "program": "launch_function_returning_void.ets"
                                 },
                                 "end": {
                                   "line": 19,
                                   "column": 40,
-                                  "program": "launch_function_returning_void.sts"
+                                  "program": "launch_function_returning_void.ets"
                                 }
                               }
                             },
@@ -429,12 +429,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 28,
-                                "program": "launch_function_returning_void.sts"
+                                "program": "launch_function_returning_void.ets"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 40,
-                                "program": "launch_function_returning_void.sts"
+                                "program": "launch_function_returning_void.ets"
                               }
                             }
                           },
@@ -442,12 +442,12 @@
                             "start": {
                               "line": 19,
                               "column": 9,
-                              "program": "launch_function_returning_void.sts"
+                              "program": "launch_function_returning_void.ets"
                             },
                             "end": {
                               "line": 19,
                               "column": 40,
-                              "program": "launch_function_returning_void.sts"
+                              "program": "launch_function_returning_void.ets"
                             }
                           }
                         }
@@ -457,12 +457,12 @@
                         "start": {
                           "line": 19,
                           "column": 5,
-                          "program": "launch_function_returning_void.sts"
+                          "program": "launch_function_returning_void.ets"
                         },
                         "end": {
                           "line": 19,
                           "column": 40,
-                          "program": "launch_function_returning_void.sts"
+                          "program": "launch_function_returning_void.ets"
                         }
                       }
                     }
@@ -471,12 +471,12 @@
                     "start": {
                       "line": 18,
                       "column": 16,
-                      "program": "launch_function_returning_void.sts"
+                      "program": "launch_function_returning_void.ets"
                     },
                     "end": {
                       "line": 20,
                       "column": 2,
-                      "program": "launch_function_returning_void.sts"
+                      "program": "launch_function_returning_void.ets"
                     }
                   }
                 },
@@ -484,12 +484,12 @@
                   "start": {
                     "line": 18,
                     "column": 10,
-                    "program": "launch_function_returning_void.sts"
+                    "program": "launch_function_returning_void.ets"
                   },
                   "end": {
                     "line": 20,
                     "column": 2,
-                    "program": "launch_function_returning_void.sts"
+                    "program": "launch_function_returning_void.ets"
                   }
                 }
               },
@@ -497,12 +497,12 @@
                 "start": {
                   "line": 18,
                   "column": 10,
-                  "program": "launch_function_returning_void.sts"
+                  "program": "launch_function_returning_void.ets"
                 },
                 "end": {
                   "line": 20,
                   "column": 2,
-                  "program": "launch_function_returning_void.sts"
+                  "program": "launch_function_returning_void.ets"
                 }
               }
             },
@@ -512,12 +512,12 @@
               "start": {
                 "line": 18,
                 "column": 1,
-                "program": "launch_function_returning_void.sts"
+                "program": "launch_function_returning_void.ets"
               },
               "end": {
                 "line": 20,
                 "column": 2,
-                "program": "launch_function_returning_void.sts"
+                "program": "launch_function_returning_void.ets"
               }
             }
           }
@@ -526,12 +526,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "launch_function_returning_void.sts"
+            "program": "launch_function_returning_void.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "launch_function_returning_void.sts"
+            "program": "launch_function_returning_void.ets"
           }
         }
       },
@@ -539,12 +539,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "launch_function_returning_void.sts"
+          "program": "launch_function_returning_void.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "launch_function_returning_void.sts"
+          "program": "launch_function_returning_void.ets"
         }
       }
     }
@@ -553,12 +553,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "launch_function_returning_void.sts"
+      "program": "launch_function_returning_void.ets"
     },
     "end": {
       "line": 20,
       "column": 2,
-      "program": "launch_function_returning_void.sts"
+      "program": "launch_function_returning_void.ets"
     }
   }
 }

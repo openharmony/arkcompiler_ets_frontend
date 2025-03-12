@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "ternary.sts"
+              "program": "ternary.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "ternary.sts"
+              "program": "ternary.ets"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "ternary.sts"
+                "program": "ternary.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "ternary.sts"
+                "program": "ternary.ets"
               }
             }
           },
@@ -195,12 +195,12 @@
                             "start": {
                               "line": 16,
                               "column": 5,
-                              "program": "ternary.sts"
+                              "program": "ternary.ets"
                             },
                             "end": {
                               "line": 16,
                               "column": 6,
-                              "program": "ternary.sts"
+                              "program": "ternary.ets"
                             }
                           }
                         },
@@ -211,12 +211,12 @@
                             "start": {
                               "line": 16,
                               "column": 9,
-                              "program": "ternary.sts"
+                              "program": "ternary.ets"
                             },
                             "end": {
                               "line": 16,
                               "column": 10,
-                              "program": "ternary.sts"
+                              "program": "ternary.ets"
                             }
                           }
                         },
@@ -224,12 +224,12 @@
                           "start": {
                             "line": 16,
                             "column": 5,
-                            "program": "ternary.sts"
+                            "program": "ternary.ets"
                           },
                           "end": {
                             "line": 16,
                             "column": 10,
-                            "program": "ternary.sts"
+                            "program": "ternary.ets"
                           }
                         }
                       },
@@ -237,12 +237,12 @@
                         "start": {
                           "line": 16,
                           "column": 5,
-                          "program": "ternary.sts"
+                          "program": "ternary.ets"
                         },
                         "end": {
                           "line": 16,
                           "column": 10,
-                          "program": "ternary.sts"
+                          "program": "ternary.ets"
                         }
                       }
                     },
@@ -259,12 +259,12 @@
                             "start": {
                               "line": 17,
                               "column": 5,
-                              "program": "ternary.sts"
+                              "program": "ternary.ets"
                             },
                             "end": {
                               "line": 17,
                               "column": 6,
-                              "program": "ternary.sts"
+                              "program": "ternary.ets"
                             }
                           }
                         },
@@ -275,12 +275,12 @@
                             "start": {
                               "line": 17,
                               "column": 9,
-                              "program": "ternary.sts"
+                              "program": "ternary.ets"
                             },
                             "end": {
                               "line": 17,
                               "column": 10,
-                              "program": "ternary.sts"
+                              "program": "ternary.ets"
                             }
                           }
                         },
@@ -288,12 +288,12 @@
                           "start": {
                             "line": 17,
                             "column": 5,
-                            "program": "ternary.sts"
+                            "program": "ternary.ets"
                           },
                           "end": {
                             "line": 17,
                             "column": 10,
-                            "program": "ternary.sts"
+                            "program": "ternary.ets"
                           }
                         }
                       },
@@ -301,12 +301,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "ternary.sts"
+                          "program": "ternary.ets"
                         },
                         "end": {
                           "line": 17,
                           "column": 10,
-                          "program": "ternary.sts"
+                          "program": "ternary.ets"
                         }
                       }
                     },
@@ -323,12 +323,12 @@
                             "start": {
                               "line": 19,
                               "column": 5,
-                              "program": "ternary.sts"
+                              "program": "ternary.ets"
                             },
                             "end": {
                               "line": 19,
                               "column": 6,
-                              "program": "ternary.sts"
+                              "program": "ternary.ets"
                             }
                           }
                         },
@@ -345,12 +345,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 9,
-                                  "program": "ternary.sts"
+                                  "program": "ternary.ets"
                                 },
                                 "end": {
                                   "line": 19,
                                   "column": 10,
-                                  "program": "ternary.sts"
+                                  "program": "ternary.ets"
                                 }
                               }
                             },
@@ -362,12 +362,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 13,
-                                  "program": "ternary.sts"
+                                  "program": "ternary.ets"
                                 },
                                 "end": {
                                   "line": 19,
                                   "column": 14,
-                                  "program": "ternary.sts"
+                                  "program": "ternary.ets"
                                 }
                               }
                             },
@@ -375,12 +375,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 9,
-                                "program": "ternary.sts"
+                                "program": "ternary.ets"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 14,
-                                "program": "ternary.sts"
+                                "program": "ternary.ets"
                               }
                             }
                           },
@@ -392,12 +392,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 17,
-                                "program": "ternary.sts"
+                                "program": "ternary.ets"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 18,
-                                "program": "ternary.sts"
+                                "program": "ternary.ets"
                               }
                             }
                           },
@@ -409,12 +409,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 21,
-                                "program": "ternary.sts"
+                                "program": "ternary.ets"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 22,
-                                "program": "ternary.sts"
+                                "program": "ternary.ets"
                               }
                             }
                           },
@@ -422,12 +422,12 @@
                             "start": {
                               "line": 19,
                               "column": 9,
-                              "program": "ternary.sts"
+                              "program": "ternary.ets"
                             },
                             "end": {
                               "line": 19,
                               "column": 22,
-                              "program": "ternary.sts"
+                              "program": "ternary.ets"
                             }
                           }
                         },
@@ -435,12 +435,12 @@
                           "start": {
                             "line": 19,
                             "column": 5,
-                            "program": "ternary.sts"
+                            "program": "ternary.ets"
                           },
                           "end": {
                             "line": 19,
                             "column": 22,
-                            "program": "ternary.sts"
+                            "program": "ternary.ets"
                           }
                         }
                       },
@@ -448,12 +448,12 @@
                         "start": {
                           "line": 19,
                           "column": 5,
-                          "program": "ternary.sts"
+                          "program": "ternary.ets"
                         },
                         "end": {
                           "line": 19,
                           "column": 22,
-                          "program": "ternary.sts"
+                          "program": "ternary.ets"
                         }
                       }
                     }
@@ -503,12 +503,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "ternary.sts"
+                "program": "ternary.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "ternary.sts"
+                "program": "ternary.ets"
               }
             }
           },
@@ -522,12 +522,12 @@
                 "start": {
                   "line": 16,
                   "column": 5,
-                  "program": "ternary.sts"
+                  "program": "ternary.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 6,
-                  "program": "ternary.sts"
+                  "program": "ternary.ets"
                 }
               }
             },
@@ -538,12 +538,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "ternary.sts"
+                  "program": "ternary.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 10,
-                  "program": "ternary.sts"
+                  "program": "ternary.ets"
                 }
               }
             },
@@ -559,12 +559,12 @@
               "start": {
                 "line": 16,
                 "column": 5,
-                "program": "ternary.sts"
+                "program": "ternary.ets"
               },
               "end": {
                 "line": 16,
                 "column": 10,
-                "program": "ternary.sts"
+                "program": "ternary.ets"
               }
             }
           },
@@ -578,12 +578,12 @@
                 "start": {
                   "line": 17,
                   "column": 5,
-                  "program": "ternary.sts"
+                  "program": "ternary.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 6,
-                  "program": "ternary.sts"
+                  "program": "ternary.ets"
                 }
               }
             },
@@ -594,12 +594,12 @@
                 "start": {
                   "line": 17,
                   "column": 9,
-                  "program": "ternary.sts"
+                  "program": "ternary.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 10,
-                  "program": "ternary.sts"
+                  "program": "ternary.ets"
                 }
               }
             },
@@ -615,12 +615,12 @@
               "start": {
                 "line": 17,
                 "column": 5,
-                "program": "ternary.sts"
+                "program": "ternary.ets"
               },
               "end": {
                 "line": 17,
                 "column": 10,
-                "program": "ternary.sts"
+                "program": "ternary.ets"
               }
             }
           },
@@ -634,12 +634,12 @@
                 "start": {
                   "line": 19,
                   "column": 5,
-                  "program": "ternary.sts"
+                  "program": "ternary.ets"
                 },
                 "end": {
                   "line": 19,
                   "column": 6,
-                  "program": "ternary.sts"
+                  "program": "ternary.ets"
                 }
               }
             },
@@ -656,12 +656,12 @@
                     "start": {
                       "line": 19,
                       "column": 9,
-                      "program": "ternary.sts"
+                      "program": "ternary.ets"
                     },
                     "end": {
                       "line": 19,
                       "column": 10,
-                      "program": "ternary.sts"
+                      "program": "ternary.ets"
                     }
                   }
                 },
@@ -673,12 +673,12 @@
                     "start": {
                       "line": 19,
                       "column": 13,
-                      "program": "ternary.sts"
+                      "program": "ternary.ets"
                     },
                     "end": {
                       "line": 19,
                       "column": 14,
-                      "program": "ternary.sts"
+                      "program": "ternary.ets"
                     }
                   }
                 },
@@ -686,12 +686,12 @@
                   "start": {
                     "line": 19,
                     "column": 9,
-                    "program": "ternary.sts"
+                    "program": "ternary.ets"
                   },
                   "end": {
                     "line": 19,
                     "column": 14,
-                    "program": "ternary.sts"
+                    "program": "ternary.ets"
                   }
                 }
               },
@@ -703,12 +703,12 @@
                   "start": {
                     "line": 19,
                     "column": 17,
-                    "program": "ternary.sts"
+                    "program": "ternary.ets"
                   },
                   "end": {
                     "line": 19,
                     "column": 18,
-                    "program": "ternary.sts"
+                    "program": "ternary.ets"
                   }
                 }
               },
@@ -720,12 +720,12 @@
                   "start": {
                     "line": 19,
                     "column": 21,
-                    "program": "ternary.sts"
+                    "program": "ternary.ets"
                   },
                   "end": {
                     "line": 19,
                     "column": 22,
-                    "program": "ternary.sts"
+                    "program": "ternary.ets"
                   }
                 }
               },
@@ -733,12 +733,12 @@
                 "start": {
                   "line": 19,
                   "column": 9,
-                  "program": "ternary.sts"
+                  "program": "ternary.ets"
                 },
                 "end": {
                   "line": 19,
                   "column": 22,
-                  "program": "ternary.sts"
+                  "program": "ternary.ets"
                 }
               }
             },
@@ -754,12 +754,12 @@
               "start": {
                 "line": 19,
                 "column": 5,
-                "program": "ternary.sts"
+                "program": "ternary.ets"
               },
               "end": {
                 "line": 19,
                 "column": 22,
-                "program": "ternary.sts"
+                "program": "ternary.ets"
               }
             }
           }
@@ -768,12 +768,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "ternary.sts"
+            "program": "ternary.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "ternary.sts"
+            "program": "ternary.ets"
           }
         }
       },
@@ -781,12 +781,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "ternary.sts"
+          "program": "ternary.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "ternary.sts"
+          "program": "ternary.ets"
         }
       }
     }
@@ -795,12 +795,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "ternary.sts"
+      "program": "ternary.ets"
     },
     "end": {
       "line": 20,
       "column": 1,
-      "program": "ternary.sts"
+      "program": "ternary.ets"
     }
   }
 }

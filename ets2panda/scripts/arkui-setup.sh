@@ -112,7 +112,7 @@ function do_checkout() {
 GIT_URL=https://gitee.com/rri_opensource/koala_projects.git
 DEST="${DEST:-koala-sig}"
 
-do_checkout "${GIT_URL}" panda_rev_6-0-prepare_ordinal "${DEST}"
+do_checkout "${GIT_URL}" panda_rev_6-0-prepare_ordinal_fixed "${DEST}"
 
 cd "${DEST}" || exit 1
 

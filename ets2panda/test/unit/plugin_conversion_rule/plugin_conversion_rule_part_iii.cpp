@@ -179,7 +179,7 @@ TEST_F(PluginConversionRuleUnitTest, ScriptionExtensionInputParameter)
     extern "C" bool IdentifierIsReferenceConst([[maybe_unused]] es2panda_Context *context,
     es2panda_AstNode *classInstance/*return_args:*/)
     {
-        ark::es2panda::ScriptExtension extE2p {ScriptExtension::STS};
+        ark::es2panda::ScriptExtension extE2p {ScriptExtension::ETS};
         auto apiRes = ((reinterpret_cast<const ir::Identifier *>(classInstance))->IsReference(extE2p));
     	return apiRes;
     })"};

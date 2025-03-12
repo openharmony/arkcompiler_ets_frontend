@@ -1,0 +1,55 @@
+/*
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+let x!: number;
+initializeX();
+console.log(x + x);
+
+function initializeX() {
+  x = 10;
+}
+
+let y: number;
+initializeY();
+
+console.log(y! + y!); // it's not a definite assignment assertion, it's the 'Ensure Not-Null expression', see 7.16 ArkTS spec
+function initializeY() {
+  y = 20;
+}
+
+class ArticleMeta {
+  private wordsPerMinute!: number;
+  private secondsPerImage: number;
+
+  constructor(wordsPerMinute: number) {
+      this.secondsPerImage = 15;
+  }
+}
+
+class Person {
+  name: string = ""
+  age: number = 0
+  location: string = ""
+}
+
+type OptionalPerson = Person | undefined
+let persons : Record<string, OptionalPerson> = {
+  "Bob": {
+      name: "Bob",
+      age: 48,
+      location: "New York"
+  }
+}
+console.log(persons["Bob"]!.age)

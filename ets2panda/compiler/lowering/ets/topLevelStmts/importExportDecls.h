@@ -25,7 +25,7 @@
 namespace ark::es2panda::compiler {
 
 class ImportExportDecls : ir::visitor::EmptyAstVisitor {
-    static constexpr std::string_view DEFAULT_IMPORT_SOURCE_FILE = "<default_import>.sts";
+    static constexpr std::string_view DEFAULT_IMPORT_SOURCE_FILE = "<default_import>.ets";
 
     static std::string CreateDefaultImportSource(const std::vector<std::string> &paths)
     {

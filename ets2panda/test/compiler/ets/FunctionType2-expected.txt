@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "FunctionType2.sts"
+              "program": "FunctionType2.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "FunctionType2.sts"
+              "program": "FunctionType2.ets"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "FunctionType2.sts"
+                "program": "FunctionType2.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "FunctionType2.sts"
+                "program": "FunctionType2.ets"
               }
             }
           },
@@ -140,12 +140,12 @@
                 "start": {
                   "line": 16,
                   "column": 5,
-                  "program": "FunctionType2.sts"
+                  "program": "FunctionType2.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "FunctionType2.sts"
+                  "program": "FunctionType2.ets"
                 }
               }
             },
@@ -169,12 +169,12 @@
                         "start": {
                           "line": 16,
                           "column": 15,
-                          "program": "FunctionType2.sts"
+                          "program": "FunctionType2.ets"
                         },
                         "end": {
                           "line": 16,
                           "column": 18,
-                          "program": "FunctionType2.sts"
+                          "program": "FunctionType2.ets"
                         }
                       }
                     },
@@ -183,12 +183,12 @@
                       "start": {
                         "line": 16,
                         "column": 12,
-                        "program": "FunctionType2.sts"
+                        "program": "FunctionType2.ets"
                       },
                       "end": {
                         "line": 16,
                         "column": 18,
-                        "program": "FunctionType2.sts"
+                        "program": "FunctionType2.ets"
                       }
                     }
                   },
@@ -196,12 +196,12 @@
                     "start": {
                       "line": 16,
                       "column": 12,
-                      "program": "FunctionType2.sts"
+                      "program": "FunctionType2.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 18,
-                      "program": "FunctionType2.sts"
+                      "program": "FunctionType2.ets"
                     }
                   }
                 },
@@ -216,12 +216,12 @@
                         "start": {
                           "line": 16,
                           "column": 23,
-                          "program": "FunctionType2.sts"
+                          "program": "FunctionType2.ets"
                         },
                         "end": {
                           "line": 16,
                           "column": 26,
-                          "program": "FunctionType2.sts"
+                          "program": "FunctionType2.ets"
                         }
                       }
                     },
@@ -230,12 +230,12 @@
                       "start": {
                         "line": 16,
                         "column": 20,
-                        "program": "FunctionType2.sts"
+                        "program": "FunctionType2.ets"
                       },
                       "end": {
                         "line": 16,
                         "column": 26,
-                        "program": "FunctionType2.sts"
+                        "program": "FunctionType2.ets"
                       }
                     }
                   },
@@ -243,12 +243,12 @@
                     "start": {
                       "line": 16,
                       "column": 20,
-                      "program": "FunctionType2.sts"
+                      "program": "FunctionType2.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 26,
-                      "program": "FunctionType2.sts"
+                      "program": "FunctionType2.ets"
                     }
                   }
                 }
@@ -259,12 +259,12 @@
                   "start": {
                     "line": 16,
                     "column": 31,
-                    "program": "FunctionType2.sts"
+                    "program": "FunctionType2.ets"
                   },
                   "end": {
                     "line": 16,
                     "column": 37,
-                    "program": "FunctionType2.sts"
+                    "program": "FunctionType2.ets"
                   }
                 }
               },
@@ -272,12 +272,12 @@
                 "start": {
                   "line": 16,
                   "column": 11,
-                  "program": "FunctionType2.sts"
+                  "program": "FunctionType2.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 37,
-                  "program": "FunctionType2.sts"
+                  "program": "FunctionType2.ets"
                 }
               }
             },
@@ -287,12 +287,12 @@
               "start": {
                 "line": 16,
                 "column": 5,
-                "program": "FunctionType2.sts"
+                "program": "FunctionType2.ets"
               },
               "end": {
                 "line": 16,
                 "column": 9,
-                "program": "FunctionType2.sts"
+                "program": "FunctionType2.ets"
               }
             }
           },
@@ -306,12 +306,12 @@
                 "start": {
                   "line": 18,
                   "column": 10,
-                  "program": "FunctionType2.sts"
+                  "program": "FunctionType2.ets"
                 },
                 "end": {
                   "line": 18,
                   "column": 15,
-                  "program": "FunctionType2.sts"
+                  "program": "FunctionType2.ets"
                 }
               }
             },
@@ -332,12 +332,12 @@
                     "start": {
                       "line": 18,
                       "column": 10,
-                      "program": "FunctionType2.sts"
+                      "program": "FunctionType2.ets"
                     },
                     "end": {
                       "line": 18,
                       "column": 15,
-                      "program": "FunctionType2.sts"
+                      "program": "FunctionType2.ets"
                     }
                   }
                 },
@@ -364,12 +364,12 @@
                                   "start": {
                                     "line": 18,
                                     "column": 23,
-                                    "program": "FunctionType2.sts"
+                                    "program": "FunctionType2.ets"
                                   },
                                   "end": {
                                     "line": 18,
                                     "column": 26,
-                                    "program": "FunctionType2.sts"
+                                    "program": "FunctionType2.ets"
                                   }
                                 }
                               },
@@ -378,12 +378,12 @@
                                 "start": {
                                   "line": 18,
                                   "column": 20,
-                                  "program": "FunctionType2.sts"
+                                  "program": "FunctionType2.ets"
                                 },
                                 "end": {
                                   "line": 18,
                                   "column": 26,
-                                  "program": "FunctionType2.sts"
+                                  "program": "FunctionType2.ets"
                                 }
                               }
                             },
@@ -391,12 +391,12 @@
                               "start": {
                                 "line": 18,
                                 "column": 20,
-                                "program": "FunctionType2.sts"
+                                "program": "FunctionType2.ets"
                               },
                               "end": {
                                 "line": 18,
                                 "column": 26,
-                                "program": "FunctionType2.sts"
+                                "program": "FunctionType2.ets"
                               }
                             }
                           },
@@ -411,12 +411,12 @@
                                   "start": {
                                     "line": 18,
                                     "column": 31,
-                                    "program": "FunctionType2.sts"
+                                    "program": "FunctionType2.ets"
                                   },
                                   "end": {
                                     "line": 18,
                                     "column": 34,
-                                    "program": "FunctionType2.sts"
+                                    "program": "FunctionType2.ets"
                                   }
                                 }
                               },
@@ -425,12 +425,12 @@
                                 "start": {
                                   "line": 18,
                                   "column": 28,
-                                  "program": "FunctionType2.sts"
+                                  "program": "FunctionType2.ets"
                                 },
                                 "end": {
                                   "line": 18,
                                   "column": 34,
-                                  "program": "FunctionType2.sts"
+                                  "program": "FunctionType2.ets"
                                 }
                               }
                             },
@@ -438,12 +438,12 @@
                               "start": {
                                 "line": 18,
                                 "column": 28,
-                                "program": "FunctionType2.sts"
+                                "program": "FunctionType2.ets"
                               },
                               "end": {
                                 "line": 18,
                                 "column": 34,
-                                "program": "FunctionType2.sts"
+                                "program": "FunctionType2.ets"
                               }
                             }
                           }
@@ -454,12 +454,12 @@
                             "start": {
                               "line": 18,
                               "column": 39,
-                              "program": "FunctionType2.sts"
+                              "program": "FunctionType2.ets"
                             },
                             "end": {
                               "line": 18,
                               "column": 45,
-                              "program": "FunctionType2.sts"
+                              "program": "FunctionType2.ets"
                             }
                           }
                         },
@@ -467,12 +467,12 @@
                           "start": {
                             "line": 18,
                             "column": 19,
-                            "program": "FunctionType2.sts"
+                            "program": "FunctionType2.ets"
                           },
                           "end": {
                             "line": 18,
                             "column": 45,
-                            "program": "FunctionType2.sts"
+                            "program": "FunctionType2.ets"
                           }
                         }
                       },
@@ -481,12 +481,12 @@
                         "start": {
                           "line": 18,
                           "column": 16,
-                          "program": "FunctionType2.sts"
+                          "program": "FunctionType2.ets"
                         },
                         "end": {
                           "line": 18,
                           "column": 45,
-                          "program": "FunctionType2.sts"
+                          "program": "FunctionType2.ets"
                         }
                       }
                     },
@@ -494,12 +494,12 @@
                       "start": {
                         "line": 18,
                         "column": 16,
-                        "program": "FunctionType2.sts"
+                        "program": "FunctionType2.ets"
                       },
                       "end": {
                         "line": 18,
                         "column": 45,
-                        "program": "FunctionType2.sts"
+                        "program": "FunctionType2.ets"
                       }
                     }
                   }
@@ -510,12 +510,12 @@
                     "start": {
                       "line": 18,
                       "column": 48,
-                      "program": "FunctionType2.sts"
+                      "program": "FunctionType2.ets"
                     },
                     "end": {
                       "line": 18,
                       "column": 52,
-                      "program": "FunctionType2.sts"
+                      "program": "FunctionType2.ets"
                     }
                   }
                 },
@@ -526,12 +526,12 @@
                     "start": {
                       "line": 18,
                       "column": 53,
-                      "program": "FunctionType2.sts"
+                      "program": "FunctionType2.ets"
                     },
                     "end": {
                       "line": 20,
                       "column": 2,
-                      "program": "FunctionType2.sts"
+                      "program": "FunctionType2.ets"
                     }
                   }
                 },
@@ -539,12 +539,12 @@
                   "start": {
                     "line": 18,
                     "column": 10,
-                    "program": "FunctionType2.sts"
+                    "program": "FunctionType2.ets"
                   },
                   "end": {
                     "line": 20,
                     "column": 2,
-                    "program": "FunctionType2.sts"
+                    "program": "FunctionType2.ets"
                   }
                 }
               },
@@ -552,12 +552,12 @@
                 "start": {
                   "line": 18,
                   "column": 10,
-                  "program": "FunctionType2.sts"
+                  "program": "FunctionType2.ets"
                 },
                 "end": {
                   "line": 20,
                   "column": 2,
-                  "program": "FunctionType2.sts"
+                  "program": "FunctionType2.ets"
                 }
               }
             },
@@ -567,12 +567,12 @@
               "start": {
                 "line": 18,
                 "column": 1,
-                "program": "FunctionType2.sts"
+                "program": "FunctionType2.ets"
               },
               "end": {
                 "line": 20,
                 "column": 2,
-                "program": "FunctionType2.sts"
+                "program": "FunctionType2.ets"
               }
             }
           },
@@ -586,12 +586,12 @@
                 "start": {
                   "line": 22,
                   "column": 10,
-                  "program": "FunctionType2.sts"
+                  "program": "FunctionType2.ets"
                 },
                 "end": {
                   "line": 22,
                   "column": 14,
-                  "program": "FunctionType2.sts"
+                  "program": "FunctionType2.ets"
                 }
               }
             },
@@ -612,12 +612,12 @@
                     "start": {
                       "line": 22,
                       "column": 10,
-                      "program": "FunctionType2.sts"
+                      "program": "FunctionType2.ets"
                     },
                     "end": {
                       "line": 22,
                       "column": 14,
-                      "program": "FunctionType2.sts"
+                      "program": "FunctionType2.ets"
                     }
                   }
                 },
@@ -631,12 +631,12 @@
                     "start": {
                       "line": 22,
                       "column": 18,
-                      "program": "FunctionType2.sts"
+                      "program": "FunctionType2.ets"
                     },
                     "end": {
                       "line": 22,
                       "column": 22,
-                      "program": "FunctionType2.sts"
+                      "program": "FunctionType2.ets"
                     }
                   }
                 },
@@ -655,12 +655,12 @@
                             "start": {
                               "line": 23,
                               "column": 5,
-                              "program": "FunctionType2.sts"
+                              "program": "FunctionType2.ets"
                             },
                             "end": {
                               "line": 23,
                               "column": 10,
-                              "program": "FunctionType2.sts"
+                              "program": "FunctionType2.ets"
                             }
                           }
                         },
@@ -673,12 +673,12 @@
                               "start": {
                                 "line": 23,
                                 "column": 11,
-                                "program": "FunctionType2.sts"
+                                "program": "FunctionType2.ets"
                               },
                               "end": {
                                 "line": 23,
                                 "column": 15,
-                                "program": "FunctionType2.sts"
+                                "program": "FunctionType2.ets"
                               }
                             }
                           }
@@ -688,12 +688,12 @@
                           "start": {
                             "line": 23,
                             "column": 5,
-                            "program": "FunctionType2.sts"
+                            "program": "FunctionType2.ets"
                           },
                           "end": {
                             "line": 23,
                             "column": 16,
-                            "program": "FunctionType2.sts"
+                            "program": "FunctionType2.ets"
                           }
                         }
                       },
@@ -701,12 +701,12 @@
                         "start": {
                           "line": 23,
                           "column": 5,
-                          "program": "FunctionType2.sts"
+                          "program": "FunctionType2.ets"
                         },
                         "end": {
                           "line": 23,
                           "column": 17,
-                          "program": "FunctionType2.sts"
+                          "program": "FunctionType2.ets"
                         }
                       }
                     }
@@ -715,12 +715,12 @@
                     "start": {
                       "line": 22,
                       "column": 23,
-                      "program": "FunctionType2.sts"
+                      "program": "FunctionType2.ets"
                     },
                     "end": {
                       "line": 24,
                       "column": 2,
-                      "program": "FunctionType2.sts"
+                      "program": "FunctionType2.ets"
                     }
                   }
                 },
@@ -728,12 +728,12 @@
                   "start": {
                     "line": 22,
                     "column": 10,
-                    "program": "FunctionType2.sts"
+                    "program": "FunctionType2.ets"
                   },
                   "end": {
                     "line": 24,
                     "column": 2,
-                    "program": "FunctionType2.sts"
+                    "program": "FunctionType2.ets"
                   }
                 }
               },
@@ -741,12 +741,12 @@
                 "start": {
                   "line": 22,
                   "column": 10,
-                  "program": "FunctionType2.sts"
+                  "program": "FunctionType2.ets"
                 },
                 "end": {
                   "line": 24,
                   "column": 2,
-                  "program": "FunctionType2.sts"
+                  "program": "FunctionType2.ets"
                 }
               }
             },
@@ -756,12 +756,12 @@
               "start": {
                 "line": 22,
                 "column": 1,
-                "program": "FunctionType2.sts"
+                "program": "FunctionType2.ets"
               },
               "end": {
                 "line": 24,
                 "column": 2,
-                "program": "FunctionType2.sts"
+                "program": "FunctionType2.ets"
               }
             }
           }
@@ -770,12 +770,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "FunctionType2.sts"
+            "program": "FunctionType2.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "FunctionType2.sts"
+            "program": "FunctionType2.ets"
           }
         }
       },
@@ -783,12 +783,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "FunctionType2.sts"
+          "program": "FunctionType2.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "FunctionType2.sts"
+          "program": "FunctionType2.ets"
         }
       }
     }
@@ -797,13 +797,13 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "FunctionType2.sts"
+      "program": "FunctionType2.ets"
     },
     "end": {
       "line": 25,
       "column": 1,
-      "program": "FunctionType2.sts"
+      "program": "FunctionType2.ets"
     }
   }
 }
-Warning: Variable 'func' is used before being assigned. [FunctionType2.sts:23:11]
+Warning: Variable 'func' is used before being assigned. [FunctionType2.ets:23:11]

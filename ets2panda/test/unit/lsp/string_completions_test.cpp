@@ -28,7 +28,7 @@ class SLCTests : public LSPAPITests {};
 TEST_F(SLCTests, SLCInterfaceTest)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *context = initializer.CreateContext("not-found-node.sts", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *context = initializer.CreateContext("not-found-node.ets", ES2PANDA_STATE_CHECKED,
                                                           "interface X { name: string}; let variable: X = { name: '");
 
     const size_t declarationPosition = 8;
@@ -50,7 +50,7 @@ TEST_F(SLCTests, SLCInterfaceTest)
 TEST_F(SLCTests, SLCClassDeclarationTest)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *context = initializer.CreateContext("not-found-node.sts", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *context = initializer.CreateContext("not-found-node.ets", ES2PANDA_STATE_CHECKED,
                                                           "class C { name: string}; let variable: C = { name: '");
 
     const size_t declarationPosition = 4;

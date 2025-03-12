@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "functionTypeThrows.sts"
+              "program": "functionTypeThrows.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "functionTypeThrows.sts"
+              "program": "functionTypeThrows.ets"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "functionTypeThrows.sts"
+                "program": "functionTypeThrows.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "functionTypeThrows.sts"
+                "program": "functionTypeThrows.ets"
               }
             }
           },
@@ -227,12 +227,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "functionTypeThrows.sts"
+                "program": "functionTypeThrows.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "functionTypeThrows.sts"
+                "program": "functionTypeThrows.ets"
               }
             }
           },
@@ -246,12 +246,12 @@
                 "start": {
                   "line": 16,
                   "column": 5,
-                  "program": "functionTypeThrows.sts"
+                  "program": "functionTypeThrows.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 6,
-                  "program": "functionTypeThrows.sts"
+                  "program": "functionTypeThrows.ets"
                 }
               }
             },
@@ -275,12 +275,12 @@
                         "start": {
                           "line": 16,
                           "column": 12,
-                          "program": "functionTypeThrows.sts"
+                          "program": "functionTypeThrows.ets"
                         },
                         "end": {
                           "line": 16,
                           "column": 15,
-                          "program": "functionTypeThrows.sts"
+                          "program": "functionTypeThrows.ets"
                         }
                       }
                     },
@@ -289,12 +289,12 @@
                       "start": {
                         "line": 16,
                         "column": 9,
-                        "program": "functionTypeThrows.sts"
+                        "program": "functionTypeThrows.ets"
                       },
                       "end": {
                         "line": 16,
                         "column": 15,
-                        "program": "functionTypeThrows.sts"
+                        "program": "functionTypeThrows.ets"
                       }
                     }
                   },
@@ -302,12 +302,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "functionTypeThrows.sts"
+                      "program": "functionTypeThrows.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 15,
-                      "program": "functionTypeThrows.sts"
+                      "program": "functionTypeThrows.ets"
                     }
                   }
                 },
@@ -322,12 +322,12 @@
                         "start": {
                           "line": 16,
                           "column": 20,
-                          "program": "functionTypeThrows.sts"
+                          "program": "functionTypeThrows.ets"
                         },
                         "end": {
                           "line": 16,
                           "column": 23,
-                          "program": "functionTypeThrows.sts"
+                          "program": "functionTypeThrows.ets"
                         }
                       }
                     },
@@ -336,12 +336,12 @@
                       "start": {
                         "line": 16,
                         "column": 17,
-                        "program": "functionTypeThrows.sts"
+                        "program": "functionTypeThrows.ets"
                       },
                       "end": {
                         "line": 16,
                         "column": 23,
-                        "program": "functionTypeThrows.sts"
+                        "program": "functionTypeThrows.ets"
                       }
                     }
                   },
@@ -349,12 +349,12 @@
                     "start": {
                       "line": 16,
                       "column": 17,
-                      "program": "functionTypeThrows.sts"
+                      "program": "functionTypeThrows.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 23,
-                      "program": "functionTypeThrows.sts"
+                      "program": "functionTypeThrows.ets"
                     }
                   }
                 }
@@ -365,12 +365,12 @@
                   "start": {
                     "line": 16,
                     "column": 28,
-                    "program": "functionTypeThrows.sts"
+                    "program": "functionTypeThrows.ets"
                   },
                   "end": {
                     "line": 16,
                     "column": 32,
-                    "program": "functionTypeThrows.sts"
+                    "program": "functionTypeThrows.ets"
                   }
                 }
               },
@@ -379,12 +379,12 @@
                 "start": {
                   "line": 16,
                   "column": 8,
-                  "program": "functionTypeThrows.sts"
+                  "program": "functionTypeThrows.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 32,
-                  "program": "functionTypeThrows.sts"
+                  "program": "functionTypeThrows.ets"
                 }
               }
             },
@@ -394,12 +394,12 @@
               "start": {
                 "line": 16,
                 "column": 5,
-                "program": "functionTypeThrows.sts"
+                "program": "functionTypeThrows.ets"
               },
               "end": {
                 "line": 16,
                 "column": 6,
-                "program": "functionTypeThrows.sts"
+                "program": "functionTypeThrows.ets"
               }
             }
           }
@@ -408,12 +408,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "functionTypeThrows.sts"
+            "program": "functionTypeThrows.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "functionTypeThrows.sts"
+            "program": "functionTypeThrows.ets"
           }
         }
       },
@@ -421,12 +421,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "functionTypeThrows.sts"
+          "program": "functionTypeThrows.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "functionTypeThrows.sts"
+          "program": "functionTypeThrows.ets"
         }
       }
     }
@@ -435,12 +435,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "functionTypeThrows.sts"
+      "program": "functionTypeThrows.ets"
     },
     "end": {
       "line": 17,
       "column": 1,
-      "program": "functionTypeThrows.sts"
+      "program": "functionTypeThrows.ets"
     }
   }
 }

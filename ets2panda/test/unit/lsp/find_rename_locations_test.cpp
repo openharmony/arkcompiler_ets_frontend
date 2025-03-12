@@ -22,7 +22,7 @@
 #include <gtest/gtest.h>
 
 // NOLINTBEGIN
-std::vector<std::string> fileNames = {"findRenameLocsOne.sts", "findRenameLocsTwo.sts"};
+std::vector<std::string> fileNames = {"findRenameLocsOne.ets", "findRenameLocsTwo.ets"};
 std::vector<std::string> fileContents = {
     R"(
         export function abc(x: number): void {
@@ -64,7 +64,7 @@ std::vector<std::string> fileContents = {
         abc(4);
         )",
     R"(
-        import { dummy, abc, Foo  } from "./findRenameLocsOne.sts";
+        import { dummy, abc, Foo  } from "./findRenameLocsOne.ets";
 
         dummy(4);
         dummy(44);
@@ -162,36 +162,36 @@ TEST_F(LspFindRenameLocationsTests, DISABLED_genTestData)
 }
 
 std::set<ark::es2panda::lsp::RenameLocation> expected_Foo = {
-    {R"(/tmp/findRenameLocsOne.sts)", 140, 143, 7, R"(        export class )", R"( {)"},
-    {R"(/tmp/findRenameLocsTwo.sts)", 30, 33, 1, R"(        import { dummy, abc, )",
-     R"(  } from "./findRenameLocsOne.sts";)"},
-    {R"(/tmp/findRenameLocsTwo.sts)", 183, 186, 9, R"(        let myfoo = new )", R"(("apples", 1, 2, 3);)"},
-    {R"(/tmp/findRenameLocsTwo.sts)", 234, 237, 10, R"(        let otherfoo = new )", R"(("oranges", 4, 5, 6);)"},
+    {R"(/tmp/findRenameLocsOne.ets)", 140, 143, 7, R"(        export class )", R"( {)"},
+    {R"(/tmp/findRenameLocsTwo.ets)", 30, 33, 1, R"(        import { dummy, abc, )",
+     R"(  } from "./findRenameLocsOne.ets";)"},
+    {R"(/tmp/findRenameLocsTwo.ets)", 183, 186, 9, R"(        let myfoo = new )", R"(("apples", 1, 2, 3);)"},
+    {R"(/tmp/findRenameLocsTwo.ets)", 234, 237, 10, R"(        let otherfoo = new )", R"(("oranges", 4, 5, 6);)"},
 };
 std::set<ark::es2panda::lsp::RenameLocation> expected_abc = {
-    {R"(/tmp/findRenameLocsOne.sts)", 25, 28, 1, R"(        export function )", R"((x: number): void {)"},
-    {R"(/tmp/findRenameLocsOne.sts)", 899, 902, 35, R"(        )", R"((2);)"},
-    {R"(/tmp/findRenameLocsOne.sts)", 915, 918, 36, R"(        )", R"((3);)"},
-    {R"(/tmp/findRenameLocsOne.sts)", 931, 934, 37, R"(        )", R"((4);)"},
-    {R"(/tmp/findRenameLocsTwo.sts)", 25, 28, 1, R"(        import { dummy, )",
-     R"(, Foo  } from "./findRenameLocsOne.sts";)"},
-    {R"(/tmp/findRenameLocsTwo.sts)", 115, 118, 5, R"(        )", R"((5);)"},
-    {R"(/tmp/findRenameLocsTwo.sts)", 131, 134, 6, R"(        )", R"((55);)"},
-    {R"(/tmp/findRenameLocsTwo.sts)", 148, 151, 7, R"(        )", R"((555);)"},
+    {R"(/tmp/findRenameLocsOne.ets)", 25, 28, 1, R"(        export function )", R"((x: number): void {)"},
+    {R"(/tmp/findRenameLocsOne.ets)", 899, 902, 35, R"(        )", R"((2);)"},
+    {R"(/tmp/findRenameLocsOne.ets)", 915, 918, 36, R"(        )", R"((3);)"},
+    {R"(/tmp/findRenameLocsOne.ets)", 931, 934, 37, R"(        )", R"((4);)"},
+    {R"(/tmp/findRenameLocsTwo.ets)", 25, 28, 1, R"(        import { dummy, )",
+     R"(, Foo  } from "./findRenameLocsOne.ets";)"},
+    {R"(/tmp/findRenameLocsTwo.ets)", 115, 118, 5, R"(        )", R"((5);)"},
+    {R"(/tmp/findRenameLocsTwo.ets)", 131, 134, 6, R"(        )", R"((55);)"},
+    {R"(/tmp/findRenameLocsTwo.ets)", 148, 151, 7, R"(        )", R"((555);)"},
 };
 std::set<ark::es2panda::lsp::RenameLocation> expected_dummy = {
-    {R"(/tmp/findRenameLocsOne.sts)", 83, 88, 4, R"(        export function )", R"((x: number): void {)"},
-    {R"(/tmp/findRenameLocsOne.sts)", 863, 868, 33, R"(        )", R"((0);)"},
-    {R"(/tmp/findRenameLocsOne.sts)", 881, 886, 34, R"(        )", R"((1);)"},
-    {R"(/tmp/findRenameLocsTwo.sts)", 18, 23, 1, R"(        import { )",
-     R"(, abc, Foo  } from "./findRenameLocsOne.sts";)"},
-    {R"(/tmp/findRenameLocsTwo.sts)", 78, 83, 3, R"(        )", R"((4);)"},
-    {R"(/tmp/findRenameLocsTwo.sts)", 96, 101, 4, R"(        )", R"((44);)"},
+    {R"(/tmp/findRenameLocsOne.ets)", 83, 88, 4, R"(        export function )", R"((x: number): void {)"},
+    {R"(/tmp/findRenameLocsOne.ets)", 863, 868, 33, R"(        )", R"((0);)"},
+    {R"(/tmp/findRenameLocsOne.ets)", 881, 886, 34, R"(        )", R"((1);)"},
+    {R"(/tmp/findRenameLocsTwo.ets)", 18, 23, 1, R"(        import { )",
+     R"(, abc, Foo  } from "./findRenameLocsOne.ets";)"},
+    {R"(/tmp/findRenameLocsTwo.ets)", 78, 83, 3, R"(        )", R"((4);)"},
+    {R"(/tmp/findRenameLocsTwo.ets)", 96, 101, 4, R"(        )", R"((44);)"},
 };
 std::set<ark::es2panda::lsp::RenameLocation> expected_name = {
-    {R"(/tmp/findRenameLocsOne.sts)", 158, 162, 8, R"(            )", R"(: string = "unassigned";)"},
-    {R"(/tmp/findRenameLocsOne.sts)", 362, 366, 13, R"(                this.)", R"( = name;)"},
-    {R"(/tmp/findRenameLocsTwo.sts)", 343, 347, 14, R"(        console.log(myfoo.)", R"())"},
+    {R"(/tmp/findRenameLocsOne.ets)", 158, 162, 8, R"(            )", R"(: string = "unassigned";)"},
+    {R"(/tmp/findRenameLocsOne.ets)", 362, 366, 13, R"(                this.)", R"( = name;)"},
+    {R"(/tmp/findRenameLocsTwo.ets)", 343, 347, 14, R"(        console.log(myfoo.)", R"())"},
 };
 
 TEST_F(LspFindRenameLocationsTests, FindRenameLocationsClassName)

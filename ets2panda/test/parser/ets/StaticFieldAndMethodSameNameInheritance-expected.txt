@@ -12,12 +12,12 @@
             "start": {
               "line": 16,
               "column": 7,
-              "program": "StaticFieldAndMethodSameNameInheritance.sts"
+              "program": "StaticFieldAndMethodSameNameInheritance.ets"
             },
             "end": {
               "line": 16,
               "column": 8,
-              "program": "StaticFieldAndMethodSameNameInheritance.sts"
+              "program": "StaticFieldAndMethodSameNameInheritance.ets"
             }
           }
         },
@@ -34,12 +34,12 @@
                 "start": {
                   "line": 17,
                   "column": 9,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 12,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 }
               }
             },
@@ -60,12 +60,12 @@
                     "start": {
                       "line": 17,
                       "column": 9,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     },
                     "end": {
                       "line": 17,
                       "column": 12,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     }
                   }
                 },
@@ -79,12 +79,12 @@
                     "start": {
                       "line": 17,
                       "column": 16,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     },
                     "end": {
                       "line": 17,
                       "column": 20,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     }
                   }
                 },
@@ -95,12 +95,12 @@
                     "start": {
                       "line": 17,
                       "column": 21,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     },
                     "end": {
                       "line": 17,
                       "column": 23,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     }
                   }
                 },
@@ -108,12 +108,12 @@
                   "start": {
                     "line": 17,
                     "column": 12,
-                    "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                    "program": "StaticFieldAndMethodSameNameInheritance.ets"
                   },
                   "end": {
                     "line": 17,
                     "column": 23,
-                    "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                    "program": "StaticFieldAndMethodSameNameInheritance.ets"
                   }
                 }
               },
@@ -121,12 +121,12 @@
                 "start": {
                   "line": 17,
                   "column": 12,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 23,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 }
               }
             },
@@ -136,12 +136,12 @@
               "start": {
                 "line": 17,
                 "column": 2,
-                "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                "program": "StaticFieldAndMethodSameNameInheritance.ets"
               },
               "end": {
                 "line": 17,
                 "column": 23,
-                "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                "program": "StaticFieldAndMethodSameNameInheritance.ets"
               }
             }
           },
@@ -155,12 +155,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 10,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 }
               }
             },
@@ -180,12 +180,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 10,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     }
                   }
                 },
@@ -200,12 +200,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 10,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     }
                   }
                 },
@@ -213,12 +213,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                    "program": "StaticFieldAndMethodSameNameInheritance.ets"
                   },
                   "end": {
                     "line": 16,
                     "column": 10,
-                    "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                    "program": "StaticFieldAndMethodSameNameInheritance.ets"
                   }
                 }
               },
@@ -226,12 +226,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 10,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 }
               }
             },
@@ -255,12 +255,12 @@
           "start": {
             "line": 16,
             "column": 9,
-            "program": "StaticFieldAndMethodSameNameInheritance.sts"
+            "program": "StaticFieldAndMethodSameNameInheritance.ets"
           },
           "end": {
             "line": 20,
             "column": 6,
-            "program": "StaticFieldAndMethodSameNameInheritance.sts"
+            "program": "StaticFieldAndMethodSameNameInheritance.ets"
           }
         }
       },
@@ -268,12 +268,12 @@
         "start": {
           "line": 16,
           "column": 1,
-          "program": "StaticFieldAndMethodSameNameInheritance.sts"
+          "program": "StaticFieldAndMethodSameNameInheritance.ets"
         },
         "end": {
           "line": 20,
           "column": 6,
-          "program": "StaticFieldAndMethodSameNameInheritance.sts"
+          "program": "StaticFieldAndMethodSameNameInheritance.ets"
         }
       }
     },
@@ -288,12 +288,12 @@
             "start": {
               "line": 20,
               "column": 7,
-              "program": "StaticFieldAndMethodSameNameInheritance.sts"
+              "program": "StaticFieldAndMethodSameNameInheritance.ets"
             },
             "end": {
               "line": 20,
               "column": 8,
-              "program": "StaticFieldAndMethodSameNameInheritance.sts"
+              "program": "StaticFieldAndMethodSameNameInheritance.ets"
             }
           }
         },
@@ -309,12 +309,12 @@
                 "start": {
                   "line": 20,
                   "column": 17,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 },
                 "end": {
                   "line": 20,
                   "column": 18,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 }
               }
             },
@@ -322,12 +322,12 @@
               "start": {
                 "line": 20,
                 "column": 17,
-                "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                "program": "StaticFieldAndMethodSameNameInheritance.ets"
               },
               "end": {
                 "line": 20,
                 "column": 20,
-                "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                "program": "StaticFieldAndMethodSameNameInheritance.ets"
               }
             }
           },
@@ -335,12 +335,12 @@
             "start": {
               "line": 20,
               "column": 17,
-              "program": "StaticFieldAndMethodSameNameInheritance.sts"
+              "program": "StaticFieldAndMethodSameNameInheritance.ets"
             },
             "end": {
               "line": 20,
               "column": 20,
-              "program": "StaticFieldAndMethodSameNameInheritance.sts"
+              "program": "StaticFieldAndMethodSameNameInheritance.ets"
             }
           }
         },
@@ -356,12 +356,12 @@
                 "start": {
                   "line": 21,
                   "column": 2,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 },
                 "end": {
                   "line": 21,
                   "column": 5,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 }
               }
             },
@@ -372,12 +372,12 @@
                 "start": {
                   "line": 21,
                   "column": 16,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 },
                 "end": {
                   "line": 21,
                   "column": 18,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 }
               }
             },
@@ -399,12 +399,12 @@
                     "start": {
                       "line": 21,
                       "column": 7,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     },
                     "end": {
                       "line": 21,
                       "column": 13,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     }
                   }
                 },
@@ -412,12 +412,12 @@
                   "start": {
                     "line": 21,
                     "column": 7,
-                    "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                    "program": "StaticFieldAndMethodSameNameInheritance.ets"
                   },
                   "end": {
                     "line": 21,
                     "column": 15,
-                    "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                    "program": "StaticFieldAndMethodSameNameInheritance.ets"
                   }
                 }
               },
@@ -425,12 +425,12 @@
                 "start": {
                   "line": 21,
                   "column": 7,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 },
                 "end": {
                   "line": 21,
                   "column": 15,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 }
               }
             },
@@ -440,12 +440,12 @@
               "start": {
                 "line": 21,
                 "column": 2,
-                "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                "program": "StaticFieldAndMethodSameNameInheritance.ets"
               },
               "end": {
                 "line": 21,
                 "column": 18,
-                "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                "program": "StaticFieldAndMethodSameNameInheritance.ets"
               }
             }
           },
@@ -459,12 +459,12 @@
                 "start": {
                   "line": 20,
                   "column": 20,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 },
                 "end": {
                   "line": 20,
                   "column": 20,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 }
               }
             },
@@ -484,12 +484,12 @@
                     "start": {
                       "line": 20,
                       "column": 20,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     },
                     "end": {
                       "line": 20,
                       "column": 20,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     }
                   }
                 },
@@ -504,12 +504,12 @@
                     "start": {
                       "line": 20,
                       "column": 20,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     },
                     "end": {
                       "line": 20,
                       "column": 20,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     }
                   }
                 },
@@ -517,12 +517,12 @@
                   "start": {
                     "line": 20,
                     "column": 20,
-                    "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                    "program": "StaticFieldAndMethodSameNameInheritance.ets"
                   },
                   "end": {
                     "line": 20,
                     "column": 20,
-                    "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                    "program": "StaticFieldAndMethodSameNameInheritance.ets"
                   }
                 }
               },
@@ -530,12 +530,12 @@
                 "start": {
                   "line": 20,
                   "column": 20,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 },
                 "end": {
                   "line": 20,
                   "column": 20,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 }
               }
             },
@@ -559,12 +559,12 @@
           "start": {
             "line": 20,
             "column": 19,
-            "program": "StaticFieldAndMethodSameNameInheritance.sts"
+            "program": "StaticFieldAndMethodSameNameInheritance.ets"
           },
           "end": {
             "line": 24,
             "column": 9,
-            "program": "StaticFieldAndMethodSameNameInheritance.sts"
+            "program": "StaticFieldAndMethodSameNameInheritance.ets"
           }
         }
       },
@@ -572,12 +572,12 @@
         "start": {
           "line": 20,
           "column": 1,
-          "program": "StaticFieldAndMethodSameNameInheritance.sts"
+          "program": "StaticFieldAndMethodSameNameInheritance.ets"
         },
         "end": {
           "line": 24,
           "column": 9,
-          "program": "StaticFieldAndMethodSameNameInheritance.sts"
+          "program": "StaticFieldAndMethodSameNameInheritance.ets"
         }
       }
     },
@@ -592,12 +592,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "StaticFieldAndMethodSameNameInheritance.sts"
+              "program": "StaticFieldAndMethodSameNameInheritance.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "StaticFieldAndMethodSameNameInheritance.sts"
+              "program": "StaticFieldAndMethodSameNameInheritance.ets"
             }
           }
         },
@@ -701,12 +701,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                "program": "StaticFieldAndMethodSameNameInheritance.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                "program": "StaticFieldAndMethodSameNameInheritance.ets"
               }
             }
           },
@@ -720,12 +720,12 @@
                 "start": {
                   "line": 24,
                   "column": 10,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 },
                 "end": {
                   "line": 24,
                   "column": 14,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 }
               }
             },
@@ -746,12 +746,12 @@
                     "start": {
                       "line": 24,
                       "column": 10,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     },
                     "end": {
                       "line": 24,
                       "column": 14,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     }
                   }
                 },
@@ -765,12 +765,12 @@
                     "start": {
                       "line": 24,
                       "column": 18,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     },
                     "end": {
                       "line": 24,
                       "column": 22,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     }
                   }
                 },
@@ -791,12 +791,12 @@
                               "start": {
                                 "line": 25,
                                 "column": 5,
-                                "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                                "program": "StaticFieldAndMethodSameNameInheritance.ets"
                               },
                               "end": {
                                 "line": 25,
                                 "column": 6,
-                                "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                                "program": "StaticFieldAndMethodSameNameInheritance.ets"
                               }
                             }
                           },
@@ -808,12 +808,12 @@
                               "start": {
                                 "line": 25,
                                 "column": 7,
-                                "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                                "program": "StaticFieldAndMethodSameNameInheritance.ets"
                               },
                               "end": {
                                 "line": 25,
                                 "column": 10,
-                                "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                                "program": "StaticFieldAndMethodSameNameInheritance.ets"
                               }
                             }
                           },
@@ -823,12 +823,12 @@
                             "start": {
                               "line": 25,
                               "column": 5,
-                              "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                              "program": "StaticFieldAndMethodSameNameInheritance.ets"
                             },
                             "end": {
                               "line": 25,
                               "column": 10,
-                              "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                              "program": "StaticFieldAndMethodSameNameInheritance.ets"
                             }
                           }
                         },
@@ -838,12 +838,12 @@
                           "start": {
                             "line": 25,
                             "column": 5,
-                            "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                            "program": "StaticFieldAndMethodSameNameInheritance.ets"
                           },
                           "end": {
                             "line": 25,
                             "column": 12,
-                            "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                            "program": "StaticFieldAndMethodSameNameInheritance.ets"
                           }
                         }
                       },
@@ -851,12 +851,12 @@
                         "start": {
                           "line": 25,
                           "column": 5,
-                          "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                          "program": "StaticFieldAndMethodSameNameInheritance.ets"
                         },
                         "end": {
                           "line": 25,
                           "column": 12,
-                          "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                          "program": "StaticFieldAndMethodSameNameInheritance.ets"
                         }
                       }
                     },
@@ -878,12 +878,12 @@
                                   "start": {
                                     "line": 26,
                                     "column": 9,
-                                    "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                                    "program": "StaticFieldAndMethodSameNameInheritance.ets"
                                   },
                                   "end": {
                                     "line": 26,
                                     "column": 10,
-                                    "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                                    "program": "StaticFieldAndMethodSameNameInheritance.ets"
                                   }
                                 }
                               },
@@ -891,12 +891,12 @@
                                 "start": {
                                   "line": 26,
                                   "column": 9,
-                                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                                 },
                                 "end": {
                                   "line": 26,
                                   "column": 11,
-                                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                                 }
                               }
                             },
@@ -904,12 +904,12 @@
                               "start": {
                                 "line": 26,
                                 "column": 9,
-                                "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                                "program": "StaticFieldAndMethodSameNameInheritance.ets"
                               },
                               "end": {
                                 "line": 26,
                                 "column": 11,
-                                "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                                "program": "StaticFieldAndMethodSameNameInheritance.ets"
                               }
                             }
                           },
@@ -918,12 +918,12 @@
                             "start": {
                               "line": 26,
                               "column": 5,
-                              "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                              "program": "StaticFieldAndMethodSameNameInheritance.ets"
                             },
                             "end": {
                               "line": 26,
                               "column": 13,
-                              "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                              "program": "StaticFieldAndMethodSameNameInheritance.ets"
                             }
                           }
                         },
@@ -935,12 +935,12 @@
                             "start": {
                               "line": 26,
                               "column": 13,
-                              "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                              "program": "StaticFieldAndMethodSameNameInheritance.ets"
                             },
                             "end": {
                               "line": 26,
                               "column": 16,
-                              "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                              "program": "StaticFieldAndMethodSameNameInheritance.ets"
                             }
                           }
                         },
@@ -950,12 +950,12 @@
                           "start": {
                             "line": 26,
                             "column": 5,
-                            "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                            "program": "StaticFieldAndMethodSameNameInheritance.ets"
                           },
                           "end": {
                             "line": 26,
                             "column": 16,
-                            "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                            "program": "StaticFieldAndMethodSameNameInheritance.ets"
                           }
                         }
                       },
@@ -963,12 +963,12 @@
                         "start": {
                           "line": 26,
                           "column": 5,
-                          "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                          "program": "StaticFieldAndMethodSameNameInheritance.ets"
                         },
                         "end": {
                           "line": 26,
                           "column": 16,
-                          "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                          "program": "StaticFieldAndMethodSameNameInheritance.ets"
                         }
                       }
                     }
@@ -977,12 +977,12 @@
                     "start": {
                       "line": 24,
                       "column": 23,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     },
                     "end": {
                       "line": 27,
                       "column": 2,
-                      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                      "program": "StaticFieldAndMethodSameNameInheritance.ets"
                     }
                   }
                 },
@@ -990,12 +990,12 @@
                   "start": {
                     "line": 24,
                     "column": 10,
-                    "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                    "program": "StaticFieldAndMethodSameNameInheritance.ets"
                   },
                   "end": {
                     "line": 27,
                     "column": 2,
-                    "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                    "program": "StaticFieldAndMethodSameNameInheritance.ets"
                   }
                 }
               },
@@ -1003,12 +1003,12 @@
                 "start": {
                   "line": 24,
                   "column": 10,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 },
                 "end": {
                   "line": 27,
                   "column": 2,
-                  "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                  "program": "StaticFieldAndMethodSameNameInheritance.ets"
                 }
               }
             },
@@ -1018,12 +1018,12 @@
               "start": {
                 "line": 24,
                 "column": 1,
-                "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                "program": "StaticFieldAndMethodSameNameInheritance.ets"
               },
               "end": {
                 "line": 27,
                 "column": 2,
-                "program": "StaticFieldAndMethodSameNameInheritance.sts"
+                "program": "StaticFieldAndMethodSameNameInheritance.ets"
               }
             }
           }
@@ -1032,12 +1032,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "StaticFieldAndMethodSameNameInheritance.sts"
+            "program": "StaticFieldAndMethodSameNameInheritance.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "StaticFieldAndMethodSameNameInheritance.sts"
+            "program": "StaticFieldAndMethodSameNameInheritance.ets"
           }
         }
       },
@@ -1045,12 +1045,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "StaticFieldAndMethodSameNameInheritance.sts"
+          "program": "StaticFieldAndMethodSameNameInheritance.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "StaticFieldAndMethodSameNameInheritance.sts"
+          "program": "StaticFieldAndMethodSameNameInheritance.ets"
         }
       }
     }
@@ -1059,12 +1059,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+      "program": "StaticFieldAndMethodSameNameInheritance.ets"
     },
     "end": {
       "line": 28,
       "column": 1,
-      "program": "StaticFieldAndMethodSameNameInheritance.sts"
+      "program": "StaticFieldAndMethodSameNameInheritance.ets"
     }
   }
 }

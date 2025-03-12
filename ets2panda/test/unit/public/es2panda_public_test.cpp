@@ -24,12 +24,12 @@ using Es2PandaLibTest = test::utils::AstVerifierTest;
 
 TEST_F(Es2PandaLibTest, NoError)
 {
-    CONTEXT(ES2PANDA_STATE_ASM_GENERATED, "function main() {}", "no-error.sts") {}
+    CONTEXT(ES2PANDA_STATE_ASM_GENERATED, "function main() {}", "no-error.ets") {}
 }
 
 TEST_F(Es2PandaLibTest, TypeError)
 {
-    CONTEXT(ES2PANDA_STATE_ASM_GENERATED, ES2PANDA_STATE_ERROR, "function main() { let x: int = \"\" }", "error.sts")
+    CONTEXT(ES2PANDA_STATE_ASM_GENERATED, ES2PANDA_STATE_ERROR, "function main() { let x: int = \"\" }", "error.ets")
     {
         ASSERT_EQ(GetImpl()->ContextState(GetContext()), ES2PANDA_STATE_ERROR);
         auto diagnostics = GetImpl()->GetSemanticErrors(GetContext());
@@ -62,7 +62,7 @@ function main() {
             a->ids.emplace_back(a->impl->IdentifierName(a->ctx, ast));
         }
     };
-    CONTEXT(ES2PANDA_STATE_PARSED, text, "list-ids.sts")
+    CONTEXT(ES2PANDA_STATE_PARSED, text, "list-ids.ets")
     {
         Arg arg {GetImpl(), GetContext()};
         AstNodeForEach(func, &arg);
@@ -75,7 +75,7 @@ function main() {
 
 TEST_F(Es2PandaLibTest, LogDiagnostic)
 {
-    CONTEXT(ES2PANDA_STATE_ASM_GENERATED, "", "user-error.sts")
+    CONTEXT(ES2PANDA_STATE_ASM_GENERATED, "", "user-error.ets")
     {
         auto pos = GetImpl()->CreateSourcePosition(GetContext(), 3, 5);
         auto diagnostics = GetImpl()->GetPluginErrors(GetContext());

@@ -1,0 +1,31 @@
+/*
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+class C {
+    public met(...p: number[]): string {
+         return "nR"
+    }
+    public met(...p: Number[]): string {
+        return "NR"
+    }
+}
+
+function main() {
+    let c: C = new C()
+    c.met()
+}
+
+/* @@? 27:5 Error TypeError: Call to `met` is ambiguous   */
+/* @@? 27:5 Error TypeError: Reference to met is ambiguous  */

@@ -920,7 +920,7 @@ static ir::ScriptFunction *GetWrappingLambdaParentFunction(public_lib::Context *
 
     for (auto *p : func->Params()) {
         ir::Identifier *clone = p->AsETSParameterExpression()->Ident()->Clone(allocator, nullptr);
-        if (clone->IsIdentifier() && (clone->IsReference(ScriptExtension::STS)) &&
+        if (clone->IsIdentifier() && (clone->IsReference(ScriptExtension::ETS)) &&
             (clone->TypeAnnotation() != nullptr)) {
             clone->SetTsTypeAnnotation(nullptr);
         }
@@ -1118,7 +1118,7 @@ static ir::AstNode *BuildLambdaClassWhenNeeded(public_lib::Context *ctx, ir::Ast
         auto *var = id->Variable();
         // We are running this lowering only for ETS files
         // so it is correct to pass ETS extension here to isReference()
-        if (id->IsReference(ScriptExtension::STS) && id->TsType() != nullptr && id->TsType()->IsETSFunctionType() &&
+        if (id->IsReference(ScriptExtension::ETS) && id->TsType() != nullptr && id->TsType()->IsETSFunctionType() &&
             var != nullptr && var->Declaration() != nullptr && var->Declaration()->IsFunctionDecl() &&
             !IsInCalleePosition(id) && !IsEnumFunctionCall(id)) {
             return ConvertFunctionReference(ctx, id);

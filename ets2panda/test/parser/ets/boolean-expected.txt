@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "boolean.sts"
+              "program": "boolean.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "boolean.sts"
+              "program": "boolean.ets"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "boolean.sts"
+                "program": "boolean.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "boolean.sts"
+                "program": "boolean.ets"
               }
             }
           },
@@ -195,12 +195,12 @@
                             "start": {
                               "line": 16,
                               "column": 5,
-                              "program": "boolean.sts"
+                              "program": "boolean.ets"
                             },
                             "end": {
                               "line": 16,
                               "column": 6,
-                              "program": "boolean.sts"
+                              "program": "boolean.ets"
                             }
                           }
                         },
@@ -211,12 +211,12 @@
                             "start": {
                               "line": 16,
                               "column": 18,
-                              "program": "boolean.sts"
+                              "program": "boolean.ets"
                             },
                             "end": {
                               "line": 16,
                               "column": 22,
-                              "program": "boolean.sts"
+                              "program": "boolean.ets"
                             }
                           }
                         },
@@ -224,12 +224,12 @@
                           "start": {
                             "line": 16,
                             "column": 5,
-                            "program": "boolean.sts"
+                            "program": "boolean.ets"
                           },
                           "end": {
                             "line": 16,
                             "column": 22,
-                            "program": "boolean.sts"
+                            "program": "boolean.ets"
                           }
                         }
                       },
@@ -237,12 +237,12 @@
                         "start": {
                           "line": 16,
                           "column": 5,
-                          "program": "boolean.sts"
+                          "program": "boolean.ets"
                         },
                         "end": {
                           "line": 16,
                           "column": 22,
-                          "program": "boolean.sts"
+                          "program": "boolean.ets"
                         }
                       }
                     }
@@ -292,12 +292,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "boolean.sts"
+                "program": "boolean.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "boolean.sts"
+                "program": "boolean.ets"
               }
             }
           },
@@ -311,12 +311,12 @@
                 "start": {
                   "line": 16,
                   "column": 5,
-                  "program": "boolean.sts"
+                  "program": "boolean.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 6,
-                  "program": "boolean.sts"
+                  "program": "boolean.ets"
                 }
               }
             },
@@ -332,12 +332,12 @@
                 "start": {
                   "line": 16,
                   "column": 8,
-                  "program": "boolean.sts"
+                  "program": "boolean.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 15,
-                  "program": "boolean.sts"
+                  "program": "boolean.ets"
                 }
               }
             },
@@ -347,12 +347,12 @@
               "start": {
                 "line": 16,
                 "column": 5,
-                "program": "boolean.sts"
+                "program": "boolean.ets"
               },
               "end": {
                 "line": 16,
                 "column": 22,
-                "program": "boolean.sts"
+                "program": "boolean.ets"
               }
             }
           },
@@ -366,12 +366,12 @@
                 "start": {
                   "line": 17,
                   "column": 7,
-                  "program": "boolean.sts"
+                  "program": "boolean.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 8,
-                  "program": "boolean.sts"
+                  "program": "boolean.ets"
                 }
               }
             },
@@ -382,12 +382,12 @@
                 "start": {
                   "line": 17,
                   "column": 11,
-                  "program": "boolean.sts"
+                  "program": "boolean.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 16,
-                  "program": "boolean.sts"
+                  "program": "boolean.ets"
                 }
               }
             },
@@ -403,12 +403,12 @@
               "start": {
                 "line": 17,
                 "column": 7,
-                "program": "boolean.sts"
+                "program": "boolean.ets"
               },
               "end": {
                 "line": 17,
                 "column": 16,
-                "program": "boolean.sts"
+                "program": "boolean.ets"
               }
             }
           }
@@ -417,12 +417,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "boolean.sts"
+            "program": "boolean.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "boolean.sts"
+            "program": "boolean.ets"
           }
         }
       },
@@ -430,12 +430,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "boolean.sts"
+          "program": "boolean.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "boolean.sts"
+          "program": "boolean.ets"
         }
       }
     }
@@ -444,12 +444,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "boolean.sts"
+      "program": "boolean.ets"
     },
     "end": {
       "line": 17,
       "column": 17,
-      "program": "boolean.sts"
+      "program": "boolean.ets"
     }
   }
 }

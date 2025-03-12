@@ -10,12 +10,12 @@
           "start": {
             "line": 27,
             "column": 19,
-            "program": "dynamicObjectLiteral.sts"
+            "program": "dynamicObjectLiteral.ets"
           },
           "end": {
             "line": 27,
             "column": 44,
-            "program": "dynamicObjectLiteral.sts"
+            "program": "dynamicObjectLiteral.ets"
           }
         }
       },
@@ -30,12 +30,12 @@
               "start": {
                 "line": 27,
                 "column": 10,
-                "program": "dynamicObjectLiteral.sts"
+                "program": "dynamicObjectLiteral.ets"
               },
               "end": {
                 "line": 27,
                 "column": 11,
-                "program": "dynamicObjectLiteral.sts"
+                "program": "dynamicObjectLiteral.ets"
               }
             }
           },
@@ -47,12 +47,12 @@
               "start": {
                 "line": 27,
                 "column": 10,
-                "program": "dynamicObjectLiteral.sts"
+                "program": "dynamicObjectLiteral.ets"
               },
               "end": {
                 "line": 27,
                 "column": 11,
-                "program": "dynamicObjectLiteral.sts"
+                "program": "dynamicObjectLiteral.ets"
               }
             }
           },
@@ -60,12 +60,12 @@
             "start": {
               "line": 27,
               "column": 10,
-              "program": "dynamicObjectLiteral.sts"
+              "program": "dynamicObjectLiteral.ets"
             },
             "end": {
               "line": 27,
               "column": 11,
-              "program": "dynamicObjectLiteral.sts"
+              "program": "dynamicObjectLiteral.ets"
             }
           }
         }
@@ -74,12 +74,12 @@
         "start": {
           "line": 27,
           "column": 1,
-          "program": "dynamicObjectLiteral.sts"
+          "program": "dynamicObjectLiteral.ets"
         },
         "end": {
           "line": 27,
           "column": 44,
-          "program": "dynamicObjectLiteral.sts"
+          "program": "dynamicObjectLiteral.ets"
         }
       }
     },
@@ -94,12 +94,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "dynamicObjectLiteral.sts"
+              "program": "dynamicObjectLiteral.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "dynamicObjectLiteral.sts"
+              "program": "dynamicObjectLiteral.ets"
             }
           }
         },
@@ -203,12 +203,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "dynamicObjectLiteral.sts"
+                "program": "dynamicObjectLiteral.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "dynamicObjectLiteral.sts"
+                "program": "dynamicObjectLiteral.ets"
               }
             }
           },
@@ -222,12 +222,12 @@
                 "start": {
                   "line": 29,
                   "column": 10,
-                  "program": "dynamicObjectLiteral.sts"
+                  "program": "dynamicObjectLiteral.ets"
                 },
                 "end": {
                   "line": 29,
                   "column": 14,
-                  "program": "dynamicObjectLiteral.sts"
+                  "program": "dynamicObjectLiteral.ets"
                 }
               }
             },
@@ -248,12 +248,12 @@
                     "start": {
                       "line": 29,
                       "column": 10,
-                      "program": "dynamicObjectLiteral.sts"
+                      "program": "dynamicObjectLiteral.ets"
                     },
                     "end": {
                       "line": 29,
                       "column": 14,
-                      "program": "dynamicObjectLiteral.sts"
+                      "program": "dynamicObjectLiteral.ets"
                     }
                   }
                 },
@@ -267,12 +267,12 @@
                     "start": {
                       "line": 29,
                       "column": 18,
-                      "program": "dynamicObjectLiteral.sts"
+                      "program": "dynamicObjectLiteral.ets"
                     },
                     "end": {
                       "line": 29,
                       "column": 22,
-                      "program": "dynamicObjectLiteral.sts"
+                      "program": "dynamicObjectLiteral.ets"
                     }
                   }
                 },
@@ -299,12 +299,12 @@
                                     "start": {
                                       "line": 30,
                                       "column": 12,
-                                      "program": "dynamicObjectLiteral.sts"
+                                      "program": "dynamicObjectLiteral.ets"
                                     },
                                     "end": {
                                       "line": 30,
                                       "column": 13,
-                                      "program": "dynamicObjectLiteral.sts"
+                                      "program": "dynamicObjectLiteral.ets"
                                     }
                                   }
                                 },
@@ -312,12 +312,12 @@
                                   "start": {
                                     "line": 30,
                                     "column": 12,
-                                    "program": "dynamicObjectLiteral.sts"
+                                    "program": "dynamicObjectLiteral.ets"
                                   },
                                   "end": {
                                     "line": 30,
                                     "column": 15,
-                                    "program": "dynamicObjectLiteral.sts"
+                                    "program": "dynamicObjectLiteral.ets"
                                   }
                                 }
                               },
@@ -325,12 +325,12 @@
                                 "start": {
                                   "line": 30,
                                   "column": 12,
-                                  "program": "dynamicObjectLiteral.sts"
+                                  "program": "dynamicObjectLiteral.ets"
                                 },
                                 "end": {
                                   "line": 30,
                                   "column": 15,
-                                  "program": "dynamicObjectLiteral.sts"
+                                  "program": "dynamicObjectLiteral.ets"
                                 }
                               }
                             },
@@ -339,12 +339,12 @@
                               "start": {
                                 "line": 30,
                                 "column": 9,
-                                "program": "dynamicObjectLiteral.sts"
+                                "program": "dynamicObjectLiteral.ets"
                               },
                               "end": {
                                 "line": 30,
                                 "column": 10,
-                                "program": "dynamicObjectLiteral.sts"
+                                "program": "dynamicObjectLiteral.ets"
                               }
                             }
                           },
@@ -364,12 +364,12 @@
                                     "start": {
                                       "line": 30,
                                       "column": 18,
-                                      "program": "dynamicObjectLiteral.sts"
+                                      "program": "dynamicObjectLiteral.ets"
                                     },
                                     "end": {
                                       "line": 30,
                                       "column": 22,
-                                      "program": "dynamicObjectLiteral.sts"
+                                      "program": "dynamicObjectLiteral.ets"
                                     }
                                   }
                                 },
@@ -380,12 +380,12 @@
                                     "start": {
                                       "line": 30,
                                       "column": 24,
-                                      "program": "dynamicObjectLiteral.sts"
+                                      "program": "dynamicObjectLiteral.ets"
                                     },
                                     "end": {
                                       "line": 30,
                                       "column": 32,
-                                      "program": "dynamicObjectLiteral.sts"
+                                      "program": "dynamicObjectLiteral.ets"
                                     }
                                   }
                                 },
@@ -394,12 +394,12 @@
                                   "start": {
                                     "line": 30,
                                     "column": 18,
-                                    "program": "dynamicObjectLiteral.sts"
+                                    "program": "dynamicObjectLiteral.ets"
                                   },
                                   "end": {
                                     "line": 30,
                                     "column": 32,
-                                    "program": "dynamicObjectLiteral.sts"
+                                    "program": "dynamicObjectLiteral.ets"
                                   }
                                 }
                               },
@@ -416,12 +416,12 @@
                                     "start": {
                                       "line": 30,
                                       "column": 34,
-                                      "program": "dynamicObjectLiteral.sts"
+                                      "program": "dynamicObjectLiteral.ets"
                                     },
                                     "end": {
                                       "line": 30,
                                       "column": 37,
-                                      "program": "dynamicObjectLiteral.sts"
+                                      "program": "dynamicObjectLiteral.ets"
                                     }
                                   }
                                 },
@@ -432,12 +432,12 @@
                                     "start": {
                                       "line": 30,
                                       "column": 39,
-                                      "program": "dynamicObjectLiteral.sts"
+                                      "program": "dynamicObjectLiteral.ets"
                                     },
                                     "end": {
                                       "line": 30,
                                       "column": 41,
-                                      "program": "dynamicObjectLiteral.sts"
+                                      "program": "dynamicObjectLiteral.ets"
                                     }
                                   }
                                 },
@@ -446,12 +446,12 @@
                                   "start": {
                                     "line": 30,
                                     "column": 34,
-                                    "program": "dynamicObjectLiteral.sts"
+                                    "program": "dynamicObjectLiteral.ets"
                                   },
                                   "end": {
                                     "line": 30,
                                     "column": 41,
-                                    "program": "dynamicObjectLiteral.sts"
+                                    "program": "dynamicObjectLiteral.ets"
                                   }
                                 }
                               },
@@ -468,12 +468,12 @@
                                     "start": {
                                       "line": 30,
                                       "column": 43,
-                                      "program": "dynamicObjectLiteral.sts"
+                                      "program": "dynamicObjectLiteral.ets"
                                     },
                                     "end": {
                                       "line": 30,
                                       "column": 51,
-                                      "program": "dynamicObjectLiteral.sts"
+                                      "program": "dynamicObjectLiteral.ets"
                                     }
                                   }
                                 },
@@ -484,12 +484,12 @@
                                     "start": {
                                       "line": 30,
                                       "column": 53,
-                                      "program": "dynamicObjectLiteral.sts"
+                                      "program": "dynamicObjectLiteral.ets"
                                     },
                                     "end": {
                                       "line": 30,
                                       "column": 68,
-                                      "program": "dynamicObjectLiteral.sts"
+                                      "program": "dynamicObjectLiteral.ets"
                                     }
                                   }
                                 },
@@ -498,12 +498,12 @@
                                   "start": {
                                     "line": 30,
                                     "column": 43,
-                                    "program": "dynamicObjectLiteral.sts"
+                                    "program": "dynamicObjectLiteral.ets"
                                   },
                                   "end": {
                                     "line": 30,
                                     "column": 68,
-                                    "program": "dynamicObjectLiteral.sts"
+                                    "program": "dynamicObjectLiteral.ets"
                                   }
                                 }
                               }
@@ -512,12 +512,12 @@
                               "start": {
                                 "line": 30,
                                 "column": 16,
-                                "program": "dynamicObjectLiteral.sts"
+                                "program": "dynamicObjectLiteral.ets"
                               },
                               "end": {
                                 "line": 30,
                                 "column": 70,
-                                "program": "dynamicObjectLiteral.sts"
+                                "program": "dynamicObjectLiteral.ets"
                               }
                             }
                           },
@@ -525,12 +525,12 @@
                             "start": {
                               "line": 30,
                               "column": 9,
-                              "program": "dynamicObjectLiteral.sts"
+                              "program": "dynamicObjectLiteral.ets"
                             },
                             "end": {
                               "line": 30,
                               "column": 70,
-                              "program": "dynamicObjectLiteral.sts"
+                              "program": "dynamicObjectLiteral.ets"
                             }
                           }
                         }
@@ -540,12 +540,12 @@
                         "start": {
                           "line": 30,
                           "column": 5,
-                          "program": "dynamicObjectLiteral.sts"
+                          "program": "dynamicObjectLiteral.ets"
                         },
                         "end": {
                           "line": 30,
                           "column": 71,
-                          "program": "dynamicObjectLiteral.sts"
+                          "program": "dynamicObjectLiteral.ets"
                         }
                       }
                     }
@@ -554,12 +554,12 @@
                     "start": {
                       "line": 29,
                       "column": 23,
-                      "program": "dynamicObjectLiteral.sts"
+                      "program": "dynamicObjectLiteral.ets"
                     },
                     "end": {
                       "line": 31,
                       "column": 2,
-                      "program": "dynamicObjectLiteral.sts"
+                      "program": "dynamicObjectLiteral.ets"
                     }
                   }
                 },
@@ -567,12 +567,12 @@
                   "start": {
                     "line": 29,
                     "column": 10,
-                    "program": "dynamicObjectLiteral.sts"
+                    "program": "dynamicObjectLiteral.ets"
                   },
                   "end": {
                     "line": 31,
                     "column": 2,
-                    "program": "dynamicObjectLiteral.sts"
+                    "program": "dynamicObjectLiteral.ets"
                   }
                 }
               },
@@ -580,12 +580,12 @@
                 "start": {
                   "line": 29,
                   "column": 10,
-                  "program": "dynamicObjectLiteral.sts"
+                  "program": "dynamicObjectLiteral.ets"
                 },
                 "end": {
                   "line": 31,
                   "column": 2,
-                  "program": "dynamicObjectLiteral.sts"
+                  "program": "dynamicObjectLiteral.ets"
                 }
               }
             },
@@ -595,12 +595,12 @@
               "start": {
                 "line": 29,
                 "column": 1,
-                "program": "dynamicObjectLiteral.sts"
+                "program": "dynamicObjectLiteral.ets"
               },
               "end": {
                 "line": 31,
                 "column": 2,
-                "program": "dynamicObjectLiteral.sts"
+                "program": "dynamicObjectLiteral.ets"
               }
             }
           }
@@ -609,12 +609,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "dynamicObjectLiteral.sts"
+            "program": "dynamicObjectLiteral.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "dynamicObjectLiteral.sts"
+            "program": "dynamicObjectLiteral.ets"
           }
         }
       },
@@ -622,12 +622,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "dynamicObjectLiteral.sts"
+          "program": "dynamicObjectLiteral.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "dynamicObjectLiteral.sts"
+          "program": "dynamicObjectLiteral.ets"
         }
       }
     },
@@ -1112,12 +1112,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "dynamicObjectLiteral.sts"
+      "program": "dynamicObjectLiteral.ets"
     },
     "end": {
       "line": 32,
       "column": 1,
-      "program": "dynamicObjectLiteral.sts"
+      "program": "dynamicObjectLiteral.ets"
     }
   }
 }

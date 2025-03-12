@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "blocks_scopes.sts"
+              "program": "blocks_scopes.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "blocks_scopes.sts"
+              "program": "blocks_scopes.ets"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "blocks_scopes.sts"
+                "program": "blocks_scopes.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "blocks_scopes.sts"
+                "program": "blocks_scopes.ets"
               }
             }
           },
@@ -198,12 +198,12 @@
                                   "start": {
                                     "line": 18,
                                     "column": 7,
-                                    "program": "blocks_scopes.sts"
+                                    "program": "blocks_scopes.ets"
                                   },
                                   "end": {
                                     "line": 18,
                                     "column": 8,
-                                    "program": "blocks_scopes.sts"
+                                    "program": "blocks_scopes.ets"
                                   }
                                 }
                               },
@@ -214,12 +214,12 @@
                                   "start": {
                                     "line": 18,
                                     "column": 11,
-                                    "program": "blocks_scopes.sts"
+                                    "program": "blocks_scopes.ets"
                                   },
                                   "end": {
                                     "line": 18,
                                     "column": 13,
-                                    "program": "blocks_scopes.sts"
+                                    "program": "blocks_scopes.ets"
                                   }
                                 }
                               },
@@ -227,12 +227,12 @@
                                 "start": {
                                   "line": 18,
                                   "column": 7,
-                                  "program": "blocks_scopes.sts"
+                                  "program": "blocks_scopes.ets"
                                 },
                                 "end": {
                                   "line": 18,
                                   "column": 13,
-                                  "program": "blocks_scopes.sts"
+                                  "program": "blocks_scopes.ets"
                                 }
                               }
                             }
@@ -242,12 +242,12 @@
                             "start": {
                               "line": 18,
                               "column": 3,
-                              "program": "blocks_scopes.sts"
+                              "program": "blocks_scopes.ets"
                             },
                             "end": {
                               "line": 18,
                               "column": 14,
-                              "program": "blocks_scopes.sts"
+                              "program": "blocks_scopes.ets"
                             }
                           }
                         },
@@ -267,12 +267,12 @@
                                       "start": {
                                         "line": 20,
                                         "column": 9,
-                                        "program": "blocks_scopes.sts"
+                                        "program": "blocks_scopes.ets"
                                       },
                                       "end": {
                                         "line": 20,
                                         "column": 10,
-                                        "program": "blocks_scopes.sts"
+                                        "program": "blocks_scopes.ets"
                                       }
                                     }
                                   },
@@ -287,12 +287,12 @@
                                         "start": {
                                           "line": 20,
                                           "column": 13,
-                                          "program": "blocks_scopes.sts"
+                                          "program": "blocks_scopes.ets"
                                         },
                                         "end": {
                                           "line": 20,
                                           "column": 14,
-                                          "program": "blocks_scopes.sts"
+                                          "program": "blocks_scopes.ets"
                                         }
                                       }
                                     },
@@ -303,12 +303,12 @@
                                         "start": {
                                           "line": 20,
                                           "column": 17,
-                                          "program": "blocks_scopes.sts"
+                                          "program": "blocks_scopes.ets"
                                         },
                                         "end": {
                                           "line": 20,
                                           "column": 19,
-                                          "program": "blocks_scopes.sts"
+                                          "program": "blocks_scopes.ets"
                                         }
                                       }
                                     },
@@ -316,12 +316,12 @@
                                       "start": {
                                         "line": 20,
                                         "column": 13,
-                                        "program": "blocks_scopes.sts"
+                                        "program": "blocks_scopes.ets"
                                       },
                                       "end": {
                                         "line": 20,
                                         "column": 19,
-                                        "program": "blocks_scopes.sts"
+                                        "program": "blocks_scopes.ets"
                                       }
                                     }
                                   },
@@ -329,12 +329,12 @@
                                     "start": {
                                       "line": 20,
                                       "column": 9,
-                                      "program": "blocks_scopes.sts"
+                                      "program": "blocks_scopes.ets"
                                     },
                                     "end": {
                                       "line": 20,
                                       "column": 19,
-                                      "program": "blocks_scopes.sts"
+                                      "program": "blocks_scopes.ets"
                                     }
                                   }
                                 }
@@ -344,12 +344,12 @@
                                 "start": {
                                   "line": 20,
                                   "column": 5,
-                                  "program": "blocks_scopes.sts"
+                                  "program": "blocks_scopes.ets"
                                 },
                                 "end": {
                                   "line": 20,
                                   "column": 20,
-                                  "program": "blocks_scopes.sts"
+                                  "program": "blocks_scopes.ets"
                                 }
                               }
                             },
@@ -369,12 +369,12 @@
                                           "start": {
                                             "line": 22,
                                             "column": 13,
-                                            "program": "blocks_scopes.sts"
+                                            "program": "blocks_scopes.ets"
                                           },
                                           "end": {
                                             "line": 22,
                                             "column": 14,
-                                            "program": "blocks_scopes.sts"
+                                            "program": "blocks_scopes.ets"
                                           }
                                         }
                                       },
@@ -389,12 +389,12 @@
                                             "start": {
                                               "line": 22,
                                               "column": 17,
-                                              "program": "blocks_scopes.sts"
+                                              "program": "blocks_scopes.ets"
                                             },
                                             "end": {
                                               "line": 22,
                                               "column": 18,
-                                              "program": "blocks_scopes.sts"
+                                              "program": "blocks_scopes.ets"
                                             }
                                           }
                                         },
@@ -405,12 +405,12 @@
                                             "start": {
                                               "line": 22,
                                               "column": 21,
-                                              "program": "blocks_scopes.sts"
+                                              "program": "blocks_scopes.ets"
                                             },
                                             "end": {
                                               "line": 22,
                                               "column": 23,
-                                              "program": "blocks_scopes.sts"
+                                              "program": "blocks_scopes.ets"
                                             }
                                           }
                                         },
@@ -418,12 +418,12 @@
                                           "start": {
                                             "line": 22,
                                             "column": 17,
-                                            "program": "blocks_scopes.sts"
+                                            "program": "blocks_scopes.ets"
                                           },
                                           "end": {
                                             "line": 22,
                                             "column": 23,
-                                            "program": "blocks_scopes.sts"
+                                            "program": "blocks_scopes.ets"
                                           }
                                         }
                                       },
@@ -431,12 +431,12 @@
                                         "start": {
                                           "line": 22,
                                           "column": 13,
-                                          "program": "blocks_scopes.sts"
+                                          "program": "blocks_scopes.ets"
                                         },
                                         "end": {
                                           "line": 22,
                                           "column": 23,
-                                          "program": "blocks_scopes.sts"
+                                          "program": "blocks_scopes.ets"
                                         }
                                       }
                                     }
@@ -446,12 +446,12 @@
                                     "start": {
                                       "line": 22,
                                       "column": 9,
-                                      "program": "blocks_scopes.sts"
+                                      "program": "blocks_scopes.ets"
                                     },
                                     "end": {
                                       "line": 22,
                                       "column": 24,
-                                      "program": "blocks_scopes.sts"
+                                      "program": "blocks_scopes.ets"
                                     }
                                   }
                                 },
@@ -462,12 +462,12 @@
                                     "start": {
                                       "line": 23,
                                       "column": 9,
-                                      "program": "blocks_scopes.sts"
+                                      "program": "blocks_scopes.ets"
                                     },
                                     "end": {
                                       "line": 23,
                                       "column": 11,
-                                      "program": "blocks_scopes.sts"
+                                      "program": "blocks_scopes.ets"
                                     }
                                   }
                                 }
@@ -476,12 +476,12 @@
                                 "start": {
                                   "line": 21,
                                   "column": 5,
-                                  "program": "blocks_scopes.sts"
+                                  "program": "blocks_scopes.ets"
                                 },
                                 "end": {
                                   "line": 24,
                                   "column": 6,
-                                  "program": "blocks_scopes.sts"
+                                  "program": "blocks_scopes.ets"
                                 }
                               }
                             }
@@ -490,12 +490,12 @@
                             "start": {
                               "line": 19,
                               "column": 3,
-                              "program": "blocks_scopes.sts"
+                              "program": "blocks_scopes.ets"
                             },
                             "end": {
                               "line": 25,
                               "column": 4,
-                              "program": "blocks_scopes.sts"
+                              "program": "blocks_scopes.ets"
                             }
                           }
                         }
@@ -504,12 +504,12 @@
                         "start": {
                           "line": 17,
                           "column": 1,
-                          "program": "blocks_scopes.sts"
+                          "program": "blocks_scopes.ets"
                         },
                         "end": {
                           "line": 26,
                           "column": 2,
-                          "program": "blocks_scopes.sts"
+                          "program": "blocks_scopes.ets"
                         }
                       }
                     }
@@ -559,12 +559,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "blocks_scopes.sts"
+                "program": "blocks_scopes.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "blocks_scopes.sts"
+                "program": "blocks_scopes.ets"
               }
             }
           }
@@ -573,12 +573,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "blocks_scopes.sts"
+            "program": "blocks_scopes.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "blocks_scopes.sts"
+            "program": "blocks_scopes.ets"
           }
         }
       },
@@ -586,12 +586,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "blocks_scopes.sts"
+          "program": "blocks_scopes.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "blocks_scopes.sts"
+          "program": "blocks_scopes.ets"
         }
       }
     }
@@ -600,12 +600,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "blocks_scopes.sts"
+      "program": "blocks_scopes.ets"
     },
     "end": {
       "line": 27,
       "column": 1,
-      "program": "blocks_scopes.sts"
+      "program": "blocks_scopes.ets"
     }
   }
 }
