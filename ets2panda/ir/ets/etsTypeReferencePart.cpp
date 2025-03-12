@@ -203,4 +203,14 @@ ETSTypeReferencePart *ETSTypeReferencePart::Clone(ArenaAllocator *const allocato
     clone->SetRange(Range());
     return clone;
 }
+
+ir::Identifier *ETSTypeReferencePart::GetIdent()
+{
+    if (name_->IsTSQualifiedName()) {
+        auto ident = name_->AsTSQualifiedName()->Right();
+        ES2PANDA_ASSERT(ident->IsIdentifier());
+        return ident->AsIdentifier();
+    }
+    return name_->AsIdentifier();
+}
 }  // namespace ark::es2panda::ir

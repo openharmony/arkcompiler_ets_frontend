@@ -761,7 +761,7 @@ std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *typeAnnotation) co
             typeParamNames.pop_back();
             typeParamNames += ">";
         }
-        return typeAnnotation->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name().Mutf8() + typeParamNames;
+        return typeAnnotation->AsETSTypeReference()->Part()->GetIdent()->Name().Mutf8() + typeParamNames;
     }
 
     if (typeAnnotation->IsETSFunctionType()) {

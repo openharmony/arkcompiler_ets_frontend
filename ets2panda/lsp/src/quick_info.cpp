@@ -471,7 +471,7 @@ std::string GetNameForTypeReference(const ir::TypeNode *typeReference)
         typeParamNames.pop_back();
         typeParamNames += ">";
     }
-    return typeReference->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name().Mutf8() + typeParamNames;
+    return typeReference->AsETSTypeReference()->Part()->GetIdent()->Name().Mutf8() + typeParamNames;
 }
 
 std::string GetNameForFunctionType(const ir::TypeNode *functionType)
@@ -996,8 +996,7 @@ std::vector<SymbolDisplayPart> CreateDisplayForClassProperty(ir::AstNode *node, 
         if (typeAnnotation == nullptr) {
             auto newClassExpr = node->AsClassProperty()->Value()->AsETSNewClassInstanceExpression();
             if (newClassExpr != nullptr) {
-                type = std::string(
-                    newClassExpr->GetTypeRef()->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name());
+                type = std::string(newClassExpr->GetTypeRef()->AsETSTypeReference()->Part()->GetIdent()->Name());
             }
         } else {
             type = GetNameForTypeNode(typeAnnotation);
