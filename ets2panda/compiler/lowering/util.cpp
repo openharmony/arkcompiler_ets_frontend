@@ -59,7 +59,7 @@ void SetSourceRangesRecursively(ir::AstNode *node, const lexer::SourceRange &ran
 // Function to clear expression node types and identifier node variables (for correct re-binding and re-checking)
 void ClearTypesVariablesAndScopes(ir::AstNode *node) noexcept
 {
-    auto doNode = [](ir::AstNode *nn) {
+    std::function<void(ir::AstNode *)> doNode = [&](ir::AstNode *nn) {
         if (nn->IsScopeBearer()) {
             nn->ClearScope();
         }
@@ -69,10 +69,12 @@ void ClearTypesVariablesAndScopes(ir::AstNode *node) noexcept
         if (nn->IsIdentifier()) {
             nn->AsIdentifier()->SetVariable(nullptr);
         }
+        if (!nn->IsETSTypeReference()) {
+            nn->Iterate([&](ir::AstNode *child) { doNode(child); });
+        }
     };
 
     doNode(node);
-    node->IterateRecursively(doNode);
 }
 
 ArenaSet<varbinder::Variable *> FindCaptured(ArenaAllocator *allocator, ir::AstNode *scopeBearer) noexcept
