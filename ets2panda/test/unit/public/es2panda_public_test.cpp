@@ -18,6 +18,7 @@
 #include "public/es2panda_lib.h"
 #include "test/utils/panda_executable_path_getter.h"
 #include "test/utils/ast_verifier_test.h"
+#include "util/diagnostic.h"
 
 using Es2PandaLibTest = test::utils::AstVerifierTest;
 
@@ -30,7 +31,9 @@ TEST_F(Es2PandaLibTest, TypeError)
 {
     CONTEXT(ES2PANDA_STATE_ASM_GENERATED, ES2PANDA_STATE_ERROR, "function main() { let x: int = \"\" }", "error.sts")
     {
-        ASSERT_EQ(ContextErrorMessage(), "TypeError: Type '\"\"' cannot be assigned to type 'int'[error.sts:1,32]");
+        ASSERT_EQ(GetImpl()->ContextState(GetContext()), ES2PANDA_STATE_ERROR);
+        auto diagnostics = GetImpl()->GetSemanticErrors(GetContext());
+        ASSERT_EQ(reinterpret_cast<const ark::es2panda::util::DiagnosticStorage *>(diagnostics)->size(), 1);
     }
 }
 
@@ -67,5 +70,26 @@ function main() {
         std::vector<std::string> expected {"C", "n", "string",  "constructor", "constructor", "main",
                                            "c", "C", "console", "log",         "c",           "n"};
         ASSERT_EQ(arg.ids, expected);
+    }
+}
+
+TEST_F(Es2PandaLibTest, LogDiagnostic)
+{
+    CONTEXT(ES2PANDA_STATE_ASM_GENERATED, "", "user-error.sts")
+    {
+        auto pos = GetImpl()->CreateSourcePosition(GetContext(), 3, 5);
+        auto diagnostics = GetImpl()->GetPluginErrors(GetContext());
+        auto diagnosticStorage = reinterpret_cast<const ark::es2panda::util::DiagnosticStorage *>(diagnostics);
+        ASSERT_EQ(diagnosticStorage->size(), 0);
+
+        auto kind = GetImpl()->CreateDiagnosticKind(GetContext(), "Test {}");
+        const char **args = new const char *[1];
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        args[0] = "1";
+        GetImpl()->LogDiagnostic(GetContext(), kind, args, 1, pos);
+        delete[] args;
+        ASSERT_EQ(diagnosticStorage->size(), 1);
+        ASSERT_EQ((*diagnosticStorage)[0]->Type(), ark::es2panda::util::DiagnosticType::PLUGIN);
+        ASSERT_EQ((*diagnosticStorage)[0]->Message(), "Test 1");
     }
 }

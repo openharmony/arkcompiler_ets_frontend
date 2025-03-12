@@ -48,8 +48,6 @@ set(PLUGIN_TESTS
     "plugin_proceed_to_state_change_call_lambda compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_test_annotation_change compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_test_class_decl_annotation compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
-# NOTE(schernykh): refactor diagnostic reporting in plugin api
-#    "plugin_test_print_err_msg_func compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_check_manual_capi compile_with_external_source.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_check_script_function_flags compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_find_import_declaration compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"

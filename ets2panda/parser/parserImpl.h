@@ -94,7 +94,7 @@ public:
         return reinterpret_cast<const ETSParser *>(this);
     }
 
-    util::DiagnosticEngine &DiagnosticEngine()
+    util::DiagnosticEngine &DiagnosticEngine() const
     {
         return diagnosticEngine_;
     }

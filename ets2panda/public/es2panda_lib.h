@@ -97,6 +97,9 @@ typedef struct es2panda_IRNode es2panda_IRNode;
 typedef struct es2panda_ErrorLogger es2panda_ErrorLogger;
 typedef struct es2panda_VerificationContext es2panda_VerificationContext;
 typedef struct es2panda_ImportPathManager es2panda_ImportPathManager;
+typedef struct es2panda_DiagnosticKind es2panda_DiagnosticKind;
+typedef struct es2panda_DiagnosticMessageParams es2panda_DiagnosticMessageParams;
+typedef struct es2panda_DiagnosticStorage es2panda_DiagnosticStorage;
 typedef void (*NodeTraverser)(es2panda_AstNode *);
 typedef es2panda_AstNode *(*NodeTransformer)(es2panda_AstNode *);
 typedef bool (*NodePredicate)(es2panda_AstNode *);
@@ -177,9 +180,13 @@ struct CAPI_EXPORT es2panda_Impl {
     size_t (*SourcePositionLine)(es2panda_Context *context, es2panda_SourcePosition *position);
     es2panda_SourcePosition *(*SourceRangeStart)(es2panda_Context *context, es2panda_SourceRange *range);
     es2panda_SourcePosition *(*SourceRangeEnd)(es2panda_Context *context, es2panda_SourceRange *range);
-    void (*LogTypeError)(es2panda_Context *context, const char *errorMsg, es2panda_SourcePosition *pos);
-    void (*LogWarning)(es2panda_Context *context, const char *warnMsg, es2panda_SourcePosition *pos);
-    void (*LogSyntaxError)(es2panda_Context *context, const char *errorMsg, es2panda_SourcePosition *pos);
+    const es2panda_DiagnosticKind *(*CreateDiagnosticKind)(es2panda_Context *context, const char *dmessage);
+    void (*LogDiagnostic)(es2panda_Context *context, const es2panda_DiagnosticKind *kind, const char **args,
+                          size_t argc, es2panda_SourcePosition *pos);
+    const es2panda_DiagnosticStorage *(*GetSemanticErrors)(es2panda_Context *context);
+    const es2panda_DiagnosticStorage *(*GetSyntaxErrors)(es2panda_Context *context);
+    const es2panda_DiagnosticStorage *(*GetPluginErrors)(es2panda_Context *context);
+    const es2panda_DiagnosticStorage *(*GetWarnings)(es2panda_Context *context);
     es2panda_Scope *(*AstNodeFindNearestScope)(es2panda_Context *ctx, es2panda_AstNode *node);
     es2panda_Scope *(*AstNodeRebind)(es2panda_Context *ctx, es2panda_AstNode *node);
     void (*AstNodeRecheck)(es2panda_Context *ctx, es2panda_AstNode *node);
