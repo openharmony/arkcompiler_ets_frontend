@@ -70,8 +70,8 @@ let test4 = foo() {
 
 
 function main(): void {
-    assert test1 == 1
-    assert test2 == 15
-    assert test3 == 1015
-    assert test4 == 5015
+    assertEQ(test1, 1)
+    assertEQ(test2, 15)
+    assertEQ(test3, 1015)
+    assertEQ(test4, 5015)
 }
