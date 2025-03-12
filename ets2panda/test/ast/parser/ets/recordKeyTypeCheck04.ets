@@ -19,4 +19,3 @@ function main(){
     }
 }
 /* @@? 18:9 Error TypeError: Type '"hello"' is not compatible with type 'Double' at index 1  */
-/* @@? 1:1 Error TypeError: No matching call signature for set("hello", int)  */

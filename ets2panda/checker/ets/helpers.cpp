@@ -712,6 +712,41 @@ static void CheckAssignForDeclare(ir::Identifier *ident, ir::TypeNode *typeAnnot
     }
 }
 
+static void CheckRecordType(ir::Expression *init, checker::Type *annotationType, ETSChecker *checker)
+{
+    if (!annotationType->IsETSObjectType() || !init->IsObjectExpression()) {
+        return;
+    }
+
+    std::stringstream ss;
+    init->TsType()->ToAssemblerType(ss);
+    if (ss.str() != "escompat.Record" && ss.str() != "escompat.Map") {
+        return;
+    }
+
+    auto objectExpr = init->AsObjectExpression();
+    auto typeArguments = annotationType->AsETSObjectType()->TypeArguments();
+    auto properties = objectExpr->Properties();
+
+    for (const auto &property : properties) {
+        ES2PANDA_ASSERT(property->IsProperty());
+        auto p = property->AsProperty();
+
+        ETSChecker::SetPreferredTypeIfPossible(p->Key(), typeArguments[0]);
+        ETSChecker::SetPreferredTypeIfPossible(p->Value(), typeArguments[1]);
+
+        Type *keyType = p->Key()->Check(checker);
+        Type *valueType = p->Value()->Check(checker);
+
+        checker::AssignmentContext(
+            checker->Relation(), p->Key(), keyType, typeArguments[0], p->Key()->Start(),
+            {"Type '", keyType, "' is not compatible with type '", typeArguments[0], "' at index 1"});
+        checker::AssignmentContext(
+            checker->Relation(), p->Value(), valueType, typeArguments[1], p->Value()->Start(),
+            {"Type '", valueType, "' is not compatible with type '", typeArguments[1], "' at index 2"});
+    }
+}
+
 // CC-OFFNXT(huge_method,huge_cca_cyclomatic_complexity,huge_cyclomatic_complexity,G.FUN.01-CPP) solid logic
 checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *typeAnnotation,
                                                     ir::Expression *init, ir::ModifierFlags const flags)
@@ -764,6 +799,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
 
     if (annotationType != nullptr) {
         if (typeAnnotation != nullptr) {
+            CheckRecordType(init, annotationType, this);
             AssignmentContext(Relation(), init, initType, annotationType, init->Start(),
                               {"Type '", initType, "' cannot be assigned to type '", annotationType, "'"});
             if (!Relation()->IsTrue()) {
