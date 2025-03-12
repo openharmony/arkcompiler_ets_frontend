@@ -55,16 +55,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 18,
-            "column": 25,
-            "endLine": 18,
-            "endColumn": 27,
-            "problem": "ArrayIndexExprType",
-            "suggest": "",
-            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
-            "severity": "ERROR"
-        },
-        {
             "line": 19,
             "column": 1,
             "endLine": 19,
@@ -72,36 +62,6 @@
             "problem": "IndexNegative",
             "suggest": "",
             "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 10,
-            "endLine": 19,
-            "endColumn": 12,
-            "problem": "ArrayIndexExprType",
-            "suggest": "",
-            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 10,
-            "endLine": 20,
-            "endColumn": 12,
-            "problem": "ArrayIndexExprType",
-            "suggest": "",
-            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 21,
-            "column": 10,
-            "endLine": 21,
-            "endColumn": 12,
-            "problem": "ArrayIndexExprType",
-            "suggest": "",
-            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
             "severity": "ERROR"
         },
         {
@@ -135,19 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 28,
-            "column": 12,
-            "endLine": 28,
-            "endColumn": 14,
-            "problem": "ArrayIndexExprType",
-            "suggest": "",
-            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 33,
+            "line": 36,
             "column": 5,
-            "endLine": 33,
+            "endLine": 36,
             "endColumn": 31,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -155,9 +105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 34,
+            "line": 37,
             "column": 1,
-            "endLine": 34,
+            "endLine": 37,
             "endColumn": 8,
             "problem": "IndexNegative",
             "suggest": "",
@@ -165,19 +115,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 34,
-            "column": 5,
-            "endLine": 34,
-            "endColumn": 7,
-            "problem": "ArrayIndexExprType",
+            "line": 38,
+            "column": 1,
+            "endLine": 38,
+            "endColumn": 14,
+            "problem": "IndexNegative",
             "suggest": "",
-            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
             "severity": "ERROR"
         },
         {
-            "line": 35,
+            "line": 39,
             "column": 5,
-            "endLine": 35,
+            "endLine": 39,
             "endColumn": 11,
             "problem": "ArrayIndexExprType",
             "suggest": "",
@@ -185,9 +135,29 @@
             "severity": "ERROR"
         },
         {
-            "line": 36,
+            "line": 41,
+            "column": 7,
+            "endLine": 41,
+            "endColumn": 21,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 42,
+            "column": 1,
+            "endLine": 42,
+            "endColumn": 7,
+            "problem": "IndexNegative",
+            "suggest": "",
+            "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
             "column": 5,
-            "endLine": 36,
+            "endLine": 43,
             "endColumn": 19,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -195,9 +165,89 @@
             "severity": "ERROR"
         },
         {
-            "line": 37,
+            "line": 45,
             "column": 5,
-            "endLine": 37,
+            "endLine": 45,
+            "endColumn": 11,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 1,
+            "endLine": 50,
+            "endColumn": 10,
+            "problem": "IndexNegative",
+            "suggest": "",
+            "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 7,
+            "endLine": 51,
+            "endColumn": 26,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 52,
+            "column": 1,
+            "endLine": 52,
+            "endColumn": 15,
+            "problem": "IndexNegative",
+            "suggest": "",
+            "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 54,
+            "column": 1,
+            "endLine": 54,
+            "endColumn": 8,
+            "problem": "IndexNegative",
+            "suggest": "",
+            "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 5,
+            "endLine": 55,
+            "endColumn": 39,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 57,
+            "column": 1,
+            "endLine": 57,
+            "endColumn": 29,
+            "problem": "IndexNegative",
+            "suggest": "",
+            "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 57,
+            "column": 5,
+            "endLine": 57,
+            "endColumn": 28,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 58,
+            "column": 5,
+            "endLine": 58,
             "endColumn": 6,
             "problem": "ArrayIndexExprType",
             "suggest": "",
@@ -205,9 +255,209 @@
             "severity": "ERROR"
         },
         {
-            "line": 38,
+            "line": 60,
+            "column": 1,
+            "endLine": 60,
+            "endColumn": 17,
+            "problem": "IndexNegative",
+            "suggest": "",
+            "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 61,
+            "column": 1,
+            "endLine": 61,
+            "endColumn": 16,
+            "problem": "IndexNegative",
+            "suggest": "",
+            "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 61,
             "column": 5,
-            "endLine": 38,
+            "endLine": 61,
+            "endColumn": 15,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 62,
+            "column": 7,
+            "endLine": 62,
+            "endColumn": 41,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 63,
+            "column": 1,
+            "endLine": 63,
+            "endColumn": 31,
+            "problem": "IndexNegative",
+            "suggest": "",
+            "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 65,
+            "column": 1,
+            "endLine": 65,
+            "endColumn": 8,
+            "problem": "IndexNegative",
+            "suggest": "",
+            "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 66,
+            "column": 1,
+            "endLine": 66,
+            "endColumn": 10,
+            "problem": "IndexNegative",
+            "suggest": "",
+            "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 67,
+            "column": 5,
+            "endLine": 67,
+            "endColumn": 40,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 68,
+            "column": 1,
+            "endLine": 68,
+            "endColumn": 31,
+            "problem": "IndexNegative",
+            "suggest": "",
+            "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 69,
+            "column": 5,
+            "endLine": 69,
+            "endColumn": 6,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 71,
+            "column": 7,
+            "endLine": 71,
+            "endColumn": 35,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 73,
+            "column": 1,
+            "endLine": 73,
+            "endColumn": 7,
+            "problem": "IndexNegative",
+            "suggest": "",
+            "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 74,
+            "column": 7,
+            "endLine": 74,
+            "endColumn": 15,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 75,
+            "column": 7,
+            "endLine": 75,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 76,
+            "column": 7,
+            "endLine": 76,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 77,
+            "column": 7,
+            "endLine": 77,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 77,
+            "column": 12,
+            "endLine": 77,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 78,
+            "column": 7,
+            "endLine": 78,
+            "endColumn": 16,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 81,
+            "column": 1,
+            "endLine": 81,
+            "endColumn": 8,
+            "problem": "IndexNegative",
+            "suggest": "",
+            "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 82,
+            "column": 1,
+            "endLine": 82,
+            "endColumn": 8,
+            "problem": "IndexNegative",
+            "suggest": "",
+            "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 84,
+            "column": 7,
+            "endLine": 84,
             "endColumn": 19,
             "problem": "NumericSemantics",
             "suggest": "",
@@ -215,63 +465,13 @@
             "severity": "ERROR"
         },
         {
-            "line": 39,
-            "column": 5,
-            "endLine": 39,
+            "line": 85,
+            "column": 1,
+            "endLine": 85,
             "endColumn": 8,
-            "problem": "ArrayIndexExprType",
+            "problem": "IndexNegative",
             "suggest": "",
-            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 40,
-            "column": 5,
-            "endLine": 40,
-            "endColumn": 11,
-            "problem": "ArrayIndexExprType",
-            "suggest": "",
-            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 45,
-            "column": 5,
-            "endLine": 45,
-            "endColumn": 10,
-            "problem": "ArrayIndexExprType",
-            "suggest": "",
-            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 46,
-            "column": 5,
-            "endLine": 46,
-            "endColumn": 13,
-            "problem": "ArrayIndexExprType",
-            "suggest": "",
-            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 47,
-            "column": 5,
-            "endLine": 47,
-            "endColumn": 9,
-            "problem": "ArrayIndexExprType",
-            "suggest": "",
-            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 48,
-            "column": 5,
-            "endLine": 48,
-            "endColumn": 13,
-            "problem": "ArrayIndexExprType",
-            "suggest": "",
-            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
             "severity": "ERROR"
         }
     ]

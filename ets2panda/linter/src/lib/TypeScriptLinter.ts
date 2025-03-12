@@ -111,6 +111,7 @@ export class TypeScriptLinter {
   static strictDiagnosticCache: Set<ts.Diagnostic>;
   static unknowDiagnosticCache: Set<ts.Diagnostic>;
   static nameSpaceFunctionCache: Map<string, Set<string>>;
+  private readonly constVariableInitCache: Map<ts.Symbol, number | null> = new Map();
 
   static initGlobals(): void {
     TypeScriptLinter.filteredDiagnosticMessages = new Set<ts.DiagnosticMessageChain>();
@@ -3668,24 +3669,129 @@ export class TypeScriptLinter {
     }
   }
 
+  private findVariableInitializationValue(identifier: ts.Identifier): number | null {
+    const symbol = this.tsTypeChecker.getSymbolAtLocation(identifier);
+    if (symbol) {
+      if (this.constVariableInitCache.has(symbol)) {
+        return this.constVariableInitCache.get(symbol)!;
+      }
+      const declarations = symbol.getDeclarations();
+      if (declarations && declarations.length > 0) {
+        const declaration = declarations[0];
+        if (
+          ts.isVariableDeclaration(declaration) &&
+          declaration.initializer &&
+          (declaration.parent as ts.VariableDeclarationList).flags & ts.NodeFlags.Const
+        ) {
+          const res = this.evaluateNumericValue(declaration.initializer);
+          this.constVariableInitCache.set(symbol, res);
+          return res;
+        }
+      }
+    }
+    return null;
+  }
+
+  private evaluateNumericValueFromPrefixUnaryExpression(node: ts.PrefixUnaryExpression): number | null {
+    if (node.operator === ts.SyntaxKind.MinusToken) {
+      if (ts.isNumericLiteral(node.operand) || ts.isIdentifier(node.operand) && node.operand.text === 'Infinity') {
+        return node.operand.text === 'Infinity' ? Number.NEGATIVE_INFINITY : -Number(node.operand.text);
+      }
+      const operandValue = this.evaluateNumericValue(node.operand);
+      if (operandValue !== null) {
+        return -operandValue;
+      }
+    }
+    return null;
+  }
+
+  private evaluateNumericValue(node: ts.Expression): number | null {
+    let result: number | null = null;
+    if (ts.isNumericLiteral(node)) {
+      result = Number(node.text);
+    } else if (ts.isPrefixUnaryExpression(node)) {
+      result = this.evaluateNumericValueFromPrefixUnaryExpression(node);
+    } else if (ts.isBinaryExpression(node)) {
+      result = this.evaluateNumericValueFromBinaryExpression(node);
+    } else if (ts.isPropertyAccessExpression(node)) {
+      result = TypeScriptLinter.evaluateNumericValueFromPropertyAccess(node);
+    } else if (ts.isParenthesizedExpression(node)) {
+      result = this.evaluateNumericValue(node.expression);
+    } else if (ts.isIdentifier(node)) {
+      if (node.text === 'Infinity') {
+        return Number.POSITIVE_INFINITY;
+      }
+      const symbol = this.tsTypeChecker.getSymbolAtLocation(node);
+      return symbol ? this.constVariableInitCache.get(symbol) || null : null;
+    }
+    return result;
+  }
+
+  private evaluateNumericValueFromBinaryExpression(node: ts.BinaryExpression): number | null {
+    const leftValue = this.evaluateNumericValue(node.left);
+    const rightValue = this.evaluateNumericValue(node.right);
+    if (leftValue !== null && rightValue !== null) {
+      switch (node.operatorToken.kind) {
+        case ts.SyntaxKind.PlusToken:
+          return leftValue + rightValue;
+        case ts.SyntaxKind.MinusToken:
+          return leftValue - rightValue;
+        case ts.SyntaxKind.AsteriskToken:
+          return leftValue * rightValue;
+        case ts.SyntaxKind.SlashToken:
+          return leftValue / rightValue;
+        default:
+          return null;
+      }
+    }
+    return null;
+  }
+
+  private static evaluateNumericValueFromPropertyAccess(node: ts.PropertyAccessExpression): number | null {
+    const numberProperties = ['MIN_SAFE_INTEGER', 'MAX_SAFE_INTEGER', 'NaN', 'NEGATIVE_INFINITY', 'POSITIVE_INFINITY'];
+    if (
+      ts.isIdentifier(node.expression) &&
+      node.expression.text === 'Number' &&
+      numberProperties.includes(node.name.text)
+    ) {
+      switch (node.name.text) {
+        case 'MIN_SAFE_INTEGER':
+          return Number.MIN_SAFE_INTEGER;
+        case 'MAX_SAFE_INTEGER':
+          return Number.MAX_SAFE_INTEGER;
+        case 'NaN':
+          return Number.NaN;
+        case 'NEGATIVE_INFINITY':
+          return Number.NEGATIVE_INFINITY;
+        case 'POSITIVE_INFINITY':
+          return Number.POSITIVE_INFINITY;
+        default:
+          return null;
+      }
+    }
+    return null;
+  }
+
+  private collectVariableNamesAndCache(node: ts.Node): void {
+    if (ts.isIdentifier(node)) {
+      const value = this.findVariableInitializationValue(node);
+      const symbol = this.tsTypeChecker.getSymbolAtLocation(node);
+      if (value && symbol) {
+        this.constVariableInitCache.set(symbol, value);
+      }
+    }
+    ts.forEachChild(node, this.collectVariableNamesAndCache.bind(this));
+  }
   private handleIndexNegative(node: ts.Node): void {
     if (!this.options.arkts2 || !ts.isElementAccessExpression(node)) {
       return;
     }
     const indexNode = node.argumentExpression;
     if (indexNode) {
-      let isInvalidIndex = false;
-      if (ts.isNumericLiteral(indexNode)) {
-        isInvalidIndex = parseInt(indexNode.text) < 0;
-      }
-      if (
-        ts.isPrefixUnaryExpression(indexNode) &&
-        indexNode.operator === ts.SyntaxKind.MinusToken &&
-        ts.isNumericLiteral(indexNode.operand)
-      ) {
-        isInvalidIndex = true;
-      }
-      if (isInvalidIndex) {
+      this.collectVariableNamesAndCache(indexNode);
+      const indexValue = this.evaluateNumericValue(indexNode);
+
+      if (indexValue !== null && indexValue !== 0 && (indexValue < 0 || isNaN(indexValue))) {
         this.incrementCounters(node, FaultID.IndexNegative);
       }
     }

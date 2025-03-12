@@ -29,20 +29,57 @@ class A {
         return ss[0];
         }
 }
+function test() {
+  return -1;
+}
 
 let arr: string[] = ['1', '2']
 arr[-2]
+arr[-0.13536]
 arr[test()]
-let b: number = -9;
+arr[test()*6]
+const b: number = -9;
 arr[b]
 let a: A = new A()
 arr[a.a]
 arr[a.aa()]
 
-function test() {
-  return -1;
-}
 arr[a.a+5]
 arr[a.aa()*5]
+
 arr[-1*6]
-arr[test()*6]
+const m:number = Infinity;
+arr[-Infinity]
+arr[m]
+arr[-m]
+let n:number = Number.MIN_SAFE_INTEGER;
+arr [-Number.MIN_SAFE_INTEGER]
+arr[Number.MIN_SAFE_INTEGER]
+arr[n]
+arr[-n]
+arr[-Number.NaN]
+arr[Number.NaN]
+const p:number = Number.MAX_SAFE_INTEGER;
+arr [-Number.MAX_SAFE_INTEGER]
+arr[Number.MAX_SAFE_INTEGER-5]
+arr[-p]
+arr[-p+7]
+let q:number = Number.POSITIVE_INFINITY
+arr[-Number.POSITIVE_INFINITY] 
+arr[q]
+arr[-q]
+const c = Number.NEGATIVE_INFINITY
+arr[-Number.NEGATIVE_INFINITY]
+arr[c]
+const y1 = 6+n
+const y2 = -6-n
+const y3 = -6*m 
+const y4 = -6/2
+const y5 = -6/b
+arr[y1]
+arr[y2]
+arr[y3]
+arr[y4]
+arr[y5]
+const y7 = -(-6/b)
+arr[y7]
