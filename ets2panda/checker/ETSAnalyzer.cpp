@@ -889,8 +889,13 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
             checker->Scope()->Find(varbinder::VarBinder::MANDATORY_PARAM_THIS).variable->TsType()->AsETSObjectType());
     }
 
+    auto lambdaSavedSmartCasts = checker->Context().CloneSmartCasts();
     checker::SavedCheckerContext savedContext(checker, checker->Context().Status(),
                                               checker->Context().ContainingClass());
+
+    if (expr->Parent()->IsCallExpression() && !expr->Function()->IsAsyncFunc()) {
+        checker->Context().RestoreSmartCasts(lambdaSavedSmartCasts);
+    }
 
     checker->AddStatus(checker::CheckerStatus::IN_LAMBDA);
     checker->Context().SetContainingLambda(expr);
