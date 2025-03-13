@@ -461,7 +461,6 @@ private:
     ir::Expression *ParseNewExpression() override;
     ir::Expression *ParseAsyncExpression();
     ir::Expression *ParseAwaitExpression();
-    ir::Expression *ParseETSImportExpression();
     ir::ArrayExpression *ParseArrayExpression(ExpressionParseFlags flags) override;
     ir::TSTypeParameter *ParseTypeParameter(TypeAnnotationParsingOptions *options) override;
 
