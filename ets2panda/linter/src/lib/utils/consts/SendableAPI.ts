@@ -16,11 +16,12 @@
 import * as ts from 'typescript';
 
 export const SENDABLE_DECORATOR = 'Sendable';
+export const CONCURRENT_DECORATOR = 'Concurrent';
 
 export const SENDABLE_DECORATOR_NODES = [
-  ts.SyntaxKind.ClassDeclaration,
-  ts.SyntaxKind.FunctionDeclaration,
-  ts.SyntaxKind.TypeAliasDeclaration
+    ts.SyntaxKind.ClassDeclaration,
+    ts.SyntaxKind.FunctionDeclaration,
+    ts.SyntaxKind.TypeAliasDeclaration
 ];
 
 export const SENDABLE_CLOSURE_DECLS = [ts.SyntaxKind.ClassDeclaration, ts.SyntaxKind.FunctionDeclaration];
