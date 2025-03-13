@@ -75,8 +75,11 @@ private:
 
     void LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const;
 
+    // clang-format off
     template <typename TypeNode>
-    bool CheckEnumMemberType(const ArenaVector<ir::AstNode *> &enumMembers, bool &hasLoggedError);
+    bool CheckEnumMemberType(const ArenaVector<ir::AstNode *> &enumMembers, bool &hasLoggedError,
+                             bool &hasLongLiteral);
+    // clang-format on
 
     [[nodiscard]] ir::ScriptFunction *MakeFunction(FunctionInfo &&functionInfo);
     ir::ClassDeclaration *CreateClass(ir::TSEnumDeclaration *const enumDecl, const DeclarationFlags flags,
@@ -89,6 +92,7 @@ private:
 
     void ProcessEnumClassDeclaration(ir::TSEnumDeclaration *const enumDecl, const DeclarationFlags &flags,
                                      ir::ClassDeclaration *enumClassDecl);
+    template <ir::PrimitiveType Type>
     ir::ClassDeclaration *CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl,
                                                                 const DeclarationFlags flags);
     ir::ClassDeclaration *CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl,
@@ -100,6 +104,7 @@ private:
                                             ElementMaker &&elementMaker);
     void CreateEnumItemFields(const ir::TSEnumDeclaration *const enumDecl, ir::ClassDefinition *enumClass);
     ir::Identifier *CreateEnumNamesArray(const ir::TSEnumDeclaration *const enumDecl, ir::ClassDefinition *enumClass);
+    template <ir::PrimitiveType Type>
     ir::Identifier *CreateEnumValuesArray(const ir::TSEnumDeclaration *const enumDecl, ir::ClassDefinition *enumClass);
     ir::Identifier *CreateEnumStringValuesArray(const ir::TSEnumDeclaration *const enumDecl,
                                                 ir::ClassDefinition *enumClass);
@@ -107,14 +112,15 @@ private:
     void CreateEnumToStringMethod(ir::TSEnumDeclaration const *const enumDecl, ir::ClassDefinition *const enumClass,
                                   ir::Identifier *const stringValuesArrayIdent);
     void CreateEnumValueOfMethod(ir::TSEnumDeclaration const *const enumDecl, ir::ClassDefinition *const enumClass,
-                                 ir::Identifier *const valuesArrayIdent, bool isIntEnum);
+                                 ir::Identifier *const valuesArrayIdent,
+                                 std::optional<ir::PrimitiveType> primitiveType);
     void CreateEnumGetNameMethod(ir::TSEnumDeclaration const *const enumDecl, ir::ClassDefinition *const enumClass,
                                  ir::Identifier *const namesArrayIdent);
     void CreateEnumGetValueOfMethod(ir::TSEnumDeclaration const *const enumDecl, ir::ClassDefinition *const enumClass,
                                     ir::Identifier *const namesArrayIdent, ir::Identifier *const itemsArrayIdent);
     void CreateEnumFromValueMethod(ir::TSEnumDeclaration const *const enumDecl, ir::ClassDefinition *const enumClass,
                                    ir::Identifier *const valuesArrayIdent, ir::Identifier *const itemsArrayIdent,
-                                   bool isIntEnum);
+                                   std::optional<ir::PrimitiveType> primitiveType);
     void CreateEnumValuesMethod(ir::TSEnumDeclaration const *const enumDecl, ir::ClassDefinition *const enumClass,
                                 ir::Identifier *const itemsArrayIdent);
     void CreateEnumGetOrdinalMethod(ir::TSEnumDeclaration const *const enumDecl, ir::ClassDefinition *const enumClass);

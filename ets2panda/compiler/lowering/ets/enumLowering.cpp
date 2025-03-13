@@ -77,12 +77,26 @@ void EnumLoweringPhase::LogSyntaxError(std::string_view errorMessage, const lexe
 }
 
 template <typename TypeNode>
-bool EnumLoweringPhase::CheckEnumMemberType(const ArenaVector<ir::AstNode *> &enumMembers, bool &hasLoggedError)
+bool EnumLoweringPhase::CheckEnumMemberType(const ArenaVector<ir::AstNode *> &enumMembers, bool &hasLoggedError,
+                                            bool &hasLongLiteral)
 {
     for (auto *member : enumMembers) {
         auto *init = member->AsTSEnumMember()->Init();
         if constexpr (std::is_same_v<TypeNode, ir::NumberLiteral>) {
-            if (!init->IsNumberLiteral() || !init->AsNumberLiteral()->Number().IsInt()) {
+            if (!init->IsNumberLiteral() || !init->AsNumberLiteral()->Number().IsInteger()) {
+                LogSyntaxError("Invalid enum initialization value", init->Start());
+                hasLoggedError = true;
+                continue;
+            }
+
+            if (!init->AsNumberLiteral()->Number().IsLong()) {
+                continue;
+            }
+
+            hasLongLiteral = true;
+            // Invalid generated value.
+            if (member->AsTSEnumMember()->IsGenerated() &&
+                init->AsNumberLiteral()->Number().GetLong() == std::numeric_limits<int64_t>::min()) {
                 LogSyntaxError("Invalid enum initialization value", init->Start());
                 hasLoggedError = true;
             }
@@ -352,6 +366,7 @@ void EnumLoweringPhase::ProcessEnumClassDeclaration(ir::TSEnumDeclaration *const
     }
 }
 
+template <ir::PrimitiveType Type>
 ir::ClassDeclaration *EnumLoweringPhase::CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl,
                                                                                const DeclarationFlags flags)
 {
@@ -360,7 +375,7 @@ ir::ClassDeclaration *EnumLoweringPhase::CreateEnumIntClassFromEnumDeclaration(i
 
     CreateEnumItemFields(enumDecl, enumClass);
     auto *const namesArrayIdent = CreateEnumNamesArray(enumDecl, enumClass);
-    auto *const valuesArrayIdent = CreateEnumValuesArray(enumDecl, enumClass);
+    auto *const valuesArrayIdent = CreateEnumValuesArray<Type>(enumDecl, enumClass);
     auto *const stringValuesArrayIdent = CreateEnumStringValuesArray(enumDecl, enumClass);
     auto *const itemsArrayIdent = CreateEnumItemsArray(enumDecl, enumClass);
 
@@ -368,9 +383,9 @@ ir::ClassDeclaration *EnumLoweringPhase::CreateEnumIntClassFromEnumDeclaration(i
 
     CreateEnumGetValueOfMethod(enumDecl, enumClass, namesArrayIdent, itemsArrayIdent);
 
-    CreateEnumFromValueMethod(enumDecl, enumClass, valuesArrayIdent, itemsArrayIdent, true);
+    CreateEnumFromValueMethod(enumDecl, enumClass, valuesArrayIdent, itemsArrayIdent, Type);
 
-    CreateEnumValueOfMethod(enumDecl, enumClass, valuesArrayIdent, true);
+    CreateEnumValueOfMethod(enumDecl, enumClass, valuesArrayIdent, Type);
 
     CreateEnumToStringMethod(enumDecl, enumClass, stringValuesArrayIdent);
 
@@ -403,9 +418,9 @@ ir::ClassDeclaration *EnumLoweringPhase::CreateEnumStringClassFromEnumDeclaratio
 
     CreateEnumGetValueOfMethod(enumDecl, enumClass, namesArrayIdent, itemsArrayIdent);
 
-    CreateEnumFromValueMethod(enumDecl, enumClass, stringValuesArrayIdent, itemsArrayIdent, false);
+    CreateEnumFromValueMethod(enumDecl, enumClass, stringValuesArrayIdent, itemsArrayIdent, std::nullopt);
 
-    CreateEnumValueOfMethod(enumDecl, enumClass, stringValuesArrayIdent, false);
+    CreateEnumValueOfMethod(enumDecl, enumClass, stringValuesArrayIdent, std::nullopt);
 
     CreateEnumToStringMethod(enumDecl, enumClass, stringValuesArrayIdent);
 
@@ -453,13 +468,17 @@ bool EnumLoweringPhase::PerformForModule(public_lib::Context *ctx, parser::Progr
                     return ast;
                 }
                 bool hasLoggedError = false;
+                bool hasLongLiteral = false;
                 auto *const itemInit = enumDecl->Members().front()->AsTSEnumMember()->Init();
                 if (itemInit->IsNumberLiteral() &&
-                    CheckEnumMemberType<ir::NumberLiteral>(enumDecl->Members(), hasLoggedError)) {
-                    return CreateEnumIntClassFromEnumDeclaration(enumDecl, flags);
+                    CheckEnumMemberType<ir::NumberLiteral>(enumDecl->Members(), hasLoggedError, hasLongLiteral)) {
+                    auto res = hasLongLiteral
+                                   ? CreateEnumIntClassFromEnumDeclaration<ir::PrimitiveType::LONG>(enumDecl, flags)
+                                   : CreateEnumIntClassFromEnumDeclaration<ir::PrimitiveType::INT>(enumDecl, flags);
+                    return res;
                 }
                 if (itemInit->IsStringLiteral() &&
-                    CheckEnumMemberType<ir::StringLiteral>(enumDecl->Members(), hasLoggedError)) {
+                    CheckEnumMemberType<ir::StringLiteral>(enumDecl->Members(), hasLoggedError, hasLongLiteral)) {
                     return CreateEnumStringClassFromEnumDeclaration(enumDecl, flags);
                 }
                 if (!hasLoggedError) {
@@ -476,11 +495,12 @@ bool EnumLoweringPhase::PerformForModule(public_lib::Context *ctx, parser::Progr
     return isPerformedSuccess;
 }
 
+template <ir::PrimitiveType Type>
 ir::Identifier *EnumLoweringPhase::CreateEnumValuesArray(const ir::TSEnumDeclaration *const enumDecl,
                                                          ir::ClassDefinition *const enumClass)
 {
-    auto *const intType = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator());
-    auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(intType, Allocator());
+    auto *const type = checker_->AllocNode<ir::ETSPrimitiveType>(Type, Allocator());
+    auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(type, Allocator());
     // clang-format off
     return MakeArray(enumDecl, enumClass, VALUES_ARRAY_NAME, arrayTypeAnnotation,
                      [this](const ir::TSEnumMember *const member) {
@@ -489,7 +509,7 @@ ir::Identifier *EnumLoweringPhase::CreateEnumValuesArray(const ir::TSEnumDeclara
                                                 ->Init()
                                                 ->AsNumberLiteral()
                                                 ->Number()
-                                                .GetValue<std::int32_t>()));
+                                                .GetValue<std::int64_t>()));
                         return enumValueLiteral;
                     });
     // clang-format on
@@ -511,7 +531,7 @@ ir::Identifier *EnumLoweringPhase::CreateEnumStringValuesArray(const ir::TSEnumD
                             stringValue = init->AsStringLiteral()->Str();
                         } else {
                             auto str = std::to_string(
-                                init->AsNumberLiteral()->Number().GetValue<std::int32_t>());
+                                init->AsNumberLiteral()->Number().GetValue<std::int64_t>());
                             stringValue = util::UString(str, Allocator()).View();
                         }
 
@@ -631,7 +651,8 @@ void EnumLoweringPhase::CreateEnumToStringMethod(const ir::TSEnumDeclaration *co
 
 void EnumLoweringPhase::CreateEnumValueOfMethod(const ir::TSEnumDeclaration *const enumDecl,
                                                 ir::ClassDefinition *const enumClass,
-                                                ir::Identifier *const valuesArrayIdent, bool isIntEnum)
+                                                ir::Identifier *const valuesArrayIdent,
+                                                std::optional<ir::PrimitiveType> primitiveType)
 {
     auto *ordinalAccessExpr = CreateOrdinalAccessExpression();
     auto *const returnStmt = CreateReturnStatement(checker_, enumClass->Ident(), valuesArrayIdent, ordinalAccessExpr);
@@ -641,8 +662,9 @@ void EnumLoweringPhase::CreateEnumValueOfMethod(const ir::TSEnumDeclaration *con
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     auto *const typeAnnotation =
-        isIntEnum ? checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator())->AsTypeNode()
-                  : MakeTypeReference(checker_, STRING_REFERENCE_TYPE)->AsTypeNode();
+        primitiveType.has_value()
+            ? checker_->AllocNode<ir::ETSPrimitiveType>(primitiveType.value(), Allocator())->AsTypeNode()
+            : MakeTypeReference(checker_, STRING_REFERENCE_TYPE)->AsTypeNode();
     auto *const function =
         MakeFunction({std::move(params), std::move(body), typeAnnotation, enumDecl, ir::ModifierFlags::PUBLIC});
     auto *const functionIdent =
@@ -784,15 +806,17 @@ void EnumLoweringPhase::CreateEnumGetValueOfMethod(const ir::TSEnumDeclaration *
 void EnumLoweringPhase::CreateEnumFromValueMethod(ir::TSEnumDeclaration const *const enumDecl,
                                                   ir::ClassDefinition *const enumClass,
                                                   ir::Identifier *const valuesArrayIdent,
-                                                  ir::Identifier *const itemsArrayIdent, bool isIntEnum)
+                                                  ir::Identifier *const itemsArrayIdent,
+                                                  std::optional<ir::PrimitiveType> primitiveType)
 {
     auto *const forLoopIIdent = checker_->AllocNode<ir::Identifier>(IDENTIFIER_I, checker_->Allocator());
     auto *const forLoopInitVarDecl = CreateForLoopInitVariableDeclaration(checker_, forLoopIIdent);
     auto *const forLoopTest = CreateForLoopTest(checker_, enumClass->Ident(), valuesArrayIdent, forLoopIIdent);
     auto *const forLoopUpdate = CreateForLoopUpdate(checker_, forLoopIIdent);
     auto *const typeAnnotation =
-        isIntEnum ? checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator())->AsTypeNode()
-                  : MakeTypeReference(checker_, STRING_REFERENCE_TYPE)->AsTypeNode();
+        primitiveType.has_value()
+            ? checker_->AllocNode<ir::ETSPrimitiveType>(primitiveType.value(), Allocator())->AsTypeNode()
+            : MakeTypeReference(checker_, STRING_REFERENCE_TYPE)->AsTypeNode();
     auto *const inputValueIdent = MakeFunctionParam(checker_, PARAM_VALUE, typeAnnotation);
     auto *const ifStmt =
         CreateIf(checker_, CreateStaticAccessMemberExpression(checker_, enumClass->Ident(), valuesArrayIdent),
