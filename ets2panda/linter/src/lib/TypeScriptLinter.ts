@@ -2242,29 +2242,64 @@ export class TypeScriptLinter {
     if (this.tsUtils.isOrDerivedFrom(tsElemAccessBaseExprType, this.tsUtils.isIndexableArray)) {
       this.handleIndexNegative(node);
     }
-    this.checkArrayIndexType(node, tsElemAccessBaseExprType, tsElemAccessArgType, tsElementAccessExpr);
+    this.checkArrayIndexType(tsElemAccessBaseExprType, tsElemAccessArgType, tsElementAccessExpr);
   }
 
   private checkArrayIndexType(
-    node: ts.Node,
     exprType: ts.Type,
     argType: ts.Type,
     expr: ts.ElementAccessExpression
   ): void {
     const argExpr = expr.argumentExpression;
 
-    if (!this.options.arkts2) {
+    if (!this.options.arkts2 || !this.tsUtils.isOrDerivedFrom(exprType, this.tsUtils.isIndexableArray)) {
       return;
     }
 
-    if (this.tsUtils.isOrDerivedFrom(exprType, this.tsUtils.isIndexableArray)) {
-      if (this.tsUtils.isNumberLikeType(argType)) {
-        if (ts.isNumericLiteral(argExpr) && !Number.isInteger(Number(argExpr.text))) {
-          this.incrementCounters(argExpr, FaultID.ArrayIndexExprType);
-        }
-      } else {
-        this.incrementCounters(argExpr, FaultID.ArrayIndexExprType);
-      }
+    if (this.tsUtils.isNumberLikeType(argType)) {
+      this.handleNumericArgument(argExpr);
+    } else if (this.tsTypeChecker.typeToString(argType) !== 'int') {
+      this.incrementCounters(argExpr, FaultID.ArrayIndexExprType);
+    }
+  }
+
+  private handleNumericArgument(argExpr: ts.Expression): void {
+    if (
+      (ts.isNumericLiteral(argExpr) && 
+      !Number.isInteger(Number(argExpr.text))) ||
+      argExpr.kind === ts.SyntaxKind.CallExpression
+    ) {
+      this.incrementCounters(argExpr, FaultID.ArrayIndexExprType);
+    }
+
+    this.checkNumericArgumentDeclaration(argExpr);
+  }
+
+  private checkNumericArgumentDeclaration(argExpr: ts.Expression): void {
+    const symbol = this.tsTypeChecker.getSymbolAtLocation(argExpr);
+
+    if (!symbol) {
+      return;
+    }
+
+    const declarations = symbol.getDeclarations();
+    if (!declarations || declarations.length === 0) {
+      return;
+    }
+
+    const firstDeclaration = declarations[0] as ts.VariableDeclaration;
+    const initializer = firstDeclaration.initializer;
+    const initializerText = initializer ? initializer.getText() : 'undefined';
+
+    if (
+      (firstDeclaration.parent.flags === ts.NodeFlags.Const &&
+        initializer &&
+        ts.isNumericLiteral(initializer) &&
+        !Number.isInteger(Number(initializerText)) ||
+        firstDeclaration.parent.flags === ts.NodeFlags.Let ||
+        initializerText === 'undefined')
+    ) {
+      this.incrementCounters(argExpr, FaultID.ArrayIndexExprType);
     }
   }
 

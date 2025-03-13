@@ -55,6 +55,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 18,
+            "column": 25,
+            "endLine": 18,
+            "endColumn": 27,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
             "line": 19,
             "column": 1,
             "endLine": 19,
@@ -62,6 +72,36 @@
             "problem": "IndexNegative",
             "suggest": "",
             "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 10,
+            "endLine": 19,
+            "endColumn": 12,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 10,
+            "endLine": 20,
+            "endColumn": 12,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 10,
+            "endLine": 21,
+            "endColumn": 12,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
             "severity": "ERROR"
         },
         {
@@ -95,6 +135,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 28,
+            "column": 12,
+            "endLine": 28,
+            "endColumn": 14,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
             "line": 33,
             "column": 5,
             "endLine": 33,
@@ -115,6 +165,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 34,
+            "column": 5,
+            "endLine": 34,
+            "endColumn": 7,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 5,
+            "endLine": 35,
+            "endColumn": 11,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
             "line": 36,
             "column": 5,
             "endLine": 36,
@@ -125,6 +195,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 37,
+            "column": 5,
+            "endLine": 37,
+            "endColumn": 6,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
             "line": 38,
             "column": 5,
             "endLine": 38,
@@ -132,6 +212,66 @@
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 5,
+            "endLine": 39,
+            "endColumn": 8,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 40,
+            "column": 5,
+            "endLine": 40,
+            "endColumn": 11,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 5,
+            "endLine": 45,
+            "endColumn": 10,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 5,
+            "endLine": 46,
+            "endColumn": 13,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 5,
+            "endLine": 47,
+            "endColumn": 9,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 5,
+            "endLine": 48,
+            "endColumn": 13,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
             "severity": "ERROR"
         }
     ]
