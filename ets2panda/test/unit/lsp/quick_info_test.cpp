@@ -36,23 +36,21 @@ TEST_F(LspQuickInfoTests, GetQuickInfoAtPosition1)
     ASSERT_NE(quickInfo, QuickInfo());
     std::vector<DocTagInfo> tags {};
     std::vector<SymbolDisplayPart> document {};
-    const std::string kind;
+    const std::string kind = "property";
     size_t const start = 17;
     size_t const length = 1;
     TextSpan span(start, length);
-    const std::string kindModifiers;
+    const std::string kindModifiers = "static public readonly";
     const std::string expectedFileName = "/tmp/quick_info3.sts";
 
     std::vector<SymbolDisplayPart> expected;
-    expected.emplace_back("MyStrings", "enumName");
+    // Enum was transformed to class, enum member becomes class property    MyStrings.A : MyStrings
+    expected.emplace_back("MyStrings", "className");
     expected.emplace_back(".", "punctuation");
-    expected.emplace_back("A", "enumMember");
+    expected.emplace_back("A", "property");
+    expected.emplace_back(":", "punctuation");
     expected.emplace_back(" ", "space");
-    expected.emplace_back("=", "operator");
-    expected.emplace_back(" ", "space");
-    expected.emplace_back("\"", "punctuation");
-    expected.emplace_back("hello", "text");
-    expected.emplace_back("\"", "punctuation");
+    expected.emplace_back("MyStrings", "typeName");
 
     auto expectedQuickInfo = QuickInfo(kind, kindModifiers, span, expected, document, tags, expectedFileName);
     ASSERT_EQ(quickInfo, expectedQuickInfo);
@@ -260,88 +258,17 @@ TEST_F(LspQuickInfoTests, GetNodeAtLocationForQuickInfo5)
     ASSERT_NE(node, nullptr);
     auto nodeAtLocationForQuickInfo = ark::es2panda::lsp::GetNodeAtLocationForQuickInfo(node);
     ASSERT_NE(nodeAtLocationForQuickInfo, nullptr);
-    ASSERT_EQ(nodeAtLocationForQuickInfo->Type(), ark::es2panda::ir::AstNodeType::TS_ENUM_DECLARATION);
+    // Enum was transformed to class before checker phase
+    ASSERT_EQ(nodeAtLocationForQuickInfo->Type(), ark::es2panda::ir::AstNodeType::CLASS_DEFINITION);
 
     size_t const position = 70;
     node = ark::es2panda::lsp::GetTokenForQuickInfo(ctx, position);
     ASSERT_NE(node, nullptr);
     nodeAtLocationForQuickInfo = ark::es2panda::lsp::GetNodeAtLocationForQuickInfo(node);
     ASSERT_NE(nodeAtLocationForQuickInfo, nullptr);
-    ASSERT_EQ(nodeAtLocationForQuickInfo->Type(), ark::es2panda::ir::AstNodeType::TS_ENUM_DECLARATION);
+    // Enum was transformed to class before checker phase
+    ASSERT_EQ(nodeAtLocationForQuickInfo->Type(), ark::es2panda::ir::AstNodeType::CLASS_DEFINITION);
 
-    initializer.DestroyContext(ctx);
-}
-
-TEST_F(LspQuickInfoTests, CreateDisplayForEnumMemberWithNumberLiteral)
-{
-    Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("enum-member-test.sts", ES2PANDA_STATE_CHECKED,
-                                                      "enum MyEnum { First = 1, Second = 2 }");
-    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
-    auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
-    auto ast = reinterpret_cast<ark::es2panda::ir::AstNode *>(context->parserProgram->Ast());
-    auto checkFunc = [](ark::es2panda::ir::AstNode *node) {
-        return node->Type() == ark::es2panda::ir::AstNodeType::TS_ENUM_MEMBER;
-    };
-    auto found = ast->FindChild(checkFunc);
-    std::vector<SymbolDisplayPart> display = ark::es2panda::lsp::CreateDisplayForEnumMember(found);
-    std::vector<SymbolDisplayPart> expected;
-    expected.emplace_back("MyEnum", "enumName");
-    expected.emplace_back(".", "punctuation");
-    expected.emplace_back("First", "enumMember");
-    expected.emplace_back(" ", "space");
-    expected.emplace_back("=", "operator");
-    expected.emplace_back(" ", "space");
-    expected.emplace_back("1", "text");
-    ASSERT_EQ(expected, display);
-    initializer.DestroyContext(ctx);
-}
-
-TEST_F(LspQuickInfoTests, CreateDisplayForEnumMemberWithStringLiteral)
-{
-    Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("enum-member-string-test.sts", ES2PANDA_STATE_CHECKED,
-                                                      "enum MyStrings { A = 'hello' }");
-    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
-    auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
-    auto ast = reinterpret_cast<ark::es2panda::ir::AstNode *>(context->parserProgram->Ast());
-    auto checkFunc = [](ark::es2panda::ir::AstNode *node) {
-        return node->Type() == ark::es2panda::ir::AstNodeType::TS_ENUM_MEMBER;
-    };
-    auto found = ast->FindChild(checkFunc);
-    std::vector<SymbolDisplayPart> display = ark::es2panda::lsp::CreateDisplayForEnumMember(found);
-    std::vector<SymbolDisplayPart> expected;
-    expected.emplace_back("MyStrings", "enumName");
-    expected.emplace_back(".", "punctuation");
-    expected.emplace_back("A", "enumMember");
-    expected.emplace_back(" ", "space");
-    expected.emplace_back("=", "operator");
-    expected.emplace_back(" ", "space");
-    expected.emplace_back("\"", "punctuation");
-    expected.emplace_back("hello", "text");
-    expected.emplace_back("\"", "punctuation");
-    ASSERT_EQ(expected, display);
-    initializer.DestroyContext(ctx);
-}
-
-TEST_F(LspQuickInfoTests, CreateDisplayForEnum)
-{
-    Initializer initializer = Initializer();
-    es2panda_Context *ctx =
-        initializer.CreateContext("enum-test.sts", ES2PANDA_STATE_CHECKED, "enum MyEnum { A, B, C }");
-    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
-    auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
-    auto ast = reinterpret_cast<ark::es2panda::ir::AstNode *>(context->parserProgram->Ast());
-    auto checkFunc = [](ark::es2panda::ir::AstNode *node) {
-        return node->Type() == ark::es2panda::ir::AstNodeType::TS_ENUM_DECLARATION;
-    };
-    auto found = ast->FindChild(checkFunc);
-    std::vector<SymbolDisplayPart> display = ark::es2panda::lsp::CreateDisplayForEnum(found);
-    std::vector<SymbolDisplayPart> expected;
-    expected.emplace_back("enum", "keyword");
-    expected.emplace_back(" ", "space");
-    expected.emplace_back("MyEnum", "enumName");
-    ASSERT_EQ(expected, display);
     initializer.DestroyContext(ctx);
 }
 

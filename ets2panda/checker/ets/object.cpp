@@ -1802,7 +1802,7 @@ static bool ShouldRemoveStaticSearchFlag(const ir::MemberExpression *const membe
         if (object->IsMemberExpression()) {
             object = object->AsMemberExpression()->Property();
         }
-        if (!object->IsIdentifier() || !object->AsIdentifier()->Variable() ||
+        if (!object->IsIdentifier() || (object->AsIdentifier()->Variable() == nullptr) ||
             object->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::INITIALIZED)) {
             return true;
         }
@@ -1822,7 +1822,7 @@ PropertySearchFlags ETSChecker::GetSearchFlags(const ir::MemberExpression *const
     }
 
     if (targetRef != nullptr &&
-        (targetRef->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) ||
+        (targetRef->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE_OR_ENUM) ||
          //  NOTE (DZ):  need to investigate when and why `targetRef->TsType()->Variable()` can be `nullptr`
          //              (see ast/parser/ets/union_static_method.sts)
          (targetRef->HasFlag(varbinder::VariableFlags::TYPE_ALIAS) && targetRef->TsType()->Variable() != nullptr &&

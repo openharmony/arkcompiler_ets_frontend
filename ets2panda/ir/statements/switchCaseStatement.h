@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_IR_STATEMENT_SWITCH_CASE_STATEMENT_H
 #define ES2PANDA_IR_STATEMENT_SWITCH_CASE_STATEMENT_H
 
+#include "ir/expression.h"
 #include "ir/statement.h"
 
 namespace ark::es2panda::ir {
@@ -42,6 +43,14 @@ public:
     [[nodiscard]] const Expression *Test() const noexcept
     {
         return test_;
+    }
+
+    void SetTest(Expression *test) noexcept
+    {
+        if (test != nullptr) {
+            test->SetParent(this);
+        }
+        test_ = test;
     }
 
     [[nodiscard]] const ArenaVector<Statement *> &Consequent() const noexcept

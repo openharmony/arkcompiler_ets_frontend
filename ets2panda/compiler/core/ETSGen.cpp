@@ -1132,24 +1132,6 @@ void ETSGen::ApplyBoxingConversion(const ir::AstNode *node)
         static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() & ~(ir::BoxingUnboxingFlags::BOXING_FLAG)));
 }
 
-static checker::Type const *GetUnboxedTypeFromContext(checker::ETSChecker const *checker, const ir::AstNode *node)
-{
-    // A consequence of current enum type implementation, #20510
-    checker::Type const *type;
-    if (node->IsExpression()) {
-        if (node->Parent()->IsTSAsExpression()) {
-            type = node->Parent()->AsTSAsExpression()->TsType();
-        } else {
-            type = node->AsExpression()->TsType();
-        }
-    } else {
-        UNREACHABLE();
-    }
-    type = checker->MaybeUnboxType(const_cast<checker::Type *>(type));
-    ES2PANDA_ASSERT(!type->IsETSReferenceType());
-    return type;
-}
-
 void ETSGen::ApplyUnboxingConversion(const ir::AstNode *node)
 {
     auto const callUnbox = [this, node](std::string_view sig, checker::Type const *unboxedType) {
@@ -1186,11 +1168,6 @@ void ETSGen::ApplyUnboxingConversion(const ir::AstNode *node)
         case ir::BoxingUnboxingFlags::UNBOX_TO_DOUBLE:
             callUnbox(Signatures::BUILTIN_DOUBLE_UNBOXED, Checker()->GlobalDoubleType());
             return;
-        case ir::BoxingUnboxingFlags::UNBOX_TO_ENUM: {
-            auto enumType = GetUnboxedTypeFromContext(Checker(), node)->AsETSEnumType();
-            callUnbox(enumType->UnboxMethod().globalSignature->InternalName().Utf8(), enumType);
-            return;
-        }
         default:
             UNREACHABLE();
     }
@@ -1342,11 +1319,6 @@ void ETSGen::EmitBoxingConversion(ir::BoxingUnboxingFlags boxingFlag, const ir::
         case ir::BoxingUnboxingFlags::BOX_TO_DOUBLE:
             callBox(Signatures::BUILTIN_DOUBLE_VALUE_OF, Checker()->GlobalDoubleType());
             return;
-        case ir::BoxingUnboxingFlags::BOX_TO_ENUM: {
-            const auto *const enumType = node->AsExpression()->TsType()->AsETSEnumType();
-            callBox(enumType->BoxedFromIntMethod().globalSignature->InternalName().Utf8(), enumType);
-            return;
-        }
         default:
             UNREACHABLE();
     }
@@ -1719,8 +1691,6 @@ void ETSGen::CastToInt(const ir::AstNode *node)
         }
         case checker::TypeFlag::ETS_BOOLEAN:
         case checker::TypeFlag::CHAR:
-        case checker::TypeFlag::ETS_INT_ENUM:
-        case checker::TypeFlag::ETS_STRING_ENUM:
         case checker::TypeFlag::BYTE:
         case checker::TypeFlag::SHORT: {
             break;
@@ -2458,8 +2428,6 @@ void ETSGen::BinaryEqualityCondition(const ir::AstNode *node, VReg lhs, Label *i
             BinaryNumberComparison<CmpWide, CondCompare>(node, lhs, ifFalse);
             break;
         }
-        case checker::TypeFlag::ETS_INT_ENUM:
-        case checker::TypeFlag::ETS_STRING_ENUM:
         case checker::TypeFlag::ETS_BOOLEAN:
         case checker::TypeFlag::BYTE:
         case checker::TypeFlag::CHAR:
@@ -3161,9 +3129,6 @@ void ETSGen::LoadArrayElement(const ir::AstNode *node, VReg objectReg)
             Ra().Emit<Ldarr16>(node, objectReg);
             break;
         }
-        case checker::TypeFlag::ETS_STRING_ENUM:
-            [[fallthrough]];
-        case checker::TypeFlag::ETS_INT_ENUM:
         case checker::TypeFlag::INT: {
             Ra().Emit<Ldarr>(node, objectReg);
             break;
@@ -3207,9 +3172,6 @@ void ETSGen::StoreArrayElement(const ir::AstNode *node, VReg objectReg, VReg ind
             Ra().Emit<Starr16>(node, objectReg, index);
             break;
         }
-        case checker::TypeFlag::ETS_STRING_ENUM:
-            [[fallthrough]];
-        case checker::TypeFlag::ETS_INT_ENUM:
         case checker::TypeFlag::INT: {
             Ra().Emit<Starr>(node, objectReg, index);
             break;
@@ -3501,13 +3463,6 @@ void ETSGen::SetAccumulatorTargetType(const ir::AstNode *node, checker::TypeFlag
         case checker::TypeFlag::DOUBLE: {
             Sa().Emit<FldaiWide>(node, static_cast<checker::DoubleType::UType>(number));
             SetAccumulatorType(Checker()->GlobalDoubleType());
-            break;
-        }
-        case checker::TypeFlag::ETS_STRING_ENUM:
-            [[fallthrough]];
-        case checker::TypeFlag::ETS_INT_ENUM: {
-            Sa().Emit<Ldai>(node, static_cast<checker::ETSEnumType::UType>(number));
-            SetAccumulatorType(Checker()->GlobalIntType());
             break;
         }
         default: {

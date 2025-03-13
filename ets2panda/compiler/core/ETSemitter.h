@@ -90,6 +90,8 @@ private:
     void GenClassRecord(const ir::ClassDefinition *classDef, bool external);
     pandasm::AnnotationElement ProcessArrayType(const ir::ClassProperty *prop, std::string &baseName,
                                                 const ir::Expression *init);
+    pandasm::AnnotationElement ProcessETSEnumType(std::string &baseName, const ir::Expression *init,
+                                                  const checker::Type *type);
     pandasm::AnnotationElement GenCustomAnnotationElement(const ir::ClassProperty *prop, std::string &baseName);
     pandasm::AnnotationData GenCustomAnnotation(ir::AnnotationUsage *anno, std::string &baseName);
     void CreateEnumProp(const ir::ClassProperty *prop, pandasm::Field &field);

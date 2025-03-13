@@ -1593,22 +1593,6 @@ static void TypeErrorOnMissingProperty(ir::MemberExpression *expr, checker::Type
         expr->Object()->Start());
 }
 
-checker::Type *ETSAnalyzer::CheckEnumMemberExpression(ETSEnumType *const baseType,
-                                                      ir::MemberExpression *const expr) const
-{
-    ETSChecker *checker = GetETSChecker();
-    auto *const boxedClass = baseType->GetDecl()->BoxedClass();
-    if (!boxedClass->IsClassDefinitionChecked()) {
-        // Check enum class first to set types and build signatures
-        checker->CheckClassDefinition(boxedClass);
-    }
-
-    auto [memberType, memberVar] = expr->ResolveEnumMember(checker, baseType);
-    expr->SetPropVar(memberVar);
-    expr->Property()->SetTsType(memberType == nullptr ? checker->GlobalTypeError() : memberType);
-    return expr->AdjustType(checker, expr->Property()->TsType());
-}
-
 checker::Type *ETSAnalyzer::ResolveMemberExpressionByBaseType(ETSChecker *checker, checker::Type *baseType,
                                                               ir::MemberExpression *expr) const
 {
@@ -1632,11 +1616,6 @@ checker::Type *ETSAnalyzer::ResolveMemberExpressionByBaseType(ETSChecker *checke
         checker->ETSObjectTypeDeclNode(checker, baseType->AsETSObjectType());
         return expr->SetTsType(TransformTypeForMethodReference(
             checker, expr, expr->SetAndAdjustType(checker, baseType->AsETSObjectType())));
-    }
-
-    // NOTE(vpukhov): #20510 member access
-    if (baseType->IsETSEnumType()) {
-        return CheckEnumMemberExpression(baseType->AsETSEnumType(), expr);
     }
 
     if (baseType->IsETSUnionType()) {
@@ -1967,10 +1946,6 @@ static checker::Type *GetTypeOfStringType(checker::Type *argType, ETSChecker *ch
             case TypeFlag::FLOAT:
             case TypeFlag::DOUBLE:
                 return checker->CreateETSStringLiteralType("number");
-            case TypeFlag::ETS_INT_ENUM:
-                return checker->CreateETSStringLiteralType(argType == unboxed ? "number" : "object");
-            case TypeFlag::ETS_STRING_ENUM:
-                return checker->CreateETSStringLiteralType(argType == unboxed ? "string" : "object");
             default:
                 UNREACHABLE();
         }
@@ -1981,7 +1956,7 @@ static checker::Type *GetTypeOfStringType(checker::Type *argType, ETSChecker *ch
     if (argType->IsETSArrayType() || argType->IsETSNullType()) {
         return checker->CreateETSStringLiteralType("object");
     }
-    if (argType->IsETSStringType() || argType->IsETSStringEnumType()) {
+    if (argType->IsETSStringType()) {
         return checker->CreateETSStringLiteralType("string");
     }
     if (argType->IsETSBigIntType()) {
@@ -1990,7 +1965,12 @@ static checker::Type *GetTypeOfStringType(checker::Type *argType, ETSChecker *ch
     if (argType->IsETSFunctionType()) {
         return checker->CreateETSStringLiteralType("function");
     }
-
+    if (argType->IsETSIntEnumType()) {
+        return checker->CreateETSStringLiteralType("number");
+    }
+    if (argType->IsETSStringEnumType()) {
+        return checker->CreateETSStringLiteralType("string");
+    }
     return checker->GlobalBuiltinETSStringType();
 }
 
@@ -2971,35 +2951,8 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
 
 checker::Type *ETSAnalyzer::Check(ir::TSEnumDeclaration *st) const
 {
-    ETSChecker *checker = GetETSChecker();
-    varbinder::Variable *enumVar = st->Key()->Variable();
-    if (enumVar == nullptr) {
-        ES2PANDA_ASSERT(checker->IsAnyError());
-        return st->SetTsType(checker->GlobalTypeError());
-    }
-
-    if (enumVar->TsType() == nullptr) {
-        if (st->BoxedClass() == nullptr) {
-            ES2PANDA_ASSERT(checker->IsAnyError());
-            enumVar->SetTsType(checker->GlobalTypeError());
-            return st->SetTsType(checker->GlobalTypeError());
-        }
-
-        st->BoxedClass()->Check(checker);
-        if (auto *const itemInit = st->Members().front()->AsTSEnumMember()->Init(); itemInit->IsNumberLiteral()) {
-            checker->CreateEnumIntTypeFromEnumDeclaration(st);
-        } else if (itemInit->IsStringLiteral()) {
-            checker->CreateEnumStringTypeFromEnumDeclaration(st);
-        } else {
-            checker->LogError(diagnostic::ENUM_TYPE_INVALID, {}, st->Start());
-            enumVar->SetTsType(checker->GlobalTypeError());
-            st->SetTsType(checker->GlobalTypeError());
-        }
-    } else if (st->TsType() == nullptr) {
-        st->SetTsType(enumVar->TsType());
-    }
-
-    return st->TsType();
+    // Some invalid TSEnumDeclaration will not be transformed to class.
+    return ReturnTypeForStatement(st);
 }
 
 checker::Type *ETSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const

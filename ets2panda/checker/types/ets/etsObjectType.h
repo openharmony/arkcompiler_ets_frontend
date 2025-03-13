@@ -276,12 +276,6 @@ public:
         return static_cast<checker::ETSObjectFlags>(flags_ & ETSObjectFlags::UNBOXABLE_TYPE);
     }
 
-    ETSEnumType *GetUnboxedEnumType() const
-    {
-        ES2PANDA_ASSERT(HasObjectFlag(ETSObjectFlags::BOXED_ENUM));
-        return GetDeclNode()->AsClassDefinition()->OrigEnumDecl()->TsType()->AsETSEnumType();
-    }
-
     ETSObjectType *GetInstantiatedType(util::StringView hash)
     {
         auto found = instantiationMap_.find(hash);

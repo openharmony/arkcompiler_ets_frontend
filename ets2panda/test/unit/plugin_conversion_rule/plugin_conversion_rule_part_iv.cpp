@@ -462,23 +462,4 @@ TEST_F(PluginConversionRuleUnitTest, TSInterfaceDeclarationConstructorDataInputP
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
     EXPECT_TRUE(HasMatched(targetAPIWithNoSpace));
 }
-
-// apiName: ETSEnumTypeSetToStringMethod
-TEST_F(PluginConversionRuleUnitTest, CheckerMethodInputParameter)
-{
-    std::string targetCAPI {R"(
-    extern "C" void ETSEnumTypeSetToStringMethod([[maybe_unused]] es2panda_Context *context,
-    es2panda_Type *classInstance, [[maybe_unused]] es2panda_Signature *globalSignature,
-    es2panda_Type *memberProxyType/*return_args:*/)
-    {
-        auto es2pandaGlobalSignature = reinterpret_cast<checker::Signature *>(globalSignature);
-        auto es2pandaMemberProxyType = reinterpret_cast<checker::ETSFunctionType *>(memberProxyType);
-
-        ((reinterpret_cast< checker::ETSEnumType *>(classInstance))->SetToStringMethod(checker::ETSEnumType::Method
-        {es2pandaGlobalSignature, es2pandaMemberProxyType}));
-    })"};
-
-    std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
-    EXPECT_TRUE(HasMatched(targetAPIWithNoSpace));
-}
 }  // namespace ark::es2panda

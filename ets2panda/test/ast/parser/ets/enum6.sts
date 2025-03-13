@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,4 +25,4 @@ function main(): void {
   i = i./* @@ label */Blue;
 }
 
-/* @@@ label Error TypeError: Enum constant does not have property 'Blue'.  */
+/* @@@ label Error TypeError: 'Blue' is a static property of 'Color' */

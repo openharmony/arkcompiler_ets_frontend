@@ -52,6 +52,8 @@ enum class ClassDefinitionModifiers : uint32_t {
     LOCAL = 1U << 11U,
     CLASSDEFINITION_CHECKED = 1U << 12U,
     NAMESPACE_TRANSFORMED = 1U << 13U,
+    STRING_ENUM_TRANSFORMED = 1U << 14U,
+    INT_ENUM_TRANSFORMED = 1U << 15U,
     DECLARATION_ID_REQUIRED = DECLARATION | ID_REQUIRED,
     ETS_MODULE = NAMESPACE_TRANSFORMED | GLOBAL
 };
@@ -223,6 +225,21 @@ public:
     [[nodiscard]] bool IsAnonymous() const noexcept
     {
         return (modifiers_ & ClassDefinitionModifiers::ANONYMOUS) != 0;
+    }
+
+    [[nodiscard]] bool IsIntEnumTransformed() const noexcept
+    {
+        return (modifiers_ & ClassDefinitionModifiers::INT_ENUM_TRANSFORMED) != 0;
+    }
+
+    [[nodiscard]] bool IsStringEnumTransformed() const noexcept
+    {
+        return (modifiers_ & ClassDefinitionModifiers::STRING_ENUM_TRANSFORMED) != 0;
+    }
+
+    [[nodiscard]] bool IsEnumTransformed() const noexcept
+    {
+        return IsIntEnumTransformed() || IsStringEnumTransformed();
     }
 
     [[nodiscard]] bool IsNamespaceTransformed() const noexcept

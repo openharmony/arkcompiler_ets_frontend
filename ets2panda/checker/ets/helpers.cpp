@@ -22,6 +22,7 @@
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
 #include "utils/arena_containers.h"
+#include "util/ustring.h"
 
 namespace ark::es2panda::checker {
 varbinder::Variable *ETSChecker::FindVariableInFunctionScope(const util::StringView name,
@@ -402,7 +403,7 @@ std::tuple<bool, bool> ETSChecker::IsResolvedAndValue(const ir::Expression *expr
         IsNullLikeOrVoidExpression(expr) ? std::make_tuple(true, false) : type->ResolveConditionExpr();
 
     const Type *tsType = expr->TsType();
-    if (tsType->DefinitelyNotETSNullish() && !type->IsETSPrimitiveType()) {
+    if (tsType->DefinitelyNotETSNullish() && !type->IsETSPrimitiveOrEnumType()) {
         isResolve = true;
         isValue = true;
     }
@@ -473,7 +474,19 @@ bool ETSChecker::HandleLogicalPotentialResult(ir::Expression *left, ir::Expressi
 void ETSChecker::ResolveReturnStatement(checker::Type *funcReturnType, checker::Type *argumentType,
                                         ir::ScriptFunction *containingFunc, ir::ReturnStatement *st)
 {
-    if (funcReturnType->IsETSReferenceType() || argumentType->IsETSReferenceType()) {
+    if (funcReturnType->IsETSPrimitiveOrEnumType() && argumentType->IsETSPrimitiveOrEnumType()) {
+        // function return type is of primitive type (including enums):
+        Relation()->SetFlags(checker::TypeRelationFlag::DIRECT_RETURN |
+                             checker::TypeRelationFlag::IN_ASSIGNMENT_CONTEXT |
+                             checker::TypeRelationFlag::ASSIGNMENT_CONTEXT);
+        if (Relation()->IsAssignableTo(funcReturnType, argumentType)) {
+            funcReturnType = argumentType;
+            containingFunc->Signature()->SetReturnType(funcReturnType);
+            containingFunc->Signature()->AddSignatureFlag(checker::SignatureFlags::INFERRED_RETURN_TYPE);
+        } else if (!Relation()->IsAssignableTo(argumentType, funcReturnType)) {
+            LogError(diagnostic::RETURN_DIFFERENT_PRIM, {funcReturnType, argumentType}, st->Argument()->Start());
+        }
+    } else if (funcReturnType->IsETSReferenceType() || argumentType->IsETSReferenceType()) {
         // function return type should be of reference (object) type
         Relation()->SetFlags(checker::TypeRelationFlag::NONE);
 
@@ -496,18 +509,6 @@ void ETSChecker::ResolveReturnStatement(checker::Type *funcReturnType, checker::
             funcReturnType = CreateETSUnionType({funcReturnType, argumentType});
             containingFunc->Signature()->SetReturnType(funcReturnType);
             containingFunc->Signature()->AddSignatureFlag(checker::SignatureFlags::INFERRED_RETURN_TYPE);
-        }
-    } else if (funcReturnType->IsETSPrimitiveType() && argumentType->IsETSPrimitiveType()) {
-        // function return type is of primitive type (including enums):
-        Relation()->SetFlags(checker::TypeRelationFlag::DIRECT_RETURN |
-                             checker::TypeRelationFlag::IN_ASSIGNMENT_CONTEXT |
-                             checker::TypeRelationFlag::ASSIGNMENT_CONTEXT);
-        if (Relation()->IsAssignableTo(funcReturnType, argumentType)) {
-            funcReturnType = argumentType;
-            containingFunc->Signature()->SetReturnType(funcReturnType);
-            containingFunc->Signature()->AddSignatureFlag(checker::SignatureFlags::INFERRED_RETURN_TYPE);
-        } else if (!Relation()->IsAssignableTo(argumentType, funcReturnType)) {
-            LogError(diagnostic::RETURN_DIFFERENT_PRIM, {funcReturnType, argumentType}, st->Argument()->Start());
         }
     } else {
         // Should never in this branch.
@@ -1568,8 +1569,6 @@ Type *ETSChecker::ResolveReferencedType(varbinder::LocalVariable *refVar, const 
                 return GlobalTypeError();
             }
             return GetTypeFromClassReference(refVar);
-        case ir::AstNodeType::TS_ENUM_DECLARATION:
-            return GetTypeFromEnumReference(refVar);
         case ir::AstNodeType::TS_TYPE_PARAMETER:
             return GetTypeFromTypeParameterReference(refVar, name->Start());
         case ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION:
@@ -1825,8 +1824,8 @@ Type *ETSChecker::CheckSwitchDiscriminant(ir::Expression *discriminant)
     auto *discriminantType = GetNonConstantType(MaybeUnboxExpression(discriminant));
     if (!discriminantType->HasTypeFlag(TypeFlag::VALID_SWITCH_TYPE)) {
         if (!(discriminantType->IsETSObjectType() &&
-              discriminantType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_STRING |
-                                                                 ETSObjectFlags::STRING | ETSObjectFlags::ENUM))) {
+              discriminantType->AsETSObjectType()->HasObjectFlag(
+                  ETSObjectFlags::BUILTIN_STRING | ETSObjectFlags::STRING | ETSObjectFlags::ENUM_OBJECT))) {
             LogError(diagnostic::ENUM_INVALID_DISCRIMINANT, {discriminantType}, discriminant->Start());
         }
     }
@@ -1914,7 +1913,33 @@ bool IsConstantMemberOrIdentifierExpression(ir::Expression *expression)
 
 static bool IsValidSwitchType(checker::Type *caseType)
 {
-    return caseType->HasTypeFlag(checker::TypeFlag::VALID_SWITCH_TYPE) || caseType->IsETSStringType();
+    return caseType->HasTypeFlag(checker::TypeFlag::VALID_SWITCH_TYPE) || caseType->IsETSStringType() ||
+           caseType->IsETSEnumType();
+}
+
+void CheckEnumCaseUnqualified(ETSChecker *checker, ir::Expression const *const caseTest)
+{
+    if (!caseTest->IsMemberExpression()) {
+        checker->LogTypeError("Enum switch case must be unqualified name of an enum constant", caseTest->Start());
+        return;
+    }
+
+    auto caseMember = caseTest->AsMemberExpression();
+    auto baseObject = caseMember->Object();
+
+    util::StringView enumName;
+    if (baseObject->IsIdentifier()) {
+        enumName = baseObject->AsIdentifier()->Name();
+    } else if (baseObject->IsMemberExpression()) {
+        enumName = baseObject->AsMemberExpression()->Property()->AsIdentifier()->Name();
+    } else {
+        checker->LogTypeError("Enum switch case must be unqualified name of an enum constant", caseTest->Start());
+    }
+
+    auto enumType = caseTest->TsType()->AsETSObjectType();
+    if (enumName != enumType->Name()) {
+        checker->LogTypeError("Enum switch case must be unqualified name of an enum constant", caseTest->Start());
+    }
 }
 
 void ETSChecker::CheckItemCasesConstant(ArenaVector<ir::SwitchCaseStatement *> const &cases)
@@ -1928,7 +1953,9 @@ void ETSChecker::CheckItemCasesConstant(ArenaVector<ir::SwitchCaseStatement *> c
         if (caseType->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
             continue;
         }
+
         if (caseTest->TsType()->IsETSEnumType()) {
+            CheckEnumCaseUnqualified(this, caseTest);
             continue;
         }
 
@@ -1945,19 +1972,28 @@ void ETSChecker::CheckItemCasesConstant(ArenaVector<ir::SwitchCaseStatement *> c
     }
 }
 
-void CheckItemEnumType(ir::Expression const *const caseTest, ETSChecker *checker, ETSIntEnumType const *const type,
-                       bool &isDup)
+void CheckItemEnumType(ir::Expression const *const caseTest, ir::Expression const *const compareCaseTest,
+                       ETSChecker *checker, bool &isDup)
 {
-    if (caseTest->TsType()->AsETSIntEnumType()->IsSameEnumLiteralType(type)) {
-        isDup = true;
-        checker->LogError(diagnostic::SWITCH_CASE_DUPLICATE, {}, caseTest->Start());
+    // These case has logged error before, no need log error.
+    if (!caseTest->IsMemberExpression() || !compareCaseTest->IsMemberExpression()) {
+        return;
     }
-}
+    if (!caseTest->AsMemberExpression()->Object()->IsIdentifier() ||
+        !compareCaseTest->AsMemberExpression()->Object()->IsIdentifier()) {
+        return;
+    }
+    if (caseTest->AsMemberExpression()->Object()->AsIdentifier()->Name() !=
+        compareCaseTest->AsMemberExpression()->Object()->AsIdentifier()->Name()) {
+        return;
+    }
 
-void CheckItemStringEnumType(ir::Expression const *const caseTest, ETSChecker *checker,
-                             ETSStringEnumType const *const type, bool &isDup)
-{
-    if (caseTest->TsType()->AsETSStringEnumType()->IsSameEnumLiteralType(type)) {
+    if (!caseTest->AsMemberExpression()->Property()->IsIdentifier() ||
+        !compareCaseTest->AsMemberExpression()->Property()->IsIdentifier()) {
+        return;
+    }
+    if (caseTest->AsMemberExpression()->Property()->AsIdentifier()->Name() ==
+        compareCaseTest->AsMemberExpression()->Property()->AsIdentifier()->Name()) {
         isDup = true;
         checker->LogError(diagnostic::SWITCH_CASE_DUPLICATE, {}, caseTest->Start());
     }
@@ -1975,14 +2011,8 @@ void ETSChecker::CheckItemCasesDuplicate(ArenaVector<ir::SwitchCaseStatement *> 
                 continue;
             }
 
-            if (caseTest->TsType()->IsETSIntEnumType()) {
-                CheckItemEnumType(caseTest, this, compareCaseTest->TsType()->AsETSIntEnumType(), isItemDuplicate);
-                continue;
-            }
-
-            if (caseTest->TsType()->IsETSStringEnumType()) {
-                CheckItemStringEnumType(caseTest, this, compareCaseTest->TsType()->AsETSStringEnumType(),
-                                        isItemDuplicate);
+            if (caseTest->TsType()->IsETSEnumType() && compareCaseTest->TsType()->IsETSEnumType()) {
+                CheckItemEnumType(caseTest, compareCaseTest, this, isItemDuplicate);
                 continue;
             }
 

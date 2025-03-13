@@ -364,8 +364,6 @@ void ETSEmitter::GenClassField(const ir::ClassProperty *prop, pandasm::Record &c
         field.metadata->SetAttribute(Signatures::EXTERNAL);
     } else if (prop->TsType()->IsETSPrimitiveType() || prop->TsType()->IsETSStringType()) {
         EmitDefaultFieldValue(field, prop->Value());
-    } else if (prop->TsType()->IsETSEnumType()) {
-        CreateEnumProp(prop, field);
     }
 
     classRecord.fieldList.emplace_back(std::move(field));
@@ -556,17 +554,15 @@ void ETSEmitter::CreateEnumProp(const ir::ClassProperty *prop, pandasm::Field &f
     if (prop->Value() == nullptr) {
         return;
     }
-    auto *init = prop->Value()->AsMemberExpression()->PropVar()->Declaration()->Node()->AsTSEnumMember()->Init();
     field.metadata->SetFieldType(field.type);
+    auto declNode = prop->Value()->AsMemberExpression()->PropVar()->Declaration()->Node();
+    auto *init = declNode->AsClassProperty()->OriginEnumMember()->Init();
     if (init->IsNumberLiteral()) {
         auto value = init->AsNumberLiteral()->Number().GetInt();
         field.metadata->SetValue(pandasm::ScalarValue::Create<pandasm::Value::Type::I32>(value));
     } else if (init->IsStringLiteral()) {
         auto value = init->AsStringLiteral()->Str().Mutf8();
         field.metadata->SetValue(pandasm::ScalarValue::Create<pandasm::Value::Type::STRING>(value));
-    } else if (init->IsUnaryExpression() && IsNegativeLiteralNode(init->AsUnaryExpression())) {
-        double doubleValue = (-1) * init->AsUnaryExpression()->Argument()->AsNumberLiteral()->Number().GetDouble();
-        field.metadata->SetValue(pandasm::ScalarValue::Create<pandasm::Value::Type::F64>(doubleValue));
     } else {
         UNREACHABLE();
     }
@@ -592,7 +588,7 @@ static void ProcessEnumExpression(std::vector<pandasm::LiteralArray::Literal> &l
 {
     auto *memberExpr = elem->IsCallExpression() ? elem->AsCallExpression()->Arguments()[0]->AsMemberExpression()
                                                 : elem->AsMemberExpression();
-    auto *init = memberExpr->PropVar()->Declaration()->Node()->AsTSEnumMember()->Init();
+    auto *init = memberExpr->PropVar()->Declaration()->Node()->AsClassProperty()->OriginEnumMember()->Init();
     if (init->IsNumberLiteral()) {
         auto enumValue = static_cast<uint32_t>(init->AsNumberLiteral()->Number().GetInt());
         literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::TAGVALUE,
@@ -758,6 +754,22 @@ pandasm::AnnotationElement ETSEmitter::ProcessArrayType(const ir::ClassProperty 
                       std::string_view {litArrays.back().first}))};
 }
 
+pandasm::AnnotationElement ETSEmitter::ProcessETSEnumType(std::string &baseName, const ir::Expression *init,
+                                                          const checker::Type *type)
+{
+    auto declNode = init->AsMemberExpression()->PropVar()->Declaration()->Node();
+    auto *initValue = declNode->AsClassProperty()->OriginEnumMember()->Init();
+    if (type->IsETSIntEnumType()) {
+        auto enumValue = static_cast<uint32_t>(initValue->AsNumberLiteral()->Number().GetInt());
+        auto intEnumValue = pandasm::ScalarValue::Create<pandasm::Value::Type::I32>(enumValue);
+        return pandasm::AnnotationElement {baseName, std::make_unique<pandasm::ScalarValue>(intEnumValue)};
+    }
+    ASSERT(type->IsETSStringEnumType());
+    auto enumValue = initValue->AsStringLiteral()->Str().Mutf8();
+    auto stringValue = pandasm::ScalarValue::Create<pandasm::Value::Type::STRING>(enumValue);
+    return pandasm::AnnotationElement {baseName, std::make_unique<pandasm::ScalarValue>(stringValue)};
+}
+
 pandasm::AnnotationElement ETSEmitter::GenCustomAnnotationElement(const ir::ClassProperty *prop, std::string &baseName)
 {
     const auto *init = prop->Value();
@@ -766,6 +778,10 @@ pandasm::AnnotationElement ETSEmitter::GenCustomAnnotationElement(const ir::Clas
     auto propName = prop->Id()->Name().Mutf8();
     if (type->IsETSArrayType()) {
         return ProcessArrayType(prop, baseName, init);
+    }
+
+    if (type->IsETSEnumType()) {
+        return ProcessETSEnumType(baseName, init, type);
     }
     switch (checker::ETSChecker::TypeKind(
         Context()->checker->AsETSChecker()->MaybeUnboxType(const_cast<checker::Type *>(type)))) {
@@ -786,18 +802,6 @@ pandasm::AnnotationElement ETSEmitter::GenCustomAnnotationElement(const ir::Clas
             }
             return pandasm::AnnotationElement {
                 propName, std::make_unique<pandasm::ScalarValue>(CreateScalarValue(init->TsType(), typeKind))};
-        }
-        case checker::TypeFlag::ETS_INT_ENUM: {
-            auto *initValue = init->AsMemberExpression()->PropVar()->Declaration()->Node()->AsTSEnumMember()->Init();
-            auto enumValue = static_cast<uint32_t>(initValue->AsNumberLiteral()->Number().GetInt());
-            auto intEnumValue = pandasm::ScalarValue::Create<pandasm::Value::Type::I32>(enumValue);
-            return pandasm::AnnotationElement {propName, std::make_unique<pandasm::ScalarValue>(intEnumValue)};
-        }
-        case checker::TypeFlag::ETS_STRING_ENUM: {
-            auto *initValue = init->AsMemberExpression()->PropVar()->Declaration()->Node()->AsTSEnumMember()->Init();
-            auto enumValue = initValue->AsStringLiteral()->Str().Mutf8();
-            auto stringValue = pandasm::ScalarValue::Create<pandasm::Value::Type::STRING>(enumValue);
-            return pandasm::AnnotationElement {propName, std::make_unique<pandasm::ScalarValue>(stringValue)};
         }
         default:
             UNREACHABLE();

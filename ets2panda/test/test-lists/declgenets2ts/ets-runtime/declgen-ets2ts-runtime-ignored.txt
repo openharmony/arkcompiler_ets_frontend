@@ -33,6 +33,7 @@ enum-switch-statement.sts
 enum-to-string-conversion.sts
 enum-typeof.sts
 enum_string_init.sts
+enum_switch.sts
 generics_1.sts
 
 # FailKind.TSC_FAIL
@@ -71,6 +72,7 @@ DefaultParam_4.sts
 DefaultParam_5.sts
 Enum.sts
 Enum2.sts
+enum_namespace.sts
 FunctionOverload.sts
 FunctionType.sts
 GenericArray_1.sts

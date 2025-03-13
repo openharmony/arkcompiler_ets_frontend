@@ -1027,11 +1027,6 @@ static bool IsFunctionOrMethodCall(ir::CallExpression const *node)
         return true;
     }
 
-    // NOTE(vpukhov): #20510 member access pattern Enum.Const.<method>()
-    if (callee->IsMemberExpression() && (callee->AsMemberExpression()->Object()->TsType()->IsETSEnumType())) {
-        return true;
-    }
-
     varbinder::Variable *var = nullptr;
     if (callee->IsMemberExpression() &&
         callee->AsMemberExpression()->Kind() == ir::MemberExpressionKind::PROPERTY_ACCESS) {

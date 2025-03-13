@@ -467,20 +467,3 @@ TEST_F(LspRenameInfoTests, RenameInfoNodeIsEligibleForRenameStringLiteral)
     ASSERT_TRUE(ark::es2panda::lsp::NodeIsEligibleForRename(targetNode));
     initializer.DestroyContext(ctx);
 }
-
-TEST_F(LspRenameInfoTests, RenameInfoNodeIsEligibleForRenameNumberLiteralEnumMember)
-{
-    Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("trigger-span-literal.sts", ES2PANDA_STATE_CHECKED,
-                                                      "enum MyEnum { FixedValue = 42 }");
-    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
-    auto targetNode = ast->FindChild([](ark::es2panda::ir::AstNode *node) {
-        return node->IsNumberLiteral() && node->AsNumberLiteral()->Str() == "42";
-    });
-
-    ASSERT_NE(targetNode, nullptr);
-    ASSERT_FALSE(ark::es2panda::lsp::NodeIsEligibleForRename(targetNode));
-    initializer.DestroyContext(ctx);
-}

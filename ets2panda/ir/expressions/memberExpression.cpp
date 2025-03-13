@@ -148,44 +148,6 @@ checker::Type *MemberExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-static varbinder::LocalVariable *GetEnumMethodVariable(checker::ETSEnumType const *const enumInterface,
-                                                       const util::StringView propName)
-{
-    varbinder::LocalVariable *methodVar = nullptr;
-
-    const auto *const boxedClass = enumInterface->GetDecl()->BoxedClass();
-    ES2PANDA_ASSERT(boxedClass->TsType()->IsETSObjectType());
-    const auto *const obj = boxedClass->TsType()->AsETSObjectType();
-
-    std::string_view methodName = propName.Utf8();
-    if (enumInterface->IsETSStringEnumType() && (propName == checker::ETSEnumType::VALUE_OF_METHOD_NAME)) {
-        // For string enums valueOf method calls toString method
-        methodName = checker::ETSEnumType::TO_STRING_METHOD_NAME;
-    }
-
-    const auto searchFlags =
-        checker::PropertySearchFlags::SEARCH_METHOD | checker::PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION;
-    methodVar = obj->GetProperty(methodName, searchFlags);
-
-    return methodVar;
-}
-
-std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::ResolveEnumMember(
-    checker::ETSChecker *checker, checker::ETSEnumType *type) const
-{
-    if (parent_->Type() == ir::AstNodeType::CALL_EXPRESSION && parent_->AsCallExpression()->Callee() == this) {
-        auto *const memberType = type->LookupMethod(checker, object_, property_->AsIdentifier());
-        varbinder::LocalVariable *const memberVar = GetEnumMethodVariable(type, property_->AsIdentifier()->Name());
-        return {memberType, memberVar};
-    }
-
-    auto *const literalType = type->LookupConstant(checker, object_, property_->AsIdentifier());
-    if (literalType == nullptr) {
-        return {nullptr, nullptr};
-    }
-    return {literalType, literalType->GetMemberVar()};
-}
-
 std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::ResolveObjectMember(
     checker::ETSChecker *checker) const
 {
@@ -478,14 +440,6 @@ checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, che
     if (baseType->IsETSObjectType()) {
         SetObjectType(baseType->AsETSObjectType());
         return CheckIndexAccessMethod(checker);
-    }
-    // NOTE(vpukhov): #20510 lowering
-    if (baseType->IsETSEnumType()) {
-        property_->Check(checker);
-        if (property_->TsType()->IsETSEnumType()) {
-            AddAstNodeFlags(ir::AstNodeFlags::GENERATE_GET_NAME);
-            return checker->GlobalBuiltinETSStringType();
-        }
     }
     checker->LogError(diagnostic::INDEX_ON_INVALID_TYPE, {}, Object()->Start());
     return nullptr;

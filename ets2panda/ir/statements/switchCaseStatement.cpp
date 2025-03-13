@@ -108,11 +108,8 @@ void SwitchCaseStatement::CheckAndTestCase(checker::ETSChecker *checker, checker
 
         if (caseType->HasTypeFlag(checker::TypeFlag::CHAR)) {
             validCaseType = comparedExprType->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL);
-        } else if (caseType->IsETSIntEnumType() && comparedExprType->IsETSIntEnumType()) {
-            validCaseType = comparedExprType->AsETSIntEnumType()->IsSameEnumType(caseType->AsETSIntEnumType());
-        } else if (caseType->IsETSStringEnumType() && comparedExprType->IsETSStringEnumType()) {
-            // CC-OFFNXT(G.FMT.06-CPP) project code style
-            validCaseType = comparedExprType->AsETSStringEnumType()->IsSameEnumType(caseType->AsETSStringEnumType());
+        } else if (caseType->IsETSEnumType() || comparedExprType->IsETSEnumType()) {
+            validCaseType = checker->Relation()->IsIdenticalTo(caseType, comparedExprType);
         } else {
             if (!checker::AssignmentContext(
                      // CC-OFFNXT(G.FMT.06-CPP) project code style

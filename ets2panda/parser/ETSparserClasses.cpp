@@ -16,7 +16,6 @@
 #include "ETSparser.h"
 #include "ETSNolintParser.h"
 #include <utility>
-#include "generated/diagnostic.h"
 #include "macros.h"
 #include "parser/parserFlags.h"
 #include "parser/parserStatusContext.h"
@@ -27,7 +26,6 @@
 #include "varbinder/ETSBinder.h"
 #include "lexer/lexer.h"
 #include "lexer/ETSLexer.h"
-#include "checker/types/ets/etsEnumType.h"
 #include "ir/astNode.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/decorator.h"

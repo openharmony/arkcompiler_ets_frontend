@@ -34,7 +34,6 @@ public:
 #undef DECLARE_ETSCOMPILER_COMPILE_METHOD
 
 private:
-    bool IsSucceedCompilationProxyMemberExpr(const ir::CallExpression *expr) const;
     void GetDynamicNameParts(const ir::CallExpression *expr, ArenaVector<util::StringView> &parts) const;
     void CompileDynamic(const ir::CallExpression *expr, compiler::VReg &calleeReg) const;
     void CompileCastUnboxable(const ir::TSAsExpression *expr) const;
@@ -42,7 +41,6 @@ private:
     void CompileCast(const ir::TSAsExpression *expr) const;
     void EmitCall(const ir::CallExpression *expr, compiler::VReg &calleeReg, checker::Signature *signature) const;
     bool HandleArrayTypeLengthProperty(const ir::MemberExpression *expr, ETSGen *etsg) const;
-    bool HandleEnumTypes(const ir::MemberExpression *expr, ETSGen *etsg) const;
     bool HandleStaticProperties(const ir::MemberExpression *expr, ETSGen *etsg) const;
 
     static bool CompileComputed(compiler::ETSGen *etsg, const ir::MemberExpression *expr);
