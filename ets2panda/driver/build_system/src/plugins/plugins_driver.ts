@@ -13,13 +13,12 @@
  * limitations under the License.
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
 import {
   Logger,
   LogData,
   LogDataFactory
 } from '../logger';
+import { BuildConfig } from '../init/process_build_config'
 import { ErrorCode } from '../error_code';
 
 export enum PluginHook {
@@ -69,10 +68,12 @@ type RawPlugins = {
 class PluginContext {
   private ast: object | undefined;
   private program: object | undefined;
+  private projectConfig: object | undefined;
 
   constructor() {
     this.ast = undefined;
     this.program = undefined;
+    this.projectConfig = undefined;
   }
 
   public setArkTSAst(ast: object): void {
@@ -89,6 +90,23 @@ class PluginContext {
 
   public getArkTSProgram(): object | undefined {
     return this.program;
+  }
+
+  public setProjectConfig(projectConfig: object): void {
+    if (this.projectConfig) {
+      const logData: LogData = LogDataFactory.newInstance(
+        ErrorCode.BUILDSYSTEM_PLUGIN_CONTEXT_RESET_PROJECT_CONFIG,
+        'Trying to reset projectConfig in PluginContext, abort compiling.',
+        'projectConfig in PluginContext can only be set once.'
+      );
+      Logger.getInstance().printErrorAndExit(logData);
+      return;
+    }
+    this.projectConfig = projectConfig;
+  }
+
+  public getProjectConfig(): object | undefined {
+    return this.projectConfig;
   }
 }
 
@@ -112,18 +130,19 @@ export class PluginDriver {
     return this.instance;
   }
 
-  public initPlugins(pluginConfig: object): void {
-    if (!pluginConfig) {
+  public initPlugins(projectConfig: BuildConfig): void {
+    if (!projectConfig || !projectConfig.plugins) {
       return;
     }
-    const pluginResults: RawPlugins[] = Object.entries(pluginConfig).map(([key, value]) => {
+
+    const pluginResults: RawPlugins[] = Object.entries(projectConfig.plugins).map(([key, value]) => {
       try {
         let pluginObject = require(value as string);
         let initFunction = Object.values(pluginObject)[0] as PluginInitFunction;
         if (typeof initFunction !== 'function') {
           throw('Failed to load plugin: plugin in wrong format');
         }
-        console.log('Loaded plugin: ', key, pluginObject, initFunction);
+        this.logger.printInfo(`Loaded plugin: ', ${key}, ${pluginObject}`);
 
         return {
           name: key,
@@ -148,6 +167,8 @@ export class PluginDriver {
         this.allPlugins.set(plugin.name, plugin.init());
       }
     });
+
+    this.context.setProjectConfig(projectConfig);
   }
 
   private getPlugins(hook: PluginHook) : PluginExecutor[] | undefined {

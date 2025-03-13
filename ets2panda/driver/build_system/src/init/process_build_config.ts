@@ -92,7 +92,7 @@ export function processBuildConfig(projectConfig: BuildConfig): BuildConfig {
   initPlatformSpecificConfig(buildConfig);
   initBuildEnv(buildConfig);
   initKoalaWrapper(buildConfig);
-  PluginDriver.getInstance().initPlugins(buildConfig.plugins as object);
+  PluginDriver.getInstance().initPlugins(buildConfig);
 
   return buildConfig;
 }
