@@ -694,11 +694,17 @@ Signature *ETSChecker::FindMostSpecificSignature(const ArenaVector<Signature *> 
     return mostSpecificSignature;
 }
 
+static Type *GetParatmeterTypeOrRestAtIdx(Signature *sig, const size_t idx)
+{
+    return idx < sig->ArgCount() ? sig->Params().at(idx)->TsType()
+                                 : sig->RestVar()->TsType()->AsETSArrayType()->ElementType();
+}
+
 static void InitMostSpecificType(const ArenaVector<Signature *> &signatures, [[maybe_unused]] Type *&mostSpecificType,
                                  [[maybe_unused]] Signature *&prevSig, const size_t idx)
 {
     for (auto *sig : signatures) {
-        if (Type *sigType = sig->Params().at(idx)->TsType();
+        if (Type *sigType = GetParatmeterTypeOrRestAtIdx(sig, idx);
             sigType->IsETSObjectType() && !sigType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
             mostSpecificType = sigType;
             prevSig = sig;
@@ -712,7 +718,7 @@ void ETSChecker::SearchAmongMostSpecificTypes(Type *&mostSpecificType, Signature
                                               bool lookForClassType)
 {
     auto [pos, idx, sig] = info;
-    Type *sigType = sig->Params().at(idx)->TsType();
+    Type *sigType = GetParatmeterTypeOrRestAtIdx(sig, idx);
     const bool isClassType =
         sigType->IsETSObjectType() && !sigType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE);
     if (isClassType == lookForClassType) {
@@ -760,7 +766,7 @@ ArenaMultiMap<size_t, Signature *> ETSChecker::GetSuitableSignaturesForParameter
         }
 
         for (auto *sig : signatures) {
-            Type *sigType = sig->Params().at(i)->TsType();
+            Type *sigType = GetParatmeterTypeOrRestAtIdx(sig, i);
             if (Relation()->IsIdenticalTo(sigType, mostSpecificType)) {
                 bestSignaturesForParameter.insert({i, sig});
             }
@@ -778,6 +784,9 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
     if (signatures.size() == 1) {
         return signatures.front();
     }
+
+    std::sort(signatures.begin(), signatures.end(),
+              [](Signature *sig1, Signature *sig2) { return sig1->ArgCount() > sig2->ArgCount(); });
 
     size_t paramCount = signatures.front()->ArgCount();
     if (argumentsSize != ULONG_MAX) {
