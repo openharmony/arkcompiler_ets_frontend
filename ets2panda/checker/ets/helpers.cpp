@@ -2088,6 +2088,8 @@ std::string ETSChecker::GetStringFromLiteral(ir::Expression *caseTest) const
             return std::to_string(caseTest->AsCharLiteral()->Char());
         }
         case ir::AstNodeType::STRING_LITERAL:
+        case ir::AstNodeType::NULL_LITERAL:
+        case ir::AstNodeType::UNDEFINED_LITERAL:
         case ir::AstNodeType::NUMBER_LITERAL: {
             return util::Helpers::LiteralToPropName(caseTest).Mutf8();
         }
