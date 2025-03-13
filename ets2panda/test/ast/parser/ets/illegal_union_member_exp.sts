@@ -22,4 +22,5 @@ function main(): void {
     /* @@ label */b.toString();
 }
 
+/* @@@ label Error TypeError: Member type must be the same for all union objects.  */
 /* @@@ label Error TypeError: Type String|int[] is illegal in union member expression.  */

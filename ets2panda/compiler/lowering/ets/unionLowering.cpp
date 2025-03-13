@@ -82,7 +82,7 @@ static varbinder::LocalVariable *CreateNamedAccessProperty(checker::ETSChecker *
     auto fieldCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(varbinder, classScope->InstanceFieldScope());
 
     if (auto *var = classScope->FindLocal(propName, varbinder::ResolveBindingOptions::VARIABLES); var != nullptr) {
-        ES2PANDA_ASSERT(var->TsType() == fieldType);
+        ES2PANDA_ASSERT(checker->IsTypeIdenticalTo(var->TsType(), fieldType));
         return var->AsLocalVariable();
     }
 
