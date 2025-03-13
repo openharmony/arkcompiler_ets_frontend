@@ -15,6 +15,7 @@
 
 #include "checker/ETSchecker.h"
 
+#include "ir/expressions/identifier.h"
 #include "ir/ets/etsNullishTypes.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "ir/ets/etsUnionType.h"
@@ -35,11 +36,13 @@ std::optional<ir::TypeNode *> ETSChecker::GetUtilityTypeTypeParamNode(
 }
 
 Type *ETSChecker::HandleUtilityTypeParameterNode(const ir::TSTypeParameterInstantiation *const typeParams,
-                                                 const std::string_view &utilityType)
+                                                 const ir::Identifier *const ident)
 {
     if (typeParams == nullptr) {
+        LogError(diagnostic::USING_RESERVED_NAME_AS_VARIABLE_OR_TYPE_NAME, {ident->Name().Utf8()}, ident->Start());
         return GlobalTypeError();
     }
+    const std::string_view &utilityType = ident->Name().Utf8();
     std::optional<ir::TypeNode *> possiblyTypeParam = GetUtilityTypeTypeParamNode(typeParams, utilityType);
     if (!possiblyTypeParam.has_value()) {
         return GlobalTypeError();

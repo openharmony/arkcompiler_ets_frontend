@@ -114,7 +114,7 @@ checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *co
 
     if (ident->Name() == compiler::Signatures::READONLY_TYPE_NAME ||
         ident->Name() == compiler::Signatures::REQUIRED_TYPE_NAME) {
-        return checker->HandleUtilityTypeParameterNode(typeParams_, ident->Name().Utf8());
+        return checker->HandleUtilityTypeParameterNode(typeParams_, ident);
     }
 
     if (ident->Name() == compiler::Signatures::PARTIAL_TYPE_NAME) {
@@ -131,7 +131,7 @@ checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *co
 checker::Type *ETSTypeReferencePart::HandlePartialType(checker::ETSChecker *const checker,
                                                        const Identifier *const ident)
 {
-    auto *baseType = checker->HandleUtilityTypeParameterNode(typeParams_, ident->Name().Utf8());
+    auto *baseType = checker->HandleUtilityTypeParameterNode(typeParams_, ident);
     if (baseType != nullptr && baseType->IsETSObjectType() && !baseType->AsETSObjectType()->TypeArguments().empty()) {
         // we treat Partial<A<T,D>> class as a different copy from A<T,D> now,
         // but not a generic type param for Partial<>
