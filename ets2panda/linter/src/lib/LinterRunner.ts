@@ -39,7 +39,7 @@ import { clearPathHelperCache, pathContainsDirectory } from './utils/functions/P
 import { LibraryTypeCallDiagnosticChecker } from './utils/functions/LibraryTypeCallDiagnosticChecker';
 
 export function consoleLog(linterOptions: LinterOptions, ...args: unknown[]): void {
-  if (linterOptions.ideMode) {
+  if (linterOptions.ideMode || linterOptions.ideInteractive) {
     return;
   }
   let outLine = '';
@@ -129,10 +129,14 @@ export function lint(config: LinterConfig, etsLoaderPath: string | undefined): L
   logProblemsPercentageByFeatures(linter);
 
   freeMemory();
+  let problemsInfosValues = problemsInfos;
+  if (!options.ideInteractive) {
+    problemsInfosValues = mergeArrayMaps(problemsInfos, transformTscDiagnostics(tscStrictDiagnostics));
+  }
 
   return {
     errorNodes: errorNodesTotal,
-    problemsInfos: mergeArrayMaps(problemsInfos, transformTscDiagnostics(tscStrictDiagnostics))
+    problemsInfos: problemsInfosValues
   };
 }
 
@@ -231,7 +235,7 @@ function countProblemFiles(
       ' lines'
     );
   }
-
+  
   return filesNumber;
 }
 

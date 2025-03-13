@@ -37,13 +37,46 @@ export function run(): void {
 
   TypeScriptLinter.initGlobals();
 
-  if (!cmdOptions.linterOptions.ideMode) {
+  if (!cmdOptions.linterOptions.ideMode && !cmdOptions.linterOptions.ideInteractive) {
     const compileOptions = compileLintOptions(cmdOptions);
     const result = lint(compileOptions, getEtsLoaderPath(compileOptions));
     process.exit(result.errorNodes > 0 ? 1 : 0);
+  } else if (cmdOptions.linterOptions.ideInteractive) {
+    runMigrationCliMode(cmdOptions);
   } else {
     runIDEMode(cmdOptions);
   }
+}
+
+async function runMigrationCliMode(cmdOptions: CommandLineOptions): Promise<void> {
+  const compileOptions = compileLintOptions(cmdOptions);
+  const result = lint(compileOptions, getEtsLoaderPath(compileOptions));
+  for (const [filePath, problems] of result.problemsInfos) {
+    await processSyncOut(
+      JSON.stringify({
+        filePath,
+        problems
+      }) + '\n'
+    );
+  }
+  await processSyncErr('{"content":"report finish","messageType":1,"indictor":1}\n');
+  process.exit(result.errorNodes > 0 ? 1 : 0);
+}
+
+async function processSyncOut(message: string): Promise<void> {
+  await new Promise((resolve) => {
+    process.stdout.write(message, () => {
+      resolve('success');
+    });
+  });
+}
+
+async function processSyncErr(message: string): Promise<void> {
+  await new Promise((resolve) => {
+    process.stderr.write(message, () => {
+      resolve('success');
+    });
+  });
 }
 
 function getTempFileName(): string {

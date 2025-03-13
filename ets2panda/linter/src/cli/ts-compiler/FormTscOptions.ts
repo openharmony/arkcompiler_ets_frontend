@@ -15,6 +15,7 @@
 
 import * as ts from 'typescript';
 import type { CommandLineOptions } from '../../lib/CommandLineOptions';
+import { createCompilerHost } from './ResolveSdks';
 
 export function formTscOptions(
   cmdOptions: CommandLineOptions,
@@ -39,6 +40,13 @@ export function formTscOptions(
       checkJs: true
     }
   };
+  if (cmdOptions.sdkDefaultApiPath && cmdOptions.arktsWholeProjectPath && cmdOptions.sdkExternalApiPath) {
+    options.host = createCompilerHost(
+      cmdOptions.sdkDefaultApiPath,
+      cmdOptions.sdkExternalApiPath,
+      cmdOptions.arktsWholeProjectPath
+    );
+  }
   options.options = Object.assign(options.options, overrideCompilerOptions);
   return options;
 }
