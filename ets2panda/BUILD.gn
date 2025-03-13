@@ -1166,6 +1166,15 @@ ohos_shared_library("libes2panda_public") {
   subsystem_name = "arkcompiler"
 }
 
+action("generate_ets2panda_info") {
+  script = "$ark_root/gn/build/es2panda_info.sh"
+  outputs = [ "$target_gen_dir/generated/es2panda_build_info.h" ]
+  args = [
+    rebase_path("$target_gen_dir/generated/es2panda_build_info.h"),
+    rebase_path("$ark_root"),
+  ]
+}
+
 ohos_source_set("libes2panda_public_frontend_static") {
   sources = libes2panda_public_sources
 
@@ -1175,6 +1184,11 @@ ohos_source_set("libes2panda_public_frontend_static") {
 
   if (ark_standalone_build || ark_static_standalone_build) {
     deps += [ "$ark_root/bytecode_optimizer:libarktsbytecodeopt_package" ]
+  }
+
+  if (target_os != "win" && target_os != "mingw" && target_os != "winuwp") {
+    deps += [ ":generate_ets2panda_info" ]
+    defines = [ "ES2PANDA_COMPILE_BY_GN" ]
   }
 
   external_deps = [
