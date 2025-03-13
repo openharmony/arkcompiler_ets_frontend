@@ -71,7 +71,7 @@ void ScopesInitPhase::VisitScriptFunction(ir::ScriptFunction *scriptFunction)
 
 void ScopesInitPhase::VisitBlockStatement(ir::BlockStatement *blockStmt)
 {
-    auto localCtx = LexicalScopeCreateOrEnter<varbinder::LocalScopeWithTypeAlias>(VarBinder(), blockStmt);
+    auto localCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), blockStmt);
     HandleBlockStmt(blockStmt, GetScope());
 }
 
@@ -244,7 +244,7 @@ void ScopesInitPhase::VisitVariableDeclarator(ir::VariableDeclarator *varDecl)
 void ScopesInitPhase::VisitSwitchStatement(ir::SwitchStatement *switchStmt)
 {
     CallNode(switchStmt->Discriminant());
-    auto localCtx = LexicalScopeCreateOrEnter<varbinder::LocalScopeWithTypeAlias>(VarBinder(), switchStmt);
+    auto localCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), switchStmt);
     AttachLabelToScope(switchStmt);
     BindScopeNode(localCtx.GetScope(), switchStmt);
     CallNode(switchStmt->Cases());

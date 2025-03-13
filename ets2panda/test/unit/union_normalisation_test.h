@@ -139,7 +139,7 @@ public:
     static checker::Type *FindTypeAlias(checker::ETSChecker *checker, std::string_view aliasName)
     {
         auto *foundVar =
-            checker->Scope()->FindLocal(aliasName, varbinder::ResolveBindingOptions::TYPE_ALIASES)->AsLocalVariable();
+            checker->Scope()->FindLocal(aliasName, varbinder::ResolveBindingOptions::ALL)->AsLocalVariable();
         if (foundVar == nullptr) {
             return nullptr;
         }

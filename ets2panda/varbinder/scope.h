@@ -217,9 +217,8 @@ public:
     Variable *AddDecl(ArenaAllocator *allocator, Decl *decl, ScriptExtension extension)
     {
         decls_.emplace_back(decl);
-        auto options = decl->IsTypeAliasDecl() ? varbinder::ResolveBindingOptions::TYPE_ALIASES
-                                               : varbinder::ResolveBindingOptions::BINDINGS;
-        return AddBinding(allocator, FindLocal(decl->Name(), options), decl, extension);
+        return AddBinding(allocator, FindLocal(decl->Name(), varbinder::ResolveBindingOptions::BINDINGS), decl,
+                          extension);
     }
 
     Variable *AddTsDecl(ArenaAllocator *allocator, Decl *decl, ScriptExtension extension)
@@ -307,6 +306,8 @@ protected:
 
     Variable *AddLocalVar(ArenaAllocator *allocator, Decl *newDecl);
     Variable *AddLocalInterfaceVariable(ArenaAllocator *allocator, Decl *newDecl);
+    Variable *AddLocalTypeAliasVariable(ArenaAllocator *allocator, Decl *newDecl);
+    Variable *AddLocalClassVariable(ArenaAllocator *allocator, Decl *newDecl);
 
 private:
     template <
@@ -538,45 +539,9 @@ public:
                          [[maybe_unused]] ScriptExtension extension) override;
 };
 
-class LocalScopeWithTypeAlias : public LocalScope {
-public:
-    explicit LocalScopeWithTypeAlias(ArenaAllocator *allocator, Scope *parent)
-        : LocalScope(allocator, parent),
-          typeAliasScope_(allocator->New<LocalScope>(allocator, this, ScopeFlags::TYPE_ALIAS))
-    {
-    }
-    explicit LocalScopeWithTypeAlias(ArenaAllocator *allocator, Scope *parent, ScopeFlags flags)
-        : LocalScope(allocator, parent, flags),
-          typeAliasScope_(allocator->New<LocalScope>(allocator, this, ScopeFlags::TYPE_ALIAS))
-    {
-    }
-
-    Variable *FindLocal(const util::StringView &name, ResolveBindingOptions options) const override;
-
-    Variable *AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
-                         [[maybe_unused]] ScriptExtension extension) override;
-
-    const LocalScope *TypeAliasScope() const
-    {
-        return typeAliasScope_;
-    }
-
-    LocalScope *TypeAliasScope()
-    {
-        return typeAliasScope_;
-    }
-
-private:
-    LocalScope *typeAliasScope_;
-};
-
 class FunctionScope : public ScopeWithParamScope<VariableScope, FunctionParamScope> {
 public:
-    explicit FunctionScope(ArenaAllocator *allocator, Scope *parent)
-        : ScopeWithParamScope(allocator, parent),
-          typeAliasScope_(allocator->New<LocalScope>(allocator, this, ScopeFlags::TYPE_ALIAS))
-    {
-    }
+    explicit FunctionScope(ArenaAllocator *allocator, Scope *parent) : ScopeWithParamScope(allocator, parent) {}
 
     ScopeType Type() const override
     {
@@ -603,13 +568,6 @@ public:
         return internalName_;
     }
 
-    const LocalScope *TypeAliasScope() const
-    {
-        return typeAliasScope_;
-    }
-
-    Variable *FindLocal(const util::StringView &name, ResolveBindingOptions options) const override;
-
     Variable *AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                          [[maybe_unused]] ScriptExtension extension) override;
     Variable *InsertBindingIfAbsentInScope(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
@@ -618,14 +576,14 @@ public:
 private:
     util::StringView name_ {};
     util::StringView internalName_ {};
-    LocalScope *typeAliasScope_;
 };
 
-class ClassScope : public LocalScopeWithTypeAlias {
+class ClassScope : public LocalScope {
 public:
     explicit ClassScope(ArenaAllocator *allocator, Scope *parent)
-        : LocalScopeWithTypeAlias(allocator, parent),
-          staticDeclScope_(allocator->New<LocalScope>(allocator, this, ScopeFlags::STATIC_DECL_SCOPE)),
+        : LocalScope(allocator, parent),
+          typeAliasScope_(allocator->New<LocalScope>(allocator, this, ScopeFlags::TYPE_ALIAS)),
+          staticDeclScope_(allocator->New<LocalScope>(allocator, typeAliasScope_, ScopeFlags::STATIC_DECL_SCOPE)),
           staticFieldScope_(allocator->New<LocalScope>(allocator, staticDeclScope_, ScopeFlags::STATIC_FIELD_SCOPE)),
           staticMethodScope_(allocator->New<LocalScope>(allocator, staticFieldScope_, ScopeFlags::STATIC_METHOD_SCOPE)),
           instanceDeclScope_(allocator->New<LocalScope>(allocator, staticMethodScope_, ScopeFlags::DECL_SCOPE)),
@@ -637,6 +595,16 @@ public:
     ScopeType Type() const override
     {
         return ScopeType::CLASS;
+    }
+
+    LocalScope *TypeAliasScope()
+    {
+        return typeAliasScope_;
+    }
+
+    const LocalScope *TypeAliasScope() const
+    {
+        return typeAliasScope_;
     }
 
     LocalScope *StaticDeclScope()
@@ -745,6 +713,7 @@ public:
     void SetBindingProps(Decl *newDecl, BindingProps *props, bool isStatic);
 
 private:
+    LocalScope *typeAliasScope_;
     LocalScope *staticDeclScope_;
     LocalScope *staticFieldScope_;
     LocalScope *staticMethodScope_;
@@ -792,7 +761,7 @@ public:
     friend class CatchScope;
 };
 
-class CatchScope : public ScopeWithParamScope<LocalScopeWithTypeAlias, CatchParamScope> {
+class CatchScope : public ScopeWithParamScope<LocalScope, CatchParamScope> {
 public:
     explicit CatchScope(ArenaAllocator *allocator, Scope *parent) : ScopeWithParamScope(allocator, parent) {}
 

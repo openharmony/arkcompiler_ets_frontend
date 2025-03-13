@@ -445,3 +445,6 @@
     }
   }
 }
+TypeError: Variable 'x' has already been declared. [test_type_alias6.sts:17:5]
+TypeError: Type name 'x' used in the wrong context [test_type_alias6.sts:17:5]
+TypeError: Type 'double' cannot be assigned to type 'int' [test_type_alias6.sts:17:9]
