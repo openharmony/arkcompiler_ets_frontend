@@ -949,9 +949,142 @@ static std::pair<Type *, Type *> ComputeConditionalSubtypes(TypeRelation *relati
     return {condition, actual};
 }
 
+checker::Type *CheckerContext::GetUnionOfTypes(checker::Type *const type1, checker::Type *const type2) const noexcept
+{
+    if (type1 == nullptr || type2 == nullptr) {
+        return type1 == nullptr ? type2 : type1;
+    }
+
+    return parent_->AsETSChecker()->CreateETSUnionType({type1, type2});
+}
+
+static std::optional<checker::Type *> GetIntersectionOfTypeAndTypeSetIfExist(ETSChecker *checker, checker::Type *type,
+                                                                             const ArenaVector<Type *> &typeSet)
+{
+    for (auto *const typeOfTypeSet : typeSet) {
+        if (checker->Relation()->IsSupertypeOf(type, typeOfTypeSet)) {
+            return std::make_optional(typeOfTypeSet);
+        }
+
+        if (checker->Relation()->IsSupertypeOf(typeOfTypeSet, type)) {
+            return std::make_optional(type);
+        }
+    }
+
+    return std::nullopt;
+}
+
+// The method name 'intersection' may be misleading. The function does not create a theoretically correct
+// intersection type from 2 arbitrary types, instead does an intersection operation on the type set of 2 (possibly)
+// union types. Currently this is good enough, and the correct implementation with type algebra will be in the complete
+// smart type rework with CFG.
+checker::Type *CheckerContext::GetIntersectionOfTypes(checker::Type *const type1,
+                                                      checker::Type *const type2) const noexcept
+{
+    if (type1 == nullptr || type2 == nullptr) {
+        return type1 == nullptr ? type2 : type1;
+    }
+
+    auto *const checker = parent_->AsETSChecker();
+
+    if (checker->Relation()->IsIdenticalTo(type1, type2)) {
+        return type1;
+    }
+
+    ArenaVector<Type *> typeSet1(checker->Allocator()->Adapter());
+    ArenaVector<Type *> typeSet2(checker->Allocator()->Adapter());
+    ArenaVector<Type *> intersection(checker->Allocator()->Adapter());
+
+    if (type1->IsETSUnionType()) {
+        typeSet1 = type1->AsETSUnionType()->ConstituentTypes();
+    } else {
+        typeSet1.push_back(type1);
+    }
+
+    if (type2->IsETSUnionType()) {
+        typeSet2 = type2->AsETSUnionType()->ConstituentTypes();
+    } else {
+        typeSet2.push_back(type2);
+    }
+
+    for (auto *const typeOfTypeSet1 : typeSet1) {
+        auto possibleIntersectionType = GetIntersectionOfTypeAndTypeSetIfExist(checker, typeOfTypeSet1, typeSet2);
+        if (possibleIntersectionType.has_value()) {
+            intersection.emplace_back(*possibleIntersectionType);
+        }
+    }
+
+    return checker->CreateETSUnionType(std::move(intersection));
+}
+
 static constexpr std::size_t const VARIABLE_POSITION = 0UL;
 static constexpr std::size_t const CONSEQUENT_TYPE_POSITION = 1UL;
 static constexpr std::size_t const ALTERNATE_TYPE_POSITION = 2UL;
+
+void CheckerContext::MergeSmartTypesForLogicalAnd(SmartCastTuple &newSmartCastTypes)
+{
+    auto const &variable = std::get<VARIABLE_POSITION>(newSmartCastTypes);
+
+    if (testSmartCasts_.find(variable) == testSmartCasts_.end()) {
+        testSmartCasts_.emplace(
+            variable, std::make_pair(std::get<CONSEQUENT_TYPE_POSITION>(newSmartCastTypes), variable->TsType()));
+        return;
+    }
+
+    auto *newConsequentType = std::get<CONSEQUENT_TYPE_POSITION>(newSmartCastTypes);
+    auto *newAlternateType = std::get<ALTERNATE_TYPE_POSITION>(newSmartCastTypes);
+    auto [currentConsequentType, currentAlternateType] = testSmartCasts_.at(variable);
+    auto *const mergedConsequentType = GetIntersectionOfTypes(currentConsequentType, newConsequentType);
+    auto *const mergedAlternateType = GetUnionOfTypes(currentAlternateType, newAlternateType);
+    testSmartCasts_[variable] = {mergedConsequentType, mergedAlternateType};
+}
+
+void CheckerContext::InvalidateNecessarySmartCastsInLogicalAnd(std::optional<SmartCastTuple> &newSmartCastTypes)
+{
+    // If there is no new smart casts in the checked expression, then invalidate all smart casts for the alternate
+    // branch.
+    // Eg. if(x == null && false) -> we didn't get a new smart cast from 'false', so in the alternate branch 'x'
+    // can also be 'null'
+
+    if (!newSmartCastTypes.has_value()) {
+        for (auto &smartCast : testSmartCasts_) {
+            smartCast.second.second = nullptr;
+        }
+
+        return;
+    }
+
+    // If there is already exist a smart cast for a variable, that isn't checked in the current expression for the
+    // logical and, it means that in the alternate branch it's smart type will not be valid.
+    //
+    // Example 1:
+    // cond: x != null && y != null
+    // Here the new smart cast will only contain smart type for 'y', but it's unrelated to the type of 'x', so both
+    // smart type needs to by invalidated in the alternate branch.
+    //
+    // Example 2:
+    // let x: null|undefined|A  <- A is an arbitrary type
+    // cond: x != null && x != undefined
+    // Here the new smart type will contain further check for 'x', so it's still checking the same variable. In this
+    // case the alternate type will contain the already computed union type 'null|undefined' , and not needed to be
+    // restored to 'null|undefined|A'.
+
+    auto const &variable = std::get<VARIABLE_POSITION>(*newSmartCastTypes);
+    bool anyOtherSmartCastCleared = false;
+
+    for (auto existingSmartCast : testSmartCasts_) {
+        if (existingSmartCast.first != variable) {
+            // If there is a smart cast that doesn't include the current variable, then we need to invalidate the
+            // consequent types, because from now on these are unrelated restrictions
+            testSmartCasts_[existingSmartCast.first].second = nullptr;
+            anyOtherSmartCastCleared = true;
+        }
+    }
+
+    if (anyOtherSmartCastCleared) {
+        testSmartCasts_[variable].second = nullptr;
+    }
+}
 
 void CheckerContext::CheckTestSmartCastCondition(lexer::TokenType operatorType)
 {
@@ -964,25 +1097,11 @@ void CheckerContext::CheckTestSmartCastCondition(lexer::TokenType operatorType)
 
     if (operatorType_ == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
         if (types.has_value()) {
-            auto const &variable = std::get<VARIABLE_POSITION>(*types);
-            //  NOTE: now we support only cases like 'if (x != null && y == null)' but don't support different type
-            //  checks for a single variable (like 'if (x != null && x instanceof string)'), because it seems that
-            //  it doesn't make much sense.
-            //  Can be implemented later on if the need arises.
-            if (auto [_, inserted] =
-                    testSmartCasts_.emplace(variable, std::make_pair(std::get<CONSEQUENT_TYPE_POSITION>(*types),
-                                                                     std::get<ALTERNATE_TYPE_POSITION>(*types)));
-                !inserted) {
-                testSmartCasts_[variable] = {nullptr, nullptr};
-            }
+            MergeSmartTypesForLogicalAnd(*types);
         }
-        //  Clear alternate types, because now they become indefinite
-        for (auto &smartCast : testSmartCasts_) {
-            smartCast.second.second = nullptr;
-        }
+        InvalidateNecessarySmartCastsInLogicalAnd(types);
     } else if (operatorType_ == lexer::TokenType::PUNCTUATOR_LOGICAL_OR) {
-        if (bool const cleanConsequent = types.has_value() ? CheckTestOrSmartCastCondition(*types) : true;
-            cleanConsequent) {
+        if (!types.has_value() || CheckTestOrSmartCastCondition(*types)) {
             //  Clear consequent types, because now they become indefinite
             for (auto &smartCast : testSmartCasts_) {
                 smartCast.second.first = nullptr;
