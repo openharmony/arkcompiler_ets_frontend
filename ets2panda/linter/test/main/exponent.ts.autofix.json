@@ -30,18 +30,6 @@
             "endLine": 16,
             "endColumn": 24,
             "problem": "MathPow",
-            "autofix": [
-                {
-                    "replacementText": "specialAutofixLib.mathPow(6, 3)",
-                    "start": 614,
-                    "end": 628
-                },
-                {
-                    "replacementText": "",
-                    "start": 0,
-                    "end": 0
-                }
-            ],
             "suggest": "",
             "rule": "function \"Math.pow()\" behavior for ArkTS differs from Typescript version (arkts-math-pow-standard-diff)",
             "severity": "ERROR"
@@ -64,9 +52,14 @@
             "problem": "ExponentOp",
             "autofix": [
                 {
-                    "replacementText": "specialAutofixLib.mathPow(5, 2)",
+                    "replacementText": "Math.pow(5, 2)",
                     "start": 656,
                     "end": 662
+                },
+                {
+                    "replacementText": "",
+                    "start": 0,
+                    "end": 0
                 }
             ],
             "suggest": "",
@@ -81,7 +74,7 @@
             "problem": "ExponentOp",
             "autofix": [
                 {
-                    "replacementText": "k = specialAutofixLib.mathPow(k, 2)",
+                    "replacementText": "k = Math.pow(k, 2)",
                     "start": 681,
                     "end": 688
                 }
@@ -96,13 +89,6 @@
             "endLine": 25,
             "endColumn": 27,
             "problem": "MathPow",
-            "autofix": [
-                {
-                    "replacementText": "specialAutofixLib.mathPow(-1, Infinity)",
-                    "start": 711,
-                    "end": 733
-                }
-            ],
             "suggest": "",
             "rule": "function \"Math.pow()\" behavior for ArkTS differs from Typescript version (arkts-math-pow-standard-diff)",
             "severity": "ERROR"

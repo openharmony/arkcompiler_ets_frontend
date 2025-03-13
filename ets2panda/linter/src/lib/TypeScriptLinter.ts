@@ -2350,8 +2350,7 @@ export class TypeScriptLinter {
     }
 
     if (this.options.arkts2 && calleeSym.getEscapedName() === 'pow' && isStdLibrarySymbol(calleeSym)) {
-      const autofix = this.autofixer?.fixExponent(tsCallExpr);
-      this.incrementCounters(tsCallExpr, FaultID.MathPow, autofix);
+      this.incrementCounters(tsCallExpr, FaultID.MathPow);
     }
   }
 
