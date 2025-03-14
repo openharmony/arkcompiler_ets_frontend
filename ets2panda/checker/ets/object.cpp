@@ -2082,14 +2082,6 @@ void ETSChecker::CheckValidInheritance(ETSObjectType *classType, ir::ClassDefini
         return;
     }
 
-    if (classDef->TypeParams() != nullptr &&
-        (Relation()->IsAssignableTo(classType->SuperType(), GlobalBuiltinExceptionType()) ||
-         Relation()->IsAssignableTo(classType->SuperType(), GlobalBuiltinErrorType()))) {
-        LogError(diagnostic::GENERIC_ERROR_OR_EXCEPTION,
-                 {compiler::Signatures::BUILTIN_EXCEPTION_CLASS, compiler::Signatures::BUILTIN_ERROR_CLASS},
-                 classDef->TypeParams()->Start());
-    }
-
     const auto &allProps = classType->GetAllProperties();
 
     for (auto *it : allProps) {
