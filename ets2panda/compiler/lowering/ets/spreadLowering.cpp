@@ -179,7 +179,7 @@ static std::vector<ir::Statement *> CreateElementsAssignForTupleElements(public_
     auto *const newArrayId = newArrayAndIndex[0];
     auto *const newArrayIndexId = newArrayAndIndex[1];
 
-    ASSERT(spId->TsType()->IsETSTupleType());
+    ES2PANDA_ASSERT(spId->TsType()->IsETSTupleType());
     const auto *const spreadType = spId->TsType()->AsETSTupleType();
     std::vector<ir::Statement *> tupleAssignmentStatements {};
 

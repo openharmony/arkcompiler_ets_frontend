@@ -71,7 +71,7 @@ static lexer::TokenType CombinedOpToOp(const lexer::TokenType combinedOp)
             return conv.to;
         }
     }
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 void AdjustBoxingUnboxingFlags(ir::Expression *loweringResult, const ir::Expression *oldExpr)
@@ -85,7 +85,7 @@ void AdjustBoxingUnboxingFlags(ir::Expression *loweringResult, const ir::Express
             exprToProcess = statement->AsExpressionStatement()->GetExpression();
         }
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     // NOTE: gogabr. make sure that the checker never puts both a boxing and an unboxing flag on the same node.
@@ -245,7 +245,7 @@ static ir::Expression *ConstructOpAssignmentResult(public_lib::Context *ctx, ir:
         retVal = GenerateStringForLoweredAssignment(opEqual, left->AsMemberExpression(), allocator, parser,
                                                     {right, exprType});
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     return retVal;

@@ -17,7 +17,7 @@
 #define ES2PANDA_PARSER_CORE_KEYWORD_STRING_H
 
 #include "generated/tokenType.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "util/ustring.h"
 
 namespace ark::es2panda::lexer {

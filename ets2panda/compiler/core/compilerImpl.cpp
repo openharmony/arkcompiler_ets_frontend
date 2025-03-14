@@ -301,7 +301,7 @@ pandasm::Program *CompilerImpl::Compile(const CompilationUnit &unit)
                                                                                        this);
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
             return nullptr;
         }
     }

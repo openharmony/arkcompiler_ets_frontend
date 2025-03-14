@@ -19,14 +19,10 @@
 #include <memory>
 #include <utility>
 #include "es2panda.h"
+#include "util/es2pandaMacros.h"
 #include "generated/diagnostic.h"
-#include "macros.h"
 #include "util/diagnostic.h"
 #include "lexer/token/sourceLocation.h"
-
-namespace ark::es2panda {
-lexer::SourcePosition GetPositionForDiagnostic();
-}  // namespace ark::es2panda
 
 namespace ark::es2panda::util {
 
@@ -103,11 +99,6 @@ public:
     {
         LogThrowableDiagnostic(DiagnosticType::WARNING, std::forward<T>(args)...);
     }
-    template <typename... T>
-    void LogCompilerBug(T &&...args)
-    {
-        LogThrowableDiagnostic(DiagnosticType::COMPILER_BUG, std::forward<T>(args)...);
-    }
 
     // NOTE(schernykh): should not be able from STS
     template <typename... T>
@@ -167,31 +158,6 @@ private:
     std::unique_ptr<const DiagnosticPrinter> printer_;
     bool wError_ {false};
 };
-
-#ifndef NDEBUG
-// CC-OFFNXT(G.PRE.06) solid logic
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define ES2PANDA_ASSERT3(cond, position)                                            \
-    if (UNLIKELY(!(cond))) {                                                        \
-        if (g_diagnosticEngine != nullptr) {                                        \
-            g_diagnosticEngine->LogCompilerBug(std::string_view {#cond}, position); \
-            g_diagnosticEngine->FlushDiagnostic();                                  \
-        }                                                                           \
-        ASSERT_FAIL(#cond);                                                         \
-    }
-
-// CC-OFFNXT(G.PRE.06) solid logic
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define ES2PANDA_ASSERT(cond) ES2PANDA_ASSERT3(cond, GetPositionForDiagnostic())
-
-#else  // NDEBUG
-// CC-OFFNXT(G.PRE.06) solid logic
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define ES2PANDA_ASSERT3(cond, position) static_cast<void>(0)
-// CC-OFFNXT(G.PRE.06) solid logic
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define ES2PANDA_ASSERT(cond) static_cast<void>(0)
-#endif
 
 }  // namespace ark::es2panda::util
 

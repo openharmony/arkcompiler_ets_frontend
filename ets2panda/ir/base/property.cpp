@@ -156,7 +156,7 @@ void Property::Dump(ir::AstDumper *dumper) const
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 

@@ -40,7 +40,7 @@ checker::Type *UnboxingConverter::Convert(checker::ETSChecker const *checker, ET
         case ETSObjectFlags::BUILTIN_DOUBLE:
             return checker->GlobalDoubleType();
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 

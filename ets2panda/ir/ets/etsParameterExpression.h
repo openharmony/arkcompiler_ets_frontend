@@ -77,13 +77,13 @@ public:
     void SetOptional(bool value) noexcept
     {
         isOptional_ = value;
-        ASSERT(isOptional_ || initializer_ == nullptr);
+        ES2PANDA_ASSERT(isOptional_ || initializer_ == nullptr);
     }
 
     void SetInitializer(Expression *initExpr) noexcept
     {
         initializer_ = initExpr;
-        ASSERT(isOptional_ || initializer_ == nullptr);
+        ES2PANDA_ASSERT(isOptional_ || initializer_ == nullptr);
     }
 
     [[nodiscard]] bool IsRestParameter() const noexcept

@@ -98,7 +98,7 @@ WhileStatement *WhileStatement::Clone(ArenaAllocator *const allocator, AstNode *
     }
 
     clone->SetRange(Range());
-    ASSERT(clone->Scope() == nullptr);
+    ES2PANDA_ASSERT(clone->Scope() == nullptr);
     return clone;
 }
 }  // namespace ark::es2panda::ir

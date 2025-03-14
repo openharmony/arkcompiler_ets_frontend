@@ -38,7 +38,7 @@ bool ETSNeverType::AssignmentSource(TypeRelation *relation, [[maybe_unused]] Typ
 
 void ETSNeverType::Compare([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *other)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 void ETSNeverType::Cast(TypeRelation *relation, Type *target)

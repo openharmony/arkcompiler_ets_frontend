@@ -305,7 +305,7 @@ public:
 #ifdef PANDA_WITH_ETS
         Ra().Emit<EtsTypeof>(node, reg);
 #else
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
 #endif  // PANDA_WITH_ETS
     }
 
@@ -314,7 +314,7 @@ public:
 #ifdef PANDA_WITH_ETS
         Ra().Emit<EtsIstrue>(node, reg);
 #else
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
 #endif  // PANDA_WITH_ETS
     }
 
@@ -480,7 +480,7 @@ private:
 #ifdef PANDA_WITH_ETS
         Sa().Emit<EtsIsnullvalue>(node);
 #else
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
 #endif  // PANDA_WITH_ETS
     }
 
@@ -495,7 +495,7 @@ private:
             Ra().Emit<EtsEquals>(node, lhs, rhs);
         }
 #else
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
 #endif  // PANDA_WITH_ETS
     }
 

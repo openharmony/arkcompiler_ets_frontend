@@ -15,7 +15,7 @@
 
 #include "tsInterfaceDeclaration.h"
 
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "varbinder/declaration.h"
 #include "varbinder/variable.h"
 #include "checker/TSchecker.h"

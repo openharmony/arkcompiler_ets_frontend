@@ -202,7 +202,7 @@ std::vector<Phase *> GetPhaseList(ScriptExtension ext)
         case ScriptExtension::JS:
             return GetJSPhaseList();
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 

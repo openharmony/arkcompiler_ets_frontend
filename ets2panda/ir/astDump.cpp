@@ -179,7 +179,7 @@ void AstDumper::SerializeConstant(Property::Constant constant)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }

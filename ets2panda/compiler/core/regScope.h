@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_COMPILER_CORE_REG_SCOPE_H
 #define ES2PANDA_COMPILER_CORE_REG_SCOPE_H
 
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "varbinder/scope.h"
 #include "vReg.h"
 

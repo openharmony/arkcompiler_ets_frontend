@@ -20,7 +20,7 @@
 #include "compiler/core/vReg.h"
 #include "compiler/core/programElement.h"
 #include "lexer/token/sourceLocation.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "util/ustring.h"
 #include "utils/span.h"
 

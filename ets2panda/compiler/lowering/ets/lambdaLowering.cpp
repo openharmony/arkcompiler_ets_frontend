@@ -59,7 +59,7 @@ static std::pair<ir::ClassDeclaration *, ir::ScriptFunction *> FindEnclosingClas
             function = curr->AsScriptFunction();
         }
     }
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 static bool CheckIfNeedThis(ir::ArrowFunctionExpression *lambda, checker::ETSChecker *checker)
@@ -685,7 +685,7 @@ static void CreateLambdaClassInvokeMethod(public_lib::Context *ctx, LambdaInfo c
     auto *invokeMethod = util::NodeAllocator::ForceSetParent<ir::MethodDefinition>(
         allocator, ir::MethodDefinitionKind::METHOD, invokeIdClone, funcExpr, ir::ModifierFlags::NONE, allocator,
         false);
-    ASSERT(!invokeMethod->IsStatic());
+    ES2PANDA_ASSERT(!invokeMethod->IsStatic());
 
     lciInfo->classDefinition->Body().push_back(invokeMethod);
     invokeMethod->SetParent(lciInfo->classDefinition);
@@ -730,10 +730,10 @@ static void CorrectTheTrueThisForExtensionLambda(public_lib::Context *ctx, ir::C
                                ->AsFunctionExpression()
                                ->Function();
         if (!scriptFunc->Signature()->HasSignatureFlag(checker::SignatureFlags::EXTENSION_FUNCTION)) {
-            ASSERT(!scriptFunc->IsExtensionMethod());
+            ES2PANDA_ASSERT(!scriptFunc->IsExtensionMethod());
             continue;
         }
-        ASSERT(scriptFunc->IsExtensionMethod());
+        ES2PANDA_ASSERT(scriptFunc->IsExtensionMethod());
         auto *functionScope = scriptFunc->Scope();
         auto *functionParamScope = scriptFunc->Scope()->ParamScope();
         auto *theTrueThisVar = functionParamScope->Params()[0];
@@ -944,7 +944,7 @@ static ir::ArrowFunctionExpression *CreateWrappingLambda(public_lib::Context *ct
 {
     auto *allocator = ctx->allocator;
     auto *varBinder = ctx->checker->VarBinder()->AsETSBinder();
-    ASSERT(funcRef->TsType()->IsETSArrowType());
+    ES2PANDA_ASSERT(funcRef->TsType()->IsETSArrowType());
     auto signature = funcRef->TsType()->AsETSFunctionType()->ArrowSignature();
 
     auto *parent = funcRef->Parent();
@@ -1014,7 +1014,7 @@ static ir::AstNode *ConvertFunctionReference(public_lib::Context *ctx, ir::Expre
         info.callReceiver = funcRef->AsMemberExpression()->Object();
     }
 
-    ASSERT(funcRef->TsType()->IsETSArrowType());
+    ES2PANDA_ASSERT(funcRef->TsType()->IsETSArrowType());
     auto *lambdaClass = CreateLambdaClass(ctx, funcRef->TsType()->AsETSFunctionType(), method, &info);
     auto *constructorCall = CreateConstructorCall(ctx, funcRef, lambdaClass, &info);
     return constructorCall;
@@ -1059,7 +1059,7 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
         util::UString {checker::FunctionalInterfaceInvokeName(arity, hasRestParam), allocator}.View();
     auto *prop = ifaceType->GetProperty(invokeMethodName, checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD |
                                                               checker::PropertySearchFlags::SEARCH_IN_INTERFACES);
-    ASSERT(prop != nullptr);
+    ES2PANDA_ASSERT(prop != nullptr);
     auto *invoke0Id = allocator->New<ir::Identifier>(invokeMethodName, allocator);
     invoke0Id->SetTsType(prop->TsType());
     invoke0Id->SetVariable(prop);

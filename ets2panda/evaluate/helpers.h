@@ -107,7 +107,7 @@ static inline constexpr std::string_view DEBUGGER_API_CLASS_NAME = "DebuggerAPI"
                 /* CC-OFFNXT(G.PRE.05) function gen */ \
                 return #TYPE_NAME_BASE "Object";       \
             default:                                   \
-                UNREACHABLE();                         \
+                ES2PANDA_UNREACHABLE();                \
                 /* CC-OFFNXT(G.PRE.05) function gen */ \
                 return {};                             \
         }                                              \

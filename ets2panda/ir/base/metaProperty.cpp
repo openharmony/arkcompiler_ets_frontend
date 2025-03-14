@@ -41,7 +41,7 @@ void MetaProperty::Dump(ir::AstDumper *dumper) const
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 

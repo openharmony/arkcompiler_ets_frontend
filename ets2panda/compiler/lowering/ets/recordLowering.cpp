@@ -58,7 +58,7 @@ RecordLowering::KeyType RecordLowering::TypeToKey(checker::Type *type) const
     if (type->IsETSStringType()) {
         return type->AsETSStringType()->GetValue();
     }
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
     return {};
 }
 
@@ -107,7 +107,7 @@ void RecordLowering::CheckDuplicateKey(KeySetType &keySet, ir::ObjectExpression 
                 break;
             }
             default: {
-                UNREACHABLE();
+                ES2PANDA_UNREACHABLE();
                 break;
             }
         }
@@ -161,7 +161,7 @@ ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *exp
         return expr;
     }
 
-    ASSERT(expr->TsType() != nullptr);
+    ES2PANDA_ASSERT(expr->TsType() != nullptr);
     std::stringstream ss;
     expr->TsType()->ToAssemblerType(ss);
     if (!(ss.str() == "escompat.Record" || ss.str() == "escompat.Map")) {

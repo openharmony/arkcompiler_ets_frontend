@@ -78,7 +78,7 @@ void ETSPrimitiveType::Dump(ir::SrcDumper *dumper) const
             dumper->Add("void");
             break;
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -151,7 +151,7 @@ checker::Type *ETSPrimitiveType::GetType([[maybe_unused]] checker::ETSChecker *c
             return checker->InvalidateType(this);
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }

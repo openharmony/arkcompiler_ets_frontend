@@ -265,7 +265,7 @@ ObjectExpression::CheckPatternIsShorthand(CheckPatternIsShorthandArgs *args)
                 break;
             }
             default: {
-                UNREACHABLE();
+                ES2PANDA_UNREACHABLE();
             }
         }
         return {args->isOptional, args->bindingVar, args->patternParamType, args->foundVar};
@@ -290,7 +290,7 @@ ObjectExpression::CheckPatternIsShorthand(CheckPatternIsShorthandArgs *args)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
     return {args->isOptional, args->bindingVar, args->patternParamType, args->foundVar};

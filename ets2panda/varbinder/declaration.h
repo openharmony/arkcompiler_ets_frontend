@@ -17,7 +17,7 @@
 #define ES2PANDA_COMPILER_SCOPES_DECLARATION_H
 
 #include "varbinder/variableFlags.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "util/diagnosticEngine.h"
 #include "util/ustring.h"
 

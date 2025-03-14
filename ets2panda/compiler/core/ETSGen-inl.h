@@ -65,7 +65,7 @@ void ETSGen::MoveImmediateToRegister(const ir::AstNode *node, VReg reg, const ch
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }

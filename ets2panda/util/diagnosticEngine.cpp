@@ -20,13 +20,6 @@
 
 #include <csignal>
 
-namespace ark::es2panda {
-lexer::SourcePosition GetPositionForDiagnostic()
-{
-    return lexer::SourcePosition {};
-}
-}  // namespace ark::es2panda
-
 namespace ark::es2panda::util {
 
 void CLIDiagnosticPrinter::Print(const DiagnosticBase &diagnostic) const
@@ -78,11 +71,7 @@ void DiagnosticEngine::FlushDiagnostic()
 
 static void SigSegvHandler([[maybe_unused]] int sig)
 {
-    if (g_diagnosticEngine != nullptr) {
-        g_diagnosticEngine->FlushDiagnostic();
-    }
-    std::cerr << "PLEASE submit a bug report to https://gitee.com/openharmony/arkcompiler_ets_frontend/issues"
-              << std::endl;
+    CompilerBugAction(lexer::SourcePosition {});
     ark::PrintStack(ark::GetStacktrace(), std::cerr);
     std::abort();  // CC-OFF(G.STD.16-CPP) fatal error
 }
@@ -104,13 +93,13 @@ bool DiagnosticEngine::IsAnyError() const noexcept
 
 const DiagnosticBase &DiagnosticEngine::GetAnyError() const
 {
-    ASSERT(IsAnyError());
+    ES2PANDA_ASSERT(IsAnyError());
     for (size_t i = DiagnosticType::BEGIN; i < DiagnosticType::COUNT; ++i) {
         if (IsError(static_cast<DiagnosticType>(i)) && !diagnostics_[i].empty()) {
             return *diagnostics_[i].front();
         }
     }
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 bool DiagnosticEngine::IsError(DiagnosticType type) const
@@ -121,14 +110,13 @@ bool DiagnosticEngine::IsError(DiagnosticType type) const
         case DiagnosticType::SEMANTIC:
         case DiagnosticType::PLUGIN:
         case DiagnosticType::DECLGEN_ETS2TS_ERROR:
-        case DiagnosticType::COMPILER_BUG:
         case DiagnosticType::ARKTS_CONFIG_ERROR:
             return true;
         case DiagnosticType::WARNING:
         case DiagnosticType::DECLGEN_ETS2TS_WARNING:
             return wError_;
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 

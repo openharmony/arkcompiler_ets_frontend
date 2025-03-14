@@ -177,7 +177,7 @@ void TSDeclGen::LogError(const diagnostic::DiagnosticKind &kind, const util::Dia
 void TSDeclGen::LogWarning(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &params = {},
                            const lexer::SourcePosition &pos = lexer::SourcePosition())
 {
-    ASSERT(kind.Type() == util::DiagnosticType::DECLGEN_ETS2TS_WARNING);
+    ES2PANDA_ASSERT(kind.Type() == util::DiagnosticType::DECLGEN_ETS2TS_WARNING);
     LogError(kind, params, pos);
 }
 
@@ -1069,7 +1069,7 @@ void TSDeclGen::GenClassDeclaration(const ir::ClassDeclaration *classDecl)
         CloseClassBlock(true);
     }
     if (classNode_.hasNestedClass || state_.inNamespace) {
-        ASSERT(classNode_.indentLevel != static_cast<decltype(classNode_.indentLevel)>(-1));
+        ES2PANDA_ASSERT(classNode_.indentLevel != static_cast<decltype(classNode_.indentLevel)>(-1));
         CloseClassBlock(false);
     }
 }

@@ -69,7 +69,7 @@
 #include "lexer/token/letters.h"
 #include "lexer/token/sourceLocation.h"
 #include "lexer/token/token.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "util/errorRecovery.h"
 #include "util/options.h"
 #include "generated/diagnostic.h"
@@ -1062,7 +1062,7 @@ ir::Expression *ParserImpl::ParsePunctuators(ExpressionParseFlags flags)
             return ParsePrefixAssertionExpression();
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -1135,7 +1135,7 @@ static constexpr size_t GetOperatorPrecedenceArithmeticAndComparison(const lexer
             return PRECEDENCE;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -1242,7 +1242,7 @@ static inline ir::Expression *GetAmendedChildExpression(ir::Expression *const ex
     } else if (expression->IsTSAsExpression()) {
         amendedChild = expression->AsTSAsExpression()->Expr();
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     return amendedChild;
@@ -1257,7 +1257,7 @@ static inline void SetAmendedChildExpression(ir::Expression *const parent, ir::E
         parent->AsTSAsExpression()->SetExpr(amended);
         amended->SetParent(parent);
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -1410,7 +1410,7 @@ ir::CallExpression *ParserImpl::ParseCallExpression(ir::Expression *callee, bool
         callee = callExpr;
     }
 
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 ir::Expression *ParserImpl::ParseOptionalChain(ir::Expression *leftSideExpr)

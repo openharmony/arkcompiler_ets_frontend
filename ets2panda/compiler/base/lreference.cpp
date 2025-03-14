@@ -70,7 +70,7 @@ LReference::LReferenceBase LReference::CreateBase(CodeGen *cg, const ir::AstNode
             return CreateBase(cg, node->AsTSNonNullExpression()->Expr(), isDeclaration);
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -136,7 +136,7 @@ void JSLReference::GetValue() const
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -167,7 +167,7 @@ void JSLReference::SetValue() const
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }

@@ -39,7 +39,7 @@ bool ETSNullType::AssignmentSource(TypeRelation *relation, Type *target)
 
 void ETSNullType::Compare([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *other)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 void ETSNullType::Cast(TypeRelation *relation, Type *target)
@@ -90,7 +90,7 @@ bool ETSUndefinedType::AssignmentSource(TypeRelation *relation, Type *target)
 
 void ETSUndefinedType::Compare([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *other)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 void ETSUndefinedType::Cast(TypeRelation *relation, Type *target)

@@ -296,7 +296,7 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
             return {nullptr, nullptr, false};
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -380,7 +380,7 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -447,7 +447,7 @@ void TSChecker::HandlePropertyPatternParameterName(ir::Property *prop, std::stri
                 break;
             }
             default: {
-                UNREACHABLE();
+                ES2PANDA_UNREACHABLE();
                 break;
             }
         }
@@ -522,7 +522,7 @@ ir::Statement *FindSubsequentFunctionNode(ir::BlockStatement *block, ir::ScriptF
         }
     }
 
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
     return nullptr;
 }
 

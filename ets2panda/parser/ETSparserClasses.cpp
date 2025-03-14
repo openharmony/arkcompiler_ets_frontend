@@ -16,7 +16,8 @@
 #include "ETSparser.h"
 #include "ETSNolintParser.h"
 #include <utility>
-#include "macros.h"
+#include "generated/diagnostic.h"
+#include "util/es2pandaMacros.h"
 #include "parser/parserFlags.h"
 #include "parser/parserStatusContext.h"
 #include "util/helpers.h"
@@ -134,7 +135,7 @@ ir::ModifierFlags ETSParser::ParseClassModifiers()
                 break;
             }
             default: {
-                UNREACHABLE();
+                ES2PANDA_UNREACHABLE();
             }
         }
 
@@ -235,7 +236,7 @@ std::tuple<ir::ModifierFlags, bool> ETSParser::ParseClassMemberAccessModifiers()
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -283,7 +284,7 @@ ir::ModifierFlags ETSParser::ParseClassFieldModifiers(bool seenStatic)
                 break;
             }
             default: {
-                UNREACHABLE();
+                ES2PANDA_UNREACHABLE();
             }
         }
 
@@ -352,7 +353,7 @@ ir::ModifierFlags ETSParser::ParseClassMethodModifierFlag()
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 

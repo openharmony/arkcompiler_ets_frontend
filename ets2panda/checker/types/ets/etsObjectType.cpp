@@ -167,7 +167,7 @@ varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(co
     std::vector<Signature *> signatures;
     varbinder::LocalVariable *functionalInterface = CollectSignaturesForSyntheticType(signatures, name, flags);
     // #22952: the called function *always* returns nullptr
-    ASSERT(functionalInterface == nullptr);
+    ES2PANDA_ASSERT(functionalInterface == nullptr);
     (void)functionalInterface;
 
     if (signatures.empty()) {
@@ -192,7 +192,7 @@ varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(co
 
 ETSFunctionType *ETSObjectType::CreateMethodTypeForProp(const util::StringView &name) const
 {
-    ASSERT(GetRelation() != nullptr);
+    ES2PANDA_ASSERT(GetRelation() != nullptr);
     return GetRelation()->GetChecker()->AsETSChecker()->CreateETSMethodType(name, {{}, Allocator()->Adapter()});
 }
 
@@ -492,7 +492,7 @@ void ETSObjectType::AssignmentTarget(TypeRelation *const relation, Type *source)
 
 ETSFunctionType *ETSObjectType::GetFunctionalInterfaceInvokeType() const
 {
-    ASSERT(HasObjectFlag(ETSObjectFlags::FUNCTIONAL));
+    ES2PANDA_ASSERT(HasObjectFlag(ETSObjectFlags::FUNCTIONAL));
 
     // NOTE(vpukhov): this is still better than to retain any "functional" state in ETSObjectType
     auto [foundArity, hasRest] = [this]() {
@@ -506,12 +506,12 @@ ETSFunctionType *ETSObjectType::GetFunctionalInterfaceInvokeType() const
                 return std::make_pair(arity, true);
             }
         }
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }();
 
     std::string invokeName = FunctionalInterfaceInvokeName(foundArity, hasRest);
     auto *invoke = GetOwnProperty<PropertyType::INSTANCE_METHOD>(util::StringView(invokeName));
-    ASSERT(invoke != nullptr && invoke->TsType() != nullptr && invoke->TsType()->IsETSFunctionType());
+    ES2PANDA_ASSERT(invoke != nullptr && invoke->TsType() != nullptr && invoke->TsType()->IsETSFunctionType());
     return invoke->TsType()->AsETSFunctionType();
 }
 
@@ -756,7 +756,7 @@ void ETSObjectType::IsGenericSupertypeOf(TypeRelation *relation, ETSObjectType *
         return;
     }
 
-    ASSERT(declNode_ == source->GetDeclNode());
+    ES2PANDA_ASSERT(declNode_ == source->GetDeclNode());
 
     auto *typeParamsDecl = GetTypeParams();
     ES2PANDA_ASSERT(typeParamsDecl != nullptr || typeArguments_.empty());

@@ -1162,21 +1162,21 @@ ArenaVector<ir::Statement *> &ParserImpl::ParseStatementsArrayFormatPlaceholder(
 {
     // NOTE(schernykh): add info about LoC
     LOG(FATAL, ES2PANDA) << "Format placeholder from statements array is not supported";
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 ArenaVector<ir::AstNode *> &ParserImpl::ParseAstNodesArrayFormatPlaceholder()
 {
     // NOTE(schernykh): add info about LoC
     LOG(FATAL, ES2PANDA) << "Format placeholder from AST nodes is not supported";
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 ArenaVector<ir::Expression *> &ParserImpl::ParseExpressionsArrayFormatPlaceholder()
 {
     // NOTE(schernykh): add info about LoC
     LOG(FATAL, ES2PANDA) << "Format placeholder from expressions array is not supported";
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 util::StringView ParserImpl::ParseSymbolIteratorIdentifier() const noexcept

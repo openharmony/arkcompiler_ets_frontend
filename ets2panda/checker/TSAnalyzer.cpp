@@ -366,7 +366,7 @@ checker::Type *TSAnalyzer::CheckAssignmentExprOperatorType(ir::AssignmentExpress
             return rightType;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
             break;
         }
     }
@@ -503,7 +503,7 @@ checker::Type *TSAnalyzer::Check(ir::BinaryExpression *expr) const
                                               expr->Right(), expr);
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
             break;
         }
     }
@@ -633,7 +633,7 @@ void TSAnalyzer::CheckComputed(ir::MemberExpression *expr, checker::Type *indexT
                 expr->Property()->Start());
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -1028,7 +1028,7 @@ checker::Type *TSAnalyzer::Check(ir::UnaryExpression *expr) const
             return checker->GlobalBooleanType();
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 

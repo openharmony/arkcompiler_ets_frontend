@@ -32,13 +32,13 @@ public:
 
     [[nodiscard]] ArenaVector<Signature *> &CallSignatures()
     {
-        ASSERT(!IsETSArrowType());
+        ES2PANDA_ASSERT(!IsETSArrowType());
         return callSignatures_;
     }
 
     [[nodiscard]] const ArenaVector<Signature *> &CallSignatures() const
     {
-        ASSERT(!IsETSArrowType());
+        ES2PANDA_ASSERT(!IsETSArrowType());
         return callSignatures_;
     }
 
@@ -50,7 +50,7 @@ public:
 
     [[nodiscard]] util::StringView Name() const
     {
-        ASSERT(!IsETSArrowType());
+        ES2PANDA_ASSERT(!IsETSArrowType());
         return name_;
     }
 
@@ -59,7 +59,7 @@ public:
     template <class UnaryPredicate>
     Signature *FindSpecificSignature(UnaryPredicate predicate) const noexcept
     {
-        ASSERT(!IsETSArrowType());
+        ES2PANDA_ASSERT(!IsETSArrowType());
         auto const it = std::find_if(callSignatures_.cbegin(), callSignatures_.cend(), predicate);
         return it != callSignatures_.cend() ? *it : nullptr;
     }
@@ -87,10 +87,10 @@ public:
 
     Signature *ArrowSignature() const
     {
-        ASSERT(IsETSArrowType());
-        ASSERT(callSignatures_.size() == 1);
+        ES2PANDA_ASSERT(IsETSArrowType());
+        ES2PANDA_ASSERT(callSignatures_.size() == 1);
         auto sig = callSignatures_[0];
-        ASSERT(!sig->HasFunction());
+        ES2PANDA_ASSERT(!sig->HasFunction());
         return sig;
     }
 

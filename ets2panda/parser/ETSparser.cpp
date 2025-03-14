@@ -17,7 +17,7 @@
 #include "ETSNolintParser.h"
 #include <utility>
 
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "parser/parserFlags.h"
 #include "parser/parserStatusContext.h"
 #include "util/helpers.h"
@@ -698,7 +698,7 @@ std::pair<bool, std::size_t> ETSParser::CheckDefaultParameters(const ir::ScriptF
     return std::make_pair(hasOptionalParameters, requiredParametersNumber);
 }
 
-std::string ETSParser::PrimitiveTypeToName(ir::PrimitiveType type)
+std::string ETSParser::PrimitiveTypeToName(ir::PrimitiveType type) const
 {
     switch (type) {
         case ir::PrimitiveType::BYTE:
@@ -720,7 +720,7 @@ std::string ETSParser::PrimitiveTypeToName(ir::PrimitiveType type)
         case ir::PrimitiveType::VOID:
             return "void";
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -793,7 +793,7 @@ std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *typeAnnotation) co
         return "undefined";
     }
 
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 void ETSParser::ValidateRestParameter(ir::Expression *param)

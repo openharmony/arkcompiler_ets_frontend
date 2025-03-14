@@ -542,7 +542,7 @@ void TSParser::ParseOptionalFunctionParameter(ir::AnnotatedExpression *returnNod
                 break;
             }
             default: {
-                UNREACHABLE();
+                ES2PANDA_UNREACHABLE();
             }
         }
 

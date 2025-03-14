@@ -183,7 +183,7 @@ std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::Resolve
             return {resolvedType, nullptr};
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -316,7 +316,7 @@ bool MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
         }
         index = static_cast<std::size_t>(value);
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     if (object_->IsArrayExpression() && object_->AsArrayExpression()->Elements().size() <= index) {

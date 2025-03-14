@@ -359,7 +359,7 @@ checker::Type *ETSChecker::ApplyConditionalOperatorPromotion(checker::ETSChecker
     if (checkLeftRight.has_value()) {
         return checkLeftRight.value();
     }
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 Type *ETSChecker::ApplyUnaryOperatorPromotion(Type *type, const bool createConst, const bool doPromotion,
@@ -441,7 +441,7 @@ Type *ETSChecker::HandleBooleanLogicalOperators(Type *leftType, Type *rightType,
         }
     }
 
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
     return nullptr;
 }
 
@@ -510,7 +510,7 @@ void ETSChecker::ResolveReturnStatement(checker::Type *funcReturnType, checker::
         }
     } else {
         // Should never in this branch.
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
         return;
     }
 }
@@ -1126,7 +1126,7 @@ std::optional<SmartCastTuple> CheckerContext::ResolveSmartCastTypes()
         return std::nullopt;
     }
 
-    ASSERT(testCondition_.testedType != nullptr);
+    ES2PANDA_ASSERT(testCondition_.testedType != nullptr);
     if (!testCondition_.testedType->IsETSReferenceType()) {
         return std::nullopt;
     }
@@ -1570,7 +1570,7 @@ Type *ETSChecker::ResolveReferencedType(varbinder::LocalVariable *refVar, const 
             return GlobalTypeError();
 
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -1616,7 +1616,7 @@ void ETSChecker::ConcatConstantString(util::UString &target, Type *type)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -1744,7 +1744,7 @@ util::StringView ETSChecker::GetContainingObjectNameFromSignature(Signature *sig
         iter = iter->Parent();
     }
 
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
     return {""};
 }
 
@@ -1886,7 +1886,7 @@ std::string ETSChecker::GetStringFromIdentifierValue(checker::Type *caseType) co
             return "error";
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -2084,7 +2084,7 @@ std::string ETSChecker::GetStringFromLiteral(ir::Expression *caseTest) const
             return util::Helpers::LiteralToPropName(caseTest).Mutf8();
         }
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 

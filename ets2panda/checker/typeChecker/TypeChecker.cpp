@@ -38,7 +38,7 @@ bool RunTypeChecker(Checker *checker, ScriptExtension ext, ir::AstNode *node)
         case ScriptExtension::AS:
             return ASTypeChecker(checker).Check(node);
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 

@@ -58,7 +58,7 @@ ParserImpl::NodeFormatType ETSParser::GetFormatPlaceholderType()
     auto identNumber = std::atoi(identData + 1U);
     if (identNumber <= 0) {
         LogError(diagnostic::INVALID_NODE_NUMBER, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     return {isArray, *identData,
@@ -77,7 +77,7 @@ ir::Expression *ETSParser::ParseExpressionFormatPlaceholder()
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
     if (std::get<0>(nodeFormat)) {
         LogError(diagnostic::INVALID_NODE_TYPE, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     if (auto const placeholderType = std::get<1>(nodeFormat); placeholderType == TYPE_FORMAT_NODE) {
@@ -86,7 +86,7 @@ ir::Expression *ETSParser::ParseExpressionFormatPlaceholder()
         return ParseIdentifierFormatPlaceholder(std::make_optional(std::move(nodeFormat)));
     } else if (placeholderType != EXPRESSION_FORMAT_NODE) {  // NOLINT(readability-else-after-return)
         LogError(diagnostic::INVALID_NODE_TYPE, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     auto const placeholderNumber = std::get<2>(nodeFormat);
@@ -94,7 +94,7 @@ ir::Expression *ETSParser::ParseExpressionFormatPlaceholder()
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsExpression()) {
         LogError(diagnostic::INVALID_INSERT_NODE, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     auto *const insertExpression = insertingNode->AsExpression();
@@ -107,13 +107,13 @@ ir::TypeNode *ETSParser::ParseTypeFormatPlaceholder(std::optional<ParserImpl::No
     if (!nodeFormat.has_value()) {
         if (insertingNodes_.empty()) {
             LogError(diagnostic::INSERT_NODE_ABSENT, {}, Lexer()->GetToken().Start());
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
 
         nodeFormat = GetFormatPlaceholderType();
         if (std::get<0>(*nodeFormat) || std::get<1>(*nodeFormat) != TYPE_FORMAT_NODE) {
             LogError(diagnostic::INVALID_NODE_TYPE, {}, Lexer()->GetToken().Start());
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -122,7 +122,7 @@ ir::TypeNode *ETSParser::ParseTypeFormatPlaceholder(std::optional<ParserImpl::No
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsExpression() || !insertingNode->AsExpression()->IsTypeNode()) {
         LogError(diagnostic::INVALID_INSERT_NODE, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     auto *const insertType = insertingNode->AsExpression()->AsTypeNode();
@@ -150,7 +150,7 @@ ir::Identifier *ETSParser::ParseIdentifierFormatPlaceholder(std::optional<Parser
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsExpression() || !insertingNode->AsExpression()->IsIdentifier()) {
         LogError(diagnostic::INVALID_INSERT_NODE, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     auto *const insertIdentifier = insertingNode->AsExpression()->AsIdentifier();
@@ -162,13 +162,13 @@ ir::Statement *ETSParser::ParseStatementFormatPlaceholder()
 {
     if (insertingNodes_.empty()) {
         LogError(diagnostic::INSERT_NODE_ABSENT, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
     if (std::get<0>(nodeFormat) || std::get<1>(nodeFormat) != STATEMENT_FORMAT_NODE) {
         LogError(diagnostic::INVALID_NODE_TYPE, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     auto const placeholderNumber = std::get<2>(nodeFormat);
@@ -176,7 +176,7 @@ ir::Statement *ETSParser::ParseStatementFormatPlaceholder()
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsStatement()) {
         LogError(diagnostic::INVALID_INSERT_NODE, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     Lexer()->NextToken();
@@ -188,20 +188,20 @@ ir::AstNode *ETSParser::ParseTypeParametersFormatPlaceholder()
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
     if (std::get<0>(nodeFormat) || std::get<1>(nodeFormat) != EXPRESSION_FORMAT_NODE) {
         LogError(diagnostic::INVALID_NODE_TYPE, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     auto const placeholderNumber = std::get<2>(nodeFormat);
     if (placeholderNumber >= insertingNodes_.size()) {
         LogError(diagnostic::INSERT_NODE_ABSENT, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     auto *const insertingNode = insertingNodes_[placeholderNumber];
     if (insertingNode != nullptr && !insertingNode->IsTSTypeParameterDeclaration() &&
         !insertingNode->IsTSTypeParameterInstantiation()) {
         LogError(diagnostic::INVALID_INSERT_NODE, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     Lexer()->NextToken();
@@ -212,13 +212,13 @@ ArenaVector<ir::AstNode *> &ETSParser::ParseAstNodesArrayFormatPlaceholder()
 {
     if (insertingNodes_.empty()) {
         LogError(diagnostic::INSERT_NODE_ABSENT, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
     if (!std::get<0>(nodeFormat) || std::get<1>(nodeFormat) != GENERAL_FORMAT_NODE) {
         LogError(diagnostic::INVALID_NODE_TYPE, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     auto const placeholderNumber = std::get<2>(nodeFormat);
@@ -226,7 +226,7 @@ ArenaVector<ir::AstNode *> &ETSParser::ParseAstNodesArrayFormatPlaceholder()
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsTSInterfaceBody()) {
         LogError(diagnostic::INVALID_INSERT_NODE, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     Lexer()->NextToken();
@@ -237,13 +237,13 @@ ArenaVector<ir::Statement *> &ETSParser::ParseStatementsArrayFormatPlaceholder()
 {
     if (insertingNodes_.empty()) {
         LogError(diagnostic::INSERT_NODE_ABSENT, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
     if (!std::get<0>(nodeFormat) || std::get<1>(nodeFormat) != STATEMENT_FORMAT_NODE) {
         LogError(diagnostic::INVALID_NODE_TYPE, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     auto const placeholderNumber = std::get<2>(nodeFormat);
@@ -251,7 +251,7 @@ ArenaVector<ir::Statement *> &ETSParser::ParseStatementsArrayFormatPlaceholder()
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsBlockExpression()) {
         LogError(diagnostic::INVALID_INSERT_NODE, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     Lexer()->NextToken();
@@ -262,13 +262,13 @@ ArenaVector<ir::Expression *> &ETSParser::ParseExpressionsArrayFormatPlaceholder
 {
     if (insertingNodes_.empty()) {
         LogError(diagnostic::INSERT_NODE_ABSENT, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
     if (!std::get<0>(nodeFormat) || std::get<1>(nodeFormat) != EXPRESSION_FORMAT_NODE) {
         LogError(diagnostic::INVALID_NODE_TYPE, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     auto const placeholderNumber = std::get<2>(nodeFormat);
@@ -276,7 +276,7 @@ ArenaVector<ir::Expression *> &ETSParser::ParseExpressionsArrayFormatPlaceholder
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsSequenceExpression()) {
         LogError(diagnostic::INVALID_INSERT_NODE, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     Lexer()->NextToken();
@@ -363,7 +363,7 @@ ir::AstNode *ETSParser::CreateFormattedClassFieldDefinition(std::string_view sou
     auto *const property = CreateClassElement(sourceCode, DUMMY_ARRAY, ir::ClassDefinitionModifiers::NONE);
     if (!property->IsTSInterfaceBody() || property->AsTSInterfaceBody()->Body().empty()) {
         LogError(diagnostic::INVALID_CLASS_FIELD, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     insertingNodes_.swap(insertingNodes);
@@ -379,7 +379,7 @@ ir::AstNode *ETSParser::CreateFormattedClassMethodDefinition(std::string_view so
     auto *const property = CreateClassElement(sourceCode, DUMMY_ARRAY, ir::ClassDefinitionModifiers::NONE);
     if (!property->IsMethodDefinition()) {
         LogError(diagnostic::INVALID_CLASS_METHOD, {}, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     insertingNodes_.swap(insertingNodes);
@@ -487,7 +487,7 @@ ir::MethodDefinition *ETSParser::CreateConstructorDefinition(ir::ModifierFlags m
 
     if ((modifiers & ir::ModifierFlags::ASYNC) != 0) {
         LogError(diagnostic::ASYNC_CONSTRUCTOR);
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     auto *memberName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());

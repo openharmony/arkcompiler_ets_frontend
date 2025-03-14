@@ -17,7 +17,7 @@
 #define ES2PANDA_COMPILER_CORE_AST_VISITOR_H
 
 #include <ir/astNodeMapping.h>
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include <tuple>
 
 namespace ark::es2panda::ir {

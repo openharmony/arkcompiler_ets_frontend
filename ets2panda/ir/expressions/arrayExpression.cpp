@@ -305,7 +305,7 @@ checker::Type *CheckElementPattern(Expression *it, checker::Type *elementType, c
             return elementType;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }

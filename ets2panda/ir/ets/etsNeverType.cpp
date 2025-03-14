@@ -51,12 +51,12 @@ void ETSNeverType::Dump(ir::SrcDumper *dumper) const
 
 void ETSNeverType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 checker::Type *ETSNeverType::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 checker::VerifiedType ETSNeverType::Check([[maybe_unused]] checker::ETSChecker *checker)

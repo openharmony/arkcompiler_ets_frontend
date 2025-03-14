@@ -99,7 +99,7 @@ DoWhileStatement *DoWhileStatement::Clone(ArenaAllocator *const allocator, AstNo
     }
 
     clone->SetRange(Range());
-    ASSERT(clone->Scope() == nullptr);
+    ES2PANDA_ASSERT(clone->Scope() == nullptr);
     return clone;
 }
 

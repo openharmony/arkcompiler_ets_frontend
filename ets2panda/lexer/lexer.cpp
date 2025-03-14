@@ -523,7 +523,7 @@ LexerTemplateString Lexer::ScanTemplateString()
         Iterator().Forward(cpSize);
     }
 
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
     return templateStr;
 }
 
@@ -573,7 +573,7 @@ util::StringView Lexer::ScanMultilineString()
         Iterator().Forward(cpSize);
     }
 
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
     return str.View();
 }
 

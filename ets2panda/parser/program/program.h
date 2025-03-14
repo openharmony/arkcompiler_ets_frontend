@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_PROGRAM_H
 #define ES2PANDA_PARSER_INCLUDE_PROGRAM_H
 
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "mem/pool_manager.h"
 #include "os/filesystem.h"
 #include "util/ustring.h"

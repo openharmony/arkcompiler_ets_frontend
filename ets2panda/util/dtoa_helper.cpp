@@ -96,7 +96,7 @@ void DtoaHelper::GrisuRound(uint64_t delta, uint64_t rest, uint64_t tenKappa, ui
 constexpr auto MAX_DIGITS = 9;
 int DtoaHelper::CountDecimalDigit32(uint32_t n)
 {
-    ASSERT(n < POW10[MAX_DIGITS]);
+    ES2PANDA_ASSERT(n < POW10[MAX_DIGITS]);
     for (int i = 1; i < MAX_DIGITS; i++) {
         if (n < POW10[i]) {
             return i;
@@ -146,17 +146,17 @@ uint32_t DtoaHelper::PopDigit(int kappa, uint32_t &p1)
             p1 = 0;
             break;
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
     return d;
 }
 
 void DtoaHelper::DigitGen(const DiyFp &w, const DiyFp &mp, uint64_t delta)
 {
-    ASSERT(mp.e_ <= 0);
+    ES2PANDA_ASSERT(mp.e_ <= 0);
     const DiyFp one(uint64_t(1) << static_cast<uint32_t>(-mp.e_), mp.e_);
     const DiyFp distance = mp - w;
-    ASSERT(one.e_ <= 0);
+    ES2PANDA_ASSERT(one.e_ <= 0);
     auto p1 = static_cast<uint32_t>(mp.f_ >> static_cast<uint32_t>(-one.e_));
     uint64_t p2 = mp.f_ & (one.f_ - 1);
     int kappa = CountDecimalDigit32(p1);  // kappa in [0, 9]
@@ -214,7 +214,7 @@ void DtoaHelper::Dtoa(double value)
 {
     // Exceptional case such as NAN, 0.0, negative... are processed in DoubleToEcmaString
     // So use Dtoa should avoid Exceptional case.
-    ASSERT(value > 0);
+    ES2PANDA_ASSERT(value > 0);
     Grisu(value);
     point_ = length_ + k_;
 }

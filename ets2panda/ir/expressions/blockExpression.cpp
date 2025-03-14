@@ -83,7 +83,7 @@ void BlockExpression::Dump(ir::SrcDumper *dumper) const
 
 void BlockExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 void BlockExpression::Compile(compiler::ETSGen *etsg) const
@@ -93,7 +93,7 @@ void BlockExpression::Compile(compiler::ETSGen *etsg) const
 
 checker::Type *BlockExpression::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 checker::VerifiedType BlockExpression::Check(checker::ETSChecker *checker)

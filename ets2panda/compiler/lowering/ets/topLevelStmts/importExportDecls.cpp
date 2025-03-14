@@ -137,7 +137,7 @@ void ImportExportDecls::HandleSelectiveExportWithAlias(util::StringView original
         ir::AstNode *field = fieldItem->second;
         if (field->IsVariableDeclaration()) {
             variableDeclarator = field->AsVariableDeclaration()->GetDeclaratorByName(originalFieldName);
-            ASSERT(variableDeclarator != nullptr);
+            ES2PANDA_ASSERT(variableDeclarator != nullptr);
         }
 
         if (variableDeclarator != nullptr) {

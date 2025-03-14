@@ -74,12 +74,12 @@ bool AstNode::IsScopeBearer() const noexcept
 
 varbinder::Scope *AstNode::Scope() const noexcept
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 void AstNode::ClearScope() noexcept
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 ir::ClassElement *AstNode::AsClassElement()
@@ -118,7 +118,7 @@ const ir::BlockStatement *AstNode::GetTopStatement() const
 
 AstNode *AstNode::Clone([[maybe_unused]] ArenaAllocator *const allocator, [[maybe_unused]] AstNode *const parent)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 void AstNode::TransformChildrenRecursively(const NodeTransformer &cb, std::string_view transformationName)

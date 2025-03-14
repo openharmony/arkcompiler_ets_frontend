@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_COMPILER_CORE_COMPILE_QUEUE_H
 #define ES2PANDA_COMPILER_CORE_COMPILE_QUEUE_H
 
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "os/thread.h"
 #include "es2panda.h"
 #include "compiler/core/compileJob.h"

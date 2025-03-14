@@ -313,7 +313,7 @@ static pandasm::ScalarValue CreateScalarValue(const checker::Type *type, checker
                 type->AsETSObjectType()->AsETSStringType()->GetValue().Mutf8());
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -564,7 +564,7 @@ void ETSEmitter::CreateEnumProp(const ir::ClassProperty *prop, pandasm::Field &f
         auto value = init->AsStringLiteral()->Str().Mutf8();
         field.metadata->SetValue(pandasm::ScalarValue::Create<pandasm::Value::Type::STRING>(value));
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -644,7 +644,7 @@ void ETSEmitter::ProcessArrayElement(const ir::Expression *elem, std::vector<pan
             break;
         }
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
             break;
     }
 }
@@ -711,7 +711,7 @@ void ETSEmitter::GenCustomAnnotationProp(const ir::ClassProperty *prop, std::str
     } else if (type->IsETSArrayType()) {
         CreateLiteralArrayProp(prop, baseName, field);
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
     record.fieldList.emplace_back(std::move(field));
 }
@@ -764,7 +764,7 @@ pandasm::AnnotationElement ETSEmitter::ProcessETSEnumType(std::string &baseName,
         auto intEnumValue = pandasm::ScalarValue::Create<pandasm::Value::Type::I32>(enumValue);
         return pandasm::AnnotationElement {baseName, std::make_unique<pandasm::ScalarValue>(intEnumValue)};
     }
-    ASSERT(type->IsETSStringEnumType());
+    ES2PANDA_ASSERT(type->IsETSStringEnumType());
     auto enumValue = initValue->AsStringLiteral()->Str().Mutf8();
     auto stringValue = pandasm::ScalarValue::Create<pandasm::Value::Type::STRING>(enumValue);
     return pandasm::AnnotationElement {baseName, std::make_unique<pandasm::ScalarValue>(stringValue)};
@@ -804,7 +804,7 @@ pandasm::AnnotationElement ETSEmitter::GenCustomAnnotationElement(const ir::Clas
                 propName, std::make_unique<pandasm::ScalarValue>(CreateScalarValue(init->TsType(), typeKind))};
         }
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 

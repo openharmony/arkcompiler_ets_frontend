@@ -1490,7 +1490,7 @@ std::optional<std::size_t> ETSChecker::GetTupleElementAccessValue(const Type *co
             return std::nullopt;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -1631,7 +1631,7 @@ void ETSChecker::ValidateNamespaceProperty(varbinder::Variable *property, const 
     if (property->TsType() != nullptr && property->TsType()->IsETSMethodType()) {
         auto funcType = property->TsType()->AsETSFunctionType();
         property = funcType->CallSignatures()[0]->OwnerVar();
-        ASSERT(property != nullptr);
+        ES2PANDA_ASSERT(property != nullptr);
     }
 
     if (property->Declaration() == nullptr) {
@@ -1945,8 +1945,8 @@ bool ETSChecker::FindPropertyInAssignment(const ir::AstNode *it, const std::stri
 
 static ResolvedKind DecideResolvedKind(Type *typeOfGlobalFunctionVar)
 {
-    ASSERT(typeOfGlobalFunctionVar != nullptr);
-    ASSERT(typeOfGlobalFunctionVar->IsETSObjectType() || typeOfGlobalFunctionVar->IsETSFunctionType());
+    ES2PANDA_ASSERT(typeOfGlobalFunctionVar != nullptr);
+    ES2PANDA_ASSERT(typeOfGlobalFunctionVar->IsETSObjectType() || typeOfGlobalFunctionVar->IsETSFunctionType());
     if (typeOfGlobalFunctionVar->IsETSObjectType()) {
         return ResolvedKind::EXTENSION_FUNCTION;
     }
@@ -2147,7 +2147,7 @@ void ETSChecker::CheckProperties(ETSObjectType *classType, ir::ClassDefinition *
         } else if (it->HasFlag(varbinder::VariableFlags::ENUM_LITERAL)) {
             targetType = "enum";
         } else {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
 
         if (interfaceFound != nullptr) {

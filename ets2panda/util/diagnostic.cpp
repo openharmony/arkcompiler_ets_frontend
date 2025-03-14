@@ -57,7 +57,7 @@ std::string Format(const DiagnosticMessageElement &elem)
         std::get<const checker::Signature *const>(elem)->ToString(ss, nullptr, true);
         return ss.str();
     }
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 std::string Format(const DiagnosticMessageParams &list)
 {
@@ -162,12 +162,10 @@ const char *DiagnosticTypeToString(DiagnosticType type)
             return "Declgen ets2ts error";
         case DiagnosticType::DECLGEN_ETS2TS_WARNING:
             return "Declgen ets2ts warning";
-        case DiagnosticType::COMPILER_BUG:
-            return "Compiler bug";
         case DiagnosticType::ARKTS_CONFIG_ERROR:
             return "ArkTS config error";
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 

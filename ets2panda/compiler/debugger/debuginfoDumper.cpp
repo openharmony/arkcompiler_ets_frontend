@@ -15,7 +15,7 @@
 
 #include "debuginfoDumper.h"
 
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 
 #include <sstream>
 #include <string>

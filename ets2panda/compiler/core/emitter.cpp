@@ -28,7 +28,7 @@
 #include "parser/program/program.h"
 #include "checker/types/type.h"
 #include "generated/isa.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "public/public.h"
 
 #include <string>
@@ -68,7 +68,7 @@ static LiteralPair TransformMethodLiterals(const compiler::Literal *literal)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
             break;
         }
     }
@@ -165,7 +165,7 @@ static Format MatchFormat(const IRNode *node, const Formats &formats)
         }
     }
 
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
     return *iter;
 }
 
@@ -435,12 +435,12 @@ static void UpdateLiteralBufferId([[maybe_unused]] ark::pandasm::Ins *ins, [[may
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
             break;
         }
     }
 #else
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 #endif
 }
 

@@ -593,14 +593,14 @@ Type *ETSChecker::GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *
         case ir::AstNodeType::CLASS_DEFINITION:
             return GetTypeOfVariable(prop);
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 
 // Determine if substituted method cast requires cast from erased type
 Type *ETSChecker::GuaranteedTypeForUncheckedCallReturn(Signature *sig)
 {
-    ASSERT(sig->HasFunction());
+    ES2PANDA_ASSERT(sig->HasFunction());
     if (sig->HasSignatureFlag(SignatureFlags::THIS_RETURN_TYPE)) {
         return sig->ReturnType();
     }
@@ -756,7 +756,7 @@ bool ETSChecker::CheckAmbientAnnotationFieldInitializer(ir::Expression *init, ir
             return false;
         }
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 
     return true;
@@ -813,7 +813,7 @@ bool ETSChecker::CheckAmbientAnnotationFieldInitializerValue(ir::Expression *ini
                                                           expected->AsUnaryExpression()->Argument());
         }
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -952,7 +952,7 @@ void ETSChecker::CheckStandardAnnotation(ir::AnnotationUsage *anno)
     if (anno->GetBaseName()->Variable() == nullptr) {
         return;
     }
-    ASSERT(anno->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration() != nullptr);
+    ES2PANDA_ASSERT(anno->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration() != nullptr);
     auto *annoDecl = anno->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
     auto annoName = annoDecl->InternalName().Mutf8();
     if (annoName.rfind(compiler::Signatures::STD_ANNOTATIONS) != 0) {
@@ -1133,7 +1133,7 @@ ir::BoxingUnboxingFlags ETSChecker::GetBoxingFlag(Type *const boxingType)
         case TypeFlag::DOUBLE:
             return ir::BoxingUnboxingFlags::BOX_TO_DOUBLE;
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -1158,7 +1158,7 @@ ir::BoxingUnboxingFlags ETSChecker::GetUnboxingFlag(Type const *const unboxingTy
         case TypeFlag::DOUBLE:
             return ir::BoxingUnboxingFlags::UNBOX_TO_DOUBLE;
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 
@@ -1279,7 +1279,7 @@ static ir::AstNode *DerefETSTypeReference(ir::AstNode *node)
 // #22952: optional arrow leftovers
 bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction *lambda)
 {
-    ASSERT(param->IsETSParameterExpression());
+    ES2PANDA_ASSERT(param->IsETSParameterExpression());
     ir::AstNode *typeAnn = param->AsETSParameterExpression()->Ident()->TypeAnnotation();
     if (typeAnn->IsETSTypeReference()) {
         typeAnn = DerefETSTypeReference(typeAnn);

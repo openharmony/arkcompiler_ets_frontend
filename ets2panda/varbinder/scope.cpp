@@ -473,7 +473,7 @@ Variable *FunctionParamScope::AddBinding([[maybe_unused]] ArenaAllocator *alloca
                                          [[maybe_unused]] Variable *currentVariable, [[maybe_unused]] Decl *newDecl,
                                          [[maybe_unused]] ScriptExtension extension)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 Variable *AnnotationParamScope::AddBinding([[maybe_unused]] ArenaAllocator *allocator,
@@ -595,7 +595,7 @@ Scope::InsertResult GlobalScope::TryInsertBinding(const util::StringView &name, 
 
 void GlobalScope::MergeBindings([[maybe_unused]] const VariableMap &bindings)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 Scope::VariableMap::size_type GlobalScope::EraseBinding(const util::StringView &name)
@@ -890,7 +890,7 @@ void ClassScope::SetBindingProps(Decl *newDecl, BindingProps *props, bool isStat
             break;
 
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 

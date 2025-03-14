@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,6 +14,10 @@
  */
 
 #include "scope_init_test.h"
+#include "ir/expression.h"
+#include "ir/statements/blockStatement.h"
+#include "ir/statements/variableDeclarator.h"
+#include "ir/statements/variableDeclaration.h"
 
 namespace test::utils {
 

@@ -31,7 +31,7 @@ static ir::Statement *TransformInitializer(ArenaAllocator *allocator, parser::ET
     typeAnnotation->SetParent(param->Ident());
 
     param->SetInitializer(nullptr);
-    ASSERT(param->IsOptional());
+    ES2PANDA_ASSERT(param->IsOptional());
 
     return parser->CreateFormattedStatement("let @@I1: @@T2 = (@@I3 !== undefined) ? @@I4 : (@@E5 as @@T6)", ident,
                                             typeAnnotation->Clone(allocator, nullptr), param->Ident()->Name(),
@@ -45,14 +45,14 @@ static void TransformFunction(public_lib::Context *ctx, ir::ScriptFunction *func
 
     for (auto *param : params) {
         if (!param->IsETSParameterExpression()) {  // #23134
-            ASSERT(ctx->diagnosticEngine->IsAnyError());
+            ES2PANDA_ASSERT(ctx->diagnosticEngine->IsAnyError());
             continue;
         }
         if (param->AsETSParameterExpression()->Initializer() == nullptr) {
             continue;
         }
         if (param->AsETSParameterExpression()->TypeAnnotation() == nullptr) {  // #23134
-            ASSERT(ctx->diagnosticEngine->IsAnyError());
+            ES2PANDA_ASSERT(ctx->diagnosticEngine->IsAnyError());
             continue;
         }
         defaultParams.push_back(param->AsETSParameterExpression());
@@ -62,7 +62,7 @@ static void TransformFunction(public_lib::Context *ctx, ir::ScriptFunction *func
         return;
     }
     if (!function->HasBody()) {  // #23134
-        ASSERT(ctx->diagnosticEngine->IsAnyError());
+        ES2PANDA_ASSERT(ctx->diagnosticEngine->IsAnyError());
         return;
     }
     auto const body = function->Body()->AsBlockStatement();
@@ -103,7 +103,7 @@ bool DefaultParametersLowering::PostconditionForModule([[maybe_unused]] public_l
         }
         for (auto p : node->AsScriptFunction()->Params()) {
             if (!p->IsETSParameterExpression()) {  // #23134
-                ASSERT(ctx->diagnosticEngine->IsAnyError());
+                ES2PANDA_ASSERT(ctx->diagnosticEngine->IsAnyError());
                 (void)ctx;
                 continue;
             }

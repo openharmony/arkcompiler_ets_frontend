@@ -43,7 +43,7 @@ checker::ETSObjectType *BoxingConverter::Convert(ETSChecker const *checker, Type
         case checker::TypeFlag::DOUBLE:
             return typeHolder->GlobalDoubleBuiltinType()->AsETSObjectType();
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 

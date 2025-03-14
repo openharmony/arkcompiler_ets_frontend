@@ -69,7 +69,7 @@ ir::MethodDefinition *CreateMethodFunctionDefinition(ir::DummyNode *node, public
         sourceCode = "$_set(" + std::string(indexName) + " : number, " + "value : " + std::string(returnType->Name()) +
                      " ) : void";
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 
     auto methodDefinition = parser->CreateFormattedClassMethodDefinition(sourceCode);

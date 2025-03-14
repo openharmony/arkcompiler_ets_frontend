@@ -282,7 +282,7 @@ void ETSTryContext::EmitFinalizerInsertion(ETSGen *etsg, compiler::LabelPair lab
         compiler::Label *target = etsg->ControlFlowChangeContinue(statement->AsContinueStatement()->Ident());
         etsg->Branch(tryStmt_, target);
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 }
 

@@ -44,7 +44,7 @@ PrivateFieldKind MethodDefinition::ToPrivateFieldKind(bool const isStatic) const
             return isStatic ? PrivateFieldKind::STATIC_SET : PrivateFieldKind::SET;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -140,7 +140,7 @@ void MethodDefinition::Dump(ir::AstDumper *dumper) const
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 

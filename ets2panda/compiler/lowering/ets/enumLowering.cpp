@@ -343,7 +343,7 @@ void EnumLoweringPhase::ProcessEnumClassDeclaration(ir::TSEnumDeclaration *const
         InitScopesPhaseETS::RunExternalNode(enumClassDecl, varbinder_);
         var = varbinder_->GetScope()->FindLocal(ident->Name(), varbinder::ResolveBindingOptions::DECLARATION);
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
     if (var != nullptr) {
         // Although it enum was transformed to class, it should still be regarded as enum.
