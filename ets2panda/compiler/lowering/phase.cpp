@@ -14,11 +14,12 @@
  */
 
 #include "phase.h"
+#include "checker/checker.h"
 #include "compiler/lowering/checkerPhase.h"
 #include "compiler/lowering/ets/asyncMethodLowering.h"
 #include "compiler/lowering/ets/bigintLowering.h"
-#include "compiler/lowering/ets/boxingForLocals.h"
 #include "compiler/lowering/ets/boxedTypeLowering.h"
+#include "compiler/lowering/ets/boxingForLocals.h"
 #include "compiler/lowering/ets/capturedVariables.h"
 #include "compiler/lowering/ets/constStringToCharLowering.h"
 #include "compiler/lowering/ets/constantExpressionLowering.h"
@@ -39,9 +40,9 @@
 #include "compiler/lowering/ets/objectIndexAccess.h"
 #include "compiler/lowering/ets/objectIterator.h"
 #include "compiler/lowering/ets/objectLiteralLowering.h"
+#include "compiler/lowering/ets/opAssignment.h"
 #include "compiler/lowering/ets/optionalArgumentsLowering.h"
 #include "compiler/lowering/ets/optionalLowering.h"
-#include "compiler/lowering/ets/opAssignment.h"
 #include "compiler/lowering/ets/packageImplicitImport.h"
 #include "compiler/lowering/ets/partialExportClassGen.h"
 #include "compiler/lowering/ets/promiseVoid.h"
@@ -52,7 +53,6 @@
 #include "compiler/lowering/ets/stringConstantsLowering.h"
 #include "compiler/lowering/ets/stringConstructorLowering.h"
 #include "compiler/lowering/ets/topLevelStmts/topLevelStmts.h"
-#include "compiler/lowering/ets/tupleLowering.h"
 #include "compiler/lowering/ets/unionLowering.h"
 #include "compiler/lowering/plugin_phase.h"
 #include "compiler/lowering/resolveIdentifiers.h"
@@ -62,7 +62,6 @@
 #include "lexer/token/sourceLocation.h"
 #include "public/es2panda_lib.h"
 #include "util/options.h"
-#include "checker/checker.h"
 
 namespace ark::es2panda::compiler {
 
@@ -89,7 +88,6 @@ static ObjectIndexLowering g_objectIndexLowering;
 static ObjectIteratorLowering g_objectIteratorLowering;
 static ObjectLiteralLowering g_objectLiteralLowering;
 static InterfaceObjectLiteralLowering g_interfaceObjectLiteralLowering;
-static TupleLowering g_tupleLowering;  // Can be only applied after checking phase, and OP_ASSIGNMENT_LOWERING phase
 static UnionLowering g_unionLowering;
 static OptionalLowering g_optionalLowering;
 static ExpandBracketsPhase g_expandBracketsPhase;
@@ -160,7 +158,6 @@ std::vector<Phase *> GetETSPhaseList()
         &g_objectIndexLowering,
         &g_objectIteratorLowering,
         &g_lambdaConversionPhase,
-        &g_tupleLowering,
         &g_unionLowering,
         &g_expandBracketsPhase,
         &g_localClassLowering,

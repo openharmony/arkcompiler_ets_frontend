@@ -833,7 +833,6 @@ void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, std::tuple
         case checker::TypeFlag::ETS_ARRAY:
         case checker::TypeFlag::ETS_TUPLE:
         case checker::TypeFlag::FUNCTION: {
-            // NOTE (mmartin): remove tuple, after runtime representation has changed
             Sa().Emit<Isinstance>(node, ToAssemblerType(target));
             BranchIfTrue(node, ifTrue);
             break;
@@ -3172,100 +3171,33 @@ void ETSGen::StoreArrayElement(const ir::AstNode *node, VReg objectReg, VReg ind
     SetAccumulatorType(elementType);
 }
 
-void ETSGen::LoadTupleElement(const ir::AstNode *node, VReg objectReg)
+util::StringView ETSGen::GetTupleMemberNameForIndex(const std::size_t index) const
 {
-    auto *elementType = GetVRegType(objectReg)->AsETSTupleType()->GetLubType();
-    if (elementType->IsETSReferenceType()) {
-        Ra().Emit<LdarrObj>(node, objectReg);
-        SetAccumulatorType(elementType);
-        return;
-    }
-    switch (checker::ETSChecker::ETSType(elementType)) {
-        case checker::TypeFlag::ETS_BOOLEAN:
-        case checker::TypeFlag::BYTE: {
-            Ra().Emit<Ldarr8>(node, objectReg);
-            break;
-        }
-        case checker::TypeFlag::CHAR: {
-            Ra().Emit<Ldarru16>(node, objectReg);
-            break;
-        }
-        case checker::TypeFlag::SHORT: {
-            Ra().Emit<Ldarr16>(node, objectReg);
-            break;
-        }
-        case checker::TypeFlag::ETS_STRING_ENUM:
-            [[fallthrough]];
-        case checker::TypeFlag::ETS_INT_ENUM:
-        case checker::TypeFlag::INT: {
-            Ra().Emit<Ldarr>(node, objectReg);
-            break;
-        }
-        case checker::TypeFlag::LONG: {
-            Ra().Emit<LdarrWide>(node, objectReg);
-            break;
-        }
-        case checker::TypeFlag::FLOAT: {
-            Ra().Emit<Fldarr32>(node, objectReg);
-            break;
-        }
-        case checker::TypeFlag::DOUBLE: {
-            Ra().Emit<FldarrWide>(node, objectReg);
-            break;
-        }
-
-        default: {
-            ES2PANDA_UNREACHABLE();
-        }
-    }
-
-    SetAccumulatorType(elementType);
+    return util::UString("$" + std::to_string(index), Allocator()).View();
 }
 
-void ETSGen::StoreTupleElement(const ir::AstNode *node, VReg objectReg, VReg index, const checker::Type *elementType)
+void ETSGen::LoadTupleElement(const ir::AstNode *node, VReg objectReg, const checker::Type *elementType,
+                              std::size_t index)
 {
-    if (elementType->IsETSReferenceType()) {
-        Ra().Emit<StarrObj>(node, objectReg, index);
-        SetAccumulatorType(elementType);
-        return;
-    }
-    switch (checker::ETSChecker::ETSType(elementType)) {
-        case checker::TypeFlag::ETS_BOOLEAN:
-        case checker::TypeFlag::BYTE: {
-            Ra().Emit<Starr8>(node, objectReg, index);
-            break;
-        }
-        case checker::TypeFlag::CHAR:
-        case checker::TypeFlag::SHORT: {
-            Ra().Emit<Starr16>(node, objectReg, index);
-            break;
-        }
-        case checker::TypeFlag::ETS_STRING_ENUM:
-            [[fallthrough]];
-        case checker::TypeFlag::ETS_INT_ENUM:
-        case checker::TypeFlag::INT: {
-            Ra().Emit<Starr>(node, objectReg, index);
-            break;
-        }
-        case checker::TypeFlag::LONG: {
-            Ra().Emit<StarrWide>(node, objectReg, index);
-            break;
-        }
-        case checker::TypeFlag::FLOAT: {
-            Ra().Emit<Fstarr32>(node, objectReg, index);
-            break;
-        }
-        case checker::TypeFlag::DOUBLE: {
-            Ra().Emit<FstarrWide>(node, objectReg, index);
-            break;
-        }
+    ES2PANDA_ASSERT(GetVRegType(objectReg)->IsETSTupleType());
+    const auto propName = FormClassPropReference(GetVRegType(objectReg)->AsETSTupleType()->GetWrapperType(),
+                                                 GetTupleMemberNameForIndex(index));
 
-        default: {
-            ES2PANDA_UNREACHABLE();
-        }
-    }
+    // NOTE (smartin): remove after generics without type erasure is possible
+    const auto *const boxedElementType = Checker()->MaybeBoxType(elementType);
+    LoadProperty(node, boxedElementType, objectReg, propName);
+}
 
-    SetAccumulatorType(elementType);
+void ETSGen::StoreTupleElement(const ir::AstNode *node, VReg objectReg, const checker::Type *elementType,
+                               std::size_t index)
+{
+    ES2PANDA_ASSERT(GetVRegType(objectReg)->IsETSTupleType());
+    const auto *const tupleType = GetVRegType(objectReg)->AsETSTupleType();
+    SetVRegType(objectReg, tupleType->GetWrapperType());
+
+    // NOTE (smartin): remove after generics without type erasure is possible
+    const auto *const boxedElementType = Checker()->MaybeBoxType(elementType);
+    StoreProperty(node, boxedElementType, objectReg, GetTupleMemberNameForIndex(index));
 }
 
 template <typename T>
@@ -3449,10 +3381,13 @@ void ETSGen::SetAccumulatorTargetType(const ir::AstNode *node, checker::TypeFlag
 template <typename T>
 void ETSGen::LoadAccumulatorNumber(const ir::AstNode *node, T number, checker::TypeFlag targetType)
 {
-    auto typeKind = targetType_ && (!targetType_->IsETSObjectType() && !targetType_->IsETSUnionType() &&
-                                    !targetType_->IsETSArrayType() && !targetType_->IsETSTupleType())
-                        ? checker::ETSChecker::TypeKind(targetType_)
-                        : targetType;
+    // NOTE (smartin): refactor this to do at a more appropriate place
+    const bool isContextTargetTypeValid =
+        targetType_ != nullptr &&
+        (!targetType_->IsETSObjectType() && !targetType_->IsETSUnionType() && !targetType_->IsETSArrayType() &&
+         !targetType_->IsETSTupleType() && !targetType_->IsETSTypeParameter());
+
+    auto typeKind = isContextTargetTypeValid ? checker::ETSChecker::TypeKind(targetType_) : targetType;
 
     SetAccumulatorTargetType(node, typeKind, number);
 

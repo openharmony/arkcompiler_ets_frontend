@@ -304,7 +304,7 @@ bool ETSChecker::IsArrayExprSizeValidForTuple(const ir::ArrayExpression *const a
     }
 
     if (size != tuple->GetTupleSize()) {
-        LogError(diagnostic::TUPLE_TOO_FEW_ELEMS, {size, tuple->GetTupleSize()}, arrayExpr->Start());
+        LogError(diagnostic::TUPLE_WRONG_NUMBER_OF_ELEMS, {size, tuple->GetTupleSize()}, arrayExpr->Start());
         return false;
     }
 

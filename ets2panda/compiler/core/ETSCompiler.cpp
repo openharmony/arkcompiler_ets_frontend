@@ -367,21 +367,29 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::ETSWildcardType *node) cons
     ES2PANDA_UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::ArrayExpression *expr) const
+void ETSCompiler::CompileTupleCreation(const ir::ArrayExpression *tupleInitializer) const
 {
     ETSGen *etsg = GetETSGen();
-    const compiler::RegScope rs(etsg);
+
+    etsg->InitObject(tupleInitializer,
+                     tupleInitializer->TsType()->AsETSTupleType()->GetWrapperType()->ConstructSignatures().front(),
+                     tupleInitializer->Elements());
+    etsg->SetAccumulatorType(tupleInitializer->TsType());
+}
+
+void ETSCompiler::CompileArrayCreation(const ir::ArrayExpression *expr) const
+{
+    ETSGen *etsg = GetETSGen();
 
     const auto arr = etsg->AllocReg();
     const auto dim = etsg->AllocReg();
 
-    const auto *const arrayExprType =
-        expr->TsType()->IsETSTupleType() ? expr->TsType()->AsETSTupleType()->GetHolderArrayType() : expr->TsType();
+    const auto *const arrayExprType = expr->TsType();
 
     const compiler::TargetTypeContext ttctx(etsg, etsg->Checker()->GlobalIntType());
     etsg->LoadAccumulatorInt(expr, static_cast<std::int32_t>(expr->Elements().size()));
     etsg->StoreAccumulator(expr, dim);
-    etsg->NewArray(expr, arr, dim, arrayExprType);
+    etsg->NewArray(expr, arr, dim, expr->TsType());
 
     const auto indexReg = etsg->AllocReg();
     auto const *const elementType = arrayExprType->AsETSArrayType()->ElementType();
@@ -397,10 +405,8 @@ void ETSCompiler::Compile(const ir::ArrayExpression *expr) const
 
         if (expression->TsType()->IsETSArrayType()) {
             etsg->StoreArrayElement(expr, arr, indexReg, expression->TsType());
-        } else if (expr->TsType()->IsETSTupleType()) {
-            etsg->StoreTupleElement(expr, arr, indexReg, expr->TsType()->AsETSTupleType()->GetLubType());
         } else {
-            etsg->StoreArrayElement(expr, arr, indexReg, expr->TsType()->AsETSArrayType()->ElementType());
+            etsg->StoreArrayElement(expr, arr, indexReg, arrayExprType->AsETSArrayType()->ElementType());
         }
     }
 
@@ -408,12 +414,24 @@ void ETSCompiler::Compile(const ir::ArrayExpression *expr) const
     ES2PANDA_ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), arrayExprType));
 }
 
+void ETSCompiler::Compile(const ir::ArrayExpression *expr) const
+{
+    ETSGen *etsg = GetETSGen();
+    const compiler::RegScope rs(etsg);
+
+    if (expr->TsType()->IsETSTupleType()) {
+        CompileTupleCreation(expr);
+    } else {
+        CompileArrayCreation(expr);
+    }
+}
+
 void ETSCompiler::Compile(const ir::AssignmentExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
     // All other operations are handled in OpAssignmentLowering
     ES2PANDA_ASSERT(expr->OperatorType() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
-    auto *const exprType = expr->TsType();
+    const auto *const exprType = expr->TsType();
 
     compiler::RegScope rs(etsg);
     auto lref = compiler::ETSLReference::Create(etsg, expr->Left(), false);
@@ -853,6 +871,17 @@ void ETSCompiler::Compile(const ir::Identifier *expr) const
     etsg->SetAccumulatorType(smartType);
 }
 
+static void LoadETSDynamicTypeFromMemberExpr(compiler::ETSGen *etsg, const ir::MemberExpression *expr,
+                                             compiler::VReg objReg)
+{
+    if (etsg->Checker()->AsETSChecker()->Relation()->IsSupertypeOf(etsg->Checker()->GlobalBuiltinETSStringType(),
+                                                                   expr->Property()->TsType())) {
+        etsg->LoadPropertyDynamic(expr, expr->TsType(), objReg, expr->Property());
+    } else {
+        etsg->LoadElementDynamic(expr, objReg);
+    }
+}
+
 bool ETSCompiler::CompileComputed(compiler::ETSGen *etsg, const ir::MemberExpression *expr)
 {
     if (!expr->IsComputed()) {
@@ -873,18 +902,16 @@ bool ETSCompiler::CompileComputed(compiler::ETSGen *etsg, const ir::MemberExpres
 
     auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
 
-    if (objectType->IsETSDynamicType()) {
-        if (etsg->Checker()->AsETSChecker()->Relation()->IsSupertypeOf(etsg->Checker()->GlobalBuiltinETSStringType(),
-                                                                       expr->Property()->TsType())) {
-            etsg->LoadPropertyDynamic(expr, expr->TsType(), objReg, expr->Property());
-        } else {
-            etsg->LoadElementDynamic(expr, objReg);
-        }
-    } else if (objectType->IsETSArrayType()) {
-        etsg->LoadArrayElement(expr, objReg);
+    if (objectType->IsETSTupleType()) {
+        ES2PANDA_ASSERT(expr->GetTupleIndexValue().has_value());
+        auto indexValue = *expr->GetTupleIndexValue();
+        auto *tupleElementType = objectType->AsETSTupleType()->GetTypeAtIndex(indexValue);
+        etsg->LoadTupleElement(expr, objReg, tupleElementType, indexValue);
+    } else if (objectType->IsETSDynamicType()) {
+        LoadETSDynamicTypeFromMemberExpr(etsg, expr, objReg);
     } else {
-        ES2PANDA_ASSERT(objectType->IsETSTupleType());
-        etsg->LoadTupleElement(expr, objReg);
+        ES2PANDA_ASSERT(objectType->IsETSArrayType());
+        etsg->LoadArrayElement(expr, objReg);
     }
 
     etsg->GuardUncheckedType(expr, expr->UncheckedType(), expr->TsType());

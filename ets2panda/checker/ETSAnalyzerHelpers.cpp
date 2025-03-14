@@ -713,6 +713,31 @@ void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, ch
     }
 }
 
+bool IsArrayExpressionValidInitializerForType(ETSChecker *checker, const Type *const arrayExprPreferredType)
+{
+    const auto validForTarget = arrayExprPreferredType == nullptr  // preferred type will be inferred from elements
+                                || arrayExprPreferredType->IsETSArrayType()                    // valid for array type
+                                || arrayExprPreferredType->IsETSTupleType()                    // valid for tuple type
+                                || checker->Relation()->IsSupertypeOf(arrayExprPreferredType,  // valid for 'Object'
+                                                                      checker->GlobalETSObjectType());
+
+    return validForTarget;
+}
+
+void CastPossibleTupleOnRHS(ETSChecker *checker, ir::AssignmentExpression *expr)
+{
+    if (expr->Left()->IsMemberExpression() &&
+        expr->Left()->AsMemberExpression()->Object()->TsType()->IsETSTupleType() &&
+        expr->OperatorType() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
+        auto *storedTupleType = expr->Left()->AsMemberExpression()->Object()->TsType();
+
+        const checker::CastingContext tupleCast(
+            checker->Relation(), {"this cast should never fail"},
+            checker::CastingContext::ConstructorData {expr->Right(), expr->Right()->TsType(), storedTupleType,
+                                                      expr->Right()->Start(), TypeRelationFlag::NO_THROW});
+    }
+}
+
 void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containingFunc, checker::Type *&funcReturnType,
                              ir::ReturnStatement *st, ir::Expression *stArgument)
 {

@@ -151,6 +151,7 @@ static constexpr std::string_view BUILTINS_TO_INIT[] = {
     compiler::Signatures::BUILTIN_FUNCTIONR14_CLASS,
     compiler::Signatures::BUILTIN_FUNCTIONR15_CLASS,
     compiler::Signatures::BUILTIN_FUNCTIONR16_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONN_CLASS,
     compiler::Signatures::BUILTIN_LAMBDAR0_CLASS,
     compiler::Signatures::BUILTIN_LAMBDAR1_CLASS,
     compiler::Signatures::BUILTIN_LAMBDAR2_CLASS,
@@ -168,8 +169,25 @@ static constexpr std::string_view BUILTINS_TO_INIT[] = {
     compiler::Signatures::BUILTIN_LAMBDAR14_CLASS,
     compiler::Signatures::BUILTIN_LAMBDAR15_CLASS,
     compiler::Signatures::BUILTIN_LAMBDAR16_CLASS,
-    compiler::Signatures::BUILTIN_FUNCTIONN_CLASS,
     compiler::Signatures::BUILTIN_LAMBDAN_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE0_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE1_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE2_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE3_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE4_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE5_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE6_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE7_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE8_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE9_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE10_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE11_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE12_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE13_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE14_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE15_CLASS,
+    compiler::Signatures::BUILTIN_TUPLE16_CLASS,
+    compiler::Signatures::BUILTIN_TUPLEN_CLASS,
 };
 // clang-format on
 
@@ -506,6 +524,11 @@ ETSObjectType *ETSChecker::GlobalBuiltinFunctionType(size_t nargs, bool hasRest)
 ETSObjectType *ETSChecker::GlobalBuiltinLambdaType(size_t nargs, bool hasRest) const
 {
     return AsETSObjectType(&GlobalTypesHolder::GlobalLambdaBuiltinType, nargs, hasRest);
+}
+
+ETSObjectType *ETSChecker::GlobalBuiltinTupleType(size_t nargs) const
+{
+    return AsETSObjectType(&GlobalTypesHolder::GlobalTupleBuiltinType, nargs);
 }
 
 size_t ETSChecker::GlobalBuiltinFunctionTypeVariadicThreshold() const

@@ -241,7 +241,6 @@ libes2panda_sources = [
   "compiler/lowering/ets/topLevelStmts/globalDeclTransformer.cpp",
   "compiler/lowering/ets/topLevelStmts/importExportDecls.cpp",
   "compiler/lowering/ets/topLevelStmts/topLevelStmts.cpp",
-  "compiler/lowering/ets/tupleLowering.cpp",
   "compiler/lowering/ets/unionLowering.cpp",
   "compiler/lowering/phase.cpp",
   "compiler/lowering/plugin_phase.cpp",

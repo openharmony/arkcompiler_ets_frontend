@@ -42,6 +42,8 @@ private:
     void EmitCall(const ir::CallExpression *expr, compiler::VReg &calleeReg, checker::Signature *signature) const;
     bool HandleArrayTypeLengthProperty(const ir::MemberExpression *expr, ETSGen *etsg) const;
     bool HandleStaticProperties(const ir::MemberExpression *expr, ETSGen *etsg) const;
+    void CompileArrayCreation(const ir::ArrayExpression *expr) const;
+    void CompileTupleCreation(const ir::ArrayExpression *tupleInitializer) const;
 
     static bool CompileComputed(compiler::ETSGen *etsg, const ir::MemberExpression *expr);
 

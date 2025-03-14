@@ -466,18 +466,6 @@ the `for of` loop converts to
     }
 ```
 
-- `TupleLowering` inserts explicit conversions needed to support tuples.
-(The reason is that tuples are represented as arrays of the LUB type of their elements, 
-and sometimes implicit conversions do not work)
-```
-    let t: [string, short] = ["oh", 11];
-    t[1] = 12;
-```
-The last assignment changes to
-```
-    t[1] = 12 as Short as String|Short;
-```
-
 - `UnionLowering` does two things: 
   1. processes field access to union 
   1. cast to primitive type

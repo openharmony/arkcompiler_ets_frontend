@@ -58,6 +58,8 @@ bool CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker
                      ir::Expression *stArgument, ir::ScriptFunction *containingFunc);
 void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, checker::Type *&funcReturnType,
                      ir::Expression *stArgument);
+bool IsArrayExpressionValidInitializerForType(ETSChecker *checker, const Type *arrayExprPreferredType);
+void CastPossibleTupleOnRHS(ETSChecker *checker, ir::AssignmentExpression *expr);
 void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containingFunc, checker::Type *&funcReturnType,
                              ir::ReturnStatement *st, ir::Expression *stArgument);
 bool CheckReturnTypeNecessity(ir::MethodDefinition *node);

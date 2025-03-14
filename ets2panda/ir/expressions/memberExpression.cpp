@@ -234,7 +234,11 @@ checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checke
     } else if (IsComputed() && objType->IsETSArrayType()) {  // access erased array or tuple type
         uncheckedType_ = checker->GuaranteedTypeForUncheckedCast(objType->AsETSArrayType()->ElementType(), type);
     } else if (IsComputed() && objType->IsETSTupleType()) {
-        uncheckedType_ = checker->GuaranteedTypeForUncheckedCast(objType->AsETSTupleType()->GetLubType(), type);
+        if (!checker->ValidateTupleIndex(objType->AsETSTupleType(), this, false)) {
+            // error recovery
+            return checker->InvalidateType(this);
+        }
+        uncheckedType_ = checker->GetApparentType(checker->MaybeBoxType(GetTypeOfTupleElement(checker, objType)));
     } else if (checker->IsExtensionAccessorFunctionType(type)) {
         SetTsType(type);
         checker::Type *accessorReturnType = checker->GetExtensionAccessorReturnType(this);
@@ -250,11 +254,41 @@ checker::Type *MemberExpression::SetAndAdjustType(checker::ETSChecker *checker, 
     SetObjectType(objectType);
     auto [resType, resVar] = ResolveObjectMember(checker);
     if (resType == nullptr) {
-        SetTsType(checker->GlobalTypeError());
-        return checker->GlobalTypeError();
+        return checker->InvalidateType(this);
     }
     SetPropVar(resVar);
     return AdjustType(checker, resType);
+}
+
+std::optional<std::size_t> MemberExpression::GetTupleIndexValue() const
+{
+    auto *propType = property_->TsType();
+    if (object_->TsType() == nullptr || !object_->TsType()->IsETSTupleType() ||
+        !propType->HasTypeFlag(checker::TypeFlag::CONSTANT | checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
+        return std::nullopt;
+    }
+
+    if (propType->IsByteType()) {
+        return propType->AsByteType()->GetValue();
+    }
+
+    if (propType->IsShortType()) {
+        return propType->AsShortType()->GetValue();
+    }
+
+    if (propType->IsIntType()) {
+        return propType->AsIntType()->GetValue();
+    }
+
+    if (propType->IsLongType()) {
+        if (auto val = propType->AsLongType()->GetValue();
+            val <= std::numeric_limits<int32_t>::max() && val >= std::numeric_limits<int32_t>::min()) {
+            return static_cast<std::size_t>(val);
+        }
+        return std::nullopt;
+    }
+
+    ES2PANDA_UNREACHABLE();
 }
 
 bool MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
@@ -270,7 +304,9 @@ bool MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
             return false;
         }
         index = static_cast<std::size_t>(value);
-    } else if (number.IsReal()) {
+    } else {
+        ES2PANDA_ASSERT(number.IsReal());
+
         double value = number.GetDouble();
         double fraction = std::modf(value, &value);
         if (value < 0.0 || fraction >= std::numeric_limits<double>::epsilon()) {
@@ -278,8 +314,6 @@ bool MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
             return false;
         }
         index = static_cast<std::size_t>(value);
-    } else {
-        ES2PANDA_UNREACHABLE();
     }
 
     if (object_->IsArrayExpression() && object_->AsArrayExpression()->Elements().size() <= index) {
@@ -352,7 +386,7 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
     return signature->ReturnType();
 }
 
-checker::Type *MemberExpression::CheckTupleAccessMethod(checker::ETSChecker *checker, checker::Type *baseType)
+checker::Type *MemberExpression::GetTypeOfTupleElement(checker::ETSChecker *checker, checker::Type *baseType)
 {
     ES2PANDA_ASSERT(baseType->IsETSTupleType());
     checker::Type *type = nullptr;
@@ -367,19 +401,20 @@ checker::Type *MemberExpression::CheckTupleAccessMethod(checker::ETSChecker *che
     if (!idxIfAny.has_value()) {
         return nullptr;
     }
-    auto *const tupleTypeAtIdx = baseType->AsETSTupleType()->GetTypeAtIndex(*idxIfAny);
 
-    if ((!Parent()->IsAssignmentExpression() || Parent()->AsAssignmentExpression()->Left() != this) &&
-        (!Parent()->IsUpdateExpression())) {
-        // Error never should be thrown by this call, because LUB of types can be converted to any type which
-        // LUB was calculated by casting
-        const checker::CastingContext cast(
-            checker->Relation(), {"Tuple type couldn't be converted "},
-            checker::CastingContext::ConstructorData {this, baseType->AsETSTupleType()->GetLubType(), tupleTypeAtIdx,
-                                                      Start()});
-    }
+    return baseType->AsETSTupleType()->GetTypeAtIndex(*idxIfAny);
+}
 
-    return tupleTypeAtIdx;
+static void CastTupleElementFromClassMemberType(checker::ETSChecker *checker,
+                                                ir::MemberExpression *tupleElementAccessor, checker::Type *baseType)
+{
+    auto *typeOfTuple = tupleElementAccessor->GetTypeOfTupleElement(checker, baseType);
+    auto *storedTupleType = checker->MaybeBoxType(typeOfTuple);
+
+    const checker::CastingContext tupleCast(
+        checker->Relation(), {"this cast should never fail"},
+        checker::CastingContext::ConstructorData {tupleElementAccessor, storedTupleType, typeOfTuple,
+                                                  tupleElementAccessor->Start(), checker::TypeRelationFlag::NO_THROW});
 }
 
 checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, checker::Type *baseType)
@@ -408,15 +443,24 @@ checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, che
     }
 
     if (baseType->IsETSTupleType()) {
-        auto *dflt = baseType->AsETSTupleType()->GetLubType();
         if (!checker->ValidateTupleIndex(baseType->AsETSTupleType(), this)) {
             // error reported to log
-            return dflt;
+            return baseType;
         }
 
+        if (Parent()->IsAssignmentExpression() && Parent()->AsAssignmentExpression()->Left() == this) {
+            // NOTE (smartin): When an assignment to a tuple type happens, see it as the boxed (stored) type of the
+            // element. This can be removed, when generics without type erasure is possible
+            auto *typeOfTuple = GetTypeOfTupleElement(checker, baseType);
+            auto *storedTupleType = checker->MaybeBoxType(typeOfTuple);
+            return storedTupleType;
+        }
+
+        CastTupleElementFromClassMemberType(checker, this, baseType);
+
         // NOTE: apply capture conversion on this type
-        auto *res = CheckTupleAccessMethod(checker, baseType);
-        return (res == nullptr) ? dflt : res;
+        auto *res = GetTypeOfTupleElement(checker, baseType);
+        return (res == nullptr) ? baseType : res;
     }
 
     if (baseType->IsETSObjectType()) {

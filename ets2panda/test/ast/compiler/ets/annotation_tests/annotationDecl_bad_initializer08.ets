@@ -26,8 +26,8 @@ enum Size{S, M, L, XL, XXL}
 
 /* @@? 20:29 Error TypeError: Type 'int' cannot be assigned to type 'String' */
 /* @@? 21:30 Error TypeError: Type '"false"' cannot be assigned to type 'boolean' */
-/* @@? 22:39 Error TypeError: Array element type 'double' is not assignable to explicit type 'int' */
-/* @@? 22:44 Error TypeError: Array element type 'double' is not assignable to explicit type 'int' */
+/* @@? 22:39 Error TypeError: Array element at index 0 with type 'double' is not compatible with the target array element type 'int' */
+/* @@? 22:44 Error TypeError: Array element at index 1 with type 'double' is not compatible with the target array element type 'int' */
 /* @@? 23:28 Error TypeError: Type 'Size' cannot be assigned to type 'Color' */
-/* @@? 24:40 Error TypeError: Array element type 'Color' is not assignable to explicit type 'Size' */
-/* @@? 24:53 Error TypeError: Array element type 'Color' is not assignable to explicit type 'Size' */
+/* @@? 24:40 Error TypeError: Array element at index 0 with type 'Color' is not compatible with the target array element type 'Size' */
+/* @@? 24:53 Error TypeError: Array element at index 1 with type 'Color' is not compatible with the target array element type 'Size' */
