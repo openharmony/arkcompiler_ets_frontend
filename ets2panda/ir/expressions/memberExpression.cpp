@@ -259,6 +259,8 @@ checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checke
             return checker->InvalidateType(this);
         }
         uncheckedType_ = checker->GetApparentType(checker->MaybeBoxType(GetTypeOfTupleElement(checker, objType)));
+    } else if (objType->IsETSUnionType()) {
+        uncheckedType_ = checker->GuaranteedTypeForUnionFieldAccess(this, objType->AsETSUnionType());
     } else if (checker->IsExtensionAccessorFunctionType(type)) {
         SetTsType(type);
         checker::Type *accessorReturnType = checker->GetExtensionAccessorReturnType(this);
