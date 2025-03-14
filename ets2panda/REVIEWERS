@@ -57,6 +57,7 @@
 /ets2panda/checker/types/typeRelation.* ^vpukhov ^igelhaus ^Prof1983  @zelentsovdmitry
 /ets2panda/compiler/core/ @zelentsovdmitry ^vpukhov ^igelhaus ^Prof1983
 /ets2panda/test/test-lists/astchecker @chernykhsergey ^igelhaus ^Prof1983
+/ets2panda/test/test-lists/declgenets2ts @dreamdoomwalker ^hufeng20 ^igelhaus ^Prof1983
 /ets2panda/test/test-lists/parser @chernykhsergey ^igelhaus ^Prof1983
 /ets2panda/test/unit/lsp ^igelhaus ^Prof1983 @dreamdoomwalker @Ascnbio ^muhammet-fevzi-bayiroglu @utkugursel
 /ets2panda/checker/types/ets/Nullish.* ^vpukhov @gogabr ^igelhaus ^Prof1983
