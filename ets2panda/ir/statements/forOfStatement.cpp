@@ -163,7 +163,6 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
 
     ArenaVector<Expression *> arguments {checker->Allocator()->Adapter()};
     auto &signatures = checker->GetTypeOfVariable(method)->AsETSFunctionType()->CallSignatures();
-
     checker::Signature *signature = checker->ValidateSignatures(signatures, nullptr, arguments, position, "iterator",
                                                                 checker::TypeRelationFlag::NO_THROW);
     if (signature == nullptr) {
@@ -179,6 +178,12 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
         return nullptr;
     }
 
+    if (checker->IsClassStaticMethod(sourceType, signature)) {
+        checker->LogError(diagnostic::PROP_IS_STATIC, {compiler::Signatures::ITERATOR_METHOD, sourceType->Name()},
+                          position);
+        return nullptr;
+    }
+
     auto *const nextMethod =
         signature->ReturnType()->AsETSObjectType()->GetProperty(ITERATOR_INTERFACE_METHOD, searchFlag);
     if (nextMethod == nullptr || !nextMethod->HasFlag(varbinder::VariableFlags::METHOD)) {
@@ -187,7 +192,6 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
     }
 
     auto &nextSignatures = checker->GetTypeOfVariable(nextMethod)->AsETSFunctionType()->CallSignatures();
-
     auto const *const nextSignature = checker->ValidateSignatures(nextSignatures, nullptr, arguments, position,
                                                                   "iterator", checker::TypeRelationFlag::NO_THROW);
     if (nextSignature != nullptr && nextSignature->ReturnType()->IsETSObjectType()) {

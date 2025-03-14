@@ -343,6 +343,12 @@ Type *ETSChecker::CheckTypeCached(ir::Expression *expr)
     return expr->TsType();
 }
 
+bool ETSChecker::IsClassStaticMethod(checker::ETSObjectType *objType, checker::Signature *signature)
+{
+    return objType->HasObjectFlag(checker::ETSObjectFlags::CLASS) &&
+           signature->HasSignatureFlag(checker::SignatureFlags::STATIC);
+}
+
 template <typename... Args>
 ETSObjectType *ETSChecker::AsETSObjectType(Type *(GlobalTypesHolder::*typeFunctor)(Args...), Args... args) const
 {

@@ -768,6 +768,7 @@ public:
 
     // Static invoke
     void CheckInvokeMethodsLegitimacy(ETSObjectType *classType);
+    bool IsClassStaticMethod(checker::ETSObjectType *objType, checker::Signature *signature);
 
     // Covariant and contravariant
     void CheckTypeParameterVariance(ir::ClassDefinition *classDef);
