@@ -247,7 +247,10 @@ ir::Expression *ETSParser::ParseDefaultPrimaryExpression(ExpressionParseFlags fl
     bool pretendArrow = Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_ARROW;
     Lexer()->Rewind(savedPos);
 
-    if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT && !pretendArrow) {
+    if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
+        if (pretendArrow) {
+            return ParseArrowFunctionExpression();
+        }
         return ParsePrimaryExpressionIdent(flags);
     }
 

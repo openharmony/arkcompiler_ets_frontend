@@ -927,6 +927,13 @@ FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status)
     ir::TSTypeParameterDeclaration *typeParamDecl = ParseFunctionTypeParameters();
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
+        auto parameter = (status & ParserStatus::ARROW_FUNCTION) != 0 ? ParseFunctionParameter() : nullptr;
+        if (parameter != nullptr) {
+            ArenaVector<ir::Expression *> param(Allocator()->Adapter());
+            param.push_back(parameter);
+            auto res = ir::FunctionSignature(typeParamDecl, std::move(param), nullptr, false);
+            return {std::move(res), ir::ScriptFunctionFlags::NONE};
+        }
         LogExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     }
 

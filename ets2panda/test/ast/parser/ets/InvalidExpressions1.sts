@@ -76,10 +76,7 @@ let a = [1, 2, 3);
 /* @@? 24:24 Error SyntaxError: Unexpected token ')'. */
 /* @@? 24:25 Error SyntaxError: Unexpected token ':'. */
 /* @@? 24:25 Error SyntaxError: Unexpected token ':'. */
-/* @@? 24:27 Error SyntaxError: Unexpected token 'void'. */
-/* @@? 24:27 Error SyntaxError: Unexpected token 'void'. */
-/* @@? 24:32 Error SyntaxError: Unexpected token '=>'. */
-/* @@? 24:32 Error SyntaxError: Unexpected token '=>'. */
+/* @@? 24:27 Error TypeError: The type of parameter 'void' cannot be inferred */
 /* @@? 26:7 Error SyntaxError: Unexpected token '||='. */
 /* @@? 28:5 Error TypeError: Variable 'a' has already been declared. */
 /* @@? 28:16 Error TypeError: Bad operand type, the types of the operands must be numeric type, enum or String. */
