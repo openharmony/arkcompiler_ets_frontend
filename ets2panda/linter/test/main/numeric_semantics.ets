@@ -55,3 +55,53 @@ let f: number = 1
 let g = [1, 2, 3]
 
 let x!: number
+
+let t8 = Infinity
+
+let t9 = -Infinity;
+
+let t10 = NaN;
+
+let t11 = Number.MAX_VALUE;
+
+let t12 = Number.MIN_VALUE;
+
+let o:number = 123;
+
+const oo:number = 123;
+
+let o2 = o; 
+
+let o3 = oo; 
+
+class A{
+   a = 1;
+   constructor() {
+  }
+}
+
+let t2 = +123;
+
+let t3 = -234;
+
+let num = Math.floor(4.8); // num 可能是 int
+
+let value = parseInt("42"); // value 可能是 int
+
+
+function multiply(x = 2, y = 3) { 
+ return x * y;
+}
+
+function divide(x: number, y: number) {
+  return x / y;
+}
+
+function identity<T>(value: T): T {
+  return value;
+}
+identity(42);
+
+let an_array = [1,2,3]
+
+let g = an_array[]

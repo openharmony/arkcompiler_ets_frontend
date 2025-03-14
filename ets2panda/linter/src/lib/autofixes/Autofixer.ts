@@ -1248,6 +1248,7 @@ export class Autofixer {
       const text = this.getFixReturnTypeArrowFunction(funcLikeDecl, typeNode);
       const startPos = funcLikeDecl.getStart();
       const endPos = funcLikeDecl.getEnd();
+
       return [{ start: startPos, end: endPos, replacementText: text }];
     }
     const text = ': ' + this.printer.printNode(ts.EmitHint.Unspecified, typeNode, funcLikeDecl.getSourceFile());
@@ -2438,25 +2439,95 @@ export class Autofixer {
     return createCompanyFunction(expr);
   }
 
-  findVariableDeclaration(node: ts.VariableDeclaration): Autofix[] | undefined {
+  fixVariableDeclaration(node: ts.VariableDeclaration): Autofix[] | undefined {
     const initializer = node.initializer;
-    if (node.type || !initializer) {
-      return undefined;
-    }
     const name = node.name;
-    if (!ts.isIdentifier(name)) {
+    const sym = this.typeChecker.getSymbolAtLocation(name);
+    if (!sym) {
       return undefined;
     }
-    if (!ts.isNumericLiteral(initializer)) {
+
+    const type = this.typeChecker.getTypeOfSymbolAtLocation(sym, name);
+    const typeText = this.typeChecker.typeToString(type);
+
+    let typeNode: ts.TypeNode;
+    if (typeText === 'number') {
+      typeNode = ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
+    } else if (typeText === 'number[]') {
+      typeNode = ts.factory.createArrayTypeNode(ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword));
+    } else {
       return undefined;
     }
-    const newVarDecl = ts.factory.createVariableDeclaration(
-      name,
-      undefined,
+
+    const newVarDecl = ts.factory.createVariableDeclaration(name, undefined, typeNode, initializer);
+
+    const parent = node.parent;
+    if (!ts.isVariableDeclarationList(parent)) {
+      return undefined;
+    }
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, newVarDecl, node.getSourceFile());
+    return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];
+  }
+
+  fixParameter(param: ts.ParameterDeclaration): Autofix[] {
+    const newParam = ts.factory.createParameterDeclaration(
+      param.modifiers,
+      param.dotDotDotToken,
+      param.name,
+      param.questionToken,
       ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+      param.initializer
+    );
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, newParam, param.getSourceFile());
+    return [
+      {
+        start: param.getStart(),
+        end: param.getEnd(),
+        replacementText: text
+      }
+    ];
+  }
+
+  fixPropertyDeclaration(node: ts.PropertyDeclaration): Autofix[] | undefined {
+    const initializer = node.initializer;
+    if (initializer === undefined) {
+      return undefined;
+    }
+
+    const propType = this.typeChecker.getTypeAtLocation(node);
+    const propTypeNode = this.typeChecker.typeToTypeNode(propType, undefined, ts.NodeBuilderFlags.None);
+    if (!propTypeNode || !this.utils.isSupportedType(propTypeNode)) {
+      return undefined;
+    }
+
+    const questionOrExclamationToken: ts.ExclamationToken | ts.QuestionToken | undefined =
+      node.questionToken ?? node.exclamationToken ?? undefined;
+    const newPropDecl: ts.PropertyDeclaration = ts.factory.createPropertyDeclaration(
+      node.modifiers,
+      node.name,
+      questionOrExclamationToken,
+      propTypeNode,
       initializer
     );
-    const text = this.printer.printNode(ts.EmitHint.Unspecified, newVarDecl, node.getSourceFile());
-    return [{ start: node.getFullStart(), end: node.getEnd(), replacementText: text }];
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, newPropDecl, node.getSourceFile());
+    return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];
+  }
+
+  fixFunctionDeclarationly(
+    callExpr: ts.CallExpression,
+    resolvedTypeArgs: ts.NodeArray<ts.TypeNode>
+  ): Autofix[] | undefined {
+    if (callExpr.typeArguments && callExpr.typeArguments.length > 0) {
+      return undefined;
+    }
+    const newCallExpr = ts.factory.createCallExpression(callExpr.expression, resolvedTypeArgs, callExpr.arguments);
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, newCallExpr, callExpr.getSourceFile());
+    return [
+      {
+        start: callExpr.getStart(),
+        end: callExpr.getEnd(),
+        replacementText: text
+      }
+    ];
   }
 }

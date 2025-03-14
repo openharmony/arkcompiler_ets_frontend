@@ -15,174 +15,64 @@
   ],
   "result": [
     {
-      "line": 15,
-      "column": 5,
-      "endLine": 15,
-      "endColumn": 28,
-      "problem": "ExplicitFunctionType",
-      "suggest": "",
-      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-      "severity": "ERROR"
+        "line": 15,
+        "column": 5,
+        "endLine": 15,
+        "endColumn": 28,
+        "problem": "ExplicitFunctionType",
+        "suggest": "",
+        "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+        "severity": "ERROR"
     },
     {
-            "line": 15,
-            "column": 5,
-            "endLine": 15,
-            "endColumn": 28,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 16,
-            "column": 5,
-            "endLine": 16,
-            "endColumn": 33,
-            "problem": "ExplicitFunctionType",
-            "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 16,
-            "column": 5,
-            "endLine": 16,
-            "endColumn": 33,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 16,
-            "column": 20,
-            "endLine": 16,
-            "endColumn": 33,
-            "problem": "FunctionExpression",
-            "suggest": "",
-            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 17,
-            "column": 5,
-            "endLine": 17,
-            "endColumn": 45,
-            "problem": "ExplicitFunctionType",
-            "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 17,
-            "column": 5,
-            "endLine": 17,
-            "endColumn": 45,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 5,
-            "endLine": 18,
-            "endColumn": 23,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 10,
-            "endLine": 18,
-            "endColumn": 23,
-            "problem": "FunctionExpression",
-            "suggest": "",
-            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 5,
-            "endLine": 19,
-            "endColumn": 35,
-            "problem": "ExplicitFunctionType",
-            "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 5,
-            "endLine": 19,
-            "endColumn": 35,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 20,
-            "column": 5,
-            "endLine": 20,
-            "endColumn": 18,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 21,
-            "column": 5,
-            "endLine": 21,
-            "endColumn": 30,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 28,
-            "column": 5,
-            "endLine": 28,
-            "endColumn": 27,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 29,
-            "column": 5,
-            "endLine": 29,
-            "endColumn": 29,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 30,
-            "column": 5,
-            "endLine": 30,
-            "endColumn": 53,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 31,
-            "column": 5,
-            "endLine": 31,
-            "endColumn": 76,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        }
+        "line": 16,
+        "column": 5,
+        "endLine": 16,
+        "endColumn": 33,
+        "problem": "ExplicitFunctionType",
+        "suggest": "",
+        "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 16,
+        "column": 20,
+        "endLine": 16,
+        "endColumn": 33,
+        "problem": "FunctionExpression",
+        "suggest": "",
+        "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 17,
+        "column": 5,
+        "endLine": 17,
+        "endColumn": 45,
+        "problem": "ExplicitFunctionType",
+        "suggest": "",
+        "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 18,
+        "column": 10,
+        "endLine": 18,
+        "endColumn": 23,
+        "problem": "FunctionExpression",
+        "suggest": "",
+        "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 19,
+        "column": 5,
+        "endLine": 19,
+        "endColumn": 35,
+        "problem": "ExplicitFunctionType",
+        "suggest": "",
+        "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+        "severity": "ERROR"
+    }
     ]
 }

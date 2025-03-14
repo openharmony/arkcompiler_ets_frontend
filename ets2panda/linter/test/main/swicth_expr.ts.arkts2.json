@@ -13,176 +13,116 @@
     "See the License for the specific language governing permissions and",
     "limitations under the License."
   ],
-  "result": [
-    {
-      "line": 16,
-      "column": 7,
-      "endLine": 16,
-      "endColumn": 20,
-      "problem": "NumericSemantics",
-      "suggest": "",
-      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 17,
-      "column": 9,
-      "endLine": 17,
-      "endColumn": 15,
-      "problem": "SwitchExpression",
-      "suggest": "",
-      "rule": "The switch expression type must be of type number,string or enum (arkts-switch-expr)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 26,
-      "column": 5,
-      "endLine": 26,
-      "endColumn": 32,
-      "problem": "NumericSemantics",
-      "suggest": "",
-      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 26,
-      "column": 16,
-      "endLine": 26,
-      "endColumn": 17,
-      "problem": "ObjectLiteralNoContextType",
-      "suggest": "",
-      "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 28,
-      "column": 9,
-      "endLine": 28,
-      "endColumn": 17,
-      "problem": "SwitchExpression",
-      "suggest": "",
-      "rule": "The switch expression type must be of type number,string or enum (arkts-switch-expr)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 29,
-      "column": 8,
-      "endLine": 29,
-      "endColumn": 9,
-      "problem": "ObjectLiteralNoContextType",
-      "suggest": "",
-      "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 36,
-      "column": 5,
-      "endLine": 36,
-      "endColumn": 27,
-      "problem": "NumericSemantics",
-      "suggest": "",
-      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 38,
-      "column": 9,
-      "endLine": 38,
-      "endColumn": 19,
-      "problem": "SwitchExpression",
-      "suggest": "",
-      "rule": "The switch expression type must be of type number,string or enum (arkts-switch-expr)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 46,
-      "column": 7,
-      "endLine": 46,
-      "endColumn": 19,
-      "problem": "NumericSemantics",
-      "suggest": "",
-      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 56,
-      "column": 7,
-      "endLine": 56,
-      "endColumn": 18,
-      "problem": "NumericSemantics",
-      "suggest": "",
-      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 70,
-      "column": 7,
-      "endLine": 70,
-      "endColumn": 20,
-      "problem": "NumericSemantics",
-      "suggest": "",
-      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 80,
-      "column": 7,
-      "endLine": 80,
-      "endColumn": 21,
-      "problem": "NumericSemantics",
-      "suggest": "",
-      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 81,
-      "column": 9,
-      "endLine": 81,
-      "endColumn": 16,
-      "problem": "SwitchExpression",
-      "suggest": "",
-      "rule": "The switch expression type must be of type number,string or enum (arkts-switch-expr)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 90,
-      "column": 7,
-      "endLine": 90,
-      "endColumn": 27,
-      "problem": "NumericSemantics",
-      "suggest": "",
-      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 91,
-      "column": 9,
-      "endLine": 91,
-      "endColumn": 16,
-      "problem": "SwitchExpression",
-      "suggest": "",
-      "rule": "The switch expression type must be of type number,string or enum (arkts-switch-expr)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 100,
-      "column": 7,
-      "endLine": 100,
-      "endColumn": 33,
-      "problem": "NumericSemantics",
-      "suggest": "",
-      "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-      "severity": "ERROR"
-    },
-    {
-      "line": 101,
-      "column": 9,
-      "endLine": 101,
-      "endColumn": 16,
-      "problem": "SwitchExpression",
-      "suggest": "",
-      "rule": "The switch expression type must be of type number,string or enum (arkts-switch-expr)",
-      "severity": "ERROR"
-    }
-  ]
+ "result": [
+        {
+            "line": 17,
+            "column": 9,
+            "endLine": 17,
+            "endColumn": 15,
+            "problem": "SwitchExpression",
+            "suggest": "",
+            "rule": "The switch expression type must be of type number,string or enum (arkts-switch-expr)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 16,
+            "endLine": 26,
+            "endColumn": 17,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 9,
+            "endLine": 28,
+            "endColumn": 17,
+            "problem": "SwitchExpression",
+            "suggest": "",
+            "rule": "The switch expression type must be of type number,string or enum (arkts-switch-expr)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 29,
+            "column": 8,
+            "endLine": 29,
+            "endColumn": 9,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 5,
+            "endLine": 36,
+            "endColumn": 27,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 9,
+            "endLine": 38,
+            "endColumn": 19,
+            "problem": "SwitchExpression",
+            "suggest": "",
+            "rule": "The switch expression type must be of type number,string or enum (arkts-switch-expr)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 81,
+            "column": 9,
+            "endLine": 81,
+            "endColumn": 16,
+            "problem": "SwitchExpression",
+            "suggest": "",
+            "rule": "The switch expression type must be of type number,string or enum (arkts-switch-expr)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 90,
+            "column": 7,
+            "endLine": 90,
+            "endColumn": 27,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 91,
+            "column": 9,
+            "endLine": 91,
+            "endColumn": 16,
+            "problem": "SwitchExpression",
+            "suggest": "",
+            "rule": "The switch expression type must be of type number,string or enum (arkts-switch-expr)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 100,
+            "column": 7,
+            "endLine": 100,
+            "endColumn": 33,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 101,
+            "column": 9,
+            "endLine": 101,
+            "endColumn": 16,
+            "problem": "SwitchExpression",
+            "suggest": "",
+            "rule": "The switch expression type must be of type number,string or enum (arkts-switch-expr)",
+            "severity": "ERROR"
+        }
+    ]
 }

@@ -29,7 +29,7 @@ function foo(index:number){
   let j = an_array[0]
   let k = an_array[Number.MAX_VALUE]
   let l = an_array[Number.MIN_VALUE]
-  let m = an_array[Number.EPSILON]
+  let m = an_array[Number.MAX_SAFE_INTEGER]
 }
 
 let array = [1,2,3]
@@ -54,3 +54,19 @@ let array2 = [1, 2, 3];
 for (let i: number = 0; i < array2.length; i++) {
   console.log(array2[i]);
 }
+
+for (let i: int = 0; i < array2.length; i++) {
+  console.log(array2[i]);
+}
+
+let arr1:number[] = [1, 2, 3]
+enum TE{
+  AA = 1.12
+  BB = 0
+}
+arr1[TE.AA];
+arr1[TE.BB];
+arr1[+0];
+arr1[-0];
+arr1[+1];
+arr1[-1];

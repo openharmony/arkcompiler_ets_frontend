@@ -87,8 +87,8 @@ function parseCommand(program: Command, cmdArgs: string[]): ParsedCommand {
   };
 }
 
-function formOptionPaths(cmdlOptions: CommandLineOptions, options:OptionValues): CommandLineOptions {
-  let opts = cmdlOptions;
+function formOptionPaths(cmdlOptions: CommandLineOptions, options: OptionValues): CommandLineOptions {
+  const opts = cmdlOptions;
   if (options.sdkExternalApiPath) {
     opts.sdkExternalApiPath = options.sdkExternalApiPath;
   }

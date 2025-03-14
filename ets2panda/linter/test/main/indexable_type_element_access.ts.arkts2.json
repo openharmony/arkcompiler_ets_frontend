@@ -15,16 +15,6 @@
     ],
     "result": [
         {
-            "line": 21,
-            "column": 5,
-            "endLine": 21,
-            "endColumn": 34,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 23,
             "column": 1,
             "endLine": 23,
@@ -35,16 +25,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 28,
-            "column": 5,
-            "endLine": 28,
-            "endColumn": 34,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 29,
             "column": 12,
             "endLine": 29,
@@ -52,16 +32,6 @@
             "problem": "PropertyAccessByIndex",
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 39,
-            "column": 5,
-            "endLine": 39,
-            "endColumn": 43,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

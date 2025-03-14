@@ -70,7 +70,6 @@ export function createCompilerHost(
 }
 
 function getResolveModule(modulePath: string, type: string): ts.ResolvedModuleFull {
-
   return {
     resolvedFileName: modulePath,
     isExternalLibraryImport: false,

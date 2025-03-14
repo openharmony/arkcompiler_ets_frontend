@@ -25,26 +25,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 16,
-            "column": 5,
-            "endLine": 16,
-            "endColumn": 15,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 24,
-            "column": 5,
-            "endLine": 24,
-            "endColumn": 14,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 33,
             "column": 3,
             "endLine": 33,
@@ -52,16 +32,6 @@
             "problem": "DefiniteAssignmentError",
             "suggest": "",
             "rule": "Definite assignment assertions are not supported (arkts-no-definite-assignment)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 48,
-            "column": 5,
-            "endLine": 54,
-            "endColumn": 2,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

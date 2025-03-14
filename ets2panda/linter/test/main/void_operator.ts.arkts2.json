@@ -86,16 +86,6 @@
         },
         {
             "line": 28,
-            "column": 7,
-            "endLine": 28,
-            "endColumn": 31,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 28,
             "column": 25,
             "endLine": 28,
             "endColumn": 29,
@@ -106,32 +96,12 @@
         },
         {
             "line": 30,
-            "column": 7,
-            "endLine": 30,
-            "endColumn": 43,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 30,
             "column": 37,
             "endLine": 30,
             "endColumn": 41,
             "problem": "VoidOperator",
             "suggest": "",
             "rule": "\"void\" operator is not supported (arkts-no-void-operator)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 32,
-            "column": 7,
-            "endLine": 32,
-            "endColumn": 52,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

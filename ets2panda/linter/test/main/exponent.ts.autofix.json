@@ -20,6 +20,13 @@
             "endLine": 16,
             "endColumn": 24,
             "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 609,
+                    "end": 628,
+                    "replacementText": "kk: number = Math.pow(6, 3)"
+                }
+            ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
@@ -40,6 +47,13 @@
             "endLine": 19,
             "endColumn": 15,
             "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 652,
+                    "end": 662,
+                    "replacementText": "k: number = 5 ** 2"
+                }
+            ],
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
