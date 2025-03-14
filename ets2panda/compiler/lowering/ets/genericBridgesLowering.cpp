@@ -89,6 +89,7 @@ void GenericBridgesPhase::AddGenericBridge(ir::ClassDefinition const *const clas
     auto *const bridgeMethod =
         parser->CreateFormattedClassMethodDefinition(sourceCode, typeNodes)->AsMethodDefinition();
     bridgeMethod->AddModifier(methodDefinition->Modifiers());
+    bridgeMethod->ClearModifier(ir::ModifierFlags::NATIVE | ir::ModifierFlags::ABSTRACT);
     bridgeMethod->AddAstNodeFlags(methodDefinition->GetAstNodeFlags());
     bridgeMethod->SetParent(const_cast<ir::ClassDefinition *>(classDefinition));
 
@@ -189,11 +190,10 @@ void GenericBridgesPhase::MaybeAddGenericBridges(ir::ClassDefinition const *cons
 }
 
 void GenericBridgesPhase::CreateGenericBridges(ir::ClassDefinition const *const classDefinition,
-                                               Substitutions &substitutions) const
+                                               Substitutions &substitutions,
+                                               ArenaVector<ir::AstNode *> const &items) const
 {
     auto const &classBody = classDefinition->Body();
-    auto const *const superDefinition =
-        classDefinition->Super()->TsType()->AsETSObjectType()->GetDeclNode()->AsClassDefinition();
 
     //  Collect type parameters defaults/constraints in the derived class
     auto *checker = context_->checker->AsETSChecker();
@@ -207,9 +207,9 @@ void GenericBridgesPhase::CreateGenericBridges(ir::ClassDefinition const *const 
                                     typeParameter->GetConstraintType());
     }
 
-    for (auto *item : superDefinition->Body()) {
+    for (auto *item : items) {
         if (item->IsMethodDefinition()) {
-            // Skip `static`, `final`, `abstract` and special methods...
+            // Skip `static`, `final` and special methods...
             auto *const method = item->AsMethodDefinition();
             if (method->Kind() != ir::MethodDefinitionKind::METHOD || method->IsStatic() || method->IsFinal() ||
                 method->Id()->Name().Utf8().find("lambda$invoke$") != std::string_view::npos) {
@@ -228,22 +228,10 @@ void GenericBridgesPhase::CreateGenericBridges(ir::ClassDefinition const *const 
     }
 }
 
-ir::ClassDefinition *GenericBridgesPhase::ProcessClassDefinition(ir::ClassDefinition *const classDefinition) const
+GenericBridgesPhase::Substitutions GenericBridgesPhase::GetSubstitutions(
+    checker::ETSObjectType const *const objectType, ArenaVector<checker::Type *> const &typeParameters) const noexcept
 {
-    if (classDefinition->Super() == nullptr || classDefinition->Super()->TsType() == nullptr ||
-        !classDefinition->Super()->TsType()->IsETSObjectType()) {
-        return classDefinition;
-    }
-
-    //  First we need to check if the base class is a generic class.
-    auto const *const superType = classDefinition->Super()->TsType()->AsETSObjectType();
-
-    auto const &typeParameters = superType->GetConstOriginalBaseType()->AsETSObjectType()->TypeArguments();
-    if (typeParameters.empty()) {
-        return classDefinition;
-    }
-
-    auto const &typeArguments = superType->TypeArguments();
+    auto const &typeArguments = objectType->TypeArguments();
     auto const parameterNumber = typeParameters.size();
     ES2PANDA_ASSERT(parameterNumber == typeArguments.size());
 
@@ -252,8 +240,8 @@ ir::ClassDefinition *GenericBridgesPhase::ProcessClassDefinition(ir::ClassDefini
     substitutions.derivedSubstitutions = checker->NewSubstitution();
     substitutions.baseConstraints = checker->NewSubstitution();
 
-    //  Then we need to check if the class derived from base generic class has either explicit class type substitutions
-    //  or the type parameters with narrowing constraints.
+    //  We need to check if the class derived from base generic class (or implementing generic interface)
+    //  has either explicit class type substitutions or type parameters with narrowing constraints.
     for (std::size_t i = 0U; i < parameterNumber; ++i) {
         auto *const typeParameter = typeParameters[i]->AsETSTypeParameter();
         checker::Type *const typeArgument = typeArguments[i];
@@ -269,9 +257,52 @@ ir::ClassDefinition *GenericBridgesPhase::ProcessClassDefinition(ir::ClassDefini
         }
     }
 
-    // If it has, then probably the generic bridges should be created.
-    if (!substitutions.derivedSubstitutions->empty()) {
-        CreateGenericBridges(classDefinition, substitutions);
+    return substitutions;
+}
+
+void GenericBridgesPhase::ProcessInterfaces(ir::ClassDefinition *const classDefinition,
+                                            ArenaVector<checker::ETSObjectType *> const &interfaces) const
+{
+    for (auto const *interfaceType : interfaces) {
+        if (auto const &typeParameters = interfaceType->GetConstOriginalBaseType()->AsETSObjectType()->TypeArguments();
+            !typeParameters.empty()) {
+            if (Substitutions substitutions = GetSubstitutions(interfaceType, typeParameters);
+                !substitutions.derivedSubstitutions->empty()) {
+                ES2PANDA_ASSERT(interfaceType->GetDeclNode()->IsTSInterfaceDeclaration());
+                auto const &interfaceBody = interfaceType->GetDeclNode()->AsTSInterfaceDeclaration()->Body()->Body();
+                CreateGenericBridges(classDefinition, substitutions, interfaceBody);
+            }
+        }
+
+        ProcessInterfaces(classDefinition, interfaceType->Interfaces());
+    }
+}
+
+ir::ClassDefinition *GenericBridgesPhase::ProcessClassDefinition(ir::ClassDefinition *const classDefinition) const
+{
+    //  Check class interfaces.
+    ProcessInterfaces(classDefinition, classDefinition->TsType()->AsETSObjectType()->Interfaces());
+
+    //  Check if the base class is a generic class.
+    if (classDefinition->Super() == nullptr || classDefinition->Super()->TsType() == nullptr ||
+        !classDefinition->Super()->TsType()->IsETSObjectType()) {
+        return classDefinition;
+    }
+
+    auto const *const superType = classDefinition->Super()->TsType()->AsETSObjectType();
+    auto const &typeParameters = superType->GetConstOriginalBaseType()->AsETSObjectType()->TypeArguments();
+    if (typeParameters.empty()) {
+        return classDefinition;
+    }
+
+    //  Check if the class derived from base generic class has either explicit class type substitutions
+    //  or type parameters with narrowing constraints.
+    if (Substitutions substitutions = GetSubstitutions(superType, typeParameters);
+        !substitutions.derivedSubstitutions->empty()) {
+        // If it has, then probably the generic bridges should be created.
+        auto const &superClassBody =
+            classDefinition->Super()->TsType()->AsETSObjectType()->GetDeclNode()->AsClassDefinition()->Body();
+        CreateGenericBridges(classDefinition, substitutions, superClassBody);
     }
 
     return classDefinition;
