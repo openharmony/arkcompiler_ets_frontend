@@ -736,6 +736,17 @@ void ETSChecker::SearchAmongMostSpecificTypes(Type *&mostSpecificType, Signature
     }
 }
 
+static void CollectSuitableSignaturesForTypeInference(size_t paramIdx, ArenaVector<Signature *> &signatures,
+                                                      ArenaMultiMap<size_t, Signature *> &bestSignaturesForParameter)
+{
+    for (auto *sig : signatures) {
+        if (paramIdx >= sig->Params().size() || !sig->Params().at(paramIdx)->TsType()->IsETSObjectType() ||
+            !sig->Params().at(paramIdx)->TsType()->AsETSObjectType()->IsGlobalETSObjectType()) {
+            bestSignaturesForParameter.insert({paramIdx, sig});
+        }
+    }
+}
+
 ArenaMultiMap<size_t, Signature *> ETSChecker::GetSuitableSignaturesForParameter(
     const std::vector<bool> &argTypeInferenceRequired, size_t paramCount, ArenaVector<Signature *> &signatures,
     const lexer::SourcePosition &pos)
@@ -748,9 +759,7 @@ ArenaMultiMap<size_t, Signature *> ETSChecker::GetSuitableSignaturesForParameter
 
     for (size_t i = 0; i < paramCount; ++i) {
         if (i >= argTypeInferenceRequired.size() || argTypeInferenceRequired[i]) {
-            for (auto *sig : signatures) {
-                bestSignaturesForParameter.insert({i, sig});
-            }
+            CollectSuitableSignaturesForTypeInference(i, signatures, bestSignaturesForParameter);
             continue;
         }
         // 1st step: check which is the most specific parameter type for i. parameter.
