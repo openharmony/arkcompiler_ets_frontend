@@ -255,6 +255,8 @@ checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checke
         uncheckedType_ = checker->GuaranteedTypeForUncheckedCast(objType->AsETSArrayType()->ElementType(), type);
     } else if (IsComputed() && objType->IsETSTupleType()) {
         uncheckedType_ = checker->GuaranteedTypeForUncheckedCast(objType->AsETSTupleType()->GetLubType(), type);
+    } else if (objType->IsETSUnionType()) {
+        uncheckedType_ = checker->GuaranteedTypeForUnionFieldAccess(this, objType->AsETSUnionType());
     } else if (checker->IsExtensionAccessorFunctionType(type)) {
         SetTsType(type);
         checker::Type *accessorReturnType = checker->GetExtensionAccessorReturnType(this);

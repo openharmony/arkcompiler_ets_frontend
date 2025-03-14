@@ -169,6 +169,7 @@ public:
     Type *GuaranteedTypeForUncheckedCast(Type *base, Type *substituted);
     Type *GuaranteedTypeForUncheckedCallReturn(Signature *sig);
     Type *GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *prop);
+    Type *GuaranteedTypeForUnionFieldAccess(ir::MemberExpression *memberExpression, ETSUnionType *etsUnionType);
 
     [[nodiscard]] bool IsETSChecker() const noexcept override
     {
@@ -944,6 +945,8 @@ private:
     ETSObjectType *UpdateGlobalType(ETSObjectType *objType, util::StringView name);
     void CheckProgram(parser::Program *program, bool runAnalysis = false);
     void CheckWarnings(parser::Program *program, const util::Options &options);
+
+    Type *ResolveUnionUncheckedType(ArenaVector<checker::Type *> &&apparentTypes);
 
     bool ComputeSuperType(ETSObjectType *type);
 

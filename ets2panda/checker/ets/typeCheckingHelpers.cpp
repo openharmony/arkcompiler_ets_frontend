@@ -638,6 +638,44 @@ Type *ETSChecker::GuaranteedTypeForUncheckedCallReturn(Signature *sig)
     return GuaranteedTypeForUncheckedCast(MaybeBoxType(baseSig->ReturnType()), MaybeBoxType(sig->ReturnType()));
 }
 
+Type *ETSChecker::ResolveUnionUncheckedType(ArenaVector<checker::Type *> &&apparentTypes)
+{
+    if (apparentTypes.empty()) {
+        return nullptr;
+    }
+    auto *unionType = CreateETSUnionType(std::move(apparentTypes));
+    if (unionType->IsETSUnionType()) {
+        checker::Type *typeLUB = unionType->AsETSUnionType()->GetAssemblerLUB();
+        return typeLUB;
+    }
+    // Is case of single apparent type, just return itself
+    return unionType;
+}
+
+Type *ETSChecker::GuaranteedTypeForUnionFieldAccess(ir::MemberExpression *memberExpression, ETSUnionType *etsUnionType)
+{
+    const auto &types = etsUnionType->ConstituentTypes();
+    ArenaVector<checker::Type *> apparentTypes {Allocator()->Adapter()};
+    const auto &propertyName = memberExpression->Property()->AsIdentifier()->Name();
+    for (auto *type : types) {
+        auto searchFlags = PropertySearchFlags::SEARCH_FIELD | PropertySearchFlags::SEARCH_METHOD |
+                           PropertySearchFlags::SEARCH_IN_BASE;
+        if (!type->IsETSObjectType()) {
+            return nullptr;
+        }
+        auto *fieldVar = type->AsETSObjectType()->GetProperty(propertyName, searchFlags);
+        if (fieldVar == nullptr) {
+            return nullptr;
+        }
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        auto *fieldType = GuaranteedTypeForUncheckedPropertyAccess(fieldVar);
+        if (fieldType != nullptr) {
+            apparentTypes.push_back(fieldType);
+        }
+    }
+    return ResolveUnionUncheckedType(std::move(apparentTypes));
+}
+
 bool ETSChecker::IsAllowedTypeAliasRecursion(const ir::TSTypeAliasDeclaration *typeAliasNode,
                                              std::unordered_set<const ir::TSTypeAliasDeclaration *> &typeAliases)
 {
