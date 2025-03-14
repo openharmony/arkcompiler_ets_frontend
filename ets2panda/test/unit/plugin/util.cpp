@@ -18,6 +18,7 @@
 #include <cstddef>
 #include <ostream>
 #include <string>
+#include <algorithm>
 
 static es2panda_Impl *g_implPtr = nullptr;
 
@@ -58,4 +59,43 @@ void CheckForErrors(const std::string &stateName, es2panda_Context *context)
     } else {
         std::cout << "PROCEED TO " << stateName << " SUCCESS" << std::endl;
     }
+}
+
+es2panda_AstNode *CreateIdentifierFromString(es2panda_Context *context, const std::string_view &name)
+{
+    auto impl = GetImpl();
+    auto *memForName = static_cast<char *>(impl->AllocMemory(context, name.size() + 1, 1));
+    std::copy_n(name.data(), name.size() + 1, memForName);
+    auto *identifier = impl->CreateIdentifier1(context, memForName);
+    return identifier;
+}
+
+void AppendStatementToProgram(es2panda_Context *context, es2panda_AstNode *program, es2panda_AstNode *newStatement)
+{
+    auto impl = GetImpl();
+    size_t sizeOfStatements = 0;
+    auto *statements = impl->BlockStatementStatements(context, program, &sizeOfStatements);
+    es2panda_AstNode **newStatements =
+        static_cast<es2panda_AstNode **>(impl->AllocMemory(context, sizeOfStatements + 1, sizeof(es2panda_AstNode *)));
+    for (size_t i = 0; i < sizeOfStatements; i++) {
+        newStatements[i] = statements[i];
+    }
+    newStatements[sizeOfStatements] = newStatement;
+    impl->BlockStatementSetStatements(context, program, newStatements, sizeOfStatements + 1);
+    impl->AstNodeSetParent(context, newStatement, program);
+}
+
+void PrependStatementToProgram(es2panda_Context *context, es2panda_AstNode *program, es2panda_AstNode *newStatement)
+{
+    auto impl = GetImpl();
+    size_t sizeOfStatements = 0;
+    auto *statements = impl->BlockStatementStatements(context, program, &sizeOfStatements);
+    es2panda_AstNode **newStatements =
+        static_cast<es2panda_AstNode **>(impl->AllocMemory(context, sizeOfStatements + 1, sizeof(es2panda_AstNode *)));
+    for (size_t i = 0; i < sizeOfStatements; i++) {
+        newStatements[i + 1] = statements[i];
+    }
+    newStatements[0] = newStatement;
+    impl->BlockStatementSetStatements(context, program, newStatements, sizeOfStatements + 1);
+    impl->AstNodeSetParent(context, newStatement, program);
 }
