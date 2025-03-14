@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
 import { ExportLitAsPropName } from './ignore_files/good';
 
 enum LiteralAsPropertyNameEnum {
@@ -85,4 +85,15 @@ const imp: ExportLitAsPropName = { 1: 234 };
 
 LiteralAsPropertyNameEnum['One']
 
-LiteralAsPropertyNameEnum['PrivateTwo']
+LiteralAsPropertyNameEnum['PrivateTwo'];
+
+{
+  const enum Direction {
+   "" = 1,
+  }
+}
+
+const enum Direction16 {
+  "\\" = 1,
+  "__x5c" = 1,
+}

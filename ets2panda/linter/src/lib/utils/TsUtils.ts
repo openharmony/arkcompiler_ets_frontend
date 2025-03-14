@@ -2644,6 +2644,9 @@ export class TsUtils {
   }
 
   private static getIdentifierNameFromString(str: string): string | undefined {
+    if (str === '') {
+      return '__empty';
+    }
     let result: string = '';
 
     let offset = 0;

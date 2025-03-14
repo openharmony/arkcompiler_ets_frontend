@@ -227,7 +227,8 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.ArrayType, this.handleArrayType],
     [ts.SyntaxKind.LiteralType, this.handleLimitedLiteralType],
     [ts.SyntaxKind.NonNullExpression, this.handleNonNullExpression],
-    [ts.SyntaxKind.HeritageClause, this.checkExtendsExpression]
+    [ts.SyntaxKind.HeritageClause, this.checkExtendsExpression],
+    [ts.SyntaxKind.TaggedTemplateExpression, this.handleTaggedTemplatesExpression]
   ]);
 
   private getLineAndCharacterOfNode(node: ts.Node | ts.CommentRange): ts.LineAndCharacter {
@@ -311,7 +312,11 @@ export class TypeScriptLinter {
     }
   }
 
-  private incrementCountersIdeInteractiveMode(node: ts.Node | ts.CommentRange, faultId: number, autofix?: Autofix[]): void {
+  private incrementCountersIdeInteractiveMode(
+    node: ts.Node | ts.CommentRange,
+    faultId: number,
+    autofix?: Autofix[]
+  ): void {
     if (!this.options.ideInteractive) {
       return;
     }
@@ -888,7 +893,7 @@ export class TypeScriptLinter {
     this.handleSendableClassProperty(node);
     this.checkAssignmentNumericSemanticslyPro(node);
     this.handleInvalidIdentifier(node);
-    this.handleExplicitFunctionType(node)
+    this.handleExplicitFunctionType(node);
   }
 
   private handleSendableClassProperty(node: ts.PropertyDeclaration): void {
@@ -992,7 +997,11 @@ export class TypeScriptLinter {
     }
   }
 
-  private visitInterfaceMembers(interfaces: ts.InterfaceDeclaration[], interfaceName: string, propertyName: string): void {
+  private visitInterfaceMembers(
+    interfaces: ts.InterfaceDeclaration[],
+    interfaceName: string,
+    propertyName: string
+  ): void {
     void this;
     interfaces.some((interfaceDecl) => {
       const implementsClause = this.getExtendsClause(interfaceDecl);
@@ -2481,8 +2490,7 @@ export class TypeScriptLinter {
     const constVal = this.tsTypeChecker.getConstantValue(tsEnumMember);
     const tsEnumMemberName = tsEnumMember.name;
     if (this.options.arkts2 && ts.isStringLiteral(tsEnumMemberName)) {
-      const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(tsEnumMemberName);
-      this.incrementCounters(node, FaultID.LiteralAsPropertyName, autofix);
+      this.handleStringLiteralEnumMember(tsEnumMember, tsEnumMemberName, node);
     }
 
     if (tsEnumMember.initializer && !this.tsUtils.isValidEnumMemberInit(tsEnumMember.initializer)) {
@@ -2518,6 +2526,16 @@ export class TypeScriptLinter {
     if (firstEnumMemberType !== tsEnumMemberType) {
       this.incrementCounters(node, FaultID.EnumMemberNonConstInit);
     }
+  }
+
+  private handleStringLiteralEnumMember(
+    tsEnumMember: ts.EnumMember,
+    tsEnumMemberName: ts.StringLiteral,
+    node: ts.Node
+  ): void {
+    const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(tsEnumMemberName);
+    this.autofixer?.checkEnumMemberNameConflict(tsEnumMember, autofix);
+    this.incrementCounters(node, FaultID.LiteralAsPropertyName, autofix);
   }
 
   private handleEnumNotSupportFloat(enumMember: ts.EnumMember): void {
@@ -4137,7 +4155,8 @@ export class TypeScriptLinter {
   }
 
   private handleInvalidIdentifier(
-    decl: ts.VariableDeclaration
+    decl:
+      | ts.VariableDeclaration
       | ts.FunctionDeclaration
       | ts.MethodSignature
       | ts.ClassDeclaration
@@ -4150,13 +4169,13 @@ export class TypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
-  
-    const checkIdentifier = (identifier: ts.Identifier | undefined) => {
+
+    const checkIdentifier = (identifier: ts.Identifier | undefined): void => {
       if (identifier && INVALID_IDENTIFIER_KEYWORDS.includes(identifier.text)) {
         this.incrementCounters(decl, FaultID.InvalidIdentifier);
       }
-    }
-  
+    };
+
     if (ts.isImportDeclaration(decl)) {
       const importClause = decl.importClause;
       if (importClause?.namedBindings && ts.isNamedImports(importClause?.namedBindings)) {

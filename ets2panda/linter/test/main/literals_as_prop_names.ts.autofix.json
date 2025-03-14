@@ -23,13 +23,13 @@
             "autofix": [
                 {
                     "replacementText": "PrivateTwo",
-                    "start": 720,
-                    "end": 732
+                    "start": 721,
+                    "end": 733
                 },
                 {
                     "replacementText": "LiteralAsPropertyNameEnum.PrivateTwo",
-                    "start": 1918,
-                    "end": 1957
+                    "start": 1919,
+                    "end": 1958
                 }
             ],
             "suggest": "",
@@ -45,18 +45,18 @@
             "autofix": [
                 {
                     "replacementText": "__2",
-                    "start": 835,
-                    "end": 836
+                    "start": 836,
+                    "end": 837
                 },
                 {
                     "replacementText": "__2",
-                    "start": 927,
-                    "end": 928
+                    "start": 928,
+                    "end": 929
                 },
                 {
                     "replacementText": "litAsPropName.__2",
-                    "start": 1000,
-                    "end": 1016
+                    "start": 1001,
+                    "end": 1017
                 }
             ],
             "suggest": "",
@@ -72,18 +72,18 @@
             "autofix": [
                 {
                     "replacementText": "__2",
-                    "start": 835,
-                    "end": 836
+                    "start": 836,
+                    "end": 837
                 },
                 {
                     "replacementText": "__2",
-                    "start": 927,
-                    "end": 928
+                    "start": 928,
+                    "end": 929
                 },
                 {
                     "replacementText": "litAsPropName.__2",
-                    "start": 1000,
-                    "end": 1016
+                    "start": 1001,
+                    "end": 1017
                 }
             ],
             "suggest": "",
@@ -99,18 +99,18 @@
             "autofix": [
                 {
                     "replacementText": "Two",
-                    "start": 848,
-                    "end": 853
+                    "start": 849,
+                    "end": 854
                 },
                 {
                     "replacementText": "Two",
-                    "start": 939,
-                    "end": 944
+                    "start": 940,
+                    "end": 945
                 },
                 {
                     "replacementText": "litAsPropName.Two",
-                    "start": 1031,
-                    "end": 1051
+                    "start": 1032,
+                    "end": 1052
                 }
             ],
             "suggest": "",
@@ -126,18 +126,18 @@
             "autofix": [
                 {
                     "replacementText": "Two",
-                    "start": 848,
-                    "end": 853
+                    "start": 849,
+                    "end": 854
                 },
                 {
                     "replacementText": "Two",
-                    "start": 939,
-                    "end": 944
+                    "start": 940,
+                    "end": 945
                 },
                 {
                     "replacementText": "litAsPropName.Two",
-                    "start": 1031,
-                    "end": 1051
+                    "start": 1032,
+                    "end": 1052
                 }
             ],
             "suggest": "",
@@ -173,18 +173,18 @@
             "autofix": [
                 {
                     "replacementText": "__2",
-                    "start": 835,
-                    "end": 836
+                    "start": 836,
+                    "end": 837
                 },
                 {
                     "replacementText": "__2",
-                    "start": 927,
-                    "end": 928
+                    "start": 928,
+                    "end": 929
                 },
                 {
                     "replacementText": "litAsPropName.__2",
-                    "start": 1000,
-                    "end": 1016
+                    "start": 1001,
+                    "end": 1017
                 }
             ],
             "suggest": "",
@@ -200,8 +200,8 @@
             "autofix": [
                 {
                     "replacementText": "litAsPropName.one",
-                    "start": 965,
-                    "end": 985
+                    "start": 966,
+                    "end": 986
                 }
             ],
             "suggest": "",
@@ -217,18 +217,18 @@
             "autofix": [
                 {
                     "replacementText": "__2",
-                    "start": 835,
-                    "end": 836
+                    "start": 836,
+                    "end": 837
                 },
                 {
                     "replacementText": "__2",
-                    "start": 927,
-                    "end": 928
+                    "start": 928,
+                    "end": 929
                 },
                 {
                     "replacementText": "litAsPropName.__2",
-                    "start": 1000,
-                    "end": 1016
+                    "start": 1001,
+                    "end": 1017
                 }
             ],
             "suggest": "",
@@ -244,18 +244,18 @@
             "autofix": [
                 {
                     "replacementText": "Two",
-                    "start": 848,
-                    "end": 853
+                    "start": 849,
+                    "end": 854
                 },
                 {
                     "replacementText": "Two",
-                    "start": 939,
-                    "end": 944
+                    "start": 940,
+                    "end": 945
                 },
                 {
                     "replacementText": "litAsPropName.Two",
-                    "start": 1031,
-                    "end": 1051
+                    "start": 1032,
+                    "end": 1052
                 }
             ],
             "suggest": "",
@@ -270,13 +270,13 @@
             "problem": "ObjectLiteralNoContextType",
             "autofix": [
                 {
-                    "start": 1415,
-                    "end": 1415,
+                    "start": 1416,
+                    "end": 1416,
                     "replacementText": "interface GeneratedObjectLiteralInterface_1 {\n    \"name\": number;\n    2: number;\n}\n"
                 },
                 {
-                    "start": 1420,
-                    "end": 1420,
+                    "start": 1421,
+                    "end": 1421,
                     "replacementText": ": GeneratedObjectLiteralInterface_1"
                 }
             ],
@@ -342,13 +342,13 @@
             "problem": "ObjectLiteralNoContextType",
             "autofix": [
                 {
-                    "start": 1555,
-                    "end": 1555,
+                    "start": 1556,
+                    "end": 1556,
                     "replacementText": "interface GeneratedObjectLiteralInterface_2 {\n    name: number;\n    _2: number;\n}\n"
                 },
                 {
-                    "start": 1564,
-                    "end": 1564,
+                    "start": 1565,
+                    "end": 1565,
                     "replacementText": ": GeneratedObjectLiteralInterface_2"
                 }
             ],
@@ -365,13 +365,13 @@
             "autofix": [
                 {
                     "replacementText": "___2",
-                    "start": 1725,
-                    "end": 1726
+                    "start": 1726,
+                    "end": 1727
                 },
                 {
                     "replacementText": "___2",
-                    "start": 1807,
-                    "end": 1808
+                    "start": 1808,
+                    "end": 1809
                 }
             ],
             "suggest": "",
@@ -387,13 +387,13 @@
             "autofix": [
                 {
                     "replacementText": "___2",
-                    "start": 1725,
-                    "end": 1726
+                    "start": 1726,
+                    "end": 1727
                 },
                 {
                     "replacementText": "___2",
-                    "start": 1807,
-                    "end": 1808
+                    "start": 1808,
+                    "end": 1809
                 }
             ],
             "suggest": "",
@@ -409,13 +409,13 @@
             "autofix": [
                 {
                     "replacementText": "__2",
-                    "start": 1738,
-                    "end": 1743
+                    "start": 1739,
+                    "end": 1744
                 },
                 {
                     "replacementText": "__2",
-                    "start": 1823,
-                    "end": 1828
+                    "start": 1824,
+                    "end": 1829
                 }
             ],
             "suggest": "",
@@ -431,13 +431,13 @@
             "autofix": [
                 {
                     "replacementText": "__2",
-                    "start": 1738,
-                    "end": 1743
+                    "start": 1739,
+                    "end": 1744
                 },
                 {
                     "replacementText": "__2",
-                    "start": 1823,
-                    "end": 1828
+                    "start": 1824,
+                    "end": 1829
                 }
             ],
             "suggest": "",
@@ -483,13 +483,13 @@
             "autofix": [
                 {
                     "replacementText": "___2",
-                    "start": 1725,
-                    "end": 1726
+                    "start": 1726,
+                    "end": 1727
                 },
                 {
                     "replacementText": "___2",
-                    "start": 1807,
-                    "end": 1808
+                    "start": 1808,
+                    "end": 1809
                 }
             ],
             "suggest": "",
@@ -512,6 +512,57 @@
             "endLine": 84,
             "endColumn": 37,
             "problem": "LiteralAsPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 92,
+            "column": 4,
+            "endLine": 92,
+            "endColumn": 10,
+            "problem": "LiteralAsPropertyName",
+            "autofix": [
+                {
+                    "replacementText": "__empty",
+                    "start": 1991,
+                    "end": 1993
+                }
+            ],
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 97,
+            "column": 3,
+            "endLine": 97,
+            "endColumn": 11,
+            "problem": "LiteralAsPropertyName",
+            "autofix": [
+                {
+                    "replacementText": "__x5c_1",
+                    "start": 2033,
+                    "end": 2037
+                }
+            ],
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 98,
+            "column": 3,
+            "endLine": 98,
+            "endColumn": 14,
+            "problem": "LiteralAsPropertyName",
+            "autofix": [
+                {
+                    "replacementText": "__x5c",
+                    "start": 2045,
+                    "end": 2052
+                }
+            ],
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
             "severity": "ERROR"
