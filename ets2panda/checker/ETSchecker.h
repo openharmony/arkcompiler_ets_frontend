@@ -679,7 +679,7 @@ public:
     std::optional<ir::TypeNode *> GetUtilityTypeTypeParamNode(const ir::TSTypeParameterInstantiation *typeParams,
                                                               const std::string_view &utilityTypeName);
     Type *HandleUtilityTypeParameterNode(const ir::TSTypeParameterInstantiation *typeParams,
-                                         const std::string_view &utilityType);
+                                         const ir::Identifier *const ident);
     // Partial
     Type *CreatePartialType(Type *typeToBePartial);
     Type *HandlePartialInterface(ir::TSInterfaceDeclaration *interfaceDecl, ETSObjectType *typeToBePartial);

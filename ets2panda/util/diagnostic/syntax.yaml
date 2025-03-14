@@ -979,3 +979,7 @@ syntax:
 - name: SETTER_NO_RETURN_TYPE
   id: 242
   message: "Setter must not have return type even if it is void."
+
+- name: USING_RESERVED_NAME_AS_VARIABLE_OR_TYPE_NAME
+  id: 243
+  message: "'{}' is reserved and cannot be used as a variable/type name"

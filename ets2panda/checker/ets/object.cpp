@@ -60,7 +60,7 @@ ETSObjectType *ETSChecker::GetSuperType(ETSObjectType *type)
     return type->SuperType();
 }
 
-bool ETSChecker::ComputeSuperType(ETSObjectType *type)
+static bool CheckObjectTypeAndSuperType(ETSChecker *checker, ETSObjectType *type)
 {
     if (type->HasObjectFlag(ETSObjectFlags::RESOLVED_SUPER)) {
         return true;
@@ -68,14 +68,32 @@ bool ETSChecker::ComputeSuperType(ETSObjectType *type)
 
     ES2PANDA_ASSERT(type->Variable() && type->GetDeclNode()->IsClassDefinition());
     auto *classDef = type->GetDeclNode()->AsClassDefinition();
+    auto cName = classDef->Ident()->Name();
+    if (cName == compiler::Signatures::PARTIAL_TYPE_NAME || cName == compiler::Signatures::READONLY_TYPE_NAME ||
+        cName == compiler::Signatures::REQUIRED_TYPE_NAME) {
+        checker->LogError(diagnostic::USING_RESERVED_NAME_AS_VARIABLE_OR_TYPE_NAME, {cName},
+                          type->GetDeclNode()->Start());
+        type->SetSuperType(checker->GlobalETSObjectType());
+        return true;
+    }
 
     if (classDef->Super() == nullptr || !classDef->Super()->IsTypeNode()) {
         type->AddObjectFlag(ETSObjectFlags::RESOLVED_SUPER);
-        if (type != GlobalETSObjectType()) {
-            type->SetSuperType(GlobalETSObjectType());
+        if (type != checker->GlobalETSObjectType()) {
+            type->SetSuperType(checker->GlobalETSObjectType());
         }
         return true;
     }
+
+    return false;
+}
+
+bool ETSChecker::ComputeSuperType(ETSObjectType *type)
+{
+    if (CheckObjectTypeAndSuperType(this, type)) {
+        return true;
+    }
+    auto *classDef = type->GetDeclNode()->AsClassDefinition();
 
     TypeStackElement tse(this, type, {"Cyclic inheritance involving ", type->Name(), "."}, classDef->Ident()->Start());
     if (tse.HasTypeError()) {
