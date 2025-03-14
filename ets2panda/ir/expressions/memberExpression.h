@@ -202,6 +202,8 @@ public:
     [[nodiscard]] bool IsPrivateReference() const noexcept;
 
     [[nodiscard]] MemberExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
+    std::optional<std::size_t> GetTupleIndexValue() const;
+    checker::Type *GetTypeOfTupleElement(checker::ETSChecker *checker, checker::Type *baseType);
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
@@ -250,7 +252,6 @@ private:
 
     bool CheckArrayIndexValue(checker::ETSChecker *checker) const;
     checker::Type *CheckIndexAccessMethod(checker::ETSChecker *checker);
-    checker::Type *CheckTupleAccessMethod(checker::ETSChecker *checker, checker::Type *baseType);
 
     void LoadRhs(compiler::PandaGen *pg) const;
 

@@ -185,6 +185,25 @@ enum class GlobalTypeId : std::size_t {
     ETS_LAMBDAR15_CLASS,
     ETS_LAMBDAR16_CLASS,
 
+    ETS_TUPLE0_CLASS,
+    ETS_TUPLE1_CLASS,
+    ETS_TUPLE2_CLASS,
+    ETS_TUPLE3_CLASS,
+    ETS_TUPLE4_CLASS,
+    ETS_TUPLE5_CLASS,
+    ETS_TUPLE6_CLASS,
+    ETS_TUPLE7_CLASS,
+    ETS_TUPLE8_CLASS,
+    ETS_TUPLE9_CLASS,
+    ETS_TUPLE10_CLASS,
+    ETS_TUPLE11_CLASS,
+    ETS_TUPLE12_CLASS,
+    ETS_TUPLE13_CLASS,
+    ETS_TUPLE14_CLASS,
+    ETS_TUPLE15_CLASS,
+    ETS_TUPLE16_CLASS,
+    ETS_TUPLEN_CLASS,
+
     TYPE_ERROR,
 
     COUNT,
@@ -205,6 +224,7 @@ public:
     void AddEtsSpecificBuiltinTypes();
     void AddTSSpecificTypes(ArenaAllocator *allocator);
     void AddFunctionTypes(ArenaAllocator *allocator);
+    void AddTupleTypes(ArenaAllocator *allocator);
 
     // TS specific types
     Type *GlobalNumberType();
@@ -291,6 +311,10 @@ public:
     size_t VariadicFunctionTypeThreshold();
     Type *GlobalFunctionBuiltinType(size_t nargs, bool hasRest);
     Type *GlobalLambdaBuiltinType(size_t nargs, bool hasRest);
+
+    // Tuple types
+    Type *GlobalTupleBuiltinType(size_t nargs);
+    size_t VariadicTupleTypeThreshold();
 
     // ETS escompat layer
     Type *GlobalArrayBuiltinType();

@@ -287,11 +287,16 @@ void ETSLReference::SetValueComputed(const ir::MemberExpression *memberExpr) con
     }
 
     if (objectType->IsETSTupleType()) {
-        etsg_->StoreTupleElement(Node(), baseReg_, propReg_, objectType->AsETSTupleType()->GetLubType());
-    } else {
-        etsg_->StoreArrayElement(Node(), baseReg_, propReg_,
-                                 etsg_->GetVRegType(baseReg_)->AsETSArrayType()->ElementType());
+        ES2PANDA_ASSERT(memberExpr->GetTupleIndexValue().has_value());
+
+        std::size_t indexValue = *memberExpr->GetTupleIndexValue();
+        etsg_->StoreTupleElement(Node(), baseReg_, objectType->AsETSTupleType()->GetTypeAtIndex(indexValue),
+                                 indexValue);
+        return;
     }
+
+    ES2PANDA_ASSERT(objectType->IsETSArrayType());
+    etsg_->StoreArrayElement(Node(), baseReg_, propReg_, etsg_->GetVRegType(baseReg_)->AsETSArrayType()->ElementType());
 }
 
 void ETSLReference::SetValueGetterSetter(const ir::MemberExpression *memberExpr) const
@@ -318,9 +323,7 @@ void ETSLReference::SetValue() const
     }
 
     const auto *const memberExpr = Node()->AsMemberExpression();
-    const auto *const memberExprTsType = memberExpr->Object()->TsType()->IsETSTupleType()
-                                             ? memberExpr->Object()->TsType()->AsETSTupleType()->GetLubType()
-                                             : memberExpr->TsType();
+    const auto *const memberExprTsType = memberExpr->TsType();
 
     if (!memberExpr->IsIgnoreBox()) {
         etsg_->ApplyConversion(Node(), memberExprTsType);

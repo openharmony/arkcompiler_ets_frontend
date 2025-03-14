@@ -927,7 +927,7 @@ semantic:
   id: 230
   message: "Annotation missing '@' symbol before annotation name."
 
-- name: TUPLE_TOO_FEW_ELEMS
+- name: TUPLE_WRONG_NUMBER_OF_ELEMS
   id: 231
   message: "Initializer has {} elements, but tuple requires {}"
 

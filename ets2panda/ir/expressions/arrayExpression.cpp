@@ -358,21 +358,21 @@ bool ArrayExpression::TrySetPreferredTypeForNestedArrayExpr(checker::ETSChecker 
                checker->IsArrayExprSizeValidForTuple(nestedArrayExpr, possibleTupleType->AsETSTupleType());
     };
 
-    if (preferredType_->IsETSTupleType()) {
+    if (GetPreferredType()->IsETSTupleType()) {
+        if (idx >= preferredType_->AsETSTupleType()->GetTupleSize()) {
+            return false;
+        }
         auto *const typeInTupleAtIdx = preferredType_->AsETSTupleType()->GetTypeAtIndex(idx);
         nestedArrayExpr->SetPreferredType(typeInTupleAtIdx);
 
         return doesArrayExprFitInTuple(typeInTupleAtIdx);
     }
 
-    if (preferredType_->IsETSArrayType()) {
+    if (GetPreferredType()->IsETSArrayType()) {
         auto *const arrayElementType = preferredType_->AsETSArrayType()->ElementType();
-        if (!doesArrayExprFitInTuple(arrayElementType)) {
-            return false;
-        }
-
         nestedArrayExpr->SetPreferredType(arrayElementType);
-        return true;
+
+        return doesArrayExprFitInTuple(arrayElementType);
     }
 
     if (nestedArrayExpr->GetPreferredType() == nullptr) {
@@ -419,9 +419,12 @@ void ArrayExpression::SetPreferredTypeBasedOnFuncParam(checker::ETSChecker *chec
     }
 
     param = possiblePreferredType.value();
+    if (param->IsETSTupleType()) {
+        preferredType_ = param;
+        return;
+    }
 
-    auto *elementType =
-        param->IsETSArrayType() ? param->AsETSArrayType()->ElementType() : param->AsETSTupleType()->GetLubType();
+    auto *elementType = param->AsETSArrayType()->ElementType();
     bool isAssignable = true;
 
     for (auto *const elem : elements_) {

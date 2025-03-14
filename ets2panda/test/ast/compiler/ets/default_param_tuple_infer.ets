@@ -13,9 +13,12 @@
  * limitations under the License.
  */
 
-function main(): void {
-    const tuple: [number, number, boolean] = [1, 3.14, true]
-    const array: (number|boolean) [] = tuple
-}
+type TupleAlias = [ number, string ]
 
-/* @@? 18:40 Error TypeError: Type '[double, double, boolean]' cannot be assigned to type '(Double|Boolean)[]' */
+function handleTupleAlias_notCast(tuple: TupleAlias  = [ 1, 'string' ]) {}
+function handleTupleAdHoc_notCast(tuple: [ number, string ] = [ 1, 'string' ]) {}
+function handleByte_notCast(arg: byte = 1): byte { return arg; }
+
+function handleTupleAlias_cast(tuple: TupleAlias  = [ 1, 'string' ] as TupleAlias) {}
+function handleTupleAdHoc_cast(tuple: [ number, string ] = [ 1, 'string' ] as [ number, string ]) {}
+function handleByte_cast(arg: byte = 1 as byte): byte { return arg; }

@@ -524,12 +524,25 @@ void ETSChecker::ResolveReturnStatement(checker::Type *funcReturnType, checker::
 checker::Type *ETSChecker::CheckArrayElements(ir::ArrayExpression *init)
 {
     ArenaVector<checker::Type *> elementTypes(Allocator()->Adapter());
-    for (auto e : init->AsArrayExpression()->Elements()) {
-        Type *eType = e->Check(this);
-        if (eType->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
-            return eType;
+    for (auto *elementNode : init->AsArrayExpression()->Elements()) {
+        Type *elementType = elementNode->Check(this);
+        if (elementType->IsTypeError()) {
+            return elementType;
         }
-        elementTypes.push_back(GetNonConstantType(eType));
+
+        if (elementNode->IsSpreadElement() && elementType->IsETSTupleType()) {
+            for (auto *typeFromTuple : elementType->AsETSTupleType()->GetTupleTypesList()) {
+                elementTypes.emplace_back(typeFromTuple);
+            }
+
+            continue;
+        }
+
+        if (elementNode->IsSpreadElement() && elementType->IsETSArrayType()) {
+            elementType = elementType->AsETSArrayType()->ElementType();
+        }
+
+        elementTypes.push_back(GetNonConstantType(elementType));
     }
 
     if (elementTypes.empty()) {
@@ -538,13 +551,13 @@ checker::Type *ETSChecker::CheckArrayElements(ir::ArrayExpression *init)
     }
     auto const isNumeric = [](checker::Type *ct) { return ct->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC); };
     auto const isChar = [](checker::Type *ct) { return ct->HasTypeFlag(TypeFlag::CHAR); };
-    auto const elementType =
+    auto *const arrayElementType =
         std::all_of(elementTypes.begin(), elementTypes.end(), isNumeric)
             ? std::all_of(elementTypes.begin(), elementTypes.end(), isChar) ? GlobalCharType() : GlobalDoubleType()
             : CreateETSUnionType(std::move(elementTypes));
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    return Allocator()->New<ETSArrayType>(elementType);
+    return Allocator()->New<ETSArrayType>(arrayElementType);
 }
 
 void ETSChecker::InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::ArrowFunctionExpression *init)

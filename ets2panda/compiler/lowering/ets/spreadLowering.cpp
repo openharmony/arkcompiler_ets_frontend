@@ -65,7 +65,7 @@ ir::Identifier *CreateNewArrayLengthStatement(public_lib::Context *ctx, ir::Arra
     lengthString << "let @@I" << (argumentCount++) << " : int = " << normalElementCount << " + ";
     for (auto *const spaId : spreadArrayIds) {
         if (spaId->TsType() != nullptr && spaId->TsType()->IsETSTupleType()) {
-            lengthString << "(" << spaId->TsType()->AsETSTupleType()->GetTupleTypesList().size() << ") + ";
+            lengthString << "(" << spaId->TsType()->AsETSTupleType()->GetTupleSize() << ") + ";
         } else {
             lengthString << "(@@I" << (argumentCount++) << ".length as int) + ";
             nodesWaitingInsert.emplace_back(spaId->Clone(allocator, nullptr));
@@ -86,10 +86,7 @@ static ir::Identifier *CreateNewArrayDeclareStatement(public_lib::Context *ctx, 
     auto *const allocator = ctx->allocator;
     auto *const parser = ctx->parser->AsETSParser();
     ir::Identifier *newArrayId = Gensym(allocator);
-    checker::Type *arrayElementType = array->TsType()->IsETSArrayType()
-                                          ? array->TsType()->AsETSArrayType()->ElementType()
-                                          : array->TsType()->AsETSTupleType()->GetLubType();
-    checker::Type *newArrayElementType = arrayElementType;
+    checker::Type *arrayElementType = array->TsType()->AsETSArrayType()->ElementType();
 
     // NOTE: If arrayElementType is ETSUnionType(String|Int) or ETSObjectType(private constructor) or ..., we cannot
     //       use "new Type[]" to declare an array, so we generate a new UnionType "arrayElementType|null" to solve
@@ -99,19 +96,84 @@ static ir::Identifier *CreateNewArrayDeclareStatement(public_lib::Context *ctx, 
     //       But now cast Expression doesn't support built-in array (cast fatherType[] to sonType[]), so "newArrayName
     //       as arrayType" should be added after cast Expression is implemented completely.
     //       Related issue: #issue20162
-    if (checker->IsReferenceType(arrayElementType)) {
-        newArrayElementType = checker->CreateETSUnionType({arrayElementType, checker->GlobalETSUndefinedType()});
+    if (checker::ETSChecker::IsReferenceType(arrayElementType)) {
+        arrayElementType = checker->CreateETSUnionType({arrayElementType, checker->GlobalETSUndefinedType()});
     }
 
     std::stringstream newArrayDeclareStr;
-    newArrayDeclareStr << "let @@I1: @@T2[] = new @@T3[@@I4];" << std::endl;
+    newArrayDeclareStr << "let @@I1: (@@T2)[] = new (@@T3)[@@I4];" << std::endl;
 
     ir::Statement *newArrayDeclareSt = parser->CreateFormattedStatement(
-        newArrayDeclareStr.str(), newArrayId->Clone(allocator, nullptr), newArrayElementType, newArrayElementType,
+        newArrayDeclareStr.str(), newArrayId->Clone(allocator, nullptr), arrayElementType, arrayElementType,
         newArrayLengthId->Clone(allocator, nullptr));
     statements.emplace_back(newArrayDeclareSt);
 
     return newArrayId;
+}
+
+static std::string GenerateNewTupleInitList(ArenaAllocator *allocator, ir::ArrayExpression *array,
+                                            std::vector<ir::AstNode *> &elementNodes)
+{
+    std::string tupleInitList {};
+
+    for (auto *element : array->Elements()) {
+        if (element->IsSpreadElement()) {
+            // Only a tuple type can be spread into a new tuple type
+            ES2PANDA_ASSERT(element->AsSpreadElement()->Argument()->TsType()->IsETSTupleType());
+            auto *const argumentTupleType = element->AsSpreadElement()->Argument()->TsType()->AsETSTupleType();
+
+            // NOTE (smartin): make a distinct variable for the spread argument. Now if the argument is a function call
+            // (that returns a tuple), it'll run every time when inserted into the new initializer. It should however
+            // run once, and index the element from that result.
+
+            for (std::size_t idx = 0; idx < argumentTupleType->GetTupleSize(); idx++) {
+                tupleInitList +=
+                    "@@E" + std::to_string(elementNodes.size() + 1) + "[" + std::to_string(idx) + "]" + ", ";
+                elementNodes.emplace_back(element->Clone(allocator, nullptr)->AsSpreadElement()->Argument());
+            }
+        } else {
+            tupleInitList += "@@E" + std::to_string(elementNodes.size() + 1) + ", ";
+            elementNodes.emplace_back(element->Clone(allocator, nullptr));
+        }
+    }
+
+    tupleInitList.pop_back();
+    return tupleInitList;
+}
+
+static ir::Expression *GenerateTupleInitExpr(public_lib::Context *ctx, ir::ArrayExpression *array)
+{
+    auto *const parser = ctx->parser->AsETSParser();
+    auto *const allocator = ctx->allocator;
+
+    std::vector<ir::AstNode *> arrayExprElementNodes {};
+    std::stringstream newTupleExpr;
+
+    newTupleExpr << "[";
+    newTupleExpr << GenerateNewTupleInitList(allocator, array, arrayExprElementNodes);
+    newTupleExpr << "];";
+
+    return parser->CreateFormattedExpression(newTupleExpr.str(), arrayExprElementNodes);
+}
+
+static ir::Identifier *CreateNewTupleDeclareStatement(public_lib::Context *ctx, ir::ArrayExpression *array,
+                                                      ArenaVector<ir::Statement *> &statements)
+{
+    auto *const allocator = ctx->allocator;
+    auto *const parser = ctx->parser->AsETSParser();
+    ir::Identifier *newTupleId = Gensym(allocator);
+    checker::ETSTupleType *tupleType = array->TsType()->AsETSTupleType();
+
+    std::stringstream newArrayDeclareStr;
+    newArrayDeclareStr << "let @@I1: (@@T2) = (@@E3);" << std::endl;
+
+    ir::Expression *tupleCreationExpr = GenerateTupleInitExpr(ctx, array);
+
+    ir::Statement *newTupleInitStmt = parser->CreateFormattedStatement(
+        newArrayDeclareStr.str(), newTupleId->Clone(allocator, nullptr), tupleType, tupleCreationExpr);
+    statements.emplace_back(newTupleInitStmt);
+
+    return newTupleId;
 }
 
 static ir::Statement *CreateSpreadArrIteratorStatement(public_lib::Context *ctx, ir::ArrayExpression *array,
@@ -244,7 +306,7 @@ static void CreateNewArrayElementsAssignStatement(public_lib::Context *ctx, ir::
  * ...
  * newArray;
  */
-static ir::BlockExpression *CreateLoweredExpression(public_lib::Context *ctx, ir::ArrayExpression *array)
+static ir::BlockExpression *CreateLoweredExpressionForArray(public_lib::Context *ctx, ir::ArrayExpression *array)
 {
     auto *const checker = ctx->checker->AsETSChecker();
     auto *const parser = ctx->parser->AsETSParser();
@@ -267,6 +329,23 @@ static ir::BlockExpression *CreateLoweredExpression(public_lib::Context *ctx, ir
     return checker->AllocNode<ir::BlockExpression>(std::move(statements));
 }
 
+/*
+ * NOTE: Expand the SpreadExpr to BlockExpr, the rules as follows :
+ * let newTuple: typeOfNewTuple = new std.core.TupleN(normalExpr1, ..., normalExprN);
+ */
+static ir::BlockExpression *CreateLoweredExpressionForTuple(public_lib::Context *ctx, ir::ArrayExpression *array)
+{
+    auto *const checker = ctx->checker->AsETSChecker();
+    auto *const parser = ctx->parser->AsETSParser();
+    auto *const allocator = ctx->allocator;
+
+    ArenaVector<ir::Statement *> statements(allocator->Adapter());
+    ir::Identifier *newTupleId = CreateNewTupleDeclareStatement(ctx, array, statements);
+
+    statements.emplace_back(parser->CreateFormattedStatement("@@I1;", newTupleId->Clone(allocator, nullptr)));
+    return checker->AllocNode<ir::BlockExpression>(std::move(statements));
+}
+
 bool SpreadConstructionPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
@@ -280,7 +359,10 @@ bool SpreadConstructionPhase::PerformForModule(public_lib::Context *ctx, parser:
                 auto scopeCtx =
                     varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), NearestScope(node));
 
-                ir::BlockExpression *blockExpression = CreateLoweredExpression(ctx, node->AsArrayExpression());
+                const auto *const arrayExprType = node->AsArrayExpression()->TsType();
+                ir::BlockExpression *blockExpression =
+                    arrayExprType->IsETSArrayType() ? CreateLoweredExpressionForArray(ctx, node->AsArrayExpression())
+                                                    : CreateLoweredExpressionForTuple(ctx, node->AsArrayExpression());
                 blockExpression->SetParent(node->Parent());
 
                 // NOTE: this blockExpression is a kind of formatted-dummy code, which is invisible to users,

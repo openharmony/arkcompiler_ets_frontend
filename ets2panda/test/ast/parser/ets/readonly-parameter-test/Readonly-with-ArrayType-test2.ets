@@ -19,5 +19,5 @@ function foo (p: [int, string]) {
 let x: Readonly<[int, string]> = []
 /* @@ label */foo(/* @@ label1 */x)
 
-/* @@@ label1 Error TypeError: Type 'readonly [Int, String]' is not compatible with type '[Int, String]' at index 1 */
-/* @@@ label Error TypeError: No matching call signature for foo(readonly [Int, String]) */
+/* @@@ label1 Error TypeError: Type 'readonly [int, String]' is not compatible with type '[int, String]' at index 1 */
+/* @@@ label Error TypeError: No matching call signature for foo(readonly [int, String]) */

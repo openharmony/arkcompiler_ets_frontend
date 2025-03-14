@@ -140,7 +140,12 @@ void ETSUnionType::RelationTarget(TypeRelation *relation, Type *source, RelFN co
     if (std::any_of(constituentTypes_.begin(), constituentTypes_.end(),
                     [relation, refsource, relFn](auto *t) { return relFn(relation, refsource, t); })) {
         if (refsource != source) {
-            relation->GetNode()->SetBoxingUnboxingFlags(checker->GetBoxingFlag(refsource));
+            // Some nodes can have both boxing and unboxing flags set. When applying them, first the unboxing happens
+            // (then a possible primitive conversion), and boxing at last.
+            // NOTE (smartin): when boxing/unboxing is moved to a lowering, review this part of the code
+            const auto mergedBoxingFlags =
+                relation->GetNode()->GetBoxingUnboxingFlags() | checker->GetBoxingFlag(refsource);
+            relation->GetNode()->SetBoxingUnboxingFlags(mergedBoxingFlags);
         }
         relation->Result(true);
         return;

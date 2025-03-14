@@ -18,14 +18,14 @@ class A<in T1,out T2,T3>{
     field2:/* @@ label2 */[number,T2,string];   //CTE
     field3:[number,T3,string];
     readonly readonlyfield1:/* @@ label3 */[number,T1,string];   //CTE
-    readonly readonlyfield2:[number,T2,string];
+    readonly readonlyfield2:/* @@ label4 */[number,T2,string];  //CTE
     readonly readonlyfield3:[number,T3,string];
 
-    returnTypeFunc1():/* @@ label4 */[number,T1,string]{   //CTE
+    returnTypeFunc1():/* @@ label5 */[number,T1,string]{   //CTE
         return this.readonlyfield1;
     }
 
-    returnTypeFunc2():[number,T2,string]{
+    returnTypeFunc2():/* @@ label6 */[number,T2,string]{   //CTE
         return this.readonlyfield2;
     }
 
@@ -33,13 +33,16 @@ class A<in T1,out T2,T3>{
         return this.readonlyfield3;
     }
 
-    paramsFunc1(a:[number,T1,string]){}
-    paramsFunc2(a:/* @@ label5 */[number,T2,string]){}   //CTE
+    paramsFunc1(a:/* @@ label7 */[number,T1,string]){}  //CTE
+    paramsFunc2(a:/* @@ label8 */[number,T2,string]){}   //CTE
     paramsFunc3(a:[number,T3,string]){}
 }
 
-/* @@@ label1 Error TypeError: Type Parameter 'T1' is declared as 'in' but occurs in 'invariant' position.  */
-/* @@@ label2 Error TypeError: Type Parameter 'T2' is declared as 'out' but occurs in 'invariant' position.  */
-/* @@@ label3 Error TypeError: Type Parameter 'T1' is declared as 'in' but occurs in 'out' position.  */
-/* @@@ label4 Error TypeError: Type Parameter 'T1' is declared as 'in' but occurs in 'out' position.  */
-/* @@@ label5 Error TypeError: Type Parameter 'T2' is declared as 'out' but occurs in 'in' position.  */
+/* @@@ label1 Error TypeError: Type Parameter 'T1' is declared as 'in' but occurs in 'invariant' position. */
+/* @@@ label2 Error TypeError: Type Parameter 'T2' is declared as 'out' but occurs in 'invariant' position. */
+/* @@@ label3 Error TypeError: Type Parameter 'T1' is declared as 'in' but occurs in 'invariant' position. */
+/* @@@ label4 Error TypeError: Type Parameter 'T2' is declared as 'out' but occurs in 'invariant' position. */
+/* @@@ label5 Error TypeError: Type Parameter 'T1' is declared as 'in' but occurs in 'invariant' position. */
+/* @@@ label6 Error TypeError: Type Parameter 'T2' is declared as 'out' but occurs in 'invariant' position. */
+/* @@@ label7 Error TypeError: Type Parameter 'T1' is declared as 'in' but occurs in 'invariant' position. */
+/* @@@ label8 Error TypeError: Type Parameter 'T2' is declared as 'out' but occurs in 'invariant' position. */
