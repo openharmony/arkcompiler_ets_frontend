@@ -85,7 +85,7 @@ interface RunTestFileOptions {
 interface TestModeProperties {
   resultFileExt: string;
   mode: TestMode;
-  modeOpts: LinterOptions;
+  modeOpts: LinterOptions /* Options that enable specific mode */;
 }
 
 const DEFAULT_MODE_PROPERTIES: TestModeProperties = {
@@ -111,7 +111,11 @@ const ARKTS2_MODE_PROPERTIES: TestModeProperties = {
 const MIGRATE_MODE_PROPERTIES: TestModeProperties = {
   resultFileExt: '.migrate.json',
   mode: TestMode.MIGRATE,
-  modeOpts: {}
+  modeOpts: {
+    arkts2: true,
+    migratorMode: true,
+    ideMode: false
+  }
 };
 
 interface TestConfiguration {

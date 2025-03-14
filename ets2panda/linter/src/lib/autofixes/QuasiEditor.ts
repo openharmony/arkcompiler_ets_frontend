@@ -40,7 +40,7 @@ export class QuasiEditor {
         readonly cancellationToken?: ts.CancellationToken,
     ) {
         this.srcFileName = this.sourceFile.fileName;
-        this.backupSrcFile();
+        // need to backup only once "this.backupSrcFile();"
         // load text into buffer
         this.dataBuffer = fs.readFileSync(this.srcFileName);
         this.textBuffer = this.dataBuffer.toString();
@@ -49,8 +49,12 @@ export class QuasiEditor {
         }
     }
 
-    private backupSrcFile(): void {
+    public backupSrcFile(): void {
         fs.copyFileSync(this.srcFileName, this.srcFileName + BACKUP_AFFIX);
+    }
+
+    public backupSrcFileDebug(pass: number): void {
+        fs.copyFileSync(this.srcFileName, this.srcFileName + BACKUP_AFFIX + pass.toString());
     }
 
     private saveText(): void {
@@ -71,13 +75,16 @@ export class QuasiEditor {
 
     public applyFixes(problemInfos: ProblemInfo[]): void {
         let lastFixStart = this.textBuffer.length;
+        if (problemInfos.length === 0) {
+            return;
+        }
         for (let i = problemInfos.length - 1; i >= 0; i--) {
             let pInfo = problemInfos[i];
             if (!pInfo.autofix) {
                 continue;
             }
             for (let j = pInfo.autofix.length - 1; j >= 0; j--) {
-                if (pInfo.autofix[j].end > lastFixStart || pInfo.autofix[j].start > lastFixStart) {
+                if (pInfo.autofix[j].end >= lastFixStart || pInfo.autofix[j].start >= lastFixStart) {
                     Logger.error(`Error: ${this.srcFileName} (${lastFixStart}) fix intersectection ${pInfo.autofixTitle}`);
                     this.wasError = true;
                     continue;
@@ -91,7 +98,6 @@ export class QuasiEditor {
                     pInfo.autofix[j].end - pInfo.autofix[j].start, pInfo.autofix[j].replacementText);
             }
         }
-
         this.saveText();
     }
 
