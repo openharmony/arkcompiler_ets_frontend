@@ -463,7 +463,9 @@ bool ETSUnionType::ExtractType(checker::ETSChecker *checker, checker::ETSObjectT
         //  Because 'instanceof' expression does not check for type parameters, then for generic types we should
         //  consider that expressions like 'SomeType<U...>' and 'SomeType<T...>' are identical for smart casting.
         //  We also have to pass through all the union to process cases like 'C<T>|A|B|C<U>|undefined`
-        if (constituentType->HasTypeFlag(checker::TypeFlag::GENERIC)) {
+        if (constituentType->IsETSTypeParameter()) {
+            constituentType = constituentType->AsETSTypeParameter()->GetConstraintType();
+        } else if (constituentType->HasTypeFlag(checker::TypeFlag::GENERIC)) {
             constituentType = constituentType->Clone(checker);
             constituentType->RemoveTypeFlag(checker::TypeFlag::GENERIC);
         }
@@ -516,28 +518,27 @@ bool ETSUnionType::ExtractType(checker::ETSChecker *checker, checker::ETSArrayTy
                                ArenaVector<Type *> &unionTypes) noexcept
 {
     auto it = unionTypes.cbegin();
+
+    bool rc = false;
     while (it != unionTypes.cend()) {
-        auto *const constituentType = *it;
-        if (constituentType != nullptr && constituentType->IsETSArrayType()) {
-            if (checker->Relation()->IsIdenticalTo(constituentType, sourceType)) {
-                unionTypes.erase(it);
-                return true;
-            }
-            if (checker->Relation()->IsSupertypeOf(constituentType, sourceType)) {
-                return true;
-            }
+        auto *constituentType = *it;
+
+        if (constituentType->IsETSTypeParameter()) {
+            constituentType = constituentType->AsETSTypeParameter()->GetConstraintType();
+        }
+
+        if (checker->Relation()->IsIdenticalTo(constituentType, sourceType)) {
+            rc = true;
+            unionTypes.erase(it);
+            continue;
+        }
+        if (checker->Relation()->IsSupertypeOf(constituentType, sourceType)) {
+            rc = true;
         }
         ++it;
     }
 
-    for (auto const &constituentType : unionTypes) {
-        if (constituentType != nullptr && constituentType->IsETSObjectType() &&
-            constituentType->AsETSObjectType()->IsGlobalETSObjectType()) {
-            return true;
-        }
-    }
-
-    return false;
+    return rc;
 }
 
 std::pair<checker::Type *, checker::Type *> ETSUnionType::GetComplimentaryType(ETSChecker *const checker,
@@ -574,7 +575,7 @@ std::pair<checker::Type *, checker::Type *> ETSUnionType::GetComplimentaryType(E
     }
 
     if (!ok) {
-        return std::make_pair(checker->GetGlobalTypesHolder()->GlobalNeverType(), this);
+        return std::make_pair(checker->GetGlobalTypesHolder()->GlobalETSNeverType(), this);
     }
 
     checker::Type *complimentaryType;
