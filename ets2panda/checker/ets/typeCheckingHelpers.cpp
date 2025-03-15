@@ -37,7 +37,6 @@
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ets/etsUnionType.h"
 #include "varbinder/declaration.h"
-#include "parser/program/program.h"
 #include "checker/ETSchecker.h"
 #include "varbinder/ETSBinder.h"
 #include "checker/ets/typeRelationContext.h"
@@ -1407,12 +1406,22 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
         Type *const parameterType = signature->Params()[index]->TsType();
 
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        bool const rc = CheckLambdaTypeAnnotation(typeAnn, arrowFuncExpr, parameterType, flags);
+        bool rc = CheckLambdaTypeAnnotation(typeAnn, arrowFuncExpr, parameterType, flags);
         if (!rc && (flags & TypeRelationFlag::NO_THROW) == 0) {
             Type *const argumentType = arrowFuncExpr->Check(this);
             LogError(diagnostic::LAMBDA_TYPE_MISMATCH, {argumentType, parameterType, index + 1},
                      arrowFuncExpr->Start());
-            return false;
+            rc = false;
+        } else if (!lambda->HasReturnStatement()) {
+            //  Need to check void return type here if there are no return statement(s) in the body.
+            if (!AssignmentContext(Relation(), AllocNode<ir::Identifier>(Allocator()), GlobalVoidType(),
+                                   lambda->Signature()->ReturnType(), lambda->Start(), {},
+                                   checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
+                     .IsAssignable()) {  // CC-OFF(G.FMT.02-CPP) project code style
+                LogError(diagnostic::ARROW_TYPE_MISMATCH, {GlobalVoidType(), lambda->Signature()->ReturnType()},
+                         lambda->Body()->Start());
+                rc = false;
+            }
         }
 
         invocable &= rc;

@@ -2670,6 +2670,8 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
     ES2PANDA_ASSERT(ancestor && ancestor->IsScriptFunction());
 
     auto *containingFunc = ancestor->AsScriptFunction();
+    containingFunc->AddFlag(ir::ScriptFunctionFlags::HAS_RETURN);
+
     if (containingFunc->Signature() == nullptr) {
         ES2PANDA_ASSERT(checker->IsAnyError());
         return ReturnTypeForStatement(st);
