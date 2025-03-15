@@ -128,9 +128,6 @@ static bool RunVerifierAndPhases(public_lib::Context &context, const std::vector
     const auto verifierEachPhase = options.IsAstVerifierEachPhase();
 
     ast_verifier::ASTVerifier verifier(context, program);
-    if (context.diagnosticEngine->IsAnyError()) {
-        verifier.Suppress();
-    }
 
     for (auto *phase : phases) {
         const auto name = std::string {phase->Name()};
@@ -149,7 +146,7 @@ static bool RunVerifierAndPhases(public_lib::Context &context, const std::vector
         }
 
         if (verifierEachPhase || options.HasVerifierPhase(name)) {
-            verifier.Verify(name);
+            verifier.Verify(phase->Name());
         }
         verifier.IntroduceNewInvariants(name);
 
