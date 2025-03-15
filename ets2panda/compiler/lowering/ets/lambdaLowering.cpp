@@ -500,17 +500,21 @@ static ArenaVector<ark::es2panda::ir::Statement *> CreateRestArgumentsArrayReall
         auto *restParameterType = lciInfo->lambdaSignature->RestVar()->TsType();
         auto *restParameterSubstituteType = restParameterType->Substitute(checker->Relation(), lciInfo->substitution);
         auto *elementType = restParameterSubstituteType->AsETSArrayType()->ElementType();
+        auto restParameterIndex = GenName(allocator).View();
+        auto spreadArrIterator = GenName(allocator).View();
         std::stringstream lengthString;
-        lengthString << "let length :int = @@I1.length;"
-                     << "type elem = @@T2;"
-                     << "let @@I3 :elem[] = new elem[length];"
-                     << "for(let i:int = 0;i < length ;i = i + 1){"
-                     << "@@I4[i] = @@I5[i] as @@T6 as elem;"
+        lengthString << "let @@I1:int = 0;"
+                     << "let @@I2:@@T3[] = new @@T4[@@I5.length];"
+                     << "for (let @@I6:@@T7 of @@I8){"
+                     << "@@I9[@@I10] = @@I11 as @@T12 as @@T13;"
+                     << "@@I14 = @@I15 + 1;"
                      << "}";
-        auto *arg = parser->CreateFormattedStatement(
-            lengthString.str(), lciInfo->restParameterIdentifier, elementType, lciInfo->restArgumentIdentifier,
-            lciInfo->restArgumentIdentifier, lciInfo->restParameterIdentifier, checker->MaybeBoxType(elementType));
-        return ArenaVector<ir::Statement *>(std::move(arg->AsBlockStatement()->Statements()));
+        auto *args = parser->CreateFormattedStatement(
+            lengthString.str(), restParameterIndex, lciInfo->restArgumentIdentifier, elementType, elementType,
+            lciInfo->restParameterIdentifier, spreadArrIterator, checker->GlobalETSNullishObjectType(),
+            lciInfo->restParameterIdentifier, lciInfo->restArgumentIdentifier, restParameterIndex, spreadArrIterator,
+            checker->MaybeBoxType(elementType), elementType, restParameterIndex, restParameterIndex);
+        return ArenaVector<ir::Statement *>(std::move(args->AsBlockStatement()->Statements()));
     }
     return ArenaVector<ir::Statement *>(allocator->Adapter());
 }
