@@ -59,7 +59,8 @@ interface TestStatistics {
 enum TestMode {
   DEFAULT,
   AUTOFIX,
-  ARKTS2
+  ARKTS2,
+  MIGRATE
 }
 
 interface CreateTestConfigurationOptions {
@@ -105,6 +106,12 @@ const ARKTS2_MODE_PROPERTIES: TestModeProperties = {
   modeOpts: {
     arkts2: true
   }
+};
+
+const MIGRATE_MODE_PROPERTIES: TestModeProperties = {
+  resultFileExt: '.migrate.json',
+  mode: TestMode.MIGRATE,
+  modeOpts: {}
 };
 
 interface TestConfiguration {
@@ -284,6 +291,12 @@ function runTestFile(runTestFileOpts: RunTestFileOptions, testStats: TestStatist
       runTestFileOpts,
       testModeProps: ARKTS2_MODE_PROPERTIES,
       testModeArgs: testArgs.mode?.arkts2,
+      testCommonOpts
+    });
+    addTestConfiguration(testConfigs, {
+      runTestFileOpts,
+      testModeProps: MIGRATE_MODE_PROPERTIES,
+      testModeArgs: testArgs.mode?.migrate,
       testCommonOpts
     });
   } else {

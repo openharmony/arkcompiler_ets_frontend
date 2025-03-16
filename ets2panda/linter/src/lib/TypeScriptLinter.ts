@@ -236,7 +236,7 @@ export class TypeScriptLinter {
   incrementCounters(node: ts.Node | ts.CommentRange, faultId: number, autofix?: Autofix[]): void {
     this.nodeCounters[faultId]++;
     const { line, character } = this.getLineAndCharacterOfNode(node);
-    if (this.options.ideMode) {
+    if ((this.options.ideMode || this.options.migratorMode) && !this.options.ideInteractive) {
       this.incrementCountersIdeMode(node, faultId, autofix);
     } else if (this.options.ideInteractive) {
       this.incrementCountersCLI2(node, faultId, autofix);
@@ -269,7 +269,7 @@ export class TypeScriptLinter {
   }
 
   private incrementCountersIdeMode(node: ts.Node | ts.CommentRange, faultId: number, autofix?: Autofix[]): void {
-    if (!this.options.ideMode) {
+    if (!this.options.ideMode && !this.options.migratorMode) {
       return;
     }
     const [startOffset, endOffset] = TsUtils.getHighlightRange(node, faultId);
