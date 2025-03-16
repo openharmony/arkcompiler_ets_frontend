@@ -2490,7 +2490,7 @@ ir::ClassProperty *ETSChecker::ClassPropToImplementationProp(ir::ClassProperty *
     auto *fieldDecl = Allocator()->New<varbinder::LetDecl>(classProp->Key()->AsIdentifier()->Name());
     fieldDecl->BindNode(classProp);
 
-    auto fieldVar = scope->InstanceFieldScope()->AddDecl(Allocator(), fieldDecl, ScriptExtension::STS);
+    auto fieldVar = scope->InstanceFieldScope()->AddDecl(Allocator(), fieldDecl, ScriptExtension::ETS);
     fieldVar->AddFlag(varbinder::VariableFlags::PROPERTY);
     fieldVar->SetScope(scope->InstanceFieldScope());
 
@@ -2744,7 +2744,7 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
     auto *const methodScope = scope->InstanceMethodScope();
     auto *const decl = Allocator()->New<varbinder::FunctionDecl>(Allocator(), name, getter);
 
-    auto *var = methodScope->AddDecl(Allocator(), decl, ScriptExtension::STS);
+    auto *var = methodScope->AddDecl(Allocator(), decl, ScriptExtension::ETS);
     if (var == nullptr) {
         auto *const prevDecl = methodScope->FindDecl(name);
         for (const auto &method : {getter, setter}) {

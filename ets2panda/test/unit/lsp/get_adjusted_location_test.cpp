@@ -55,7 +55,7 @@ let z = x;
 )";
 
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("test.sts", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("test.ets", ES2PANDA_STATE_CHECKED, source);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto *context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto *varNode = ark::es2panda::lsp::GetTouchingPropertyName(ctx, VARIABLE_POS);
@@ -76,7 +76,7 @@ class Example {
 )";
 
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("test.sts", ES2PANDA_STATE_PARSED, source);
+    es2panda_Context *ctx = initializer.CreateContext("test.ets", ES2PANDA_STATE_PARSED, source);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
     auto *node = ark::es2panda::lsp::GetTouchingPropertyName(ctx, PROPERTY_POS);
     ASSERT_NE(node, nullptr);
@@ -97,7 +97,7 @@ class MyClass {
 let instance = new MyClass();
 )";
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("test.sts", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("test.ets", ES2PANDA_STATE_CHECKED, source);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto *context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     AstNode *classNode = ark::es2panda::lsp::GetTouchingPropertyName(ctx, CLASS_POS);
@@ -120,7 +120,7 @@ function testFunc(param: number) {
 let result = testFunc(21);
 )";
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("test.sts", ES2PANDA_STATE_PARSED, source);
+    es2panda_Context *ctx = initializer.CreateContext("test.ets", ES2PANDA_STATE_PARSED, source);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
     auto *context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto *funcNode = ark::es2panda::lsp::GetTouchingPropertyName(ctx, FUNCTION_POS);
@@ -147,7 +147,7 @@ class Test {
 }
 )";
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("test.sts", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("test.ets", ES2PANDA_STATE_CHECKED, source);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto *context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto *classNode = ark::es2panda::lsp::GetTouchingPropertyName(ctx, CLASS_POS);
@@ -186,7 +186,7 @@ class Test {
 }
 )";
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("test.sts", ES2PANDA_STATE_PARSED, source);
+    es2panda_Context *ctx = initializer.CreateContext("test.ets", ES2PANDA_STATE_PARSED, source);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
     auto *privateNode = ark::es2panda::lsp::GetTouchingPropertyName(ctx, PRIVATE_POS);
     auto *publicNode = ark::es2panda::lsp::GetTouchingPropertyName(ctx, PUBLIC_POS);
@@ -227,7 +227,7 @@ TEST_F(LspGetAdjustedLocation, GetAdjustedLocationForNestedScopeTest)
         "    }\n"
         "}\n";
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("test.sts", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("test.ets", ES2PANDA_STATE_CHECKED, source);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto *context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto *globalVar = ark::es2panda::lsp::GetTouchingPropertyName(ctx, VARIABLE_POS);
@@ -258,7 +258,7 @@ class MyClass {
 let instance = new MyClass();
 )";
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("test.sts", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("test.ets", ES2PANDA_STATE_CHECKED, source);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto *context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto *node = ark::es2panda::lsp::GetTouchingPropertyName(ctx, IMPORT_POS);
@@ -279,7 +279,7 @@ class MyClass {
 let instance = new MyClass();
 )";
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("test.sts", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("test.ets", ES2PANDA_STATE_CHECKED, source);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto *context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto *node = ark::es2panda::lsp::GetTouchingPropertyName(ctx, EXPORT_POS);
@@ -298,7 +298,7 @@ class BaseClass {}
 class ChildClass extends BaseClass {}
 )";
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("test.sts", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("test.ets", ES2PANDA_STATE_CHECKED, source);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto *context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto *node = ark::es2panda::lsp::GetTouchingPropertyName(ctx, HERITAGE_POS);
@@ -317,7 +317,7 @@ class MyType {}
 let variable: MyType;
 )";
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("test.sts", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("test.ets", ES2PANDA_STATE_CHECKED, source);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto *context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto *node = ark::es2panda::lsp::GetTouchingPropertyName(ctx, TYPE_PARAM_POS);
@@ -336,7 +336,7 @@ type NumArray = number[];
 let numbers: NumArray;
 )";
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("test.sts", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("test.ets", ES2PANDA_STATE_CHECKED, source);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto *context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto *node = ark::es2panda::lsp::GetTouchingToken(ctx, ARRAY_TYPE_POS, true);
@@ -354,7 +354,7 @@ TEST_F(LspGetAdjustedLocation, SkipOuterExpressionsTest)
 let x = (((42)));
 )";
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("test.sts", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("test.ets", ES2PANDA_STATE_CHECKED, source);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto *context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto *node = ark::es2panda::lsp::GetTouchingPropertyName(ctx, VARIABLE_POS);
@@ -372,7 +372,7 @@ TEST_F(LspGetAdjustedLocation, FindFirstExpressionTest)
 let x = 42 + (5 * 3);
 )";
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("test.sts", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("test.ets", ES2PANDA_STATE_CHECKED, source);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto *context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto *node = ark::es2panda::lsp::GetTouchingPropertyName(ctx, VARIABLE_POS);
@@ -388,7 +388,7 @@ TEST_F(LspGetAdjustedLocation, FindFirstExpressionAfterTest)
 {
     const char *source = R"(let x = 1 + 2 + 3;)";
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("test.sts", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("test.ets", ES2PANDA_STATE_CHECKED, source);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto *context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto *node = ark::es2panda::lsp::GetTouchingToken(ctx, EXPRESSION_POS, true);
@@ -412,7 +412,7 @@ class TestClass {
 }
 )";
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("test.sts", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("test.ets", ES2PANDA_STATE_CHECKED, source);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto *context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto *node = ark::es2panda::lsp::GetTouchingToken(ctx, METHOD_POS, true);
@@ -435,7 +435,7 @@ class Container<T> {
 }
 )";
     ark::es2panda::lsp::Initializer initializer = ark::es2panda::lsp::Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("test.sts", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("test.ets", ES2PANDA_STATE_CHECKED, source);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto *context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto *node = ark::es2panda::lsp::GetTouchingToken(ctx, TYPE_PARAM_POS, true);

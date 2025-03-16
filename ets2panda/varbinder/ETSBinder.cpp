@@ -984,7 +984,7 @@ ArenaVector<parser::Program *> ETSBinder::GetExternalProgram(const util::StringV
     if (programList.empty()) {
         if (ark::os::file::File::IsDirectory(sourceName.Mutf8())) {
             ThrowError(importPath->Start(),
-                       "Cannot find index.[sts|ts] or package module in folder: " + importPath->Str().Mutf8());
+                       "Cannot find index.[ets|ts] or package module in folder: " + importPath->Str().Mutf8());
         } else {
             ThrowError(importPath->Start(), "Cannot find import: " + importPath->Str().Mutf8());
         }

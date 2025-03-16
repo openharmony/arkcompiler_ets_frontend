@@ -207,7 +207,7 @@ bool ETSParser::ParseNumberEnumHelper()
     }
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_NUMBER) {
-        // enum15.sts; will be zero by default
+        // enum15.ets; will be zero by default
         LogError(diagnostic::INVALID_ENUM_TYPE, {}, Lexer()->GetToken().Start());
         Lexer()->GetToken().SetTokenType(lexer::TokenType::LITERAL_NUMBER);
         Lexer()->GetToken().SetTokenStr(ERROR_LITERAL);

@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "test_jsvalue_set_double.sts"
+              "program": "test_jsvalue_set_double.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "test_jsvalue_set_double.sts"
+              "program": "test_jsvalue_set_double.ets"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "test_jsvalue_set_double.sts"
+                "program": "test_jsvalue_set_double.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "test_jsvalue_set_double.sts"
+                "program": "test_jsvalue_set_double.ets"
               }
             }
           },
@@ -227,12 +227,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "test_jsvalue_set_double.sts"
+                "program": "test_jsvalue_set_double.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "test_jsvalue_set_double.sts"
+                "program": "test_jsvalue_set_double.ets"
               }
             }
           },
@@ -246,12 +246,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "test_jsvalue_set_double.sts"
+                  "program": "test_jsvalue_set_double.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 12,
-                  "program": "test_jsvalue_set_double.sts"
+                  "program": "test_jsvalue_set_double.ets"
                 }
               }
             },
@@ -272,12 +272,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "test_jsvalue_set_double.sts"
+                      "program": "test_jsvalue_set_double.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 12,
-                      "program": "test_jsvalue_set_double.sts"
+                      "program": "test_jsvalue_set_double.ets"
                     }
                   }
                 },
@@ -291,12 +291,12 @@
                     "start": {
                       "line": 16,
                       "column": 16,
-                      "program": "test_jsvalue_set_double.sts"
+                      "program": "test_jsvalue_set_double.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 20,
-                      "program": "test_jsvalue_set_double.sts"
+                      "program": "test_jsvalue_set_double.ets"
                     }
                   }
                 },
@@ -323,12 +323,12 @@
                                     "start": {
                                       "line": 17,
                                       "column": 12,
-                                      "program": "test_jsvalue_set_double.sts"
+                                      "program": "test_jsvalue_set_double.ets"
                                     },
                                     "end": {
                                       "line": 17,
                                       "column": 19,
-                                      "program": "test_jsvalue_set_double.sts"
+                                      "program": "test_jsvalue_set_double.ets"
                                     }
                                   }
                                 },
@@ -336,12 +336,12 @@
                                   "start": {
                                     "line": 17,
                                     "column": 12,
-                                    "program": "test_jsvalue_set_double.sts"
+                                    "program": "test_jsvalue_set_double.ets"
                                   },
                                   "end": {
                                     "line": 17,
                                     "column": 20,
-                                    "program": "test_jsvalue_set_double.sts"
+                                    "program": "test_jsvalue_set_double.ets"
                                   }
                                 }
                               },
@@ -349,12 +349,12 @@
                                 "start": {
                                   "line": 17,
                                   "column": 12,
-                                  "program": "test_jsvalue_set_double.sts"
+                                  "program": "test_jsvalue_set_double.ets"
                                 },
                                 "end": {
                                   "line": 17,
                                   "column": 20,
-                                  "program": "test_jsvalue_set_double.sts"
+                                  "program": "test_jsvalue_set_double.ets"
                                 }
                               }
                             },
@@ -363,12 +363,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 9,
-                                "program": "test_jsvalue_set_double.sts"
+                                "program": "test_jsvalue_set_double.ets"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 10,
-                                "program": "test_jsvalue_set_double.sts"
+                                "program": "test_jsvalue_set_double.ets"
                               }
                             }
                           },
@@ -377,12 +377,12 @@
                             "start": {
                               "line": 17,
                               "column": 9,
-                              "program": "test_jsvalue_set_double.sts"
+                              "program": "test_jsvalue_set_double.ets"
                             },
                             "end": {
                               "line": 17,
                               "column": 10,
-                              "program": "test_jsvalue_set_double.sts"
+                              "program": "test_jsvalue_set_double.ets"
                             }
                           }
                         }
@@ -392,12 +392,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "test_jsvalue_set_double.sts"
+                          "program": "test_jsvalue_set_double.ets"
                         },
                         "end": {
                           "line": 17,
                           "column": 20,
-                          "program": "test_jsvalue_set_double.sts"
+                          "program": "test_jsvalue_set_double.ets"
                         }
                       }
                     },
@@ -414,12 +414,12 @@
                             "start": {
                               "line": 18,
                               "column": 5,
-                              "program": "test_jsvalue_set_double.sts"
+                              "program": "test_jsvalue_set_double.ets"
                             },
                             "end": {
                               "line": 18,
                               "column": 6,
-                              "program": "test_jsvalue_set_double.sts"
+                              "program": "test_jsvalue_set_double.ets"
                             }
                           }
                         },
@@ -430,12 +430,12 @@
                             "start": {
                               "line": 18,
                               "column": 9,
-                              "program": "test_jsvalue_set_double.sts"
+                              "program": "test_jsvalue_set_double.ets"
                             },
                             "end": {
                               "line": 18,
                               "column": 14,
-                              "program": "test_jsvalue_set_double.sts"
+                              "program": "test_jsvalue_set_double.ets"
                             }
                           }
                         },
@@ -443,12 +443,12 @@
                           "start": {
                             "line": 18,
                             "column": 5,
-                            "program": "test_jsvalue_set_double.sts"
+                            "program": "test_jsvalue_set_double.ets"
                           },
                           "end": {
                             "line": 18,
                             "column": 14,
-                            "program": "test_jsvalue_set_double.sts"
+                            "program": "test_jsvalue_set_double.ets"
                           }
                         }
                       },
@@ -456,12 +456,12 @@
                         "start": {
                           "line": 18,
                           "column": 5,
-                          "program": "test_jsvalue_set_double.sts"
+                          "program": "test_jsvalue_set_double.ets"
                         },
                         "end": {
                           "line": 18,
                           "column": 15,
-                          "program": "test_jsvalue_set_double.sts"
+                          "program": "test_jsvalue_set_double.ets"
                         }
                       }
                     }
@@ -470,12 +470,12 @@
                     "start": {
                       "line": 16,
                       "column": 21,
-                      "program": "test_jsvalue_set_double.sts"
+                      "program": "test_jsvalue_set_double.ets"
                     },
                     "end": {
                       "line": 19,
                       "column": 2,
-                      "program": "test_jsvalue_set_double.sts"
+                      "program": "test_jsvalue_set_double.ets"
                     }
                   }
                 },
@@ -483,12 +483,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "test_jsvalue_set_double.sts"
+                    "program": "test_jsvalue_set_double.ets"
                   },
                   "end": {
                     "line": 19,
                     "column": 2,
-                    "program": "test_jsvalue_set_double.sts"
+                    "program": "test_jsvalue_set_double.ets"
                   }
                 }
               },
@@ -496,12 +496,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "test_jsvalue_set_double.sts"
+                  "program": "test_jsvalue_set_double.ets"
                 },
                 "end": {
                   "line": 19,
                   "column": 2,
-                  "program": "test_jsvalue_set_double.sts"
+                  "program": "test_jsvalue_set_double.ets"
                 }
               }
             },
@@ -511,12 +511,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "test_jsvalue_set_double.sts"
+                "program": "test_jsvalue_set_double.ets"
               },
               "end": {
                 "line": 19,
                 "column": 2,
-                "program": "test_jsvalue_set_double.sts"
+                "program": "test_jsvalue_set_double.ets"
               }
             }
           }
@@ -525,12 +525,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "test_jsvalue_set_double.sts"
+            "program": "test_jsvalue_set_double.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "test_jsvalue_set_double.sts"
+            "program": "test_jsvalue_set_double.ets"
           }
         }
       },
@@ -538,12 +538,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "test_jsvalue_set_double.sts"
+          "program": "test_jsvalue_set_double.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "test_jsvalue_set_double.sts"
+          "program": "test_jsvalue_set_double.ets"
         }
       }
     }
@@ -552,12 +552,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "test_jsvalue_set_double.sts"
+      "program": "test_jsvalue_set_double.ets"
     },
     "end": {
       "line": 20,
       "column": 1,
-      "program": "test_jsvalue_set_double.sts"
+      "program": "test_jsvalue_set_double.ets"
     }
   }
 }

@@ -157,7 +157,7 @@ static int Run(Span<const char *const> args)
     std::string sourceFile;
     std::string_view parserInput;
     if (options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
-        sourceFile = "etsstdlib.sts";
+        sourceFile = "etsstdlib.ets";
         parserInput = "";
     } else {
         sourceFile = options->SourceFileName();

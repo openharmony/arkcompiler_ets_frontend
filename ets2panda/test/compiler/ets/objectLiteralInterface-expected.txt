@@ -10,12 +10,12 @@
           "start": {
             "line": 16,
             "column": 13,
-            "program": "objectLiteralInterface.sts"
+            "program": "objectLiteralInterface.ets"
           },
           "end": {
             "line": 16,
             "column": 15,
-            "program": "objectLiteralInterface.sts"
+            "program": "objectLiteralInterface.ets"
           }
         }
       },
@@ -27,12 +27,12 @@
           "start": {
             "line": 16,
             "column": 11,
-            "program": "objectLiteralInterface.sts"
+            "program": "objectLiteralInterface.ets"
           },
           "end": {
             "line": 16,
             "column": 12,
-            "program": "objectLiteralInterface.sts"
+            "program": "objectLiteralInterface.ets"
           }
         }
       },
@@ -41,12 +41,12 @@
         "start": {
           "line": 16,
           "column": 1,
-          "program": "objectLiteralInterface.sts"
+          "program": "objectLiteralInterface.ets"
         },
         "end": {
           "line": 18,
           "column": 4,
-          "program": "objectLiteralInterface.sts"
+          "program": "objectLiteralInterface.ets"
         }
       }
     },
@@ -61,12 +61,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "objectLiteralInterface.sts"
+              "program": "objectLiteralInterface.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "objectLiteralInterface.sts"
+              "program": "objectLiteralInterface.ets"
             }
           }
         },
@@ -170,12 +170,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "objectLiteralInterface.sts"
+                "program": "objectLiteralInterface.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "objectLiteralInterface.sts"
+                "program": "objectLiteralInterface.ets"
               }
             }
           },
@@ -244,12 +244,12 @@
                             "start": {
                               "line": 18,
                               "column": 5,
-                              "program": "objectLiteralInterface.sts"
+                              "program": "objectLiteralInterface.ets"
                             },
                             "end": {
                               "line": 18,
                               "column": 6,
-                              "program": "objectLiteralInterface.sts"
+                              "program": "objectLiteralInterface.ets"
                             }
                           }
                         },
@@ -260,12 +260,12 @@
                             "start": {
                               "line": 18,
                               "column": 12,
-                              "program": "objectLiteralInterface.sts"
+                              "program": "objectLiteralInterface.ets"
                             },
                             "end": {
                               "line": 18,
                               "column": 14,
-                              "program": "objectLiteralInterface.sts"
+                              "program": "objectLiteralInterface.ets"
                             }
                           }
                         },
@@ -273,12 +273,12 @@
                           "start": {
                             "line": 18,
                             "column": 5,
-                            "program": "objectLiteralInterface.sts"
+                            "program": "objectLiteralInterface.ets"
                           },
                           "end": {
                             "line": 18,
                             "column": 14,
-                            "program": "objectLiteralInterface.sts"
+                            "program": "objectLiteralInterface.ets"
                           }
                         }
                       },
@@ -286,12 +286,12 @@
                         "start": {
                           "line": 18,
                           "column": 5,
-                          "program": "objectLiteralInterface.sts"
+                          "program": "objectLiteralInterface.ets"
                         },
                         "end": {
                           "line": 18,
                           "column": 14,
-                          "program": "objectLiteralInterface.sts"
+                          "program": "objectLiteralInterface.ets"
                         }
                       }
                     }
@@ -341,12 +341,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "objectLiteralInterface.sts"
+                "program": "objectLiteralInterface.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "objectLiteralInterface.sts"
+                "program": "objectLiteralInterface.ets"
               }
             }
           },
@@ -360,12 +360,12 @@
                 "start": {
                   "line": 18,
                   "column": 5,
-                  "program": "objectLiteralInterface.sts"
+                  "program": "objectLiteralInterface.ets"
                 },
                 "end": {
                   "line": 18,
                   "column": 6,
-                  "program": "objectLiteralInterface.sts"
+                  "program": "objectLiteralInterface.ets"
                 }
               }
             },
@@ -387,12 +387,12 @@
                     "start": {
                       "line": 18,
                       "column": 8,
-                      "program": "objectLiteralInterface.sts"
+                      "program": "objectLiteralInterface.ets"
                     },
                     "end": {
                       "line": 18,
                       "column": 9,
-                      "program": "objectLiteralInterface.sts"
+                      "program": "objectLiteralInterface.ets"
                     }
                   }
                 },
@@ -400,12 +400,12 @@
                   "start": {
                     "line": 18,
                     "column": 8,
-                    "program": "objectLiteralInterface.sts"
+                    "program": "objectLiteralInterface.ets"
                   },
                   "end": {
                     "line": 18,
                     "column": 11,
-                    "program": "objectLiteralInterface.sts"
+                    "program": "objectLiteralInterface.ets"
                   }
                 }
               },
@@ -413,12 +413,12 @@
                 "start": {
                   "line": 18,
                   "column": 8,
-                  "program": "objectLiteralInterface.sts"
+                  "program": "objectLiteralInterface.ets"
                 },
                 "end": {
                   "line": 18,
                   "column": 11,
-                  "program": "objectLiteralInterface.sts"
+                  "program": "objectLiteralInterface.ets"
                 }
               }
             },
@@ -428,12 +428,12 @@
               "start": {
                 "line": 18,
                 "column": 5,
-                "program": "objectLiteralInterface.sts"
+                "program": "objectLiteralInterface.ets"
               },
               "end": {
                 "line": 18,
                 "column": 14,
-                "program": "objectLiteralInterface.sts"
+                "program": "objectLiteralInterface.ets"
               }
             }
           }
@@ -442,12 +442,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "objectLiteralInterface.sts"
+            "program": "objectLiteralInterface.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "objectLiteralInterface.sts"
+            "program": "objectLiteralInterface.ets"
           }
         }
       },
@@ -455,12 +455,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "objectLiteralInterface.sts"
+          "program": "objectLiteralInterface.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "objectLiteralInterface.sts"
+          "program": "objectLiteralInterface.ets"
         }
       }
     }
@@ -469,12 +469,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "objectLiteralInterface.sts"
+      "program": "objectLiteralInterface.ets"
     },
     "end": {
       "line": 19,
       "column": 1,
-      "program": "objectLiteralInterface.sts"
+      "program": "objectLiteralInterface.ets"
     }
   }
 }

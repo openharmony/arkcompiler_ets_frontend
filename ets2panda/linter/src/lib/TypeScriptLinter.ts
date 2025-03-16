@@ -1466,8 +1466,8 @@ export class TypeScriptLinter {
     const leftSymbol = this.tsUtils.trueSymbolAtLocation(leftExpr);
 
     /*
-     * In STS, the left-hand side expression may be of any reference type, otherwise
-     * a compile-time error occurs. In addition, the left operand in STS cannot be a type.
+     * In ETS, the left-hand side expression may be of any reference type, otherwise
+     * a compile-time error occurs. In addition, the left operand in ETS cannot be a type.
      */
     if (tsLhsExpr.kind === ts.SyntaxKind.ThisKeyword) {
       return;
@@ -1612,7 +1612,7 @@ export class TypeScriptLinter {
 
     /*
      * In TS catch clause doesn't permit specification of the exception varible type except 'any' or 'unknown'.
-     * It is not compatible with STS 'catch' where the exception variable has to be of type
+     * It is not compatible with ETS 'catch' where the exception variable has to be of type
      * Error or derived from it.
      * So each 'catch' which has explicit type for the exception object goes to problems.
      */

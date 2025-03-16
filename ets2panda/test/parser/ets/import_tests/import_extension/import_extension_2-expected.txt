@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "import_extension_2.sts"
+              "program": "import_extension_2.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "import_extension_2.sts"
+              "program": "import_extension_2.ets"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "import_extension_2.sts"
+                "program": "import_extension_2.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "import_extension_2.sts"
+                "program": "import_extension_2.ets"
               }
             }
           },
@@ -195,12 +195,12 @@
                             "start": {
                               "line": 16,
                               "column": 12,
-                              "program": "import_extension_2.sts"
+                              "program": "import_extension_2.ets"
                             },
                             "end": {
                               "line": 16,
                               "column": 15,
-                              "program": "import_extension_2.sts"
+                              "program": "import_extension_2.ets"
                             }
                           }
                         },
@@ -211,12 +211,12 @@
                             "start": {
                               "line": 16,
                               "column": 18,
-                              "program": "import_extension_2.sts"
+                              "program": "import_extension_2.ets"
                             },
                             "end": {
                               "line": 16,
                               "column": 21,
-                              "program": "import_extension_2.sts"
+                              "program": "import_extension_2.ets"
                             }
                           }
                         },
@@ -224,12 +224,12 @@
                           "start": {
                             "line": 16,
                             "column": 12,
-                            "program": "import_extension_2.sts"
+                            "program": "import_extension_2.ets"
                           },
                           "end": {
                             "line": 16,
                             "column": 21,
-                            "program": "import_extension_2.sts"
+                            "program": "import_extension_2.ets"
                           }
                         }
                       },
@@ -237,12 +237,12 @@
                         "start": {
                           "line": 16,
                           "column": 12,
-                          "program": "import_extension_2.sts"
+                          "program": "import_extension_2.ets"
                         },
                         "end": {
                           "line": 16,
                           "column": 21,
-                          "program": "import_extension_2.sts"
+                          "program": "import_extension_2.ets"
                         }
                       }
                     }
@@ -292,12 +292,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "import_extension_2.sts"
+                "program": "import_extension_2.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "import_extension_2.sts"
+                "program": "import_extension_2.ets"
               }
             }
           },
@@ -311,12 +311,12 @@
                 "start": {
                   "line": 16,
                   "column": 12,
-                  "program": "import_extension_2.sts"
+                  "program": "import_extension_2.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 15,
-                  "program": "import_extension_2.sts"
+                  "program": "import_extension_2.ets"
                 }
               }
             },
@@ -327,12 +327,12 @@
                 "start": {
                   "line": 16,
                   "column": 18,
-                  "program": "import_extension_2.sts"
+                  "program": "import_extension_2.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 21,
-                  "program": "import_extension_2.sts"
+                  "program": "import_extension_2.ets"
                 }
               }
             },
@@ -348,12 +348,12 @@
               "start": {
                 "line": 16,
                 "column": 12,
-                "program": "import_extension_2.sts"
+                "program": "import_extension_2.ets"
               },
               "end": {
                 "line": 16,
                 "column": 21,
-                "program": "import_extension_2.sts"
+                "program": "import_extension_2.ets"
               }
             }
           }
@@ -362,12 +362,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "import_extension_2.sts"
+            "program": "import_extension_2.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "import_extension_2.sts"
+            "program": "import_extension_2.ets"
           }
         }
       },
@@ -375,12 +375,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "import_extension_2.sts"
+          "program": "import_extension_2.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "import_extension_2.sts"
+          "program": "import_extension_2.ets"
         }
       }
     }
@@ -389,12 +389,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "import_extension_2.sts"
+      "program": "import_extension_2.ets"
     },
     "end": {
       "line": 16,
       "column": 22,
-      "program": "import_extension_2.sts"
+      "program": "import_extension_2.ets"
     }
   }
 }

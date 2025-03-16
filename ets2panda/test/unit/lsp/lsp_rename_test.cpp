@@ -31,7 +31,7 @@ TEST_F(LspRenameInfoTests, RenameInfoCreateTriggerSpanForNodeNumberLiteral)
 {
     Initializer initializer = Initializer();
 
-    es2panda_Context *ctx = initializer.CreateContext("trigger-span-literal.sts", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("trigger-span-literal.ets", ES2PANDA_STATE_CHECKED,
                                                       "let number_literal: number = 1234\n");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
@@ -53,7 +53,7 @@ TEST_F(LspRenameInfoTests, RenameInfoCreateTriggerSpanForNodeStringLiteral)
 {
     Initializer initializer = Initializer();
 
-    es2panda_Context *ctx = initializer.CreateContext("trigger-span-string-literal.sts", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("trigger-span-string-literal.ets", ES2PANDA_STATE_CHECKED,
                                                       "let string_literal: string = \"hello\";\n");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
@@ -76,7 +76,7 @@ TEST_F(LspRenameInfoTests, RenameInfoCreateTriggerSpanForNodeEmptyStringLiteral)
     Initializer initializer = Initializer();
 
     es2panda_Context *ctx =
-        initializer.CreateContext("trigger-span-empty-string.sts", ES2PANDA_STATE_CHECKED, "let emptyStr = \"\";");
+        initializer.CreateContext("trigger-span-empty-string.ets", ES2PANDA_STATE_CHECKED, "let emptyStr = \"\";");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
@@ -104,7 +104,7 @@ TEST_F(LspRenameInfoTests, RenameInfoNodeReturnTrueIfStartEqualEnd)
 {
     Initializer initializer = Initializer();
 
-    es2panda_Context *ctx = initializer.CreateContext("StartEqualEnd.sts", ES2PANDA_STATE_CHECKED, "");
+    es2panda_Context *ctx = initializer.CreateContext("StartEqualEnd.ets", ES2PANDA_STATE_CHECKED, "");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
@@ -126,7 +126,7 @@ TEST_F(LspRenameInfoTests, RenameInfoNodeReturnFalseIfStartNotEqualEnd)
 {
     Initializer initializer = Initializer();
 
-    es2panda_Context *ctx = initializer.CreateContext("StartNotEqualEnd.sts", ES2PANDA_STATE_CHECKED, "");
+    es2panda_Context *ctx = initializer.CreateContext("StartNotEqualEnd.ets", ES2PANDA_STATE_CHECKED, "");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
@@ -149,7 +149,7 @@ TEST_F(LspRenameInfoTests, RenameInfoNodeGetSourceTextOfNodeFromSourceFile)
     Initializer initializer = Initializer();
 
     auto sourceView = ark::es2panda::util::StringView("function A(a:number, b:number) {\n  return a + b;\n}\nA(1, 2);");
-    es2panda_Context *ctx = initializer.CreateContext("GetTextOfNodeFromSourceFile.sts", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("GetTextOfNodeFromSourceFile.ets", ES2PANDA_STATE_CHECKED,
                                                       "function A(a:number, b:number) {\n  return a + b;\n}\nA(1, 2);");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
@@ -215,7 +215,7 @@ TEST_F(LspRenameInfoTests, RenameInfoIsStringOrNumericLiteralLike)
 {
     Initializer initializer = Initializer();
 
-    es2panda_Context *ctx = initializer.CreateContext("trigger-span-string-literal.sts", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("trigger-span-string-literal.ets", ES2PANDA_STATE_CHECKED,
                                                       "let string_literal: string = \"hello\";\n");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
@@ -238,7 +238,7 @@ TEST_F(LspRenameInfoTests, RenameInfoGetNodeKindForRenameInfo)
 {
     Initializer initializer = Initializer();
 
-    es2panda_Context *ctx = initializer.CreateContext("token-pos-identifier.sts", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("token-pos-identifier.ets", ES2PANDA_STATE_CHECKED,
                                                       "function A(a:number, b:number) {\n  return a + b;\n}\nA(1, 2);");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
@@ -251,7 +251,7 @@ TEST_F(LspRenameInfoTests, RenameInfoGetTextOfNode)
 {
     Initializer initializer = Initializer();
 
-    std::vector<std::string> files = {"reanme_export1.sts"};
+    std::vector<std::string> files = {"reanme_export1.ets"};
     std::vector<std::string> texts = {
         R"(export function A(a:number, b:number): number {return a + b;}
         export function B(a:number, b:number): number {return a + b;})"};
@@ -293,7 +293,7 @@ TEST_F(LspRenameInfoTests, RenameInfoGetRenameInfoSuccess)
 {
     Initializer initializer = Initializer();
 
-    es2panda_Context *ctx = initializer.CreateContext("token-pos-identifier.sts", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("token-pos-identifier.ets", ES2PANDA_STATE_CHECKED,
                                                       "function A(a:number, b:number) {\n  return a + b;\n}\nA(1, 2);");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
@@ -318,7 +318,7 @@ TEST_F(LspRenameInfoTests, RenameInfoTryGetImportFromModuleSpecifier)
 {
     Initializer initializer = Initializer();
 
-    std::vector<std::string> files = {"rename-module.sts"};
+    std::vector<std::string> files = {"rename-module.ets"};
     std::vector<std::string> texts = {R"(import { PI } from "std/math";
     console.log(PI);)"};
 
@@ -347,7 +347,7 @@ TEST_F(LspRenameInfoTests, RenameInfoGetRenameInfoForModuleCaseModule1)
 {
     Initializer initializer = Initializer();
 
-    std::vector<std::string> files = {"rename-module.sts"};
+    std::vector<std::string> files = {"rename-module.ets"};
     std::vector<std::string> texts = {R"(const s = "std/math/index";)"};
     auto filePaths = CreateTempFile(files, texts);
     size_t const expectedSize = 1;
@@ -374,8 +374,8 @@ TEST_F(LspRenameInfoTests, RenameInfoGetRenameInfoForModuleCaseModule2)
 {
     Initializer initializer = Initializer();
 
-    std::vector<std::string> files = {"rename-module.sts"};
-    std::vector<std::string> texts = {R"(const s = "std/math.sts";)"};
+    std::vector<std::string> files = {"rename-module.ets"};
+    std::vector<std::string> texts = {R"(const s = "std/math.ets";)"};
     auto filePaths = CreateTempFile(files, texts);
     size_t const expectedSize = 1;
     ASSERT_EQ(filePaths.size(), expectedSize);
@@ -387,7 +387,7 @@ TEST_F(LspRenameInfoTests, RenameInfoGetRenameInfoForModuleCaseModule2)
 
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     auto targetNode = ast->FindChild([](ark::es2panda::ir::AstNode *node) {
-        return node->IsStringLiteral() && node->AsStringLiteral()->ToString() == "std/math.sts";
+        return node->IsStringLiteral() && node->AsStringLiteral()->ToString() == "std/math.ets";
     });
     ASSERT_NE(targetNode, nullptr);
 
@@ -401,8 +401,8 @@ TEST_F(LspRenameInfoTests, RenameInfoGetRenameInfoForModuleCaseDirectory)
 {
     Initializer initializer = Initializer();
 
-    std::vector<std::string> files = {"rename-directory.sts"};
-    std::vector<std::string> texts = {R"(const s = "std/math/index.sts";)"};
+    std::vector<std::string> files = {"rename-directory.ets"};
+    std::vector<std::string> texts = {R"(const s = "std/math/index.ets";)"};
     auto filePaths = CreateTempFile(files, texts);
     size_t const expectedSize = 1;
     ASSERT_EQ(filePaths.size(), expectedSize);
@@ -414,7 +414,7 @@ TEST_F(LspRenameInfoTests, RenameInfoGetRenameInfoForModuleCaseDirectory)
 
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     auto targetNode = ast->FindChild([](ark::es2panda::ir::AstNode *node) {
-        return node->IsStringLiteral() && node->AsStringLiteral()->ToString() == "std/math/index.sts";
+        return node->IsStringLiteral() && node->AsStringLiteral()->ToString() == "std/math/index.ets";
     });
     ASSERT_NE(targetNode, nullptr);
 
@@ -428,7 +428,7 @@ TEST_F(LspRenameInfoTests, RenameInfoGetRenameInfoForNode1)
 {
     Initializer initializer = Initializer();
 
-    std::vector<std::string> files = {"rename.sts"};
+    std::vector<std::string> files = {"rename.ets"};
     std::vector<std::string> texts = {R"(import { PI } from "std/math"; console.log(PI);)"};
 
     auto filePaths = CreateTempFile(files, texts);
@@ -454,7 +454,7 @@ TEST_F(LspRenameInfoTests, RenameInfoGetRenameInfoForNode1)
 TEST_F(LspRenameInfoTests, RenameInfoNodeIsEligibleForRenameStringLiteral)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("trigger-span-string-literal.sts", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("trigger-span-string-literal.ets", ES2PANDA_STATE_CHECKED,
                                                       "let string_literal: string = \"hello\";\n");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 

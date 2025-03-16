@@ -11,12 +11,12 @@
           "start": {
             "line": 16,
             "column": 6,
-            "program": "type_alias_1.sts"
+            "program": "type_alias_1.ets"
           },
           "end": {
             "line": 16,
             "column": 12,
-            "program": "type_alias_1.sts"
+            "program": "type_alias_1.ets"
           }
         }
       },
@@ -30,12 +30,12 @@
               "start": {
                 "line": 16,
                 "column": 15,
-                "program": "type_alias_1.sts"
+                "program": "type_alias_1.ets"
               },
               "end": {
                 "line": 16,
                 "column": 18,
-                "program": "type_alias_1.sts"
+                "program": "type_alias_1.ets"
               }
             }
           },
@@ -44,12 +44,12 @@
             "start": {
               "line": 16,
               "column": 18,
-              "program": "type_alias_1.sts"
+              "program": "type_alias_1.ets"
             },
             "end": {
               "line": 16,
               "column": 20,
-              "program": "type_alias_1.sts"
+              "program": "type_alias_1.ets"
             }
           }
         },
@@ -58,12 +58,12 @@
           "start": {
             "line": 16,
             "column": 20,
-            "program": "type_alias_1.sts"
+            "program": "type_alias_1.ets"
           },
           "end": {
             "line": 16,
             "column": 22,
-            "program": "type_alias_1.sts"
+            "program": "type_alias_1.ets"
           }
         }
       },
@@ -71,12 +71,12 @@
         "start": {
           "line": 16,
           "column": 1,
-          "program": "type_alias_1.sts"
+          "program": "type_alias_1.ets"
         },
         "end": {
           "line": 18,
           "column": 4,
-          "program": "type_alias_1.sts"
+          "program": "type_alias_1.ets"
         }
       }
     },
@@ -91,12 +91,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "type_alias_1.sts"
+              "program": "type_alias_1.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "type_alias_1.sts"
+              "program": "type_alias_1.ets"
             }
           }
         },
@@ -200,12 +200,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "type_alias_1.sts"
+                "program": "type_alias_1.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "type_alias_1.sts"
+                "program": "type_alias_1.ets"
               }
             }
           },
@@ -306,12 +306,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "type_alias_1.sts"
+                "program": "type_alias_1.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "type_alias_1.sts"
+                "program": "type_alias_1.ets"
               }
             }
           },
@@ -325,12 +325,12 @@
                 "start": {
                   "line": 18,
                   "column": 5,
-                  "program": "type_alias_1.sts"
+                  "program": "type_alias_1.ets"
                 },
                 "end": {
                   "line": 18,
                   "column": 11,
-                  "program": "type_alias_1.sts"
+                  "program": "type_alias_1.ets"
                 }
               }
             },
@@ -352,12 +352,12 @@
                     "start": {
                       "line": 18,
                       "column": 13,
-                      "program": "type_alias_1.sts"
+                      "program": "type_alias_1.ets"
                     },
                     "end": {
                       "line": 18,
                       "column": 19,
-                      "program": "type_alias_1.sts"
+                      "program": "type_alias_1.ets"
                     }
                   }
                 },
@@ -365,12 +365,12 @@
                   "start": {
                     "line": 18,
                     "column": 13,
-                    "program": "type_alias_1.sts"
+                    "program": "type_alias_1.ets"
                   },
                   "end": {
                     "line": 19,
                     "column": 1,
-                    "program": "type_alias_1.sts"
+                    "program": "type_alias_1.ets"
                   }
                 }
               },
@@ -378,12 +378,12 @@
                 "start": {
                   "line": 18,
                   "column": 13,
-                  "program": "type_alias_1.sts"
+                  "program": "type_alias_1.ets"
                 },
                 "end": {
                   "line": 19,
                   "column": 1,
-                  "program": "type_alias_1.sts"
+                  "program": "type_alias_1.ets"
                 }
               }
             },
@@ -393,12 +393,12 @@
               "start": {
                 "line": 18,
                 "column": 5,
-                "program": "type_alias_1.sts"
+                "program": "type_alias_1.ets"
               },
               "end": {
                 "line": 18,
                 "column": 11,
-                "program": "type_alias_1.sts"
+                "program": "type_alias_1.ets"
               }
             }
           }
@@ -407,12 +407,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "type_alias_1.sts"
+            "program": "type_alias_1.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "type_alias_1.sts"
+            "program": "type_alias_1.ets"
           }
         }
       },
@@ -420,12 +420,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "type_alias_1.sts"
+          "program": "type_alias_1.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "type_alias_1.sts"
+          "program": "type_alias_1.ets"
         }
       }
     }
@@ -434,13 +434,13 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "type_alias_1.sts"
+      "program": "type_alias_1.ets"
     },
     "end": {
       "line": 19,
       "column": 1,
-      "program": "type_alias_1.sts"
+      "program": "type_alias_1.ets"
     }
   }
 }
-TypeError: Variable 'Matrix' has already been declared. [type_alias_1.sts:18:5]
+TypeError: Variable 'Matrix' has already been declared. [type_alias_1.ets:18:5]

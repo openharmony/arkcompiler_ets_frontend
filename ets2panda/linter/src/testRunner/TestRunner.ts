@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -47,9 +47,9 @@ const RESULTS_DIR = 'results';
 
 const ARGS_CONFIG_EXT = '.args.json';
 const DIFF_EXT = '.diff';
-const TEST_EXTENSION_STS = '.sts';
-const TEST_EXTENSION_STSX = '.stsx';
-const TEST_EXTENSION_D_STS = '.d.sts';
+const TEST_EXTENSION_ETS = '.ets';
+const TEST_EXTENSION_ETSX = '.etsx';
+const TEST_EXTENSION_D_ETS = '.d.ets';
 
 interface TestStatistics {
   passed: number;
@@ -212,8 +212,8 @@ function runTests(): boolean {
         x.trimEnd().endsWith(ts.Extension.Ts) && !x.trimEnd().endsWith(ts.Extension.Dts) ||
         x.trimEnd().endsWith(ts.Extension.Tsx) ||
         x.trimEnd().endsWith(ts.Extension.Ets) ||
-        x.trimEnd().endsWith(TEST_EXTENSION_STS) && !x.trimEnd().endsWith(TEST_EXTENSION_D_STS) ||
-        x.trimEnd().endsWith(TEST_EXTENSION_STSX)
+        x.trimEnd().endsWith(TEST_EXTENSION_ETS) && !x.trimEnd().endsWith(TEST_EXTENSION_D_ETS) ||
+        x.trimEnd().endsWith(TEST_EXTENSION_ETSX)
       );
     });
     runTestFiles(testFiles, testDir, testRunnerOpts, testStats);
@@ -246,9 +246,9 @@ function runTestFiles(
     try {
       let renamed = false;
       let tsName = testFile;
-      if (testFile.includes(TEST_EXTENSION_STS)) {
+      if (testFile.includes(TEST_EXTENSION_ETS)) {
         renamed = true;
-        tsName = testFile.replace(TEST_EXTENSION_STS, ts.Extension.Ts);
+        tsName = testFile.replace(TEST_EXTENSION_ETS, ts.Extension.Ts);
         fs.renameSync(path.join(testDir, testFile), path.join(testDir, tsName));
       }
       runTestFile({ testDir, testFile: tsName, testRunnerOpts }, testStats);

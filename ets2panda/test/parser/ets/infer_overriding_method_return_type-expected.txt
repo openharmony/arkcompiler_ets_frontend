@@ -12,12 +12,12 @@
             "start": {
               "line": 16,
               "column": 16,
-              "program": "infer_overriding_method_return_type.sts"
+              "program": "infer_overriding_method_return_type.ets"
             },
             "end": {
               "line": 16,
               "column": 20,
-              "program": "infer_overriding_method_return_type.sts"
+              "program": "infer_overriding_method_return_type.ets"
             }
           }
         },
@@ -34,12 +34,12 @@
                 "start": {
                   "line": 17,
                   "column": 14,
-                  "program": "infer_overriding_method_return_type.sts"
+                  "program": "infer_overriding_method_return_type.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 20,
-                  "program": "infer_overriding_method_return_type.sts"
+                  "program": "infer_overriding_method_return_type.ets"
                 }
               }
             },
@@ -60,12 +60,12 @@
                     "start": {
                       "line": 17,
                       "column": 14,
-                      "program": "infer_overriding_method_return_type.sts"
+                      "program": "infer_overriding_method_return_type.ets"
                     },
                     "end": {
                       "line": 17,
                       "column": 20,
-                      "program": "infer_overriding_method_return_type.sts"
+                      "program": "infer_overriding_method_return_type.ets"
                     }
                   }
                 },
@@ -85,12 +85,12 @@
                         "start": {
                           "line": 17,
                           "column": 24,
-                          "program": "infer_overriding_method_return_type.sts"
+                          "program": "infer_overriding_method_return_type.ets"
                         },
                         "end": {
                           "line": 17,
                           "column": 30,
-                          "program": "infer_overriding_method_return_type.sts"
+                          "program": "infer_overriding_method_return_type.ets"
                         }
                       }
                     },
@@ -98,12 +98,12 @@
                       "start": {
                         "line": 17,
                         "column": 24,
-                        "program": "infer_overriding_method_return_type.sts"
+                        "program": "infer_overriding_method_return_type.ets"
                       },
                       "end": {
                         "line": 17,
                         "column": 31,
-                        "program": "infer_overriding_method_return_type.sts"
+                        "program": "infer_overriding_method_return_type.ets"
                       }
                     }
                   },
@@ -111,12 +111,12 @@
                     "start": {
                       "line": 17,
                       "column": 24,
-                      "program": "infer_overriding_method_return_type.sts"
+                      "program": "infer_overriding_method_return_type.ets"
                     },
                     "end": {
                       "line": 17,
                       "column": 31,
-                      "program": "infer_overriding_method_return_type.sts"
+                      "program": "infer_overriding_method_return_type.ets"
                     }
                   }
                 },
@@ -124,12 +124,12 @@
                   "start": {
                     "line": 17,
                     "column": 20,
-                    "program": "infer_overriding_method_return_type.sts"
+                    "program": "infer_overriding_method_return_type.ets"
                   },
                   "end": {
                     "line": 17,
                     "column": 20,
-                    "program": "infer_overriding_method_return_type.sts"
+                    "program": "infer_overriding_method_return_type.ets"
                   }
                 }
               },
@@ -137,12 +137,12 @@
                 "start": {
                   "line": 17,
                   "column": 20,
-                  "program": "infer_overriding_method_return_type.sts"
+                  "program": "infer_overriding_method_return_type.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 20,
-                  "program": "infer_overriding_method_return_type.sts"
+                  "program": "infer_overriding_method_return_type.ets"
                 }
               }
             },
@@ -152,12 +152,12 @@
               "start": {
                 "line": 17,
                 "column": 5,
-                "program": "infer_overriding_method_return_type.sts"
+                "program": "infer_overriding_method_return_type.ets"
               },
               "end": {
                 "line": 17,
                 "column": 20,
-                "program": "infer_overriding_method_return_type.sts"
+                "program": "infer_overriding_method_return_type.ets"
               }
             }
           },
@@ -171,12 +171,12 @@
                 "start": {
                   "line": 16,
                   "column": 22,
-                  "program": "infer_overriding_method_return_type.sts"
+                  "program": "infer_overriding_method_return_type.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 22,
-                  "program": "infer_overriding_method_return_type.sts"
+                  "program": "infer_overriding_method_return_type.ets"
                 }
               }
             },
@@ -196,12 +196,12 @@
                     "start": {
                       "line": 16,
                       "column": 22,
-                      "program": "infer_overriding_method_return_type.sts"
+                      "program": "infer_overriding_method_return_type.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 22,
-                      "program": "infer_overriding_method_return_type.sts"
+                      "program": "infer_overriding_method_return_type.ets"
                     }
                   }
                 },
@@ -216,12 +216,12 @@
                     "start": {
                       "line": 16,
                       "column": 22,
-                      "program": "infer_overriding_method_return_type.sts"
+                      "program": "infer_overriding_method_return_type.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 22,
-                      "program": "infer_overriding_method_return_type.sts"
+                      "program": "infer_overriding_method_return_type.ets"
                     }
                   }
                 },
@@ -229,12 +229,12 @@
                   "start": {
                     "line": 16,
                     "column": 22,
-                    "program": "infer_overriding_method_return_type.sts"
+                    "program": "infer_overriding_method_return_type.ets"
                   },
                   "end": {
                     "line": 16,
                     "column": 22,
-                    "program": "infer_overriding_method_return_type.sts"
+                    "program": "infer_overriding_method_return_type.ets"
                   }
                 }
               },
@@ -242,12 +242,12 @@
                 "start": {
                   "line": 16,
                   "column": 22,
-                  "program": "infer_overriding_method_return_type.sts"
+                  "program": "infer_overriding_method_return_type.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 22,
-                  "program": "infer_overriding_method_return_type.sts"
+                  "program": "infer_overriding_method_return_type.ets"
                 }
               }
             },
@@ -271,12 +271,12 @@
           "start": {
             "line": 16,
             "column": 21,
-            "program": "infer_overriding_method_return_type.sts"
+            "program": "infer_overriding_method_return_type.ets"
           },
           "end": {
             "line": 20,
             "column": 6,
-            "program": "infer_overriding_method_return_type.sts"
+            "program": "infer_overriding_method_return_type.ets"
           }
         }
       },
@@ -284,12 +284,12 @@
         "start": {
           "line": 16,
           "column": 10,
-          "program": "infer_overriding_method_return_type.sts"
+          "program": "infer_overriding_method_return_type.ets"
         },
         "end": {
           "line": 20,
           "column": 6,
-          "program": "infer_overriding_method_return_type.sts"
+          "program": "infer_overriding_method_return_type.ets"
         }
       }
     },
@@ -304,12 +304,12 @@
             "start": {
               "line": 20,
               "column": 7,
-              "program": "infer_overriding_method_return_type.sts"
+              "program": "infer_overriding_method_return_type.ets"
             },
             "end": {
               "line": 20,
               "column": 14,
-              "program": "infer_overriding_method_return_type.sts"
+              "program": "infer_overriding_method_return_type.ets"
             }
           }
         },
@@ -325,12 +325,12 @@
                 "start": {
                   "line": 20,
                   "column": 23,
-                  "program": "infer_overriding_method_return_type.sts"
+                  "program": "infer_overriding_method_return_type.ets"
                 },
                 "end": {
                   "line": 20,
                   "column": 27,
-                  "program": "infer_overriding_method_return_type.sts"
+                  "program": "infer_overriding_method_return_type.ets"
                 }
               }
             },
@@ -338,12 +338,12 @@
               "start": {
                 "line": 20,
                 "column": 23,
-                "program": "infer_overriding_method_return_type.sts"
+                "program": "infer_overriding_method_return_type.ets"
               },
               "end": {
                 "line": 20,
                 "column": 29,
-                "program": "infer_overriding_method_return_type.sts"
+                "program": "infer_overriding_method_return_type.ets"
               }
             }
           },
@@ -351,12 +351,12 @@
             "start": {
               "line": 20,
               "column": 23,
-              "program": "infer_overriding_method_return_type.sts"
+              "program": "infer_overriding_method_return_type.ets"
             },
             "end": {
               "line": 20,
               "column": 29,
-              "program": "infer_overriding_method_return_type.sts"
+              "program": "infer_overriding_method_return_type.ets"
             }
           }
         },
@@ -372,12 +372,12 @@
                 "start": {
                   "line": 21,
                   "column": 5,
-                  "program": "infer_overriding_method_return_type.sts"
+                  "program": "infer_overriding_method_return_type.ets"
                 },
                 "end": {
                   "line": 21,
                   "column": 11,
-                  "program": "infer_overriding_method_return_type.sts"
+                  "program": "infer_overriding_method_return_type.ets"
                 }
               }
             },
@@ -398,12 +398,12 @@
                     "start": {
                       "line": 21,
                       "column": 5,
-                      "program": "infer_overriding_method_return_type.sts"
+                      "program": "infer_overriding_method_return_type.ets"
                     },
                     "end": {
                       "line": 21,
                       "column": 11,
-                      "program": "infer_overriding_method_return_type.sts"
+                      "program": "infer_overriding_method_return_type.ets"
                     }
                   }
                 },
@@ -423,12 +423,12 @@
                           "start": {
                             "line": 22,
                             "column": 16,
-                            "program": "infer_overriding_method_return_type.sts"
+                            "program": "infer_overriding_method_return_type.ets"
                           },
                           "end": {
                             "line": 22,
                             "column": 19,
-                            "program": "infer_overriding_method_return_type.sts"
+                            "program": "infer_overriding_method_return_type.ets"
                           }
                         }
                       },
@@ -436,12 +436,12 @@
                         "start": {
                           "line": 22,
                           "column": 9,
-                          "program": "infer_overriding_method_return_type.sts"
+                          "program": "infer_overriding_method_return_type.ets"
                         },
                         "end": {
                           "line": 22,
                           "column": 19,
-                          "program": "infer_overriding_method_return_type.sts"
+                          "program": "infer_overriding_method_return_type.ets"
                         }
                       }
                     }
@@ -450,12 +450,12 @@
                     "start": {
                       "line": 21,
                       "column": 14,
-                      "program": "infer_overriding_method_return_type.sts"
+                      "program": "infer_overriding_method_return_type.ets"
                     },
                     "end": {
                       "line": 23,
                       "column": 6,
-                      "program": "infer_overriding_method_return_type.sts"
+                      "program": "infer_overriding_method_return_type.ets"
                     }
                   }
                 },
@@ -463,12 +463,12 @@
                   "start": {
                     "line": 21,
                     "column": 11,
-                    "program": "infer_overriding_method_return_type.sts"
+                    "program": "infer_overriding_method_return_type.ets"
                   },
                   "end": {
                     "line": 23,
                     "column": 6,
-                    "program": "infer_overriding_method_return_type.sts"
+                    "program": "infer_overriding_method_return_type.ets"
                   }
                 }
               },
@@ -476,12 +476,12 @@
                 "start": {
                   "line": 21,
                   "column": 11,
-                  "program": "infer_overriding_method_return_type.sts"
+                  "program": "infer_overriding_method_return_type.ets"
                 },
                 "end": {
                   "line": 23,
                   "column": 6,
-                  "program": "infer_overriding_method_return_type.sts"
+                  "program": "infer_overriding_method_return_type.ets"
                 }
               }
             },
@@ -491,12 +491,12 @@
               "start": {
                 "line": 21,
                 "column": 5,
-                "program": "infer_overriding_method_return_type.sts"
+                "program": "infer_overriding_method_return_type.ets"
               },
               "end": {
                 "line": 23,
                 "column": 6,
-                "program": "infer_overriding_method_return_type.sts"
+                "program": "infer_overriding_method_return_type.ets"
               }
             }
           },
@@ -510,12 +510,12 @@
                 "start": {
                   "line": 20,
                   "column": 29,
-                  "program": "infer_overriding_method_return_type.sts"
+                  "program": "infer_overriding_method_return_type.ets"
                 },
                 "end": {
                   "line": 20,
                   "column": 29,
-                  "program": "infer_overriding_method_return_type.sts"
+                  "program": "infer_overriding_method_return_type.ets"
                 }
               }
             },
@@ -535,12 +535,12 @@
                     "start": {
                       "line": 20,
                       "column": 29,
-                      "program": "infer_overriding_method_return_type.sts"
+                      "program": "infer_overriding_method_return_type.ets"
                     },
                     "end": {
                       "line": 20,
                       "column": 29,
-                      "program": "infer_overriding_method_return_type.sts"
+                      "program": "infer_overriding_method_return_type.ets"
                     }
                   }
                 },
@@ -555,12 +555,12 @@
                     "start": {
                       "line": 20,
                       "column": 29,
-                      "program": "infer_overriding_method_return_type.sts"
+                      "program": "infer_overriding_method_return_type.ets"
                     },
                     "end": {
                       "line": 20,
                       "column": 29,
-                      "program": "infer_overriding_method_return_type.sts"
+                      "program": "infer_overriding_method_return_type.ets"
                     }
                   }
                 },
@@ -568,12 +568,12 @@
                   "start": {
                     "line": 20,
                     "column": 29,
-                    "program": "infer_overriding_method_return_type.sts"
+                    "program": "infer_overriding_method_return_type.ets"
                   },
                   "end": {
                     "line": 20,
                     "column": 29,
-                    "program": "infer_overriding_method_return_type.sts"
+                    "program": "infer_overriding_method_return_type.ets"
                   }
                 }
               },
@@ -581,12 +581,12 @@
                 "start": {
                   "line": 20,
                   "column": 29,
-                  "program": "infer_overriding_method_return_type.sts"
+                  "program": "infer_overriding_method_return_type.ets"
                 },
                 "end": {
                   "line": 20,
                   "column": 29,
-                  "program": "infer_overriding_method_return_type.sts"
+                  "program": "infer_overriding_method_return_type.ets"
                 }
               }
             },
@@ -610,12 +610,12 @@
           "start": {
             "line": 20,
             "column": 28,
-            "program": "infer_overriding_method_return_type.sts"
+            "program": "infer_overriding_method_return_type.ets"
           },
           "end": {
             "line": 24,
             "column": 2,
-            "program": "infer_overriding_method_return_type.sts"
+            "program": "infer_overriding_method_return_type.ets"
           }
         }
       },
@@ -623,12 +623,12 @@
         "start": {
           "line": 20,
           "column": 1,
-          "program": "infer_overriding_method_return_type.sts"
+          "program": "infer_overriding_method_return_type.ets"
         },
         "end": {
           "line": 24,
           "column": 2,
-          "program": "infer_overriding_method_return_type.sts"
+          "program": "infer_overriding_method_return_type.ets"
         }
       }
     },
@@ -643,12 +643,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "infer_overriding_method_return_type.sts"
+              "program": "infer_overriding_method_return_type.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "infer_overriding_method_return_type.sts"
+              "program": "infer_overriding_method_return_type.ets"
             }
           }
         },
@@ -752,12 +752,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "infer_overriding_method_return_type.sts"
+                "program": "infer_overriding_method_return_type.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "infer_overriding_method_return_type.sts"
+                "program": "infer_overriding_method_return_type.ets"
               }
             }
           },
@@ -858,12 +858,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "infer_overriding_method_return_type.sts"
+                "program": "infer_overriding_method_return_type.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "infer_overriding_method_return_type.sts"
+                "program": "infer_overriding_method_return_type.ets"
               }
             }
           }
@@ -872,12 +872,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "infer_overriding_method_return_type.sts"
+            "program": "infer_overriding_method_return_type.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "infer_overriding_method_return_type.sts"
+            "program": "infer_overriding_method_return_type.ets"
           }
         }
       },
@@ -885,12 +885,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "infer_overriding_method_return_type.sts"
+          "program": "infer_overriding_method_return_type.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "infer_overriding_method_return_type.sts"
+          "program": "infer_overriding_method_return_type.ets"
         }
       }
     }
@@ -899,12 +899,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "infer_overriding_method_return_type.sts"
+      "program": "infer_overriding_method_return_type.ets"
     },
     "end": {
       "line": 24,
       "column": 2,
-      "program": "infer_overriding_method_return_type.sts"
+      "program": "infer_overriding_method_return_type.ets"
     }
   }
 }

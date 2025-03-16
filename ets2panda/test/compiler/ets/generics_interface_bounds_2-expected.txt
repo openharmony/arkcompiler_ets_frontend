@@ -10,12 +10,12 @@
           "start": {
             "line": 16,
             "column": 16,
-            "program": "generics_interface_bounds_2.sts"
+            "program": "generics_interface_bounds_2.ets"
           },
           "end": {
             "line": 16,
             "column": 18,
-            "program": "generics_interface_bounds_2.sts"
+            "program": "generics_interface_bounds_2.ets"
           }
         }
       },
@@ -27,12 +27,12 @@
           "start": {
             "line": 16,
             "column": 11,
-            "program": "generics_interface_bounds_2.sts"
+            "program": "generics_interface_bounds_2.ets"
           },
           "end": {
             "line": 16,
             "column": 15,
-            "program": "generics_interface_bounds_2.sts"
+            "program": "generics_interface_bounds_2.ets"
           }
         }
       },
@@ -41,12 +41,12 @@
         "start": {
           "line": 16,
           "column": 1,
-          "program": "generics_interface_bounds_2.sts"
+          "program": "generics_interface_bounds_2.ets"
         },
         "end": {
           "line": 17,
           "column": 10,
-          "program": "generics_interface_bounds_2.sts"
+          "program": "generics_interface_bounds_2.ets"
         }
       }
     },
@@ -59,12 +59,12 @@
           "start": {
             "line": 17,
             "column": 45,
-            "program": "generics_interface_bounds_2.sts"
+            "program": "generics_interface_bounds_2.ets"
           },
           "end": {
             "line": 17,
             "column": 47,
-            "program": "generics_interface_bounds_2.sts"
+            "program": "generics_interface_bounds_2.ets"
           }
         }
       },
@@ -76,12 +76,12 @@
           "start": {
             "line": 17,
             "column": 11,
-            "program": "generics_interface_bounds_2.sts"
+            "program": "generics_interface_bounds_2.ets"
           },
           "end": {
             "line": 17,
             "column": 12,
-            "program": "generics_interface_bounds_2.sts"
+            "program": "generics_interface_bounds_2.ets"
           }
         }
       },
@@ -99,12 +99,12 @@
                 "start": {
                   "line": 17,
                   "column": 13,
-                  "program": "generics_interface_bounds_2.sts"
+                  "program": "generics_interface_bounds_2.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 14,
-                  "program": "generics_interface_bounds_2.sts"
+                  "program": "generics_interface_bounds_2.ets"
                 }
               }
             },
@@ -112,12 +112,12 @@
               "start": {
                 "line": 17,
                 "column": 13,
-                "program": "generics_interface_bounds_2.sts"
+                "program": "generics_interface_bounds_2.ets"
               },
               "end": {
                 "line": 17,
                 "column": 15,
-                "program": "generics_interface_bounds_2.sts"
+                "program": "generics_interface_bounds_2.ets"
               }
             }
           },
@@ -131,12 +131,12 @@
                 "start": {
                   "line": 17,
                   "column": 16,
-                  "program": "generics_interface_bounds_2.sts"
+                  "program": "generics_interface_bounds_2.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 17,
-                  "program": "generics_interface_bounds_2.sts"
+                  "program": "generics_interface_bounds_2.ets"
                 }
               }
             },
@@ -152,12 +152,12 @@
                     "start": {
                       "line": 17,
                       "column": 26,
-                      "program": "generics_interface_bounds_2.sts"
+                      "program": "generics_interface_bounds_2.ets"
                     },
                     "end": {
                       "line": 17,
                       "column": 27,
-                      "program": "generics_interface_bounds_2.sts"
+                      "program": "generics_interface_bounds_2.ets"
                     }
                   }
                 },
@@ -165,12 +165,12 @@
                   "start": {
                     "line": 17,
                     "column": 26,
-                    "program": "generics_interface_bounds_2.sts"
+                    "program": "generics_interface_bounds_2.ets"
                   },
                   "end": {
                     "line": 17,
                     "column": 28,
-                    "program": "generics_interface_bounds_2.sts"
+                    "program": "generics_interface_bounds_2.ets"
                   }
                 }
               },
@@ -178,12 +178,12 @@
                 "start": {
                   "line": 17,
                   "column": 26,
-                  "program": "generics_interface_bounds_2.sts"
+                  "program": "generics_interface_bounds_2.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 28,
-                  "program": "generics_interface_bounds_2.sts"
+                  "program": "generics_interface_bounds_2.ets"
                 }
               }
             },
@@ -191,12 +191,12 @@
               "start": {
                 "line": 17,
                 "column": 16,
-                "program": "generics_interface_bounds_2.sts"
+                "program": "generics_interface_bounds_2.ets"
               },
               "end": {
                 "line": 17,
                 "column": 28,
-                "program": "generics_interface_bounds_2.sts"
+                "program": "generics_interface_bounds_2.ets"
               }
             }
           },
@@ -210,12 +210,12 @@
                 "start": {
                   "line": 17,
                   "column": 29,
-                  "program": "generics_interface_bounds_2.sts"
+                  "program": "generics_interface_bounds_2.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 30,
-                  "program": "generics_interface_bounds_2.sts"
+                  "program": "generics_interface_bounds_2.ets"
                 }
               }
             },
@@ -231,12 +231,12 @@
                     "start": {
                       "line": 17,
                       "column": 39,
-                      "program": "generics_interface_bounds_2.sts"
+                      "program": "generics_interface_bounds_2.ets"
                     },
                     "end": {
                       "line": 17,
                       "column": 43,
-                      "program": "generics_interface_bounds_2.sts"
+                      "program": "generics_interface_bounds_2.ets"
                     }
                   }
                 },
@@ -244,12 +244,12 @@
                   "start": {
                     "line": 17,
                     "column": 39,
-                    "program": "generics_interface_bounds_2.sts"
+                    "program": "generics_interface_bounds_2.ets"
                   },
                   "end": {
                     "line": 17,
                     "column": 44,
-                    "program": "generics_interface_bounds_2.sts"
+                    "program": "generics_interface_bounds_2.ets"
                   }
                 }
               },
@@ -257,12 +257,12 @@
                 "start": {
                   "line": 17,
                   "column": 39,
-                  "program": "generics_interface_bounds_2.sts"
+                  "program": "generics_interface_bounds_2.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 44,
-                  "program": "generics_interface_bounds_2.sts"
+                  "program": "generics_interface_bounds_2.ets"
                 }
               }
             },
@@ -270,12 +270,12 @@
               "start": {
                 "line": 17,
                 "column": 29,
-                "program": "generics_interface_bounds_2.sts"
+                "program": "generics_interface_bounds_2.ets"
               },
               "end": {
                 "line": 17,
                 "column": 44,
-                "program": "generics_interface_bounds_2.sts"
+                "program": "generics_interface_bounds_2.ets"
               }
             }
           }
@@ -284,12 +284,12 @@
           "start": {
             "line": 17,
             "column": 12,
-            "program": "generics_interface_bounds_2.sts"
+            "program": "generics_interface_bounds_2.ets"
           },
           "end": {
             "line": 17,
             "column": 44,
-            "program": "generics_interface_bounds_2.sts"
+            "program": "generics_interface_bounds_2.ets"
           }
         }
       },
@@ -297,12 +297,12 @@
         "start": {
           "line": 17,
           "column": 1,
-          "program": "generics_interface_bounds_2.sts"
+          "program": "generics_interface_bounds_2.ets"
         },
         "end": {
           "line": 18,
           "column": 1,
-          "program": "generics_interface_bounds_2.sts"
+          "program": "generics_interface_bounds_2.ets"
         }
       }
     },
@@ -317,12 +317,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "generics_interface_bounds_2.sts"
+              "program": "generics_interface_bounds_2.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "generics_interface_bounds_2.sts"
+              "program": "generics_interface_bounds_2.ets"
             }
           }
         },
@@ -426,12 +426,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "generics_interface_bounds_2.sts"
+                "program": "generics_interface_bounds_2.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "generics_interface_bounds_2.sts"
+                "program": "generics_interface_bounds_2.ets"
               }
             }
           },
@@ -532,12 +532,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "generics_interface_bounds_2.sts"
+                "program": "generics_interface_bounds_2.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "generics_interface_bounds_2.sts"
+                "program": "generics_interface_bounds_2.ets"
               }
             }
           }
@@ -546,12 +546,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "generics_interface_bounds_2.sts"
+            "program": "generics_interface_bounds_2.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "generics_interface_bounds_2.sts"
+            "program": "generics_interface_bounds_2.ets"
           }
         }
       },
@@ -559,12 +559,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "generics_interface_bounds_2.sts"
+          "program": "generics_interface_bounds_2.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "generics_interface_bounds_2.sts"
+          "program": "generics_interface_bounds_2.ets"
         }
       }
     }
@@ -573,12 +573,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "generics_interface_bounds_2.sts"
+      "program": "generics_interface_bounds_2.ets"
     },
     "end": {
       "line": 18,
       "column": 1,
-      "program": "generics_interface_bounds_2.sts"
+      "program": "generics_interface_bounds_2.ets"
     }
   }
 }

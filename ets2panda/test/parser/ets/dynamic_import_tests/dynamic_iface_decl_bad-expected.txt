@@ -10,12 +10,12 @@
           "start": {
             "line": 20,
             "column": 19,
-            "program": "dynamic_iface_decl_bad.sts"
+            "program": "dynamic_iface_decl_bad.ets"
           },
           "end": {
             "line": 20,
             "column": 56,
-            "program": "dynamic_iface_decl_bad.sts"
+            "program": "dynamic_iface_decl_bad.ets"
           }
         }
       },
@@ -30,12 +30,12 @@
               "start": {
                 "line": 20,
                 "column": 10,
-                "program": "dynamic_iface_decl_bad.sts"
+                "program": "dynamic_iface_decl_bad.ets"
               },
               "end": {
                 "line": 20,
                 "column": 11,
-                "program": "dynamic_iface_decl_bad.sts"
+                "program": "dynamic_iface_decl_bad.ets"
               }
             }
           },
@@ -47,12 +47,12 @@
               "start": {
                 "line": 20,
                 "column": 10,
-                "program": "dynamic_iface_decl_bad.sts"
+                "program": "dynamic_iface_decl_bad.ets"
               },
               "end": {
                 "line": 20,
                 "column": 11,
-                "program": "dynamic_iface_decl_bad.sts"
+                "program": "dynamic_iface_decl_bad.ets"
               }
             }
           },
@@ -60,12 +60,12 @@
             "start": {
               "line": 20,
               "column": 10,
-              "program": "dynamic_iface_decl_bad.sts"
+              "program": "dynamic_iface_decl_bad.ets"
             },
             "end": {
               "line": 20,
               "column": 11,
-              "program": "dynamic_iface_decl_bad.sts"
+              "program": "dynamic_iface_decl_bad.ets"
             }
           }
         }
@@ -74,12 +74,12 @@
         "start": {
           "line": 20,
           "column": 1,
-          "program": "dynamic_iface_decl_bad.sts"
+          "program": "dynamic_iface_decl_bad.ets"
         },
         "end": {
           "line": 20,
           "column": 56,
-          "program": "dynamic_iface_decl_bad.sts"
+          "program": "dynamic_iface_decl_bad.ets"
         }
       }
     },
@@ -94,12 +94,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "dynamic_iface_decl_bad.sts"
+              "program": "dynamic_iface_decl_bad.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "dynamic_iface_decl_bad.sts"
+              "program": "dynamic_iface_decl_bad.ets"
             }
           }
         },
@@ -203,12 +203,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "dynamic_iface_decl_bad.sts"
+                "program": "dynamic_iface_decl_bad.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "dynamic_iface_decl_bad.sts"
+                "program": "dynamic_iface_decl_bad.ets"
               }
             }
           },
@@ -309,12 +309,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "dynamic_iface_decl_bad.sts"
+                "program": "dynamic_iface_decl_bad.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "dynamic_iface_decl_bad.sts"
+                "program": "dynamic_iface_decl_bad.ets"
               }
             }
           }
@@ -323,12 +323,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "dynamic_iface_decl_bad.sts"
+            "program": "dynamic_iface_decl_bad.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "dynamic_iface_decl_bad.sts"
+            "program": "dynamic_iface_decl_bad.ets"
           }
         }
       },
@@ -336,12 +336,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "dynamic_iface_decl_bad.sts"
+          "program": "dynamic_iface_decl_bad.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "dynamic_iface_decl_bad.sts"
+          "program": "dynamic_iface_decl_bad.ets"
         }
       }
     },
@@ -356,12 +356,12 @@
             "start": {
               "line": 22,
               "column": 7,
-              "program": "dynamic_iface_decl_bad.sts"
+              "program": "dynamic_iface_decl_bad.ets"
             },
             "end": {
               "line": 22,
               "column": 8,
-              "program": "dynamic_iface_decl_bad.sts"
+              "program": "dynamic_iface_decl_bad.ets"
             }
           }
         },
@@ -381,12 +381,12 @@
                     "start": {
                       "line": 22,
                       "column": 20,
-                      "program": "dynamic_iface_decl_bad.sts"
+                      "program": "dynamic_iface_decl_bad.ets"
                     },
                     "end": {
                       "line": 22,
                       "column": 21,
-                      "program": "dynamic_iface_decl_bad.sts"
+                      "program": "dynamic_iface_decl_bad.ets"
                     }
                   }
                 },
@@ -394,12 +394,12 @@
                   "start": {
                     "line": 22,
                     "column": 20,
-                    "program": "dynamic_iface_decl_bad.sts"
+                    "program": "dynamic_iface_decl_bad.ets"
                   },
                   "end": {
                     "line": 22,
                     "column": 23,
-                    "program": "dynamic_iface_decl_bad.sts"
+                    "program": "dynamic_iface_decl_bad.ets"
                   }
                 }
               },
@@ -407,12 +407,12 @@
                 "start": {
                   "line": 22,
                   "column": 20,
-                  "program": "dynamic_iface_decl_bad.sts"
+                  "program": "dynamic_iface_decl_bad.ets"
                 },
                 "end": {
                   "line": 22,
                   "column": 23,
-                  "program": "dynamic_iface_decl_bad.sts"
+                  "program": "dynamic_iface_decl_bad.ets"
                 }
               }
             },
@@ -420,12 +420,12 @@
               "start": {
                 "line": 22,
                 "column": 20,
-                "program": "dynamic_iface_decl_bad.sts"
+                "program": "dynamic_iface_decl_bad.ets"
               },
               "end": {
                 "line": 22,
                 "column": 23,
-                "program": "dynamic_iface_decl_bad.sts"
+                "program": "dynamic_iface_decl_bad.ets"
               }
             }
           }
@@ -441,12 +441,12 @@
                 "start": {
                   "line": 22,
                   "column": 23,
-                  "program": "dynamic_iface_decl_bad.sts"
+                  "program": "dynamic_iface_decl_bad.ets"
                 },
                 "end": {
                   "line": 22,
                   "column": 23,
-                  "program": "dynamic_iface_decl_bad.sts"
+                  "program": "dynamic_iface_decl_bad.ets"
                 }
               }
             },
@@ -466,12 +466,12 @@
                     "start": {
                       "line": 22,
                       "column": 23,
-                      "program": "dynamic_iface_decl_bad.sts"
+                      "program": "dynamic_iface_decl_bad.ets"
                     },
                     "end": {
                       "line": 22,
                       "column": 23,
-                      "program": "dynamic_iface_decl_bad.sts"
+                      "program": "dynamic_iface_decl_bad.ets"
                     }
                   }
                 },
@@ -486,12 +486,12 @@
                     "start": {
                       "line": 22,
                       "column": 23,
-                      "program": "dynamic_iface_decl_bad.sts"
+                      "program": "dynamic_iface_decl_bad.ets"
                     },
                     "end": {
                       "line": 22,
                       "column": 23,
-                      "program": "dynamic_iface_decl_bad.sts"
+                      "program": "dynamic_iface_decl_bad.ets"
                     }
                   }
                 },
@@ -499,12 +499,12 @@
                   "start": {
                     "line": 22,
                     "column": 23,
-                    "program": "dynamic_iface_decl_bad.sts"
+                    "program": "dynamic_iface_decl_bad.ets"
                   },
                   "end": {
                     "line": 22,
                     "column": 23,
-                    "program": "dynamic_iface_decl_bad.sts"
+                    "program": "dynamic_iface_decl_bad.ets"
                   }
                 }
               },
@@ -512,12 +512,12 @@
                 "start": {
                   "line": 22,
                   "column": 23,
-                  "program": "dynamic_iface_decl_bad.sts"
+                  "program": "dynamic_iface_decl_bad.ets"
                 },
                 "end": {
                   "line": 22,
                   "column": 23,
-                  "program": "dynamic_iface_decl_bad.sts"
+                  "program": "dynamic_iface_decl_bad.ets"
                 }
               }
             },
@@ -541,12 +541,12 @@
           "start": {
             "line": 22,
             "column": 22,
-            "program": "dynamic_iface_decl_bad.sts"
+            "program": "dynamic_iface_decl_bad.ets"
           },
           "end": {
             "line": 24,
             "column": 2,
-            "program": "dynamic_iface_decl_bad.sts"
+            "program": "dynamic_iface_decl_bad.ets"
           }
         }
       },
@@ -554,12 +554,12 @@
         "start": {
           "line": 22,
           "column": 1,
-          "program": "dynamic_iface_decl_bad.sts"
+          "program": "dynamic_iface_decl_bad.ets"
         },
         "end": {
           "line": 24,
           "column": 2,
-          "program": "dynamic_iface_decl_bad.sts"
+          "program": "dynamic_iface_decl_bad.ets"
         }
       }
     }
@@ -568,13 +568,13 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "dynamic_iface_decl_bad.sts"
+      "program": "dynamic_iface_decl_bad.ets"
     },
     "end": {
       "line": 24,
       "column": 2,
-      "program": "dynamic_iface_decl_bad.sts"
+      "program": "dynamic_iface_decl_bad.ets"
     }
   }
 }
-TypeError: A is not abstract and does not override abstract method f1(p: String): double in I [dynamic_iface_decl_bad.sts:22:22]
+TypeError: A is not abstract and does not override abstract method f1(p: String): double in I [dynamic_iface_decl_bad.ets:22:22]

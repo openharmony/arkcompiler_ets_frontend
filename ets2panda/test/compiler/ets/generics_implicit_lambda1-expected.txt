@@ -12,12 +12,12 @@
             "start": {
               "line": 21,
               "column": 7,
-              "program": "generics_implicit_lambda1.sts"
+              "program": "generics_implicit_lambda1.ets"
             },
             "end": {
               "line": 21,
               "column": 8,
-              "program": "generics_implicit_lambda1.sts"
+              "program": "generics_implicit_lambda1.ets"
             }
           }
         },
@@ -34,12 +34,12 @@
                 "start": {
                   "line": 22,
                   "column": 12,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 },
                 "end": {
                   "line": 22,
                   "column": 15,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 }
               }
             },
@@ -60,12 +60,12 @@
                     "start": {
                       "line": 22,
                       "column": 12,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     },
                     "end": {
                       "line": 22,
                       "column": 15,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     }
                   }
                 },
@@ -93,12 +93,12 @@
                                 "start": {
                                   "line": 22,
                                   "column": 32,
-                                  "program": "generics_implicit_lambda1.sts"
+                                  "program": "generics_implicit_lambda1.ets"
                                 },
                                 "end": {
                                   "line": 22,
                                   "column": 33,
-                                  "program": "generics_implicit_lambda1.sts"
+                                  "program": "generics_implicit_lambda1.ets"
                                 }
                               }
                             },
@@ -106,12 +106,12 @@
                               "start": {
                                 "line": 22,
                                 "column": 32,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               },
                               "end": {
                                 "line": 22,
                                 "column": 34,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               }
                             }
                           },
@@ -119,12 +119,12 @@
                             "start": {
                               "line": 22,
                               "column": 32,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             },
                             "end": {
                               "line": 22,
                               "column": 34,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             }
                           }
                         },
@@ -132,12 +132,12 @@
                           "start": {
                             "line": 22,
                             "column": 26,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           },
                           "end": {
                             "line": 22,
                             "column": 34,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           }
                         }
                       },
@@ -146,12 +146,12 @@
                         "start": {
                           "line": 22,
                           "column": 19,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 22,
                           "column": 34,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     },
@@ -159,12 +159,12 @@
                       "start": {
                         "line": 22,
                         "column": 19,
-                        "program": "generics_implicit_lambda1.sts"
+                        "program": "generics_implicit_lambda1.ets"
                       },
                       "end": {
                         "line": 22,
                         "column": 34,
-                        "program": "generics_implicit_lambda1.sts"
+                        "program": "generics_implicit_lambda1.ets"
                       }
                     }
                   },
@@ -182,12 +182,12 @@
                             "start": {
                               "line": 22,
                               "column": 49,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             },
                             "end": {
                               "line": 22,
                               "column": 53,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             }
                           }
                         },
@@ -195,12 +195,12 @@
                           "start": {
                             "line": 22,
                             "column": 43,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           },
                           "end": {
                             "line": 22,
                             "column": 53,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           }
                         }
                       },
@@ -209,12 +209,12 @@
                         "start": {
                           "line": 22,
                           "column": 35,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 22,
                           "column": 53,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     },
@@ -222,12 +222,12 @@
                       "start": {
                         "line": 22,
                         "column": 35,
-                        "program": "generics_implicit_lambda1.sts"
+                        "program": "generics_implicit_lambda1.ets"
                       },
                       "end": {
                         "line": 22,
                         "column": 53,
-                        "program": "generics_implicit_lambda1.sts"
+                        "program": "generics_implicit_lambda1.ets"
                       }
                     }
                   }
@@ -244,12 +244,12 @@
                         "start": {
                           "line": 22,
                           "column": 56,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 22,
                           "column": 57,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     },
@@ -257,12 +257,12 @@
                       "start": {
                         "line": 22,
                         "column": 56,
-                        "program": "generics_implicit_lambda1.sts"
+                        "program": "generics_implicit_lambda1.ets"
                       },
                       "end": {
                         "line": 22,
                         "column": 59,
-                        "program": "generics_implicit_lambda1.sts"
+                        "program": "generics_implicit_lambda1.ets"
                       }
                     }
                   },
@@ -270,12 +270,12 @@
                     "start": {
                       "line": 22,
                       "column": 56,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     },
                     "end": {
                       "line": 22,
                       "column": 59,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     }
                   }
                 },
@@ -292,12 +292,12 @@
                           "start": {
                             "line": 22,
                             "column": 16,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           },
                           "end": {
                             "line": 22,
                             "column": 17,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           }
                         }
                       },
@@ -305,12 +305,12 @@
                         "start": {
                           "line": 22,
                           "column": 16,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 22,
                           "column": 18,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     }
@@ -319,12 +319,12 @@
                     "start": {
                       "line": 22,
                       "column": 15,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     },
                     "end": {
                       "line": 22,
                       "column": 18,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     }
                   }
                 },
@@ -344,12 +344,12 @@
                               "start": {
                                 "line": 23,
                                 "column": 15,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               },
                               "end": {
                                 "line": 23,
                                 "column": 23,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               }
                             }
                           },
@@ -363,12 +363,12 @@
                                 "start": {
                                   "line": 23,
                                   "column": 26,
-                                  "program": "generics_implicit_lambda1.sts"
+                                  "program": "generics_implicit_lambda1.ets"
                                 },
                                 "end": {
                                   "line": 23,
                                   "column": 31,
-                                  "program": "generics_implicit_lambda1.sts"
+                                  "program": "generics_implicit_lambda1.ets"
                                 }
                               }
                             },
@@ -378,12 +378,12 @@
                               "start": {
                                 "line": 23,
                                 "column": 26,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               },
                               "end": {
                                 "line": 23,
                                 "column": 33,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               }
                             }
                           },
@@ -391,12 +391,12 @@
                             "start": {
                               "line": 23,
                               "column": 15,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             },
                             "end": {
                               "line": 23,
                               "column": 33,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             }
                           }
                         }
@@ -406,12 +406,12 @@
                         "start": {
                           "line": 23,
                           "column": 9,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 23,
                           "column": 33,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     },
@@ -427,12 +427,12 @@
                             "start": {
                               "line": 24,
                               "column": 9,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             },
                             "end": {
                               "line": 24,
                               "column": 15,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             }
                           }
                         },
@@ -442,12 +442,12 @@
                           "start": {
                             "line": 24,
                             "column": 9,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           },
                           "end": {
                             "line": 24,
                             "column": 17,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           }
                         }
                       },
@@ -455,12 +455,12 @@
                         "start": {
                           "line": 24,
                           "column": 9,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 24,
                           "column": 17,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     },
@@ -474,12 +474,12 @@
                           "start": {
                             "line": 25,
                             "column": 16,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           },
                           "end": {
                             "line": 25,
                             "column": 24,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           }
                         }
                       },
@@ -487,12 +487,12 @@
                         "start": {
                           "line": 25,
                           "column": 9,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 25,
                           "column": 24,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     }
@@ -501,12 +501,12 @@
                     "start": {
                       "line": 22,
                       "column": 58,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     },
                     "end": {
                       "line": 26,
                       "column": 6,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     }
                   }
                 },
@@ -514,12 +514,12 @@
                   "start": {
                     "line": 22,
                     "column": 15,
-                    "program": "generics_implicit_lambda1.sts"
+                    "program": "generics_implicit_lambda1.ets"
                   },
                   "end": {
                     "line": 26,
                     "column": 6,
-                    "program": "generics_implicit_lambda1.sts"
+                    "program": "generics_implicit_lambda1.ets"
                   }
                 }
               },
@@ -527,12 +527,12 @@
                 "start": {
                   "line": 22,
                   "column": 15,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 },
                 "end": {
                   "line": 26,
                   "column": 6,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 }
               }
             },
@@ -542,12 +542,12 @@
               "start": {
                 "line": 22,
                 "column": 5,
-                "program": "generics_implicit_lambda1.sts"
+                "program": "generics_implicit_lambda1.ets"
               },
               "end": {
                 "line": 26,
                 "column": 6,
-                "program": "generics_implicit_lambda1.sts"
+                "program": "generics_implicit_lambda1.ets"
               }
             }
           },
@@ -561,12 +561,12 @@
                 "start": {
                   "line": 28,
                   "column": 12,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 },
                 "end": {
                   "line": 28,
                   "column": 20,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 }
               }
             },
@@ -587,12 +587,12 @@
                     "start": {
                       "line": 28,
                       "column": 12,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     },
                     "end": {
                       "line": 28,
                       "column": 20,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     }
                   }
                 },
@@ -620,12 +620,12 @@
                                 "start": {
                                   "line": 28,
                                   "column": 37,
-                                  "program": "generics_implicit_lambda1.sts"
+                                  "program": "generics_implicit_lambda1.ets"
                                 },
                                 "end": {
                                   "line": 28,
                                   "column": 38,
-                                  "program": "generics_implicit_lambda1.sts"
+                                  "program": "generics_implicit_lambda1.ets"
                                 }
                               }
                             },
@@ -633,12 +633,12 @@
                               "start": {
                                 "line": 28,
                                 "column": 37,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               },
                               "end": {
                                 "line": 28,
                                 "column": 39,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               }
                             }
                           },
@@ -646,12 +646,12 @@
                             "start": {
                               "line": 28,
                               "column": 37,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             },
                             "end": {
                               "line": 28,
                               "column": 39,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             }
                           }
                         },
@@ -659,12 +659,12 @@
                           "start": {
                             "line": 28,
                             "column": 31,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           },
                           "end": {
                             "line": 28,
                             "column": 39,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           }
                         }
                       },
@@ -673,12 +673,12 @@
                         "start": {
                           "line": 28,
                           "column": 24,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 28,
                           "column": 39,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     },
@@ -686,12 +686,12 @@
                       "start": {
                         "line": 28,
                         "column": 24,
-                        "program": "generics_implicit_lambda1.sts"
+                        "program": "generics_implicit_lambda1.ets"
                       },
                       "end": {
                         "line": 28,
                         "column": 39,
-                        "program": "generics_implicit_lambda1.sts"
+                        "program": "generics_implicit_lambda1.ets"
                       }
                     }
                   },
@@ -709,12 +709,12 @@
                             "start": {
                               "line": 28,
                               "column": 54,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             },
                             "end": {
                               "line": 28,
                               "column": 58,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             }
                           }
                         },
@@ -722,12 +722,12 @@
                           "start": {
                             "line": 28,
                             "column": 48,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           },
                           "end": {
                             "line": 28,
                             "column": 58,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           }
                         }
                       },
@@ -736,12 +736,12 @@
                         "start": {
                           "line": 28,
                           "column": 40,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 28,
                           "column": 58,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     },
@@ -749,12 +749,12 @@
                       "start": {
                         "line": 28,
                         "column": 40,
-                        "program": "generics_implicit_lambda1.sts"
+                        "program": "generics_implicit_lambda1.ets"
                       },
                       "end": {
                         "line": 28,
                         "column": 58,
-                        "program": "generics_implicit_lambda1.sts"
+                        "program": "generics_implicit_lambda1.ets"
                       }
                     }
                   }
@@ -771,12 +771,12 @@
                         "start": {
                           "line": 28,
                           "column": 61,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 28,
                           "column": 62,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     },
@@ -784,12 +784,12 @@
                       "start": {
                         "line": 28,
                         "column": 61,
-                        "program": "generics_implicit_lambda1.sts"
+                        "program": "generics_implicit_lambda1.ets"
                       },
                       "end": {
                         "line": 28,
                         "column": 64,
-                        "program": "generics_implicit_lambda1.sts"
+                        "program": "generics_implicit_lambda1.ets"
                       }
                     }
                   },
@@ -797,12 +797,12 @@
                     "start": {
                       "line": 28,
                       "column": 61,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     },
                     "end": {
                       "line": 28,
                       "column": 64,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     }
                   }
                 },
@@ -819,12 +819,12 @@
                           "start": {
                             "line": 28,
                             "column": 21,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           },
                           "end": {
                             "line": 28,
                             "column": 22,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           }
                         }
                       },
@@ -832,12 +832,12 @@
                         "start": {
                           "line": 28,
                           "column": 21,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 28,
                           "column": 23,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     }
@@ -846,12 +846,12 @@
                     "start": {
                       "line": 28,
                       "column": 20,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     },
                     "end": {
                       "line": 28,
                       "column": 23,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     }
                   }
                 },
@@ -871,12 +871,12 @@
                               "start": {
                                 "line": 29,
                                 "column": 15,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               },
                               "end": {
                                 "line": 29,
                                 "column": 23,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               }
                             }
                           },
@@ -890,12 +890,12 @@
                                 "start": {
                                   "line": 29,
                                   "column": 26,
-                                  "program": "generics_implicit_lambda1.sts"
+                                  "program": "generics_implicit_lambda1.ets"
                                 },
                                 "end": {
                                   "line": 29,
                                   "column": 31,
-                                  "program": "generics_implicit_lambda1.sts"
+                                  "program": "generics_implicit_lambda1.ets"
                                 }
                               }
                             },
@@ -905,12 +905,12 @@
                               "start": {
                                 "line": 29,
                                 "column": 26,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               },
                               "end": {
                                 "line": 29,
                                 "column": 33,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               }
                             }
                           },
@@ -918,12 +918,12 @@
                             "start": {
                               "line": 29,
                               "column": 15,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             },
                             "end": {
                               "line": 29,
                               "column": 33,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             }
                           }
                         }
@@ -933,12 +933,12 @@
                         "start": {
                           "line": 29,
                           "column": 9,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 29,
                           "column": 33,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     },
@@ -954,12 +954,12 @@
                             "start": {
                               "line": 30,
                               "column": 9,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             },
                             "end": {
                               "line": 30,
                               "column": 15,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             }
                           }
                         },
@@ -969,12 +969,12 @@
                           "start": {
                             "line": 30,
                             "column": 9,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           },
                           "end": {
                             "line": 30,
                             "column": 17,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           }
                         }
                       },
@@ -982,12 +982,12 @@
                         "start": {
                           "line": 30,
                           "column": 9,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 30,
                           "column": 17,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     },
@@ -1001,12 +1001,12 @@
                           "start": {
                             "line": 31,
                             "column": 16,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           },
                           "end": {
                             "line": 31,
                             "column": 24,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           }
                         }
                       },
@@ -1014,12 +1014,12 @@
                         "start": {
                           "line": 31,
                           "column": 9,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 31,
                           "column": 24,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     }
@@ -1028,12 +1028,12 @@
                     "start": {
                       "line": 28,
                       "column": 63,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     },
                     "end": {
                       "line": 32,
                       "column": 6,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     }
                   }
                 },
@@ -1041,12 +1041,12 @@
                   "start": {
                     "line": 28,
                     "column": 20,
-                    "program": "generics_implicit_lambda1.sts"
+                    "program": "generics_implicit_lambda1.ets"
                   },
                   "end": {
                     "line": 32,
                     "column": 6,
-                    "program": "generics_implicit_lambda1.sts"
+                    "program": "generics_implicit_lambda1.ets"
                   }
                 }
               },
@@ -1054,12 +1054,12 @@
                 "start": {
                   "line": 28,
                   "column": 20,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 },
                 "end": {
                   "line": 32,
                   "column": 6,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 }
               }
             },
@@ -1069,12 +1069,12 @@
               "start": {
                 "line": 28,
                 "column": 5,
-                "program": "generics_implicit_lambda1.sts"
+                "program": "generics_implicit_lambda1.ets"
               },
               "end": {
                 "line": 32,
                 "column": 6,
-                "program": "generics_implicit_lambda1.sts"
+                "program": "generics_implicit_lambda1.ets"
               }
             }
           },
@@ -1088,12 +1088,12 @@
                 "start": {
                   "line": 21,
                   "column": 10,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 },
                 "end": {
                   "line": 21,
                   "column": 10,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 }
               }
             },
@@ -1113,12 +1113,12 @@
                     "start": {
                       "line": 21,
                       "column": 10,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     },
                     "end": {
                       "line": 21,
                       "column": 10,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     }
                   }
                 },
@@ -1133,12 +1133,12 @@
                     "start": {
                       "line": 21,
                       "column": 10,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     },
                     "end": {
                       "line": 21,
                       "column": 10,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     }
                   }
                 },
@@ -1146,12 +1146,12 @@
                   "start": {
                     "line": 21,
                     "column": 10,
-                    "program": "generics_implicit_lambda1.sts"
+                    "program": "generics_implicit_lambda1.ets"
                   },
                   "end": {
                     "line": 21,
                     "column": 10,
-                    "program": "generics_implicit_lambda1.sts"
+                    "program": "generics_implicit_lambda1.ets"
                   }
                 }
               },
@@ -1159,12 +1159,12 @@
                 "start": {
                   "line": 21,
                   "column": 10,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 },
                 "end": {
                   "line": 21,
                   "column": 10,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 }
               }
             },
@@ -1188,12 +1188,12 @@
           "start": {
             "line": 21,
             "column": 9,
-            "program": "generics_implicit_lambda1.sts"
+            "program": "generics_implicit_lambda1.ets"
           },
           "end": {
             "line": 35,
             "column": 9,
-            "program": "generics_implicit_lambda1.sts"
+            "program": "generics_implicit_lambda1.ets"
           }
         }
       },
@@ -1201,12 +1201,12 @@
         "start": {
           "line": 21,
           "column": 1,
-          "program": "generics_implicit_lambda1.sts"
+          "program": "generics_implicit_lambda1.ets"
         },
         "end": {
           "line": 35,
           "column": 9,
-          "program": "generics_implicit_lambda1.sts"
+          "program": "generics_implicit_lambda1.ets"
         }
       }
     },
@@ -1221,12 +1221,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "generics_implicit_lambda1.sts"
+              "program": "generics_implicit_lambda1.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "generics_implicit_lambda1.sts"
+              "program": "generics_implicit_lambda1.ets"
             }
           }
         },
@@ -1330,12 +1330,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "generics_implicit_lambda1.sts"
+                "program": "generics_implicit_lambda1.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "generics_implicit_lambda1.sts"
+                "program": "generics_implicit_lambda1.ets"
               }
             }
           },
@@ -1349,12 +1349,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 13,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 }
               }
             },
@@ -1375,12 +1375,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 13,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     }
                   }
                 },
@@ -1408,12 +1408,12 @@
                                 "start": {
                                   "line": 16,
                                   "column": 30,
-                                  "program": "generics_implicit_lambda1.sts"
+                                  "program": "generics_implicit_lambda1.ets"
                                 },
                                 "end": {
                                   "line": 16,
                                   "column": 31,
-                                  "program": "generics_implicit_lambda1.sts"
+                                  "program": "generics_implicit_lambda1.ets"
                                 }
                               }
                             },
@@ -1421,12 +1421,12 @@
                               "start": {
                                 "line": 16,
                                 "column": 30,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               },
                               "end": {
                                 "line": 16,
                                 "column": 32,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               }
                             }
                           },
@@ -1434,12 +1434,12 @@
                             "start": {
                               "line": 16,
                               "column": 30,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             },
                             "end": {
                               "line": 16,
                               "column": 32,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             }
                           }
                         },
@@ -1447,12 +1447,12 @@
                           "start": {
                             "line": 16,
                             "column": 24,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           },
                           "end": {
                             "line": 16,
                             "column": 32,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           }
                         }
                       },
@@ -1461,12 +1461,12 @@
                         "start": {
                           "line": 16,
                           "column": 17,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 16,
                           "column": 32,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     },
@@ -1474,12 +1474,12 @@
                       "start": {
                         "line": 16,
                         "column": 17,
-                        "program": "generics_implicit_lambda1.sts"
+                        "program": "generics_implicit_lambda1.ets"
                       },
                       "end": {
                         "line": 16,
                         "column": 32,
-                        "program": "generics_implicit_lambda1.sts"
+                        "program": "generics_implicit_lambda1.ets"
                       }
                     }
                   }
@@ -1496,12 +1496,12 @@
                         "start": {
                           "line": 16,
                           "column": 34,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 16,
                           "column": 35,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     },
@@ -1509,12 +1509,12 @@
                       "start": {
                         "line": 16,
                         "column": 34,
-                        "program": "generics_implicit_lambda1.sts"
+                        "program": "generics_implicit_lambda1.ets"
                       },
                       "end": {
                         "line": 16,
                         "column": 37,
-                        "program": "generics_implicit_lambda1.sts"
+                        "program": "generics_implicit_lambda1.ets"
                       }
                     }
                   },
@@ -1522,12 +1522,12 @@
                     "start": {
                       "line": 16,
                       "column": 34,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 37,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     }
                   }
                 },
@@ -1544,12 +1544,12 @@
                           "start": {
                             "line": 16,
                             "column": 14,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           },
                           "end": {
                             "line": 16,
                             "column": 15,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           }
                         }
                       },
@@ -1557,12 +1557,12 @@
                         "start": {
                           "line": 16,
                           "column": 14,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 16,
                           "column": 16,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     }
@@ -1571,12 +1571,12 @@
                     "start": {
                       "line": 16,
                       "column": 13,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 16,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     }
                   }
                 },
@@ -1596,12 +1596,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 11,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 19,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               }
                             }
                           },
@@ -1615,12 +1615,12 @@
                                 "start": {
                                   "line": 17,
                                   "column": 22,
-                                  "program": "generics_implicit_lambda1.sts"
+                                  "program": "generics_implicit_lambda1.ets"
                                 },
                                 "end": {
                                   "line": 17,
                                   "column": 27,
-                                  "program": "generics_implicit_lambda1.sts"
+                                  "program": "generics_implicit_lambda1.ets"
                                 }
                               }
                             },
@@ -1630,12 +1630,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 22,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 29,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               }
                             }
                           },
@@ -1643,12 +1643,12 @@
                             "start": {
                               "line": 17,
                               "column": 11,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             },
                             "end": {
                               "line": 17,
                               "column": 29,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             }
                           }
                         }
@@ -1658,12 +1658,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 17,
                           "column": 29,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     },
@@ -1677,12 +1677,12 @@
                           "start": {
                             "line": 18,
                             "column": 12,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           },
                           "end": {
                             "line": 18,
                             "column": 20,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           }
                         }
                       },
@@ -1690,12 +1690,12 @@
                         "start": {
                           "line": 18,
                           "column": 5,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 18,
                           "column": 20,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     }
@@ -1704,12 +1704,12 @@
                     "start": {
                       "line": 16,
                       "column": 36,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     },
                     "end": {
                       "line": 19,
                       "column": 2,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     }
                   }
                 },
@@ -1717,12 +1717,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "generics_implicit_lambda1.sts"
+                    "program": "generics_implicit_lambda1.ets"
                   },
                   "end": {
                     "line": 19,
                     "column": 2,
-                    "program": "generics_implicit_lambda1.sts"
+                    "program": "generics_implicit_lambda1.ets"
                   }
                 }
               },
@@ -1730,12 +1730,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 },
                 "end": {
                   "line": 19,
                   "column": 2,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 }
               }
             },
@@ -1745,12 +1745,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "generics_implicit_lambda1.sts"
+                "program": "generics_implicit_lambda1.ets"
               },
               "end": {
                 "line": 19,
                 "column": 2,
-                "program": "generics_implicit_lambda1.sts"
+                "program": "generics_implicit_lambda1.ets"
               }
             }
           },
@@ -1764,12 +1764,12 @@
                 "start": {
                   "line": 35,
                   "column": 10,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 },
                 "end": {
                   "line": 35,
                   "column": 14,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 }
               }
             },
@@ -1790,12 +1790,12 @@
                     "start": {
                       "line": 35,
                       "column": 10,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     },
                     "end": {
                       "line": 35,
                       "column": 14,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     }
                   }
                 },
@@ -1818,12 +1818,12 @@
                             "start": {
                               "line": 36,
                               "column": 5,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             },
                             "end": {
                               "line": 36,
                               "column": 8,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             }
                           }
                         },
@@ -1849,12 +1849,12 @@
                                       "start": {
                                         "line": 36,
                                         "column": 13,
-                                        "program": "generics_implicit_lambda1.sts"
+                                        "program": "generics_implicit_lambda1.ets"
                                       },
                                       "end": {
                                         "line": 36,
                                         "column": 19,
-                                        "program": "generics_implicit_lambda1.sts"
+                                        "program": "generics_implicit_lambda1.ets"
                                       }
                                     }
                                   },
@@ -1862,12 +1862,12 @@
                                     "start": {
                                       "line": 36,
                                       "column": 13,
-                                      "program": "generics_implicit_lambda1.sts"
+                                      "program": "generics_implicit_lambda1.ets"
                                     },
                                     "end": {
                                       "line": 36,
                                       "column": 22,
-                                      "program": "generics_implicit_lambda1.sts"
+                                      "program": "generics_implicit_lambda1.ets"
                                     }
                                   }
                                 },
@@ -1875,12 +1875,12 @@
                                   "start": {
                                     "line": 36,
                                     "column": 13,
-                                    "program": "generics_implicit_lambda1.sts"
+                                    "program": "generics_implicit_lambda1.ets"
                                   },
                                   "end": {
                                     "line": 36,
                                     "column": 22,
-                                    "program": "generics_implicit_lambda1.sts"
+                                    "program": "generics_implicit_lambda1.ets"
                                   }
                                 }
                               },
@@ -1896,12 +1896,12 @@
                                         "start": {
                                           "line": 36,
                                           "column": 32,
-                                          "program": "generics_implicit_lambda1.sts"
+                                          "program": "generics_implicit_lambda1.ets"
                                         },
                                         "end": {
                                           "line": 36,
                                           "column": 37,
-                                          "program": "generics_implicit_lambda1.sts"
+                                          "program": "generics_implicit_lambda1.ets"
                                         }
                                       }
                                     },
@@ -1909,12 +1909,12 @@
                                       "start": {
                                         "line": 36,
                                         "column": 25,
-                                        "program": "generics_implicit_lambda1.sts"
+                                        "program": "generics_implicit_lambda1.ets"
                                       },
                                       "end": {
                                         "line": 36,
                                         "column": 37,
-                                        "program": "generics_implicit_lambda1.sts"
+                                        "program": "generics_implicit_lambda1.ets"
                                       }
                                     }
                                   }
@@ -1923,12 +1923,12 @@
                                   "start": {
                                     "line": 36,
                                     "column": 23,
-                                    "program": "generics_implicit_lambda1.sts"
+                                    "program": "generics_implicit_lambda1.ets"
                                   },
                                   "end": {
                                     "line": 36,
                                     "column": 39,
-                                    "program": "generics_implicit_lambda1.sts"
+                                    "program": "generics_implicit_lambda1.ets"
                                   }
                                 }
                               },
@@ -1936,12 +1936,12 @@
                                 "start": {
                                   "line": 36,
                                   "column": 9,
-                                  "program": "generics_implicit_lambda1.sts"
+                                  "program": "generics_implicit_lambda1.ets"
                                 },
                                 "end": {
                                   "line": 36,
                                   "column": 39,
-                                  "program": "generics_implicit_lambda1.sts"
+                                  "program": "generics_implicit_lambda1.ets"
                                 }
                               }
                             },
@@ -1949,12 +1949,12 @@
                               "start": {
                                 "line": 36,
                                 "column": 9,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               },
                               "end": {
                                 "line": 36,
                                 "column": 39,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               }
                             }
                           }
@@ -1964,12 +1964,12 @@
                           "start": {
                             "line": 36,
                             "column": 5,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           },
                           "end": {
                             "line": 36,
                             "column": 40,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           }
                         }
                       },
@@ -1977,12 +1977,12 @@
                         "start": {
                           "line": 36,
                           "column": 5,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 36,
                           "column": 41,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     },
@@ -1998,12 +1998,12 @@
                             "start": {
                               "line": 38,
                               "column": 5,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             },
                             "end": {
                               "line": 38,
                               "column": 8,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             }
                           }
                         },
@@ -2029,12 +2029,12 @@
                                       "start": {
                                         "line": 38,
                                         "column": 13,
-                                        "program": "generics_implicit_lambda1.sts"
+                                        "program": "generics_implicit_lambda1.ets"
                                       },
                                       "end": {
                                         "line": 38,
                                         "column": 16,
-                                        "program": "generics_implicit_lambda1.sts"
+                                        "program": "generics_implicit_lambda1.ets"
                                       }
                                     }
                                   },
@@ -2042,12 +2042,12 @@
                                     "start": {
                                       "line": 38,
                                       "column": 13,
-                                      "program": "generics_implicit_lambda1.sts"
+                                      "program": "generics_implicit_lambda1.ets"
                                     },
                                     "end": {
                                       "line": 38,
                                       "column": 19,
-                                      "program": "generics_implicit_lambda1.sts"
+                                      "program": "generics_implicit_lambda1.ets"
                                     }
                                   }
                                 },
@@ -2055,12 +2055,12 @@
                                   "start": {
                                     "line": 38,
                                     "column": 13,
-                                    "program": "generics_implicit_lambda1.sts"
+                                    "program": "generics_implicit_lambda1.ets"
                                   },
                                   "end": {
                                     "line": 38,
                                     "column": 19,
-                                    "program": "generics_implicit_lambda1.sts"
+                                    "program": "generics_implicit_lambda1.ets"
                                   }
                                 }
                               },
@@ -2083,12 +2083,12 @@
                                               "start": {
                                                 "line": 38,
                                                 "column": 33,
-                                                "program": "generics_implicit_lambda1.sts"
+                                                "program": "generics_implicit_lambda1.ets"
                                               },
                                               "end": {
                                                 "line": 38,
                                                 "column": 36,
-                                                "program": "generics_implicit_lambda1.sts"
+                                                "program": "generics_implicit_lambda1.ets"
                                               }
                                             }
                                           },
@@ -2096,12 +2096,12 @@
                                             "start": {
                                               "line": 38,
                                               "column": 33,
-                                              "program": "generics_implicit_lambda1.sts"
+                                              "program": "generics_implicit_lambda1.ets"
                                             },
                                             "end": {
                                               "line": 38,
                                               "column": 37,
-                                              "program": "generics_implicit_lambda1.sts"
+                                              "program": "generics_implicit_lambda1.ets"
                                             }
                                           }
                                         },
@@ -2109,12 +2109,12 @@
                                           "start": {
                                             "line": 38,
                                             "column": 33,
-                                            "program": "generics_implicit_lambda1.sts"
+                                            "program": "generics_implicit_lambda1.ets"
                                           },
                                           "end": {
                                             "line": 38,
                                             "column": 37,
-                                            "program": "generics_implicit_lambda1.sts"
+                                            "program": "generics_implicit_lambda1.ets"
                                           }
                                         }
                                       },
@@ -2126,12 +2126,12 @@
                                             "start": {
                                               "line": 38,
                                               "column": 37,
-                                              "program": "generics_implicit_lambda1.sts"
+                                              "program": "generics_implicit_lambda1.ets"
                                             },
                                             "end": {
                                               "line": 38,
                                               "column": 39,
-                                              "program": "generics_implicit_lambda1.sts"
+                                              "program": "generics_implicit_lambda1.ets"
                                             }
                                           }
                                         }
@@ -2140,12 +2140,12 @@
                                         "start": {
                                           "line": 38,
                                           "column": 29,
-                                          "program": "generics_implicit_lambda1.sts"
+                                          "program": "generics_implicit_lambda1.ets"
                                         },
                                         "end": {
                                           "line": 38,
                                           "column": 42,
-                                          "program": "generics_implicit_lambda1.sts"
+                                          "program": "generics_implicit_lambda1.ets"
                                         }
                                       }
                                     },
@@ -2153,12 +2153,12 @@
                                       "start": {
                                         "line": 38,
                                         "column": 22,
-                                        "program": "generics_implicit_lambda1.sts"
+                                        "program": "generics_implicit_lambda1.ets"
                                       },
                                       "end": {
                                         "line": 38,
                                         "column": 42,
-                                        "program": "generics_implicit_lambda1.sts"
+                                        "program": "generics_implicit_lambda1.ets"
                                       }
                                     }
                                   }
@@ -2167,12 +2167,12 @@
                                   "start": {
                                     "line": 38,
                                     "column": 20,
-                                    "program": "generics_implicit_lambda1.sts"
+                                    "program": "generics_implicit_lambda1.ets"
                                   },
                                   "end": {
                                     "line": 38,
                                     "column": 42,
-                                    "program": "generics_implicit_lambda1.sts"
+                                    "program": "generics_implicit_lambda1.ets"
                                   }
                                 }
                               },
@@ -2180,12 +2180,12 @@
                                 "start": {
                                   "line": 38,
                                   "column": 9,
-                                  "program": "generics_implicit_lambda1.sts"
+                                  "program": "generics_implicit_lambda1.ets"
                                 },
                                 "end": {
                                   "line": 38,
                                   "column": 42,
-                                  "program": "generics_implicit_lambda1.sts"
+                                  "program": "generics_implicit_lambda1.ets"
                                 }
                               }
                             },
@@ -2193,12 +2193,12 @@
                               "start": {
                                 "line": 38,
                                 "column": 9,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               },
                               "end": {
                                 "line": 38,
                                 "column": 42,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               }
                             }
                           }
@@ -2208,12 +2208,12 @@
                           "start": {
                             "line": 38,
                             "column": 5,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           },
                           "end": {
                             "line": 38,
                             "column": 43,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           }
                         }
                       },
@@ -2221,12 +2221,12 @@
                         "start": {
                           "line": 38,
                           "column": 5,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 38,
                           "column": 44,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     },
@@ -2242,12 +2242,12 @@
                             "start": {
                               "line": 40,
                               "column": 5,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             },
                             "end": {
                               "line": 40,
                               "column": 6,
-                              "program": "generics_implicit_lambda1.sts"
+                              "program": "generics_implicit_lambda1.ets"
                             }
                           }
                         },
@@ -2273,12 +2273,12 @@
                                       "start": {
                                         "line": 41,
                                         "column": 9,
-                                        "program": "generics_implicit_lambda1.sts"
+                                        "program": "generics_implicit_lambda1.ets"
                                       },
                                       "end": {
                                         "line": 41,
                                         "column": 15,
-                                        "program": "generics_implicit_lambda1.sts"
+                                        "program": "generics_implicit_lambda1.ets"
                                       }
                                     }
                                   },
@@ -2286,12 +2286,12 @@
                                     "start": {
                                       "line": 41,
                                       "column": 9,
-                                      "program": "generics_implicit_lambda1.sts"
+                                      "program": "generics_implicit_lambda1.ets"
                                     },
                                     "end": {
                                       "line": 41,
                                       "column": 18,
-                                      "program": "generics_implicit_lambda1.sts"
+                                      "program": "generics_implicit_lambda1.ets"
                                     }
                                   }
                                 },
@@ -2299,12 +2299,12 @@
                                   "start": {
                                     "line": 41,
                                     "column": 9,
-                                    "program": "generics_implicit_lambda1.sts"
+                                    "program": "generics_implicit_lambda1.ets"
                                   },
                                   "end": {
                                     "line": 41,
                                     "column": 18,
-                                    "program": "generics_implicit_lambda1.sts"
+                                    "program": "generics_implicit_lambda1.ets"
                                   }
                                 }
                               },
@@ -2320,12 +2320,12 @@
                                         "start": {
                                           "line": 41,
                                           "column": 28,
-                                          "program": "generics_implicit_lambda1.sts"
+                                          "program": "generics_implicit_lambda1.ets"
                                         },
                                         "end": {
                                           "line": 41,
                                           "column": 33,
-                                          "program": "generics_implicit_lambda1.sts"
+                                          "program": "generics_implicit_lambda1.ets"
                                         }
                                       }
                                     },
@@ -2333,12 +2333,12 @@
                                       "start": {
                                         "line": 41,
                                         "column": 21,
-                                        "program": "generics_implicit_lambda1.sts"
+                                        "program": "generics_implicit_lambda1.ets"
                                       },
                                       "end": {
                                         "line": 41,
                                         "column": 33,
-                                        "program": "generics_implicit_lambda1.sts"
+                                        "program": "generics_implicit_lambda1.ets"
                                       }
                                     }
                                   }
@@ -2347,12 +2347,12 @@
                                   "start": {
                                     "line": 41,
                                     "column": 19,
-                                    "program": "generics_implicit_lambda1.sts"
+                                    "program": "generics_implicit_lambda1.ets"
                                   },
                                   "end": {
                                     "line": 41,
                                     "column": 35,
-                                    "program": "generics_implicit_lambda1.sts"
+                                    "program": "generics_implicit_lambda1.ets"
                                   }
                                 }
                               },
@@ -2360,12 +2360,12 @@
                                 "start": {
                                   "line": 41,
                                   "column": 5,
-                                  "program": "generics_implicit_lambda1.sts"
+                                  "program": "generics_implicit_lambda1.ets"
                                 },
                                 "end": {
                                   "line": 41,
                                   "column": 35,
-                                  "program": "generics_implicit_lambda1.sts"
+                                  "program": "generics_implicit_lambda1.ets"
                                 }
                               }
                             },
@@ -2373,12 +2373,12 @@
                               "start": {
                                 "line": 41,
                                 "column": 5,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               },
                               "end": {
                                 "line": 41,
                                 "column": 35,
-                                "program": "generics_implicit_lambda1.sts"
+                                "program": "generics_implicit_lambda1.ets"
                               }
                             }
                           }
@@ -2388,12 +2388,12 @@
                           "start": {
                             "line": 40,
                             "column": 5,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           },
                           "end": {
                             "line": 42,
                             "column": 6,
-                            "program": "generics_implicit_lambda1.sts"
+                            "program": "generics_implicit_lambda1.ets"
                           }
                         }
                       },
@@ -2401,12 +2401,12 @@
                         "start": {
                           "line": 40,
                           "column": 5,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         },
                         "end": {
                           "line": 42,
                           "column": 6,
-                          "program": "generics_implicit_lambda1.sts"
+                          "program": "generics_implicit_lambda1.ets"
                         }
                       }
                     }
@@ -2415,12 +2415,12 @@
                     "start": {
                       "line": 35,
                       "column": 17,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     },
                     "end": {
                       "line": 44,
                       "column": 2,
-                      "program": "generics_implicit_lambda1.sts"
+                      "program": "generics_implicit_lambda1.ets"
                     }
                   }
                 },
@@ -2428,12 +2428,12 @@
                   "start": {
                     "line": 35,
                     "column": 10,
-                    "program": "generics_implicit_lambda1.sts"
+                    "program": "generics_implicit_lambda1.ets"
                   },
                   "end": {
                     "line": 44,
                     "column": 2,
-                    "program": "generics_implicit_lambda1.sts"
+                    "program": "generics_implicit_lambda1.ets"
                   }
                 }
               },
@@ -2441,12 +2441,12 @@
                 "start": {
                   "line": 35,
                   "column": 10,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 },
                 "end": {
                   "line": 44,
                   "column": 2,
-                  "program": "generics_implicit_lambda1.sts"
+                  "program": "generics_implicit_lambda1.ets"
                 }
               }
             },
@@ -2456,12 +2456,12 @@
               "start": {
                 "line": 35,
                 "column": 1,
-                "program": "generics_implicit_lambda1.sts"
+                "program": "generics_implicit_lambda1.ets"
               },
               "end": {
                 "line": 44,
                 "column": 2,
-                "program": "generics_implicit_lambda1.sts"
+                "program": "generics_implicit_lambda1.ets"
               }
             }
           }
@@ -2470,12 +2470,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "generics_implicit_lambda1.sts"
+            "program": "generics_implicit_lambda1.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "generics_implicit_lambda1.sts"
+            "program": "generics_implicit_lambda1.ets"
           }
         }
       },
@@ -2483,12 +2483,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "generics_implicit_lambda1.sts"
+          "program": "generics_implicit_lambda1.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "generics_implicit_lambda1.sts"
+          "program": "generics_implicit_lambda1.ets"
         }
       }
     }
@@ -2497,12 +2497,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "generics_implicit_lambda1.sts"
+      "program": "generics_implicit_lambda1.ets"
     },
     "end": {
       "line": 44,
       "column": 2,
-      "program": "generics_implicit_lambda1.sts"
+      "program": "generics_implicit_lambda1.ets"
     }
   }
 }

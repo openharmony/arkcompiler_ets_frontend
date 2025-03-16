@@ -10,12 +10,12 @@
           "start": {
             "line": 16,
             "column": 27,
-            "program": "import_aliased_re-export.sts"
+            "program": "import_aliased_re-export.ets"
           },
           "end": {
             "line": 16,
             "column": 51,
-            "program": "import_aliased_re-export.sts"
+            "program": "import_aliased_re-export.ets"
           }
         }
       },
@@ -30,12 +30,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "import_aliased_re-export.sts"
+                "program": "import_aliased_re-export.ets"
               },
               "end": {
                 "line": 16,
                 "column": 20,
-                "program": "import_aliased_re-export.sts"
+                "program": "import_aliased_re-export.ets"
               }
             }
           },
@@ -47,12 +47,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "import_aliased_re-export.sts"
+                "program": "import_aliased_re-export.ets"
               },
               "end": {
                 "line": 16,
                 "column": 20,
-                "program": "import_aliased_re-export.sts"
+                "program": "import_aliased_re-export.ets"
               }
             }
           },
@@ -60,12 +60,12 @@
             "start": {
               "line": 16,
               "column": 9,
-              "program": "import_aliased_re-export.sts"
+              "program": "import_aliased_re-export.ets"
             },
             "end": {
               "line": 16,
               "column": 20,
-              "program": "import_aliased_re-export.sts"
+              "program": "import_aliased_re-export.ets"
             }
           }
         }
@@ -74,12 +74,12 @@
         "start": {
           "line": 16,
           "column": 1,
-          "program": "import_aliased_re-export.sts"
+          "program": "import_aliased_re-export.ets"
         },
         "end": {
           "line": 16,
           "column": 52,
-          "program": "import_aliased_re-export.sts"
+          "program": "import_aliased_re-export.ets"
         }
       }
     },
@@ -92,12 +92,12 @@
           "start": {
             "line": 17,
             "column": 42,
-            "program": "import_aliased_re-export.sts"
+            "program": "import_aliased_re-export.ets"
           },
           "end": {
             "line": 17,
             "column": 66,
-            "program": "import_aliased_re-export.sts"
+            "program": "import_aliased_re-export.ets"
           }
         }
       },
@@ -112,12 +112,12 @@
               "start": {
                 "line": 17,
                 "column": 9,
-                "program": "import_aliased_re-export.sts"
+                "program": "import_aliased_re-export.ets"
               },
               "end": {
                 "line": 17,
                 "column": 21,
-                "program": "import_aliased_re-export.sts"
+                "program": "import_aliased_re-export.ets"
               }
             }
           },
@@ -129,12 +129,12 @@
               "start": {
                 "line": 17,
                 "column": 9,
-                "program": "import_aliased_re-export.sts"
+                "program": "import_aliased_re-export.ets"
               },
               "end": {
                 "line": 17,
                 "column": 21,
-                "program": "import_aliased_re-export.sts"
+                "program": "import_aliased_re-export.ets"
               }
             }
           },
@@ -142,12 +142,12 @@
             "start": {
               "line": 17,
               "column": 9,
-              "program": "import_aliased_re-export.sts"
+              "program": "import_aliased_re-export.ets"
             },
             "end": {
               "line": 17,
               "column": 21,
-              "program": "import_aliased_re-export.sts"
+              "program": "import_aliased_re-export.ets"
             }
           }
         },
@@ -161,12 +161,12 @@
               "start": {
                 "line": 17,
                 "column": 23,
-                "program": "import_aliased_re-export.sts"
+                "program": "import_aliased_re-export.ets"
               },
               "end": {
                 "line": 17,
                 "column": 35,
-                "program": "import_aliased_re-export.sts"
+                "program": "import_aliased_re-export.ets"
               }
             }
           },
@@ -178,12 +178,12 @@
               "start": {
                 "line": 17,
                 "column": 23,
-                "program": "import_aliased_re-export.sts"
+                "program": "import_aliased_re-export.ets"
               },
               "end": {
                 "line": 17,
                 "column": 35,
-                "program": "import_aliased_re-export.sts"
+                "program": "import_aliased_re-export.ets"
               }
             }
           },
@@ -191,12 +191,12 @@
             "start": {
               "line": 17,
               "column": 23,
-              "program": "import_aliased_re-export.sts"
+              "program": "import_aliased_re-export.ets"
             },
             "end": {
               "line": 17,
               "column": 35,
-              "program": "import_aliased_re-export.sts"
+              "program": "import_aliased_re-export.ets"
             }
           }
         }
@@ -205,12 +205,12 @@
         "start": {
           "line": 17,
           "column": 1,
-          "program": "import_aliased_re-export.sts"
+          "program": "import_aliased_re-export.ets"
         },
         "end": {
           "line": 17,
           "column": 67,
-          "program": "import_aliased_re-export.sts"
+          "program": "import_aliased_re-export.ets"
         }
       }
     },
@@ -225,12 +225,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "import_aliased_re-export.sts"
+              "program": "import_aliased_re-export.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "import_aliased_re-export.sts"
+              "program": "import_aliased_re-export.ets"
             }
           }
         },
@@ -334,12 +334,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "import_aliased_re-export.sts"
+                "program": "import_aliased_re-export.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "import_aliased_re-export.sts"
+                "program": "import_aliased_re-export.ets"
               }
             }
           },
@@ -353,12 +353,12 @@
                 "start": {
                   "line": 19,
                   "column": 10,
-                  "program": "import_aliased_re-export.sts"
+                  "program": "import_aliased_re-export.ets"
                 },
                 "end": {
                   "line": 19,
                   "column": 14,
-                  "program": "import_aliased_re-export.sts"
+                  "program": "import_aliased_re-export.ets"
                 }
               }
             },
@@ -379,12 +379,12 @@
                     "start": {
                       "line": 19,
                       "column": 10,
-                      "program": "import_aliased_re-export.sts"
+                      "program": "import_aliased_re-export.ets"
                     },
                     "end": {
                       "line": 19,
                       "column": 14,
-                      "program": "import_aliased_re-export.sts"
+                      "program": "import_aliased_re-export.ets"
                     }
                   }
                 },
@@ -398,12 +398,12 @@
                     "start": {
                       "line": 19,
                       "column": 18,
-                      "program": "import_aliased_re-export.sts"
+                      "program": "import_aliased_re-export.ets"
                     },
                     "end": {
                       "line": 19,
                       "column": 22,
-                      "program": "import_aliased_re-export.sts"
+                      "program": "import_aliased_re-export.ets"
                     }
                   }
                 },
@@ -424,12 +424,12 @@
                               "start": {
                                 "line": 20,
                                 "column": 5,
-                                "program": "import_aliased_re-export.sts"
+                                "program": "import_aliased_re-export.ets"
                               },
                               "end": {
                                 "line": 20,
                                 "column": 12,
-                                "program": "import_aliased_re-export.sts"
+                                "program": "import_aliased_re-export.ets"
                               }
                             }
                           },
@@ -441,12 +441,12 @@
                               "start": {
                                 "line": 20,
                                 "column": 13,
-                                "program": "import_aliased_re-export.sts"
+                                "program": "import_aliased_re-export.ets"
                               },
                               "end": {
                                 "line": 20,
                                 "column": 18,
-                                "program": "import_aliased_re-export.sts"
+                                "program": "import_aliased_re-export.ets"
                               }
                             }
                           },
@@ -456,12 +456,12 @@
                             "start": {
                               "line": 20,
                               "column": 5,
-                              "program": "import_aliased_re-export.sts"
+                              "program": "import_aliased_re-export.ets"
                             },
                             "end": {
                               "line": 20,
                               "column": 18,
-                              "program": "import_aliased_re-export.sts"
+                              "program": "import_aliased_re-export.ets"
                             }
                           }
                         },
@@ -477,12 +477,12 @@
                                 "start": {
                                   "line": 20,
                                   "column": 19,
-                                  "program": "import_aliased_re-export.sts"
+                                  "program": "import_aliased_re-export.ets"
                                 },
                                 "end": {
                                   "line": 20,
                                   "column": 30,
-                                  "program": "import_aliased_re-export.sts"
+                                  "program": "import_aliased_re-export.ets"
                                 }
                               }
                             },
@@ -493,12 +493,12 @@
                                 "start": {
                                   "line": 20,
                                   "column": 33,
-                                  "program": "import_aliased_re-export.sts"
+                                  "program": "import_aliased_re-export.ets"
                                 },
                                 "end": {
                                   "line": 20,
                                   "column": 37,
-                                  "program": "import_aliased_re-export.sts"
+                                  "program": "import_aliased_re-export.ets"
                                 }
                               }
                             },
@@ -506,12 +506,12 @@
                               "start": {
                                 "line": 20,
                                 "column": 19,
-                                "program": "import_aliased_re-export.sts"
+                                "program": "import_aliased_re-export.ets"
                               },
                               "end": {
                                 "line": 20,
                                 "column": 37,
-                                "program": "import_aliased_re-export.sts"
+                                "program": "import_aliased_re-export.ets"
                               }
                             }
                           }
@@ -521,12 +521,12 @@
                           "start": {
                             "line": 20,
                             "column": 5,
-                            "program": "import_aliased_re-export.sts"
+                            "program": "import_aliased_re-export.ets"
                           },
                           "end": {
                             "line": 20,
                             "column": 38,
-                            "program": "import_aliased_re-export.sts"
+                            "program": "import_aliased_re-export.ets"
                           }
                         }
                       },
@@ -534,12 +534,12 @@
                         "start": {
                           "line": 20,
                           "column": 5,
-                          "program": "import_aliased_re-export.sts"
+                          "program": "import_aliased_re-export.ets"
                         },
                         "end": {
                           "line": 20,
                           "column": 39,
-                          "program": "import_aliased_re-export.sts"
+                          "program": "import_aliased_re-export.ets"
                         }
                       }
                     },
@@ -555,12 +555,12 @@
                             "start": {
                               "line": 21,
                               "column": 5,
-                              "program": "import_aliased_re-export.sts"
+                              "program": "import_aliased_re-export.ets"
                             },
                             "end": {
                               "line": 21,
                               "column": 17,
-                              "program": "import_aliased_re-export.sts"
+                              "program": "import_aliased_re-export.ets"
                             }
                           }
                         },
@@ -570,12 +570,12 @@
                           "start": {
                             "line": 21,
                             "column": 5,
-                            "program": "import_aliased_re-export.sts"
+                            "program": "import_aliased_re-export.ets"
                           },
                           "end": {
                             "line": 21,
                             "column": 19,
-                            "program": "import_aliased_re-export.sts"
+                            "program": "import_aliased_re-export.ets"
                           }
                         }
                       },
@@ -583,12 +583,12 @@
                         "start": {
                           "line": 21,
                           "column": 5,
-                          "program": "import_aliased_re-export.sts"
+                          "program": "import_aliased_re-export.ets"
                         },
                         "end": {
                           "line": 21,
                           "column": 20,
-                          "program": "import_aliased_re-export.sts"
+                          "program": "import_aliased_re-export.ets"
                         }
                       }
                     },
@@ -612,12 +612,12 @@
                                     "start": {
                                       "line": 23,
                                       "column": 18,
-                                      "program": "import_aliased_re-export.sts"
+                                      "program": "import_aliased_re-export.ets"
                                     },
                                     "end": {
                                       "line": 23,
                                       "column": 30,
-                                      "program": "import_aliased_re-export.sts"
+                                      "program": "import_aliased_re-export.ets"
                                     }
                                   }
                                 },
@@ -625,12 +625,12 @@
                                   "start": {
                                     "line": 23,
                                     "column": 18,
-                                    "program": "import_aliased_re-export.sts"
+                                    "program": "import_aliased_re-export.ets"
                                   },
                                   "end": {
                                     "line": 23,
                                     "column": 32,
-                                    "program": "import_aliased_re-export.sts"
+                                    "program": "import_aliased_re-export.ets"
                                   }
                                 }
                               },
@@ -638,12 +638,12 @@
                                 "start": {
                                   "line": 23,
                                   "column": 18,
-                                  "program": "import_aliased_re-export.sts"
+                                  "program": "import_aliased_re-export.ets"
                                 },
                                 "end": {
                                   "line": 23,
                                   "column": 32,
-                                  "program": "import_aliased_re-export.sts"
+                                  "program": "import_aliased_re-export.ets"
                                 }
                               }
                             },
@@ -652,12 +652,12 @@
                               "start": {
                                 "line": 23,
                                 "column": 9,
-                                "program": "import_aliased_re-export.sts"
+                                "program": "import_aliased_re-export.ets"
                               },
                               "end": {
                                 "line": 23,
                                 "column": 16,
-                                "program": "import_aliased_re-export.sts"
+                                "program": "import_aliased_re-export.ets"
                               }
                             }
                           },
@@ -675,12 +675,12 @@
                                     "start": {
                                       "line": 23,
                                       "column": 37,
-                                      "program": "import_aliased_re-export.sts"
+                                      "program": "import_aliased_re-export.ets"
                                     },
                                     "end": {
                                       "line": 23,
                                       "column": 49,
-                                      "program": "import_aliased_re-export.sts"
+                                      "program": "import_aliased_re-export.ets"
                                     }
                                   }
                                 },
@@ -688,12 +688,12 @@
                                   "start": {
                                     "line": 23,
                                     "column": 37,
-                                    "program": "import_aliased_re-export.sts"
+                                    "program": "import_aliased_re-export.ets"
                                   },
                                   "end": {
                                     "line": 23,
                                     "column": 50,
-                                    "program": "import_aliased_re-export.sts"
+                                    "program": "import_aliased_re-export.ets"
                                   }
                                 }
                               },
@@ -701,12 +701,12 @@
                                 "start": {
                                   "line": 23,
                                   "column": 37,
-                                  "program": "import_aliased_re-export.sts"
+                                  "program": "import_aliased_re-export.ets"
                                 },
                                 "end": {
                                   "line": 23,
                                   "column": 50,
-                                  "program": "import_aliased_re-export.sts"
+                                  "program": "import_aliased_re-export.ets"
                                 }
                               }
                             },
@@ -715,12 +715,12 @@
                               "start": {
                                 "line": 23,
                                 "column": 33,
-                                "program": "import_aliased_re-export.sts"
+                                "program": "import_aliased_re-export.ets"
                               },
                               "end": {
                                 "line": 23,
                                 "column": 52,
-                                "program": "import_aliased_re-export.sts"
+                                "program": "import_aliased_re-export.ets"
                               }
                             }
                           },
@@ -728,12 +728,12 @@
                             "start": {
                               "line": 23,
                               "column": 9,
-                              "program": "import_aliased_re-export.sts"
+                              "program": "import_aliased_re-export.ets"
                             },
                             "end": {
                               "line": 23,
                               "column": 52,
-                              "program": "import_aliased_re-export.sts"
+                              "program": "import_aliased_re-export.ets"
                             }
                           }
                         }
@@ -743,12 +743,12 @@
                         "start": {
                           "line": 23,
                           "column": 5,
-                          "program": "import_aliased_re-export.sts"
+                          "program": "import_aliased_re-export.ets"
                         },
                         "end": {
                           "line": 23,
                           "column": 52,
-                          "program": "import_aliased_re-export.sts"
+                          "program": "import_aliased_re-export.ets"
                         }
                       }
                     },
@@ -766,12 +766,12 @@
                               "start": {
                                 "line": 24,
                                 "column": 5,
-                                "program": "import_aliased_re-export.sts"
+                                "program": "import_aliased_re-export.ets"
                               },
                               "end": {
                                 "line": 24,
                                 "column": 12,
-                                "program": "import_aliased_re-export.sts"
+                                "program": "import_aliased_re-export.ets"
                               }
                             }
                           },
@@ -783,12 +783,12 @@
                               "start": {
                                 "line": 24,
                                 "column": 13,
-                                "program": "import_aliased_re-export.sts"
+                                "program": "import_aliased_re-export.ets"
                               },
                               "end": {
                                 "line": 24,
                                 "column": 24,
-                                "program": "import_aliased_re-export.sts"
+                                "program": "import_aliased_re-export.ets"
                               }
                             }
                           },
@@ -798,12 +798,12 @@
                             "start": {
                               "line": 24,
                               "column": 5,
-                              "program": "import_aliased_re-export.sts"
+                              "program": "import_aliased_re-export.ets"
                             },
                             "end": {
                               "line": 24,
                               "column": 24,
-                              "program": "import_aliased_re-export.sts"
+                              "program": "import_aliased_re-export.ets"
                             }
                           }
                         },
@@ -813,12 +813,12 @@
                           "start": {
                             "line": 24,
                             "column": 5,
-                            "program": "import_aliased_re-export.sts"
+                            "program": "import_aliased_re-export.ets"
                           },
                           "end": {
                             "line": 24,
                             "column": 26,
-                            "program": "import_aliased_re-export.sts"
+                            "program": "import_aliased_re-export.ets"
                           }
                         }
                       },
@@ -826,12 +826,12 @@
                         "start": {
                           "line": 24,
                           "column": 5,
-                          "program": "import_aliased_re-export.sts"
+                          "program": "import_aliased_re-export.ets"
                         },
                         "end": {
                           "line": 24,
                           "column": 27,
-                          "program": "import_aliased_re-export.sts"
+                          "program": "import_aliased_re-export.ets"
                         }
                       }
                     }
@@ -840,12 +840,12 @@
                     "start": {
                       "line": 19,
                       "column": 23,
-                      "program": "import_aliased_re-export.sts"
+                      "program": "import_aliased_re-export.ets"
                     },
                     "end": {
                       "line": 25,
                       "column": 2,
-                      "program": "import_aliased_re-export.sts"
+                      "program": "import_aliased_re-export.ets"
                     }
                   }
                 },
@@ -853,12 +853,12 @@
                   "start": {
                     "line": 19,
                     "column": 10,
-                    "program": "import_aliased_re-export.sts"
+                    "program": "import_aliased_re-export.ets"
                   },
                   "end": {
                     "line": 25,
                     "column": 2,
-                    "program": "import_aliased_re-export.sts"
+                    "program": "import_aliased_re-export.ets"
                   }
                 }
               },
@@ -866,12 +866,12 @@
                 "start": {
                   "line": 19,
                   "column": 10,
-                  "program": "import_aliased_re-export.sts"
+                  "program": "import_aliased_re-export.ets"
                 },
                 "end": {
                   "line": 25,
                   "column": 2,
-                  "program": "import_aliased_re-export.sts"
+                  "program": "import_aliased_re-export.ets"
                 }
               }
             },
@@ -881,12 +881,12 @@
               "start": {
                 "line": 19,
                 "column": 1,
-                "program": "import_aliased_re-export.sts"
+                "program": "import_aliased_re-export.ets"
               },
               "end": {
                 "line": 25,
                 "column": 2,
-                "program": "import_aliased_re-export.sts"
+                "program": "import_aliased_re-export.ets"
               }
             }
           }
@@ -895,12 +895,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "import_aliased_re-export.sts"
+            "program": "import_aliased_re-export.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "import_aliased_re-export.sts"
+            "program": "import_aliased_re-export.ets"
           }
         }
       },
@@ -908,12 +908,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "import_aliased_re-export.sts"
+          "program": "import_aliased_re-export.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "import_aliased_re-export.sts"
+          "program": "import_aliased_re-export.ets"
         }
       }
     }
@@ -922,12 +922,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "import_aliased_re-export.sts"
+      "program": "import_aliased_re-export.ets"
     },
     "end": {
       "line": 26,
       "column": 1,
-      "program": "import_aliased_re-export.sts"
+      "program": "import_aliased_re-export.ets"
     }
   }
 }

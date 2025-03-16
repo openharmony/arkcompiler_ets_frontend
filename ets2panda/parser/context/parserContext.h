@@ -85,7 +85,7 @@ namespace ark::es2panda::parser {
 class ParserContext {
 public:
     // NOLINTNEXTLINE(modernize-avoid-c-arrays)
-    inline static constexpr char const DEFAULT_SOURCE_FILE[] = "<auxiliary_tmp>.sts";
+    inline static constexpr char const DEFAULT_SOURCE_FILE[] = "<auxiliary_tmp>.ets";
 
     explicit ParserContext(const Program *program, ParserStatus status);
 

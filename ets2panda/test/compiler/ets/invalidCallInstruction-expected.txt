@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "invalidCallInstruction.sts"
+              "program": "invalidCallInstruction.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "invalidCallInstruction.sts"
+              "program": "invalidCallInstruction.ets"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "invalidCallInstruction.sts"
+                "program": "invalidCallInstruction.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "invalidCallInstruction.sts"
+                "program": "invalidCallInstruction.ets"
               }
             }
           },
@@ -140,12 +140,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "invalidCallInstruction.sts"
+                  "program": "invalidCallInstruction.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 14,
-                  "program": "invalidCallInstruction.sts"
+                  "program": "invalidCallInstruction.ets"
                 }
               }
             },
@@ -166,12 +166,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "invalidCallInstruction.sts"
+                      "program": "invalidCallInstruction.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 14,
-                      "program": "invalidCallInstruction.sts"
+                      "program": "invalidCallInstruction.ets"
                     }
                   }
                 },
@@ -185,12 +185,12 @@
                     "start": {
                       "line": 16,
                       "column": 19,
-                      "program": "invalidCallInstruction.sts"
+                      "program": "invalidCallInstruction.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 22,
-                      "program": "invalidCallInstruction.sts"
+                      "program": "invalidCallInstruction.ets"
                     }
                   }
                 },
@@ -210,12 +210,12 @@
                               "start": {
                                 "line": 18,
                                 "column": 7,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 18,
                                 "column": 9,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -226,12 +226,12 @@
                               "start": {
                                 "line": 18,
                                 "column": 12,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 18,
                                 "column": 13,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -239,12 +239,12 @@
                             "start": {
                               "line": 18,
                               "column": 7,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             },
                             "end": {
                               "line": 18,
                               "column": 13,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             }
                           }
                         }
@@ -254,12 +254,12 @@
                         "start": {
                           "line": 18,
                           "column": 3,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         },
                         "end": {
                           "line": 18,
                           "column": 14,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         }
                       }
                     },
@@ -276,12 +276,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 7,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 9,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -292,12 +292,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 12,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 13,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -305,12 +305,12 @@
                             "start": {
                               "line": 19,
                               "column": 7,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             },
                             "end": {
                               "line": 19,
                               "column": 13,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             }
                           }
                         }
@@ -320,12 +320,12 @@
                         "start": {
                           "line": 19,
                           "column": 3,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         },
                         "end": {
                           "line": 19,
                           "column": 14,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         }
                       }
                     },
@@ -342,12 +342,12 @@
                               "start": {
                                 "line": 20,
                                 "column": 7,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 20,
                                 "column": 9,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -358,12 +358,12 @@
                               "start": {
                                 "line": 20,
                                 "column": 12,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 20,
                                 "column": 13,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -371,12 +371,12 @@
                             "start": {
                               "line": 20,
                               "column": 7,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             },
                             "end": {
                               "line": 20,
                               "column": 13,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             }
                           }
                         }
@@ -386,12 +386,12 @@
                         "start": {
                           "line": 20,
                           "column": 3,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         },
                         "end": {
                           "line": 20,
                           "column": 14,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         }
                       }
                     },
@@ -408,12 +408,12 @@
                               "start": {
                                 "line": 21,
                                 "column": 7,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 21,
                                 "column": 9,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -424,12 +424,12 @@
                               "start": {
                                 "line": 21,
                                 "column": 12,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 21,
                                 "column": 13,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -437,12 +437,12 @@
                             "start": {
                               "line": 21,
                               "column": 7,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             },
                             "end": {
                               "line": 21,
                               "column": 13,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             }
                           }
                         }
@@ -452,12 +452,12 @@
                         "start": {
                           "line": 21,
                           "column": 3,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         },
                         "end": {
                           "line": 21,
                           "column": 14,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         }
                       }
                     },
@@ -474,12 +474,12 @@
                               "start": {
                                 "line": 22,
                                 "column": 7,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 22,
                                 "column": 9,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -490,12 +490,12 @@
                               "start": {
                                 "line": 22,
                                 "column": 12,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 22,
                                 "column": 13,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -503,12 +503,12 @@
                             "start": {
                               "line": 22,
                               "column": 7,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             },
                             "end": {
                               "line": 22,
                               "column": 13,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             }
                           }
                         }
@@ -518,12 +518,12 @@
                         "start": {
                           "line": 22,
                           "column": 3,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         },
                         "end": {
                           "line": 22,
                           "column": 14,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         }
                       }
                     },
@@ -540,12 +540,12 @@
                               "start": {
                                 "line": 23,
                                 "column": 7,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 23,
                                 "column": 9,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -556,12 +556,12 @@
                               "start": {
                                 "line": 23,
                                 "column": 12,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 23,
                                 "column": 13,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -569,12 +569,12 @@
                             "start": {
                               "line": 23,
                               "column": 7,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             },
                             "end": {
                               "line": 23,
                               "column": 13,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             }
                           }
                         }
@@ -584,12 +584,12 @@
                         "start": {
                           "line": 23,
                           "column": 3,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         },
                         "end": {
                           "line": 23,
                           "column": 14,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         }
                       }
                     },
@@ -606,12 +606,12 @@
                               "start": {
                                 "line": 24,
                                 "column": 7,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 24,
                                 "column": 9,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -622,12 +622,12 @@
                               "start": {
                                 "line": 24,
                                 "column": 12,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 24,
                                 "column": 13,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -635,12 +635,12 @@
                             "start": {
                               "line": 24,
                               "column": 7,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             },
                             "end": {
                               "line": 24,
                               "column": 13,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             }
                           }
                         }
@@ -650,12 +650,12 @@
                         "start": {
                           "line": 24,
                           "column": 3,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         },
                         "end": {
                           "line": 24,
                           "column": 14,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         }
                       }
                     },
@@ -672,12 +672,12 @@
                               "start": {
                                 "line": 25,
                                 "column": 7,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 25,
                                 "column": 9,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -688,12 +688,12 @@
                               "start": {
                                 "line": 25,
                                 "column": 12,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 25,
                                 "column": 13,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -701,12 +701,12 @@
                             "start": {
                               "line": 25,
                               "column": 7,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             },
                             "end": {
                               "line": 25,
                               "column": 13,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             }
                           }
                         }
@@ -716,12 +716,12 @@
                         "start": {
                           "line": 25,
                           "column": 3,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         },
                         "end": {
                           "line": 25,
                           "column": 14,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         }
                       }
                     },
@@ -738,12 +738,12 @@
                               "start": {
                                 "line": 26,
                                 "column": 7,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 26,
                                 "column": 9,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -754,12 +754,12 @@
                               "start": {
                                 "line": 26,
                                 "column": 12,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 26,
                                 "column": 13,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -767,12 +767,12 @@
                             "start": {
                               "line": 26,
                               "column": 7,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             },
                             "end": {
                               "line": 26,
                               "column": 13,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             }
                           }
                         }
@@ -782,12 +782,12 @@
                         "start": {
                           "line": 26,
                           "column": 3,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         },
                         "end": {
                           "line": 26,
                           "column": 14,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         }
                       }
                     },
@@ -804,12 +804,12 @@
                               "start": {
                                 "line": 27,
                                 "column": 7,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 27,
                                 "column": 10,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -820,12 +820,12 @@
                               "start": {
                                 "line": 27,
                                 "column": 13,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 27,
                                 "column": 14,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -833,12 +833,12 @@
                             "start": {
                               "line": 27,
                               "column": 7,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             },
                             "end": {
                               "line": 27,
                               "column": 14,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             }
                           }
                         }
@@ -848,12 +848,12 @@
                         "start": {
                           "line": 27,
                           "column": 3,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         },
                         "end": {
                           "line": 27,
                           "column": 15,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         }
                       }
                     },
@@ -870,12 +870,12 @@
                               "start": {
                                 "line": 28,
                                 "column": 7,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 28,
                                 "column": 10,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -886,12 +886,12 @@
                               "start": {
                                 "line": 28,
                                 "column": 13,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 28,
                                 "column": 14,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -899,12 +899,12 @@
                             "start": {
                               "line": 28,
                               "column": 7,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             },
                             "end": {
                               "line": 28,
                               "column": 14,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             }
                           }
                         }
@@ -914,12 +914,12 @@
                         "start": {
                           "line": 28,
                           "column": 3,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         },
                         "end": {
                           "line": 28,
                           "column": 15,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         }
                       }
                     },
@@ -936,12 +936,12 @@
                               "start": {
                                 "line": 29,
                                 "column": 7,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 29,
                                 "column": 10,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -952,12 +952,12 @@
                               "start": {
                                 "line": 29,
                                 "column": 13,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 29,
                                 "column": 14,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -965,12 +965,12 @@
                             "start": {
                               "line": 29,
                               "column": 7,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             },
                             "end": {
                               "line": 29,
                               "column": 14,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             }
                           }
                         }
@@ -980,12 +980,12 @@
                         "start": {
                           "line": 29,
                           "column": 3,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         },
                         "end": {
                           "line": 29,
                           "column": 15,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         }
                       }
                     },
@@ -1002,12 +1002,12 @@
                               "start": {
                                 "line": 30,
                                 "column": 7,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 30,
                                 "column": 10,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -1018,12 +1018,12 @@
                               "start": {
                                 "line": 30,
                                 "column": 13,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 30,
                                 "column": 14,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -1031,12 +1031,12 @@
                             "start": {
                               "line": 30,
                               "column": 7,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             },
                             "end": {
                               "line": 30,
                               "column": 14,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             }
                           }
                         }
@@ -1046,12 +1046,12 @@
                         "start": {
                           "line": 30,
                           "column": 3,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         },
                         "end": {
                           "line": 30,
                           "column": 15,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         }
                       }
                     },
@@ -1068,12 +1068,12 @@
                               "start": {
                                 "line": 31,
                                 "column": 7,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 31,
                                 "column": 10,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -1084,12 +1084,12 @@
                               "start": {
                                 "line": 31,
                                 "column": 13,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 31,
                                 "column": 14,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -1097,12 +1097,12 @@
                             "start": {
                               "line": 31,
                               "column": 7,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             },
                             "end": {
                               "line": 31,
                               "column": 14,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             }
                           }
                         }
@@ -1112,12 +1112,12 @@
                         "start": {
                           "line": 31,
                           "column": 3,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         },
                         "end": {
                           "line": 31,
                           "column": 15,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         }
                       }
                     },
@@ -1134,12 +1134,12 @@
                               "start": {
                                 "line": 32,
                                 "column": 7,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 32,
                                 "column": 10,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -1150,12 +1150,12 @@
                               "start": {
                                 "line": 32,
                                 "column": 13,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 32,
                                 "column": 14,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -1163,12 +1163,12 @@
                             "start": {
                               "line": 32,
                               "column": 7,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             },
                             "end": {
                               "line": 32,
                               "column": 14,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             }
                           }
                         }
@@ -1178,12 +1178,12 @@
                         "start": {
                           "line": 32,
                           "column": 3,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         },
                         "end": {
                           "line": 32,
                           "column": 15,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         }
                       }
                     },
@@ -1200,12 +1200,12 @@
                               "start": {
                                 "line": 33,
                                 "column": 7,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 33,
                                 "column": 10,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -1216,12 +1216,12 @@
                               "start": {
                                 "line": 33,
                                 "column": 13,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 33,
                                 "column": 14,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -1229,12 +1229,12 @@
                             "start": {
                               "line": 33,
                               "column": 7,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             },
                             "end": {
                               "line": 33,
                               "column": 14,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             }
                           }
                         }
@@ -1244,12 +1244,12 @@
                         "start": {
                           "line": 33,
                           "column": 3,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         },
                         "end": {
                           "line": 33,
                           "column": 15,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         }
                       }
                     },
@@ -1270,12 +1270,12 @@
                                   "start": {
                                     "line": 35,
                                     "column": 17,
-                                    "program": "invalidCallInstruction.sts"
+                                    "program": "invalidCallInstruction.ets"
                                   },
                                   "end": {
                                     "line": 35,
                                     "column": 21,
-                                    "program": "invalidCallInstruction.sts"
+                                    "program": "invalidCallInstruction.ets"
                                   }
                                 }
                               },
@@ -1283,12 +1283,12 @@
                                 "start": {
                                   "line": 35,
                                   "column": 11,
-                                  "program": "invalidCallInstruction.sts"
+                                  "program": "invalidCallInstruction.ets"
                                 },
                                 "end": {
                                   "line": 35,
                                   "column": 21,
-                                  "program": "invalidCallInstruction.sts"
+                                  "program": "invalidCallInstruction.ets"
                                 }
                               }
                             },
@@ -1297,12 +1297,12 @@
                               "start": {
                                 "line": 35,
                                 "column": 7,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 35,
                                 "column": 8,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -1321,12 +1321,12 @@
                                   "start": {
                                     "line": 35,
                                     "column": 29,
-                                    "program": "invalidCallInstruction.sts"
+                                    "program": "invalidCallInstruction.ets"
                                   },
                                   "end": {
                                     "line": 35,
                                     "column": 33,
-                                    "program": "invalidCallInstruction.sts"
+                                    "program": "invalidCallInstruction.ets"
                                   }
                                 }
                               },
@@ -1346,12 +1346,12 @@
                                           "start": {
                                             "line": 36,
                                             "column": 5,
-                                            "program": "invalidCallInstruction.sts"
+                                            "program": "invalidCallInstruction.ets"
                                           },
                                           "end": {
                                             "line": 36,
                                             "column": 8,
-                                            "program": "invalidCallInstruction.sts"
+                                            "program": "invalidCallInstruction.ets"
                                           }
                                         }
                                       },
@@ -1362,12 +1362,12 @@
                                           "start": {
                                             "line": 36,
                                             "column": 11,
-                                            "program": "invalidCallInstruction.sts"
+                                            "program": "invalidCallInstruction.ets"
                                           },
                                           "end": {
                                             "line": 36,
                                             "column": 12,
-                                            "program": "invalidCallInstruction.sts"
+                                            "program": "invalidCallInstruction.ets"
                                           }
                                         }
                                       },
@@ -1375,12 +1375,12 @@
                                         "start": {
                                           "line": 36,
                                           "column": 5,
-                                          "program": "invalidCallInstruction.sts"
+                                          "program": "invalidCallInstruction.ets"
                                         },
                                         "end": {
                                           "line": 36,
                                           "column": 12,
-                                          "program": "invalidCallInstruction.sts"
+                                          "program": "invalidCallInstruction.ets"
                                         }
                                       }
                                     },
@@ -1388,12 +1388,12 @@
                                       "start": {
                                         "line": 36,
                                         "column": 5,
-                                        "program": "invalidCallInstruction.sts"
+                                        "program": "invalidCallInstruction.ets"
                                       },
                                       "end": {
                                         "line": 36,
                                         "column": 13,
-                                        "program": "invalidCallInstruction.sts"
+                                        "program": "invalidCallInstruction.ets"
                                       }
                                     }
                                   }
@@ -1402,12 +1402,12 @@
                                   "start": {
                                     "line": 35,
                                     "column": 37,
-                                    "program": "invalidCallInstruction.sts"
+                                    "program": "invalidCallInstruction.ets"
                                   },
                                   "end": {
                                     "line": 37,
                                     "column": 4,
-                                    "program": "invalidCallInstruction.sts"
+                                    "program": "invalidCallInstruction.ets"
                                   }
                                 }
                               },
@@ -1415,12 +1415,12 @@
                                 "start": {
                                   "line": 35,
                                   "column": 24,
-                                  "program": "invalidCallInstruction.sts"
+                                  "program": "invalidCallInstruction.ets"
                                 },
                                 "end": {
                                   "line": 37,
                                   "column": 4,
-                                  "program": "invalidCallInstruction.sts"
+                                  "program": "invalidCallInstruction.ets"
                                 }
                               }
                             },
@@ -1428,12 +1428,12 @@
                               "start": {
                                 "line": 35,
                                 "column": 24,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               },
                               "end": {
                                 "line": 37,
                                 "column": 4,
-                                "program": "invalidCallInstruction.sts"
+                                "program": "invalidCallInstruction.ets"
                               }
                             }
                           },
@@ -1441,12 +1441,12 @@
                             "start": {
                               "line": 35,
                               "column": 7,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             },
                             "end": {
                               "line": 37,
                               "column": 4,
-                              "program": "invalidCallInstruction.sts"
+                              "program": "invalidCallInstruction.ets"
                             }
                           }
                         }
@@ -1456,12 +1456,12 @@
                         "start": {
                           "line": 35,
                           "column": 3,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         },
                         "end": {
                           "line": 37,
                           "column": 4,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         }
                       }
                     },
@@ -1474,12 +1474,12 @@
                           "start": {
                             "line": 39,
                             "column": 9,
-                            "program": "invalidCallInstruction.sts"
+                            "program": "invalidCallInstruction.ets"
                           },
                           "end": {
                             "line": 39,
                             "column": 10,
-                            "program": "invalidCallInstruction.sts"
+                            "program": "invalidCallInstruction.ets"
                           }
                         }
                       },
@@ -1487,12 +1487,12 @@
                         "start": {
                           "line": 39,
                           "column": 2,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         },
                         "end": {
                           "line": 39,
                           "column": 11,
-                          "program": "invalidCallInstruction.sts"
+                          "program": "invalidCallInstruction.ets"
                         }
                       }
                     }
@@ -1501,12 +1501,12 @@
                     "start": {
                       "line": 17,
                       "column": 1,
-                      "program": "invalidCallInstruction.sts"
+                      "program": "invalidCallInstruction.ets"
                     },
                     "end": {
                       "line": 40,
                       "column": 2,
-                      "program": "invalidCallInstruction.sts"
+                      "program": "invalidCallInstruction.ets"
                     }
                   }
                 },
@@ -1514,12 +1514,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "invalidCallInstruction.sts"
+                    "program": "invalidCallInstruction.ets"
                   },
                   "end": {
                     "line": 40,
                     "column": 2,
-                    "program": "invalidCallInstruction.sts"
+                    "program": "invalidCallInstruction.ets"
                   }
                 }
               },
@@ -1527,12 +1527,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "invalidCallInstruction.sts"
+                  "program": "invalidCallInstruction.ets"
                 },
                 "end": {
                   "line": 40,
                   "column": 2,
-                  "program": "invalidCallInstruction.sts"
+                  "program": "invalidCallInstruction.ets"
                 }
               }
             },
@@ -1542,12 +1542,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "invalidCallInstruction.sts"
+                "program": "invalidCallInstruction.ets"
               },
               "end": {
                 "line": 40,
                 "column": 2,
-                "program": "invalidCallInstruction.sts"
+                "program": "invalidCallInstruction.ets"
               }
             }
           }
@@ -1556,12 +1556,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "invalidCallInstruction.sts"
+            "program": "invalidCallInstruction.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "invalidCallInstruction.sts"
+            "program": "invalidCallInstruction.ets"
           }
         }
       },
@@ -1569,12 +1569,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "invalidCallInstruction.sts"
+          "program": "invalidCallInstruction.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "invalidCallInstruction.sts"
+          "program": "invalidCallInstruction.ets"
         }
       }
     }
@@ -1583,12 +1583,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "invalidCallInstruction.sts"
+      "program": "invalidCallInstruction.ets"
     },
     "end": {
       "line": 42,
       "column": 1,
-      "program": "invalidCallInstruction.sts"
+      "program": "invalidCallInstruction.ets"
     }
   }
 }

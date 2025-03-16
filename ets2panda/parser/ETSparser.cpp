@@ -806,7 +806,7 @@ void ETSParser::ValidateRestParameter(ir::Expression *param)
     }
     GetContext().Status() |= ParserStatus::HAS_COMPLEX_PARAM;
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-        // rest_parameter_04.sts
+        // rest_parameter_04.ets
         LogError(diagnostic::REST_PARAM_NOT_LAST);
         const auto pos = Lexer()->Save();
         Lexer()->NextToken();
@@ -1241,7 +1241,7 @@ void ETSParser::ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, 
     // should be handled at some point.
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_FROM && !isReExport &&
         (GetContext().Status() & ParserStatus::IN_DEFAULT_IMPORTS) == 0) {
-        LogExpectedToken(lexer::TokenType::KEYW_AS);  // invalid_namespce_import.sts
+        LogExpectedToken(lexer::TokenType::KEYW_AS);  // invalid_namespce_import.ets
     }
 
     auto *local = AllocNode<ir::Identifier>(util::StringView(""), Allocator());
@@ -1523,7 +1523,7 @@ ir::Expression *ETSParser::ParseCatchParam()
 
     bool checkRestrictedBinding = true;
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-        // tryCatchMissingParam.sts
+        // tryCatchMissingParam.ets
         LogError(diagnostic::UNEXPECTED_TOKEN_ID);
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
             checkRestrictedBinding = false;
@@ -1655,7 +1655,7 @@ bool ETSParser::ParsePotentialGenericFunctionCall(ir::Expression *primaryExpr, i
         return true;
     }
 
-    // unexpected_token_49,sts, 50, 51
+    // unexpected_token_49,ets, 50, 51
     if (!Lexer()->GetToken().NewLine() && Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
         LogExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     }
@@ -1703,7 +1703,7 @@ ir::ModifierFlags ETSParser::ParseTypeVarianceModifier(TypeAnnotationParsingOpti
 ir::AstNode *ETSParser::ParseAmbientSignature(const lexer::SourcePosition &startPos)
 {
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-        // ambient_indexer_9.sts
+        // ambient_indexer_9.ets
         LogUnexpectedToken(Lexer()->GetToken());
         auto pos = Lexer()->Save();
         Lexer()->NextToken();
@@ -1723,7 +1723,7 @@ ir::AstNode *ETSParser::ParseAmbientSignature(const lexer::SourcePosition &start
     auto const indexName = Lexer()->GetToken().Ident();
 
     if (Lexer()->NextToken(); Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
-        // ambient_indexer_8.sts
+        // ambient_indexer_8.ets
         LogError(diagnostic::INDEX_TYPE_EXPECTED);
 
         Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COLON);
@@ -1731,7 +1731,7 @@ ir::AstNode *ETSParser::ParseAmbientSignature(const lexer::SourcePosition &start
 
     // eat ":"
     if (Lexer()->NextToken(); Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_NUMBER) {
-        // ambient_indexer_3.sts
+        // ambient_indexer_3.ets
         LogError(diagnostic::INDEX_TYPE_NOT_NUMBER);
 
         Lexer()->GetToken().SetTokenType(lexer::TokenType::KEYW_NUMBER);
@@ -1739,7 +1739,7 @@ ir::AstNode *ETSParser::ParseAmbientSignature(const lexer::SourcePosition &start
 
     // eat indexType
     if (Lexer()->NextToken(); Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
-        // ambient_indexer_7.sts
+        // ambient_indexer_7.ets
         LogError(diagnostic::EXPECTED_BRACKETS_IN_INDEX);
 
         Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
@@ -1747,7 +1747,7 @@ ir::AstNode *ETSParser::ParseAmbientSignature(const lexer::SourcePosition &start
 
     // eat "]"
     if (Lexer()->NextToken(); Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
-        // ambient_indexer_4.sts
+        // ambient_indexer_4.ets
         LogError(diagnostic::INDEX_MISSING_TYPE);
 
         Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COLON);
@@ -1755,7 +1755,7 @@ ir::AstNode *ETSParser::ParseAmbientSignature(const lexer::SourcePosition &start
 
     // eat ":"
     if (Lexer()->NextToken(); Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-        // ambient_indexer_5.sts
+        // ambient_indexer_5.ets
         LogError(diagnostic::INDEX_MISSING_IDENTIFIER);
 
         Lexer()->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);

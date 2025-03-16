@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "ConditionalExpressionCallVoidNeg.sts"
+              "program": "ConditionalExpressionCallVoidNeg.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "ConditionalExpressionCallVoidNeg.sts"
+              "program": "ConditionalExpressionCallVoidNeg.ets"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "ConditionalExpressionCallVoidNeg.sts"
+                "program": "ConditionalExpressionCallVoidNeg.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "ConditionalExpressionCallVoidNeg.sts"
+                "program": "ConditionalExpressionCallVoidNeg.ets"
               }
             }
           },
@@ -140,12 +140,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "ConditionalExpressionCallVoidNeg.sts"
+                  "program": "ConditionalExpressionCallVoidNeg.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 13,
-                  "program": "ConditionalExpressionCallVoidNeg.sts"
+                  "program": "ConditionalExpressionCallVoidNeg.ets"
                 }
               }
             },
@@ -166,12 +166,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "ConditionalExpressionCallVoidNeg.sts"
+                      "program": "ConditionalExpressionCallVoidNeg.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 13,
-                      "program": "ConditionalExpressionCallVoidNeg.sts"
+                      "program": "ConditionalExpressionCallVoidNeg.ets"
                     }
                   }
                 },
@@ -186,12 +186,12 @@
                     "start": {
                       "line": 16,
                       "column": 15,
-                      "program": "ConditionalExpressionCallVoidNeg.sts"
+                      "program": "ConditionalExpressionCallVoidNeg.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 17,
-                      "program": "ConditionalExpressionCallVoidNeg.sts"
+                      "program": "ConditionalExpressionCallVoidNeg.ets"
                     }
                   }
                 },
@@ -199,12 +199,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "ConditionalExpressionCallVoidNeg.sts"
+                    "program": "ConditionalExpressionCallVoidNeg.ets"
                   },
                   "end": {
                     "line": 16,
                     "column": 17,
-                    "program": "ConditionalExpressionCallVoidNeg.sts"
+                    "program": "ConditionalExpressionCallVoidNeg.ets"
                   }
                 }
               },
@@ -212,12 +212,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "ConditionalExpressionCallVoidNeg.sts"
+                  "program": "ConditionalExpressionCallVoidNeg.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 17,
-                  "program": "ConditionalExpressionCallVoidNeg.sts"
+                  "program": "ConditionalExpressionCallVoidNeg.ets"
                 }
               }
             },
@@ -227,12 +227,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "ConditionalExpressionCallVoidNeg.sts"
+                "program": "ConditionalExpressionCallVoidNeg.ets"
               },
               "end": {
                 "line": 16,
                 "column": 17,
-                "program": "ConditionalExpressionCallVoidNeg.sts"
+                "program": "ConditionalExpressionCallVoidNeg.ets"
               }
             }
           },
@@ -246,12 +246,12 @@
                 "start": {
                   "line": 18,
                   "column": 10,
-                  "program": "ConditionalExpressionCallVoidNeg.sts"
+                  "program": "ConditionalExpressionCallVoidNeg.ets"
                 },
                 "end": {
                   "line": 18,
                   "column": 14,
-                  "program": "ConditionalExpressionCallVoidNeg.sts"
+                  "program": "ConditionalExpressionCallVoidNeg.ets"
                 }
               }
             },
@@ -272,12 +272,12 @@
                     "start": {
                       "line": 18,
                       "column": 10,
-                      "program": "ConditionalExpressionCallVoidNeg.sts"
+                      "program": "ConditionalExpressionCallVoidNeg.ets"
                     },
                     "end": {
                       "line": 18,
                       "column": 14,
-                      "program": "ConditionalExpressionCallVoidNeg.sts"
+                      "program": "ConditionalExpressionCallVoidNeg.ets"
                     }
                   }
                 },
@@ -301,12 +301,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 9,
-                                "program": "ConditionalExpressionCallVoidNeg.sts"
+                                "program": "ConditionalExpressionCallVoidNeg.ets"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 10,
-                                "program": "ConditionalExpressionCallVoidNeg.sts"
+                                "program": "ConditionalExpressionCallVoidNeg.ets"
                               }
                             }
                           },
@@ -317,12 +317,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 13,
-                                "program": "ConditionalExpressionCallVoidNeg.sts"
+                                "program": "ConditionalExpressionCallVoidNeg.ets"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 14,
-                                "program": "ConditionalExpressionCallVoidNeg.sts"
+                                "program": "ConditionalExpressionCallVoidNeg.ets"
                               }
                             }
                           },
@@ -330,12 +330,12 @@
                             "start": {
                               "line": 19,
                               "column": 9,
-                              "program": "ConditionalExpressionCallVoidNeg.sts"
+                              "program": "ConditionalExpressionCallVoidNeg.ets"
                             },
                             "end": {
                               "line": 19,
                               "column": 14,
-                              "program": "ConditionalExpressionCallVoidNeg.sts"
+                              "program": "ConditionalExpressionCallVoidNeg.ets"
                             }
                           }
                         }
@@ -345,12 +345,12 @@
                         "start": {
                           "line": 19,
                           "column": 5,
-                          "program": "ConditionalExpressionCallVoidNeg.sts"
+                          "program": "ConditionalExpressionCallVoidNeg.ets"
                         },
                         "end": {
                           "line": 19,
                           "column": 15,
-                          "program": "ConditionalExpressionCallVoidNeg.sts"
+                          "program": "ConditionalExpressionCallVoidNeg.ets"
                         }
                       }
                     },
@@ -367,12 +367,12 @@
                               "start": {
                                 "line": 20,
                                 "column": 9,
-                                "program": "ConditionalExpressionCallVoidNeg.sts"
+                                "program": "ConditionalExpressionCallVoidNeg.ets"
                               },
                               "end": {
                                 "line": 20,
                                 "column": 10,
-                                "program": "ConditionalExpressionCallVoidNeg.sts"
+                                "program": "ConditionalExpressionCallVoidNeg.ets"
                               }
                             }
                           },
@@ -389,12 +389,12 @@
                                   "start": {
                                     "line": 20,
                                     "column": 13,
-                                    "program": "ConditionalExpressionCallVoidNeg.sts"
+                                    "program": "ConditionalExpressionCallVoidNeg.ets"
                                   },
                                   "end": {
                                     "line": 20,
                                     "column": 14,
-                                    "program": "ConditionalExpressionCallVoidNeg.sts"
+                                    "program": "ConditionalExpressionCallVoidNeg.ets"
                                   }
                                 }
                               },
@@ -405,12 +405,12 @@
                                   "start": {
                                     "line": 20,
                                     "column": 15,
-                                    "program": "ConditionalExpressionCallVoidNeg.sts"
+                                    "program": "ConditionalExpressionCallVoidNeg.ets"
                                   },
                                   "end": {
                                     "line": 20,
                                     "column": 16,
-                                    "program": "ConditionalExpressionCallVoidNeg.sts"
+                                    "program": "ConditionalExpressionCallVoidNeg.ets"
                                   }
                                 }
                               },
@@ -418,12 +418,12 @@
                                 "start": {
                                   "line": 20,
                                   "column": 13,
-                                  "program": "ConditionalExpressionCallVoidNeg.sts"
+                                  "program": "ConditionalExpressionCallVoidNeg.ets"
                                 },
                                 "end": {
                                   "line": 20,
                                   "column": 16,
-                                  "program": "ConditionalExpressionCallVoidNeg.sts"
+                                  "program": "ConditionalExpressionCallVoidNeg.ets"
                                 }
                               }
                             },
@@ -437,12 +437,12 @@
                                   "start": {
                                     "line": 20,
                                     "column": 17,
-                                    "program": "ConditionalExpressionCallVoidNeg.sts"
+                                    "program": "ConditionalExpressionCallVoidNeg.ets"
                                   },
                                   "end": {
                                     "line": 20,
                                     "column": 20,
-                                    "program": "ConditionalExpressionCallVoidNeg.sts"
+                                    "program": "ConditionalExpressionCallVoidNeg.ets"
                                   }
                                 }
                               },
@@ -452,12 +452,12 @@
                                 "start": {
                                   "line": 20,
                                   "column": 17,
-                                  "program": "ConditionalExpressionCallVoidNeg.sts"
+                                  "program": "ConditionalExpressionCallVoidNeg.ets"
                                 },
                                 "end": {
                                   "line": 20,
                                   "column": 22,
-                                  "program": "ConditionalExpressionCallVoidNeg.sts"
+                                  "program": "ConditionalExpressionCallVoidNeg.ets"
                                 }
                               }
                             },
@@ -468,12 +468,12 @@
                                 "start": {
                                   "line": 20,
                                   "column": 23,
-                                  "program": "ConditionalExpressionCallVoidNeg.sts"
+                                  "program": "ConditionalExpressionCallVoidNeg.ets"
                                 },
                                 "end": {
                                   "line": 20,
                                   "column": 24,
-                                  "program": "ConditionalExpressionCallVoidNeg.sts"
+                                  "program": "ConditionalExpressionCallVoidNeg.ets"
                                 }
                               }
                             },
@@ -481,12 +481,12 @@
                               "start": {
                                 "line": 20,
                                 "column": 13,
-                                "program": "ConditionalExpressionCallVoidNeg.sts"
+                                "program": "ConditionalExpressionCallVoidNeg.ets"
                               },
                               "end": {
                                 "line": 20,
                                 "column": 24,
-                                "program": "ConditionalExpressionCallVoidNeg.sts"
+                                "program": "ConditionalExpressionCallVoidNeg.ets"
                               }
                             }
                           },
@@ -494,12 +494,12 @@
                             "start": {
                               "line": 20,
                               "column": 9,
-                              "program": "ConditionalExpressionCallVoidNeg.sts"
+                              "program": "ConditionalExpressionCallVoidNeg.ets"
                             },
                             "end": {
                               "line": 20,
                               "column": 24,
-                              "program": "ConditionalExpressionCallVoidNeg.sts"
+                              "program": "ConditionalExpressionCallVoidNeg.ets"
                             }
                           }
                         }
@@ -509,12 +509,12 @@
                         "start": {
                           "line": 20,
                           "column": 5,
-                          "program": "ConditionalExpressionCallVoidNeg.sts"
+                          "program": "ConditionalExpressionCallVoidNeg.ets"
                         },
                         "end": {
                           "line": 20,
                           "column": 25,
-                          "program": "ConditionalExpressionCallVoidNeg.sts"
+                          "program": "ConditionalExpressionCallVoidNeg.ets"
                         }
                       }
                     }
@@ -523,12 +523,12 @@
                     "start": {
                       "line": 18,
                       "column": 16,
-                      "program": "ConditionalExpressionCallVoidNeg.sts"
+                      "program": "ConditionalExpressionCallVoidNeg.ets"
                     },
                     "end": {
                       "line": 21,
                       "column": 2,
-                      "program": "ConditionalExpressionCallVoidNeg.sts"
+                      "program": "ConditionalExpressionCallVoidNeg.ets"
                     }
                   }
                 },
@@ -536,12 +536,12 @@
                   "start": {
                     "line": 18,
                     "column": 10,
-                    "program": "ConditionalExpressionCallVoidNeg.sts"
+                    "program": "ConditionalExpressionCallVoidNeg.ets"
                   },
                   "end": {
                     "line": 21,
                     "column": 2,
-                    "program": "ConditionalExpressionCallVoidNeg.sts"
+                    "program": "ConditionalExpressionCallVoidNeg.ets"
                   }
                 }
               },
@@ -549,12 +549,12 @@
                 "start": {
                   "line": 18,
                   "column": 10,
-                  "program": "ConditionalExpressionCallVoidNeg.sts"
+                  "program": "ConditionalExpressionCallVoidNeg.ets"
                 },
                 "end": {
                   "line": 21,
                   "column": 2,
-                  "program": "ConditionalExpressionCallVoidNeg.sts"
+                  "program": "ConditionalExpressionCallVoidNeg.ets"
                 }
               }
             },
@@ -564,12 +564,12 @@
               "start": {
                 "line": 18,
                 "column": 1,
-                "program": "ConditionalExpressionCallVoidNeg.sts"
+                "program": "ConditionalExpressionCallVoidNeg.ets"
               },
               "end": {
                 "line": 21,
                 "column": 2,
-                "program": "ConditionalExpressionCallVoidNeg.sts"
+                "program": "ConditionalExpressionCallVoidNeg.ets"
               }
             }
           }
@@ -578,12 +578,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "ConditionalExpressionCallVoidNeg.sts"
+            "program": "ConditionalExpressionCallVoidNeg.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "ConditionalExpressionCallVoidNeg.sts"
+            "program": "ConditionalExpressionCallVoidNeg.ets"
           }
         }
       },
@@ -591,12 +591,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "ConditionalExpressionCallVoidNeg.sts"
+          "program": "ConditionalExpressionCallVoidNeg.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "ConditionalExpressionCallVoidNeg.sts"
+          "program": "ConditionalExpressionCallVoidNeg.ets"
         }
       }
     }
@@ -605,13 +605,13 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "ConditionalExpressionCallVoidNeg.sts"
+      "program": "ConditionalExpressionCallVoidNeg.ets"
     },
     "end": {
       "line": 22,
       "column": 1,
-      "program": "ConditionalExpressionCallVoidNeg.sts"
+      "program": "ConditionalExpressionCallVoidNeg.ets"
     }
   }
 }
-TypeError: Cannot use type 'void' as value.  [ConditionalExpressionCallVoidNeg.sts:20:17]
+TypeError: Cannot use type 'void' as value.  [ConditionalExpressionCallVoidNeg.ets:20:17]

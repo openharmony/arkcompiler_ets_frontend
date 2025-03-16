@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "float_separator_1.sts"
+              "program": "float_separator_1.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "float_separator_1.sts"
+              "program": "float_separator_1.ets"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "float_separator_1.sts"
+                "program": "float_separator_1.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "float_separator_1.sts"
+                "program": "float_separator_1.ets"
               }
             }
           },
@@ -140,12 +140,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "float_separator_1.sts"
+                  "program": "float_separator_1.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 14,
-                  "program": "float_separator_1.sts"
+                  "program": "float_separator_1.ets"
                 }
               }
             },
@@ -166,12 +166,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "float_separator_1.sts"
+                      "program": "float_separator_1.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 14,
-                      "program": "float_separator_1.sts"
+                      "program": "float_separator_1.ets"
                     }
                   }
                 },
@@ -196,12 +196,12 @@
                                 "start": {
                                   "line": 17,
                                   "column": 12,
-                                  "program": "float_separator_1.sts"
+                                  "program": "float_separator_1.ets"
                                 },
                                 "end": {
                                   "line": 17,
                                   "column": 17,
-                                  "program": "float_separator_1.sts"
+                                  "program": "float_separator_1.ets"
                                 }
                               }
                             },
@@ -210,12 +210,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 9,
-                                "program": "float_separator_1.sts"
+                                "program": "float_separator_1.ets"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 10,
-                                "program": "float_separator_1.sts"
+                                "program": "float_separator_1.ets"
                               }
                             }
                           },
@@ -226,12 +226,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 20,
-                                "program": "float_separator_1.sts"
+                                "program": "float_separator_1.ets"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 38,
-                                "program": "float_separator_1.sts"
+                                "program": "float_separator_1.ets"
                               }
                             }
                           },
@@ -239,12 +239,12 @@
                             "start": {
                               "line": 17,
                               "column": 9,
-                              "program": "float_separator_1.sts"
+                              "program": "float_separator_1.ets"
                             },
                             "end": {
                               "line": 17,
                               "column": 38,
-                              "program": "float_separator_1.sts"
+                              "program": "float_separator_1.ets"
                             }
                           }
                         }
@@ -254,12 +254,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "float_separator_1.sts"
+                          "program": "float_separator_1.ets"
                         },
                         "end": {
                           "line": 17,
                           "column": 38,
-                          "program": "float_separator_1.sts"
+                          "program": "float_separator_1.ets"
                         }
                       }
                     }
@@ -268,12 +268,12 @@
                     "start": {
                       "line": 16,
                       "column": 17,
-                      "program": "float_separator_1.sts"
+                      "program": "float_separator_1.ets"
                     },
                     "end": {
                       "line": 18,
                       "column": 2,
-                      "program": "float_separator_1.sts"
+                      "program": "float_separator_1.ets"
                     }
                   }
                 },
@@ -281,12 +281,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "float_separator_1.sts"
+                    "program": "float_separator_1.ets"
                   },
                   "end": {
                     "line": 18,
                     "column": 2,
-                    "program": "float_separator_1.sts"
+                    "program": "float_separator_1.ets"
                   }
                 }
               },
@@ -294,12 +294,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "float_separator_1.sts"
+                  "program": "float_separator_1.ets"
                 },
                 "end": {
                   "line": 18,
                   "column": 2,
-                  "program": "float_separator_1.sts"
+                  "program": "float_separator_1.ets"
                 }
               }
             },
@@ -309,12 +309,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "float_separator_1.sts"
+                "program": "float_separator_1.ets"
               },
               "end": {
                 "line": 18,
                 "column": 2,
-                "program": "float_separator_1.sts"
+                "program": "float_separator_1.ets"
               }
             }
           }
@@ -323,12 +323,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "float_separator_1.sts"
+            "program": "float_separator_1.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "float_separator_1.sts"
+            "program": "float_separator_1.ets"
           }
         }
       },
@@ -336,12 +336,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "float_separator_1.sts"
+          "program": "float_separator_1.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "float_separator_1.sts"
+          "program": "float_separator_1.ets"
         }
       }
     }
@@ -350,12 +350,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "float_separator_1.sts"
+      "program": "float_separator_1.ets"
     },
     "end": {
       "line": 19,
       "column": 1,
-      "program": "float_separator_1.sts"
+      "program": "float_separator_1.ets"
     }
   }
 }

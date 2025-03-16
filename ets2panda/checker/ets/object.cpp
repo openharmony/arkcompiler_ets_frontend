@@ -909,7 +909,7 @@ void ETSChecker::ValidateNonOverriddenFunction(ETSObjectType *classType, ArenaVe
                                        ->Scope()
                                        ->AsClassScope()
                                        ->InstanceFieldScope()
-                                       ->AddDecl(Allocator(), newFieldDecl, ScriptExtension::STS)
+                                       ->AddDecl(Allocator(), newFieldDecl, ScriptExtension::ETS)
                                        ->AsLocalVariable();
                 newFieldVar->AddFlag(varbinder::VariableFlags::PROPERTY);
                 newFieldVar->AddFlag(varbinder::VariableFlags::PUBLIC);
@@ -1842,7 +1842,7 @@ PropertySearchFlags ETSChecker::GetSearchFlags(const ir::MemberExpression *const
     if (targetRef != nullptr &&
         (targetRef->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE_OR_ENUM) ||
          //  NOTE (DZ):  need to investigate when and why `targetRef->TsType()->Variable()` can be `nullptr`
-         //              (see ast/parser/ets/union_static_method.sts)
+         //              (see ast/parser/ets/union_static_method.ets)
          (targetRef->HasFlag(varbinder::VariableFlags::TYPE_ALIAS) && targetRef->TsType()->Variable() != nullptr &&
           targetRef->TsType()->Variable()->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE)))) {
         searchFlag &= ~PropertySearchFlags::SEARCH_INSTANCE;

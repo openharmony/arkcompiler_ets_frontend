@@ -126,7 +126,7 @@ bool ImportExportAccessValid::HandleImportExportIdentifier(std::unordered_set<st
                                                            const ir::Identifier *ident, const ir::AstNode *callExpr)
 {
     // We are running AST verifier only for ETS files so it is correct to pass ETS extension here
-    if (ident->IsReference(ScriptExtension::STS)) {
+    if (ident->IsReference(ScriptExtension::ETS)) {
         const auto *var = ident->Variable();
         if (var != nullptr) {
             if (var->HasFlag(varbinder::VariableFlags::METHOD) && callExpr != nullptr) {

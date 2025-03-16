@@ -40,7 +40,7 @@ public:
 
     void SetCurrentProgram(std::string_view src)
     {
-        static constexpr std::string_view FILE_NAME = "ets_decl_test.sts";
+        static constexpr std::string_view FILE_NAME = "ets_decl_test.ets";
         std::array<char const *, 2> args = {"../../../../bin/es2panda",
                                             "--ets-unnamed"};  // NOLINT(modernize-avoid-c-arrays)
 

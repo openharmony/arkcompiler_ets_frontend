@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "lambda_infer_type_return_lambda_expression.sts"
+              "program": "lambda_infer_type_return_lambda_expression.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "lambda_infer_type_return_lambda_expression.sts"
+              "program": "lambda_infer_type_return_lambda_expression.ets"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "lambda_infer_type_return_lambda_expression.sts"
+                "program": "lambda_infer_type_return_lambda_expression.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "lambda_infer_type_return_lambda_expression.sts"
+                "program": "lambda_infer_type_return_lambda_expression.ets"
               }
             }
           },
@@ -195,12 +195,12 @@
                             "start": {
                               "line": 23,
                               "column": 5,
-                              "program": "lambda_infer_type_return_lambda_expression.sts"
+                              "program": "lambda_infer_type_return_lambda_expression.ets"
                             },
                             "end": {
                               "line": 23,
                               "column": 13,
-                              "program": "lambda_infer_type_return_lambda_expression.sts"
+                              "program": "lambda_infer_type_return_lambda_expression.ets"
                             }
                           }
                         },
@@ -214,12 +214,12 @@
                               "start": {
                                 "line": 23,
                                 "column": 35,
-                                "program": "lambda_infer_type_return_lambda_expression.sts"
+                                "program": "lambda_infer_type_return_lambda_expression.ets"
                               },
                               "end": {
                                 "line": 23,
                                 "column": 40,
-                                "program": "lambda_infer_type_return_lambda_expression.sts"
+                                "program": "lambda_infer_type_return_lambda_expression.ets"
                               }
                             }
                           },
@@ -229,12 +229,12 @@
                             "start": {
                               "line": 23,
                               "column": 35,
-                              "program": "lambda_infer_type_return_lambda_expression.sts"
+                              "program": "lambda_infer_type_return_lambda_expression.ets"
                             },
                             "end": {
                               "line": 23,
                               "column": 43,
-                              "program": "lambda_infer_type_return_lambda_expression.sts"
+                              "program": "lambda_infer_type_return_lambda_expression.ets"
                             }
                           }
                         },
@@ -242,12 +242,12 @@
                           "start": {
                             "line": 23,
                             "column": 5,
-                            "program": "lambda_infer_type_return_lambda_expression.sts"
+                            "program": "lambda_infer_type_return_lambda_expression.ets"
                           },
                           "end": {
                             "line": 23,
                             "column": 43,
-                            "program": "lambda_infer_type_return_lambda_expression.sts"
+                            "program": "lambda_infer_type_return_lambda_expression.ets"
                           }
                         }
                       },
@@ -255,12 +255,12 @@
                         "start": {
                           "line": 23,
                           "column": 5,
-                          "program": "lambda_infer_type_return_lambda_expression.sts"
+                          "program": "lambda_infer_type_return_lambda_expression.ets"
                         },
                         "end": {
                           "line": 23,
                           "column": 43,
-                          "program": "lambda_infer_type_return_lambda_expression.sts"
+                          "program": "lambda_infer_type_return_lambda_expression.ets"
                         }
                       }
                     }
@@ -310,12 +310,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "lambda_infer_type_return_lambda_expression.sts"
+                "program": "lambda_infer_type_return_lambda_expression.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "lambda_infer_type_return_lambda_expression.sts"
+                "program": "lambda_infer_type_return_lambda_expression.ets"
               }
             }
           },
@@ -329,12 +329,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "lambda_infer_type_return_lambda_expression.sts"
+                  "program": "lambda_infer_type_return_lambda_expression.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 15,
-                  "program": "lambda_infer_type_return_lambda_expression.sts"
+                  "program": "lambda_infer_type_return_lambda_expression.ets"
                 }
               }
             },
@@ -355,12 +355,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "lambda_infer_type_return_lambda_expression.sts"
+                      "program": "lambda_infer_type_return_lambda_expression.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 15,
-                      "program": "lambda_infer_type_return_lambda_expression.sts"
+                      "program": "lambda_infer_type_return_lambda_expression.ets"
                     }
                   }
                 },
@@ -403,12 +403,12 @@
                                         "start": {
                                           "line": 18,
                                           "column": 22,
-                                          "program": "lambda_infer_type_return_lambda_expression.sts"
+                                          "program": "lambda_infer_type_return_lambda_expression.ets"
                                         },
                                         "end": {
                                           "line": 20,
                                           "column": 10,
-                                          "program": "lambda_infer_type_return_lambda_expression.sts"
+                                          "program": "lambda_infer_type_return_lambda_expression.ets"
                                         }
                                       }
                                     },
@@ -416,12 +416,12 @@
                                       "start": {
                                         "line": 18,
                                         "column": 16,
-                                        "program": "lambda_infer_type_return_lambda_expression.sts"
+                                        "program": "lambda_infer_type_return_lambda_expression.ets"
                                       },
                                       "end": {
                                         "line": 20,
                                         "column": 10,
-                                        "program": "lambda_infer_type_return_lambda_expression.sts"
+                                        "program": "lambda_infer_type_return_lambda_expression.ets"
                                       }
                                     }
                                   },
@@ -429,12 +429,12 @@
                                     "start": {
                                       "line": 18,
                                       "column": 16,
-                                      "program": "lambda_infer_type_return_lambda_expression.sts"
+                                      "program": "lambda_infer_type_return_lambda_expression.ets"
                                     },
                                     "end": {
                                       "line": 20,
                                       "column": 10,
-                                      "program": "lambda_infer_type_return_lambda_expression.sts"
+                                      "program": "lambda_infer_type_return_lambda_expression.ets"
                                     }
                                   }
                                 },
@@ -442,12 +442,12 @@
                                   "start": {
                                     "line": 18,
                                     "column": 9,
-                                    "program": "lambda_infer_type_return_lambda_expression.sts"
+                                    "program": "lambda_infer_type_return_lambda_expression.ets"
                                   },
                                   "end": {
                                     "line": 20,
                                     "column": 10,
-                                    "program": "lambda_infer_type_return_lambda_expression.sts"
+                                    "program": "lambda_infer_type_return_lambda_expression.ets"
                                   }
                                 }
                               }
@@ -456,12 +456,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 18,
-                                "program": "lambda_infer_type_return_lambda_expression.sts"
+                                "program": "lambda_infer_type_return_lambda_expression.ets"
                               },
                               "end": {
                                 "line": 21,
                                 "column": 6,
-                                "program": "lambda_infer_type_return_lambda_expression.sts"
+                                "program": "lambda_infer_type_return_lambda_expression.ets"
                               }
                             }
                           },
@@ -469,12 +469,12 @@
                             "start": {
                               "line": 17,
                               "column": 12,
-                              "program": "lambda_infer_type_return_lambda_expression.sts"
+                              "program": "lambda_infer_type_return_lambda_expression.ets"
                             },
                             "end": {
                               "line": 21,
                               "column": 6,
-                              "program": "lambda_infer_type_return_lambda_expression.sts"
+                              "program": "lambda_infer_type_return_lambda_expression.ets"
                             }
                           }
                         },
@@ -482,12 +482,12 @@
                           "start": {
                             "line": 17,
                             "column": 12,
-                            "program": "lambda_infer_type_return_lambda_expression.sts"
+                            "program": "lambda_infer_type_return_lambda_expression.ets"
                           },
                           "end": {
                             "line": 21,
                             "column": 6,
-                            "program": "lambda_infer_type_return_lambda_expression.sts"
+                            "program": "lambda_infer_type_return_lambda_expression.ets"
                           }
                         }
                       },
@@ -495,12 +495,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "lambda_infer_type_return_lambda_expression.sts"
+                          "program": "lambda_infer_type_return_lambda_expression.ets"
                         },
                         "end": {
                           "line": 21,
                           "column": 6,
-                          "program": "lambda_infer_type_return_lambda_expression.sts"
+                          "program": "lambda_infer_type_return_lambda_expression.ets"
                         }
                       }
                     }
@@ -509,12 +509,12 @@
                     "start": {
                       "line": 16,
                       "column": 19,
-                      "program": "lambda_infer_type_return_lambda_expression.sts"
+                      "program": "lambda_infer_type_return_lambda_expression.ets"
                     },
                     "end": {
                       "line": 22,
                       "column": 2,
-                      "program": "lambda_infer_type_return_lambda_expression.sts"
+                      "program": "lambda_infer_type_return_lambda_expression.ets"
                     }
                   }
                 },
@@ -522,12 +522,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "lambda_infer_type_return_lambda_expression.sts"
+                    "program": "lambda_infer_type_return_lambda_expression.ets"
                   },
                   "end": {
                     "line": 22,
                     "column": 2,
-                    "program": "lambda_infer_type_return_lambda_expression.sts"
+                    "program": "lambda_infer_type_return_lambda_expression.ets"
                   }
                 }
               },
@@ -535,12 +535,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "lambda_infer_type_return_lambda_expression.sts"
+                  "program": "lambda_infer_type_return_lambda_expression.ets"
                 },
                 "end": {
                   "line": 22,
                   "column": 2,
-                  "program": "lambda_infer_type_return_lambda_expression.sts"
+                  "program": "lambda_infer_type_return_lambda_expression.ets"
                 }
               }
             },
@@ -550,12 +550,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "lambda_infer_type_return_lambda_expression.sts"
+                "program": "lambda_infer_type_return_lambda_expression.ets"
               },
               "end": {
                 "line": 22,
                 "column": 2,
-                "program": "lambda_infer_type_return_lambda_expression.sts"
+                "program": "lambda_infer_type_return_lambda_expression.ets"
               }
             }
           },
@@ -569,12 +569,12 @@
                 "start": {
                   "line": 23,
                   "column": 5,
-                  "program": "lambda_infer_type_return_lambda_expression.sts"
+                  "program": "lambda_infer_type_return_lambda_expression.ets"
                 },
                 "end": {
                   "line": 23,
                   "column": 13,
-                  "program": "lambda_infer_type_return_lambda_expression.sts"
+                  "program": "lambda_infer_type_return_lambda_expression.ets"
                 }
               }
             },
@@ -596,12 +596,12 @@
                     "start": {
                       "line": 23,
                       "column": 28,
-                      "program": "lambda_infer_type_return_lambda_expression.sts"
+                      "program": "lambda_infer_type_return_lambda_expression.ets"
                     },
                     "end": {
                       "line": 23,
                       "column": 32,
-                      "program": "lambda_infer_type_return_lambda_expression.sts"
+                      "program": "lambda_infer_type_return_lambda_expression.ets"
                     }
                   }
                 },
@@ -609,12 +609,12 @@
                   "start": {
                     "line": 23,
                     "column": 22,
-                    "program": "lambda_infer_type_return_lambda_expression.sts"
+                    "program": "lambda_infer_type_return_lambda_expression.ets"
                   },
                   "end": {
                     "line": 23,
                     "column": 32,
-                    "program": "lambda_infer_type_return_lambda_expression.sts"
+                    "program": "lambda_infer_type_return_lambda_expression.ets"
                   }
                 }
               },
@@ -622,12 +622,12 @@
                 "start": {
                   "line": 23,
                   "column": 16,
-                  "program": "lambda_infer_type_return_lambda_expression.sts"
+                  "program": "lambda_infer_type_return_lambda_expression.ets"
                 },
                 "end": {
                   "line": 23,
                   "column": 32,
-                  "program": "lambda_infer_type_return_lambda_expression.sts"
+                  "program": "lambda_infer_type_return_lambda_expression.ets"
                 }
               }
             },
@@ -637,12 +637,12 @@
               "start": {
                 "line": 23,
                 "column": 5,
-                "program": "lambda_infer_type_return_lambda_expression.sts"
+                "program": "lambda_infer_type_return_lambda_expression.ets"
               },
               "end": {
                 "line": 23,
                 "column": 43,
-                "program": "lambda_infer_type_return_lambda_expression.sts"
+                "program": "lambda_infer_type_return_lambda_expression.ets"
               }
             }
           }
@@ -651,12 +651,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "lambda_infer_type_return_lambda_expression.sts"
+            "program": "lambda_infer_type_return_lambda_expression.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "lambda_infer_type_return_lambda_expression.sts"
+            "program": "lambda_infer_type_return_lambda_expression.ets"
           }
         }
       },
@@ -664,12 +664,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "lambda_infer_type_return_lambda_expression.sts"
+          "program": "lambda_infer_type_return_lambda_expression.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "lambda_infer_type_return_lambda_expression.sts"
+          "program": "lambda_infer_type_return_lambda_expression.ets"
         }
       }
     }
@@ -678,12 +678,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "lambda_infer_type_return_lambda_expression.sts"
+      "program": "lambda_infer_type_return_lambda_expression.ets"
     },
     "end": {
       "line": 24,
       "column": 1,
-      "program": "lambda_infer_type_return_lambda_expression.sts"
+      "program": "lambda_infer_type_return_lambda_expression.ets"
     }
   }
 }

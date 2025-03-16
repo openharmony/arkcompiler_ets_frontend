@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "tryFinallyBlockOnly.sts"
+              "program": "tryFinallyBlockOnly.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "tryFinallyBlockOnly.sts"
+              "program": "tryFinallyBlockOnly.ets"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "tryFinallyBlockOnly.sts"
+                "program": "tryFinallyBlockOnly.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "tryFinallyBlockOnly.sts"
+                "program": "tryFinallyBlockOnly.ets"
               }
             }
           },
@@ -140,12 +140,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "tryFinallyBlockOnly.sts"
+                  "program": "tryFinallyBlockOnly.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 14,
-                  "program": "tryFinallyBlockOnly.sts"
+                  "program": "tryFinallyBlockOnly.ets"
                 }
               }
             },
@@ -166,12 +166,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "tryFinallyBlockOnly.sts"
+                      "program": "tryFinallyBlockOnly.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 14,
-                      "program": "tryFinallyBlockOnly.sts"
+                      "program": "tryFinallyBlockOnly.ets"
                     }
                   }
                 },
@@ -185,12 +185,12 @@
                     "start": {
                       "line": 16,
                       "column": 19,
-                      "program": "tryFinallyBlockOnly.sts"
+                      "program": "tryFinallyBlockOnly.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 22,
-                      "program": "tryFinallyBlockOnly.sts"
+                      "program": "tryFinallyBlockOnly.ets"
                     }
                   }
                 },
@@ -206,12 +206,12 @@
                           "start": {
                             "line": 17,
                             "column": 9,
-                            "program": "tryFinallyBlockOnly.sts"
+                            "program": "tryFinallyBlockOnly.ets"
                           },
                           "end": {
                             "line": 18,
                             "column": 6,
-                            "program": "tryFinallyBlockOnly.sts"
+                            "program": "tryFinallyBlockOnly.ets"
                           }
                         }
                       },
@@ -223,12 +223,12 @@
                           "start": {
                             "line": 18,
                             "column": 15,
-                            "program": "tryFinallyBlockOnly.sts"
+                            "program": "tryFinallyBlockOnly.ets"
                           },
                           "end": {
                             "line": 18,
                             "column": 17,
-                            "program": "tryFinallyBlockOnly.sts"
+                            "program": "tryFinallyBlockOnly.ets"
                           }
                         }
                       },
@@ -236,12 +236,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "tryFinallyBlockOnly.sts"
+                          "program": "tryFinallyBlockOnly.ets"
                         },
                         "end": {
                           "line": 18,
                           "column": 17,
-                          "program": "tryFinallyBlockOnly.sts"
+                          "program": "tryFinallyBlockOnly.ets"
                         }
                       }
                     },
@@ -254,12 +254,12 @@
                           "start": {
                             "line": 19,
                             "column": 12,
-                            "program": "tryFinallyBlockOnly.sts"
+                            "program": "tryFinallyBlockOnly.ets"
                           },
                           "end": {
                             "line": 19,
                             "column": 13,
-                            "program": "tryFinallyBlockOnly.sts"
+                            "program": "tryFinallyBlockOnly.ets"
                           }
                         }
                       },
@@ -267,12 +267,12 @@
                         "start": {
                           "line": 19,
                           "column": 5,
-                          "program": "tryFinallyBlockOnly.sts"
+                          "program": "tryFinallyBlockOnly.ets"
                         },
                         "end": {
                           "line": 19,
                           "column": 14,
-                          "program": "tryFinallyBlockOnly.sts"
+                          "program": "tryFinallyBlockOnly.ets"
                         }
                       }
                     }
@@ -281,12 +281,12 @@
                     "start": {
                       "line": 16,
                       "column": 23,
-                      "program": "tryFinallyBlockOnly.sts"
+                      "program": "tryFinallyBlockOnly.ets"
                     },
                     "end": {
                       "line": 20,
                       "column": 2,
-                      "program": "tryFinallyBlockOnly.sts"
+                      "program": "tryFinallyBlockOnly.ets"
                     }
                   }
                 },
@@ -294,12 +294,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "tryFinallyBlockOnly.sts"
+                    "program": "tryFinallyBlockOnly.ets"
                   },
                   "end": {
                     "line": 20,
                     "column": 2,
-                    "program": "tryFinallyBlockOnly.sts"
+                    "program": "tryFinallyBlockOnly.ets"
                   }
                 }
               },
@@ -307,12 +307,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "tryFinallyBlockOnly.sts"
+                  "program": "tryFinallyBlockOnly.ets"
                 },
                 "end": {
                   "line": 20,
                   "column": 2,
-                  "program": "tryFinallyBlockOnly.sts"
+                  "program": "tryFinallyBlockOnly.ets"
                 }
               }
             },
@@ -322,12 +322,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "tryFinallyBlockOnly.sts"
+                "program": "tryFinallyBlockOnly.ets"
               },
               "end": {
                 "line": 20,
                 "column": 2,
-                "program": "tryFinallyBlockOnly.sts"
+                "program": "tryFinallyBlockOnly.ets"
               }
             }
           }
@@ -336,12 +336,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "tryFinallyBlockOnly.sts"
+            "program": "tryFinallyBlockOnly.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "tryFinallyBlockOnly.sts"
+            "program": "tryFinallyBlockOnly.ets"
           }
         }
       },
@@ -349,12 +349,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "tryFinallyBlockOnly.sts"
+          "program": "tryFinallyBlockOnly.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "tryFinallyBlockOnly.sts"
+          "program": "tryFinallyBlockOnly.ets"
         }
       }
     }
@@ -363,12 +363,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "tryFinallyBlockOnly.sts"
+      "program": "tryFinallyBlockOnly.ets"
     },
     "end": {
       "line": 21,
       "column": 1,
-      "program": "tryFinallyBlockOnly.sts"
+      "program": "tryFinallyBlockOnly.ets"
     }
   }
 }

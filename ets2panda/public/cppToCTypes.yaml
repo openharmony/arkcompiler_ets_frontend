@@ -2223,7 +2223,7 @@ change_types:
         expression: >-
           auto |es2panda_arg.type.ptr_depth||arg_name|E2p =
           reinterpret_cast<Context *>(context)->allocator->
-          New<ScriptExtension |es2panda_arg.type.ptr_depth|>(ScriptExtension::STS);
+          New<ScriptExtension |es2panda_arg.type.ptr_depth|>(ScriptExtension::ETS);
         var_name: '|arg_name|E2p'
 
   - es2panda_arg:
@@ -2234,7 +2234,7 @@ change_types:
     new_args:
     cast:
         expression: >-
-          ark::es2panda::ScriptExtension |arg_name|E2p {ScriptExtension::STS};
+          ark::es2panda::ScriptExtension |arg_name|E2p {ScriptExtension::ETS};
         var_name: '|arg_name|E2p'
 
   - es2panda_arg:

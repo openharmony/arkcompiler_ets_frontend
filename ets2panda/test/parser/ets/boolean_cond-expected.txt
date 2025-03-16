@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "boolean_cond.sts"
+              "program": "boolean_cond.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "boolean_cond.sts"
+              "program": "boolean_cond.ets"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "boolean_cond.sts"
+                "program": "boolean_cond.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "boolean_cond.sts"
+                "program": "boolean_cond.ets"
               }
             }
           },
@@ -140,12 +140,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "boolean_cond.sts"
+                  "program": "boolean_cond.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 14,
-                  "program": "boolean_cond.sts"
+                  "program": "boolean_cond.ets"
                 }
               }
             },
@@ -166,12 +166,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "boolean_cond.sts"
+                      "program": "boolean_cond.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 14,
-                      "program": "boolean_cond.sts"
+                      "program": "boolean_cond.ets"
                     }
                   }
                 },
@@ -185,12 +185,12 @@
                     "start": {
                       "line": 16,
                       "column": 18,
-                      "program": "boolean_cond.sts"
+                      "program": "boolean_cond.ets"
                     },
                     "end": {
                       "line": 16,
                       "column": 22,
-                      "program": "boolean_cond.sts"
+                      "program": "boolean_cond.ets"
                     }
                   }
                 },
@@ -206,12 +206,12 @@
                           "start": {
                             "line": 17,
                             "column": 7,
-                            "program": "boolean_cond.sts"
+                            "program": "boolean_cond.ets"
                           },
                           "end": {
                             "line": 17,
                             "column": 11,
-                            "program": "boolean_cond.sts"
+                            "program": "boolean_cond.ets"
                           }
                         }
                       },
@@ -222,12 +222,12 @@
                           "start": {
                             "line": 17,
                             "column": 13,
-                            "program": "boolean_cond.sts"
+                            "program": "boolean_cond.ets"
                           },
                           "end": {
                             "line": 19,
                             "column": 4,
-                            "program": "boolean_cond.sts"
+                            "program": "boolean_cond.ets"
                           }
                         }
                       },
@@ -236,12 +236,12 @@
                         "start": {
                           "line": 17,
                           "column": 3,
-                          "program": "boolean_cond.sts"
+                          "program": "boolean_cond.ets"
                         },
                         "end": {
                           "line": 19,
                           "column": 4,
-                          "program": "boolean_cond.sts"
+                          "program": "boolean_cond.ets"
                         }
                       }
                     },
@@ -257,12 +257,12 @@
                             "start": {
                               "line": 20,
                               "column": 7,
-                              "program": "boolean_cond.sts"
+                              "program": "boolean_cond.ets"
                             },
                             "end": {
                               "line": 20,
                               "column": 8,
-                              "program": "boolean_cond.sts"
+                              "program": "boolean_cond.ets"
                             }
                           }
                         },
@@ -273,12 +273,12 @@
                             "start": {
                               "line": 20,
                               "column": 11,
-                              "program": "boolean_cond.sts"
+                              "program": "boolean_cond.ets"
                             },
                             "end": {
                               "line": 20,
                               "column": 12,
-                              "program": "boolean_cond.sts"
+                              "program": "boolean_cond.ets"
                             }
                           }
                         },
@@ -286,12 +286,12 @@
                           "start": {
                             "line": 20,
                             "column": 7,
-                            "program": "boolean_cond.sts"
+                            "program": "boolean_cond.ets"
                           },
                           "end": {
                             "line": 20,
                             "column": 12,
-                            "program": "boolean_cond.sts"
+                            "program": "boolean_cond.ets"
                           }
                         }
                       },
@@ -302,12 +302,12 @@
                           "start": {
                             "line": 20,
                             "column": 14,
-                            "program": "boolean_cond.sts"
+                            "program": "boolean_cond.ets"
                           },
                           "end": {
                             "line": 22,
                             "column": 4,
-                            "program": "boolean_cond.sts"
+                            "program": "boolean_cond.ets"
                           }
                         }
                       },
@@ -316,12 +316,12 @@
                         "start": {
                           "line": 20,
                           "column": 3,
-                          "program": "boolean_cond.sts"
+                          "program": "boolean_cond.ets"
                         },
                         "end": {
                           "line": 22,
                           "column": 4,
-                          "program": "boolean_cond.sts"
+                          "program": "boolean_cond.ets"
                         }
                       }
                     }
@@ -330,12 +330,12 @@
                     "start": {
                       "line": 16,
                       "column": 23,
-                      "program": "boolean_cond.sts"
+                      "program": "boolean_cond.ets"
                     },
                     "end": {
                       "line": 23,
                       "column": 2,
-                      "program": "boolean_cond.sts"
+                      "program": "boolean_cond.ets"
                     }
                   }
                 },
@@ -343,12 +343,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "boolean_cond.sts"
+                    "program": "boolean_cond.ets"
                   },
                   "end": {
                     "line": 23,
                     "column": 2,
-                    "program": "boolean_cond.sts"
+                    "program": "boolean_cond.ets"
                   }
                 }
               },
@@ -356,12 +356,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "boolean_cond.sts"
+                  "program": "boolean_cond.ets"
                 },
                 "end": {
                   "line": 23,
                   "column": 2,
-                  "program": "boolean_cond.sts"
+                  "program": "boolean_cond.ets"
                 }
               }
             },
@@ -371,12 +371,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "boolean_cond.sts"
+                "program": "boolean_cond.ets"
               },
               "end": {
                 "line": 23,
                 "column": 2,
-                "program": "boolean_cond.sts"
+                "program": "boolean_cond.ets"
               }
             }
           }
@@ -385,12 +385,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "boolean_cond.sts"
+            "program": "boolean_cond.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "boolean_cond.sts"
+            "program": "boolean_cond.ets"
           }
         }
       },
@@ -398,12 +398,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "boolean_cond.sts"
+          "program": "boolean_cond.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "boolean_cond.sts"
+          "program": "boolean_cond.ets"
         }
       }
     }
@@ -412,12 +412,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "boolean_cond.sts"
+      "program": "boolean_cond.ets"
     },
     "end": {
       "line": 23,
       "column": 2,
-      "program": "boolean_cond.sts"
+      "program": "boolean_cond.ets"
     }
   }
 }

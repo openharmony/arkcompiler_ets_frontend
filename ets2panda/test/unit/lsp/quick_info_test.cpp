@@ -24,7 +24,7 @@ class LspQuickInfoTests : public LSPAPITests {};
 
 TEST_F(LspQuickInfoTests, GetQuickInfoAtPosition1)
 {
-    std::vector<std::string> files = {"quick_info3.sts"};
+    std::vector<std::string> files = {"quick_info3.ets"};
     std::vector<std::string> texts = {R"(enum MyStrings { A = 'hello' };)"};
     auto filePaths = CreateTempFile(files, texts);
     size_t const expectedFileCount = 1;
@@ -41,7 +41,7 @@ TEST_F(LspQuickInfoTests, GetQuickInfoAtPosition1)
     size_t const length = 1;
     TextSpan span(start, length);
     const std::string kindModifiers = "static public readonly";
-    const std::string expectedFileName = "/tmp/quick_info3.sts";
+    const std::string expectedFileName = "/tmp/quick_info3.ets";
 
     std::vector<SymbolDisplayPart> expected;
     // Enum was transformed to class, enum member becomes class property    MyStrings.A : MyStrings
@@ -59,11 +59,11 @@ TEST_F(LspQuickInfoTests, GetQuickInfoAtPosition1)
 TEST_F(LspQuickInfoTests, GetQuickInfoAtPosition2)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("quick-info-test.sts", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("quick-info-test.ets", ES2PANDA_STATE_CHECKED,
                                                       "class MyClass {\n  public myProp: number = 0;\n}");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     size_t const offset = 9;
-    const std::string fileName = "quick-info-test.sts";
+    const std::string fileName = "quick-info-test.ets";
     auto quickInfo = ark::es2panda::lsp::GetQuickInfoAtPositionImpl(ctx, offset, fileName);
     ASSERT_NE(quickInfo, QuickInfo());
     std::vector<DocTagInfo> tags {};
@@ -89,11 +89,11 @@ TEST_F(LspQuickInfoTests, GetQuickInfoAtPosition3)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("quick-info-test.sts", ES2PANDA_STATE_CHECKED,
+        initializer.CreateContext("quick-info-test.ets", ES2PANDA_STATE_CHECKED,
                                   "interface objI { key : string; }\nlet obj : objI = { key:\"valueaaaaaaaaa,\" }");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     size_t const offset = 54;
-    const std::string fileName = "quick-info-test.sts";
+    const std::string fileName = "quick-info-test.ets";
     auto quickInfo = ark::es2panda::lsp::GetQuickInfoAtPositionImpl(ctx, offset, fileName);
     ASSERT_NE(quickInfo, QuickInfo());
     std::vector<DocTagInfo> tags {};
@@ -122,7 +122,7 @@ TEST_F(LspQuickInfoTests, getPropertySymbolFromContextualType1)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("contextual-type-test.sts", ES2PANDA_STATE_CHECKED,
+        initializer.CreateContext("contextual-type-test.ets", ES2PANDA_STATE_CHECKED,
                                   "interface objI { key : string; }\nlet obj : objI = { key:\"valueaaaaaaaaa,\" }");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     size_t const offset = 54;
@@ -144,7 +144,7 @@ TEST_F(LspQuickInfoTests, getPropertySymbolFromContextualType1)
 TEST_F(LspQuickInfoTests, getPropertySymbolFromContextualType2)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("contextual-type-test.sts", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("contextual-type-test.ets", ES2PANDA_STATE_CHECKED,
                                                       "const record : Record<string,number> = { \"hello\":1234 }");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     size_t const offset = 44;
@@ -165,7 +165,7 @@ TEST_F(LspQuickInfoTests, GetNodeAtLocationForQuickInfo1)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("quick-info-test.sts", ES2PANDA_STATE_CHECKED,
+        initializer.CreateContext("quick-info-test.ets", ES2PANDA_STATE_CHECKED,
                                   "interface objI { key : string; }\nlet obj : objI = { key:\"valueaaaaaaaaa,\" }");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     size_t const offset = 54;
@@ -183,7 +183,7 @@ TEST_F(LspQuickInfoTests, GetNodeAtLocationForQuickInfo2)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("quick-info-test.sts", ES2PANDA_STATE_CHECKED,
+        initializer.CreateContext("quick-info-test.ets", ES2PANDA_STATE_CHECKED,
                                   "class Test {\n  private _a: number = 1;\n  public get a(): number {\n    "
                                   "return this._a;\n  }\n  public static ccc:number = 1\n\n  constructor(a : "
                                   "number) {\n  }\n}\n\nlet a = 1\nlet test: Test = new Test(a)\nlet t_a = test.a");
@@ -209,7 +209,7 @@ TEST_F(LspQuickInfoTests, GetNodeAtLocationForQuickInfo3)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("quick-info-test.sts", ES2PANDA_STATE_CHECKED,
+        initializer.CreateContext("quick-info-test.ets", ES2PANDA_STATE_CHECKED,
                                   "function func():string {\n  return \"func\"\n}\nlet f = func();");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     size_t const offset = 11;
@@ -233,7 +233,7 @@ TEST_F(LspQuickInfoTests, GetNodeAtLocationForQuickInfo4)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("quick-info-test.sts", ES2PANDA_STATE_CHECKED,
+        initializer.CreateContext("quick-info-test.ets", ES2PANDA_STATE_CHECKED,
                                   "type NullableObject = Object | null\nlet nullOb: NullableObject = null");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     size_t const offset = 11;
@@ -250,7 +250,7 @@ TEST_F(LspQuickInfoTests, GetNodeAtLocationForQuickInfo5)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext(
-        "quick-info-test.sts", ES2PANDA_STATE_CHECKED,
+        "quick-info-test.ets", ES2PANDA_STATE_CHECKED,
         "enum Color {\n  Red = \"red\",\n  Blue = \"blue\"\n}\n\nlet myColor: Color = Color.Red;");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     size_t const offset = 7;
@@ -276,7 +276,7 @@ TEST_F(LspQuickInfoTests, CreateDisplayForClass1)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("quick-info-test.sts", ES2PANDA_STATE_CHECKED,
+        initializer.CreateContext("quick-info-test.ets", ES2PANDA_STATE_CHECKED,
                                   "class Test {\n  private _a: number = 1;\n  public get a(): number {\n    "
                                   "return this._a;\n  }\n  public static ccc:number = 1\n\n  constructor(a : "
                                   "number) {\n  }\n}\n\nlet a = 1\nlet test: Test = new Test(a)\nlet t_a = test.a");
@@ -303,7 +303,7 @@ TEST_F(LspQuickInfoTests, CreateDisplayForClass1)
 TEST_F(LspQuickInfoTests, CreateDisplayForUnionTypeAlias)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("union-type-alias-test.sts", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("union-type-alias-test.ets", ES2PANDA_STATE_CHECKED,
                                                       "type TestUnion = string | number;");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
@@ -329,7 +329,7 @@ TEST_F(LspQuickInfoTests, CreateDisplayForTypeAlias)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("type-alias-test.sts", ES2PANDA_STATE_CHECKED, "type TestType = string;");
+        initializer.CreateContext("type-alias-test.ets", ES2PANDA_STATE_CHECKED, "type TestType = string;");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto ast = reinterpret_cast<ark::es2panda::ir::AstNode *>(context->parserProgram->Ast());
@@ -354,7 +354,7 @@ TEST_F(LspQuickInfoTests, CreateDisplayForInterface)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext(
-        "quick-info-test.sts", ES2PANDA_STATE_CHECKED,
+        "quick-info-test.ets", ES2PANDA_STATE_CHECKED,
         "interface Inner { key : string; }\ninterface Outer { inner : Inner; keyValue : number; }");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
@@ -379,7 +379,7 @@ TEST_F(LspQuickInfoTests, CreateDisplayForTypeAliasTypeParameter)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("type-alias-type-param-test.sts", ES2PANDA_STATE_CHECKED, "type list<T> = T[]");
+        initializer.CreateContext("type-alias-type-param-test.ets", ES2PANDA_STATE_CHECKED, "type list<T> = T[]");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto ast = reinterpret_cast<ark::es2panda::ir::AstNode *>(context->parserProgram->Ast());
@@ -406,7 +406,7 @@ TEST_F(LspQuickInfoTests, CreateDisplayForTypeAliasTypeParameter)
 TEST_F(LspQuickInfoTests, CreateDisplayForClassDeclarationTypeParameter)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("class-type-param-test.sts", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("class-type-param-test.ets", ES2PANDA_STATE_CHECKED,
                                                       "class Queue<T> { private items: T[] = []; }");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
@@ -432,7 +432,7 @@ TEST_F(LspQuickInfoTests, CreateDisplayForClassDeclarationTypeParameter)
 TEST_F(LspQuickInfoTests, CreateDisplayForMethodDefinition)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("method-definition-test.sts", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("method-definition-test.ets", ES2PANDA_STATE_CHECKED,
                                                       "function func(a: number): string { return 'function1'; }");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
@@ -467,7 +467,7 @@ TEST_F(LspQuickInfoTests, CreateDisplayForMethodDefinition)
 TEST_F(LspQuickInfoTests, CreateDisplayForScriptFunctionTypeParameter)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("function-type-param-test.sts", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("function-type-param-test.ets", ES2PANDA_STATE_CHECKED,
                                                       "function identity<T, D>(arg: T): T { return arg }");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
@@ -506,7 +506,7 @@ TEST_F(LspQuickInfoTests, CreateDisplayForClassProperty1)
 {
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("class-property-test.sts", ES2PANDA_STATE_CHECKED,
+        initializer.CreateContext("class-property-test.ets", ES2PANDA_STATE_CHECKED,
                                   "class MyClass {\n  public myProp: number = 0;\n}\n let obj = new MyClass();");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
@@ -533,7 +533,7 @@ TEST_F(LspQuickInfoTests, CreateDisplayForClassProperty1)
 TEST_F(LspQuickInfoTests, CreateDisplayForClassProperty2)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("class-property-test.sts", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("class-property-test.ets", ES2PANDA_STATE_CHECKED,
                                                       "class MyClass {\n  public myProp: number = 0;\n}");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
@@ -560,7 +560,7 @@ TEST_F(LspQuickInfoTests, CreateDisplayForClassProperty2)
 TEST_F(LspQuickInfoTests, CreateDisplayForParameterExpression)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("parameter-expression-test.sts", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("parameter-expression-test.ets", ES2PANDA_STATE_CHECKED,
                                                       "function func(param1: string, param2: number) {}");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     auto context = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);

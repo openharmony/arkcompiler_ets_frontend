@@ -1,107 +1,108 @@
 # SyntaxError: Cannot find type 'Class'.
 # panda#10421
-ClassNewInstance.sts
+ClassNewInstance.ets
 
 # SyntaxError: Cannot find type 'HashMap'.
 # panda#10422
-StringFasta.sts
+StringFasta.ets
 
 # SyntaxError: Cannot find type 'Class'.
 # panda#10423
-generics_1.sts
+generics_1.ets
 
 # panda#11502
-nullCoalesc.sts
+nullCoalesc.ets
 
 # panda#11104
-unboxing.sts
+unboxing.ets
 
 # panda#11326
-GenericsTest.sts
+GenericsTest.ets
 
 # panda#11327
-objectEquality.sts
+objectEquality.ets
 
 # FailKind.ES2PANDA_FAIL # panda#19809
-conditionalExpressionGenericLUB.sts
+conditionalExpressionGenericLUB.ets
 
 # Failed due to lambda captures
-trailing-lambda-with-capture.sts
+trailing-lambda-with-capture.ets
 
 # Disabled temporarily #I8EM2T implementation struct directly expanded to class
-struct-identifier.sts
-struct-init.sts
-struct-init2.sts
-struct_implements.sts
-top_level_03.sts
+struct-identifier.ets
+struct-init.ets
+struct-init2.ets
+struct_implements.ets
+top_level_03.ets
 
 # Functional type with rest parameter
-lambdaExpressionWithRestParameter.sts
-funcRefWithRestArguments.sts
+lambdaExpressionWithRestParameter.ets
+funcRefWithRestArguments.ets
 
 # Wrong type inferred for lambda
-type_param_in_union.sts
+type_param_in_union.ets
 
 # 15276
-n_overrideWithNullable.sts
-nullableType.sts
+n_overrideWithNullable.ets
+nullableType.ets
 
 #Issue 17949
 #SyntaxError: Cannot find type 'C'.
-lambdaWithLocalClassAccess.sts
+lambdaWithLocalClassAccess.ets
 
 #Issue 21065
-implementsClassPropertyUnionType1.sts
-implementsClassPropertyUnionType2.sts
+implementsClassPropertyUnionType1.ets
+implementsClassPropertyUnionType2.ets
 
 #Issue 21834
-override_for_partial_02.sts
-optional_field.sts
+override_for_partial_02.ets
+optional_field.ets
 
 #Issue 22384
-Object-type-in-binary-logical-expression.sts
-trailing-lambda.sts
-unboxingBooleanConversion.sts
-extension_accessor/extensionAccessorChained.sts
-extension_accessor/extensionAccessorInOpAssignment.sts
-extension_accessor/extensionAccessorInOpAssignment2.sts
-extension_accessor/extensionAccessorInherited1.sts
-extension_accessor/extensionAccessorInherited2.sts
-extension_accessor/extensionAccessorWithNewExpr1.sts
-extension_accessor/extensionAccessorWithNewExpr2.sts
-extension_accessor/extensionAccessorAsMemberExprObject.sts
-BitwiseOperationsOnFloat.sts
-RecursiveTypeAlias11.sts
-boxingConversions3.sts
-char-type.sts
-conversionFloatIntLong.sts
-conversionFromInfinity.sts
-enum_const_variable.sts
-local_enum03.sts
-non-const-capture.sts
-inallyCatchExecutedNormally.sts
-finallyTryExecutedNormally.sts
-finallyCatchExecutedNormally.sts
-enumConstExpression.sts
+Object-type-in-binary-logical-expression.ets
+trailing-lambda.ets
+unboxingBooleanConversion.ets
+extension_accessor/extensionAccessorChained.ets
+extension_accessor/extensionAccessorInOpAssignment.ets
+extension_accessor/extensionAccessorInOpAssignment2.ets
+extension_accessor/extensionAccessorInherited1.ets
+extension_accessor/extensionAccessorInherited2.ets
+extension_accessor/extensionAccessorWithNewExpr1.ets
+extension_accessor/extensionAccessorWithNewExpr2.ets
+extension_accessor/extensionAccessorAsMemberExprObject.ets
+BitwiseOperationsOnFloat.ets
+RecursiveTypeAlias11.ets
+boxingConversions3.ets
+char-type.ets
+conversionFloatIntLong.ets
+conversionFromInfinity.ets
+enum_const_variable.ets
+local_enum03.ets
+non-const-capture.ets
+inallyCatchExecutedNormally.ets
+finallyTryExecutedNormally.ets
+finallyCatchExecutedNormally.ets
+enumConstExpression.ets
 
 #Issue 48215
-extension_accessor/extensionAccessorAlone.sts
-extension_accessor/extensionAccessorAsExprOfStatementExpr.sts
-extension_accessor/extensionAccessorInFunction.sts
-implementsClassPropertyFunctionType_ObjectLiteralExpr.sts
-lambda_with_receiver/lambda_with_receiver_generics_return_this_rotate.sts
-lambda_with_receiver/lambda_with_receiver_return_this3.sts
-extension_accessor/extensionAccessorAsClassPropertyValue.sts
-extension_accessor/extensionAccessorAsMemberExprProperty.sts
-extension_accessor/extensionAccessorInCallArgs.sts
-lambda_with_receiver/lambda_with_receiver_generics_return_this.sts
-lambda_with_receiver/lambda_with_receiver_trailing_in_class_method_return_this_rotate.sts
-lambda_with_receiver/lambda_with_receiver_trailing_in_function_return_this_rotate.sts
+extension_accessor/extensionAccessorAlone.ets
+extension_accessor/extensionAccessorAsExprOfStatementExpr.ets
+extension_accessor/extensionAccessorInFunction.ets
+implementsClassPropertyFunctionType_ObjectLiteralExpr.ets
+lambda_with_receiver/lambda_with_receiver_generics_return_this_rotate.ets
+lambda_with_receiver/lambda_with_receiver_return_this3.ets
+extension_accessor/extensionAccessorAsClassPropertyValue.ets
+extension_accessor/extensionAccessorAsMemberExprProperty.ets
+extension_accessor/extensionAccessorInCallArgs.ets
+lambda_with_receiver/lambda_with_receiver_generics_return_this.ets
+lambda_with_receiver/lambda_with_receiver_trailing_in_class_method_return_this_rotate.ets
+lambda_with_receiver/lambda_with_receiver_trailing_in_function_return_this_rotate.ets
 
 #Issue 23074
 # instance method used as value
-FunctionType.sts
-function_type_inference1.sts
+FunctionType.ets
+function_type_inference1.ets
 # generic bridges
-GenericBridges_02.sts
-override_for_partial_01.sts
+GenericBridges_01.ets
+GenericBridges_02.ets
+override_for_partial_01.ets

@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "throwsRethrowsAsVariables.sts"
+              "program": "throwsRethrowsAsVariables.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "throwsRethrowsAsVariables.sts"
+              "program": "throwsRethrowsAsVariables.ets"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "throwsRethrowsAsVariables.sts"
+                "program": "throwsRethrowsAsVariables.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "throwsRethrowsAsVariables.sts"
+                "program": "throwsRethrowsAsVariables.ets"
               }
             }
           },
@@ -195,12 +195,12 @@
                             "start": {
                               "line": 16,
                               "column": 5,
-                              "program": "throwsRethrowsAsVariables.sts"
+                              "program": "throwsRethrowsAsVariables.ets"
                             },
                             "end": {
                               "line": 16,
                               "column": 11,
-                              "program": "throwsRethrowsAsVariables.sts"
+                              "program": "throwsRethrowsAsVariables.ets"
                             }
                           }
                         },
@@ -211,12 +211,12 @@
                             "start": {
                               "line": 16,
                               "column": 14,
-                              "program": "throwsRethrowsAsVariables.sts"
+                              "program": "throwsRethrowsAsVariables.ets"
                             },
                             "end": {
                               "line": 16,
                               "column": 15,
-                              "program": "throwsRethrowsAsVariables.sts"
+                              "program": "throwsRethrowsAsVariables.ets"
                             }
                           }
                         },
@@ -224,12 +224,12 @@
                           "start": {
                             "line": 16,
                             "column": 5,
-                            "program": "throwsRethrowsAsVariables.sts"
+                            "program": "throwsRethrowsAsVariables.ets"
                           },
                           "end": {
                             "line": 16,
                             "column": 15,
-                            "program": "throwsRethrowsAsVariables.sts"
+                            "program": "throwsRethrowsAsVariables.ets"
                           }
                         }
                       },
@@ -237,12 +237,12 @@
                         "start": {
                           "line": 16,
                           "column": 5,
-                          "program": "throwsRethrowsAsVariables.sts"
+                          "program": "throwsRethrowsAsVariables.ets"
                         },
                         "end": {
                           "line": 16,
                           "column": 15,
-                          "program": "throwsRethrowsAsVariables.sts"
+                          "program": "throwsRethrowsAsVariables.ets"
                         }
                       }
                     },
@@ -259,12 +259,12 @@
                             "start": {
                               "line": 17,
                               "column": 5,
-                              "program": "throwsRethrowsAsVariables.sts"
+                              "program": "throwsRethrowsAsVariables.ets"
                             },
                             "end": {
                               "line": 17,
                               "column": 13,
-                              "program": "throwsRethrowsAsVariables.sts"
+                              "program": "throwsRethrowsAsVariables.ets"
                             }
                           }
                         },
@@ -275,12 +275,12 @@
                             "start": {
                               "line": 17,
                               "column": 16,
-                              "program": "throwsRethrowsAsVariables.sts"
+                              "program": "throwsRethrowsAsVariables.ets"
                             },
                             "end": {
                               "line": 17,
                               "column": 17,
-                              "program": "throwsRethrowsAsVariables.sts"
+                              "program": "throwsRethrowsAsVariables.ets"
                             }
                           }
                         },
@@ -288,12 +288,12 @@
                           "start": {
                             "line": 17,
                             "column": 5,
-                            "program": "throwsRethrowsAsVariables.sts"
+                            "program": "throwsRethrowsAsVariables.ets"
                           },
                           "end": {
                             "line": 17,
                             "column": 17,
-                            "program": "throwsRethrowsAsVariables.sts"
+                            "program": "throwsRethrowsAsVariables.ets"
                           }
                         }
                       },
@@ -301,12 +301,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "throwsRethrowsAsVariables.sts"
+                          "program": "throwsRethrowsAsVariables.ets"
                         },
                         "end": {
                           "line": 17,
                           "column": 17,
-                          "program": "throwsRethrowsAsVariables.sts"
+                          "program": "throwsRethrowsAsVariables.ets"
                         }
                       }
                     }
@@ -356,12 +356,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "throwsRethrowsAsVariables.sts"
+                "program": "throwsRethrowsAsVariables.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "throwsRethrowsAsVariables.sts"
+                "program": "throwsRethrowsAsVariables.ets"
               }
             }
           },
@@ -375,12 +375,12 @@
                 "start": {
                   "line": 16,
                   "column": 5,
-                  "program": "throwsRethrowsAsVariables.sts"
+                  "program": "throwsRethrowsAsVariables.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 11,
-                  "program": "throwsRethrowsAsVariables.sts"
+                  "program": "throwsRethrowsAsVariables.ets"
                 }
               }
             },
@@ -391,12 +391,12 @@
                 "start": {
                   "line": 16,
                   "column": 14,
-                  "program": "throwsRethrowsAsVariables.sts"
+                  "program": "throwsRethrowsAsVariables.ets"
                 },
                 "end": {
                   "line": 16,
                   "column": 15,
-                  "program": "throwsRethrowsAsVariables.sts"
+                  "program": "throwsRethrowsAsVariables.ets"
                 }
               }
             },
@@ -412,12 +412,12 @@
               "start": {
                 "line": 16,
                 "column": 5,
-                "program": "throwsRethrowsAsVariables.sts"
+                "program": "throwsRethrowsAsVariables.ets"
               },
               "end": {
                 "line": 16,
                 "column": 15,
-                "program": "throwsRethrowsAsVariables.sts"
+                "program": "throwsRethrowsAsVariables.ets"
               }
             }
           },
@@ -431,12 +431,12 @@
                 "start": {
                   "line": 17,
                   "column": 5,
-                  "program": "throwsRethrowsAsVariables.sts"
+                  "program": "throwsRethrowsAsVariables.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 13,
-                  "program": "throwsRethrowsAsVariables.sts"
+                  "program": "throwsRethrowsAsVariables.ets"
                 }
               }
             },
@@ -447,12 +447,12 @@
                 "start": {
                   "line": 17,
                   "column": 16,
-                  "program": "throwsRethrowsAsVariables.sts"
+                  "program": "throwsRethrowsAsVariables.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 17,
-                  "program": "throwsRethrowsAsVariables.sts"
+                  "program": "throwsRethrowsAsVariables.ets"
                 }
               }
             },
@@ -468,12 +468,12 @@
               "start": {
                 "line": 17,
                 "column": 5,
-                "program": "throwsRethrowsAsVariables.sts"
+                "program": "throwsRethrowsAsVariables.ets"
               },
               "end": {
                 "line": 17,
                 "column": 17,
-                "program": "throwsRethrowsAsVariables.sts"
+                "program": "throwsRethrowsAsVariables.ets"
               }
             }
           },
@@ -487,12 +487,12 @@
                 "start": {
                   "line": 19,
                   "column": 10,
-                  "program": "throwsRethrowsAsVariables.sts"
+                  "program": "throwsRethrowsAsVariables.ets"
                 },
                 "end": {
                   "line": 19,
                   "column": 22,
-                  "program": "throwsRethrowsAsVariables.sts"
+                  "program": "throwsRethrowsAsVariables.ets"
                 }
               }
             },
@@ -513,12 +513,12 @@
                     "start": {
                       "line": 19,
                       "column": 10,
-                      "program": "throwsRethrowsAsVariables.sts"
+                      "program": "throwsRethrowsAsVariables.ets"
                     },
                     "end": {
                       "line": 19,
                       "column": 22,
-                      "program": "throwsRethrowsAsVariables.sts"
+                      "program": "throwsRethrowsAsVariables.ets"
                     }
                   }
                 },
@@ -532,12 +532,12 @@
                     "start": {
                       "line": 19,
                       "column": 26,
-                      "program": "throwsRethrowsAsVariables.sts"
+                      "program": "throwsRethrowsAsVariables.ets"
                     },
                     "end": {
                       "line": 19,
                       "column": 30,
-                      "program": "throwsRethrowsAsVariables.sts"
+                      "program": "throwsRethrowsAsVariables.ets"
                     }
                   }
                 },
@@ -548,12 +548,12 @@
                     "start": {
                       "line": 19,
                       "column": 38,
-                      "program": "throwsRethrowsAsVariables.sts"
+                      "program": "throwsRethrowsAsVariables.ets"
                     },
                     "end": {
                       "line": 19,
                       "column": 40,
-                      "program": "throwsRethrowsAsVariables.sts"
+                      "program": "throwsRethrowsAsVariables.ets"
                     }
                   }
                 },
@@ -562,12 +562,12 @@
                   "start": {
                     "line": 19,
                     "column": 10,
-                    "program": "throwsRethrowsAsVariables.sts"
+                    "program": "throwsRethrowsAsVariables.ets"
                   },
                   "end": {
                     "line": 19,
                     "column": 40,
-                    "program": "throwsRethrowsAsVariables.sts"
+                    "program": "throwsRethrowsAsVariables.ets"
                   }
                 }
               },
@@ -575,12 +575,12 @@
                 "start": {
                   "line": 19,
                   "column": 10,
-                  "program": "throwsRethrowsAsVariables.sts"
+                  "program": "throwsRethrowsAsVariables.ets"
                 },
                 "end": {
                   "line": 19,
                   "column": 40,
-                  "program": "throwsRethrowsAsVariables.sts"
+                  "program": "throwsRethrowsAsVariables.ets"
                 }
               }
             },
@@ -590,12 +590,12 @@
               "start": {
                 "line": 19,
                 "column": 1,
-                "program": "throwsRethrowsAsVariables.sts"
+                "program": "throwsRethrowsAsVariables.ets"
               },
               "end": {
                 "line": 19,
                 "column": 40,
-                "program": "throwsRethrowsAsVariables.sts"
+                "program": "throwsRethrowsAsVariables.ets"
               }
             }
           },
@@ -609,12 +609,12 @@
                 "start": {
                   "line": 20,
                   "column": 10,
-                  "program": "throwsRethrowsAsVariables.sts"
+                  "program": "throwsRethrowsAsVariables.ets"
                 },
                 "end": {
                   "line": 20,
                   "column": 23,
-                  "program": "throwsRethrowsAsVariables.sts"
+                  "program": "throwsRethrowsAsVariables.ets"
                 }
               }
             },
@@ -635,12 +635,12 @@
                     "start": {
                       "line": 20,
                       "column": 10,
-                      "program": "throwsRethrowsAsVariables.sts"
+                      "program": "throwsRethrowsAsVariables.ets"
                     },
                     "end": {
                       "line": 20,
                       "column": 23,
-                      "program": "throwsRethrowsAsVariables.sts"
+                      "program": "throwsRethrowsAsVariables.ets"
                     }
                   }
                 },
@@ -662,12 +662,12 @@
                             "start": {
                               "line": 20,
                               "column": 33,
-                              "program": "throwsRethrowsAsVariables.sts"
+                              "program": "throwsRethrowsAsVariables.ets"
                             },
                             "end": {
                               "line": 20,
                               "column": 37,
-                              "program": "throwsRethrowsAsVariables.sts"
+                              "program": "throwsRethrowsAsVariables.ets"
                             }
                           }
                         },
@@ -676,12 +676,12 @@
                           "start": {
                             "line": 20,
                             "column": 27,
-                            "program": "throwsRethrowsAsVariables.sts"
+                            "program": "throwsRethrowsAsVariables.ets"
                           },
                           "end": {
                             "line": 20,
                             "column": 37,
-                            "program": "throwsRethrowsAsVariables.sts"
+                            "program": "throwsRethrowsAsVariables.ets"
                           }
                         }
                       },
@@ -690,12 +690,12 @@
                         "start": {
                           "line": 20,
                           "column": 24,
-                          "program": "throwsRethrowsAsVariables.sts"
+                          "program": "throwsRethrowsAsVariables.ets"
                         },
                         "end": {
                           "line": 20,
                           "column": 37,
-                          "program": "throwsRethrowsAsVariables.sts"
+                          "program": "throwsRethrowsAsVariables.ets"
                         }
                       }
                     },
@@ -703,12 +703,12 @@
                       "start": {
                         "line": 20,
                         "column": 24,
-                        "program": "throwsRethrowsAsVariables.sts"
+                        "program": "throwsRethrowsAsVariables.ets"
                       },
                       "end": {
                         "line": 20,
                         "column": 37,
-                        "program": "throwsRethrowsAsVariables.sts"
+                        "program": "throwsRethrowsAsVariables.ets"
                       }
                     }
                   }
@@ -719,12 +719,12 @@
                     "start": {
                       "line": 20,
                       "column": 47,
-                      "program": "throwsRethrowsAsVariables.sts"
+                      "program": "throwsRethrowsAsVariables.ets"
                     },
                     "end": {
                       "line": 20,
                       "column": 51,
-                      "program": "throwsRethrowsAsVariables.sts"
+                      "program": "throwsRethrowsAsVariables.ets"
                     }
                   }
                 },
@@ -735,12 +735,12 @@
                     "start": {
                       "line": 20,
                       "column": 61,
-                      "program": "throwsRethrowsAsVariables.sts"
+                      "program": "throwsRethrowsAsVariables.ets"
                     },
                     "end": {
                       "line": 20,
                       "column": 63,
-                      "program": "throwsRethrowsAsVariables.sts"
+                      "program": "throwsRethrowsAsVariables.ets"
                     }
                   }
                 },
@@ -749,12 +749,12 @@
                   "start": {
                     "line": 20,
                     "column": 10,
-                    "program": "throwsRethrowsAsVariables.sts"
+                    "program": "throwsRethrowsAsVariables.ets"
                   },
                   "end": {
                     "line": 20,
                     "column": 63,
-                    "program": "throwsRethrowsAsVariables.sts"
+                    "program": "throwsRethrowsAsVariables.ets"
                   }
                 }
               },
@@ -762,12 +762,12 @@
                 "start": {
                   "line": 20,
                   "column": 10,
-                  "program": "throwsRethrowsAsVariables.sts"
+                  "program": "throwsRethrowsAsVariables.ets"
                 },
                 "end": {
                   "line": 20,
                   "column": 63,
-                  "program": "throwsRethrowsAsVariables.sts"
+                  "program": "throwsRethrowsAsVariables.ets"
                 }
               }
             },
@@ -777,12 +777,12 @@
               "start": {
                 "line": 20,
                 "column": 1,
-                "program": "throwsRethrowsAsVariables.sts"
+                "program": "throwsRethrowsAsVariables.ets"
               },
               "end": {
                 "line": 20,
                 "column": 63,
-                "program": "throwsRethrowsAsVariables.sts"
+                "program": "throwsRethrowsAsVariables.ets"
               }
             }
           }
@@ -791,12 +791,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "throwsRethrowsAsVariables.sts"
+            "program": "throwsRethrowsAsVariables.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "throwsRethrowsAsVariables.sts"
+            "program": "throwsRethrowsAsVariables.ets"
           }
         }
       },
@@ -804,12 +804,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "throwsRethrowsAsVariables.sts"
+          "program": "throwsRethrowsAsVariables.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "throwsRethrowsAsVariables.sts"
+          "program": "throwsRethrowsAsVariables.ets"
         }
       }
     }
@@ -818,12 +818,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "throwsRethrowsAsVariables.sts"
+      "program": "throwsRethrowsAsVariables.ets"
     },
     "end": {
       "line": 21,
       "column": 1,
-      "program": "throwsRethrowsAsVariables.sts"
+      "program": "throwsRethrowsAsVariables.ets"
     }
   }
 }

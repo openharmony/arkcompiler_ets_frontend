@@ -10,12 +10,12 @@
           "start": {
             "line": 16,
             "column": 22,
-            "program": "lambda_import_alias_1-2.sts"
+            "program": "lambda_import_alias_1-2.ets"
           },
           "end": {
             "line": 16,
             "column": 49,
-            "program": "lambda_import_alias_1-2.sts"
+            "program": "lambda_import_alias_1-2.ets"
           }
         }
       },
@@ -30,12 +30,12 @@
               "start": {
                 "line": 16,
                 "column": 13,
-                "program": "lambda_import_alias_1-2.sts"
+                "program": "lambda_import_alias_1-2.ets"
               },
               "end": {
                 "line": 16,
                 "column": 16,
-                "program": "lambda_import_alias_1-2.sts"
+                "program": "lambda_import_alias_1-2.ets"
               }
             }
           },
@@ -43,12 +43,12 @@
             "start": {
               "line": 16,
               "column": 8,
-              "program": "lambda_import_alias_1-2.sts"
+              "program": "lambda_import_alias_1-2.ets"
             },
             "end": {
               "line": 16,
               "column": 16,
-              "program": "lambda_import_alias_1-2.sts"
+              "program": "lambda_import_alias_1-2.ets"
             }
           }
         }
@@ -57,12 +57,12 @@
         "start": {
           "line": 16,
           "column": 1,
-          "program": "lambda_import_alias_1-2.sts"
+          "program": "lambda_import_alias_1-2.ets"
         },
         "end": {
           "line": 16,
           "column": 49,
-          "program": "lambda_import_alias_1-2.sts"
+          "program": "lambda_import_alias_1-2.ets"
         }
       }
     },
@@ -76,12 +76,12 @@
           "start": {
             "line": 17,
             "column": 13,
-            "program": "lambda_import_alias_1-2.sts"
+            "program": "lambda_import_alias_1-2.ets"
           },
           "end": {
             "line": 17,
             "column": 14,
-            "program": "lambda_import_alias_1-2.sts"
+            "program": "lambda_import_alias_1-2.ets"
           }
         }
       },
@@ -99,12 +99,12 @@
                 "start": {
                   "line": 17,
                   "column": 17,
-                  "program": "lambda_import_alias_1-2.sts"
+                  "program": "lambda_import_alias_1-2.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 20,
-                  "program": "lambda_import_alias_1-2.sts"
+                  "program": "lambda_import_alias_1-2.ets"
                 }
               }
             },
@@ -116,12 +116,12 @@
                 "start": {
                   "line": 17,
                   "column": 21,
-                  "program": "lambda_import_alias_1-2.sts"
+                  "program": "lambda_import_alias_1-2.ets"
                 },
                 "end": {
                   "line": 17,
                   "column": 22,
-                  "program": "lambda_import_alias_1-2.sts"
+                  "program": "lambda_import_alias_1-2.ets"
                 }
               }
             },
@@ -129,12 +129,12 @@
               "start": {
                 "line": 17,
                 "column": 17,
-                "program": "lambda_import_alias_1-2.sts"
+                "program": "lambda_import_alias_1-2.ets"
               },
               "end": {
                 "line": 18,
                 "column": 7,
-                "program": "lambda_import_alias_1-2.sts"
+                "program": "lambda_import_alias_1-2.ets"
               }
             }
           },
@@ -142,12 +142,12 @@
             "start": {
               "line": 17,
               "column": 17,
-              "program": "lambda_import_alias_1-2.sts"
+              "program": "lambda_import_alias_1-2.ets"
             },
             "end": {
               "line": 18,
               "column": 7,
-              "program": "lambda_import_alias_1-2.sts"
+              "program": "lambda_import_alias_1-2.ets"
             }
           }
         },
@@ -155,12 +155,12 @@
           "start": {
             "line": 17,
             "column": 17,
-            "program": "lambda_import_alias_1-2.sts"
+            "program": "lambda_import_alias_1-2.ets"
           },
           "end": {
             "line": 18,
             "column": 7,
-            "program": "lambda_import_alias_1-2.sts"
+            "program": "lambda_import_alias_1-2.ets"
           }
         }
       },
@@ -168,12 +168,12 @@
         "start": {
           "line": 17,
           "column": 8,
-          "program": "lambda_import_alias_1-2.sts"
+          "program": "lambda_import_alias_1-2.ets"
         },
         "end": {
           "line": 18,
           "column": 7,
-          "program": "lambda_import_alias_1-2.sts"
+          "program": "lambda_import_alias_1-2.ets"
         }
       }
     },
@@ -188,12 +188,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "lambda_import_alias_1-2.sts"
+              "program": "lambda_import_alias_1-2.ets"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "lambda_import_alias_1-2.sts"
+              "program": "lambda_import_alias_1-2.ets"
             }
           }
         },
@@ -297,12 +297,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "lambda_import_alias_1-2.sts"
+                "program": "lambda_import_alias_1-2.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "lambda_import_alias_1-2.sts"
+                "program": "lambda_import_alias_1-2.ets"
               }
             }
           },
@@ -371,12 +371,12 @@
                             "start": {
                               "line": 18,
                               "column": 12,
-                              "program": "lambda_import_alias_1-2.sts"
+                              "program": "lambda_import_alias_1-2.ets"
                             },
                             "end": {
                               "line": 18,
                               "column": 19,
-                              "program": "lambda_import_alias_1-2.sts"
+                              "program": "lambda_import_alias_1-2.ets"
                             }
                           }
                         },
@@ -390,12 +390,12 @@
                               "start": {
                                 "line": 18,
                                 "column": 31,
-                                "program": "lambda_import_alias_1-2.sts"
+                                "program": "lambda_import_alias_1-2.ets"
                               },
                               "end": {
                                 "line": 18,
                                 "column": 34,
-                                "program": "lambda_import_alias_1-2.sts"
+                                "program": "lambda_import_alias_1-2.ets"
                               }
                             }
                           },
@@ -407,12 +407,12 @@
                               "start": {
                                 "line": 18,
                                 "column": 35,
-                                "program": "lambda_import_alias_1-2.sts"
+                                "program": "lambda_import_alias_1-2.ets"
                               },
                               "end": {
                                 "line": 18,
                                 "column": 42,
-                                "program": "lambda_import_alias_1-2.sts"
+                                "program": "lambda_import_alias_1-2.ets"
                               }
                             }
                           },
@@ -422,12 +422,12 @@
                             "start": {
                               "line": 18,
                               "column": 31,
-                              "program": "lambda_import_alias_1-2.sts"
+                              "program": "lambda_import_alias_1-2.ets"
                             },
                             "end": {
                               "line": 18,
                               "column": 42,
-                              "program": "lambda_import_alias_1-2.sts"
+                              "program": "lambda_import_alias_1-2.ets"
                             }
                           }
                         },
@@ -435,12 +435,12 @@
                           "start": {
                             "line": 18,
                             "column": 12,
-                            "program": "lambda_import_alias_1-2.sts"
+                            "program": "lambda_import_alias_1-2.ets"
                           },
                           "end": {
                             "line": 18,
                             "column": 42,
-                            "program": "lambda_import_alias_1-2.sts"
+                            "program": "lambda_import_alias_1-2.ets"
                           }
                         }
                       },
@@ -448,12 +448,12 @@
                         "start": {
                           "line": 18,
                           "column": 12,
-                          "program": "lambda_import_alias_1-2.sts"
+                          "program": "lambda_import_alias_1-2.ets"
                         },
                         "end": {
                           "line": 18,
                           "column": 42,
-                          "program": "lambda_import_alias_1-2.sts"
+                          "program": "lambda_import_alias_1-2.ets"
                         }
                       }
                     }
@@ -503,12 +503,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "lambda_import_alias_1-2.sts"
+                "program": "lambda_import_alias_1-2.ets"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "lambda_import_alias_1-2.sts"
+                "program": "lambda_import_alias_1-2.ets"
               }
             }
           },
@@ -522,12 +522,12 @@
                 "start": {
                   "line": 18,
                   "column": 12,
-                  "program": "lambda_import_alias_1-2.sts"
+                  "program": "lambda_import_alias_1-2.ets"
                 },
                 "end": {
                   "line": 18,
                   "column": 19,
-                  "program": "lambda_import_alias_1-2.sts"
+                  "program": "lambda_import_alias_1-2.ets"
                 }
               }
             },
@@ -552,12 +552,12 @@
                       "start": {
                         "line": 18,
                         "column": 27,
-                        "program": "lambda_import_alias_1-2.sts"
+                        "program": "lambda_import_alias_1-2.ets"
                       },
                       "end": {
                         "line": 18,
                         "column": 28,
-                        "program": "lambda_import_alias_1-2.sts"
+                        "program": "lambda_import_alias_1-2.ets"
                       }
                     }
                   },
@@ -565,12 +565,12 @@
                     "start": {
                       "line": 18,
                       "column": 27,
-                      "program": "lambda_import_alias_1-2.sts"
+                      "program": "lambda_import_alias_1-2.ets"
                     },
                     "end": {
                       "line": 18,
                       "column": 30,
-                      "program": "lambda_import_alias_1-2.sts"
+                      "program": "lambda_import_alias_1-2.ets"
                     }
                   }
                 },
@@ -578,12 +578,12 @@
                   "start": {
                     "line": 18,
                     "column": 27,
-                    "program": "lambda_import_alias_1-2.sts"
+                    "program": "lambda_import_alias_1-2.ets"
                   },
                   "end": {
                     "line": 18,
                     "column": 30,
-                    "program": "lambda_import_alias_1-2.sts"
+                    "program": "lambda_import_alias_1-2.ets"
                   }
                 }
               },
@@ -591,12 +591,12 @@
                 "start": {
                   "line": 18,
                   "column": 21,
-                  "program": "lambda_import_alias_1-2.sts"
+                  "program": "lambda_import_alias_1-2.ets"
                 },
                 "end": {
                   "line": 18,
                   "column": 30,
-                  "program": "lambda_import_alias_1-2.sts"
+                  "program": "lambda_import_alias_1-2.ets"
                 }
               }
             },
@@ -606,12 +606,12 @@
               "start": {
                 "line": 18,
                 "column": 12,
-                "program": "lambda_import_alias_1-2.sts"
+                "program": "lambda_import_alias_1-2.ets"
               },
               "end": {
                 "line": 18,
                 "column": 42,
-                "program": "lambda_import_alias_1-2.sts"
+                "program": "lambda_import_alias_1-2.ets"
               }
             }
           }
@@ -620,12 +620,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "lambda_import_alias_1-2.sts"
+            "program": "lambda_import_alias_1-2.ets"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "lambda_import_alias_1-2.sts"
+            "program": "lambda_import_alias_1-2.ets"
           }
         }
       },
@@ -633,12 +633,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "lambda_import_alias_1-2.sts"
+          "program": "lambda_import_alias_1-2.ets"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "lambda_import_alias_1-2.sts"
+          "program": "lambda_import_alias_1-2.ets"
         }
       }
     }
@@ -647,12 +647,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "lambda_import_alias_1-2.sts"
+      "program": "lambda_import_alias_1-2.ets"
     },
     "end": {
       "line": 19,
       "column": 1,
-      "program": "lambda_import_alias_1-2.sts"
+      "program": "lambda_import_alias_1-2.ets"
     }
   }
 }

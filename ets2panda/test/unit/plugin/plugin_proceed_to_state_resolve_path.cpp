@@ -48,11 +48,11 @@ int main(int argc, char **argv)
     impl->ProceedToState(context, ES2PANDA_STATE_PARSED);
     CheckForErrors("PARSE", context);
 
-    char path_to_resolve[] = "./export.sts";
+    char path_to_resolve[] = "./export.ets";
     auto resolved_path =
         impl->ImportPathManagerResolvePathConst(context, impl->ETSParserGetImportPathManager(context), argv[argc - 1],
                                                 path_to_resolve, impl->CreateSourcePosition(context, 0, 0));
-    if (strstr(resolved_path, "export.sts") == nullptr) {
+    if (strstr(resolved_path, "export.ets") == nullptr) {
         return TEST_ERROR_CODE;
     }
 

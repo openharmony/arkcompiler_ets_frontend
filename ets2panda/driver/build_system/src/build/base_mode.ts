@@ -149,7 +149,7 @@ export abstract class BaseMode {
     arktsGlobal.config = arkts.createConfig([
         '_',
         '--extension',
-        'sts',
+        'ets',
         '--arktsconfig',
         fileInfo.arktsConfigFile,
         fileInfo.filePath
@@ -172,7 +172,7 @@ export abstract class BaseMode {
     let ets2pandaCmd: string[] = [
       '_',
       '--extension',
-      'sts',
+      'ets',
       '--arktsconfig',
       fileInfo.arktsConfigFile,
       '--output',
