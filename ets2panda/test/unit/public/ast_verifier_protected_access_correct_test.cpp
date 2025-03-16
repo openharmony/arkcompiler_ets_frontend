@@ -28,7 +28,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestCorrect)
             public b: int = this.a;
         }
     )";
-    CONTEXT(ES2PANDA_STATE_CHECKED, text, "dummy.ets")
+    CONTEXT(ES2PANDA_STATE_CHECKED, text, "dummy.sts")
     {
         GetAst()
             ->AsETSModule()

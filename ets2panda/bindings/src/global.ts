@@ -20,7 +20,7 @@ import { Es2pandaNativeModule as GeneratedEs2pandaNativeModule } from "./generat
 import { initInterop, InteropNativeModule } from "./InteropNativeModule"
 
 export class global {
-  public static filePath: string = "./examples/input/main.ets"
+  public static filePath: string = "./examples/input/main.sts"
 
   private static _config?: KNativePointer
   public static set config(config: KNativePointer) {

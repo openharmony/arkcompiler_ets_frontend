@@ -31,7 +31,7 @@ TEST_F(LspGILAPTests, GILAPIsInitializer_Test)
 {
     Initializer initializer = Initializer();
     const char *code = "class C {n: number = 0;constructor() {this.n = 12;};foo():this{return this}}";
-    es2panda_Context *ctx = initializer.CreateContext("dummy-node.ets", ES2PANDA_STATE_CHECKED, code);
+    es2panda_Context *ctx = initializer.CreateContext("dummy-node.sts", ES2PANDA_STATE_CHECKED, code);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     size_t const offset = 20;
@@ -46,7 +46,7 @@ TEST_F(LspGILAPTests, GILAPIsInitializer_Test1)
 {
     Initializer initializer = Initializer();
     const char *code = "class C {n: number=0;foo():this{return this}};let a: C = new C();";
-    es2panda_Context *ctx = initializer.CreateContext("dummy-node.ets", ES2PANDA_STATE_CHECKED, code);
+    es2panda_Context *ctx = initializer.CreateContext("dummy-node.sts", ES2PANDA_STATE_CHECKED, code);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     size_t const offset = 10;
@@ -61,7 +61,7 @@ TEST_F(LspGILAPTests, GILAPIsReturnNode_Test)
 {
     Initializer initializer = Initializer();
     const char *code = "function A(a:number, b:number):boolean{ return true;}";
-    es2panda_Context *ctx = initializer.CreateContext("dummy-node.ets", ES2PANDA_STATE_CHECKED, code);
+    es2panda_Context *ctx = initializer.CreateContext("dummy-node.sts", ES2PANDA_STATE_CHECKED, code);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     size_t const offset = 48;
@@ -76,7 +76,7 @@ TEST_F(LspGILAPTests, GILAPIsThisNode_Test)
 {
     Initializer initializer = Initializer();
     const char *code = "class C {n: number = 0;foo():this{return this}}";
-    es2panda_Context *ctx = initializer.CreateContext("dummy-node.ets", ES2PANDA_STATE_CHECKED, code);
+    es2panda_Context *ctx = initializer.CreateContext("dummy-node.sts", ES2PANDA_STATE_CHECKED, code);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     size_t const offset = 30;
@@ -91,7 +91,7 @@ TEST_F(LspGILAPTests, GILAPIsThisNode_Test1)
 {
     Initializer initializer = Initializer();
     const char *code = "class C {n: number = 0;foo():this{return this}}";
-    es2panda_Context *ctx = initializer.CreateContext("dummy-node.ets", ES2PANDA_STATE_CHECKED, code);
+    es2panda_Context *ctx = initializer.CreateContext("dummy-node.sts", ES2PANDA_STATE_CHECKED, code);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     size_t const offset = 42;
@@ -106,7 +106,7 @@ TEST_F(LspGILAPTests, GILAPIsValidImplementation_Test)
 {
     Initializer initializer = Initializer();
     const char *code = "function A(){ 1+2; }";
-    es2panda_Context *ctx = initializer.CreateContext("dummy-node.ets", ES2PANDA_STATE_CHECKED, code);
+    es2panda_Context *ctx = initializer.CreateContext("dummy-node.sts", ES2PANDA_STATE_CHECKED, code);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     size_t const offset = 15;
@@ -123,7 +123,7 @@ TEST_F(LspGILAPTests, GILAPIsAsTypeNode_Test)
     const char *code =
         "class Shape {}class Circle extends Shape {x: number = 5}class Square extends Shape {y: string = 'a'}function "
         "createShape(): Shape {return new Circle()}let c2 = createShape() as Circle";
-    es2panda_Context *ctx = initializer.CreateContext("dummy-node.ets", ES2PANDA_STATE_CHECKED, code);
+    es2panda_Context *ctx = initializer.CreateContext("dummy-node.sts", ES2PANDA_STATE_CHECKED, code);
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     size_t const offset = 159;
@@ -148,7 +148,7 @@ TEST_F(LspGILAPTests, GILAPGetImplementationAtPosition_Test)
     Ali(1);
     )";
     es2panda_Context *ctx =
-        initializer.CreateContext("implementation-at-position.ets", ES2PANDA_STATE_CHECKED, source.data());
+        initializer.CreateContext("implementation-at-position.sts", ES2PANDA_STATE_CHECKED, source.data());
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     const int callOffset = 72;
@@ -170,5 +170,5 @@ TEST_F(LspGILAPTests, GILAPGetImplementationAtPosition_Test)
     ASSERT_EQ(result[0].range_.end.line_, eL);
     ASSERT_EQ(result[0].range_.end.character_, eI);
 
-    ASSERT_EQ(result[0].uri_.compare("implementation-at-position.ets"), 0);
+    ASSERT_EQ(result[0].uri_.compare("implementation-at-position.sts"), 0);
 }

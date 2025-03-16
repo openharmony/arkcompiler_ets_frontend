@@ -53,7 +53,7 @@ void AssertCompletionsContainAndNotContainEntries(const std::vector<CompletionEn
 
 TEST_F(LSPCompletionsTests, getCompletionsAtPosition1)
 {
-    std::vector<std::string> files = {"getCompletionsAtPosition1.ets"};
+    std::vector<std::string> files = {"getCompletionsAtPosition1.sts"};
     std::vector<std::string> texts = {R"delimiter(
 function num1() {
     return 1;
@@ -81,7 +81,7 @@ let a = n
 
 TEST_F(LSPCompletionsTests, getCompletionsAtPosition2)
 {
-    std::vector<std::string> files = {"getCompletionsAtPosition2.ets"};
+    std::vector<std::string> files = {"getCompletionsAtPosition2.sts"};
     std::vector<std::string> texts = {R"delimiter(
 let aaa = 123;
 const abb = 333;
@@ -113,7 +113,7 @@ function foo() {
 
 TEST_F(LSPCompletionsTests, getCompletionsAtPosition3)
 {
-    std::vector<std::string> files = {"getCompletionsAtPosition3.ets"};
+    std::vector<std::string> files = {"getCompletionsAtPosition3.sts"};
     std::vector<std::string> texts = {R"delimiter(
 class Foo {
     bar: number = 1;
@@ -154,7 +154,7 @@ function fxx() {
 
 TEST_F(LSPCompletionsTests, getCompletionsAtPosition4)
 {
-    std::vector<std::string> files = {"getCompletionsAtPosition4.ets"};
+    std::vector<std::string> files = {"getCompletionsAtPosition4.sts"};
     std::vector<std::string> texts = {R"delimiter(
 class Foo {
     bar: number = 1;
@@ -192,7 +192,7 @@ let axx = b
 
 TEST_F(LSPCompletionsTests, MemberCompletionsForClassTest1)
 {
-    std::vector<std::string> files = {"getCompletionsAtPosition5.ets"};
+    std::vector<std::string> files = {"getCompletionsAtPosition5.sts"};
     std::vector<std::string> texts = {R"delimiter(
 class MyClass1 {
   public myProp: number = 0;
@@ -218,7 +218,7 @@ let prop = obj1.yp)delimiter"};
 
 TEST_F(LSPCompletionsTests, MemberCompletionsForClassTest2)
 {
-    std::vector<std::string> files = {"getCompletionsAtPosition6.ets"};
+    std::vector<std::string> files = {"getCompletionsAtPosition6.sts"};
     std::vector<std::string> texts = {R"delimiter(
 namespace space {
   export class classInSpace {

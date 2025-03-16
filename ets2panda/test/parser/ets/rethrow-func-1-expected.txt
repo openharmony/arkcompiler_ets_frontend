@@ -11,12 +11,12 @@
           "start": {
             "line": 16,
             "column": 6,
-            "program": "rethrow-func-1.ets"
+            "program": "rethrow-func-1.sts"
           },
           "end": {
             "line": 16,
             "column": 15,
-            "program": "rethrow-func-1.ets"
+            "program": "rethrow-func-1.sts"
           }
         }
       },
@@ -29,12 +29,12 @@
             "start": {
               "line": 16,
               "column": 24,
-              "program": "rethrow-func-1.ets"
+              "program": "rethrow-func-1.sts"
             },
             "end": {
               "line": 16,
               "column": 28,
-              "program": "rethrow-func-1.ets"
+              "program": "rethrow-func-1.sts"
             }
           }
         },
@@ -43,12 +43,12 @@
           "start": {
             "line": 16,
             "column": 18,
-            "program": "rethrow-func-1.ets"
+            "program": "rethrow-func-1.sts"
           },
           "end": {
             "line": 16,
             "column": 28,
-            "program": "rethrow-func-1.ets"
+            "program": "rethrow-func-1.sts"
           }
         }
       },
@@ -56,12 +56,12 @@
         "start": {
           "line": 16,
           "column": 1,
-          "program": "rethrow-func-1.ets"
+          "program": "rethrow-func-1.sts"
         },
         "end": {
           "line": 16,
           "column": 36,
-          "program": "rethrow-func-1.ets"
+          "program": "rethrow-func-1.sts"
         }
       }
     },
@@ -76,12 +76,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "rethrow-func-1.ets"
+              "program": "rethrow-func-1.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "rethrow-func-1.ets"
+              "program": "rethrow-func-1.sts"
             }
           }
         },
@@ -185,12 +185,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "rethrow-func-1.ets"
+                "program": "rethrow-func-1.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "rethrow-func-1.ets"
+                "program": "rethrow-func-1.sts"
               }
             }
           },
@@ -204,12 +204,12 @@
                 "start": {
                   "line": 18,
                   "column": 10,
-                  "program": "rethrow-func-1.ets"
+                  "program": "rethrow-func-1.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 24,
-                  "program": "rethrow-func-1.ets"
+                  "program": "rethrow-func-1.sts"
                 }
               }
             },
@@ -230,12 +230,12 @@
                     "start": {
                       "line": 18,
                       "column": 10,
-                      "program": "rethrow-func-1.ets"
+                      "program": "rethrow-func-1.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 24,
-                      "program": "rethrow-func-1.ets"
+                      "program": "rethrow-func-1.sts"
                     }
                   }
                 },
@@ -260,12 +260,12 @@
                               "start": {
                                 "line": 18,
                                 "column": 32,
-                                "program": "rethrow-func-1.ets"
+                                "program": "rethrow-func-1.sts"
                               },
                               "end": {
                                 "line": 18,
                                 "column": 41,
-                                "program": "rethrow-func-1.ets"
+                                "program": "rethrow-func-1.sts"
                               }
                             }
                           },
@@ -273,12 +273,12 @@
                             "start": {
                               "line": 18,
                               "column": 32,
-                              "program": "rethrow-func-1.ets"
+                              "program": "rethrow-func-1.sts"
                             },
                             "end": {
                               "line": 18,
                               "column": 42,
-                              "program": "rethrow-func-1.ets"
+                              "program": "rethrow-func-1.sts"
                             }
                           }
                         },
@@ -286,12 +286,12 @@
                           "start": {
                             "line": 18,
                             "column": 32,
-                            "program": "rethrow-func-1.ets"
+                            "program": "rethrow-func-1.sts"
                           },
                           "end": {
                             "line": 18,
                             "column": 42,
-                            "program": "rethrow-func-1.ets"
+                            "program": "rethrow-func-1.sts"
                           }
                         }
                       },
@@ -300,12 +300,12 @@
                         "start": {
                           "line": 18,
                           "column": 25,
-                          "program": "rethrow-func-1.ets"
+                          "program": "rethrow-func-1.sts"
                         },
                         "end": {
                           "line": 18,
                           "column": 42,
-                          "program": "rethrow-func-1.ets"
+                          "program": "rethrow-func-1.sts"
                         }
                       }
                     },
@@ -313,12 +313,12 @@
                       "start": {
                         "line": 18,
                         "column": 25,
-                        "program": "rethrow-func-1.ets"
+                        "program": "rethrow-func-1.sts"
                       },
                       "end": {
                         "line": 18,
                         "column": 42,
-                        "program": "rethrow-func-1.ets"
+                        "program": "rethrow-func-1.sts"
                       }
                     }
                   }
@@ -340,12 +340,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 5,
-                                "program": "rethrow-func-1.ets"
+                                "program": "rethrow-func-1.sts"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 12,
-                                "program": "rethrow-func-1.ets"
+                                "program": "rethrow-func-1.sts"
                               }
                             }
                           },
@@ -357,12 +357,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 13,
-                                "program": "rethrow-func-1.ets"
+                                "program": "rethrow-func-1.sts"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 20,
-                                "program": "rethrow-func-1.ets"
+                                "program": "rethrow-func-1.sts"
                               }
                             }
                           },
@@ -372,12 +372,12 @@
                             "start": {
                               "line": 19,
                               "column": 5,
-                              "program": "rethrow-func-1.ets"
+                              "program": "rethrow-func-1.sts"
                             },
                             "end": {
                               "line": 19,
                               "column": 20,
-                              "program": "rethrow-func-1.ets"
+                              "program": "rethrow-func-1.sts"
                             }
                           }
                         },
@@ -389,12 +389,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 21,
-                                "program": "rethrow-func-1.ets"
+                                "program": "rethrow-func-1.sts"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 46,
-                                "program": "rethrow-func-1.ets"
+                                "program": "rethrow-func-1.sts"
                               }
                             }
                           }
@@ -404,12 +404,12 @@
                           "start": {
                             "line": 19,
                             "column": 5,
-                            "program": "rethrow-func-1.ets"
+                            "program": "rethrow-func-1.sts"
                           },
                           "end": {
                             "line": 19,
                             "column": 47,
-                            "program": "rethrow-func-1.ets"
+                            "program": "rethrow-func-1.sts"
                           }
                         }
                       },
@@ -417,12 +417,12 @@
                         "start": {
                           "line": 19,
                           "column": 5,
-                          "program": "rethrow-func-1.ets"
+                          "program": "rethrow-func-1.sts"
                         },
                         "end": {
                           "line": 19,
                           "column": 47,
-                          "program": "rethrow-func-1.ets"
+                          "program": "rethrow-func-1.sts"
                         }
                       }
                     },
@@ -438,12 +438,12 @@
                             "start": {
                               "line": 20,
                               "column": 5,
-                              "program": "rethrow-func-1.ets"
+                              "program": "rethrow-func-1.sts"
                             },
                             "end": {
                               "line": 20,
                               "column": 10,
-                              "program": "rethrow-func-1.ets"
+                              "program": "rethrow-func-1.sts"
                             }
                           }
                         },
@@ -453,12 +453,12 @@
                           "start": {
                             "line": 20,
                             "column": 5,
-                            "program": "rethrow-func-1.ets"
+                            "program": "rethrow-func-1.sts"
                           },
                           "end": {
                             "line": 20,
                             "column": 12,
-                            "program": "rethrow-func-1.ets"
+                            "program": "rethrow-func-1.sts"
                           }
                         }
                       },
@@ -466,12 +466,12 @@
                         "start": {
                           "line": 20,
                           "column": 5,
-                          "program": "rethrow-func-1.ets"
+                          "program": "rethrow-func-1.sts"
                         },
                         "end": {
                           "line": 20,
                           "column": 12,
-                          "program": "rethrow-func-1.ets"
+                          "program": "rethrow-func-1.sts"
                         }
                       }
                     }
@@ -480,12 +480,12 @@
                     "start": {
                       "line": 18,
                       "column": 52,
-                      "program": "rethrow-func-1.ets"
+                      "program": "rethrow-func-1.sts"
                     },
                     "end": {
                       "line": 21,
                       "column": 2,
-                      "program": "rethrow-func-1.ets"
+                      "program": "rethrow-func-1.sts"
                     }
                   }
                 },
@@ -494,12 +494,12 @@
                   "start": {
                     "line": 18,
                     "column": 10,
-                    "program": "rethrow-func-1.ets"
+                    "program": "rethrow-func-1.sts"
                   },
                   "end": {
                     "line": 21,
                     "column": 2,
-                    "program": "rethrow-func-1.ets"
+                    "program": "rethrow-func-1.sts"
                   }
                 }
               },
@@ -507,12 +507,12 @@
                 "start": {
                   "line": 18,
                   "column": 10,
-                  "program": "rethrow-func-1.ets"
+                  "program": "rethrow-func-1.sts"
                 },
                 "end": {
                   "line": 21,
                   "column": 2,
-                  "program": "rethrow-func-1.ets"
+                  "program": "rethrow-func-1.sts"
                 }
               }
             },
@@ -522,12 +522,12 @@
               "start": {
                 "line": 18,
                 "column": 1,
-                "program": "rethrow-func-1.ets"
+                "program": "rethrow-func-1.sts"
               },
               "end": {
                 "line": 21,
                 "column": 2,
-                "program": "rethrow-func-1.ets"
+                "program": "rethrow-func-1.sts"
               }
             }
           },
@@ -541,12 +541,12 @@
                 "start": {
                   "line": 23,
                   "column": 10,
-                  "program": "rethrow-func-1.ets"
+                  "program": "rethrow-func-1.sts"
                 },
                 "end": {
                   "line": 23,
                   "column": 14,
-                  "program": "rethrow-func-1.ets"
+                  "program": "rethrow-func-1.sts"
                 }
               }
             },
@@ -567,12 +567,12 @@
                     "start": {
                       "line": 23,
                       "column": 10,
-                      "program": "rethrow-func-1.ets"
+                      "program": "rethrow-func-1.sts"
                     },
                     "end": {
                       "line": 23,
                       "column": 14,
-                      "program": "rethrow-func-1.ets"
+                      "program": "rethrow-func-1.sts"
                     }
                   }
                 },
@@ -586,12 +586,12 @@
                     "start": {
                       "line": 23,
                       "column": 18,
-                      "program": "rethrow-func-1.ets"
+                      "program": "rethrow-func-1.sts"
                     },
                     "end": {
                       "line": 23,
                       "column": 22,
-                      "program": "rethrow-func-1.ets"
+                      "program": "rethrow-func-1.sts"
                     }
                   }
                 },
@@ -618,12 +618,12 @@
                                     "start": {
                                       "line": 24,
                                       "column": 17,
-                                      "program": "rethrow-func-1.ets"
+                                      "program": "rethrow-func-1.sts"
                                     },
                                     "end": {
                                       "line": 24,
                                       "column": 26,
-                                      "program": "rethrow-func-1.ets"
+                                      "program": "rethrow-func-1.sts"
                                     }
                                   }
                                 },
@@ -631,12 +631,12 @@
                                   "start": {
                                     "line": 24,
                                     "column": 17,
-                                    "program": "rethrow-func-1.ets"
+                                    "program": "rethrow-func-1.sts"
                                   },
                                   "end": {
                                     "line": 24,
                                     "column": 28,
-                                    "program": "rethrow-func-1.ets"
+                                    "program": "rethrow-func-1.sts"
                                   }
                                 }
                               },
@@ -644,12 +644,12 @@
                                 "start": {
                                   "line": 24,
                                   "column": 17,
-                                  "program": "rethrow-func-1.ets"
+                                  "program": "rethrow-func-1.sts"
                                 },
                                 "end": {
                                   "line": 24,
                                   "column": 28,
-                                  "program": "rethrow-func-1.ets"
+                                  "program": "rethrow-func-1.sts"
                                 }
                               }
                             },
@@ -658,12 +658,12 @@
                               "start": {
                                 "line": 24,
                                 "column": 9,
-                                "program": "rethrow-func-1.ets"
+                                "program": "rethrow-func-1.sts"
                               },
                               "end": {
                                 "line": 24,
                                 "column": 15,
-                                "program": "rethrow-func-1.ets"
+                                "program": "rethrow-func-1.sts"
                               }
                             }
                           },
@@ -682,12 +682,12 @@
                                   "start": {
                                     "line": 24,
                                     "column": 33,
-                                    "program": "rethrow-func-1.ets"
+                                    "program": "rethrow-func-1.sts"
                                   },
                                   "end": {
                                     "line": 24,
                                     "column": 37,
-                                    "program": "rethrow-func-1.ets"
+                                    "program": "rethrow-func-1.sts"
                                   }
                                 }
                               },
@@ -708,12 +708,12 @@
                                             "start": {
                                               "line": 25,
                                               "column": 9,
-                                              "program": "rethrow-func-1.ets"
+                                              "program": "rethrow-func-1.sts"
                                             },
                                             "end": {
                                               "line": 25,
                                               "column": 16,
-                                              "program": "rethrow-func-1.ets"
+                                              "program": "rethrow-func-1.sts"
                                             }
                                           }
                                         },
@@ -725,12 +725,12 @@
                                             "start": {
                                               "line": 25,
                                               "column": 17,
-                                              "program": "rethrow-func-1.ets"
+                                              "program": "rethrow-func-1.sts"
                                             },
                                             "end": {
                                               "line": 25,
                                               "column": 24,
-                                              "program": "rethrow-func-1.ets"
+                                              "program": "rethrow-func-1.sts"
                                             }
                                           }
                                         },
@@ -740,12 +740,12 @@
                                           "start": {
                                             "line": 25,
                                             "column": 9,
-                                            "program": "rethrow-func-1.ets"
+                                            "program": "rethrow-func-1.sts"
                                           },
                                           "end": {
                                             "line": 25,
                                             "column": 24,
-                                            "program": "rethrow-func-1.ets"
+                                            "program": "rethrow-func-1.sts"
                                           }
                                         }
                                       },
@@ -757,12 +757,12 @@
                                             "start": {
                                               "line": 25,
                                               "column": 25,
-                                              "program": "rethrow-func-1.ets"
+                                              "program": "rethrow-func-1.sts"
                                             },
                                             "end": {
                                               "line": 25,
                                               "column": 42,
-                                              "program": "rethrow-func-1.ets"
+                                              "program": "rethrow-func-1.sts"
                                             }
                                           }
                                         }
@@ -772,12 +772,12 @@
                                         "start": {
                                           "line": 25,
                                           "column": 9,
-                                          "program": "rethrow-func-1.ets"
+                                          "program": "rethrow-func-1.sts"
                                         },
                                         "end": {
                                           "line": 25,
                                           "column": 43,
-                                          "program": "rethrow-func-1.ets"
+                                          "program": "rethrow-func-1.sts"
                                         }
                                       }
                                     },
@@ -785,12 +785,12 @@
                                       "start": {
                                         "line": 25,
                                         "column": 9,
-                                        "program": "rethrow-func-1.ets"
+                                        "program": "rethrow-func-1.sts"
                                       },
                                       "end": {
                                         "line": 25,
                                         "column": 43,
-                                        "program": "rethrow-func-1.ets"
+                                        "program": "rethrow-func-1.sts"
                                       }
                                     }
                                   },
@@ -807,12 +807,12 @@
                                             "start": {
                                               "line": 26,
                                               "column": 13,
-                                              "program": "rethrow-func-1.ets"
+                                              "program": "rethrow-func-1.sts"
                                             },
                                             "end": {
                                               "line": 26,
                                               "column": 14,
-                                              "program": "rethrow-func-1.ets"
+                                              "program": "rethrow-func-1.sts"
                                             }
                                           }
                                         },
@@ -826,12 +826,12 @@
                                               "start": {
                                                 "line": 26,
                                                 "column": 17,
-                                                "program": "rethrow-func-1.ets"
+                                                "program": "rethrow-func-1.sts"
                                               },
                                               "end": {
                                                 "line": 26,
                                                 "column": 18,
-                                                "program": "rethrow-func-1.ets"
+                                                "program": "rethrow-func-1.sts"
                                               }
                                             }
                                           },
@@ -842,12 +842,12 @@
                                               "start": {
                                                 "line": 26,
                                                 "column": 21,
-                                                "program": "rethrow-func-1.ets"
+                                                "program": "rethrow-func-1.sts"
                                               },
                                               "end": {
                                                 "line": 26,
                                                 "column": 22,
-                                                "program": "rethrow-func-1.ets"
+                                                "program": "rethrow-func-1.sts"
                                               }
                                             }
                                           },
@@ -855,12 +855,12 @@
                                             "start": {
                                               "line": 26,
                                               "column": 17,
-                                              "program": "rethrow-func-1.ets"
+                                              "program": "rethrow-func-1.sts"
                                             },
                                             "end": {
                                               "line": 26,
                                               "column": 22,
-                                              "program": "rethrow-func-1.ets"
+                                              "program": "rethrow-func-1.sts"
                                             }
                                           }
                                         },
@@ -868,12 +868,12 @@
                                           "start": {
                                             "line": 26,
                                             "column": 13,
-                                            "program": "rethrow-func-1.ets"
+                                            "program": "rethrow-func-1.sts"
                                           },
                                           "end": {
                                             "line": 26,
                                             "column": 22,
-                                            "program": "rethrow-func-1.ets"
+                                            "program": "rethrow-func-1.sts"
                                           }
                                         }
                                       }
@@ -883,12 +883,12 @@
                                       "start": {
                                         "line": 26,
                                         "column": 9,
-                                        "program": "rethrow-func-1.ets"
+                                        "program": "rethrow-func-1.sts"
                                       },
                                       "end": {
                                         "line": 26,
                                         "column": 22,
-                                        "program": "rethrow-func-1.ets"
+                                        "program": "rethrow-func-1.sts"
                                       }
                                     }
                                   }
@@ -897,12 +897,12 @@
                                   "start": {
                                     "line": 24,
                                     "column": 41,
-                                    "program": "rethrow-func-1.ets"
+                                    "program": "rethrow-func-1.sts"
                                   },
                                   "end": {
                                     "line": 27,
                                     "column": 6,
-                                    "program": "rethrow-func-1.ets"
+                                    "program": "rethrow-func-1.sts"
                                   }
                                 }
                               },
@@ -910,12 +910,12 @@
                                 "start": {
                                   "line": 24,
                                   "column": 29,
-                                  "program": "rethrow-func-1.ets"
+                                  "program": "rethrow-func-1.sts"
                                 },
                                 "end": {
                                   "line": 27,
                                   "column": 6,
-                                  "program": "rethrow-func-1.ets"
+                                  "program": "rethrow-func-1.sts"
                                 }
                               }
                             },
@@ -923,12 +923,12 @@
                               "start": {
                                 "line": 24,
                                 "column": 29,
-                                "program": "rethrow-func-1.ets"
+                                "program": "rethrow-func-1.sts"
                               },
                               "end": {
                                 "line": 27,
                                 "column": 6,
-                                "program": "rethrow-func-1.ets"
+                                "program": "rethrow-func-1.sts"
                               }
                             }
                           },
@@ -936,12 +936,12 @@
                             "start": {
                               "line": 24,
                               "column": 9,
-                              "program": "rethrow-func-1.ets"
+                              "program": "rethrow-func-1.sts"
                             },
                             "end": {
                               "line": 27,
                               "column": 6,
-                              "program": "rethrow-func-1.ets"
+                              "program": "rethrow-func-1.sts"
                             }
                           }
                         }
@@ -951,12 +951,12 @@
                         "start": {
                           "line": 24,
                           "column": 5,
-                          "program": "rethrow-func-1.ets"
+                          "program": "rethrow-func-1.sts"
                         },
                         "end": {
                           "line": 27,
                           "column": 6,
-                          "program": "rethrow-func-1.ets"
+                          "program": "rethrow-func-1.sts"
                         }
                       }
                     },
@@ -977,12 +977,12 @@
                                   "start": {
                                     "line": 29,
                                     "column": 9,
-                                    "program": "rethrow-func-1.ets"
+                                    "program": "rethrow-func-1.sts"
                                   },
                                   "end": {
                                     "line": 29,
                                     "column": 23,
-                                    "program": "rethrow-func-1.ets"
+                                    "program": "rethrow-func-1.sts"
                                   }
                                 }
                               },
@@ -995,12 +995,12 @@
                                     "start": {
                                       "line": 29,
                                       "column": 24,
-                                      "program": "rethrow-func-1.ets"
+                                      "program": "rethrow-func-1.sts"
                                     },
                                     "end": {
                                       "line": 29,
                                       "column": 30,
-                                      "program": "rethrow-func-1.ets"
+                                      "program": "rethrow-func-1.sts"
                                     }
                                   }
                                 }
@@ -1010,12 +1010,12 @@
                                 "start": {
                                   "line": 29,
                                   "column": 9,
-                                  "program": "rethrow-func-1.ets"
+                                  "program": "rethrow-func-1.sts"
                                 },
                                 "end": {
                                   "line": 29,
                                   "column": 31,
-                                  "program": "rethrow-func-1.ets"
+                                  "program": "rethrow-func-1.sts"
                                 }
                               }
                             },
@@ -1023,12 +1023,12 @@
                               "start": {
                                 "line": 29,
                                 "column": 9,
-                                "program": "rethrow-func-1.ets"
+                                "program": "rethrow-func-1.sts"
                               },
                               "end": {
                                 "line": 29,
                                 "column": 32,
-                                "program": "rethrow-func-1.ets"
+                                "program": "rethrow-func-1.sts"
                               }
                             }
                           }
@@ -1037,12 +1037,12 @@
                           "start": {
                             "line": 28,
                             "column": 9,
-                            "program": "rethrow-func-1.ets"
+                            "program": "rethrow-func-1.sts"
                           },
                           "end": {
                             "line": 30,
                             "column": 6,
-                            "program": "rethrow-func-1.ets"
+                            "program": "rethrow-func-1.sts"
                           }
                         }
                       },
@@ -1066,12 +1066,12 @@
                                         "start": {
                                           "line": 31,
                                           "column": 9,
-                                          "program": "rethrow-func-1.ets"
+                                          "program": "rethrow-func-1.sts"
                                         },
                                         "end": {
                                           "line": 31,
                                           "column": 16,
-                                          "program": "rethrow-func-1.ets"
+                                          "program": "rethrow-func-1.sts"
                                         }
                                       }
                                     },
@@ -1083,12 +1083,12 @@
                                         "start": {
                                           "line": 31,
                                           "column": 17,
-                                          "program": "rethrow-func-1.ets"
+                                          "program": "rethrow-func-1.sts"
                                         },
                                         "end": {
                                           "line": 31,
                                           "column": 24,
-                                          "program": "rethrow-func-1.ets"
+                                          "program": "rethrow-func-1.sts"
                                         }
                                       }
                                     },
@@ -1098,12 +1098,12 @@
                                       "start": {
                                         "line": 31,
                                         "column": 9,
-                                        "program": "rethrow-func-1.ets"
+                                        "program": "rethrow-func-1.sts"
                                       },
                                       "end": {
                                         "line": 31,
                                         "column": 24,
-                                        "program": "rethrow-func-1.ets"
+                                        "program": "rethrow-func-1.sts"
                                       }
                                     }
                                   },
@@ -1115,12 +1115,12 @@
                                         "start": {
                                           "line": 31,
                                           "column": 25,
-                                          "program": "rethrow-func-1.ets"
+                                          "program": "rethrow-func-1.sts"
                                         },
                                         "end": {
                                           "line": 31,
                                           "column": 45,
-                                          "program": "rethrow-func-1.ets"
+                                          "program": "rethrow-func-1.sts"
                                         }
                                       }
                                     }
@@ -1130,12 +1130,12 @@
                                     "start": {
                                       "line": 31,
                                       "column": 9,
-                                      "program": "rethrow-func-1.ets"
+                                      "program": "rethrow-func-1.sts"
                                     },
                                     "end": {
                                       "line": 31,
                                       "column": 46,
-                                      "program": "rethrow-func-1.ets"
+                                      "program": "rethrow-func-1.sts"
                                     }
                                   }
                                 },
@@ -1143,12 +1143,12 @@
                                   "start": {
                                     "line": 31,
                                     "column": 9,
-                                    "program": "rethrow-func-1.ets"
+                                    "program": "rethrow-func-1.sts"
                                   },
                                   "end": {
                                     "line": 31,
                                     "column": 46,
-                                    "program": "rethrow-func-1.ets"
+                                    "program": "rethrow-func-1.sts"
                                   }
                                 }
                               }
@@ -1157,12 +1157,12 @@
                               "start": {
                                 "line": 30,
                                 "column": 17,
-                                "program": "rethrow-func-1.ets"
+                                "program": "rethrow-func-1.sts"
                               },
                               "end": {
                                 "line": 32,
                                 "column": 6,
-                                "program": "rethrow-func-1.ets"
+                                "program": "rethrow-func-1.sts"
                               }
                             }
                           },
@@ -1174,12 +1174,12 @@
                               "start": {
                                 "line": 30,
                                 "column": 14,
-                                "program": "rethrow-func-1.ets"
+                                "program": "rethrow-func-1.sts"
                               },
                               "end": {
                                 "line": 30,
                                 "column": 15,
-                                "program": "rethrow-func-1.ets"
+                                "program": "rethrow-func-1.sts"
                               }
                             }
                           },
@@ -1187,12 +1187,12 @@
                             "start": {
                               "line": 30,
                               "column": 7,
-                              "program": "rethrow-func-1.ets"
+                              "program": "rethrow-func-1.sts"
                             },
                             "end": {
                               "line": 32,
                               "column": 6,
-                              "program": "rethrow-func-1.ets"
+                              "program": "rethrow-func-1.sts"
                             }
                           }
                         }
@@ -1202,12 +1202,12 @@
                         "start": {
                           "line": 28,
                           "column": 5,
-                          "program": "rethrow-func-1.ets"
+                          "program": "rethrow-func-1.sts"
                         },
                         "end": {
                           "line": 32,
                           "column": 6,
-                          "program": "rethrow-func-1.ets"
+                          "program": "rethrow-func-1.sts"
                         }
                       }
                     }
@@ -1216,12 +1216,12 @@
                     "start": {
                       "line": 23,
                       "column": 23,
-                      "program": "rethrow-func-1.ets"
+                      "program": "rethrow-func-1.sts"
                     },
                     "end": {
                       "line": 33,
                       "column": 2,
-                      "program": "rethrow-func-1.ets"
+                      "program": "rethrow-func-1.sts"
                     }
                   }
                 },
@@ -1229,12 +1229,12 @@
                   "start": {
                     "line": 23,
                     "column": 10,
-                    "program": "rethrow-func-1.ets"
+                    "program": "rethrow-func-1.sts"
                   },
                   "end": {
                     "line": 33,
                     "column": 2,
-                    "program": "rethrow-func-1.ets"
+                    "program": "rethrow-func-1.sts"
                   }
                 }
               },
@@ -1242,12 +1242,12 @@
                 "start": {
                   "line": 23,
                   "column": 10,
-                  "program": "rethrow-func-1.ets"
+                  "program": "rethrow-func-1.sts"
                 },
                 "end": {
                   "line": 33,
                   "column": 2,
-                  "program": "rethrow-func-1.ets"
+                  "program": "rethrow-func-1.sts"
                 }
               }
             },
@@ -1257,12 +1257,12 @@
               "start": {
                 "line": 23,
                 "column": 1,
-                "program": "rethrow-func-1.ets"
+                "program": "rethrow-func-1.sts"
               },
               "end": {
                 "line": 33,
                 "column": 2,
-                "program": "rethrow-func-1.ets"
+                "program": "rethrow-func-1.sts"
               }
             }
           }
@@ -1271,12 +1271,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "rethrow-func-1.ets"
+            "program": "rethrow-func-1.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "rethrow-func-1.ets"
+            "program": "rethrow-func-1.sts"
           }
         }
       },
@@ -1284,12 +1284,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "rethrow-func-1.ets"
+          "program": "rethrow-func-1.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "rethrow-func-1.ets"
+          "program": "rethrow-func-1.sts"
         }
       }
     }
@@ -1298,12 +1298,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "rethrow-func-1.ets"
+      "program": "rethrow-func-1.sts"
     },
     "end": {
       "line": 34,
       "column": 1,
-      "program": "rethrow-func-1.ets"
+      "program": "rethrow-func-1.sts"
     }
   }
 }

@@ -4,19 +4,19 @@ compiler/ts/memberExpTests.ts
 compiler/ts/objectLiteralAssignability.ts
 
 # Issue: ##20990
-compiler/ets/instanceof_dyndecl_dynvalue.ets
-compiler/ets/instanceof_dyndecl_jsvalue.ets
-compiler/ets/instanceof_x_dyndecl.ets
-compiler/ets/instanceof_x_etstype.ets
-compiler/ets/instanceof_x_object.ets
-parser/ets/dynamic_import_tests/dynamic_decl_import.ets
-parser/ets/dynamic_import_tests/dynamic_iface_decl_bad.ets
+compiler/ets/instanceof_dyndecl_dynvalue.sts
+compiler/ets/instanceof_dyndecl_jsvalue.sts
+compiler/ets/instanceof_x_dyndecl.sts
+compiler/ets/instanceof_x_etstype.sts
+compiler/ets/instanceof_x_object.sts
+parser/ets/dynamic_import_tests/dynamic_decl_import.sts
+parser/ets/dynamic_import_tests/dynamic_iface_decl_bad.sts
 
 
 parser/as/test_class_method.ts
 parser/as/test_class_property.ts
 parser/as/test_decorators4.ts
-parser/ets/dynamic_import_tests/modules/instanceof.ets
+parser/ets/dynamic_import_tests/modules/instanceof.sts
 parser/ts/test-func-param.ts
 parser/ts/test-tuple-type.ts
 parser/ts/test-type-literal.ts

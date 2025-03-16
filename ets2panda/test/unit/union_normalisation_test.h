@@ -91,7 +91,7 @@ public:
         Compiler compiler(options->GetExtension(), options->GetThread());
         SourceFile input(fileName, src, options->IsModule());
         compiler::CompilationUnit unit {input, *options, 0, options->GetExtension(), diagnosticEngine_};
-        auto getPhases = compiler::GetPhaseList(ScriptExtension::ETS);
+        auto getPhases = compiler::GetPhaseList(ScriptExtension::STS);
 
         auto parser =
             Parser(program, unit.options, diagnosticEngine_, static_cast<parser::ParserStatus>(unit.rawParserStatus));

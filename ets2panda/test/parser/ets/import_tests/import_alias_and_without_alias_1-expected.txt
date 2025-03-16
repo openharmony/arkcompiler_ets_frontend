@@ -10,12 +10,12 @@
           "start": {
             "line": 17,
             "column": 22,
-            "program": "import_alias_and_without_alias_1.ets"
+            "program": "import_alias_and_without_alias_1.sts"
           },
           "end": {
             "line": 17,
             "column": 32,
-            "program": "import_alias_and_without_alias_1.ets"
+            "program": "import_alias_and_without_alias_1.sts"
           }
         }
       },
@@ -30,12 +30,12 @@
               "start": {
                 "line": 17,
                 "column": 13,
-                "program": "import_alias_and_without_alias_1.ets"
+                "program": "import_alias_and_without_alias_1.sts"
               },
               "end": {
                 "line": 17,
                 "column": 16,
-                "program": "import_alias_and_without_alias_1.ets"
+                "program": "import_alias_and_without_alias_1.sts"
               }
             }
           },
@@ -43,12 +43,12 @@
             "start": {
               "line": 17,
               "column": 8,
-              "program": "import_alias_and_without_alias_1.ets"
+              "program": "import_alias_and_without_alias_1.sts"
             },
             "end": {
               "line": 17,
               "column": 16,
-              "program": "import_alias_and_without_alias_1.ets"
+              "program": "import_alias_and_without_alias_1.sts"
             }
           }
         }
@@ -57,12 +57,12 @@
         "start": {
           "line": 17,
           "column": 1,
-          "program": "import_alias_and_without_alias_1.ets"
+          "program": "import_alias_and_without_alias_1.sts"
         },
         "end": {
           "line": 17,
           "column": 32,
-          "program": "import_alias_and_without_alias_1.ets"
+          "program": "import_alias_and_without_alias_1.sts"
         }
       }
     },
@@ -75,12 +75,12 @@
           "start": {
             "line": 16,
             "column": 28,
-            "program": "import_alias_and_without_alias_1.ets"
+            "program": "import_alias_and_without_alias_1.sts"
           },
           "end": {
             "line": 16,
             "column": 38,
-            "program": "import_alias_and_without_alias_1.ets"
+            "program": "import_alias_and_without_alias_1.sts"
           }
         }
       },
@@ -95,12 +95,12 @@
               "start": {
                 "line": 16,
                 "column": 16,
-                "program": "import_alias_and_without_alias_1.ets"
+                "program": "import_alias_and_without_alias_1.sts"
               },
               "end": {
                 "line": 16,
                 "column": 20,
-                "program": "import_alias_and_without_alias_1.ets"
+                "program": "import_alias_and_without_alias_1.sts"
               }
             }
           },
@@ -112,12 +112,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "import_alias_and_without_alias_1.ets"
+                "program": "import_alias_and_without_alias_1.sts"
               },
               "end": {
                 "line": 16,
                 "column": 12,
-                "program": "import_alias_and_without_alias_1.ets"
+                "program": "import_alias_and_without_alias_1.sts"
               }
             }
           },
@@ -125,12 +125,12 @@
             "start": {
               "line": 16,
               "column": 9,
-              "program": "import_alias_and_without_alias_1.ets"
+              "program": "import_alias_and_without_alias_1.sts"
             },
             "end": {
               "line": 16,
               "column": 20,
-              "program": "import_alias_and_without_alias_1.ets"
+              "program": "import_alias_and_without_alias_1.sts"
             }
           }
         }
@@ -139,12 +139,12 @@
         "start": {
           "line": 16,
           "column": 1,
-          "program": "import_alias_and_without_alias_1.ets"
+          "program": "import_alias_and_without_alias_1.sts"
         },
         "end": {
           "line": 16,
           "column": 38,
-          "program": "import_alias_and_without_alias_1.ets"
+          "program": "import_alias_and_without_alias_1.sts"
         }
       }
     },
@@ -159,12 +159,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "import_alias_and_without_alias_1.ets"
+              "program": "import_alias_and_without_alias_1.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "import_alias_and_without_alias_1.ets"
+              "program": "import_alias_and_without_alias_1.sts"
             }
           }
         },
@@ -268,12 +268,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "import_alias_and_without_alias_1.ets"
+                "program": "import_alias_and_without_alias_1.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "import_alias_and_without_alias_1.ets"
+                "program": "import_alias_and_without_alias_1.sts"
               }
             }
           },
@@ -287,12 +287,12 @@
                 "start": {
                   "line": 19,
                   "column": 10,
-                  "program": "import_alias_and_without_alias_1.ets"
+                  "program": "import_alias_and_without_alias_1.sts"
                 },
                 "end": {
                   "line": 19,
                   "column": 14,
-                  "program": "import_alias_and_without_alias_1.ets"
+                  "program": "import_alias_and_without_alias_1.sts"
                 }
               }
             },
@@ -313,12 +313,12 @@
                     "start": {
                       "line": 19,
                       "column": 10,
-                      "program": "import_alias_and_without_alias_1.ets"
+                      "program": "import_alias_and_without_alias_1.sts"
                     },
                     "end": {
                       "line": 19,
                       "column": 14,
-                      "program": "import_alias_and_without_alias_1.ets"
+                      "program": "import_alias_and_without_alias_1.sts"
                     }
                   }
                 },
@@ -332,12 +332,12 @@
                     "start": {
                       "line": 19,
                       "column": 17,
-                      "program": "import_alias_and_without_alias_1.ets"
+                      "program": "import_alias_and_without_alias_1.sts"
                     },
                     "end": {
                       "line": 19,
                       "column": 21,
-                      "program": "import_alias_and_without_alias_1.ets"
+                      "program": "import_alias_and_without_alias_1.sts"
                     }
                   }
                 },
@@ -357,12 +357,12 @@
                               "start": {
                                 "line": 20,
                                 "column": 9,
-                                "program": "import_alias_and_without_alias_1.ets"
+                                "program": "import_alias_and_without_alias_1.sts"
                               },
                               "end": {
                                 "line": 20,
                                 "column": 10,
-                                "program": "import_alias_and_without_alias_1.ets"
+                                "program": "import_alias_and_without_alias_1.sts"
                               }
                             }
                           },
@@ -378,12 +378,12 @@
                                   "start": {
                                     "line": 20,
                                     "column": 13,
-                                    "program": "import_alias_and_without_alias_1.ets"
+                                    "program": "import_alias_and_without_alias_1.sts"
                                   },
                                   "end": {
                                     "line": 20,
                                     "column": 16,
-                                    "program": "import_alias_and_without_alias_1.ets"
+                                    "program": "import_alias_and_without_alias_1.sts"
                                   }
                                 }
                               },
@@ -395,12 +395,12 @@
                                   "start": {
                                     "line": 20,
                                     "column": 17,
-                                    "program": "import_alias_and_without_alias_1.ets"
+                                    "program": "import_alias_and_without_alias_1.sts"
                                   },
                                   "end": {
                                     "line": 20,
                                     "column": 20,
-                                    "program": "import_alias_and_without_alias_1.ets"
+                                    "program": "import_alias_and_without_alias_1.sts"
                                   }
                                 }
                               },
@@ -410,12 +410,12 @@
                                 "start": {
                                   "line": 20,
                                   "column": 13,
-                                  "program": "import_alias_and_without_alias_1.ets"
+                                  "program": "import_alias_and_without_alias_1.sts"
                                 },
                                 "end": {
                                   "line": 20,
                                   "column": 20,
-                                  "program": "import_alias_and_without_alias_1.ets"
+                                  "program": "import_alias_and_without_alias_1.sts"
                                 }
                               }
                             },
@@ -427,12 +427,12 @@
                                   "start": {
                                     "line": 20,
                                     "column": 21,
-                                    "program": "import_alias_and_without_alias_1.ets"
+                                    "program": "import_alias_and_without_alias_1.sts"
                                   },
                                   "end": {
                                     "line": 20,
                                     "column": 24,
-                                    "program": "import_alias_and_without_alias_1.ets"
+                                    "program": "import_alias_and_without_alias_1.sts"
                                   }
                                 }
                               }
@@ -442,12 +442,12 @@
                               "start": {
                                 "line": 20,
                                 "column": 13,
-                                "program": "import_alias_and_without_alias_1.ets"
+                                "program": "import_alias_and_without_alias_1.sts"
                               },
                               "end": {
                                 "line": 20,
                                 "column": 25,
-                                "program": "import_alias_and_without_alias_1.ets"
+                                "program": "import_alias_and_without_alias_1.sts"
                               }
                             }
                           },
@@ -455,12 +455,12 @@
                             "start": {
                               "line": 20,
                               "column": 9,
-                              "program": "import_alias_and_without_alias_1.ets"
+                              "program": "import_alias_and_without_alias_1.sts"
                             },
                             "end": {
                               "line": 20,
                               "column": 25,
-                              "program": "import_alias_and_without_alias_1.ets"
+                              "program": "import_alias_and_without_alias_1.sts"
                             }
                           }
                         }
@@ -470,12 +470,12 @@
                         "start": {
                           "line": 20,
                           "column": 5,
-                          "program": "import_alias_and_without_alias_1.ets"
+                          "program": "import_alias_and_without_alias_1.sts"
                         },
                         "end": {
                           "line": 20,
                           "column": 26,
-                          "program": "import_alias_and_without_alias_1.ets"
+                          "program": "import_alias_and_without_alias_1.sts"
                         }
                       }
                     }
@@ -484,12 +484,12 @@
                     "start": {
                       "line": 19,
                       "column": 21,
-                      "program": "import_alias_and_without_alias_1.ets"
+                      "program": "import_alias_and_without_alias_1.sts"
                     },
                     "end": {
                       "line": 21,
                       "column": 2,
-                      "program": "import_alias_and_without_alias_1.ets"
+                      "program": "import_alias_and_without_alias_1.sts"
                     }
                   }
                 },
@@ -497,12 +497,12 @@
                   "start": {
                     "line": 19,
                     "column": 10,
-                    "program": "import_alias_and_without_alias_1.ets"
+                    "program": "import_alias_and_without_alias_1.sts"
                   },
                   "end": {
                     "line": 21,
                     "column": 2,
-                    "program": "import_alias_and_without_alias_1.ets"
+                    "program": "import_alias_and_without_alias_1.sts"
                   }
                 }
               },
@@ -510,12 +510,12 @@
                 "start": {
                   "line": 19,
                   "column": 10,
-                  "program": "import_alias_and_without_alias_1.ets"
+                  "program": "import_alias_and_without_alias_1.sts"
                 },
                 "end": {
                   "line": 21,
                   "column": 2,
-                  "program": "import_alias_and_without_alias_1.ets"
+                  "program": "import_alias_and_without_alias_1.sts"
                 }
               }
             },
@@ -525,12 +525,12 @@
               "start": {
                 "line": 19,
                 "column": 1,
-                "program": "import_alias_and_without_alias_1.ets"
+                "program": "import_alias_and_without_alias_1.sts"
               },
               "end": {
                 "line": 21,
                 "column": 2,
-                "program": "import_alias_and_without_alias_1.ets"
+                "program": "import_alias_and_without_alias_1.sts"
               }
             }
           }
@@ -539,12 +539,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "import_alias_and_without_alias_1.ets"
+            "program": "import_alias_and_without_alias_1.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "import_alias_and_without_alias_1.ets"
+            "program": "import_alias_and_without_alias_1.sts"
           }
         }
       },
@@ -552,12 +552,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "import_alias_and_without_alias_1.ets"
+          "program": "import_alias_and_without_alias_1.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "import_alias_and_without_alias_1.ets"
+          "program": "import_alias_and_without_alias_1.sts"
         }
       }
     }
@@ -566,12 +566,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "import_alias_and_without_alias_1.ets"
+      "program": "import_alias_and_without_alias_1.sts"
     },
     "end": {
       "line": 22,
       "column": 1,
-      "program": "import_alias_and_without_alias_1.ets"
+      "program": "import_alias_and_without_alias_1.sts"
     }
   }
 }

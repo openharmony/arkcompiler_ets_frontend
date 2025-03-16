@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "extended_conditional_expression_not.ets"
+              "program": "extended_conditional_expression_not.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "extended_conditional_expression_not.ets"
+              "program": "extended_conditional_expression_not.sts"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "extended_conditional_expression_not.ets"
+                "program": "extended_conditional_expression_not.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "extended_conditional_expression_not.ets"
+                "program": "extended_conditional_expression_not.sts"
               }
             }
           },
@@ -227,12 +227,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "extended_conditional_expression_not.ets"
+                "program": "extended_conditional_expression_not.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "extended_conditional_expression_not.ets"
+                "program": "extended_conditional_expression_not.sts"
               }
             }
           },
@@ -246,12 +246,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "extended_conditional_expression_not.ets"
+                  "program": "extended_conditional_expression_not.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 11,
-                  "program": "extended_conditional_expression_not.ets"
+                  "program": "extended_conditional_expression_not.sts"
                 }
               }
             },
@@ -272,12 +272,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "extended_conditional_expression_not.ets"
+                      "program": "extended_conditional_expression_not.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 11,
-                      "program": "extended_conditional_expression_not.ets"
+                      "program": "extended_conditional_expression_not.sts"
                     }
                   }
                 },
@@ -302,12 +302,12 @@
                               "start": {
                                 "line": 16,
                                 "column": 15,
-                                "program": "extended_conditional_expression_not.ets"
+                                "program": "extended_conditional_expression_not.sts"
                               },
                               "end": {
                                 "line": 16,
                                 "column": 21,
-                                "program": "extended_conditional_expression_not.ets"
+                                "program": "extended_conditional_expression_not.sts"
                               }
                             }
                           },
@@ -315,12 +315,12 @@
                             "start": {
                               "line": 16,
                               "column": 15,
-                              "program": "extended_conditional_expression_not.ets"
+                              "program": "extended_conditional_expression_not.sts"
                             },
                             "end": {
                               "line": 16,
                               "column": 22,
-                              "program": "extended_conditional_expression_not.ets"
+                              "program": "extended_conditional_expression_not.sts"
                             }
                           }
                         },
@@ -328,12 +328,12 @@
                           "start": {
                             "line": 16,
                             "column": 15,
-                            "program": "extended_conditional_expression_not.ets"
+                            "program": "extended_conditional_expression_not.sts"
                           },
                           "end": {
                             "line": 16,
                             "column": 22,
-                            "program": "extended_conditional_expression_not.ets"
+                            "program": "extended_conditional_expression_not.sts"
                           }
                         }
                       },
@@ -342,12 +342,12 @@
                         "start": {
                           "line": 16,
                           "column": 12,
-                          "program": "extended_conditional_expression_not.ets"
+                          "program": "extended_conditional_expression_not.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 22,
-                          "program": "extended_conditional_expression_not.ets"
+                          "program": "extended_conditional_expression_not.sts"
                         }
                       }
                     },
@@ -355,12 +355,12 @@
                       "start": {
                         "line": 16,
                         "column": 12,
-                        "program": "extended_conditional_expression_not.ets"
+                        "program": "extended_conditional_expression_not.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 22,
-                        "program": "extended_conditional_expression_not.ets"
+                        "program": "extended_conditional_expression_not.sts"
                       }
                     }
                   }
@@ -371,12 +371,12 @@
                     "start": {
                       "line": 16,
                       "column": 24,
-                      "program": "extended_conditional_expression_not.ets"
+                      "program": "extended_conditional_expression_not.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 27,
-                      "program": "extended_conditional_expression_not.ets"
+                      "program": "extended_conditional_expression_not.sts"
                     }
                   }
                 },
@@ -397,12 +397,12 @@
                             "start": {
                               "line": 17,
                               "column": 10,
-                              "program": "extended_conditional_expression_not.ets"
+                              "program": "extended_conditional_expression_not.sts"
                             },
                             "end": {
                               "line": 17,
                               "column": 11,
-                              "program": "extended_conditional_expression_not.ets"
+                              "program": "extended_conditional_expression_not.sts"
                             }
                           }
                         },
@@ -410,12 +410,12 @@
                           "start": {
                             "line": 17,
                             "column": 9,
-                            "program": "extended_conditional_expression_not.ets"
+                            "program": "extended_conditional_expression_not.sts"
                           },
                           "end": {
                             "line": 17,
                             "column": 11,
-                            "program": "extended_conditional_expression_not.ets"
+                            "program": "extended_conditional_expression_not.sts"
                           }
                         }
                       },
@@ -431,12 +431,12 @@
                                 "start": {
                                   "line": 18,
                                   "column": 16,
-                                  "program": "extended_conditional_expression_not.ets"
+                                  "program": "extended_conditional_expression_not.sts"
                                 },
                                 "end": {
                                   "line": 18,
                                   "column": 17,
-                                  "program": "extended_conditional_expression_not.ets"
+                                  "program": "extended_conditional_expression_not.sts"
                                 }
                               }
                             },
@@ -444,12 +444,12 @@
                               "start": {
                                 "line": 18,
                                 "column": 9,
-                                "program": "extended_conditional_expression_not.ets"
+                                "program": "extended_conditional_expression_not.sts"
                               },
                               "end": {
                                 "line": 18,
                                 "column": 18,
-                                "program": "extended_conditional_expression_not.ets"
+                                "program": "extended_conditional_expression_not.sts"
                               }
                             }
                           }
@@ -458,12 +458,12 @@
                           "start": {
                             "line": 17,
                             "column": 13,
-                            "program": "extended_conditional_expression_not.ets"
+                            "program": "extended_conditional_expression_not.sts"
                           },
                           "end": {
                             "line": 19,
                             "column": 6,
-                            "program": "extended_conditional_expression_not.ets"
+                            "program": "extended_conditional_expression_not.sts"
                           }
                         }
                       },
@@ -472,12 +472,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "extended_conditional_expression_not.ets"
+                          "program": "extended_conditional_expression_not.sts"
                         },
                         "end": {
                           "line": 19,
                           "column": 6,
-                          "program": "extended_conditional_expression_not.ets"
+                          "program": "extended_conditional_expression_not.sts"
                         }
                       }
                     },
@@ -490,12 +490,12 @@
                           "start": {
                             "line": 20,
                             "column": 12,
-                            "program": "extended_conditional_expression_not.ets"
+                            "program": "extended_conditional_expression_not.sts"
                           },
                           "end": {
                             "line": 20,
                             "column": 13,
-                            "program": "extended_conditional_expression_not.ets"
+                            "program": "extended_conditional_expression_not.sts"
                           }
                         }
                       },
@@ -503,12 +503,12 @@
                         "start": {
                           "line": 20,
                           "column": 5,
-                          "program": "extended_conditional_expression_not.ets"
+                          "program": "extended_conditional_expression_not.sts"
                         },
                         "end": {
                           "line": 20,
                           "column": 14,
-                          "program": "extended_conditional_expression_not.ets"
+                          "program": "extended_conditional_expression_not.sts"
                         }
                       }
                     }
@@ -517,12 +517,12 @@
                     "start": {
                       "line": 16,
                       "column": 28,
-                      "program": "extended_conditional_expression_not.ets"
+                      "program": "extended_conditional_expression_not.sts"
                     },
                     "end": {
                       "line": 21,
                       "column": 2,
-                      "program": "extended_conditional_expression_not.ets"
+                      "program": "extended_conditional_expression_not.sts"
                     }
                   }
                 },
@@ -530,12 +530,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "extended_conditional_expression_not.ets"
+                    "program": "extended_conditional_expression_not.sts"
                   },
                   "end": {
                     "line": 21,
                     "column": 2,
-                    "program": "extended_conditional_expression_not.ets"
+                    "program": "extended_conditional_expression_not.sts"
                   }
                 }
               },
@@ -543,12 +543,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "extended_conditional_expression_not.ets"
+                  "program": "extended_conditional_expression_not.sts"
                 },
                 "end": {
                   "line": 21,
                   "column": 2,
-                  "program": "extended_conditional_expression_not.ets"
+                  "program": "extended_conditional_expression_not.sts"
                 }
               }
             },
@@ -558,12 +558,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "extended_conditional_expression_not.ets"
+                "program": "extended_conditional_expression_not.sts"
               },
               "end": {
                 "line": 21,
                 "column": 2,
-                "program": "extended_conditional_expression_not.ets"
+                "program": "extended_conditional_expression_not.sts"
               }
             }
           }
@@ -572,12 +572,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "extended_conditional_expression_not.ets"
+            "program": "extended_conditional_expression_not.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "extended_conditional_expression_not.ets"
+            "program": "extended_conditional_expression_not.sts"
           }
         }
       },
@@ -585,12 +585,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "extended_conditional_expression_not.ets"
+          "program": "extended_conditional_expression_not.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "extended_conditional_expression_not.ets"
+          "program": "extended_conditional_expression_not.sts"
         }
       }
     }
@@ -599,12 +599,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "extended_conditional_expression_not.ets"
+      "program": "extended_conditional_expression_not.sts"
     },
     "end": {
       "line": 22,
       "column": 1,
-      "program": "extended_conditional_expression_not.ets"
+      "program": "extended_conditional_expression_not.sts"
     }
   }
 }

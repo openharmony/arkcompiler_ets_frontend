@@ -1,0 +1,107 @@
+/*
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+type PropDecorator = (target: any, propertyKey: any) => void;
+type PropDecoratorCall = ((val: string) => PropDecorator);
+type PropDecoratorWithCall = PropDecorator & PropDecoratorCall;
+
+let Builder: PropDecorator;
+let BuilderParam: PropDecorator;
+let Component: PropDecorator = (x, y) => {};
+let Consume: PropDecoratorWithCall;
+let Entry: PropDecoratorWithCall = () => ((x, y) => {});
+let Link: PropDecorator;
+let LocalStorageLink: PropDecoratorCall;
+let LocalStorageProp: PropDecoratorCall;
+let ObjectLink: PropDecorator;
+let Observed: PropDecorator = (x, y) => {};
+let Prop: PropDecorator;
+let Provide: PropDecoratorWithCall;
+let State: PropDecorator;
+let StorageLink: PropDecoratorCall;
+let StorageProp: PropDecoratorCall;
+let Styles: PropDecorator;
+let Watch: PropDecoratorCall;
+let Concurrent: PropDecorator = (x, y) => {};
+
+let InvalidDecorator: PropDecorator = (x, y) => {};
+let InvalidDecoratorWithCall: PropDecoratorWithCall = () => ((x, y) => {});
+
+@Observed class Person {
+  name: string;
+  age: number;
+}
+
+@Component
+class PersonView {
+  @BuilderParam
+  builderParam: number;
+
+  @Consume
+  @Consume('1')
+  consume: string;
+
+  @Link
+  link: number;
+  
+  @LocalStorageLink('2')
+  @LocalStorageProp('3')
+  localStorage: string;
+  
+  @ObjectLink
+  objLink: string;
+
+  @Prop
+  prop: string;
+
+  @Provide
+  @Provide('4')
+  provide: number;
+  
+  @State
+  state: number;
+  
+  @StorageLink('5')
+  @StorageProp('6')
+  storage: string;
+
+  @Styles
+  style: string;
+  
+  @Watch('7')
+  watch: number;
+  
+  @Builder
+  foo() {}
+}
+
+@Entry
+@Component
+class PageEntry {
+  @InvalidDecorator
+  invalid: string;
+
+  @Builder
+  @InvalidDecoratorWithCall('10')
+  bar() {}
+}
+
+@InvalidDecorator
+class C {}
+
+@Concurrent
+class ConcurrentArray {
+  data: Object[];
+}

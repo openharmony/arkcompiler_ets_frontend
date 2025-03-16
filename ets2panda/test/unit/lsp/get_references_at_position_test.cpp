@@ -62,7 +62,7 @@ public:
 
 TEST_F(LSPGetReferencesAtPositionTests, GetReferencesAtPosition1)
 {
-    std::vector<std::string> files = {"references1.ets"};
+    std::vector<std::string> files = {"references1.sts"};
     std::vector<std::string> texts = {R"(let a = 1;;)"};
     auto filePaths = CreateTempFile(files, texts);
     size_t const expectedFileCount = 1;
@@ -83,7 +83,7 @@ TEST_F(LSPGetReferencesAtPositionTests, GetReferencesAtPosition1)
 
 TEST_F(LSPGetReferencesAtPositionTests, GetReferencesAtPosition2)
 {
-    std::vector<std::string> files = {"references2.ets", "references3.ets"};
+    std::vector<std::string> files = {"references2.sts", "references3.sts"};
     std::vector<std::string> texts = {R"(export let a = 1;
 let b = a;
 function C() {
@@ -117,7 +117,7 @@ console.log(a);)"};
 
 TEST_F(LSPGetReferencesAtPositionTests, GetReferencesAtPosition3)
 {
-    std::vector<std::string> files = {"references4.ets", "references5.ets"};
+    std::vector<std::string> files = {"references4.sts", "references5.sts"};
     std::vector<std::string> texts = {R"(export function A(){};)", R"(import {A} from './references4';
 A();)"};
     auto filePaths = CreateTempFile(files, texts);

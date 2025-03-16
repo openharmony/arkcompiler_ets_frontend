@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "A.ets"
+              "program": "A.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "A.ets"
+              "program": "A.sts"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "A.ets"
+                "program": "A.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "A.ets"
+                "program": "A.sts"
               }
             }
           },
@@ -195,12 +195,12 @@
                             "start": {
                               "line": 16,
                               "column": 12,
-                              "program": "A.ets"
+                              "program": "A.sts"
                             },
                             "end": {
                               "line": 16,
                               "column": 15,
-                              "program": "A.ets"
+                              "program": "A.sts"
                             }
                           }
                         },
@@ -211,12 +211,12 @@
                             "start": {
                               "line": 16,
                               "column": 26,
-                              "program": "A.ets"
+                              "program": "A.sts"
                             },
                             "end": {
                               "line": 16,
                               "column": 31,
-                              "program": "A.ets"
+                              "program": "A.sts"
                             }
                           }
                         },
@@ -224,12 +224,12 @@
                           "start": {
                             "line": 16,
                             "column": 12,
-                            "program": "A.ets"
+                            "program": "A.sts"
                           },
                           "end": {
                             "line": 16,
                             "column": 31,
-                            "program": "A.ets"
+                            "program": "A.sts"
                           }
                         }
                       },
@@ -237,12 +237,12 @@
                         "start": {
                           "line": 16,
                           "column": 12,
-                          "program": "A.ets"
+                          "program": "A.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 31,
-                          "program": "A.ets"
+                          "program": "A.sts"
                         }
                       }
                     }
@@ -292,12 +292,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "A.ets"
+                "program": "A.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "A.ets"
+                "program": "A.sts"
               }
             }
           },
@@ -311,12 +311,12 @@
                 "start": {
                   "line": 16,
                   "column": 12,
-                  "program": "A.ets"
+                  "program": "A.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 15,
-                  "program": "A.ets"
+                  "program": "A.sts"
                 }
               }
             },
@@ -338,12 +338,12 @@
                     "start": {
                       "line": 16,
                       "column": 17,
-                      "program": "A.ets"
+                      "program": "A.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 23,
-                      "program": "A.ets"
+                      "program": "A.sts"
                     }
                   }
                 },
@@ -351,12 +351,12 @@
                   "start": {
                     "line": 16,
                     "column": 17,
-                    "program": "A.ets"
+                    "program": "A.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 25,
-                    "program": "A.ets"
+                    "program": "A.sts"
                   }
                 }
               },
@@ -364,12 +364,12 @@
                 "start": {
                   "line": 16,
                   "column": 17,
-                  "program": "A.ets"
+                  "program": "A.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 25,
-                  "program": "A.ets"
+                  "program": "A.sts"
                 }
               }
             },
@@ -379,12 +379,12 @@
               "start": {
                 "line": 16,
                 "column": 12,
-                "program": "A.ets"
+                "program": "A.sts"
               },
               "end": {
                 "line": 16,
                 "column": 31,
-                "program": "A.ets"
+                "program": "A.sts"
               }
             }
           }
@@ -393,12 +393,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "A.ets"
+            "program": "A.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "A.ets"
+            "program": "A.sts"
           }
         }
       },
@@ -406,12 +406,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "A.ets"
+          "program": "A.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "A.ets"
+          "program": "A.sts"
         }
       }
     }
@@ -420,12 +420,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "A.ets"
+      "program": "A.sts"
     },
     "end": {
       "line": 17,
       "column": 1,
-      "program": "A.ets"
+      "program": "A.sts"
     }
   }
 }

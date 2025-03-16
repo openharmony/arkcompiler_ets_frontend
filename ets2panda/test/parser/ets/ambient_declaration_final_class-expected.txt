@@ -12,12 +12,12 @@
             "start": {
               "line": 16,
               "column": 21,
-              "program": "ambient_declaration_final_class.ets"
+              "program": "ambient_declaration_final_class.sts"
             },
             "end": {
               "line": 16,
               "column": 22,
-              "program": "ambient_declaration_final_class.ets"
+              "program": "ambient_declaration_final_class.sts"
             }
           }
         },
@@ -34,12 +34,12 @@
                 "start": {
                   "line": 16,
                   "column": 24,
-                  "program": "ambient_declaration_final_class.ets"
+                  "program": "ambient_declaration_final_class.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 24,
-                  "program": "ambient_declaration_final_class.ets"
+                  "program": "ambient_declaration_final_class.sts"
                 }
               }
             },
@@ -59,12 +59,12 @@
                     "start": {
                       "line": 16,
                       "column": 24,
-                      "program": "ambient_declaration_final_class.ets"
+                      "program": "ambient_declaration_final_class.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 24,
-                      "program": "ambient_declaration_final_class.ets"
+                      "program": "ambient_declaration_final_class.sts"
                     }
                   }
                 },
@@ -79,12 +79,12 @@
                     "start": {
                       "line": 16,
                       "column": 24,
-                      "program": "ambient_declaration_final_class.ets"
+                      "program": "ambient_declaration_final_class.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 24,
-                      "program": "ambient_declaration_final_class.ets"
+                      "program": "ambient_declaration_final_class.sts"
                     }
                   }
                 },
@@ -92,12 +92,12 @@
                   "start": {
                     "line": 16,
                     "column": 24,
-                    "program": "ambient_declaration_final_class.ets"
+                    "program": "ambient_declaration_final_class.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 24,
-                    "program": "ambient_declaration_final_class.ets"
+                    "program": "ambient_declaration_final_class.sts"
                   }
                 }
               },
@@ -105,12 +105,12 @@
                 "start": {
                   "line": 16,
                   "column": 24,
-                  "program": "ambient_declaration_final_class.ets"
+                  "program": "ambient_declaration_final_class.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 24,
-                  "program": "ambient_declaration_final_class.ets"
+                  "program": "ambient_declaration_final_class.sts"
                 }
               }
             },
@@ -134,12 +134,12 @@
           "start": {
             "line": 16,
             "column": 23,
-            "program": "ambient_declaration_final_class.ets"
+            "program": "ambient_declaration_final_class.sts"
           },
           "end": {
             "line": 17,
             "column": 1,
-            "program": "ambient_declaration_final_class.ets"
+            "program": "ambient_declaration_final_class.sts"
           }
         }
       },
@@ -147,12 +147,12 @@
         "start": {
           "line": 16,
           "column": 15,
-          "program": "ambient_declaration_final_class.ets"
+          "program": "ambient_declaration_final_class.sts"
         },
         "end": {
           "line": 17,
           "column": 1,
-          "program": "ambient_declaration_final_class.ets"
+          "program": "ambient_declaration_final_class.sts"
         }
       }
     },
@@ -167,12 +167,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "ambient_declaration_final_class.ets"
+              "program": "ambient_declaration_final_class.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "ambient_declaration_final_class.ets"
+              "program": "ambient_declaration_final_class.sts"
             }
           }
         },
@@ -183,12 +183,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "ambient_declaration_final_class.ets"
+            "program": "ambient_declaration_final_class.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "ambient_declaration_final_class.ets"
+            "program": "ambient_declaration_final_class.sts"
           }
         }
       },
@@ -196,12 +196,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "ambient_declaration_final_class.ets"
+          "program": "ambient_declaration_final_class.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "ambient_declaration_final_class.ets"
+          "program": "ambient_declaration_final_class.sts"
         }
       }
     }
@@ -210,12 +210,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "ambient_declaration_final_class.ets"
+      "program": "ambient_declaration_final_class.sts"
     },
     "end": {
       "line": 17,
       "column": 1,
-      "program": "ambient_declaration_final_class.ets"
+      "program": "ambient_declaration_final_class.sts"
     }
   }
 }

@@ -12,12 +12,12 @@
             "start": {
               "line": 16,
               "column": 7,
-              "program": "switchStatementBoxing.ets"
+              "program": "switchStatementBoxing.sts"
             },
             "end": {
               "line": 16,
               "column": 8,
-              "program": "switchStatementBoxing.ets"
+              "program": "switchStatementBoxing.sts"
             }
           }
         },
@@ -34,12 +34,12 @@
                 "start": {
                   "line": 17,
                   "column": 5,
-                  "program": "switchStatementBoxing.ets"
+                  "program": "switchStatementBoxing.sts"
                 },
                 "end": {
                   "line": 17,
                   "column": 8,
-                  "program": "switchStatementBoxing.ets"
+                  "program": "switchStatementBoxing.sts"
                 }
               }
             },
@@ -60,12 +60,12 @@
                     "start": {
                       "line": 17,
                       "column": 5,
-                      "program": "switchStatementBoxing.ets"
+                      "program": "switchStatementBoxing.sts"
                     },
                     "end": {
                       "line": 17,
                       "column": 8,
-                      "program": "switchStatementBoxing.ets"
+                      "program": "switchStatementBoxing.sts"
                     }
                   }
                 },
@@ -79,12 +79,12 @@
                     "start": {
                       "line": 17,
                       "column": 12,
-                      "program": "switchStatementBoxing.ets"
+                      "program": "switchStatementBoxing.sts"
                     },
                     "end": {
                       "line": 17,
                       "column": 16,
-                      "program": "switchStatementBoxing.ets"
+                      "program": "switchStatementBoxing.sts"
                     }
                   }
                 },
@@ -111,12 +111,12 @@
                                     "start": {
                                       "line": 18,
                                       "column": 16,
-                                      "program": "switchStatementBoxing.ets"
+                                      "program": "switchStatementBoxing.sts"
                                     },
                                     "end": {
                                       "line": 18,
                                       "column": 19,
-                                      "program": "switchStatementBoxing.ets"
+                                      "program": "switchStatementBoxing.sts"
                                     }
                                   }
                                 },
@@ -124,12 +124,12 @@
                                   "start": {
                                     "line": 18,
                                     "column": 16,
-                                    "program": "switchStatementBoxing.ets"
+                                    "program": "switchStatementBoxing.sts"
                                   },
                                   "end": {
                                     "line": 18,
                                     "column": 21,
-                                    "program": "switchStatementBoxing.ets"
+                                    "program": "switchStatementBoxing.sts"
                                   }
                                 }
                               },
@@ -137,12 +137,12 @@
                                 "start": {
                                   "line": 18,
                                   "column": 16,
-                                  "program": "switchStatementBoxing.ets"
+                                  "program": "switchStatementBoxing.sts"
                                 },
                                 "end": {
                                   "line": 18,
                                   "column": 21,
-                                  "program": "switchStatementBoxing.ets"
+                                  "program": "switchStatementBoxing.sts"
                                 }
                               }
                             },
@@ -151,12 +151,12 @@
                               "start": {
                                 "line": 18,
                                 "column": 13,
-                                "program": "switchStatementBoxing.ets"
+                                "program": "switchStatementBoxing.sts"
                               },
                               "end": {
                                 "line": 18,
                                 "column": 14,
-                                "program": "switchStatementBoxing.ets"
+                                "program": "switchStatementBoxing.sts"
                               }
                             }
                           },
@@ -167,12 +167,12 @@
                               "start": {
                                 "line": 18,
                                 "column": 22,
-                                "program": "switchStatementBoxing.ets"
+                                "program": "switchStatementBoxing.sts"
                               },
                               "end": {
                                 "line": 18,
                                 "column": 28,
-                                "program": "switchStatementBoxing.ets"
+                                "program": "switchStatementBoxing.sts"
                               }
                             }
                           },
@@ -180,12 +180,12 @@
                             "start": {
                               "line": 18,
                               "column": 13,
-                              "program": "switchStatementBoxing.ets"
+                              "program": "switchStatementBoxing.sts"
                             },
                             "end": {
                               "line": 18,
                               "column": 28,
-                              "program": "switchStatementBoxing.ets"
+                              "program": "switchStatementBoxing.sts"
                             }
                           }
                         }
@@ -195,12 +195,12 @@
                         "start": {
                           "line": 18,
                           "column": 9,
-                          "program": "switchStatementBoxing.ets"
+                          "program": "switchStatementBoxing.sts"
                         },
                         "end": {
                           "line": 18,
                           "column": 29,
-                          "program": "switchStatementBoxing.ets"
+                          "program": "switchStatementBoxing.sts"
                         }
                       }
                     },
@@ -218,12 +218,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 18,
-                                  "program": "switchStatementBoxing.ets"
+                                  "program": "switchStatementBoxing.sts"
                                 },
                                 "end": {
                                   "line": 19,
                                   "column": 22,
-                                  "program": "switchStatementBoxing.ets"
+                                  "program": "switchStatementBoxing.sts"
                                 }
                               }
                             },
@@ -232,12 +232,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 15,
-                                "program": "switchStatementBoxing.ets"
+                                "program": "switchStatementBoxing.sts"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 16,
-                                "program": "switchStatementBoxing.ets"
+                                "program": "switchStatementBoxing.sts"
                               }
                             }
                           },
@@ -248,12 +248,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 25,
-                                "program": "switchStatementBoxing.ets"
+                                "program": "switchStatementBoxing.sts"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 27,
-                                "program": "switchStatementBoxing.ets"
+                                "program": "switchStatementBoxing.sts"
                               }
                             }
                           },
@@ -261,12 +261,12 @@
                             "start": {
                               "line": 19,
                               "column": 15,
-                              "program": "switchStatementBoxing.ets"
+                              "program": "switchStatementBoxing.sts"
                             },
                             "end": {
                               "line": 19,
                               "column": 27,
-                              "program": "switchStatementBoxing.ets"
+                              "program": "switchStatementBoxing.sts"
                             }
                           }
                         }
@@ -276,12 +276,12 @@
                         "start": {
                           "line": 19,
                           "column": 9,
-                          "program": "switchStatementBoxing.ets"
+                          "program": "switchStatementBoxing.sts"
                         },
                         "end": {
                           "line": 19,
                           "column": 28,
-                          "program": "switchStatementBoxing.ets"
+                          "program": "switchStatementBoxing.sts"
                         }
                       }
                     },
@@ -295,12 +295,12 @@
                           "start": {
                             "line": 20,
                             "column": 16,
-                            "program": "switchStatementBoxing.ets"
+                            "program": "switchStatementBoxing.sts"
                           },
                           "end": {
                             "line": 20,
                             "column": 17,
-                            "program": "switchStatementBoxing.ets"
+                            "program": "switchStatementBoxing.sts"
                           }
                         }
                       },
@@ -315,12 +315,12 @@
                               "start": {
                                 "line": 21,
                                 "column": 18,
-                                "program": "switchStatementBoxing.ets"
+                                "program": "switchStatementBoxing.sts"
                               },
                               "end": {
                                 "line": 21,
                                 "column": 19,
-                                "program": "switchStatementBoxing.ets"
+                                "program": "switchStatementBoxing.sts"
                               }
                             }
                           },
@@ -332,12 +332,12 @@
                                 "start": {
                                   "line": 22,
                                   "column": 17,
-                                  "program": "switchStatementBoxing.ets"
+                                  "program": "switchStatementBoxing.sts"
                                 },
                                 "end": {
                                   "line": 22,
                                   "column": 23,
-                                  "program": "switchStatementBoxing.ets"
+                                  "program": "switchStatementBoxing.sts"
                                 }
                               }
                             }
@@ -346,12 +346,12 @@
                             "start": {
                               "line": 21,
                               "column": 13,
-                              "program": "switchStatementBoxing.ets"
+                              "program": "switchStatementBoxing.sts"
                             },
                             "end": {
                               "line": 22,
                               "column": 23,
-                              "program": "switchStatementBoxing.ets"
+                              "program": "switchStatementBoxing.sts"
                             }
                           }
                         },
@@ -364,12 +364,12 @@
                               "start": {
                                 "line": 23,
                                 "column": 18,
-                                "program": "switchStatementBoxing.ets"
+                                "program": "switchStatementBoxing.sts"
                               },
                               "end": {
                                 "line": 23,
                                 "column": 22,
-                                "program": "switchStatementBoxing.ets"
+                                "program": "switchStatementBoxing.sts"
                               }
                             }
                           },
@@ -378,12 +378,12 @@
                             "start": {
                               "line": 23,
                               "column": 13,
-                              "program": "switchStatementBoxing.ets"
+                              "program": "switchStatementBoxing.sts"
                             },
                             "end": {
                               "line": 23,
                               "column": 23,
-                              "program": "switchStatementBoxing.ets"
+                              "program": "switchStatementBoxing.sts"
                             }
                           }
                         }
@@ -392,12 +392,12 @@
                         "start": {
                           "line": 20,
                           "column": 9,
-                          "program": "switchStatementBoxing.ets"
+                          "program": "switchStatementBoxing.sts"
                         },
                         "end": {
                           "line": 24,
                           "column": 10,
-                          "program": "switchStatementBoxing.ets"
+                          "program": "switchStatementBoxing.sts"
                         }
                       }
                     }
@@ -406,12 +406,12 @@
                     "start": {
                       "line": 17,
                       "column": 16,
-                      "program": "switchStatementBoxing.ets"
+                      "program": "switchStatementBoxing.sts"
                     },
                     "end": {
                       "line": 25,
                       "column": 6,
-                      "program": "switchStatementBoxing.ets"
+                      "program": "switchStatementBoxing.sts"
                     }
                   }
                 },
@@ -419,12 +419,12 @@
                   "start": {
                     "line": 17,
                     "column": 8,
-                    "program": "switchStatementBoxing.ets"
+                    "program": "switchStatementBoxing.sts"
                   },
                   "end": {
                     "line": 25,
                     "column": 6,
-                    "program": "switchStatementBoxing.ets"
+                    "program": "switchStatementBoxing.sts"
                   }
                 }
               },
@@ -432,12 +432,12 @@
                 "start": {
                   "line": 17,
                   "column": 8,
-                  "program": "switchStatementBoxing.ets"
+                  "program": "switchStatementBoxing.sts"
                 },
                 "end": {
                   "line": 25,
                   "column": 6,
-                  "program": "switchStatementBoxing.ets"
+                  "program": "switchStatementBoxing.sts"
                 }
               }
             },
@@ -447,12 +447,12 @@
               "start": {
                 "line": 17,
                 "column": 5,
-                "program": "switchStatementBoxing.ets"
+                "program": "switchStatementBoxing.sts"
               },
               "end": {
                 "line": 25,
                 "column": 6,
-                "program": "switchStatementBoxing.ets"
+                "program": "switchStatementBoxing.sts"
               }
             }
           },
@@ -466,12 +466,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "switchStatementBoxing.ets"
+                  "program": "switchStatementBoxing.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 10,
-                  "program": "switchStatementBoxing.ets"
+                  "program": "switchStatementBoxing.sts"
                 }
               }
             },
@@ -491,12 +491,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "switchStatementBoxing.ets"
+                      "program": "switchStatementBoxing.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 10,
-                      "program": "switchStatementBoxing.ets"
+                      "program": "switchStatementBoxing.sts"
                     }
                   }
                 },
@@ -511,12 +511,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "switchStatementBoxing.ets"
+                      "program": "switchStatementBoxing.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 10,
-                      "program": "switchStatementBoxing.ets"
+                      "program": "switchStatementBoxing.sts"
                     }
                   }
                 },
@@ -524,12 +524,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "switchStatementBoxing.ets"
+                    "program": "switchStatementBoxing.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 10,
-                    "program": "switchStatementBoxing.ets"
+                    "program": "switchStatementBoxing.sts"
                   }
                 }
               },
@@ -537,12 +537,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "switchStatementBoxing.ets"
+                  "program": "switchStatementBoxing.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 10,
-                  "program": "switchStatementBoxing.ets"
+                  "program": "switchStatementBoxing.sts"
                 }
               }
             },
@@ -566,12 +566,12 @@
           "start": {
             "line": 16,
             "column": 9,
-            "program": "switchStatementBoxing.ets"
+            "program": "switchStatementBoxing.sts"
           },
           "end": {
             "line": 27,
             "column": 1,
-            "program": "switchStatementBoxing.ets"
+            "program": "switchStatementBoxing.sts"
           }
         }
       },
@@ -579,12 +579,12 @@
         "start": {
           "line": 16,
           "column": 1,
-          "program": "switchStatementBoxing.ets"
+          "program": "switchStatementBoxing.sts"
         },
         "end": {
           "line": 27,
           "column": 1,
-          "program": "switchStatementBoxing.ets"
+          "program": "switchStatementBoxing.sts"
         }
       }
     },
@@ -599,12 +599,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "switchStatementBoxing.ets"
+              "program": "switchStatementBoxing.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "switchStatementBoxing.ets"
+              "program": "switchStatementBoxing.sts"
             }
           }
         },
@@ -708,12 +708,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "switchStatementBoxing.ets"
+                "program": "switchStatementBoxing.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "switchStatementBoxing.ets"
+                "program": "switchStatementBoxing.sts"
               }
             }
           },
@@ -814,12 +814,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "switchStatementBoxing.ets"
+                "program": "switchStatementBoxing.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "switchStatementBoxing.ets"
+                "program": "switchStatementBoxing.sts"
               }
             }
           }
@@ -828,12 +828,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "switchStatementBoxing.ets"
+            "program": "switchStatementBoxing.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "switchStatementBoxing.ets"
+            "program": "switchStatementBoxing.sts"
           }
         }
       },
@@ -841,12 +841,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "switchStatementBoxing.ets"
+          "program": "switchStatementBoxing.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "switchStatementBoxing.ets"
+          "program": "switchStatementBoxing.sts"
         }
       }
     }
@@ -855,12 +855,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "switchStatementBoxing.ets"
+      "program": "switchStatementBoxing.sts"
     },
     "end": {
       "line": 27,
       "column": 1,
-      "program": "switchStatementBoxing.ets"
+      "program": "switchStatementBoxing.sts"
     }
   }
 }

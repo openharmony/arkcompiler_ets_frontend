@@ -28,7 +28,7 @@ TEST_F(LspSuggestionTests, canBeConvertedToAsync)
 {
     const char *source = "function add(x: number, y: number): number\n {return x + y;};";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("sug-diag.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("sug-diag.sts", ES2PANDA_STATE_CHECKED, source);
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     auto node = ast->FindChild([](ark::es2panda::ir::AstNode *childNode) {
         return childNode->Type() == ark::es2panda::ir::AstNodeType::FUNCTION_EXPRESSION;
@@ -43,7 +43,7 @@ TEST_F(LspSuggestionTests, isFixablePromiseArgument)
         "function add(x: number, y: number): number\n {return x + y;}"
         "\nconsole.log(add(1,2));";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("sug-diag.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("sug-diag.sts", ES2PANDA_STATE_CHECKED, source);
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     std::unordered_map<std::string, bool> visitedNestedConvertibleFunctions;
     auto node = ast->FindChild([](ark::es2panda::ir::AstNode *childNode) {
@@ -58,7 +58,7 @@ TEST_F(LspSuggestionTests, hasSupportedNumberOfArguments)
         "function fetchData():Promise<string>{\n"
         "\nreturn Promise.resolve(\"Success\");\n}\nfetchData().then();";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("token-pos-literal.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("token-pos-literal.sts", ES2PANDA_STATE_CHECKED, source);
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     std::vector<ark::es2panda::ir::AstNode *> callExprs;
     ast->FindChild([&callExprs](ark::es2panda::ir::AstNode *node) {
@@ -76,7 +76,7 @@ TEST_F(LspSuggestionTests, hasSupportedNumberOfArguments2)
         "function fetchData():Promise<string>{\n"
         "\nreturn Promise.reject(\"Error\");\n}\nfetchData().catch();";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("token-pos-literal.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("token-pos-literal.sts", ES2PANDA_STATE_CHECKED, source);
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     std::vector<ark::es2panda::ir::AstNode *> callExprs;
     ast->FindChild([&callExprs](ark::es2panda::ir::AstNode *node) {
@@ -95,7 +95,7 @@ TEST_F(LspSuggestionTests, hasSupportedNumberOfArguments3)
         "function fetchData():Promise<string>{\nreturn Promise.resolve(\"Success\");\n}"
         "\nfetchData().finally();";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("token-pos-literal.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("token-pos-literal.sts", ES2PANDA_STATE_CHECKED, source);
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     std::vector<ark::es2panda::ir::AstNode *> callExprs;
     ast->FindChild([&callExprs](ark::es2panda::ir::AstNode *node) {
@@ -113,7 +113,7 @@ TEST_F(LspSuggestionTests, hasSupportedNumberOfArguments4)
         "function fetchData(name:string):Promise<string>{\n"
         "\nreturn Promise.resolve(\"Success\");\n}\nfetchData(\"test\").finally();";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("token-pos-literal.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("token-pos-literal.sts", ES2PANDA_STATE_CHECKED, source);
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     std::vector<ark::es2panda::ir::AstNode *> callExprs;
     ast->FindChild([&callExprs](ark::es2panda::ir::AstNode *node) {
@@ -132,7 +132,7 @@ TEST_F(LspSuggestionTests, GetSuggestionDiagnostics)
         "function fetchData(){\nreturn Promise.resolve(\"h\")\n;}\nfunction processData()"
         "{\nreturn fetchData().finally();\n};\nprocessData();\n";
     Initializer initializer = Initializer();
-    es2panda_Context *context = initializer.CreateContext("sug-diag.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *context = initializer.CreateContext("sug-diag.sts", ES2PANDA_STATE_CHECKED, source);
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(context);
     auto diag = ark::es2panda::lsp::GetSuggestionDiagnosticsImpl(ast);
     const auto message = "This_may_be_converted_to_an_async_function";
@@ -152,7 +152,7 @@ TEST_F(LspSuggestionTests, GetSuggestionDiagnostics)
 
 TEST_F(LspSuggestionTests, GetSuggestionDiagnostics2)
 {
-    std::vector<std::string> files = {"ds1.ets"};
+    std::vector<std::string> files = {"ds1.sts"};
     std::vector<std::string> texts = {
         "function fetchData(){\nreturn Promise.resolve(\"h\")\n;}\nfunction processData()"
         "{\nreturn fetchData().finally();\n};\nprocessData();\n"};
@@ -181,7 +181,7 @@ TEST_F(LspSuggestionTests, isPromiseHandler)
         "function fetchData(name:string):Promise<string>{\n"
         "\nreturn Promise.resolve(\"Success\");\n}\nfetchData(\"test\").finally();";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("sug-diag.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("sug-diag.sts", ES2PANDA_STATE_CHECKED, source);
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     std::vector<ark::es2panda::ir::AstNode *> callExprs;
     ast->FindChild([&callExprs](ark::es2panda::ir::AstNode *node) {
@@ -200,7 +200,7 @@ TEST_F(LspSuggestionTests, isPromiseHandler2)
         "function fetchData():Promise<string>{\n"
         "\nreturn Promise.reject(\"Error\");\n}\nfetchData().catch();";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("sug-diag.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("sug-diag.sts", ES2PANDA_STATE_CHECKED, source);
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     std::vector<ark::es2panda::ir::AstNode *> callExprs;
     ast->FindChild([&callExprs](ark::es2panda::ir::AstNode *node) {
@@ -219,7 +219,7 @@ TEST_F(LspSuggestionTests, isPromiseHandler3)
         "function fetchData():Promise<string>{\n"
         "\nreturn Promise.resolve(\"Success\");\n}\nfetchData().then();";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("sug-diag.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("sug-diag.sts", ES2PANDA_STATE_CHECKED, source);
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     std::vector<ark::es2panda::ir::AstNode *> callExprs;
     ast->FindChild([&callExprs](ark::es2panda::ir::AstNode *node) {
@@ -238,7 +238,7 @@ TEST_F(LspSuggestionTests, isPromiseHandler4)
         "function fetchData(name: string,name2:string):Promise<string>{\n"
         "\nreturn Promise.resolve(\"Success\");\n}\nfetchData(\"test\",\"test2\").finally();";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("sug-diag.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("sug-diag.sts", ES2PANDA_STATE_CHECKED, source);
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     std::vector<ark::es2panda::ir::AstNode *> callExprs;
     ast->FindChild([&callExprs](ark::es2panda::ir::AstNode *node) {
@@ -257,7 +257,7 @@ TEST_F(LspSuggestionTests, isFixablePromiseHandler)
         "function fetchData():Promise<string>{\nreturn Promise.resolve(\"Success\");\n}"
         "\nfetchData().then();";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("sug-diag.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("sug-diag.sts", ES2PANDA_STATE_CHECKED, source);
     std::unordered_map<std::string, bool> visitedNestedConvertibleFunctions;
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     EXPECT_TRUE(ark::es2panda::lsp::IsFixablePromiseHandler(ast, visitedNestedConvertibleFunctions));
@@ -270,7 +270,7 @@ TEST_F(LspSuggestionTests, isFixablePromiseHandler2)
         "function fetchData(name:string):Promise<string>{\nreturn Promise.resolve(\"Success\");\n}"
         "\nfetchData(\"test\").finally();";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("sug-diag.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("sug-diag.sts", ES2PANDA_STATE_CHECKED, source);
     std::unordered_map<std::string, bool> visitedNestedConvertibleFunctions;
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     EXPECT_TRUE(ark::es2panda::lsp::IsFixablePromiseHandler(ast, visitedNestedConvertibleFunctions));
@@ -284,7 +284,7 @@ TEST_F(LspSuggestionTests, isFixablePromiseHandler3)
         "return Promise.reject(\"Error\");\n}"
         "\nfetchData().catch();";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("sug-diag.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("sug-diag.sts", ES2PANDA_STATE_CHECKED, source);
     std::unordered_map<std::string, bool> visitedNestedConvertibleFunctions;
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     EXPECT_TRUE(ark::es2panda::lsp::IsFixablePromiseHandler(ast, visitedNestedConvertibleFunctions));
@@ -298,7 +298,7 @@ TEST_F(LspSuggestionTests, isFixablePromiseHandler4)
         "\nreturn Promise.resolve(\"Success\");"
         "\n}\nfetchData(\"test\",\"test2\").finally();";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("sug-diag.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("sug-diag.sts", ES2PANDA_STATE_CHECKED, source);
     std::unordered_map<std::string, bool> visitedNestedConvertibleFunctions;
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     EXPECT_TRUE(ark::es2panda::lsp::IsFixablePromiseHandler(ast, visitedNestedConvertibleFunctions));
@@ -311,7 +311,7 @@ TEST_F(LspSuggestionTests, isReturnStatementWithFixablePromiseHandler)
         "function fetchData(){\nreturn Promise.resolve(\"h\")\n;}\nfunction processData()"
         "{\nreturn fetchData().then();\n};\nprocessData();\n";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("sug-diag.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("sug-diag.sts", ES2PANDA_STATE_CHECKED, source);
     std::unordered_map<std::string, bool> visitedNestedConvertibleFunctions;
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     EXPECT_TRUE(ark::es2panda::lsp::IsReturnStatementWithFixablePromiseHandler(ast, visitedNestedConvertibleFunctions));
@@ -324,7 +324,7 @@ TEST_F(LspSuggestionTests, isReturnStatementWithFixablePromiseHandler2)
         "function fetchData(){\nreturn Promise.resolve(\"h\")\n;}\n"
         "\nfunction processData(){\nreturn fetchData().finally();\n};\nprocessData();\n";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("sug-diag.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("sug-diag.sts", ES2PANDA_STATE_CHECKED, source);
     std::unordered_map<std::string, bool> visitedNestedConvertibleFunctions;
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     EXPECT_TRUE(ark::es2panda::lsp::IsReturnStatementWithFixablePromiseHandler(ast, visitedNestedConvertibleFunctions));
@@ -337,7 +337,7 @@ TEST_F(LspSuggestionTests, isReturnStatementWithFixablePromiseHandler3)
         "function fetchData(){\nreturn Promise.reject(\"h\")\n;}\nfunction processData(){\n"
         "\nreturn fetchData().catch();\n};\nprocessData();\n";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("sug-diag.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("sug-diag.sts", ES2PANDA_STATE_CHECKED, source);
     std::unordered_map<std::string, bool> visitedNestedConvertibleFunctions;
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     EXPECT_TRUE(ark::es2panda::lsp::IsReturnStatementWithFixablePromiseHandler(ast, visitedNestedConvertibleFunctions));
@@ -350,7 +350,7 @@ TEST_F(LspSuggestionTests, hasReturnStatementWithPromiseHandler)
         "function fetchData(){\nreturn Promise.reject(\"h\")\n;}\nfunction processData()"
         "{\nreturn fetchData().catch();\n};\nprocessData();\n";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("sug-diag.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("sug-diag.sts", ES2PANDA_STATE_CHECKED, source);
     std::unordered_map<std::string, bool> visitedNestedConvertibleFunctions;
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     EXPECT_TRUE(ark::es2panda::lsp::HasReturnStatementWithPromiseHandler(ast, visitedNestedConvertibleFunctions));
@@ -363,7 +363,7 @@ TEST_F(LspSuggestionTests, hasReturnStatementWithPromiseHandler2)
         "function fetchData(){\nreturn Promise.resolve(\"h\")\n;}\nfunction processData(){\n"
         "\nreturn fetchData().finally();\n};\nprocessData();\n";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("sug-diag.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("sug-diag.sts", ES2PANDA_STATE_CHECKED, source);
     std::unordered_map<std::string, bool> visitedNestedConvertibleFunctions;
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     EXPECT_TRUE(ark::es2panda::lsp::HasReturnStatementWithPromiseHandler(ast, visitedNestedConvertibleFunctions));
@@ -376,7 +376,7 @@ TEST_F(LspSuggestionTests, isConvertibleFunction)
         "function fetchData(){\nreturn Promise.resolve(\"h\")\n;}\nfunction processData()"
         "{\nreturn fetchData().finally();\n};\nprocessData();\n";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("sug-diag.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("sug-diag.sts", ES2PANDA_STATE_CHECKED, source);
     std::unordered_map<std::string, bool> visitedNestedConvertibleFunctions;
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     EXPECT_TRUE(ark::es2panda::lsp::IsConvertibleFunction(ast, visitedNestedConvertibleFunctions));
@@ -387,7 +387,7 @@ TEST_F(LspSuggestionTests, isFixablePromiseArgument2)
 {
     const char *source = "function myFun(x: string): string\n {return x;}\nconsole.log(\"add(1+2)\");";
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("sug-diag.ets", ES2PANDA_STATE_CHECKED, source);
+    es2panda_Context *ctx = initializer.CreateContext("sug-diag.sts", ES2PANDA_STATE_CHECKED, source);
     std::unordered_map<std::string, bool> visitedNestedConvertibleFunctions;
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
     auto node = ast->FindChild([](ark::es2panda::ir::AstNode *childNode) {

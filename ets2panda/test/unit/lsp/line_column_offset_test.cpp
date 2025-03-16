@@ -30,7 +30,7 @@ TEST_F(LCOTests, LCOPositionIsZero)
     auto posZero = 0;
     Initializer initializer = Initializer();
     es2panda_Context *context =
-        initializer.CreateContext("not-found-node.ets", ES2PANDA_STATE_CHECKED,
+        initializer.CreateContext("not-found-node.sts", ES2PANDA_STATE_CHECKED,
                                   "interface X\n{ name: string};\nlet variable: X = { name: 'Test' };\n");
     auto lineAndChar = ark::es2panda::lsp::ToLineColumnOffset(context, posZero);
 
@@ -45,7 +45,7 @@ TEST_F(LCOTests, LCOPositionIsCorrect)
     const size_t position = 33;
     Initializer initializer = Initializer();
     es2panda_Context *context =
-        initializer.CreateContext("not-found-node.ets", ES2PANDA_STATE_CHECKED,
+        initializer.CreateContext("not-found-node.sts", ES2PANDA_STATE_CHECKED,
                                   "interface X\n{ name: string};\nlet variable: X = { name: 'Test' };\n");
     auto lineAndChar = ark::es2panda::lsp::ToLineColumnOffset(context, position);
 

@@ -19,7 +19,7 @@ if (PANDA_TARGET_ARM32)
               --build-dir ${PANDA_BINARY_ROOT}
               --arm32-qemu
               --ets-runtime
-              --test-file PunctuatorAnyEqual.ets
+              --test-file PunctuatorAnyEqual.sts
   )
 endif()
 

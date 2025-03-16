@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "tupleAsTypeParam1.ets"
+              "program": "tupleAsTypeParam1.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "tupleAsTypeParam1.ets"
+              "program": "tupleAsTypeParam1.sts"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "tupleAsTypeParam1.ets"
+                "program": "tupleAsTypeParam1.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "tupleAsTypeParam1.ets"
+                "program": "tupleAsTypeParam1.sts"
               }
             }
           },
@@ -140,12 +140,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "tupleAsTypeParam1.ets"
+                  "program": "tupleAsTypeParam1.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 13,
-                  "program": "tupleAsTypeParam1.ets"
+                  "program": "tupleAsTypeParam1.sts"
                 }
               }
             },
@@ -166,12 +166,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "tupleAsTypeParam1.ets"
+                      "program": "tupleAsTypeParam1.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 13,
-                      "program": "tupleAsTypeParam1.ets"
+                      "program": "tupleAsTypeParam1.sts"
                     }
                   }
                 },
@@ -198,12 +198,12 @@
                                 "start": {
                                   "line": 16,
                                   "column": 22,
-                                  "program": "tupleAsTypeParam1.ets"
+                                  "program": "tupleAsTypeParam1.sts"
                                 },
                                 "end": {
                                   "line": 16,
                                   "column": 23,
-                                  "program": "tupleAsTypeParam1.ets"
+                                  "program": "tupleAsTypeParam1.sts"
                                 }
                               }
                             },
@@ -211,12 +211,12 @@
                               "start": {
                                 "line": 16,
                                 "column": 22,
-                                "program": "tupleAsTypeParam1.ets"
+                                "program": "tupleAsTypeParam1.sts"
                               },
                               "end": {
                                 "line": 16,
                                 "column": 24,
-                                "program": "tupleAsTypeParam1.ets"
+                                "program": "tupleAsTypeParam1.sts"
                               }
                             }
                           },
@@ -224,12 +224,12 @@
                             "start": {
                               "line": 16,
                               "column": 22,
-                              "program": "tupleAsTypeParam1.ets"
+                              "program": "tupleAsTypeParam1.sts"
                             },
                             "end": {
                               "line": 16,
                               "column": 24,
-                              "program": "tupleAsTypeParam1.ets"
+                              "program": "tupleAsTypeParam1.sts"
                             }
                           }
                         },
@@ -238,12 +238,12 @@
                           "start": {
                             "line": 16,
                             "column": 23,
-                            "program": "tupleAsTypeParam1.ets"
+                            "program": "tupleAsTypeParam1.sts"
                           },
                           "end": {
                             "line": 16,
                             "column": 25,
-                            "program": "tupleAsTypeParam1.ets"
+                            "program": "tupleAsTypeParam1.sts"
                           }
                         }
                       },
@@ -252,12 +252,12 @@
                         "start": {
                           "line": 16,
                           "column": 17,
-                          "program": "tupleAsTypeParam1.ets"
+                          "program": "tupleAsTypeParam1.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 25,
-                          "program": "tupleAsTypeParam1.ets"
+                          "program": "tupleAsTypeParam1.sts"
                         }
                       }
                     },
@@ -265,12 +265,12 @@
                       "start": {
                         "line": 16,
                         "column": 17,
-                        "program": "tupleAsTypeParam1.ets"
+                        "program": "tupleAsTypeParam1.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 25,
-                        "program": "tupleAsTypeParam1.ets"
+                        "program": "tupleAsTypeParam1.sts"
                       }
                     }
                   }
@@ -281,12 +281,12 @@
                     "start": {
                       "line": 16,
                       "column": 28,
-                      "program": "tupleAsTypeParam1.ets"
+                      "program": "tupleAsTypeParam1.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 32,
-                      "program": "tupleAsTypeParam1.ets"
+                      "program": "tupleAsTypeParam1.sts"
                     }
                   }
                 },
@@ -303,12 +303,12 @@
                           "start": {
                             "line": 16,
                             "column": 14,
-                            "program": "tupleAsTypeParam1.ets"
+                            "program": "tupleAsTypeParam1.sts"
                           },
                           "end": {
                             "line": 16,
                             "column": 15,
-                            "program": "tupleAsTypeParam1.ets"
+                            "program": "tupleAsTypeParam1.sts"
                           }
                         }
                       },
@@ -316,12 +316,12 @@
                         "start": {
                           "line": 16,
                           "column": 14,
-                          "program": "tupleAsTypeParam1.ets"
+                          "program": "tupleAsTypeParam1.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 16,
-                          "program": "tupleAsTypeParam1.ets"
+                          "program": "tupleAsTypeParam1.sts"
                         }
                       }
                     }
@@ -330,12 +330,12 @@
                     "start": {
                       "line": 16,
                       "column": 13,
-                      "program": "tupleAsTypeParam1.ets"
+                      "program": "tupleAsTypeParam1.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 16,
-                      "program": "tupleAsTypeParam1.ets"
+                      "program": "tupleAsTypeParam1.sts"
                     }
                   }
                 },
@@ -362,12 +362,12 @@
                                     "start": {
                                       "line": 17,
                                       "column": 13,
-                                      "program": "tupleAsTypeParam1.ets"
+                                      "program": "tupleAsTypeParam1.sts"
                                     },
                                     "end": {
                                       "line": 17,
                                       "column": 14,
-                                      "program": "tupleAsTypeParam1.ets"
+                                      "program": "tupleAsTypeParam1.sts"
                                     }
                                   }
                                 },
@@ -375,12 +375,12 @@
                                   "start": {
                                     "line": 17,
                                     "column": 13,
-                                    "program": "tupleAsTypeParam1.ets"
+                                    "program": "tupleAsTypeParam1.sts"
                                   },
                                   "end": {
                                     "line": 17,
                                     "column": 16,
-                                    "program": "tupleAsTypeParam1.ets"
+                                    "program": "tupleAsTypeParam1.sts"
                                   }
                                 }
                               },
@@ -388,12 +388,12 @@
                                 "start": {
                                   "line": 17,
                                   "column": 13,
-                                  "program": "tupleAsTypeParam1.ets"
+                                  "program": "tupleAsTypeParam1.sts"
                                 },
                                 "end": {
                                   "line": 17,
                                   "column": 16,
-                                  "program": "tupleAsTypeParam1.ets"
+                                  "program": "tupleAsTypeParam1.sts"
                                 }
                               }
                             },
@@ -402,12 +402,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 9,
-                                "program": "tupleAsTypeParam1.ets"
+                                "program": "tupleAsTypeParam1.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 10,
-                                "program": "tupleAsTypeParam1.ets"
+                                "program": "tupleAsTypeParam1.sts"
                               }
                             }
                           },
@@ -421,12 +421,12 @@
                                 "start": {
                                   "line": 17,
                                   "column": 17,
-                                  "program": "tupleAsTypeParam1.ets"
+                                  "program": "tupleAsTypeParam1.sts"
                                 },
                                 "end": {
                                   "line": 17,
                                   "column": 20,
-                                  "program": "tupleAsTypeParam1.ets"
+                                  "program": "tupleAsTypeParam1.sts"
                                 }
                               }
                             },
@@ -437,12 +437,12 @@
                                 "start": {
                                   "line": 17,
                                   "column": 21,
-                                  "program": "tupleAsTypeParam1.ets"
+                                  "program": "tupleAsTypeParam1.sts"
                                 },
                                 "end": {
                                   "line": 17,
                                   "column": 22,
-                                  "program": "tupleAsTypeParam1.ets"
+                                  "program": "tupleAsTypeParam1.sts"
                                 }
                               }
                             },
@@ -452,12 +452,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 17,
-                                "program": "tupleAsTypeParam1.ets"
+                                "program": "tupleAsTypeParam1.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 23,
-                                "program": "tupleAsTypeParam1.ets"
+                                "program": "tupleAsTypeParam1.sts"
                               }
                             }
                           },
@@ -465,12 +465,12 @@
                             "start": {
                               "line": 17,
                               "column": 9,
-                              "program": "tupleAsTypeParam1.ets"
+                              "program": "tupleAsTypeParam1.sts"
                             },
                             "end": {
                               "line": 17,
                               "column": 23,
-                              "program": "tupleAsTypeParam1.ets"
+                              "program": "tupleAsTypeParam1.sts"
                             }
                           }
                         }
@@ -480,12 +480,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "tupleAsTypeParam1.ets"
+                          "program": "tupleAsTypeParam1.sts"
                         },
                         "end": {
                           "line": 17,
                           "column": 24,
-                          "program": "tupleAsTypeParam1.ets"
+                          "program": "tupleAsTypeParam1.sts"
                         }
                       }
                     }
@@ -494,12 +494,12 @@
                     "start": {
                       "line": 16,
                       "column": 33,
-                      "program": "tupleAsTypeParam1.ets"
+                      "program": "tupleAsTypeParam1.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 2,
-                      "program": "tupleAsTypeParam1.ets"
+                      "program": "tupleAsTypeParam1.sts"
                     }
                   }
                 },
@@ -507,12 +507,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "tupleAsTypeParam1.ets"
+                    "program": "tupleAsTypeParam1.sts"
                   },
                   "end": {
                     "line": 18,
                     "column": 2,
-                    "program": "tupleAsTypeParam1.ets"
+                    "program": "tupleAsTypeParam1.sts"
                   }
                 }
               },
@@ -520,12 +520,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "tupleAsTypeParam1.ets"
+                  "program": "tupleAsTypeParam1.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 2,
-                  "program": "tupleAsTypeParam1.ets"
+                  "program": "tupleAsTypeParam1.sts"
                 }
               }
             },
@@ -535,12 +535,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "tupleAsTypeParam1.ets"
+                "program": "tupleAsTypeParam1.sts"
               },
               "end": {
                 "line": 18,
                 "column": 2,
-                "program": "tupleAsTypeParam1.ets"
+                "program": "tupleAsTypeParam1.sts"
               }
             }
           },
@@ -554,12 +554,12 @@
                 "start": {
                   "line": 20,
                   "column": 10,
-                  "program": "tupleAsTypeParam1.ets"
+                  "program": "tupleAsTypeParam1.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 14,
-                  "program": "tupleAsTypeParam1.ets"
+                  "program": "tupleAsTypeParam1.sts"
                 }
               }
             },
@@ -580,12 +580,12 @@
                     "start": {
                       "line": 20,
                       "column": 10,
-                      "program": "tupleAsTypeParam1.ets"
+                      "program": "tupleAsTypeParam1.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 14,
-                      "program": "tupleAsTypeParam1.ets"
+                      "program": "tupleAsTypeParam1.sts"
                     }
                   }
                 },
@@ -619,12 +619,12 @@
                                         "start": {
                                           "line": 21,
                                           "column": 16,
-                                          "program": "tupleAsTypeParam1.ets"
+                                          "program": "tupleAsTypeParam1.sts"
                                         },
                                         "end": {
                                           "line": 21,
                                           "column": 22,
-                                          "program": "tupleAsTypeParam1.ets"
+                                          "program": "tupleAsTypeParam1.sts"
                                         }
                                       }
                                     },
@@ -632,12 +632,12 @@
                                       "start": {
                                         "line": 21,
                                         "column": 16,
-                                        "program": "tupleAsTypeParam1.ets"
+                                        "program": "tupleAsTypeParam1.sts"
                                       },
                                       "end": {
                                         "line": 21,
                                         "column": 23,
-                                        "program": "tupleAsTypeParam1.ets"
+                                        "program": "tupleAsTypeParam1.sts"
                                       }
                                     }
                                   },
@@ -645,12 +645,12 @@
                                     "start": {
                                       "line": 21,
                                       "column": 16,
-                                      "program": "tupleAsTypeParam1.ets"
+                                      "program": "tupleAsTypeParam1.sts"
                                     },
                                     "end": {
                                       "line": 21,
                                       "column": 23,
-                                      "program": "tupleAsTypeParam1.ets"
+                                      "program": "tupleAsTypeParam1.sts"
                                     }
                                   }
                                 },
@@ -666,12 +666,12 @@
                                         "start": {
                                           "line": 21,
                                           "column": 24,
-                                          "program": "tupleAsTypeParam1.ets"
+                                          "program": "tupleAsTypeParam1.sts"
                                         },
                                         "end": {
                                           "line": 21,
                                           "column": 30,
-                                          "program": "tupleAsTypeParam1.ets"
+                                          "program": "tupleAsTypeParam1.sts"
                                         }
                                       }
                                     },
@@ -679,12 +679,12 @@
                                       "start": {
                                         "line": 21,
                                         "column": 24,
-                                        "program": "tupleAsTypeParam1.ets"
+                                        "program": "tupleAsTypeParam1.sts"
                                       },
                                       "end": {
                                         "line": 21,
                                         "column": 31,
-                                        "program": "tupleAsTypeParam1.ets"
+                                        "program": "tupleAsTypeParam1.sts"
                                       }
                                     }
                                   },
@@ -692,12 +692,12 @@
                                     "start": {
                                       "line": 21,
                                       "column": 24,
-                                      "program": "tupleAsTypeParam1.ets"
+                                      "program": "tupleAsTypeParam1.sts"
                                     },
                                     "end": {
                                       "line": 21,
                                       "column": 31,
-                                      "program": "tupleAsTypeParam1.ets"
+                                      "program": "tupleAsTypeParam1.sts"
                                     }
                                   }
                                 }
@@ -706,12 +706,12 @@
                                 "start": {
                                   "line": 21,
                                   "column": 15,
-                                  "program": "tupleAsTypeParam1.ets"
+                                  "program": "tupleAsTypeParam1.sts"
                                 },
                                 "end": {
                                   "line": 21,
                                   "column": 31,
-                                  "program": "tupleAsTypeParam1.ets"
+                                  "program": "tupleAsTypeParam1.sts"
                                 }
                               }
                             },
@@ -720,12 +720,12 @@
                               "start": {
                                 "line": 21,
                                 "column": 9,
-                                "program": "tupleAsTypeParam1.ets"
+                                "program": "tupleAsTypeParam1.sts"
                               },
                               "end": {
                                 "line": 21,
                                 "column": 13,
-                                "program": "tupleAsTypeParam1.ets"
+                                "program": "tupleAsTypeParam1.sts"
                               }
                             }
                           },
@@ -739,12 +739,12 @@
                                   "start": {
                                     "line": 21,
                                     "column": 35,
-                                    "program": "tupleAsTypeParam1.ets"
+                                    "program": "tupleAsTypeParam1.sts"
                                   },
                                   "end": {
                                     "line": 21,
                                     "column": 36,
-                                    "program": "tupleAsTypeParam1.ets"
+                                    "program": "tupleAsTypeParam1.sts"
                                   }
                                 }
                               },
@@ -755,12 +755,12 @@
                                   "start": {
                                     "line": 21,
                                     "column": 37,
-                                    "program": "tupleAsTypeParam1.ets"
+                                    "program": "tupleAsTypeParam1.sts"
                                   },
                                   "end": {
                                     "line": 21,
                                     "column": 38,
-                                    "program": "tupleAsTypeParam1.ets"
+                                    "program": "tupleAsTypeParam1.sts"
                                   }
                                 }
                               }
@@ -769,12 +769,12 @@
                               "start": {
                                 "line": 21,
                                 "column": 34,
-                                "program": "tupleAsTypeParam1.ets"
+                                "program": "tupleAsTypeParam1.sts"
                               },
                               "end": {
                                 "line": 21,
                                 "column": 39,
-                                "program": "tupleAsTypeParam1.ets"
+                                "program": "tupleAsTypeParam1.sts"
                               }
                             }
                           },
@@ -782,12 +782,12 @@
                             "start": {
                               "line": 21,
                               "column": 9,
-                              "program": "tupleAsTypeParam1.ets"
+                              "program": "tupleAsTypeParam1.sts"
                             },
                             "end": {
                               "line": 21,
                               "column": 39,
-                              "program": "tupleAsTypeParam1.ets"
+                              "program": "tupleAsTypeParam1.sts"
                             }
                           }
                         }
@@ -797,12 +797,12 @@
                         "start": {
                           "line": 21,
                           "column": 5,
-                          "program": "tupleAsTypeParam1.ets"
+                          "program": "tupleAsTypeParam1.sts"
                         },
                         "end": {
                           "line": 21,
                           "column": 39,
-                          "program": "tupleAsTypeParam1.ets"
+                          "program": "tupleAsTypeParam1.sts"
                         }
                       }
                     },
@@ -829,12 +829,12 @@
                                         "start": {
                                           "line": 22,
                                           "column": 17,
-                                          "program": "tupleAsTypeParam1.ets"
+                                          "program": "tupleAsTypeParam1.sts"
                                         },
                                         "end": {
                                           "line": 22,
                                           "column": 23,
-                                          "program": "tupleAsTypeParam1.ets"
+                                          "program": "tupleAsTypeParam1.sts"
                                         }
                                       }
                                     },
@@ -842,12 +842,12 @@
                                       "start": {
                                         "line": 22,
                                         "column": 17,
-                                        "program": "tupleAsTypeParam1.ets"
+                                        "program": "tupleAsTypeParam1.sts"
                                       },
                                       "end": {
                                         "line": 22,
                                         "column": 24,
-                                        "program": "tupleAsTypeParam1.ets"
+                                        "program": "tupleAsTypeParam1.sts"
                                       }
                                     }
                                   },
@@ -855,12 +855,12 @@
                                     "start": {
                                       "line": 22,
                                       "column": 17,
-                                      "program": "tupleAsTypeParam1.ets"
+                                      "program": "tupleAsTypeParam1.sts"
                                     },
                                     "end": {
                                       "line": 22,
                                       "column": 24,
-                                      "program": "tupleAsTypeParam1.ets"
+                                      "program": "tupleAsTypeParam1.sts"
                                     }
                                   }
                                 },
@@ -876,12 +876,12 @@
                                         "start": {
                                           "line": 22,
                                           "column": 25,
-                                          "program": "tupleAsTypeParam1.ets"
+                                          "program": "tupleAsTypeParam1.sts"
                                         },
                                         "end": {
                                           "line": 22,
                                           "column": 31,
-                                          "program": "tupleAsTypeParam1.ets"
+                                          "program": "tupleAsTypeParam1.sts"
                                         }
                                       }
                                     },
@@ -889,12 +889,12 @@
                                       "start": {
                                         "line": 22,
                                         "column": 25,
-                                        "program": "tupleAsTypeParam1.ets"
+                                        "program": "tupleAsTypeParam1.sts"
                                       },
                                       "end": {
                                         "line": 22,
                                         "column": 32,
-                                        "program": "tupleAsTypeParam1.ets"
+                                        "program": "tupleAsTypeParam1.sts"
                                       }
                                     }
                                   },
@@ -902,12 +902,12 @@
                                     "start": {
                                       "line": 22,
                                       "column": 25,
-                                      "program": "tupleAsTypeParam1.ets"
+                                      "program": "tupleAsTypeParam1.sts"
                                     },
                                     "end": {
                                       "line": 22,
                                       "column": 32,
-                                      "program": "tupleAsTypeParam1.ets"
+                                      "program": "tupleAsTypeParam1.sts"
                                     }
                                   }
                                 }
@@ -916,12 +916,12 @@
                                 "start": {
                                   "line": 22,
                                   "column": 16,
-                                  "program": "tupleAsTypeParam1.ets"
+                                  "program": "tupleAsTypeParam1.sts"
                                 },
                                 "end": {
                                   "line": 22,
                                   "column": 32,
-                                  "program": "tupleAsTypeParam1.ets"
+                                  "program": "tupleAsTypeParam1.sts"
                                 }
                               }
                             },
@@ -930,12 +930,12 @@
                               "start": {
                                 "line": 22,
                                 "column": 9,
-                                "program": "tupleAsTypeParam1.ets"
+                                "program": "tupleAsTypeParam1.sts"
                               },
                               "end": {
                                 "line": 22,
                                 "column": 14,
-                                "program": "tupleAsTypeParam1.ets"
+                                "program": "tupleAsTypeParam1.sts"
                               }
                             }
                           },
@@ -949,12 +949,12 @@
                                   "start": {
                                     "line": 22,
                                     "column": 36,
-                                    "program": "tupleAsTypeParam1.ets"
+                                    "program": "tupleAsTypeParam1.sts"
                                   },
                                   "end": {
                                     "line": 22,
                                     "column": 37,
-                                    "program": "tupleAsTypeParam1.ets"
+                                    "program": "tupleAsTypeParam1.sts"
                                   }
                                 }
                               },
@@ -965,12 +965,12 @@
                                   "start": {
                                     "line": 22,
                                     "column": 38,
-                                    "program": "tupleAsTypeParam1.ets"
+                                    "program": "tupleAsTypeParam1.sts"
                                   },
                                   "end": {
                                     "line": 22,
                                     "column": 39,
-                                    "program": "tupleAsTypeParam1.ets"
+                                    "program": "tupleAsTypeParam1.sts"
                                   }
                                 }
                               }
@@ -979,12 +979,12 @@
                               "start": {
                                 "line": 22,
                                 "column": 35,
-                                "program": "tupleAsTypeParam1.ets"
+                                "program": "tupleAsTypeParam1.sts"
                               },
                               "end": {
                                 "line": 22,
                                 "column": 40,
-                                "program": "tupleAsTypeParam1.ets"
+                                "program": "tupleAsTypeParam1.sts"
                               }
                             }
                           },
@@ -992,12 +992,12 @@
                             "start": {
                               "line": 22,
                               "column": 9,
-                              "program": "tupleAsTypeParam1.ets"
+                              "program": "tupleAsTypeParam1.sts"
                             },
                             "end": {
                               "line": 22,
                               "column": 40,
-                              "program": "tupleAsTypeParam1.ets"
+                              "program": "tupleAsTypeParam1.sts"
                             }
                           }
                         }
@@ -1007,12 +1007,12 @@
                         "start": {
                           "line": 22,
                           "column": 5,
-                          "program": "tupleAsTypeParam1.ets"
+                          "program": "tupleAsTypeParam1.sts"
                         },
                         "end": {
                           "line": 22,
                           "column": 40,
-                          "program": "tupleAsTypeParam1.ets"
+                          "program": "tupleAsTypeParam1.sts"
                         }
                       }
                     },
@@ -1028,12 +1028,12 @@
                             "start": {
                               "line": 23,
                               "column": 5,
-                              "program": "tupleAsTypeParam1.ets"
+                              "program": "tupleAsTypeParam1.sts"
                             },
                             "end": {
                               "line": 23,
                               "column": 8,
-                              "program": "tupleAsTypeParam1.ets"
+                              "program": "tupleAsTypeParam1.sts"
                             }
                           }
                         },
@@ -1049,12 +1049,12 @@
                                   "start": {
                                     "line": 23,
                                     "column": 28,
-                                    "program": "tupleAsTypeParam1.ets"
+                                    "program": "tupleAsTypeParam1.sts"
                                   },
                                   "end": {
                                     "line": 23,
                                     "column": 32,
-                                    "program": "tupleAsTypeParam1.ets"
+                                    "program": "tupleAsTypeParam1.sts"
                                   }
                                 }
                               },
@@ -1066,12 +1066,12 @@
                                   "start": {
                                     "line": 23,
                                     "column": 34,
-                                    "program": "tupleAsTypeParam1.ets"
+                                    "program": "tupleAsTypeParam1.sts"
                                   },
                                   "end": {
                                     "line": 23,
                                     "column": 39,
-                                    "program": "tupleAsTypeParam1.ets"
+                                    "program": "tupleAsTypeParam1.sts"
                                   }
                                 }
                               }
@@ -1080,12 +1080,12 @@
                               "start": {
                                 "line": 23,
                                 "column": 27,
-                                "program": "tupleAsTypeParam1.ets"
+                                "program": "tupleAsTypeParam1.sts"
                               },
                               "end": {
                                 "line": 23,
                                 "column": 40,
-                                "program": "tupleAsTypeParam1.ets"
+                                "program": "tupleAsTypeParam1.sts"
                               }
                             }
                           }
@@ -1109,12 +1109,12 @@
                                         "start": {
                                           "line": 23,
                                           "column": 10,
-                                          "program": "tupleAsTypeParam1.ets"
+                                          "program": "tupleAsTypeParam1.sts"
                                         },
                                         "end": {
                                           "line": 23,
                                           "column": 16,
-                                          "program": "tupleAsTypeParam1.ets"
+                                          "program": "tupleAsTypeParam1.sts"
                                         }
                                       }
                                     },
@@ -1122,12 +1122,12 @@
                                       "start": {
                                         "line": 23,
                                         "column": 10,
-                                        "program": "tupleAsTypeParam1.ets"
+                                        "program": "tupleAsTypeParam1.sts"
                                       },
                                       "end": {
                                         "line": 23,
                                         "column": 17,
-                                        "program": "tupleAsTypeParam1.ets"
+                                        "program": "tupleAsTypeParam1.sts"
                                       }
                                     }
                                   },
@@ -1135,12 +1135,12 @@
                                     "start": {
                                       "line": 23,
                                       "column": 10,
-                                      "program": "tupleAsTypeParam1.ets"
+                                      "program": "tupleAsTypeParam1.sts"
                                     },
                                     "end": {
                                       "line": 23,
                                       "column": 17,
-                                      "program": "tupleAsTypeParam1.ets"
+                                      "program": "tupleAsTypeParam1.sts"
                                     }
                                   }
                                 },
@@ -1156,12 +1156,12 @@
                                         "start": {
                                           "line": 23,
                                           "column": 18,
-                                          "program": "tupleAsTypeParam1.ets"
+                                          "program": "tupleAsTypeParam1.sts"
                                         },
                                         "end": {
                                           "line": 23,
                                           "column": 24,
-                                          "program": "tupleAsTypeParam1.ets"
+                                          "program": "tupleAsTypeParam1.sts"
                                         }
                                       }
                                     },
@@ -1169,12 +1169,12 @@
                                       "start": {
                                         "line": 23,
                                         "column": 18,
-                                        "program": "tupleAsTypeParam1.ets"
+                                        "program": "tupleAsTypeParam1.sts"
                                       },
                                       "end": {
                                         "line": 23,
                                         "column": 25,
-                                        "program": "tupleAsTypeParam1.ets"
+                                        "program": "tupleAsTypeParam1.sts"
                                       }
                                     }
                                   },
@@ -1182,12 +1182,12 @@
                                     "start": {
                                       "line": 23,
                                       "column": 18,
-                                      "program": "tupleAsTypeParam1.ets"
+                                      "program": "tupleAsTypeParam1.sts"
                                     },
                                     "end": {
                                       "line": 23,
                                       "column": 25,
-                                      "program": "tupleAsTypeParam1.ets"
+                                      "program": "tupleAsTypeParam1.sts"
                                     }
                                   }
                                 }
@@ -1196,12 +1196,12 @@
                                 "start": {
                                   "line": 23,
                                   "column": 9,
-                                  "program": "tupleAsTypeParam1.ets"
+                                  "program": "tupleAsTypeParam1.sts"
                                 },
                                 "end": {
                                   "line": 23,
                                   "column": 25,
-                                  "program": "tupleAsTypeParam1.ets"
+                                  "program": "tupleAsTypeParam1.sts"
                                 }
                               }
                             }
@@ -1210,12 +1210,12 @@
                             "start": {
                               "line": 23,
                               "column": 8,
-                              "program": "tupleAsTypeParam1.ets"
+                              "program": "tupleAsTypeParam1.sts"
                             },
                             "end": {
                               "line": 23,
                               "column": 26,
-                              "program": "tupleAsTypeParam1.ets"
+                              "program": "tupleAsTypeParam1.sts"
                             }
                           }
                         },
@@ -1223,12 +1223,12 @@
                           "start": {
                             "line": 23,
                             "column": 5,
-                            "program": "tupleAsTypeParam1.ets"
+                            "program": "tupleAsTypeParam1.sts"
                           },
                           "end": {
                             "line": 23,
                             "column": 41,
-                            "program": "tupleAsTypeParam1.ets"
+                            "program": "tupleAsTypeParam1.sts"
                           }
                         }
                       },
@@ -1236,12 +1236,12 @@
                         "start": {
                           "line": 23,
                           "column": 5,
-                          "program": "tupleAsTypeParam1.ets"
+                          "program": "tupleAsTypeParam1.sts"
                         },
                         "end": {
                           "line": 23,
                           "column": 41,
-                          "program": "tupleAsTypeParam1.ets"
+                          "program": "tupleAsTypeParam1.sts"
                         }
                       }
                     }
@@ -1250,12 +1250,12 @@
                     "start": {
                       "line": 20,
                       "column": 17,
-                      "program": "tupleAsTypeParam1.ets"
+                      "program": "tupleAsTypeParam1.sts"
                     },
                     "end": {
                       "line": 24,
                       "column": 2,
-                      "program": "tupleAsTypeParam1.ets"
+                      "program": "tupleAsTypeParam1.sts"
                     }
                   }
                 },
@@ -1263,12 +1263,12 @@
                   "start": {
                     "line": 20,
                     "column": 10,
-                    "program": "tupleAsTypeParam1.ets"
+                    "program": "tupleAsTypeParam1.sts"
                   },
                   "end": {
                     "line": 24,
                     "column": 2,
-                    "program": "tupleAsTypeParam1.ets"
+                    "program": "tupleAsTypeParam1.sts"
                   }
                 }
               },
@@ -1276,12 +1276,12 @@
                 "start": {
                   "line": 20,
                   "column": 10,
-                  "program": "tupleAsTypeParam1.ets"
+                  "program": "tupleAsTypeParam1.sts"
                 },
                 "end": {
                   "line": 24,
                   "column": 2,
-                  "program": "tupleAsTypeParam1.ets"
+                  "program": "tupleAsTypeParam1.sts"
                 }
               }
             },
@@ -1291,12 +1291,12 @@
               "start": {
                 "line": 20,
                 "column": 1,
-                "program": "tupleAsTypeParam1.ets"
+                "program": "tupleAsTypeParam1.sts"
               },
               "end": {
                 "line": 24,
                 "column": 2,
-                "program": "tupleAsTypeParam1.ets"
+                "program": "tupleAsTypeParam1.sts"
               }
             }
           }
@@ -1305,12 +1305,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "tupleAsTypeParam1.ets"
+            "program": "tupleAsTypeParam1.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "tupleAsTypeParam1.ets"
+            "program": "tupleAsTypeParam1.sts"
           }
         }
       },
@@ -1318,12 +1318,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "tupleAsTypeParam1.ets"
+          "program": "tupleAsTypeParam1.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "tupleAsTypeParam1.ets"
+          "program": "tupleAsTypeParam1.sts"
         }
       }
     }
@@ -1332,12 +1332,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "tupleAsTypeParam1.ets"
+      "program": "tupleAsTypeParam1.sts"
     },
     "end": {
       "line": 25,
       "column": 1,
-      "program": "tupleAsTypeParam1.ets"
+      "program": "tupleAsTypeParam1.sts"
     }
   }
 }

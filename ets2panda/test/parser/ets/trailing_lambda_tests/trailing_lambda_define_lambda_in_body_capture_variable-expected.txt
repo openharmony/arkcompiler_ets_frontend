@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+              "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+              "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
               }
             }
           },
@@ -140,12 +140,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                  "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 13,
-                  "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                  "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                 }
               }
             },
@@ -166,12 +166,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 13,
-                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                     }
                   }
                 },
@@ -193,12 +193,12 @@
                             "start": {
                               "line": 16,
                               "column": 24,
-                              "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                              "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                             },
                             "end": {
                               "line": 16,
                               "column": 28,
-                              "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                              "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                             }
                           }
                         },
@@ -206,12 +206,12 @@
                           "start": {
                             "line": 16,
                             "column": 18,
-                            "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                            "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                           },
                           "end": {
                             "line": 16,
                             "column": 28,
-                            "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                            "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                           }
                         }
                       },
@@ -220,12 +220,12 @@
                         "start": {
                           "line": 16,
                           "column": 14,
-                          "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                          "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 28,
-                          "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                          "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                         }
                       }
                     },
@@ -233,12 +233,12 @@
                       "start": {
                         "line": 16,
                         "column": 14,
-                        "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                        "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 28,
-                        "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                        "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                       }
                     }
                   }
@@ -249,12 +249,12 @@
                     "start": {
                       "line": 16,
                       "column": 31,
-                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 35,
-                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                     }
                   }
                 },
@@ -273,12 +273,12 @@
                             "start": {
                               "line": 17,
                               "column": 5,
-                              "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                              "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                             },
                             "end": {
                               "line": 17,
                               "column": 7,
-                              "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                              "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                             }
                           }
                         },
@@ -288,12 +288,12 @@
                           "start": {
                             "line": 17,
                             "column": 5,
-                            "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                            "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                           },
                           "end": {
                             "line": 17,
                             "column": 9,
-                            "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                            "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                           }
                         }
                       },
@@ -301,12 +301,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                          "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                         },
                         "end": {
                           "line": 17,
                           "column": 10,
-                          "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                          "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                         }
                       }
                     }
@@ -315,12 +315,12 @@
                     "start": {
                       "line": 16,
                       "column": 36,
-                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 2,
-                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                     }
                   }
                 },
@@ -328,12 +328,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                    "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                   },
                   "end": {
                     "line": 18,
                     "column": 2,
-                    "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                    "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                   }
                 }
               },
@@ -341,12 +341,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                  "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 2,
-                  "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                  "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                 }
               }
             },
@@ -356,12 +356,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
               },
               "end": {
                 "line": 18,
                 "column": 2,
-                "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
               }
             }
           },
@@ -375,12 +375,12 @@
                 "start": {
                   "line": 20,
                   "column": 10,
-                  "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                  "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 14,
-                  "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                  "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                 }
               }
             },
@@ -401,12 +401,12 @@
                     "start": {
                       "line": 20,
                       "column": 10,
-                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 14,
-                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                     }
                   }
                 },
@@ -420,12 +420,12 @@
                     "start": {
                       "line": 20,
                       "column": 18,
-                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 22,
-                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                     }
                   }
                 },
@@ -444,12 +444,12 @@
                             "start": {
                               "line": 21,
                               "column": 5,
-                              "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                              "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                             },
                             "end": {
                               "line": 21,
                               "column": 8,
-                              "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                              "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                             }
                           }
                         },
@@ -459,12 +459,12 @@
                           "start": {
                             "line": 21,
                             "column": 5,
-                            "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                            "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                           },
                           "end": {
                             "line": 21,
                             "column": 10,
-                            "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                            "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                           }
                         }
                       },
@@ -472,12 +472,12 @@
                         "start": {
                           "line": 21,
                           "column": 5,
-                          "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                          "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                         },
                         "end": {
                           "line": 21,
                           "column": 10,
-                          "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                          "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                         }
                       }
                     }
@@ -486,12 +486,12 @@
                     "start": {
                       "line": 20,
                       "column": 23,
-                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                     },
                     "end": {
                       "line": 28,
                       "column": 2,
-                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                      "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                     }
                   }
                 },
@@ -499,12 +499,12 @@
                   "start": {
                     "line": 20,
                     "column": 10,
-                    "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                    "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                   },
                   "end": {
                     "line": 28,
                     "column": 2,
-                    "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                    "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                   }
                 }
               },
@@ -512,12 +512,12 @@
                 "start": {
                   "line": 20,
                   "column": 10,
-                  "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                  "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                 },
                 "end": {
                   "line": 28,
                   "column": 2,
-                  "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                  "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
                 }
               }
             },
@@ -527,12 +527,12 @@
               "start": {
                 "line": 20,
                 "column": 1,
-                "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
               },
               "end": {
                 "line": 28,
                 "column": 2,
-                "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+                "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
               }
             }
           }
@@ -541,12 +541,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+            "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+            "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
           }
         }
       },
@@ -554,12 +554,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+          "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+          "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
         }
       }
     }
@@ -568,12 +568,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+      "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
     },
     "end": {
       "line": 29,
       "column": 1,
-      "program": "trailing_lambda_define_lambda_in_body_capture_variable.ets"
+      "program": "trailing_lambda_define_lambda_in_body_capture_variable.sts"
     }
   }
 }

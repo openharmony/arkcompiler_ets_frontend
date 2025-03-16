@@ -22,7 +22,7 @@ class LspGetDefTests : public LSPAPITests {};
 
 TEST_F(LspGetDefTests, GetDefinitionAtPosition1)
 {
-    std::vector<std::string> files = {"getDefinitionAtPosition1.ets", "getDefinitionAtPosition2.ets"};
+    std::vector<std::string> files = {"getDefinitionAtPosition1.sts", "getDefinitionAtPosition2.sts"};
     std::vector<std::string> texts = {R"(export function A(a:number, b:number): number {
     return a + b;
 })",
@@ -45,7 +45,7 @@ A(1, 2);)"};
 
 TEST_F(LspGetDefTests, GetDefinitionAtPosition2)
 {
-    std::vector<std::string> files = {"getDefinitionAtPosition3.ets"};
+    std::vector<std::string> files = {"getDefinitionAtPosition3.sts"};
     std::vector<std::string> texts = {R"(
     function A(a:number, b:number) {
         return a + b;
@@ -81,7 +81,7 @@ TEST_F(LspGetDefTests, GetDefinitionAtPosition2)
 
 TEST_F(LspGetDefTests, GetDefinitionAtPosition3)
 {
-    std::vector<std::string> files = {"getDefinitionAtPosition4.ets", "getDefinitionAtPosition5.ets"};
+    std::vector<std::string> files = {"getDefinitionAtPosition4.sts", "getDefinitionAtPosition5.sts"};
     std::vector<std::string> texts = {R"(export function A(a:number, b:number): number {
     return a + b;
 })",
@@ -104,7 +104,7 @@ All.A(1, 2);)"};
 
 TEST_F(LspGetDefTests, GetDefinitionAtPosition4)
 {
-    std::vector<std::string> files = {"getDefinitionAtPosition6.ets", "getDefinitionAtPosition7.ets"};
+    std::vector<std::string> files = {"getDefinitionAtPosition6.sts", "getDefinitionAtPosition7.sts"};
     std::vector<std::string> texts = {R"(export class A {
 Foo(a:number, b:number): number {
     return a + b;
@@ -129,7 +129,7 @@ a.Foo(1, 2);)"};
 
 TEST_F(LspGetDefTests, GetDefinitionAtPosition5)
 {
-    std::vector<std::string> files = {"getDefinitionAtPosition8.ets", "getDefinitionAtPosition9.ets"};
+    std::vector<std::string> files = {"getDefinitionAtPosition8.sts", "getDefinitionAtPosition9.sts"};
     std::vector<std::string> texts = {R"(export enum A {
 a,
 b})",
@@ -152,7 +152,7 @@ All.A.a;)"};
 
 TEST_F(LspGetDefTests, GetDefinitionAtPosition6)
 {
-    std::vector<std::string> files = {"getDefinitionAtPosition10.ets", "getDefinitionAtPosition11.ets"};
+    std::vector<std::string> files = {"getDefinitionAtPosition10.sts", "getDefinitionAtPosition11.sts"};
     std::vector<std::string> texts = {R"(export class A {
 Foo(a:number, b:number): number {
     return a + b;
@@ -178,7 +178,7 @@ a.Foo(1, 2);)"};
 
 TEST_F(LspGetDefTests, GetDefinitionAtPosition7)
 {
-    std::vector<std::string> files = {"getDefinitionAtPosition12.ets", "getDefinitionAtPosition13.ets"};
+    std::vector<std::string> files = {"getDefinitionAtPosition12.sts", "getDefinitionAtPosition13.sts"};
     std::vector<std::string> texts = {R"(export let a = 1;)",
                                       R"(import {a} from './getDefinitionAtPosition12';
 let b = a;)"};
@@ -199,7 +199,7 @@ let b = a;)"};
 
 TEST_F(LspGetDefTests, GetDefinitionAtPosition8)
 {
-    std::vector<std::string> files = {"getDefinitionAtPosition14.ets", "getDefinitionAtPosition15.ets"};
+    std::vector<std::string> files = {"getDefinitionAtPosition14.sts", "getDefinitionAtPosition15.sts"};
     std::vector<std::string> texts = {R"(export interface I {})",
                                       R"(import {I} from './getDefinitionAtPosition14';
 import * as All from './getDefinitionAtPosition14';
@@ -227,7 +227,7 @@ class A implements All.I {};)"};
 
 TEST_F(LspGetDefTests, GetDefinitionAtPosition9)
 {
-    std::vector<std::string> files = {"getDefinitionAtPosition16.ets", "getDefinitionAtPosition17.ets"};
+    std::vector<std::string> files = {"getDefinitionAtPosition16.sts", "getDefinitionAtPosition17.sts"};
     std::vector<std::string> texts = {R"(export class Foo {
 Foo(a:number, b:number): number {
     return a + b;

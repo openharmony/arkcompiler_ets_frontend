@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "comment_block.ets"
+              "program": "comment_block.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "comment_block.ets"
+              "program": "comment_block.sts"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "comment_block.ets"
+                "program": "comment_block.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "comment_block.ets"
+                "program": "comment_block.sts"
               }
             }
           },
@@ -227,12 +227,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "comment_block.ets"
+                "program": "comment_block.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "comment_block.ets"
+                "program": "comment_block.sts"
               }
             }
           }
@@ -241,12 +241,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "comment_block.ets"
+            "program": "comment_block.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "comment_block.ets"
+            "program": "comment_block.sts"
           }
         }
       },
@@ -254,12 +254,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "comment_block.ets"
+          "program": "comment_block.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "comment_block.ets"
+          "program": "comment_block.sts"
         }
       }
     }
@@ -268,12 +268,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "comment_block.ets"
+      "program": "comment_block.sts"
     },
     "end": {
       "line": 33,
       "column": 6,
-      "program": "comment_block.ets"
+      "program": "comment_block.sts"
     }
   }
 }

@@ -22,7 +22,7 @@ class LspDiagnosticsTests : public LSPAPITests {};
 
 TEST_F(LspDiagnosticsTests, GetSemanticDiagnostics1)
 {
-    std::vector<std::string> files = {"GetSemanticDiagnosticsNoError1.ets"};
+    std::vector<std::string> files = {"GetSemanticDiagnosticsNoError1.sts"};
     std::vector<std::string> texts = {R"delimiter(
 function add(a: number, b: number) {
     return a + b;
@@ -41,7 +41,7 @@ let res = add(n, n);
 
 TEST_F(LspDiagnosticsTests, GetSemanticDiagnostics2)
 {
-    std::vector<std::string> files = {"GetSemanticDiagnosticsNoError2.ets"};
+    std::vector<std::string> files = {"GetSemanticDiagnosticsNoError2.sts"};
     std::vector<std::string> texts = {R"delimiter(
 const a: number = "hello";
 function add(a: number, b: number): number {
@@ -86,7 +86,7 @@ add("1", 2);
 
 TEST_F(LspDiagnosticsTests, GetSyntacticDiagnostics1)
 {
-    std::vector<std::string> files = {"GetSemanticDiagnosticsNoError1.ets"};
+    std::vector<std::string> files = {"GetSemanticDiagnosticsNoError1.sts"};
     std::vector<std::string> texts = {R"delimiter(
 function add(a: number, b: number) {
     return a + b;
@@ -105,7 +105,7 @@ let res = add(n, n);
 
 TEST_F(LspDiagnosticsTests, GetSyntacticDiagnostics2)
 {
-    std::vector<std::string> files = {"GetSemanticDiagnosticsNoError2.ets"};
+    std::vector<std::string> files = {"GetSemanticDiagnosticsNoError2.sts"};
     std::vector<std::string> texts = {R"delimiter(
 functon add(a: number, b: number) {
     return a + b;
@@ -157,7 +157,7 @@ let res = add(n, n);
 
 TEST_F(LspDiagnosticsTests, GetSyntacticDiagnostics3)
 {
-    std::vector<std::string> files = {"GetSemanticDiagnosticsNoError3.ets"};
+    std::vector<std::string> files = {"GetSemanticDiagnosticsNoError3.sts"};
     std::vector<std::string> texts = {R"delimiter(
 functon add(a: number, b: number) {
     return a + b;
@@ -201,7 +201,7 @@ let res = add(n, n);
 
 TEST_F(LspDiagnosticsTests, GetSyntacticDiagnosticsForFile4)
 {
-    std::vector<std::string> files = {"GetSemanticDiagnosticsNoError4.ets"};
+    std::vector<std::string> files = {"GetSemanticDiagnosticsNoError4.sts"};
     std::vector<std::string> texts = {R"delimiter(
 functon add(a: number, b: number) {
     return a + b;

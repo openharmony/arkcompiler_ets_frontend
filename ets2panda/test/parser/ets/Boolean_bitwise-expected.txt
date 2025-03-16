@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "Boolean_bitwise.ets"
+              "program": "Boolean_bitwise.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "Boolean_bitwise.ets"
+              "program": "Boolean_bitwise.sts"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "Boolean_bitwise.ets"
+                "program": "Boolean_bitwise.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "Boolean_bitwise.ets"
+                "program": "Boolean_bitwise.sts"
               }
             }
           },
@@ -140,12 +140,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "Boolean_bitwise.ets"
+                  "program": "Boolean_bitwise.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 14,
-                  "program": "Boolean_bitwise.ets"
+                  "program": "Boolean_bitwise.sts"
                 }
               }
             },
@@ -166,12 +166,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "Boolean_bitwise.ets"
+                      "program": "Boolean_bitwise.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 14,
-                      "program": "Boolean_bitwise.ets"
+                      "program": "Boolean_bitwise.sts"
                     }
                   }
                 },
@@ -185,12 +185,12 @@
                     "start": {
                       "line": 16,
                       "column": 18,
-                      "program": "Boolean_bitwise.ets"
+                      "program": "Boolean_bitwise.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 22,
-                      "program": "Boolean_bitwise.ets"
+                      "program": "Boolean_bitwise.sts"
                     }
                   }
                 },
@@ -217,12 +217,12 @@
                                     "start": {
                                       "line": 17,
                                       "column": 10,
-                                      "program": "Boolean_bitwise.ets"
+                                      "program": "Boolean_bitwise.sts"
                                     },
                                     "end": {
                                       "line": 17,
                                       "column": 17,
-                                      "program": "Boolean_bitwise.ets"
+                                      "program": "Boolean_bitwise.sts"
                                     }
                                   }
                                 },
@@ -230,12 +230,12 @@
                                   "start": {
                                     "line": 17,
                                     "column": 10,
-                                    "program": "Boolean_bitwise.ets"
+                                    "program": "Boolean_bitwise.sts"
                                   },
                                   "end": {
                                     "line": 17,
                                     "column": 19,
-                                    "program": "Boolean_bitwise.ets"
+                                    "program": "Boolean_bitwise.sts"
                                   }
                                 }
                               },
@@ -243,12 +243,12 @@
                                 "start": {
                                   "line": 17,
                                   "column": 10,
-                                  "program": "Boolean_bitwise.ets"
+                                  "program": "Boolean_bitwise.sts"
                                 },
                                 "end": {
                                   "line": 17,
                                   "column": 19,
-                                  "program": "Boolean_bitwise.ets"
+                                  "program": "Boolean_bitwise.sts"
                                 }
                               }
                             },
@@ -257,12 +257,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 7,
-                                "program": "Boolean_bitwise.ets"
+                                "program": "Boolean_bitwise.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 8,
-                                "program": "Boolean_bitwise.ets"
+                                "program": "Boolean_bitwise.sts"
                               }
                             }
                           },
@@ -273,12 +273,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 20,
-                                "program": "Boolean_bitwise.ets"
+                                "program": "Boolean_bitwise.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 24,
-                                "program": "Boolean_bitwise.ets"
+                                "program": "Boolean_bitwise.sts"
                               }
                             }
                           },
@@ -286,12 +286,12 @@
                             "start": {
                               "line": 17,
                               "column": 7,
-                              "program": "Boolean_bitwise.ets"
+                              "program": "Boolean_bitwise.sts"
                             },
                             "end": {
                               "line": 17,
                               "column": 24,
-                              "program": "Boolean_bitwise.ets"
+                              "program": "Boolean_bitwise.sts"
                             }
                           }
                         }
@@ -301,12 +301,12 @@
                         "start": {
                           "line": 17,
                           "column": 3,
-                          "program": "Boolean_bitwise.ets"
+                          "program": "Boolean_bitwise.sts"
                         },
                         "end": {
                           "line": 17,
                           "column": 25,
-                          "program": "Boolean_bitwise.ets"
+                          "program": "Boolean_bitwise.sts"
                         }
                       }
                     },
@@ -330,12 +330,12 @@
                                     "start": {
                                       "line": 18,
                                       "column": 10,
-                                      "program": "Boolean_bitwise.ets"
+                                      "program": "Boolean_bitwise.sts"
                                     },
                                     "end": {
                                       "line": 18,
                                       "column": 17,
-                                      "program": "Boolean_bitwise.ets"
+                                      "program": "Boolean_bitwise.sts"
                                     }
                                   }
                                 },
@@ -343,12 +343,12 @@
                                   "start": {
                                     "line": 18,
                                     "column": 10,
-                                    "program": "Boolean_bitwise.ets"
+                                    "program": "Boolean_bitwise.sts"
                                   },
                                   "end": {
                                     "line": 18,
                                     "column": 19,
-                                    "program": "Boolean_bitwise.ets"
+                                    "program": "Boolean_bitwise.sts"
                                   }
                                 }
                               },
@@ -356,12 +356,12 @@
                                 "start": {
                                   "line": 18,
                                   "column": 10,
-                                  "program": "Boolean_bitwise.ets"
+                                  "program": "Boolean_bitwise.sts"
                                 },
                                 "end": {
                                   "line": 18,
                                   "column": 19,
-                                  "program": "Boolean_bitwise.ets"
+                                  "program": "Boolean_bitwise.sts"
                                 }
                               }
                             },
@@ -370,12 +370,12 @@
                               "start": {
                                 "line": 18,
                                 "column": 7,
-                                "program": "Boolean_bitwise.ets"
+                                "program": "Boolean_bitwise.sts"
                               },
                               "end": {
                                 "line": 18,
                                 "column": 8,
-                                "program": "Boolean_bitwise.ets"
+                                "program": "Boolean_bitwise.sts"
                               }
                             }
                           },
@@ -386,12 +386,12 @@
                               "start": {
                                 "line": 18,
                                 "column": 20,
-                                "program": "Boolean_bitwise.ets"
+                                "program": "Boolean_bitwise.sts"
                               },
                               "end": {
                                 "line": 18,
                                 "column": 25,
-                                "program": "Boolean_bitwise.ets"
+                                "program": "Boolean_bitwise.sts"
                               }
                             }
                           },
@@ -399,12 +399,12 @@
                             "start": {
                               "line": 18,
                               "column": 7,
-                              "program": "Boolean_bitwise.ets"
+                              "program": "Boolean_bitwise.sts"
                             },
                             "end": {
                               "line": 18,
                               "column": 25,
-                              "program": "Boolean_bitwise.ets"
+                              "program": "Boolean_bitwise.sts"
                             }
                           }
                         }
@@ -414,12 +414,12 @@
                         "start": {
                           "line": 18,
                           "column": 3,
-                          "program": "Boolean_bitwise.ets"
+                          "program": "Boolean_bitwise.sts"
                         },
                         "end": {
                           "line": 18,
                           "column": 26,
-                          "program": "Boolean_bitwise.ets"
+                          "program": "Boolean_bitwise.sts"
                         }
                       }
                     },
@@ -443,12 +443,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 13,
-                                      "program": "Boolean_bitwise.ets"
+                                      "program": "Boolean_bitwise.sts"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 20,
-                                      "program": "Boolean_bitwise.ets"
+                                      "program": "Boolean_bitwise.sts"
                                     }
                                   }
                                 },
@@ -456,12 +456,12 @@
                                   "start": {
                                     "line": 19,
                                     "column": 13,
-                                    "program": "Boolean_bitwise.ets"
+                                    "program": "Boolean_bitwise.sts"
                                   },
                                   "end": {
                                     "line": 19,
                                     "column": 22,
-                                    "program": "Boolean_bitwise.ets"
+                                    "program": "Boolean_bitwise.sts"
                                   }
                                 }
                               },
@@ -469,12 +469,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 13,
-                                  "program": "Boolean_bitwise.ets"
+                                  "program": "Boolean_bitwise.sts"
                                 },
                                 "end": {
                                   "line": 19,
                                   "column": 22,
-                                  "program": "Boolean_bitwise.ets"
+                                  "program": "Boolean_bitwise.sts"
                                 }
                               }
                             },
@@ -483,12 +483,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 7,
-                                "program": "Boolean_bitwise.ets"
+                                "program": "Boolean_bitwise.sts"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 11,
-                                "program": "Boolean_bitwise.ets"
+                                "program": "Boolean_bitwise.sts"
                               }
                             }
                           },
@@ -503,12 +503,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 23,
-                                  "program": "Boolean_bitwise.ets"
+                                  "program": "Boolean_bitwise.sts"
                                 },
                                 "end": {
                                   "line": 19,
                                   "column": 24,
-                                  "program": "Boolean_bitwise.ets"
+                                  "program": "Boolean_bitwise.sts"
                                 }
                               }
                             },
@@ -520,12 +520,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 27,
-                                  "program": "Boolean_bitwise.ets"
+                                  "program": "Boolean_bitwise.sts"
                                 },
                                 "end": {
                                   "line": 19,
                                   "column": 28,
-                                  "program": "Boolean_bitwise.ets"
+                                  "program": "Boolean_bitwise.sts"
                                 }
                               }
                             },
@@ -533,12 +533,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 23,
-                                "program": "Boolean_bitwise.ets"
+                                "program": "Boolean_bitwise.sts"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 28,
-                                "program": "Boolean_bitwise.ets"
+                                "program": "Boolean_bitwise.sts"
                               }
                             }
                           },
@@ -546,12 +546,12 @@
                             "start": {
                               "line": 19,
                               "column": 7,
-                              "program": "Boolean_bitwise.ets"
+                              "program": "Boolean_bitwise.sts"
                             },
                             "end": {
                               "line": 19,
                               "column": 28,
-                              "program": "Boolean_bitwise.ets"
+                              "program": "Boolean_bitwise.sts"
                             }
                           }
                         }
@@ -561,12 +561,12 @@
                         "start": {
                           "line": 19,
                           "column": 3,
-                          "program": "Boolean_bitwise.ets"
+                          "program": "Boolean_bitwise.sts"
                         },
                         "end": {
                           "line": 19,
                           "column": 29,
-                          "program": "Boolean_bitwise.ets"
+                          "program": "Boolean_bitwise.sts"
                         }
                       }
                     }
@@ -575,12 +575,12 @@
                     "start": {
                       "line": 16,
                       "column": 23,
-                      "program": "Boolean_bitwise.ets"
+                      "program": "Boolean_bitwise.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 2,
-                      "program": "Boolean_bitwise.ets"
+                      "program": "Boolean_bitwise.sts"
                     }
                   }
                 },
@@ -588,12 +588,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "Boolean_bitwise.ets"
+                    "program": "Boolean_bitwise.sts"
                   },
                   "end": {
                     "line": 20,
                     "column": 2,
-                    "program": "Boolean_bitwise.ets"
+                    "program": "Boolean_bitwise.sts"
                   }
                 }
               },
@@ -601,12 +601,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "Boolean_bitwise.ets"
+                  "program": "Boolean_bitwise.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 2,
-                  "program": "Boolean_bitwise.ets"
+                  "program": "Boolean_bitwise.sts"
                 }
               }
             },
@@ -616,12 +616,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "Boolean_bitwise.ets"
+                "program": "Boolean_bitwise.sts"
               },
               "end": {
                 "line": 20,
                 "column": 2,
-                "program": "Boolean_bitwise.ets"
+                "program": "Boolean_bitwise.sts"
               }
             }
           }
@@ -630,12 +630,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "Boolean_bitwise.ets"
+            "program": "Boolean_bitwise.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "Boolean_bitwise.ets"
+            "program": "Boolean_bitwise.sts"
           }
         }
       },
@@ -643,12 +643,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "Boolean_bitwise.ets"
+          "program": "Boolean_bitwise.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "Boolean_bitwise.ets"
+          "program": "Boolean_bitwise.sts"
         }
       }
     }
@@ -657,12 +657,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "Boolean_bitwise.ets"
+      "program": "Boolean_bitwise.sts"
     },
     "end": {
       "line": 20,
       "column": 2,
-      "program": "Boolean_bitwise.ets"
+      "program": "Boolean_bitwise.sts"
     }
   }
 }

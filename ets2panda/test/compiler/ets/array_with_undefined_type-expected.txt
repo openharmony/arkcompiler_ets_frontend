@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "array_with_undefined_type.ets"
+              "program": "array_with_undefined_type.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "array_with_undefined_type.ets"
+              "program": "array_with_undefined_type.sts"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "array_with_undefined_type.ets"
+                "program": "array_with_undefined_type.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "array_with_undefined_type.ets"
+                "program": "array_with_undefined_type.sts"
               }
             }
           },
@@ -140,12 +140,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "array_with_undefined_type.ets"
+                  "program": "array_with_undefined_type.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 14,
-                  "program": "array_with_undefined_type.ets"
+                  "program": "array_with_undefined_type.sts"
                 }
               }
             },
@@ -166,12 +166,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "array_with_undefined_type.ets"
+                      "program": "array_with_undefined_type.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 14,
-                      "program": "array_with_undefined_type.ets"
+                      "program": "array_with_undefined_type.sts"
                     }
                   }
                 },
@@ -185,12 +185,12 @@
                     "start": {
                       "line": 16,
                       "column": 18,
-                      "program": "array_with_undefined_type.ets"
+                      "program": "array_with_undefined_type.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 22,
-                      "program": "array_with_undefined_type.ets"
+                      "program": "array_with_undefined_type.sts"
                     }
                   }
                 },
@@ -213,12 +213,12 @@
                                   "start": {
                                     "line": 17,
                                     "column": 14,
-                                    "program": "array_with_undefined_type.ets"
+                                    "program": "array_with_undefined_type.sts"
                                   },
                                   "end": {
                                     "line": 17,
                                     "column": 23,
-                                    "program": "array_with_undefined_type.ets"
+                                    "program": "array_with_undefined_type.sts"
                                   }
                                 }
                               },
@@ -227,12 +227,12 @@
                                 "start": {
                                   "line": 17,
                                   "column": 23,
-                                  "program": "array_with_undefined_type.ets"
+                                  "program": "array_with_undefined_type.sts"
                                 },
                                 "end": {
                                   "line": 17,
                                   "column": 25,
-                                  "program": "array_with_undefined_type.ets"
+                                  "program": "array_with_undefined_type.sts"
                                 }
                               }
                             },
@@ -241,12 +241,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 9,
-                                "program": "array_with_undefined_type.ets"
+                                "program": "array_with_undefined_type.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 12,
-                                "program": "array_with_undefined_type.ets"
+                                "program": "array_with_undefined_type.sts"
                               }
                             }
                           },
@@ -260,12 +260,12 @@
                                   "start": {
                                     "line": 17,
                                     "column": 29,
-                                    "program": "array_with_undefined_type.ets"
+                                    "program": "array_with_undefined_type.sts"
                                   },
                                   "end": {
                                     "line": 17,
                                     "column": 38,
-                                    "program": "array_with_undefined_type.ets"
+                                    "program": "array_with_undefined_type.sts"
                                   }
                                 }
                               },
@@ -276,12 +276,12 @@
                                   "start": {
                                     "line": 17,
                                     "column": 40,
-                                    "program": "array_with_undefined_type.ets"
+                                    "program": "array_with_undefined_type.sts"
                                   },
                                   "end": {
                                     "line": 17,
                                     "column": 49,
-                                    "program": "array_with_undefined_type.ets"
+                                    "program": "array_with_undefined_type.sts"
                                   }
                                 }
                               }
@@ -290,12 +290,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 28,
-                                "program": "array_with_undefined_type.ets"
+                                "program": "array_with_undefined_type.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 50,
-                                "program": "array_with_undefined_type.ets"
+                                "program": "array_with_undefined_type.sts"
                               }
                             }
                           },
@@ -303,12 +303,12 @@
                             "start": {
                               "line": 17,
                               "column": 9,
-                              "program": "array_with_undefined_type.ets"
+                              "program": "array_with_undefined_type.sts"
                             },
                             "end": {
                               "line": 17,
                               "column": 50,
-                              "program": "array_with_undefined_type.ets"
+                              "program": "array_with_undefined_type.sts"
                             }
                           }
                         }
@@ -318,12 +318,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "array_with_undefined_type.ets"
+                          "program": "array_with_undefined_type.sts"
                         },
                         "end": {
                           "line": 17,
                           "column": 50,
-                          "program": "array_with_undefined_type.ets"
+                          "program": "array_with_undefined_type.sts"
                         }
                       }
                     },
@@ -340,12 +340,12 @@
                               "start": {
                                 "line": 18,
                                 "column": 9,
-                                "program": "array_with_undefined_type.ets"
+                                "program": "array_with_undefined_type.sts"
                               },
                               "end": {
                                 "line": 18,
                                 "column": 12,
-                                "program": "array_with_undefined_type.ets"
+                                "program": "array_with_undefined_type.sts"
                               }
                             }
                           },
@@ -357,12 +357,12 @@
                               "start": {
                                 "line": 18,
                                 "column": 15,
-                                "program": "array_with_undefined_type.ets"
+                                "program": "array_with_undefined_type.sts"
                               },
                               "end": {
                                 "line": 18,
                                 "column": 18,
-                                "program": "array_with_undefined_type.ets"
+                                "program": "array_with_undefined_type.sts"
                               }
                             }
                           },
@@ -370,12 +370,12 @@
                             "start": {
                               "line": 18,
                               "column": 9,
-                              "program": "array_with_undefined_type.ets"
+                              "program": "array_with_undefined_type.sts"
                             },
                             "end": {
                               "line": 18,
                               "column": 18,
-                              "program": "array_with_undefined_type.ets"
+                              "program": "array_with_undefined_type.sts"
                             }
                           }
                         }
@@ -385,12 +385,12 @@
                         "start": {
                           "line": 18,
                           "column": 5,
-                          "program": "array_with_undefined_type.ets"
+                          "program": "array_with_undefined_type.sts"
                         },
                         "end": {
                           "line": 18,
                           "column": 18,
-                          "program": "array_with_undefined_type.ets"
+                          "program": "array_with_undefined_type.sts"
                         }
                       }
                     },
@@ -406,12 +406,12 @@
                             "start": {
                               "line": 19,
                               "column": 5,
-                              "program": "array_with_undefined_type.ets"
+                              "program": "array_with_undefined_type.sts"
                             },
                             "end": {
                               "line": 19,
                               "column": 13,
-                              "program": "array_with_undefined_type.ets"
+                              "program": "array_with_undefined_type.sts"
                             }
                           }
                         },
@@ -426,12 +426,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 14,
-                                  "program": "array_with_undefined_type.ets"
+                                  "program": "array_with_undefined_type.sts"
                                 },
                                 "end": {
                                   "line": 19,
                                   "column": 17,
-                                  "program": "array_with_undefined_type.ets"
+                                  "program": "array_with_undefined_type.sts"
                                 }
                               }
                             },
@@ -442,12 +442,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 18,
-                                  "program": "array_with_undefined_type.ets"
+                                  "program": "array_with_undefined_type.sts"
                                 },
                                 "end": {
                                   "line": 19,
                                   "column": 19,
-                                  "program": "array_with_undefined_type.ets"
+                                  "program": "array_with_undefined_type.sts"
                                 }
                               }
                             },
@@ -457,12 +457,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 14,
-                                "program": "array_with_undefined_type.ets"
+                                "program": "array_with_undefined_type.sts"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 20,
-                                "program": "array_with_undefined_type.ets"
+                                "program": "array_with_undefined_type.sts"
                               }
                             }
                           },
@@ -473,12 +473,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 22,
-                                "program": "array_with_undefined_type.ets"
+                                "program": "array_with_undefined_type.sts"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 31,
-                                "program": "array_with_undefined_type.ets"
+                                "program": "array_with_undefined_type.sts"
                               }
                             }
                           }
@@ -488,12 +488,12 @@
                           "start": {
                             "line": 19,
                             "column": 5,
-                            "program": "array_with_undefined_type.ets"
+                            "program": "array_with_undefined_type.sts"
                           },
                           "end": {
                             "line": 19,
                             "column": 32,
-                            "program": "array_with_undefined_type.ets"
+                            "program": "array_with_undefined_type.sts"
                           }
                         }
                       },
@@ -501,12 +501,12 @@
                         "start": {
                           "line": 19,
                           "column": 5,
-                          "program": "array_with_undefined_type.ets"
+                          "program": "array_with_undefined_type.sts"
                         },
                         "end": {
                           "line": 19,
                           "column": 33,
-                          "program": "array_with_undefined_type.ets"
+                          "program": "array_with_undefined_type.sts"
                         }
                       }
                     }
@@ -515,12 +515,12 @@
                     "start": {
                       "line": 16,
                       "column": 23,
-                      "program": "array_with_undefined_type.ets"
+                      "program": "array_with_undefined_type.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 2,
-                      "program": "array_with_undefined_type.ets"
+                      "program": "array_with_undefined_type.sts"
                     }
                   }
                 },
@@ -528,12 +528,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "array_with_undefined_type.ets"
+                    "program": "array_with_undefined_type.sts"
                   },
                   "end": {
                     "line": 20,
                     "column": 2,
-                    "program": "array_with_undefined_type.ets"
+                    "program": "array_with_undefined_type.sts"
                   }
                 }
               },
@@ -541,12 +541,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "array_with_undefined_type.ets"
+                  "program": "array_with_undefined_type.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 2,
-                  "program": "array_with_undefined_type.ets"
+                  "program": "array_with_undefined_type.sts"
                 }
               }
             },
@@ -556,12 +556,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "array_with_undefined_type.ets"
+                "program": "array_with_undefined_type.sts"
               },
               "end": {
                 "line": 20,
                 "column": 2,
-                "program": "array_with_undefined_type.ets"
+                "program": "array_with_undefined_type.sts"
               }
             }
           }
@@ -570,12 +570,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "array_with_undefined_type.ets"
+            "program": "array_with_undefined_type.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "array_with_undefined_type.ets"
+            "program": "array_with_undefined_type.sts"
           }
         }
       },
@@ -583,12 +583,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "array_with_undefined_type.ets"
+          "program": "array_with_undefined_type.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "array_with_undefined_type.ets"
+          "program": "array_with_undefined_type.sts"
         }
       }
     }
@@ -597,12 +597,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "array_with_undefined_type.ets"
+      "program": "array_with_undefined_type.sts"
     },
     "end": {
       "line": 21,
       "column": 1,
-      "program": "array_with_undefined_type.ets"
+      "program": "array_with_undefined_type.sts"
     }
   }
 }

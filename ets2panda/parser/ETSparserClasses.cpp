@@ -833,7 +833,7 @@ ir::ClassProperty *ETSParser::ParseInterfaceField()
 
     ir::TypeNode *typeAnnotation = nullptr;
     if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
-        // interfaces3.ets
+        // interfaces3.sts
         LogError(diagnostic::INTERFACE_FIELDS_TYPE_ANNOTATION);
 
         Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COLON);
@@ -1145,7 +1145,7 @@ std::pair<ir::ModifierFlags, lexer::SourcePosition> ETSParser::ParseMemberModifi
         Lexer()->NextToken();
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_FUNCTION) {
-            // async_function_bas.ets
+            // async_function_bas.sts
             if (isAsync) {
                 LogError(diagnostic::ASYNC_FLAG_ONLY_FOR_TOP_FUN);
             } else {

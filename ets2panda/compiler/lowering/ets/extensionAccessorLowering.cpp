@@ -123,7 +123,7 @@ using AstNodePtr = ir::AstNode *;
 
 bool ExtensionAccessorPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    if (program->Extension() != ScriptExtension::ETS) {
+    if (program->Extension() != ScriptExtension::STS) {
         return true;
     }
 

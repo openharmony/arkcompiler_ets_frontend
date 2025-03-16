@@ -248,7 +248,7 @@ void Signature::IsSubtypeOf(TypeRelation *relation, Signature *super)
     relation->Result(MethodSignaturesAreCompatible(relation, !relation->IsOverridingCheck(), super, sub));
 }
 
-// This function is not used by ets extension
+// This function is not used by sts extension
 void Signature::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Signature *source)
 {
     if (signatureInfo_->restVar == nullptr && source->MinArgCount() > signatureInfo_->params.size()) {

@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "lambda-type-inference-arg-no-type.ets"
+              "program": "lambda-type-inference-arg-no-type.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "lambda-type-inference-arg-no-type.ets"
+              "program": "lambda-type-inference-arg-no-type.sts"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "lambda-type-inference-arg-no-type.ets"
+                "program": "lambda-type-inference-arg-no-type.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "lambda-type-inference-arg-no-type.ets"
+                "program": "lambda-type-inference-arg-no-type.sts"
               }
             }
           },
@@ -140,12 +140,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "lambda-type-inference-arg-no-type.ets"
+                  "program": "lambda-type-inference-arg-no-type.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 13,
-                  "program": "lambda-type-inference-arg-no-type.ets"
+                  "program": "lambda-type-inference-arg-no-type.sts"
                 }
               }
             },
@@ -166,12 +166,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "lambda-type-inference-arg-no-type.ets"
+                      "program": "lambda-type-inference-arg-no-type.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 13,
-                      "program": "lambda-type-inference-arg-no-type.ets"
+                      "program": "lambda-type-inference-arg-no-type.sts"
                     }
                   }
                 },
@@ -198,12 +198,12 @@
                                   "start": {
                                     "line": 16,
                                     "column": 28,
-                                    "program": "lambda-type-inference-arg-no-type.ets"
+                                    "program": "lambda-type-inference-arg-no-type.sts"
                                   },
                                   "end": {
                                     "line": 16,
                                     "column": 31,
-                                    "program": "lambda-type-inference-arg-no-type.ets"
+                                    "program": "lambda-type-inference-arg-no-type.sts"
                                   }
                                 }
                               },
@@ -212,12 +212,12 @@
                                 "start": {
                                   "line": 16,
                                   "column": 25,
-                                  "program": "lambda-type-inference-arg-no-type.ets"
+                                  "program": "lambda-type-inference-arg-no-type.sts"
                                 },
                                 "end": {
                                   "line": 16,
                                   "column": 31,
-                                  "program": "lambda-type-inference-arg-no-type.ets"
+                                  "program": "lambda-type-inference-arg-no-type.sts"
                                 }
                               }
                             },
@@ -225,12 +225,12 @@
                               "start": {
                                 "line": 16,
                                 "column": 25,
-                                "program": "lambda-type-inference-arg-no-type.ets"
+                                "program": "lambda-type-inference-arg-no-type.sts"
                               },
                               "end": {
                                 "line": 16,
                                 "column": 31,
-                                "program": "lambda-type-inference-arg-no-type.ets"
+                                "program": "lambda-type-inference-arg-no-type.sts"
                               }
                             }
                           },
@@ -251,12 +251,12 @@
                                       "start": {
                                         "line": 16,
                                         "column": 36,
-                                        "program": "lambda-type-inference-arg-no-type.ets"
+                                        "program": "lambda-type-inference-arg-no-type.sts"
                                       },
                                       "end": {
                                         "line": 16,
                                         "column": 42,
-                                        "program": "lambda-type-inference-arg-no-type.ets"
+                                        "program": "lambda-type-inference-arg-no-type.sts"
                                       }
                                     }
                                   },
@@ -264,12 +264,12 @@
                                     "start": {
                                       "line": 16,
                                       "column": 36,
-                                      "program": "lambda-type-inference-arg-no-type.ets"
+                                      "program": "lambda-type-inference-arg-no-type.sts"
                                     },
                                     "end": {
                                       "line": 16,
                                       "column": 43,
-                                      "program": "lambda-type-inference-arg-no-type.ets"
+                                      "program": "lambda-type-inference-arg-no-type.sts"
                                     }
                                   }
                                 },
@@ -277,12 +277,12 @@
                                   "start": {
                                     "line": 16,
                                     "column": 36,
-                                    "program": "lambda-type-inference-arg-no-type.ets"
+                                    "program": "lambda-type-inference-arg-no-type.sts"
                                   },
                                   "end": {
                                     "line": 16,
                                     "column": 43,
-                                    "program": "lambda-type-inference-arg-no-type.ets"
+                                    "program": "lambda-type-inference-arg-no-type.sts"
                                   }
                                 }
                               },
@@ -291,12 +291,12 @@
                                 "start": {
                                   "line": 16,
                                   "column": 33,
-                                  "program": "lambda-type-inference-arg-no-type.ets"
+                                  "program": "lambda-type-inference-arg-no-type.sts"
                                 },
                                 "end": {
                                   "line": 16,
                                   "column": 43,
-                                  "program": "lambda-type-inference-arg-no-type.ets"
+                                  "program": "lambda-type-inference-arg-no-type.sts"
                                 }
                               }
                             },
@@ -304,12 +304,12 @@
                               "start": {
                                 "line": 16,
                                 "column": 33,
-                                "program": "lambda-type-inference-arg-no-type.ets"
+                                "program": "lambda-type-inference-arg-no-type.sts"
                               },
                               "end": {
                                 "line": 16,
                                 "column": 43,
-                                "program": "lambda-type-inference-arg-no-type.ets"
+                                "program": "lambda-type-inference-arg-no-type.sts"
                               }
                             }
                           }
@@ -320,12 +320,12 @@
                             "start": {
                               "line": 16,
                               "column": 47,
-                              "program": "lambda-type-inference-arg-no-type.ets"
+                              "program": "lambda-type-inference-arg-no-type.sts"
                             },
                             "end": {
                               "line": 16,
                               "column": 54,
-                              "program": "lambda-type-inference-arg-no-type.ets"
+                              "program": "lambda-type-inference-arg-no-type.sts"
                             }
                           }
                         },
@@ -333,12 +333,12 @@
                           "start": {
                             "line": 16,
                             "column": 24,
-                            "program": "lambda-type-inference-arg-no-type.ets"
+                            "program": "lambda-type-inference-arg-no-type.sts"
                           },
                           "end": {
                             "line": 16,
                             "column": 54,
-                            "program": "lambda-type-inference-arg-no-type.ets"
+                            "program": "lambda-type-inference-arg-no-type.sts"
                           }
                         }
                       },
@@ -347,12 +347,12 @@
                         "start": {
                           "line": 16,
                           "column": 14,
-                          "program": "lambda-type-inference-arg-no-type.ets"
+                          "program": "lambda-type-inference-arg-no-type.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 54,
-                          "program": "lambda-type-inference-arg-no-type.ets"
+                          "program": "lambda-type-inference-arg-no-type.sts"
                         }
                       }
                     },
@@ -360,12 +360,12 @@
                       "start": {
                         "line": 16,
                         "column": 14,
-                        "program": "lambda-type-inference-arg-no-type.ets"
+                        "program": "lambda-type-inference-arg-no-type.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 54,
-                        "program": "lambda-type-inference-arg-no-type.ets"
+                        "program": "lambda-type-inference-arg-no-type.sts"
                       }
                     }
                   }
@@ -376,12 +376,12 @@
                     "start": {
                       "line": 16,
                       "column": 57,
-                      "program": "lambda-type-inference-arg-no-type.ets"
+                      "program": "lambda-type-inference-arg-no-type.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 61,
-                      "program": "lambda-type-inference-arg-no-type.ets"
+                      "program": "lambda-type-inference-arg-no-type.sts"
                     }
                   }
                 },
@@ -402,12 +402,12 @@
                                 "start": {
                                   "line": 17,
                                   "column": 12,
-                                  "program": "lambda-type-inference-arg-no-type.ets"
+                                  "program": "lambda-type-inference-arg-no-type.sts"
                                 },
                                 "end": {
                                   "line": 17,
                                   "column": 19,
-                                  "program": "lambda-type-inference-arg-no-type.ets"
+                                  "program": "lambda-type-inference-arg-no-type.sts"
                                 }
                               }
                             },
@@ -416,12 +416,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 9,
-                                "program": "lambda-type-inference-arg-no-type.ets"
+                                "program": "lambda-type-inference-arg-no-type.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 10,
-                                "program": "lambda-type-inference-arg-no-type.ets"
+                                "program": "lambda-type-inference-arg-no-type.sts"
                               }
                             }
                           },
@@ -435,12 +435,12 @@
                                 "start": {
                                   "line": 17,
                                   "column": 22,
-                                  "program": "lambda-type-inference-arg-no-type.ets"
+                                  "program": "lambda-type-inference-arg-no-type.sts"
                                 },
                                 "end": {
                                   "line": 17,
                                   "column": 30,
-                                  "program": "lambda-type-inference-arg-no-type.ets"
+                                  "program": "lambda-type-inference-arg-no-type.sts"
                                 }
                               }
                             },
@@ -452,12 +452,12 @@
                                   "start": {
                                     "line": 17,
                                     "column": 31,
-                                    "program": "lambda-type-inference-arg-no-type.ets"
+                                    "program": "lambda-type-inference-arg-no-type.sts"
                                   },
                                   "end": {
                                     "line": 17,
                                     "column": 32,
-                                    "program": "lambda-type-inference-arg-no-type.ets"
+                                    "program": "lambda-type-inference-arg-no-type.sts"
                                   }
                                 }
                               },
@@ -468,12 +468,12 @@
                                   "start": {
                                     "line": 17,
                                     "column": 34,
-                                    "program": "lambda-type-inference-arg-no-type.ets"
+                                    "program": "lambda-type-inference-arg-no-type.sts"
                                   },
                                   "end": {
                                     "line": 17,
                                     "column": 41,
-                                    "program": "lambda-type-inference-arg-no-type.ets"
+                                    "program": "lambda-type-inference-arg-no-type.sts"
                                   }
                                 }
                               }
@@ -483,12 +483,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 22,
-                                "program": "lambda-type-inference-arg-no-type.ets"
+                                "program": "lambda-type-inference-arg-no-type.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 42,
-                                "program": "lambda-type-inference-arg-no-type.ets"
+                                "program": "lambda-type-inference-arg-no-type.sts"
                               }
                             }
                           },
@@ -496,12 +496,12 @@
                             "start": {
                               "line": 17,
                               "column": 9,
-                              "program": "lambda-type-inference-arg-no-type.ets"
+                              "program": "lambda-type-inference-arg-no-type.sts"
                             },
                             "end": {
                               "line": 17,
                               "column": 42,
-                              "program": "lambda-type-inference-arg-no-type.ets"
+                              "program": "lambda-type-inference-arg-no-type.sts"
                             }
                           }
                         }
@@ -511,12 +511,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "lambda-type-inference-arg-no-type.ets"
+                          "program": "lambda-type-inference-arg-no-type.sts"
                         },
                         "end": {
                           "line": 17,
                           "column": 43,
-                          "program": "lambda-type-inference-arg-no-type.ets"
+                          "program": "lambda-type-inference-arg-no-type.sts"
                         }
                       }
                     }
@@ -525,12 +525,12 @@
                     "start": {
                       "line": 16,
                       "column": 62,
-                      "program": "lambda-type-inference-arg-no-type.ets"
+                      "program": "lambda-type-inference-arg-no-type.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 2,
-                      "program": "lambda-type-inference-arg-no-type.ets"
+                      "program": "lambda-type-inference-arg-no-type.sts"
                     }
                   }
                 },
@@ -538,12 +538,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "lambda-type-inference-arg-no-type.ets"
+                    "program": "lambda-type-inference-arg-no-type.sts"
                   },
                   "end": {
                     "line": 18,
                     "column": 2,
-                    "program": "lambda-type-inference-arg-no-type.ets"
+                    "program": "lambda-type-inference-arg-no-type.sts"
                   }
                 }
               },
@@ -551,12 +551,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "lambda-type-inference-arg-no-type.ets"
+                  "program": "lambda-type-inference-arg-no-type.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 2,
-                  "program": "lambda-type-inference-arg-no-type.ets"
+                  "program": "lambda-type-inference-arg-no-type.sts"
                 }
               }
             },
@@ -566,12 +566,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "lambda-type-inference-arg-no-type.ets"
+                "program": "lambda-type-inference-arg-no-type.sts"
               },
               "end": {
                 "line": 18,
                 "column": 2,
-                "program": "lambda-type-inference-arg-no-type.ets"
+                "program": "lambda-type-inference-arg-no-type.sts"
               }
             }
           },
@@ -585,12 +585,12 @@
                 "start": {
                   "line": 20,
                   "column": 10,
-                  "program": "lambda-type-inference-arg-no-type.ets"
+                  "program": "lambda-type-inference-arg-no-type.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 14,
-                  "program": "lambda-type-inference-arg-no-type.ets"
+                  "program": "lambda-type-inference-arg-no-type.sts"
                 }
               }
             },
@@ -611,12 +611,12 @@
                     "start": {
                       "line": 20,
                       "column": 10,
-                      "program": "lambda-type-inference-arg-no-type.ets"
+                      "program": "lambda-type-inference-arg-no-type.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 14,
-                      "program": "lambda-type-inference-arg-no-type.ets"
+                      "program": "lambda-type-inference-arg-no-type.sts"
                     }
                   }
                 },
@@ -630,12 +630,12 @@
                     "start": {
                       "line": 20,
                       "column": 18,
-                      "program": "lambda-type-inference-arg-no-type.ets"
+                      "program": "lambda-type-inference-arg-no-type.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 22,
-                      "program": "lambda-type-inference-arg-no-type.ets"
+                      "program": "lambda-type-inference-arg-no-type.sts"
                     }
                   }
                 },
@@ -654,12 +654,12 @@
                             "start": {
                               "line": 21,
                               "column": 5,
-                              "program": "lambda-type-inference-arg-no-type.ets"
+                              "program": "lambda-type-inference-arg-no-type.sts"
                             },
                             "end": {
                               "line": 21,
                               "column": 8,
-                              "program": "lambda-type-inference-arg-no-type.ets"
+                              "program": "lambda-type-inference-arg-no-type.sts"
                             }
                           }
                         },
@@ -684,12 +684,12 @@
                                         "start": {
                                           "line": 21,
                                           "column": 13,
-                                          "program": "lambda-type-inference-arg-no-type.ets"
+                                          "program": "lambda-type-inference-arg-no-type.sts"
                                         },
                                         "end": {
                                           "line": 21,
                                           "column": 16,
-                                          "program": "lambda-type-inference-arg-no-type.ets"
+                                          "program": "lambda-type-inference-arg-no-type.sts"
                                         }
                                       }
                                     },
@@ -698,12 +698,12 @@
                                       "start": {
                                         "line": 21,
                                         "column": 10,
-                                        "program": "lambda-type-inference-arg-no-type.ets"
+                                        "program": "lambda-type-inference-arg-no-type.sts"
                                       },
                                       "end": {
                                         "line": 21,
                                         "column": 16,
-                                        "program": "lambda-type-inference-arg-no-type.ets"
+                                        "program": "lambda-type-inference-arg-no-type.sts"
                                       }
                                     }
                                   },
@@ -711,12 +711,12 @@
                                     "start": {
                                       "line": 21,
                                       "column": 10,
-                                      "program": "lambda-type-inference-arg-no-type.ets"
+                                      "program": "lambda-type-inference-arg-no-type.sts"
                                     },
                                     "end": {
                                       "line": 21,
                                       "column": 16,
-                                      "program": "lambda-type-inference-arg-no-type.ets"
+                                      "program": "lambda-type-inference-arg-no-type.sts"
                                     }
                                   }
                                 },
@@ -730,12 +730,12 @@
                                       "start": {
                                         "line": 21,
                                         "column": 18,
-                                        "program": "lambda-type-inference-arg-no-type.ets"
+                                        "program": "lambda-type-inference-arg-no-type.sts"
                                       },
                                       "end": {
                                         "line": 21,
                                         "column": 19,
-                                        "program": "lambda-type-inference-arg-no-type.ets"
+                                        "program": "lambda-type-inference-arg-no-type.sts"
                                       }
                                     }
                                   },
@@ -743,12 +743,12 @@
                                     "start": {
                                       "line": 21,
                                       "column": 18,
-                                      "program": "lambda-type-inference-arg-no-type.ets"
+                                      "program": "lambda-type-inference-arg-no-type.sts"
                                     },
                                     "end": {
                                       "line": 21,
                                       "column": 19,
-                                      "program": "lambda-type-inference-arg-no-type.ets"
+                                      "program": "lambda-type-inference-arg-no-type.sts"
                                     }
                                   }
                                 }
@@ -759,12 +759,12 @@
                                   "start": {
                                     "line": 21,
                                     "column": 22,
-                                    "program": "lambda-type-inference-arg-no-type.ets"
+                                    "program": "lambda-type-inference-arg-no-type.sts"
                                   },
                                   "end": {
                                     "line": 21,
                                     "column": 29,
-                                    "program": "lambda-type-inference-arg-no-type.ets"
+                                    "program": "lambda-type-inference-arg-no-type.sts"
                                   }
                                 }
                               },
@@ -786,12 +786,12 @@
                                             "start": {
                                               "line": 22,
                                               "column": 16,
-                                              "program": "lambda-type-inference-arg-no-type.ets"
+                                              "program": "lambda-type-inference-arg-no-type.sts"
                                             },
                                             "end": {
                                               "line": 22,
                                               "column": 17,
-                                              "program": "lambda-type-inference-arg-no-type.ets"
+                                              "program": "lambda-type-inference-arg-no-type.sts"
                                             }
                                           }
                                         },
@@ -803,12 +803,12 @@
                                             "start": {
                                               "line": 22,
                                               "column": 18,
-                                              "program": "lambda-type-inference-arg-no-type.ets"
+                                              "program": "lambda-type-inference-arg-no-type.sts"
                                             },
                                             "end": {
                                               "line": 22,
                                               "column": 24,
-                                              "program": "lambda-type-inference-arg-no-type.ets"
+                                              "program": "lambda-type-inference-arg-no-type.sts"
                                             }
                                           }
                                         },
@@ -818,12 +818,12 @@
                                           "start": {
                                             "line": 22,
                                             "column": 16,
-                                            "program": "lambda-type-inference-arg-no-type.ets"
+                                            "program": "lambda-type-inference-arg-no-type.sts"
                                           },
                                           "end": {
                                             "line": 22,
                                             "column": 24,
-                                            "program": "lambda-type-inference-arg-no-type.ets"
+                                            "program": "lambda-type-inference-arg-no-type.sts"
                                           }
                                         }
                                       },
@@ -835,12 +835,12 @@
                                           "start": {
                                             "line": 22,
                                             "column": 28,
-                                            "program": "lambda-type-inference-arg-no-type.ets"
+                                            "program": "lambda-type-inference-arg-no-type.sts"
                                           },
                                           "end": {
                                             "line": 22,
                                             "column": 29,
-                                            "program": "lambda-type-inference-arg-no-type.ets"
+                                            "program": "lambda-type-inference-arg-no-type.sts"
                                           }
                                         }
                                       },
@@ -848,12 +848,12 @@
                                         "start": {
                                           "line": 22,
                                           "column": 16,
-                                          "program": "lambda-type-inference-arg-no-type.ets"
+                                          "program": "lambda-type-inference-arg-no-type.sts"
                                         },
                                         "end": {
                                           "line": 22,
                                           "column": 29,
-                                          "program": "lambda-type-inference-arg-no-type.ets"
+                                          "program": "lambda-type-inference-arg-no-type.sts"
                                         }
                                       }
                                     },
@@ -861,12 +861,12 @@
                                       "start": {
                                         "line": 22,
                                         "column": 9,
-                                        "program": "lambda-type-inference-arg-no-type.ets"
+                                        "program": "lambda-type-inference-arg-no-type.sts"
                                       },
                                       "end": {
                                         "line": 22,
                                         "column": 30,
-                                        "program": "lambda-type-inference-arg-no-type.ets"
+                                        "program": "lambda-type-inference-arg-no-type.sts"
                                       }
                                     }
                                   }
@@ -875,12 +875,12 @@
                                   "start": {
                                     "line": 21,
                                     "column": 33,
-                                    "program": "lambda-type-inference-arg-no-type.ets"
+                                    "program": "lambda-type-inference-arg-no-type.sts"
                                   },
                                   "end": {
                                     "line": 23,
                                     "column": 6,
-                                    "program": "lambda-type-inference-arg-no-type.ets"
+                                    "program": "lambda-type-inference-arg-no-type.sts"
                                   }
                                 }
                               },
@@ -888,12 +888,12 @@
                                 "start": {
                                   "line": 21,
                                   "column": 9,
-                                  "program": "lambda-type-inference-arg-no-type.ets"
+                                  "program": "lambda-type-inference-arg-no-type.sts"
                                 },
                                 "end": {
                                   "line": 23,
                                   "column": 6,
-                                  "program": "lambda-type-inference-arg-no-type.ets"
+                                  "program": "lambda-type-inference-arg-no-type.sts"
                                 }
                               }
                             },
@@ -901,12 +901,12 @@
                               "start": {
                                 "line": 21,
                                 "column": 9,
-                                "program": "lambda-type-inference-arg-no-type.ets"
+                                "program": "lambda-type-inference-arg-no-type.sts"
                               },
                               "end": {
                                 "line": 23,
                                 "column": 6,
-                                "program": "lambda-type-inference-arg-no-type.ets"
+                                "program": "lambda-type-inference-arg-no-type.sts"
                               }
                             }
                           }
@@ -916,12 +916,12 @@
                           "start": {
                             "line": 21,
                             "column": 5,
-                            "program": "lambda-type-inference-arg-no-type.ets"
+                            "program": "lambda-type-inference-arg-no-type.sts"
                           },
                           "end": {
                             "line": 23,
                             "column": 7,
-                            "program": "lambda-type-inference-arg-no-type.ets"
+                            "program": "lambda-type-inference-arg-no-type.sts"
                           }
                         }
                       },
@@ -929,12 +929,12 @@
                         "start": {
                           "line": 21,
                           "column": 5,
-                          "program": "lambda-type-inference-arg-no-type.ets"
+                          "program": "lambda-type-inference-arg-no-type.sts"
                         },
                         "end": {
                           "line": 23,
                           "column": 8,
-                          "program": "lambda-type-inference-arg-no-type.ets"
+                          "program": "lambda-type-inference-arg-no-type.sts"
                         }
                       }
                     }
@@ -943,12 +943,12 @@
                     "start": {
                       "line": 20,
                       "column": 23,
-                      "program": "lambda-type-inference-arg-no-type.ets"
+                      "program": "lambda-type-inference-arg-no-type.sts"
                     },
                     "end": {
                       "line": 24,
                       "column": 2,
-                      "program": "lambda-type-inference-arg-no-type.ets"
+                      "program": "lambda-type-inference-arg-no-type.sts"
                     }
                   }
                 },
@@ -956,12 +956,12 @@
                   "start": {
                     "line": 20,
                     "column": 10,
-                    "program": "lambda-type-inference-arg-no-type.ets"
+                    "program": "lambda-type-inference-arg-no-type.sts"
                   },
                   "end": {
                     "line": 24,
                     "column": 2,
-                    "program": "lambda-type-inference-arg-no-type.ets"
+                    "program": "lambda-type-inference-arg-no-type.sts"
                   }
                 }
               },
@@ -969,12 +969,12 @@
                 "start": {
                   "line": 20,
                   "column": 10,
-                  "program": "lambda-type-inference-arg-no-type.ets"
+                  "program": "lambda-type-inference-arg-no-type.sts"
                 },
                 "end": {
                   "line": 24,
                   "column": 2,
-                  "program": "lambda-type-inference-arg-no-type.ets"
+                  "program": "lambda-type-inference-arg-no-type.sts"
                 }
               }
             },
@@ -984,12 +984,12 @@
               "start": {
                 "line": 20,
                 "column": 1,
-                "program": "lambda-type-inference-arg-no-type.ets"
+                "program": "lambda-type-inference-arg-no-type.sts"
               },
               "end": {
                 "line": 24,
                 "column": 2,
-                "program": "lambda-type-inference-arg-no-type.ets"
+                "program": "lambda-type-inference-arg-no-type.sts"
               }
             }
           }
@@ -998,12 +998,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "lambda-type-inference-arg-no-type.ets"
+            "program": "lambda-type-inference-arg-no-type.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "lambda-type-inference-arg-no-type.ets"
+            "program": "lambda-type-inference-arg-no-type.sts"
           }
         }
       },
@@ -1011,12 +1011,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "lambda-type-inference-arg-no-type.ets"
+          "program": "lambda-type-inference-arg-no-type.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "lambda-type-inference-arg-no-type.ets"
+          "program": "lambda-type-inference-arg-no-type.sts"
         }
       }
     }
@@ -1025,12 +1025,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "lambda-type-inference-arg-no-type.ets"
+      "program": "lambda-type-inference-arg-no-type.sts"
     },
     "end": {
       "line": 25,
       "column": 1,
-      "program": "lambda-type-inference-arg-no-type.ets"
+      "program": "lambda-type-inference-arg-no-type.sts"
     }
   }
 }

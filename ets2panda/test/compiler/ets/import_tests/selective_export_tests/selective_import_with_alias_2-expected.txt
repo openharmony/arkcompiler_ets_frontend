@@ -10,12 +10,12 @@
           "start": {
             "line": 16,
             "column": 47,
-            "program": "selective_import_with_alias_2.ets"
+            "program": "selective_import_with_alias_2.sts"
           },
           "end": {
             "line": 16,
             "column": 77,
-            "program": "selective_import_with_alias_2.ets"
+            "program": "selective_import_with_alias_2.sts"
           }
         }
       },
@@ -30,12 +30,12 @@
               "start": {
                 "line": 16,
                 "column": 26,
-                "program": "selective_import_with_alias_2.ets"
+                "program": "selective_import_with_alias_2.sts"
               },
               "end": {
                 "line": 16,
                 "column": 40,
-                "program": "selective_import_with_alias_2.ets"
+                "program": "selective_import_with_alias_2.sts"
               }
             }
           },
@@ -47,12 +47,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "selective_import_with_alias_2.ets"
+                "program": "selective_import_with_alias_2.sts"
               },
               "end": {
                 "line": 16,
                 "column": 22,
-                "program": "selective_import_with_alias_2.ets"
+                "program": "selective_import_with_alias_2.sts"
               }
             }
           },
@@ -60,12 +60,12 @@
             "start": {
               "line": 16,
               "column": 9,
-              "program": "selective_import_with_alias_2.ets"
+              "program": "selective_import_with_alias_2.sts"
             },
             "end": {
               "line": 16,
               "column": 40,
-              "program": "selective_import_with_alias_2.ets"
+              "program": "selective_import_with_alias_2.sts"
             }
           }
         }
@@ -74,12 +74,12 @@
         "start": {
           "line": 16,
           "column": 1,
-          "program": "selective_import_with_alias_2.ets"
+          "program": "selective_import_with_alias_2.sts"
         },
         "end": {
           "line": 16,
           "column": 77,
-          "program": "selective_import_with_alias_2.ets"
+          "program": "selective_import_with_alias_2.sts"
         }
       }
     },
@@ -94,12 +94,12 @@
             "start": {
               "line": 18,
               "column": 7,
-              "program": "selective_import_with_alias_2.ets"
+              "program": "selective_import_with_alias_2.sts"
             },
             "end": {
               "line": 18,
               "column": 16,
-              "program": "selective_import_with_alias_2.ets"
+              "program": "selective_import_with_alias_2.sts"
             }
           }
         },
@@ -119,12 +119,12 @@
                     "start": {
                       "line": 18,
                       "column": 28,
-                      "program": "selective_import_with_alias_2.ets"
+                      "program": "selective_import_with_alias_2.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 42,
-                      "program": "selective_import_with_alias_2.ets"
+                      "program": "selective_import_with_alias_2.sts"
                     }
                   }
                 },
@@ -132,12 +132,12 @@
                   "start": {
                     "line": 18,
                     "column": 28,
-                    "program": "selective_import_with_alias_2.ets"
+                    "program": "selective_import_with_alias_2.sts"
                   },
                   "end": {
                     "line": 18,
                     "column": 44,
-                    "program": "selective_import_with_alias_2.ets"
+                    "program": "selective_import_with_alias_2.sts"
                   }
                 }
               },
@@ -145,12 +145,12 @@
                 "start": {
                   "line": 18,
                   "column": 28,
-                  "program": "selective_import_with_alias_2.ets"
+                  "program": "selective_import_with_alias_2.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 44,
-                  "program": "selective_import_with_alias_2.ets"
+                  "program": "selective_import_with_alias_2.sts"
                 }
               }
             },
@@ -158,12 +158,12 @@
               "start": {
                 "line": 18,
                 "column": 28,
-                "program": "selective_import_with_alias_2.ets"
+                "program": "selective_import_with_alias_2.sts"
               },
               "end": {
                 "line": 18,
                 "column": 44,
-                "program": "selective_import_with_alias_2.ets"
+                "program": "selective_import_with_alias_2.sts"
               }
             }
           }
@@ -179,12 +179,12 @@
                 "start": {
                   "line": 18,
                   "column": 44,
-                  "program": "selective_import_with_alias_2.ets"
+                  "program": "selective_import_with_alias_2.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 44,
-                  "program": "selective_import_with_alias_2.ets"
+                  "program": "selective_import_with_alias_2.sts"
                 }
               }
             },
@@ -204,12 +204,12 @@
                     "start": {
                       "line": 18,
                       "column": 44,
-                      "program": "selective_import_with_alias_2.ets"
+                      "program": "selective_import_with_alias_2.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 44,
-                      "program": "selective_import_with_alias_2.ets"
+                      "program": "selective_import_with_alias_2.sts"
                     }
                   }
                 },
@@ -224,12 +224,12 @@
                     "start": {
                       "line": 18,
                       "column": 44,
-                      "program": "selective_import_with_alias_2.ets"
+                      "program": "selective_import_with_alias_2.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 44,
-                      "program": "selective_import_with_alias_2.ets"
+                      "program": "selective_import_with_alias_2.sts"
                     }
                   }
                 },
@@ -237,12 +237,12 @@
                   "start": {
                     "line": 18,
                     "column": 44,
-                    "program": "selective_import_with_alias_2.ets"
+                    "program": "selective_import_with_alias_2.sts"
                   },
                   "end": {
                     "line": 18,
                     "column": 44,
-                    "program": "selective_import_with_alias_2.ets"
+                    "program": "selective_import_with_alias_2.sts"
                   }
                 }
               },
@@ -250,12 +250,12 @@
                 "start": {
                   "line": 18,
                   "column": 44,
-                  "program": "selective_import_with_alias_2.ets"
+                  "program": "selective_import_with_alias_2.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 44,
-                  "program": "selective_import_with_alias_2.ets"
+                  "program": "selective_import_with_alias_2.sts"
                 }
               }
             },
@@ -279,12 +279,12 @@
           "start": {
             "line": 18,
             "column": 43,
-            "program": "selective_import_with_alias_2.ets"
+            "program": "selective_import_with_alias_2.sts"
           },
           "end": {
             "line": 19,
             "column": 1,
-            "program": "selective_import_with_alias_2.ets"
+            "program": "selective_import_with_alias_2.sts"
           }
         }
       },
@@ -292,12 +292,12 @@
         "start": {
           "line": 18,
           "column": 1,
-          "program": "selective_import_with_alias_2.ets"
+          "program": "selective_import_with_alias_2.sts"
         },
         "end": {
           "line": 19,
           "column": 1,
-          "program": "selective_import_with_alias_2.ets"
+          "program": "selective_import_with_alias_2.sts"
         }
       }
     },
@@ -312,12 +312,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "selective_import_with_alias_2.ets"
+              "program": "selective_import_with_alias_2.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "selective_import_with_alias_2.ets"
+              "program": "selective_import_with_alias_2.sts"
             }
           }
         },
@@ -421,12 +421,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "selective_import_with_alias_2.ets"
+                "program": "selective_import_with_alias_2.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "selective_import_with_alias_2.ets"
+                "program": "selective_import_with_alias_2.sts"
               }
             }
           },
@@ -527,12 +527,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "selective_import_with_alias_2.ets"
+                "program": "selective_import_with_alias_2.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "selective_import_with_alias_2.ets"
+                "program": "selective_import_with_alias_2.sts"
               }
             }
           }
@@ -541,12 +541,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "selective_import_with_alias_2.ets"
+            "program": "selective_import_with_alias_2.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "selective_import_with_alias_2.ets"
+            "program": "selective_import_with_alias_2.sts"
           }
         }
       },
@@ -554,12 +554,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "selective_import_with_alias_2.ets"
+          "program": "selective_import_with_alias_2.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "selective_import_with_alias_2.ets"
+          "program": "selective_import_with_alias_2.sts"
         }
       }
     }
@@ -568,12 +568,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "selective_import_with_alias_2.ets"
+      "program": "selective_import_with_alias_2.sts"
     },
     "end": {
       "line": 19,
       "column": 1,
-      "program": "selective_import_with_alias_2.ets"
+      "program": "selective_import_with_alias_2.sts"
     }
   }
 }

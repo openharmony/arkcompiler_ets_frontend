@@ -100,7 +100,7 @@ public:
         LogThrowableDiagnostic(DiagnosticType::WARNING, std::forward<T>(args)...);
     }
 
-    // NOTE(schernykh): should not be able from ETS
+    // NOTE(schernykh): should not be able from STS
     template <typename... T>
     [[noreturn]] void ThrowSyntaxError(T &&...args)
     {

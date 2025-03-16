@@ -253,7 +253,7 @@ static pandasm::Program *Compile(const CompilationUnit &unit, const PhaseListGet
     //  We have to check the return status of 'RunVerifierAndPhase` and 'RunPhases` separately because there can be
     //  some internal errors (say, in Post-Conditional check) or terminate options (say in 'CheckOptionsAfterPhase')
     //  that were not reported to the log.
-    if (unit.ext == ScriptExtension::ETS) {
+    if (unit.ext == ScriptExtension::STS) {
         if (!RunVerifierAndPhases(context, getPhases(unit.ext), program)) {
             return nullptr;
         }
@@ -288,7 +288,7 @@ pandasm::Program *CompilerImpl::Compile(const CompilationUnit &unit)
                                      compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetPhaseList,
                                                                                        this);
         }
-        case ScriptExtension::ETS: {
+        case ScriptExtension::STS: {
             return compiler::Compile<parser::ETSParser, varbinder::ETSBinder, checker::ETSChecker, checker::ETSAnalyzer,
                                      compiler::ETSCompiler, compiler::ETSGen, compiler::StaticRegSpiller,
                                      compiler::ETSFunctionEmitter, compiler::ETSEmitter>(unit, compiler::GetPhaseList,

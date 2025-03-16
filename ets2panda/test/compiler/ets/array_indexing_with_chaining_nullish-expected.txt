@@ -12,12 +12,12 @@
             "start": {
               "line": 16,
               "column": 7,
-              "program": "array_indexing_with_chaining_nullish.ets"
+              "program": "array_indexing_with_chaining_nullish.sts"
             },
             "end": {
               "line": 16,
               "column": 8,
-              "program": "array_indexing_with_chaining_nullish.ets"
+              "program": "array_indexing_with_chaining_nullish.sts"
             }
           }
         },
@@ -34,12 +34,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "array_indexing_with_chaining_nullish.ets"
+                  "program": "array_indexing_with_chaining_nullish.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 10,
-                  "program": "array_indexing_with_chaining_nullish.ets"
+                  "program": "array_indexing_with_chaining_nullish.sts"
                 }
               }
             },
@@ -59,12 +59,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "array_indexing_with_chaining_nullish.ets"
+                      "program": "array_indexing_with_chaining_nullish.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 10,
-                      "program": "array_indexing_with_chaining_nullish.ets"
+                      "program": "array_indexing_with_chaining_nullish.sts"
                     }
                   }
                 },
@@ -79,12 +79,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "array_indexing_with_chaining_nullish.ets"
+                      "program": "array_indexing_with_chaining_nullish.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 10,
-                      "program": "array_indexing_with_chaining_nullish.ets"
+                      "program": "array_indexing_with_chaining_nullish.sts"
                     }
                   }
                 },
@@ -92,12 +92,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "array_indexing_with_chaining_nullish.ets"
+                    "program": "array_indexing_with_chaining_nullish.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 10,
-                    "program": "array_indexing_with_chaining_nullish.ets"
+                    "program": "array_indexing_with_chaining_nullish.sts"
                   }
                 }
               },
@@ -105,12 +105,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "array_indexing_with_chaining_nullish.ets"
+                  "program": "array_indexing_with_chaining_nullish.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 10,
-                  "program": "array_indexing_with_chaining_nullish.ets"
+                  "program": "array_indexing_with_chaining_nullish.sts"
                 }
               }
             },
@@ -134,12 +134,12 @@
           "start": {
             "line": 16,
             "column": 9,
-            "program": "array_indexing_with_chaining_nullish.ets"
+            "program": "array_indexing_with_chaining_nullish.sts"
           },
           "end": {
             "line": 18,
             "column": 4,
-            "program": "array_indexing_with_chaining_nullish.ets"
+            "program": "array_indexing_with_chaining_nullish.sts"
           }
         }
       },
@@ -147,12 +147,12 @@
         "start": {
           "line": 16,
           "column": 1,
-          "program": "array_indexing_with_chaining_nullish.ets"
+          "program": "array_indexing_with_chaining_nullish.sts"
         },
         "end": {
           "line": 18,
           "column": 4,
-          "program": "array_indexing_with_chaining_nullish.ets"
+          "program": "array_indexing_with_chaining_nullish.sts"
         }
       }
     },
@@ -167,12 +167,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "array_indexing_with_chaining_nullish.ets"
+              "program": "array_indexing_with_chaining_nullish.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "array_indexing_with_chaining_nullish.ets"
+              "program": "array_indexing_with_chaining_nullish.sts"
             }
           }
         },
@@ -276,12 +276,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "array_indexing_with_chaining_nullish.ets"
+                "program": "array_indexing_with_chaining_nullish.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "array_indexing_with_chaining_nullish.ets"
+                "program": "array_indexing_with_chaining_nullish.sts"
               }
             }
           },
@@ -350,12 +350,12 @@
                             "start": {
                               "line": 18,
                               "column": 5,
-                              "program": "array_indexing_with_chaining_nullish.ets"
+                              "program": "array_indexing_with_chaining_nullish.sts"
                             },
                             "end": {
                               "line": 18,
                               "column": 8,
-                              "program": "array_indexing_with_chaining_nullish.ets"
+                              "program": "array_indexing_with_chaining_nullish.sts"
                             }
                           }
                         },
@@ -376,12 +376,12 @@
                                       "start": {
                                         "line": 18,
                                         "column": 34,
-                                        "program": "array_indexing_with_chaining_nullish.ets"
+                                        "program": "array_indexing_with_chaining_nullish.sts"
                                       },
                                       "end": {
                                         "line": 18,
                                         "column": 40,
-                                        "program": "array_indexing_with_chaining_nullish.ets"
+                                        "program": "array_indexing_with_chaining_nullish.sts"
                                       }
                                     }
                                   },
@@ -389,12 +389,12 @@
                                     "start": {
                                       "line": 18,
                                       "column": 34,
-                                      "program": "array_indexing_with_chaining_nullish.ets"
+                                      "program": "array_indexing_with_chaining_nullish.sts"
                                     },
                                     "end": {
                                       "line": 18,
                                       "column": 41,
-                                      "program": "array_indexing_with_chaining_nullish.ets"
+                                      "program": "array_indexing_with_chaining_nullish.sts"
                                     }
                                   }
                                 },
@@ -402,12 +402,12 @@
                                   "start": {
                                     "line": 18,
                                     "column": 34,
-                                    "program": "array_indexing_with_chaining_nullish.ets"
+                                    "program": "array_indexing_with_chaining_nullish.sts"
                                   },
                                   "end": {
                                     "line": 18,
                                     "column": 41,
-                                    "program": "array_indexing_with_chaining_nullish.ets"
+                                    "program": "array_indexing_with_chaining_nullish.sts"
                                   }
                                 }
                               },
@@ -416,12 +416,12 @@
                                 "start": {
                                   "line": 18,
                                   "column": 30,
-                                  "program": "array_indexing_with_chaining_nullish.ets"
+                                  "program": "array_indexing_with_chaining_nullish.sts"
                                 },
                                 "end": {
                                   "line": 18,
                                   "column": 43,
-                                  "program": "array_indexing_with_chaining_nullish.ets"
+                                  "program": "array_indexing_with_chaining_nullish.sts"
                                 }
                               }
                             },
@@ -439,12 +439,12 @@
                                       "start": {
                                         "line": 18,
                                         "column": 48,
-                                        "program": "array_indexing_with_chaining_nullish.ets"
+                                        "program": "array_indexing_with_chaining_nullish.sts"
                                       },
                                       "end": {
                                         "line": 18,
                                         "column": 49,
-                                        "program": "array_indexing_with_chaining_nullish.ets"
+                                        "program": "array_indexing_with_chaining_nullish.sts"
                                       }
                                     }
                                   },
@@ -452,12 +452,12 @@
                                     "start": {
                                       "line": 18,
                                       "column": 48,
-                                      "program": "array_indexing_with_chaining_nullish.ets"
+                                      "program": "array_indexing_with_chaining_nullish.sts"
                                     },
                                     "end": {
                                       "line": 18,
                                       "column": 50,
-                                      "program": "array_indexing_with_chaining_nullish.ets"
+                                      "program": "array_indexing_with_chaining_nullish.sts"
                                     }
                                   }
                                 },
@@ -465,12 +465,12 @@
                                   "start": {
                                     "line": 18,
                                     "column": 48,
-                                    "program": "array_indexing_with_chaining_nullish.ets"
+                                    "program": "array_indexing_with_chaining_nullish.sts"
                                   },
                                   "end": {
                                     "line": 18,
                                     "column": 50,
-                                    "program": "array_indexing_with_chaining_nullish.ets"
+                                    "program": "array_indexing_with_chaining_nullish.sts"
                                   }
                                 }
                               },
@@ -479,12 +479,12 @@
                                 "start": {
                                   "line": 18,
                                   "column": 44,
-                                  "program": "array_indexing_with_chaining_nullish.ets"
+                                  "program": "array_indexing_with_chaining_nullish.sts"
                                 },
                                 "end": {
                                   "line": 18,
                                   "column": 52,
-                                  "program": "array_indexing_with_chaining_nullish.ets"
+                                  "program": "array_indexing_with_chaining_nullish.sts"
                                 }
                               }
                             }
@@ -493,12 +493,12 @@
                             "start": {
                               "line": 18,
                               "column": 29,
-                              "program": "array_indexing_with_chaining_nullish.ets"
+                              "program": "array_indexing_with_chaining_nullish.sts"
                             },
                             "end": {
                               "line": 18,
                               "column": 52,
-                              "program": "array_indexing_with_chaining_nullish.ets"
+                              "program": "array_indexing_with_chaining_nullish.sts"
                             }
                           }
                         },
@@ -506,12 +506,12 @@
                           "start": {
                             "line": 18,
                             "column": 5,
-                            "program": "array_indexing_with_chaining_nullish.ets"
+                            "program": "array_indexing_with_chaining_nullish.sts"
                           },
                           "end": {
                             "line": 18,
                             "column": 52,
-                            "program": "array_indexing_with_chaining_nullish.ets"
+                            "program": "array_indexing_with_chaining_nullish.sts"
                           }
                         }
                       },
@@ -519,12 +519,12 @@
                         "start": {
                           "line": 18,
                           "column": 5,
-                          "program": "array_indexing_with_chaining_nullish.ets"
+                          "program": "array_indexing_with_chaining_nullish.sts"
                         },
                         "end": {
                           "line": 18,
                           "column": 52,
-                          "program": "array_indexing_with_chaining_nullish.ets"
+                          "program": "array_indexing_with_chaining_nullish.sts"
                         }
                       }
                     },
@@ -541,12 +541,12 @@
                             "start": {
                               "line": 19,
                               "column": 5,
-                              "program": "array_indexing_with_chaining_nullish.ets"
+                              "program": "array_indexing_with_chaining_nullish.sts"
                             },
                             "end": {
                               "line": 19,
                               "column": 9,
-                              "program": "array_indexing_with_chaining_nullish.ets"
+                              "program": "array_indexing_with_chaining_nullish.sts"
                             }
                           }
                         },
@@ -566,12 +566,12 @@
                                       "start": {
                                         "line": 1,
                                         "column": 3,
-                                        "program": "array_indexing_with_chaining_nullish.ets"
+                                        "program": "array_indexing_with_chaining_nullish.sts"
                                       },
                                       "end": {
                                         "line": 1,
                                         "column": 3,
-                                        "program": "array_indexing_with_chaining_nullish.ets"
+                                        "program": "array_indexing_with_chaining_nullish.sts"
                                       }
                                     }
                                   },
@@ -583,12 +583,12 @@
                                       "start": {
                                         "line": 19,
                                         "column": 33,
-                                        "program": "array_indexing_with_chaining_nullish.ets"
+                                        "program": "array_indexing_with_chaining_nullish.sts"
                                       },
                                       "end": {
                                         "line": 19,
                                         "column": 36,
-                                        "program": "array_indexing_with_chaining_nullish.ets"
+                                        "program": "array_indexing_with_chaining_nullish.sts"
                                       }
                                     }
                                   },
@@ -596,12 +596,12 @@
                                     "start": {
                                       "line": 1,
                                       "column": 3,
-                                      "program": "array_indexing_with_chaining_nullish.ets"
+                                      "program": "array_indexing_with_chaining_nullish.sts"
                                     },
                                     "end": {
                                       "line": 1,
                                       "column": 3,
-                                      "program": "array_indexing_with_chaining_nullish.ets"
+                                      "program": "array_indexing_with_chaining_nullish.sts"
                                     }
                                   }
                                 }
@@ -611,12 +611,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 5,
-                                  "program": "array_indexing_with_chaining_nullish.ets"
+                                  "program": "array_indexing_with_chaining_nullish.sts"
                                 },
                                 "end": {
                                   "line": 19,
                                   "column": 41,
-                                  "program": "array_indexing_with_chaining_nullish.ets"
+                                  "program": "array_indexing_with_chaining_nullish.sts"
                                 }
                               }
                             },
@@ -635,12 +635,12 @@
                                       "start": {
                                         "line": 1,
                                         "column": 3,
-                                        "program": "array_indexing_with_chaining_nullish.ets"
+                                        "program": "array_indexing_with_chaining_nullish.sts"
                                       },
                                       "end": {
                                         "line": 1,
                                         "column": 3,
-                                        "program": "array_indexing_with_chaining_nullish.ets"
+                                        "program": "array_indexing_with_chaining_nullish.sts"
                                       }
                                     }
                                   },
@@ -651,12 +651,12 @@
                                       "start": {
                                         "line": 1,
                                         "column": 3,
-                                        "program": "array_indexing_with_chaining_nullish.ets"
+                                        "program": "array_indexing_with_chaining_nullish.sts"
                                       },
                                       "end": {
                                         "line": 1,
                                         "column": 3,
-                                        "program": "array_indexing_with_chaining_nullish.ets"
+                                        "program": "array_indexing_with_chaining_nullish.sts"
                                       }
                                     }
                                   },
@@ -664,12 +664,12 @@
                                     "start": {
                                       "line": 1,
                                       "column": 3,
-                                      "program": "array_indexing_with_chaining_nullish.ets"
+                                      "program": "array_indexing_with_chaining_nullish.sts"
                                     },
                                     "end": {
                                       "line": 1,
                                       "column": 3,
-                                      "program": "array_indexing_with_chaining_nullish.ets"
+                                      "program": "array_indexing_with_chaining_nullish.sts"
                                     }
                                   }
                                 },
@@ -680,12 +680,12 @@
                                     "start": {
                                       "line": 1,
                                       "column": 3,
-                                      "program": "array_indexing_with_chaining_nullish.ets"
+                                      "program": "array_indexing_with_chaining_nullish.sts"
                                     },
                                     "end": {
                                       "line": 1,
                                       "column": 3,
-                                      "program": "array_indexing_with_chaining_nullish.ets"
+                                      "program": "array_indexing_with_chaining_nullish.sts"
                                     }
                                   }
                                 },
@@ -699,12 +699,12 @@
                                       "start": {
                                         "line": 19,
                                         "column": 33,
-                                        "program": "array_indexing_with_chaining_nullish.ets"
+                                        "program": "array_indexing_with_chaining_nullish.sts"
                                       },
                                       "end": {
                                         "line": 19,
                                         "column": 41,
-                                        "program": "array_indexing_with_chaining_nullish.ets"
+                                        "program": "array_indexing_with_chaining_nullish.sts"
                                       }
                                     }
                                   },
@@ -715,12 +715,12 @@
                                       "start": {
                                         "line": 19,
                                         "column": 39,
-                                        "program": "array_indexing_with_chaining_nullish.ets"
+                                        "program": "array_indexing_with_chaining_nullish.sts"
                                       },
                                       "end": {
                                         "line": 19,
                                         "column": 40,
-                                        "program": "array_indexing_with_chaining_nullish.ets"
+                                        "program": "array_indexing_with_chaining_nullish.sts"
                                       }
                                     }
                                   },
@@ -730,12 +730,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 33,
-                                      "program": "array_indexing_with_chaining_nullish.ets"
+                                      "program": "array_indexing_with_chaining_nullish.sts"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 41,
-                                      "program": "array_indexing_with_chaining_nullish.ets"
+                                      "program": "array_indexing_with_chaining_nullish.sts"
                                     }
                                   }
                                 },
@@ -743,12 +743,12 @@
                                   "start": {
                                     "line": 1,
                                     "column": 3,
-                                    "program": "array_indexing_with_chaining_nullish.ets"
+                                    "program": "array_indexing_with_chaining_nullish.sts"
                                   },
                                   "end": {
                                     "line": 1,
                                     "column": 3,
-                                    "program": "array_indexing_with_chaining_nullish.ets"
+                                    "program": "array_indexing_with_chaining_nullish.sts"
                                   }
                                 }
                               },
@@ -756,12 +756,12 @@
                                 "start": {
                                   "line": 1,
                                   "column": 3,
-                                  "program": "array_indexing_with_chaining_nullish.ets"
+                                  "program": "array_indexing_with_chaining_nullish.sts"
                                 },
                                 "end": {
                                   "line": 1,
                                   "column": 3,
-                                  "program": "array_indexing_with_chaining_nullish.ets"
+                                  "program": "array_indexing_with_chaining_nullish.sts"
                                 }
                               }
                             }
@@ -770,12 +770,12 @@
                             "start": {
                               "line": 19,
                               "column": 5,
-                              "program": "array_indexing_with_chaining_nullish.ets"
+                              "program": "array_indexing_with_chaining_nullish.sts"
                             },
                             "end": {
                               "line": 19,
                               "column": 41,
-                              "program": "array_indexing_with_chaining_nullish.ets"
+                              "program": "array_indexing_with_chaining_nullish.sts"
                             }
                           }
                         },
@@ -783,12 +783,12 @@
                           "start": {
                             "line": 19,
                             "column": 5,
-                            "program": "array_indexing_with_chaining_nullish.ets"
+                            "program": "array_indexing_with_chaining_nullish.sts"
                           },
                           "end": {
                             "line": 19,
                             "column": 41,
-                            "program": "array_indexing_with_chaining_nullish.ets"
+                            "program": "array_indexing_with_chaining_nullish.sts"
                           }
                         }
                       },
@@ -796,12 +796,12 @@
                         "start": {
                           "line": 19,
                           "column": 5,
-                          "program": "array_indexing_with_chaining_nullish.ets"
+                          "program": "array_indexing_with_chaining_nullish.sts"
                         },
                         "end": {
                           "line": 19,
                           "column": 41,
-                          "program": "array_indexing_with_chaining_nullish.ets"
+                          "program": "array_indexing_with_chaining_nullish.sts"
                         }
                       }
                     }
@@ -851,12 +851,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "array_indexing_with_chaining_nullish.ets"
+                "program": "array_indexing_with_chaining_nullish.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "array_indexing_with_chaining_nullish.ets"
+                "program": "array_indexing_with_chaining_nullish.sts"
               }
             }
           },
@@ -870,12 +870,12 @@
                 "start": {
                   "line": 18,
                   "column": 5,
-                  "program": "array_indexing_with_chaining_nullish.ets"
+                  "program": "array_indexing_with_chaining_nullish.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 8,
-                  "program": "array_indexing_with_chaining_nullish.ets"
+                  "program": "array_indexing_with_chaining_nullish.sts"
                 }
               }
             },
@@ -902,12 +902,12 @@
                           "start": {
                             "line": 18,
                             "column": 11,
-                            "program": "array_indexing_with_chaining_nullish.ets"
+                            "program": "array_indexing_with_chaining_nullish.sts"
                           },
                           "end": {
                             "line": 18,
                             "column": 17,
-                            "program": "array_indexing_with_chaining_nullish.ets"
+                            "program": "array_indexing_with_chaining_nullish.sts"
                           }
                         }
                       },
@@ -915,12 +915,12 @@
                         "start": {
                           "line": 18,
                           "column": 11,
-                          "program": "array_indexing_with_chaining_nullish.ets"
+                          "program": "array_indexing_with_chaining_nullish.sts"
                         },
                         "end": {
                           "line": 18,
                           "column": 18,
-                          "program": "array_indexing_with_chaining_nullish.ets"
+                          "program": "array_indexing_with_chaining_nullish.sts"
                         }
                       }
                     },
@@ -928,12 +928,12 @@
                       "start": {
                         "line": 18,
                         "column": 11,
-                        "program": "array_indexing_with_chaining_nullish.ets"
+                        "program": "array_indexing_with_chaining_nullish.sts"
                       },
                       "end": {
                         "line": 18,
                         "column": 18,
-                        "program": "array_indexing_with_chaining_nullish.ets"
+                        "program": "array_indexing_with_chaining_nullish.sts"
                       }
                     }
                   },
@@ -942,12 +942,12 @@
                     "start": {
                       "line": 18,
                       "column": 17,
-                      "program": "array_indexing_with_chaining_nullish.ets"
+                      "program": "array_indexing_with_chaining_nullish.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 19,
-                      "program": "array_indexing_with_chaining_nullish.ets"
+                      "program": "array_indexing_with_chaining_nullish.sts"
                     }
                   }
                 },
@@ -957,12 +957,12 @@
                     "start": {
                       "line": 18,
                       "column": 22,
-                      "program": "array_indexing_with_chaining_nullish.ets"
+                      "program": "array_indexing_with_chaining_nullish.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 26,
-                      "program": "array_indexing_with_chaining_nullish.ets"
+                      "program": "array_indexing_with_chaining_nullish.sts"
                     }
                   }
                 }
@@ -971,12 +971,12 @@
                 "start": {
                   "line": 18,
                   "column": 17,
-                  "program": "array_indexing_with_chaining_nullish.ets"
+                  "program": "array_indexing_with_chaining_nullish.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 26,
-                  "program": "array_indexing_with_chaining_nullish.ets"
+                  "program": "array_indexing_with_chaining_nullish.sts"
                 }
               }
             },
@@ -986,12 +986,12 @@
               "start": {
                 "line": 18,
                 "column": 5,
-                "program": "array_indexing_with_chaining_nullish.ets"
+                "program": "array_indexing_with_chaining_nullish.sts"
               },
               "end": {
                 "line": 18,
                 "column": 52,
-                "program": "array_indexing_with_chaining_nullish.ets"
+                "program": "array_indexing_with_chaining_nullish.sts"
               }
             }
           },
@@ -1005,12 +1005,12 @@
                 "start": {
                   "line": 19,
                   "column": 5,
-                  "program": "array_indexing_with_chaining_nullish.ets"
+                  "program": "array_indexing_with_chaining_nullish.sts"
                 },
                 "end": {
                   "line": 19,
                   "column": 9,
-                  "program": "array_indexing_with_chaining_nullish.ets"
+                  "program": "array_indexing_with_chaining_nullish.sts"
                 }
               }
             },
@@ -1035,12 +1035,12 @@
                         "start": {
                           "line": 19,
                           "column": 12,
-                          "program": "array_indexing_with_chaining_nullish.ets"
+                          "program": "array_indexing_with_chaining_nullish.sts"
                         },
                         "end": {
                           "line": 19,
                           "column": 18,
-                          "program": "array_indexing_with_chaining_nullish.ets"
+                          "program": "array_indexing_with_chaining_nullish.sts"
                         }
                       }
                     },
@@ -1048,12 +1048,12 @@
                       "start": {
                         "line": 19,
                         "column": 12,
-                        "program": "array_indexing_with_chaining_nullish.ets"
+                        "program": "array_indexing_with_chaining_nullish.sts"
                       },
                       "end": {
                         "line": 19,
                         "column": 20,
-                        "program": "array_indexing_with_chaining_nullish.ets"
+                        "program": "array_indexing_with_chaining_nullish.sts"
                       }
                     }
                   },
@@ -1061,12 +1061,12 @@
                     "start": {
                       "line": 19,
                       "column": 12,
-                      "program": "array_indexing_with_chaining_nullish.ets"
+                      "program": "array_indexing_with_chaining_nullish.sts"
                     },
                     "end": {
                       "line": 19,
                       "column": 20,
-                      "program": "array_indexing_with_chaining_nullish.ets"
+                      "program": "array_indexing_with_chaining_nullish.sts"
                     }
                   }
                 },
@@ -1076,12 +1076,12 @@
                     "start": {
                       "line": 19,
                       "column": 21,
-                      "program": "array_indexing_with_chaining_nullish.ets"
+                      "program": "array_indexing_with_chaining_nullish.sts"
                     },
                     "end": {
                       "line": 19,
                       "column": 30,
-                      "program": "array_indexing_with_chaining_nullish.ets"
+                      "program": "array_indexing_with_chaining_nullish.sts"
                     }
                   }
                 }
@@ -1090,12 +1090,12 @@
                 "start": {
                   "line": 19,
                   "column": 12,
-                  "program": "array_indexing_with_chaining_nullish.ets"
+                  "program": "array_indexing_with_chaining_nullish.sts"
                 },
                 "end": {
                   "line": 19,
                   "column": 30,
-                  "program": "array_indexing_with_chaining_nullish.ets"
+                  "program": "array_indexing_with_chaining_nullish.sts"
                 }
               }
             },
@@ -1105,12 +1105,12 @@
               "start": {
                 "line": 19,
                 "column": 5,
-                "program": "array_indexing_with_chaining_nullish.ets"
+                "program": "array_indexing_with_chaining_nullish.sts"
               },
               "end": {
                 "line": 19,
                 "column": 41,
-                "program": "array_indexing_with_chaining_nullish.ets"
+                "program": "array_indexing_with_chaining_nullish.sts"
               }
             }
           }
@@ -1119,12 +1119,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "array_indexing_with_chaining_nullish.ets"
+            "program": "array_indexing_with_chaining_nullish.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "array_indexing_with_chaining_nullish.ets"
+            "program": "array_indexing_with_chaining_nullish.sts"
           }
         }
       },
@@ -1132,12 +1132,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "array_indexing_with_chaining_nullish.ets"
+          "program": "array_indexing_with_chaining_nullish.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "array_indexing_with_chaining_nullish.ets"
+          "program": "array_indexing_with_chaining_nullish.sts"
         }
       }
     }
@@ -1146,12 +1146,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "array_indexing_with_chaining_nullish.ets"
+      "program": "array_indexing_with_chaining_nullish.sts"
     },
     "end": {
       "line": 20,
       "column": 1,
-      "program": "array_indexing_with_chaining_nullish.ets"
+      "program": "array_indexing_with_chaining_nullish.sts"
     }
   }
 }

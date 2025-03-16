@@ -50,7 +50,7 @@ public:
     };
     auto GetFilename()
     {
-        return "dummy.ets";
+        return "dummy.sts";
     };
     auto GetArgs() const
     {
@@ -101,7 +101,7 @@ TestParams DumpEtsSrcSimple()
         }";
 
     return TestParams {SRC,
-                       {"--extension=ets",
+                       {"--extension=sts",
                         "--dump-ets-src-before-phases=plugins-after-parse,plugins-after-check,plugins-after-lowering"}};
 }
 

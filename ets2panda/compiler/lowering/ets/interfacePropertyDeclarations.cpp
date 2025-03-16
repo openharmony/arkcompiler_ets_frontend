@@ -130,7 +130,7 @@ ir::MethodDefinition *InterfacePropertyDeclarationsPhase::GenerateGetterOrSetter
     auto methodIdent = checker->AllocNode<ir::Identifier>(name, checker->Allocator());
 
     auto *decl = checker->Allocator()->New<varbinder::VarDecl>(name);
-    auto var = functionScope->AddDecl(checker->Allocator(), decl, ScriptExtension::ETS);
+    auto var = functionScope->AddDecl(checker->Allocator(), decl, ScriptExtension::STS);
     ES2PANDA_ASSERT(var != nullptr);
     methodIdent->SetVariable(var);
 
@@ -216,7 +216,7 @@ ir::Expression *InterfacePropertyDeclarationsPhase::UpdateInterfaceProperties(ch
 
         auto *decl = checker->Allocator()->New<varbinder::FunctionDecl>(checker->Allocator(), name, getter);
 
-        if (methodScope->AddDecl(checker->Allocator(), decl, ScriptExtension::ETS) == nullptr) {
+        if (methodScope->AddDecl(checker->Allocator(), decl, ScriptExtension::STS) == nullptr) {
             auto prevDecl = methodScope->FindDecl(name);
             ES2PANDA_ASSERT(prevDecl->IsFunctionDecl());
             prevDecl->Node()->AsMethodDefinition()->AddOverload(getter);

@@ -30,7 +30,7 @@ TEST_F(LSPAICTests, GetAutoImportCompletionEntryUnresolved1)
 {
     Initializer initializer = Initializer();
 
-    const char *fileName = "file.ets";
+    const char *fileName = "file.sts";
     const char *fileSource = "import { PI } from \"std/math\"";
     auto ctx = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED, fileSource);
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
@@ -53,7 +53,7 @@ TEST_F(LSPAICTests, GetAutoImportCompletionEntryNotExistInConfigPath)
 {
     Initializer initializer = Initializer();
 
-    const char *fileName = "file.ets";
+    const char *fileName = "file.sts";
     const char *fileSource = "import { COLLATION } from \"native/core\"";
     auto ctx = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED, fileSource);
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
@@ -76,10 +76,10 @@ TEST_F(LSPAICTests, GetAutoImportCompletionEntryResolved)
 {
     Initializer initializer = Initializer();
 
-    std::vector<std::string> files = {"get_auto_completion_test_main.ets", "get_auto_completion_test_helper.ets"};
+    std::vector<std::string> files = {"get_auto_completion_test_main.sts", "get_auto_completion_test_helper.sts"};
     std::vector<std::string> texts = {
         R"(
-         import { helper } from "./get_auto_completion_test_helper.ets";
+         import { helper } from "./get_auto_completion_test_helper.sts";
          function main() {
              helper();
          }
@@ -124,7 +124,7 @@ TEST_F(LSPAICTests, GetAutoImportCompletionEntryNullConfigNonEmptyFile)
 {
     Initializer initializer = Initializer();
 
-    const char *fileName = "file.ets";
+    const char *fileName = "file.sts";
     const char *fileSource = "import { PI } from \"std/math\"";
     auto ctx = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED, fileSource);
     auto ast = GetAstFromContext<ark::es2panda::ir::AstNode>(ctx);
@@ -146,7 +146,7 @@ TEST_F(LSPAICTests, GetAutoImportCompletionEntryEmptyImportDeclaration)
 {
     Initializer initializer = Initializer();
 
-    const char *fileName = "file.ets";
+    const char *fileName = "file.sts";
     auto ctx = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED, "");
     auto config = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx)->config->options->ArkTSConfig();
     initializer.DestroyContext(ctx);

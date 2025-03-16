@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "local-interface.ets"
+              "program": "local-interface.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "local-interface.ets"
+              "program": "local-interface.sts"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "local-interface.ets"
+                "program": "local-interface.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "local-interface.ets"
+                "program": "local-interface.sts"
               }
             }
           },
@@ -140,12 +140,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "local-interface.ets"
+                  "program": "local-interface.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 14,
-                  "program": "local-interface.ets"
+                  "program": "local-interface.sts"
                 }
               }
             },
@@ -166,12 +166,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "local-interface.ets"
+                      "program": "local-interface.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 14,
-                      "program": "local-interface.ets"
+                      "program": "local-interface.sts"
                     }
                   }
                 },
@@ -185,12 +185,12 @@
                     "start": {
                       "line": 16,
                       "column": 19,
-                      "program": "local-interface.ets"
+                      "program": "local-interface.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 22,
-                      "program": "local-interface.ets"
+                      "program": "local-interface.sts"
                     }
                   }
                 },
@@ -206,12 +206,12 @@
                           "start": {
                             "line": 18,
                             "column": 30,
-                            "program": "local-interface.ets"
+                            "program": "local-interface.sts"
                           },
                           "end": {
                             "line": 18,
                             "column": 33,
-                            "program": "local-interface.ets"
+                            "program": "local-interface.sts"
                           }
                         }
                       },
@@ -223,12 +223,12 @@
                           "start": {
                             "line": 18,
                             "column": 15,
-                            "program": "local-interface.ets"
+                            "program": "local-interface.sts"
                           },
                           "end": {
                             "line": 18,
                             "column": 29,
-                            "program": "local-interface.ets"
+                            "program": "local-interface.sts"
                           }
                         }
                       },
@@ -237,12 +237,12 @@
                         "start": {
                           "line": 18,
                           "column": 5,
-                          "program": "local-interface.ets"
+                          "program": "local-interface.sts"
                         },
                         "end": {
                           "line": 19,
                           "column": 11,
-                          "program": "local-interface.ets"
+                          "program": "local-interface.sts"
                         }
                       }
                     },
@@ -255,12 +255,12 @@
                           "start": {
                             "line": 19,
                             "column": 12,
-                            "program": "local-interface.ets"
+                            "program": "local-interface.sts"
                           },
                           "end": {
                             "line": 19,
                             "column": 13,
-                            "program": "local-interface.ets"
+                            "program": "local-interface.sts"
                           }
                         }
                       },
@@ -268,12 +268,12 @@
                         "start": {
                           "line": 19,
                           "column": 5,
-                          "program": "local-interface.ets"
+                          "program": "local-interface.sts"
                         },
                         "end": {
                           "line": 19,
                           "column": 14,
-                          "program": "local-interface.ets"
+                          "program": "local-interface.sts"
                         }
                       }
                     }
@@ -282,12 +282,12 @@
                     "start": {
                       "line": 17,
                       "column": 1,
-                      "program": "local-interface.ets"
+                      "program": "local-interface.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 2,
-                      "program": "local-interface.ets"
+                      "program": "local-interface.sts"
                     }
                   }
                 },
@@ -295,12 +295,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "local-interface.ets"
+                    "program": "local-interface.sts"
                   },
                   "end": {
                     "line": 20,
                     "column": 2,
-                    "program": "local-interface.ets"
+                    "program": "local-interface.sts"
                   }
                 }
               },
@@ -308,12 +308,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "local-interface.ets"
+                  "program": "local-interface.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 2,
-                  "program": "local-interface.ets"
+                  "program": "local-interface.sts"
                 }
               }
             },
@@ -323,12 +323,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "local-interface.ets"
+                "program": "local-interface.sts"
               },
               "end": {
                 "line": 20,
                 "column": 2,
-                "program": "local-interface.ets"
+                "program": "local-interface.sts"
               }
             }
           }
@@ -337,12 +337,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "local-interface.ets"
+            "program": "local-interface.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "local-interface.ets"
+            "program": "local-interface.sts"
           }
         }
       },
@@ -350,12 +350,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "local-interface.ets"
+          "program": "local-interface.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "local-interface.ets"
+          "program": "local-interface.sts"
         }
       }
     }
@@ -364,12 +364,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "local-interface.ets"
+      "program": "local-interface.sts"
     },
     "end": {
       "line": 20,
       "column": 2,
-      "program": "local-interface.ets"
+      "program": "local-interface.sts"
     }
   }
 }

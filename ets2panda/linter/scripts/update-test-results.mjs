@@ -19,7 +19,8 @@ import * as path from 'node:path';
 const TS_EXT = ".ts";
 const ETS_EXT = ".ets";
 const TSX_EXT = ".tsx";
-const ETSX_EXT = ".etsx";
+const STS_EXT = ".sts";
+const STSX_EXT = ".stsx";
 const D_TS_EXT = '.d.ts';
 
 class Mode {
@@ -73,9 +74,9 @@ function readJsonFile(filePath) {
 }
 
 function updateTestFile(testDir, testFile) {
-    // Temporary solution: rename '.ets' extension to '.ts'
-    if (testFile.endsWith(ETS_EXT) || testFile.endsWith(ETSX_EXT)) {
-        testFile = testFile.replace(ETS_EXT, TS_EXT);
+    // Temporary solution: rename '.sts' extension to '.ts'
+    if (testFile.endsWith(STS_EXT) || testFile.endsWith(STSX_EXT)) {
+        testFile = testFile.replace(STS_EXT, TS_EXT);
     }
 
     let testModes = [Mode.DEFAULT];
@@ -130,7 +131,8 @@ for (let testDir of testDirs) {
         (x.trimEnd().endsWith(TS_EXT) && !x.trimEnd().endsWith(D_TS_EXT)) ||
         x.trimEnd().endsWith(TSX_EXT) ||
         x.trimEnd().endsWith(ETS_EXT) ||
-        x.trimEnd().endsWith(ETSX_EXT)
+        x.trimEnd().endsWith(STS_EXT) ||
+        x.trimEnd().endsWith(STSX_EXT)
     );
 
     if (!testFiles) continue;

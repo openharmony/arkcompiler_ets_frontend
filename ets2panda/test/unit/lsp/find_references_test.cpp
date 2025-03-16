@@ -46,7 +46,7 @@ static auto testCase(vector<SourceFile> &sourceFiles, SourceFile selectedFile, s
     }
 }
 
-vector<string> fileNames = {"findReferencesOne.ets", "findReferencesTwo.ets"};
+vector<string> fileNames = {"findReferencesOne.sts", "findReferencesTwo.sts"};
 vector<string> fileContents = {
     R"(
         export function abc(x: number): void {
@@ -88,7 +88,7 @@ vector<string> fileContents = {
         abc(4);
         )",
     R"(
-        import { dummy, abc, Foo  } from "./findReferencesOne.ets";
+        import { dummy, abc, Foo  } from "./findReferencesOne.sts";
 
         dummy(4);
         dummy(44);
@@ -105,35 +105,35 @@ vector<string> fileContents = {
     )"};
 
 std::set<ark::es2panda::lsp::ReferencedNode> expected_dummy = {
-    {"/tmp/findReferencesOne.ets", 83, 88, 4, true},     {"/tmp/findReferencesOne.ets", 863, 868, 33, false},
-    {"/tmp/findReferencesOne.ets", 881, 886, 34, false}, {"/tmp/findReferencesTwo.ets", 18, 23, 1, false},
-    {"/tmp/findReferencesTwo.ets", 78, 83, 3, false},    {"/tmp/findReferencesTwo.ets", 96, 101, 4, false},
+    {"/tmp/findReferencesOne.sts", 83, 88, 4, true},     {"/tmp/findReferencesOne.sts", 863, 868, 33, false},
+    {"/tmp/findReferencesOne.sts", 881, 886, 34, false}, {"/tmp/findReferencesTwo.sts", 18, 23, 1, false},
+    {"/tmp/findReferencesTwo.sts", 78, 83, 3, false},    {"/tmp/findReferencesTwo.sts", 96, 101, 4, false},
 };
 
 std::set<ark::es2panda::lsp::ReferencedNode> expected_abc = {
-    {"/tmp/findReferencesOne.ets", 25, 28, 1, true},     {"/tmp/findReferencesOne.ets", 899, 902, 35, false},
-    {"/tmp/findReferencesOne.ets", 915, 918, 36, false}, {"/tmp/findReferencesOne.ets", 931, 934, 37, false},
-    {"/tmp/findReferencesTwo.ets", 25, 28, 1, false},    {"/tmp/findReferencesTwo.ets", 115, 118, 5, false},
-    {"/tmp/findReferencesTwo.ets", 131, 134, 6, false},  {"/tmp/findReferencesTwo.ets", 148, 151, 7, false},
+    {"/tmp/findReferencesOne.sts", 25, 28, 1, true},     {"/tmp/findReferencesOne.sts", 899, 902, 35, false},
+    {"/tmp/findReferencesOne.sts", 915, 918, 36, false}, {"/tmp/findReferencesOne.sts", 931, 934, 37, false},
+    {"/tmp/findReferencesTwo.sts", 25, 28, 1, false},    {"/tmp/findReferencesTwo.sts", 115, 118, 5, false},
+    {"/tmp/findReferencesTwo.sts", 131, 134, 6, false},  {"/tmp/findReferencesTwo.sts", 148, 151, 7, false},
 };
 
 std::set<ark::es2panda::lsp::ReferencedNode> expected_myfoo = {
-    {"/tmp/findReferencesTwo.ets", 171, 176, 9, true},
-    {"/tmp/findReferencesTwo.ets", 280, 285, 12, false},
-    {"/tmp/findReferencesTwo.ets", 337, 342, 14, false},
+    {"/tmp/findReferencesTwo.sts", 171, 176, 9, true},
+    {"/tmp/findReferencesTwo.sts", 280, 285, 12, false},
+    {"/tmp/findReferencesTwo.sts", 337, 342, 14, false},
 };
 
 std::set<ark::es2panda::lsp::ReferencedNode> expected_Foo = {
-    {"/tmp/findReferencesOne.ets", 140, 143, 7, true},
-    {"/tmp/findReferencesTwo.ets", 30, 33, 1, false},
-    {"/tmp/findReferencesTwo.ets", 183, 186, 9, false},
-    {"/tmp/findReferencesTwo.ets", 234, 237, 10, false},
+    {"/tmp/findReferencesOne.sts", 140, 143, 7, true},
+    {"/tmp/findReferencesTwo.sts", 30, 33, 1, false},
+    {"/tmp/findReferencesTwo.sts", 183, 186, 9, false},
+    {"/tmp/findReferencesTwo.sts", 234, 237, 10, false},
 };
 
 std::set<ark::es2panda::lsp::ReferencedNode> expected_name = {
-    {"/tmp/findReferencesOne.ets", 158, 162, 8, true},
-    {"/tmp/findReferencesOne.ets", 362, 366, 13, false},
-    {"/tmp/findReferencesTwo.ets", 343, 347, 14, false},
+    {"/tmp/findReferencesOne.sts", 158, 162, 8, true},
+    {"/tmp/findReferencesOne.sts", 362, 366, 13, false},
+    {"/tmp/findReferencesTwo.sts", 343, 347, 14, false},
 };
 
 class LspFindRefTests : public LSPAPITests {};
@@ -148,7 +148,7 @@ TEST_F(LspFindRefTests, FindReferencesMethodDefinition1)
     }
     ASSERT_TRUE(sourceFiles.size() == fileNames.size());
 
-    // Case 1: Search for the first occurance of "abc" within "findReferencesOne.ets" which is a method definition
+    // Case 1: Search for the first occurance of "abc" within "findReferencesOne.sts" which is a method definition
     {
         auto srcIndex = 0;
         size_t tokenOffset = 25;
@@ -166,7 +166,7 @@ TEST_F(LspFindRefTests, FindReferencesMethodDefinition2)
     }
     ASSERT_TRUE(sourceFiles.size() == fileNames.size());
 
-    // Case 2: Search for the first occurance of "dummy" within "findReferencesOne.ets" which is a method definition
+    // Case 2: Search for the first occurance of "dummy" within "findReferencesOne.sts" which is a method definition
     {
         auto srcIndex = 0;
         size_t tokenOffset = 83;
@@ -184,7 +184,7 @@ TEST_F(LspFindRefTests, FindReferencesImportSpecifier)
     }
     ASSERT_TRUE(sourceFiles.size() == fileNames.size());
 
-    // Case 3: Search for the first occurance of "abc" within "findReferencesTwo.ets" which is an import specifier
+    // Case 3: Search for the first occurance of "abc" within "findReferencesTwo.sts" which is an import specifier
     {
         auto srcIndex = 1;
         size_t tokenOffset = 25;
@@ -202,7 +202,7 @@ TEST_F(LspFindRefTests, FindReferencesCallExpression1)
     }
     ASSERT_TRUE(sourceFiles.size() == fileNames.size());
 
-    // Case 4: Search for the second occurance of "abc" within "findReferencesTwo.ets" which is a function call
+    // Case 4: Search for the second occurance of "abc" within "findReferencesTwo.sts" which is a function call
     // expression
     {
         auto srcIndex = 1;
@@ -221,7 +221,7 @@ TEST_F(LspFindRefTests, FindReferencesCallExpression2)
     }
     ASSERT_TRUE(sourceFiles.size() == fileNames.size());
 
-    // Case 5: Search for the second occurance of "dummy" within "findReferencesTwo.ets" which is a function call
+    // Case 5: Search for the second occurance of "dummy" within "findReferencesTwo.sts" which is a function call
     // expression
     {
         auto srcIndex = 1;
@@ -240,7 +240,7 @@ TEST_F(LspFindRefTests, FindReferencesVariableDefinition)
     }
     ASSERT_TRUE(sourceFiles.size() == fileNames.size());
 
-    // Case 6: Search for the first occurance of "myfoo" within "findReferencesTwo.ets" which is a variable definition
+    // Case 6: Search for the first occurance of "myfoo" within "findReferencesTwo.sts" which is a variable definition
     {
         auto srcIndex = 1;
         size_t tokenOffset = 171;
@@ -258,7 +258,7 @@ TEST_F(LspFindRefTests, FindReferencesInstanceCreation)
     }
     ASSERT_TRUE(sourceFiles.size() == fileNames.size());
 
-    // Case 7: Search for the first occurance of "Foo" within "findReferencesTwo.ets" which is a class instance creation
+    // Case 7: Search for the first occurance of "Foo" within "findReferencesTwo.sts" which is a class instance creation
     {
         auto srcIndex = 1;
         size_t tokenOffset = 30;
@@ -276,7 +276,7 @@ TEST_F(LspFindRefTests, FindReferencesMemberAccess)
     }
     ASSERT_TRUE(sourceFiles.size() == fileNames.size());
 
-    // Case 7: Search for the first occurance of "name" within "findReferencesTwo.ets" which is a reference to a member
+    // Case 7: Search for the first occurance of "name" within "findReferencesTwo.sts" which is a reference to a member
     {
         auto srcIndex = 1;
         size_t tknIndex = 343;

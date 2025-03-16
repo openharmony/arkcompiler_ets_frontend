@@ -89,7 +89,7 @@ TEST_F(ASTVerifierTest, ScopeTest)
     LocalScope scope(Allocator(), nullptr);
     FunctionScope parentScope(Allocator(), nullptr);
     scope.SetParent(&parentScope);
-    scope.AddDecl(Allocator(), &decl, ScriptExtension::ETS);
+    scope.AddDecl(Allocator(), &decl, ScriptExtension::STS);
     scope.BindNode(&ident);
 
     local.SetScope(&scope);
@@ -107,7 +107,7 @@ TEST_F(ASTVerifierTest, ScopeNodeTest)
     LocalScope scope(Allocator(), nullptr);
     FunctionScope parentScope(Allocator(), nullptr);
     scope.SetParent(&parentScope);
-    scope.AddDecl(Allocator(), &decl, ScriptExtension::ETS);
+    scope.AddDecl(Allocator(), &decl, ScriptExtension::STS);
     scope.BindNode(&ident);
     parentScope.BindNode(&ident);
 

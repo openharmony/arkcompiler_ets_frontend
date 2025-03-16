@@ -12,12 +12,12 @@
             "start": {
               "line": 16,
               "column": 15,
-              "program": "ambient_indexer_6.ets"
+              "program": "ambient_indexer_6.sts"
             },
             "end": {
               "line": 16,
               "column": 16,
-              "program": "ambient_indexer_6.ets"
+              "program": "ambient_indexer_6.sts"
             }
           }
         },
@@ -34,12 +34,12 @@
                 "start": {
                   "line": 16,
                   "column": 18,
-                  "program": "ambient_indexer_6.ets"
+                  "program": "ambient_indexer_6.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 18,
-                  "program": "ambient_indexer_6.ets"
+                  "program": "ambient_indexer_6.sts"
                 }
               }
             },
@@ -59,12 +59,12 @@
                     "start": {
                       "line": 16,
                       "column": 18,
-                      "program": "ambient_indexer_6.ets"
+                      "program": "ambient_indexer_6.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 18,
-                      "program": "ambient_indexer_6.ets"
+                      "program": "ambient_indexer_6.sts"
                     }
                   }
                 },
@@ -79,12 +79,12 @@
                     "start": {
                       "line": 16,
                       "column": 18,
-                      "program": "ambient_indexer_6.ets"
+                      "program": "ambient_indexer_6.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 18,
-                      "program": "ambient_indexer_6.ets"
+                      "program": "ambient_indexer_6.sts"
                     }
                   }
                 },
@@ -92,12 +92,12 @@
                   "start": {
                     "line": 16,
                     "column": 18,
-                    "program": "ambient_indexer_6.ets"
+                    "program": "ambient_indexer_6.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 18,
-                    "program": "ambient_indexer_6.ets"
+                    "program": "ambient_indexer_6.sts"
                   }
                 }
               },
@@ -105,12 +105,12 @@
                 "start": {
                   "line": 16,
                   "column": 18,
-                  "program": "ambient_indexer_6.ets"
+                  "program": "ambient_indexer_6.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 18,
-                  "program": "ambient_indexer_6.ets"
+                  "program": "ambient_indexer_6.sts"
                 }
               }
             },
@@ -139,12 +139,12 @@
                 "start": {
                   "line": 17,
                   "column": 5,
-                  "program": "ambient_indexer_6.ets"
+                  "program": "ambient_indexer_6.sts"
                 },
                 "end": {
                   "line": 17,
                   "column": 29,
-                  "program": "ambient_indexer_6.ets"
+                  "program": "ambient_indexer_6.sts"
                 }
               }
             },
@@ -165,12 +165,12 @@
                     "start": {
                       "line": 17,
                       "column": 5,
-                      "program": "ambient_indexer_6.ets"
+                      "program": "ambient_indexer_6.sts"
                     },
                     "end": {
                       "line": 17,
                       "column": 29,
-                      "program": "ambient_indexer_6.ets"
+                      "program": "ambient_indexer_6.sts"
                     }
                   }
                 },
@@ -195,12 +195,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 5,
-                                "program": "ambient_indexer_6.ets"
+                                "program": "ambient_indexer_6.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 29,
-                                "program": "ambient_indexer_6.ets"
+                                "program": "ambient_indexer_6.sts"
                               }
                             }
                           },
@@ -208,12 +208,12 @@
                             "start": {
                               "line": 17,
                               "column": 5,
-                              "program": "ambient_indexer_6.ets"
+                              "program": "ambient_indexer_6.sts"
                             },
                             "end": {
                               "line": 17,
                               "column": 29,
-                              "program": "ambient_indexer_6.ets"
+                              "program": "ambient_indexer_6.sts"
                             }
                           }
                         },
@@ -221,12 +221,12 @@
                           "start": {
                             "line": 17,
                             "column": 5,
-                            "program": "ambient_indexer_6.ets"
+                            "program": "ambient_indexer_6.sts"
                           },
                           "end": {
                             "line": 17,
                             "column": 29,
-                            "program": "ambient_indexer_6.ets"
+                            "program": "ambient_indexer_6.sts"
                           }
                         }
                       },
@@ -235,12 +235,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "ambient_indexer_6.ets"
+                          "program": "ambient_indexer_6.sts"
                         },
                         "end": {
                           "line": 17,
                           "column": 29,
-                          "program": "ambient_indexer_6.ets"
+                          "program": "ambient_indexer_6.sts"
                         }
                       }
                     },
@@ -248,12 +248,12 @@
                       "start": {
                         "line": 17,
                         "column": 5,
-                        "program": "ambient_indexer_6.ets"
+                        "program": "ambient_indexer_6.sts"
                       },
                       "end": {
                         "line": 17,
                         "column": 29,
-                        "program": "ambient_indexer_6.ets"
+                        "program": "ambient_indexer_6.sts"
                       }
                     }
                   },
@@ -274,12 +274,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 5,
-                                "program": "ambient_indexer_6.ets"
+                                "program": "ambient_indexer_6.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 29,
-                                "program": "ambient_indexer_6.ets"
+                                "program": "ambient_indexer_6.sts"
                               }
                             }
                           },
@@ -287,12 +287,12 @@
                             "start": {
                               "line": 17,
                               "column": 5,
-                              "program": "ambient_indexer_6.ets"
+                              "program": "ambient_indexer_6.sts"
                             },
                             "end": {
                               "line": 17,
                               "column": 29,
-                              "program": "ambient_indexer_6.ets"
+                              "program": "ambient_indexer_6.sts"
                             }
                           }
                         },
@@ -300,12 +300,12 @@
                           "start": {
                             "line": 17,
                             "column": 5,
-                            "program": "ambient_indexer_6.ets"
+                            "program": "ambient_indexer_6.sts"
                           },
                           "end": {
                             "line": 17,
                             "column": 29,
-                            "program": "ambient_indexer_6.ets"
+                            "program": "ambient_indexer_6.sts"
                           }
                         }
                       },
@@ -314,12 +314,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "ambient_indexer_6.ets"
+                          "program": "ambient_indexer_6.sts"
                         },
                         "end": {
                           "line": 17,
                           "column": 29,
-                          "program": "ambient_indexer_6.ets"
+                          "program": "ambient_indexer_6.sts"
                         }
                       }
                     },
@@ -327,12 +327,12 @@
                       "start": {
                         "line": 17,
                         "column": 5,
-                        "program": "ambient_indexer_6.ets"
+                        "program": "ambient_indexer_6.sts"
                       },
                       "end": {
                         "line": 17,
                         "column": 29,
-                        "program": "ambient_indexer_6.ets"
+                        "program": "ambient_indexer_6.sts"
                       }
                     }
                   }
@@ -343,12 +343,12 @@
                     "start": {
                       "line": 17,
                       "column": 5,
-                      "program": "ambient_indexer_6.ets"
+                      "program": "ambient_indexer_6.sts"
                     },
                     "end": {
                       "line": 17,
                       "column": 29,
-                      "program": "ambient_indexer_6.ets"
+                      "program": "ambient_indexer_6.sts"
                     }
                   }
                 },
@@ -357,12 +357,12 @@
                   "start": {
                     "line": 17,
                     "column": 5,
-                    "program": "ambient_indexer_6.ets"
+                    "program": "ambient_indexer_6.sts"
                   },
                   "end": {
                     "line": 17,
                     "column": 29,
-                    "program": "ambient_indexer_6.ets"
+                    "program": "ambient_indexer_6.sts"
                   }
                 }
               },
@@ -370,12 +370,12 @@
                 "start": {
                   "line": 17,
                   "column": 5,
-                  "program": "ambient_indexer_6.ets"
+                  "program": "ambient_indexer_6.sts"
                 },
                 "end": {
                   "line": 17,
                   "column": 29,
-                  "program": "ambient_indexer_6.ets"
+                  "program": "ambient_indexer_6.sts"
                 }
               }
             },
@@ -385,12 +385,12 @@
               "start": {
                 "line": 17,
                 "column": 5,
-                "program": "ambient_indexer_6.ets"
+                "program": "ambient_indexer_6.sts"
               },
               "end": {
                 "line": 17,
                 "column": 29,
-                "program": "ambient_indexer_6.ets"
+                "program": "ambient_indexer_6.sts"
               }
             }
           },
@@ -404,12 +404,12 @@
                 "start": {
                   "line": 17,
                   "column": 5,
-                  "program": "ambient_indexer_6.ets"
+                  "program": "ambient_indexer_6.sts"
                 },
                 "end": {
                   "line": 17,
                   "column": 29,
-                  "program": "ambient_indexer_6.ets"
+                  "program": "ambient_indexer_6.sts"
                 }
               }
             },
@@ -430,12 +430,12 @@
                     "start": {
                       "line": 17,
                       "column": 5,
-                      "program": "ambient_indexer_6.ets"
+                      "program": "ambient_indexer_6.sts"
                     },
                     "end": {
                       "line": 17,
                       "column": 29,
-                      "program": "ambient_indexer_6.ets"
+                      "program": "ambient_indexer_6.sts"
                     }
                   }
                 },
@@ -460,12 +460,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 5,
-                                "program": "ambient_indexer_6.ets"
+                                "program": "ambient_indexer_6.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 29,
-                                "program": "ambient_indexer_6.ets"
+                                "program": "ambient_indexer_6.sts"
                               }
                             }
                           },
@@ -473,12 +473,12 @@
                             "start": {
                               "line": 17,
                               "column": 5,
-                              "program": "ambient_indexer_6.ets"
+                              "program": "ambient_indexer_6.sts"
                             },
                             "end": {
                               "line": 17,
                               "column": 29,
-                              "program": "ambient_indexer_6.ets"
+                              "program": "ambient_indexer_6.sts"
                             }
                           }
                         },
@@ -486,12 +486,12 @@
                           "start": {
                             "line": 17,
                             "column": 5,
-                            "program": "ambient_indexer_6.ets"
+                            "program": "ambient_indexer_6.sts"
                           },
                           "end": {
                             "line": 17,
                             "column": 29,
-                            "program": "ambient_indexer_6.ets"
+                            "program": "ambient_indexer_6.sts"
                           }
                         }
                       },
@@ -500,12 +500,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "ambient_indexer_6.ets"
+                          "program": "ambient_indexer_6.sts"
                         },
                         "end": {
                           "line": 17,
                           "column": 29,
-                          "program": "ambient_indexer_6.ets"
+                          "program": "ambient_indexer_6.sts"
                         }
                       }
                     },
@@ -513,12 +513,12 @@
                       "start": {
                         "line": 17,
                         "column": 5,
-                        "program": "ambient_indexer_6.ets"
+                        "program": "ambient_indexer_6.sts"
                       },
                       "end": {
                         "line": 17,
                         "column": 29,
-                        "program": "ambient_indexer_6.ets"
+                        "program": "ambient_indexer_6.sts"
                       }
                     }
                   }
@@ -535,12 +535,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "ambient_indexer_6.ets"
+                          "program": "ambient_indexer_6.sts"
                         },
                         "end": {
                           "line": 17,
                           "column": 29,
-                          "program": "ambient_indexer_6.ets"
+                          "program": "ambient_indexer_6.sts"
                         }
                       }
                     },
@@ -548,12 +548,12 @@
                       "start": {
                         "line": 17,
                         "column": 5,
-                        "program": "ambient_indexer_6.ets"
+                        "program": "ambient_indexer_6.sts"
                       },
                       "end": {
                         "line": 17,
                         "column": 29,
-                        "program": "ambient_indexer_6.ets"
+                        "program": "ambient_indexer_6.sts"
                       }
                     }
                   },
@@ -561,12 +561,12 @@
                     "start": {
                       "line": 17,
                       "column": 5,
-                      "program": "ambient_indexer_6.ets"
+                      "program": "ambient_indexer_6.sts"
                     },
                     "end": {
                       "line": 17,
                       "column": 29,
-                      "program": "ambient_indexer_6.ets"
+                      "program": "ambient_indexer_6.sts"
                     }
                   }
                 },
@@ -575,12 +575,12 @@
                   "start": {
                     "line": 17,
                     "column": 5,
-                    "program": "ambient_indexer_6.ets"
+                    "program": "ambient_indexer_6.sts"
                   },
                   "end": {
                     "line": 17,
                     "column": 29,
-                    "program": "ambient_indexer_6.ets"
+                    "program": "ambient_indexer_6.sts"
                   }
                 }
               },
@@ -588,12 +588,12 @@
                 "start": {
                   "line": 17,
                   "column": 5,
-                  "program": "ambient_indexer_6.ets"
+                  "program": "ambient_indexer_6.sts"
                 },
                 "end": {
                   "line": 17,
                   "column": 29,
-                  "program": "ambient_indexer_6.ets"
+                  "program": "ambient_indexer_6.sts"
                 }
               }
             },
@@ -603,12 +603,12 @@
               "start": {
                 "line": 17,
                 "column": 5,
-                "program": "ambient_indexer_6.ets"
+                "program": "ambient_indexer_6.sts"
               },
               "end": {
                 "line": 17,
                 "column": 29,
-                "program": "ambient_indexer_6.ets"
+                "program": "ambient_indexer_6.sts"
               }
             }
           }
@@ -617,12 +617,12 @@
           "start": {
             "line": 16,
             "column": 17,
-            "program": "ambient_indexer_6.ets"
+            "program": "ambient_indexer_6.sts"
           },
           "end": {
             "line": 20,
             "column": 9,
-            "program": "ambient_indexer_6.ets"
+            "program": "ambient_indexer_6.sts"
           }
         }
       },
@@ -630,12 +630,12 @@
         "start": {
           "line": 16,
           "column": 9,
-          "program": "ambient_indexer_6.ets"
+          "program": "ambient_indexer_6.sts"
         },
         "end": {
           "line": 20,
           "column": 9,
-          "program": "ambient_indexer_6.ets"
+          "program": "ambient_indexer_6.sts"
         }
       }
     },
@@ -650,12 +650,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "ambient_indexer_6.ets"
+              "program": "ambient_indexer_6.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "ambient_indexer_6.ets"
+              "program": "ambient_indexer_6.sts"
             }
           }
         },
@@ -759,12 +759,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "ambient_indexer_6.ets"
+                "program": "ambient_indexer_6.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "ambient_indexer_6.ets"
+                "program": "ambient_indexer_6.sts"
               }
             }
           },
@@ -778,12 +778,12 @@
                 "start": {
                   "line": 20,
                   "column": 10,
-                  "program": "ambient_indexer_6.ets"
+                  "program": "ambient_indexer_6.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 14,
-                  "program": "ambient_indexer_6.ets"
+                  "program": "ambient_indexer_6.sts"
                 }
               }
             },
@@ -804,12 +804,12 @@
                     "start": {
                       "line": 20,
                       "column": 10,
-                      "program": "ambient_indexer_6.ets"
+                      "program": "ambient_indexer_6.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 14,
-                      "program": "ambient_indexer_6.ets"
+                      "program": "ambient_indexer_6.sts"
                     }
                   }
                 },
@@ -840,12 +840,12 @@
                                     "start": {
                                       "line": 21,
                                       "column": 13,
-                                      "program": "ambient_indexer_6.ets"
+                                      "program": "ambient_indexer_6.sts"
                                     },
                                     "end": {
                                       "line": 21,
                                       "column": 14,
-                                      "program": "ambient_indexer_6.ets"
+                                      "program": "ambient_indexer_6.sts"
                                     }
                                   }
                                 },
@@ -853,12 +853,12 @@
                                   "start": {
                                     "line": 21,
                                     "column": 13,
-                                    "program": "ambient_indexer_6.ets"
+                                    "program": "ambient_indexer_6.sts"
                                   },
                                   "end": {
                                     "line": 21,
                                     "column": 16,
-                                    "program": "ambient_indexer_6.ets"
+                                    "program": "ambient_indexer_6.sts"
                                   }
                                 }
                               },
@@ -866,12 +866,12 @@
                                 "start": {
                                   "line": 21,
                                   "column": 13,
-                                  "program": "ambient_indexer_6.ets"
+                                  "program": "ambient_indexer_6.sts"
                                 },
                                 "end": {
                                   "line": 21,
                                   "column": 16,
-                                  "program": "ambient_indexer_6.ets"
+                                  "program": "ambient_indexer_6.sts"
                                 }
                               }
                             },
@@ -880,12 +880,12 @@
                               "start": {
                                 "line": 21,
                                 "column": 9,
-                                "program": "ambient_indexer_6.ets"
+                                "program": "ambient_indexer_6.sts"
                               },
                               "end": {
                                 "line": 21,
                                 "column": 10,
-                                "program": "ambient_indexer_6.ets"
+                                "program": "ambient_indexer_6.sts"
                               }
                             }
                           },
@@ -903,12 +903,12 @@
                                     "start": {
                                       "line": 21,
                                       "column": 21,
-                                      "program": "ambient_indexer_6.ets"
+                                      "program": "ambient_indexer_6.sts"
                                     },
                                     "end": {
                                       "line": 21,
                                       "column": 22,
-                                      "program": "ambient_indexer_6.ets"
+                                      "program": "ambient_indexer_6.sts"
                                     }
                                   }
                                 },
@@ -916,12 +916,12 @@
                                   "start": {
                                     "line": 21,
                                     "column": 21,
-                                    "program": "ambient_indexer_6.ets"
+                                    "program": "ambient_indexer_6.sts"
                                   },
                                   "end": {
                                     "line": 21,
                                     "column": 23,
-                                    "program": "ambient_indexer_6.ets"
+                                    "program": "ambient_indexer_6.sts"
                                   }
                                 }
                               },
@@ -929,12 +929,12 @@
                                 "start": {
                                   "line": 21,
                                   "column": 21,
-                                  "program": "ambient_indexer_6.ets"
+                                  "program": "ambient_indexer_6.sts"
                                 },
                                 "end": {
                                   "line": 21,
                                   "column": 23,
-                                  "program": "ambient_indexer_6.ets"
+                                  "program": "ambient_indexer_6.sts"
                                 }
                               }
                             },
@@ -943,12 +943,12 @@
                               "start": {
                                 "line": 21,
                                 "column": 17,
-                                "program": "ambient_indexer_6.ets"
+                                "program": "ambient_indexer_6.sts"
                               },
                               "end": {
                                 "line": 22,
                                 "column": 12,
-                                "program": "ambient_indexer_6.ets"
+                                "program": "ambient_indexer_6.sts"
                               }
                             }
                           },
@@ -956,12 +956,12 @@
                             "start": {
                               "line": 21,
                               "column": 9,
-                              "program": "ambient_indexer_6.ets"
+                              "program": "ambient_indexer_6.sts"
                             },
                             "end": {
                               "line": 22,
                               "column": 12,
-                              "program": "ambient_indexer_6.ets"
+                              "program": "ambient_indexer_6.sts"
                             }
                           }
                         }
@@ -971,12 +971,12 @@
                         "start": {
                           "line": 21,
                           "column": 5,
-                          "program": "ambient_indexer_6.ets"
+                          "program": "ambient_indexer_6.sts"
                         },
                         "end": {
                           "line": 22,
                           "column": 12,
-                          "program": "ambient_indexer_6.ets"
+                          "program": "ambient_indexer_6.sts"
                         }
                       }
                     },
@@ -994,12 +994,12 @@
                               "start": {
                                 "line": 22,
                                 "column": 5,
-                                "program": "ambient_indexer_6.ets"
+                                "program": "ambient_indexer_6.sts"
                               },
                               "end": {
                                 "line": 22,
                                 "column": 12,
-                                "program": "ambient_indexer_6.ets"
+                                "program": "ambient_indexer_6.sts"
                               }
                             }
                           },
@@ -1011,12 +1011,12 @@
                               "start": {
                                 "line": 22,
                                 "column": 13,
-                                "program": "ambient_indexer_6.ets"
+                                "program": "ambient_indexer_6.sts"
                               },
                               "end": {
                                 "line": 22,
                                 "column": 16,
-                                "program": "ambient_indexer_6.ets"
+                                "program": "ambient_indexer_6.sts"
                               }
                             }
                           },
@@ -1026,12 +1026,12 @@
                             "start": {
                               "line": 22,
                               "column": 5,
-                              "program": "ambient_indexer_6.ets"
+                              "program": "ambient_indexer_6.sts"
                             },
                             "end": {
                               "line": 22,
                               "column": 16,
-                              "program": "ambient_indexer_6.ets"
+                              "program": "ambient_indexer_6.sts"
                             }
                           }
                         },
@@ -1046,12 +1046,12 @@
                                 "start": {
                                   "line": 22,
                                   "column": 17,
-                                  "program": "ambient_indexer_6.ets"
+                                  "program": "ambient_indexer_6.sts"
                                 },
                                 "end": {
                                   "line": 22,
                                   "column": 18,
-                                  "program": "ambient_indexer_6.ets"
+                                  "program": "ambient_indexer_6.sts"
                                 }
                               }
                             },
@@ -1062,12 +1062,12 @@
                                 "start": {
                                   "line": 22,
                                   "column": 19,
-                                  "program": "ambient_indexer_6.ets"
+                                  "program": "ambient_indexer_6.sts"
                                 },
                                 "end": {
                                   "line": 22,
                                   "column": 20,
-                                  "program": "ambient_indexer_6.ets"
+                                  "program": "ambient_indexer_6.sts"
                                 }
                               }
                             },
@@ -1077,12 +1077,12 @@
                               "start": {
                                 "line": 22,
                                 "column": 17,
-                                "program": "ambient_indexer_6.ets"
+                                "program": "ambient_indexer_6.sts"
                               },
                               "end": {
                                 "line": 22,
                                 "column": 21,
-                                "program": "ambient_indexer_6.ets"
+                                "program": "ambient_indexer_6.sts"
                               }
                             }
                           }
@@ -1092,12 +1092,12 @@
                           "start": {
                             "line": 22,
                             "column": 5,
-                            "program": "ambient_indexer_6.ets"
+                            "program": "ambient_indexer_6.sts"
                           },
                           "end": {
                             "line": 22,
                             "column": 22,
-                            "program": "ambient_indexer_6.ets"
+                            "program": "ambient_indexer_6.sts"
                           }
                         }
                       },
@@ -1105,12 +1105,12 @@
                         "start": {
                           "line": 22,
                           "column": 5,
-                          "program": "ambient_indexer_6.ets"
+                          "program": "ambient_indexer_6.sts"
                         },
                         "end": {
                           "line": 22,
                           "column": 22,
-                          "program": "ambient_indexer_6.ets"
+                          "program": "ambient_indexer_6.sts"
                         }
                       }
                     }
@@ -1119,12 +1119,12 @@
                     "start": {
                       "line": 20,
                       "column": 17,
-                      "program": "ambient_indexer_6.ets"
+                      "program": "ambient_indexer_6.sts"
                     },
                     "end": {
                       "line": 23,
                       "column": 2,
-                      "program": "ambient_indexer_6.ets"
+                      "program": "ambient_indexer_6.sts"
                     }
                   }
                 },
@@ -1132,12 +1132,12 @@
                   "start": {
                     "line": 20,
                     "column": 10,
-                    "program": "ambient_indexer_6.ets"
+                    "program": "ambient_indexer_6.sts"
                   },
                   "end": {
                     "line": 23,
                     "column": 2,
-                    "program": "ambient_indexer_6.ets"
+                    "program": "ambient_indexer_6.sts"
                   }
                 }
               },
@@ -1145,12 +1145,12 @@
                 "start": {
                   "line": 20,
                   "column": 10,
-                  "program": "ambient_indexer_6.ets"
+                  "program": "ambient_indexer_6.sts"
                 },
                 "end": {
                   "line": 23,
                   "column": 2,
-                  "program": "ambient_indexer_6.ets"
+                  "program": "ambient_indexer_6.sts"
                 }
               }
             },
@@ -1160,12 +1160,12 @@
               "start": {
                 "line": 20,
                 "column": 1,
-                "program": "ambient_indexer_6.ets"
+                "program": "ambient_indexer_6.sts"
               },
               "end": {
                 "line": 23,
                 "column": 2,
-                "program": "ambient_indexer_6.ets"
+                "program": "ambient_indexer_6.sts"
               }
             }
           }
@@ -1174,12 +1174,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "ambient_indexer_6.ets"
+            "program": "ambient_indexer_6.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "ambient_indexer_6.ets"
+            "program": "ambient_indexer_6.sts"
           }
         }
       },
@@ -1187,12 +1187,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "ambient_indexer_6.ets"
+          "program": "ambient_indexer_6.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "ambient_indexer_6.ets"
+          "program": "ambient_indexer_6.sts"
         }
       }
     }
@@ -1201,12 +1201,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "ambient_indexer_6.ets"
+      "program": "ambient_indexer_6.sts"
     },
     "end": {
       "line": 24,
       "column": 1,
-      "program": "ambient_indexer_6.ets"
+      "program": "ambient_indexer_6.sts"
     }
   }
 }

@@ -18,7 +18,6 @@
  * @kit ArkTS
  */
 
-// After change extention .sts to .ets got an errors #23897
 import lang from './@arkts.lang'
 
 /**

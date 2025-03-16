@@ -41,7 +41,7 @@ constexpr size_t ALLOWED_EXTENSIONS_SIZE = 8;
 
 static bool IsCompatibleExtension(const std::string &extension)
 {
-    return extension == ".ets" || extension == ".ts" || extension == ".sts";
+    return extension == ".sts" || extension == ".ts" || extension == ".ets";
 }
 
 util::StringView ImportPathManager::ResolvePath(const StringView &currentModulePath, const StringView &importPath,
@@ -202,10 +202,10 @@ void ImportPathManager::AddToParseList(const StringView &resolvedPath, const Imp
         return;
     }
 
-    // 'Object.ets' must be the first in the parse list
+    // 'Object.sts' must be the first in the parse list
     // NOTE (mmartin): still must be the first?
     const std::size_t position = resolvedPath.Mutf8().find_last_of("/\\");
-    if (isDefaultImport && resolvedPath.Substr(position + 1, resolvedPath.Length()).Is("Object.ets")) {
+    if (isDefaultImport && resolvedPath.Substr(position + 1, resolvedPath.Length()).Is("Object.sts")) {
         parseList_.emplace(parseList_.begin(), parseInfo);
     } else {
         parseList_.emplace_back(parseInfo);
@@ -286,7 +286,7 @@ StringView ImportPathManager::AppendExtensionOrIndexFileIfOmitted(const StringVi
 
     if (ark::os::file::File::IsDirectory(realPath.Mutf8())) {
         // Supported index files: keep this checking order
-        std::array<std::string, SUPPORTED_INDEX_FILES_SIZE> supportedIndexFiles = {"index.ets", "index.sts",
+        std::array<std::string, SUPPORTED_INDEX_FILES_SIZE> supportedIndexFiles = {"index.sts", "index.ets",
                                                                                    "index.ts"};
         for (const auto &indexFile : supportedIndexFiles) {
             std::string indexFilePath = realPath.Mutf8() + pathDelimiter_.data() + indexFile;
@@ -298,9 +298,9 @@ StringView ImportPathManager::AppendExtensionOrIndexFileIfOmitted(const StringVi
         return realPath;
     }
 
-    // Supported extensions: keep this checking order, and header files should follow source files
-    std::array<std::string, SUPPORTED_EXTENSIONS_SIZE> supportedExtensions = {".ets",   ".d.ets", ".sts",
-                                                                              ".d.sts", ".ts",    ".d.ts"};
+    // Supported extensions: keep this checking order
+    std::array<std::string, SUPPORTED_EXTENSIONS_SIZE> supportedExtensions = {".sts",   ".d.sts", ".ets",
+                                                                              ".d.ets", ".ts",    ".d.ts"};
     for (const auto &extension : supportedExtensions) {
         if (ark::os::file::File::IsRegularFile(path.Mutf8() + extension)) {
             return GetRealPath(UString(path.Mutf8().append(extension), allocator_).View());
@@ -322,12 +322,12 @@ static std::string FormUnitName(std::string name)
     return name;
 }
 
-// Transform /a/b/c.ets to a.b.c
+// Transform /a/b/c.sts to a.b.c
 static std::string FormRelativeModuleName(std::string relPath)
 {
     bool isMatched = false;
-    // Supported extensions: keep this checking order, and source files should follow header files
-    std::array<std::string, ALLOWED_EXTENSIONS_SIZE> supportedExtensionsDesc = {".d.ets", ".ets", ".d.sts", ".sts",
+    // Supported extensions: keep this checking order
+    std::array<std::string, ALLOWED_EXTENSIONS_SIZE> supportedExtensionsDesc = {".d.sts", ".sts", ".d.ets", ".ets",
                                                                                 ".d.ts",  ".ts",  ".js",    ".abc"};
     for (const auto &ext : supportedExtensionsDesc) {
         if (relPath.size() >= ext.size() && relPath.compare(relPath.size() - ext.size(), ext.size(), ext) == 0) {

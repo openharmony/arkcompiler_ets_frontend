@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "declare_func.ets"
+              "program": "declare_func.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "declare_func.ets"
+              "program": "declare_func.sts"
             }
           }
         },
@@ -34,12 +34,12 @@
                 "start": {
                   "line": 16,
                   "column": 18,
-                  "program": "declare_func.ets"
+                  "program": "declare_func.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 21,
-                  "program": "declare_func.ets"
+                  "program": "declare_func.sts"
                 }
               }
             },
@@ -60,12 +60,12 @@
                     "start": {
                       "line": 16,
                       "column": 18,
-                      "program": "declare_func.ets"
+                      "program": "declare_func.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 21,
-                      "program": "declare_func.ets"
+                      "program": "declare_func.sts"
                     }
                   }
                 },
@@ -90,12 +90,12 @@
                               "start": {
                                 "line": 16,
                                 "column": 25,
-                                "program": "declare_func.ets"
+                                "program": "declare_func.sts"
                               },
                               "end": {
                                 "line": 16,
                                 "column": 31,
-                                "program": "declare_func.ets"
+                                "program": "declare_func.sts"
                               }
                             }
                           },
@@ -103,12 +103,12 @@
                             "start": {
                               "line": 16,
                               "column": 25,
-                              "program": "declare_func.ets"
+                              "program": "declare_func.sts"
                             },
                             "end": {
                               "line": 16,
                               "column": 32,
-                              "program": "declare_func.ets"
+                              "program": "declare_func.sts"
                             }
                           }
                         },
@@ -116,12 +116,12 @@
                           "start": {
                             "line": 16,
                             "column": 25,
-                            "program": "declare_func.ets"
+                            "program": "declare_func.sts"
                           },
                           "end": {
                             "line": 16,
                             "column": 32,
-                            "program": "declare_func.ets"
+                            "program": "declare_func.sts"
                           }
                         }
                       },
@@ -130,12 +130,12 @@
                         "start": {
                           "line": 16,
                           "column": 22,
-                          "program": "declare_func.ets"
+                          "program": "declare_func.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 32,
-                          "program": "declare_func.ets"
+                          "program": "declare_func.sts"
                         }
                       }
                     },
@@ -143,12 +143,12 @@
                       "start": {
                         "line": 16,
                         "column": 22,
-                        "program": "declare_func.ets"
+                        "program": "declare_func.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 32,
-                        "program": "declare_func.ets"
+                        "program": "declare_func.sts"
                       }
                     }
                   }
@@ -159,12 +159,12 @@
                     "start": {
                       "line": 16,
                       "column": 34,
-                      "program": "declare_func.ets"
+                      "program": "declare_func.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 38,
-                      "program": "declare_func.ets"
+                      "program": "declare_func.sts"
                     }
                   }
                 },
@@ -173,12 +173,12 @@
                   "start": {
                     "line": 16,
                     "column": 18,
-                    "program": "declare_func.ets"
+                    "program": "declare_func.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 21,
-                    "program": "declare_func.ets"
+                    "program": "declare_func.sts"
                   }
                 }
               },
@@ -186,12 +186,12 @@
                 "start": {
                   "line": 16,
                   "column": 18,
-                  "program": "declare_func.ets"
+                  "program": "declare_func.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 21,
-                  "program": "declare_func.ets"
+                  "program": "declare_func.sts"
                 }
               }
             },
@@ -201,12 +201,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "declare_func.ets"
+                "program": "declare_func.sts"
               },
               "end": {
                 "line": 16,
                 "column": 21,
-                "program": "declare_func.ets"
+                "program": "declare_func.sts"
               }
             }
           }
@@ -215,12 +215,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "declare_func.ets"
+            "program": "declare_func.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "declare_func.ets"
+            "program": "declare_func.sts"
           }
         }
       },
@@ -228,12 +228,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "declare_func.ets"
+          "program": "declare_func.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "declare_func.ets"
+          "program": "declare_func.sts"
         }
       }
     }
@@ -242,12 +242,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "declare_func.ets"
+      "program": "declare_func.sts"
     },
     "end": {
       "line": 17,
       "column": 1,
-      "program": "declare_func.ets"
+      "program": "declare_func.sts"
     }
   }
 }

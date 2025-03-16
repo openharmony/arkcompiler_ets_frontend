@@ -435,7 +435,7 @@ static EnumLoweringPhase::DeclarationFlags GetDeclFlags(ir::TSEnumDeclaration *c
 bool EnumLoweringPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     bool isPerformedSuccess = true;
-    if (program->Extension() != ScriptExtension::ETS) {
+    if (program->Extension() != ScriptExtension::STS) {
         return isPerformedSuccess;
     }
 

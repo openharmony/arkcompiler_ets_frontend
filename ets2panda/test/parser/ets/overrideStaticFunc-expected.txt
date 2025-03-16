@@ -12,12 +12,12 @@
             "start": {
               "line": 16,
               "column": 7,
-              "program": "overrideStaticFunc.ets"
+              "program": "overrideStaticFunc.sts"
             },
             "end": {
               "line": 16,
               "column": 10,
-              "program": "overrideStaticFunc.ets"
+              "program": "overrideStaticFunc.sts"
             }
           }
         },
@@ -34,12 +34,12 @@
                 "start": {
                   "line": 17,
                   "column": 12,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 },
                 "end": {
                   "line": 17,
                   "column": 18,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 }
               }
             },
@@ -60,12 +60,12 @@
                     "start": {
                       "line": 17,
                       "column": 12,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     },
                     "end": {
                       "line": 17,
                       "column": 18,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     }
                   }
                 },
@@ -79,12 +79,12 @@
                     "start": {
                       "line": 17,
                       "column": 22,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     },
                     "end": {
                       "line": 17,
                       "column": 26,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     }
                   }
                 },
@@ -95,12 +95,12 @@
                     "start": {
                       "line": 17,
                       "column": 27,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     },
                     "end": {
                       "line": 17,
                       "column": 29,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     }
                   }
                 },
@@ -108,12 +108,12 @@
                   "start": {
                     "line": 17,
                     "column": 18,
-                    "program": "overrideStaticFunc.ets"
+                    "program": "overrideStaticFunc.sts"
                   },
                   "end": {
                     "line": 17,
                     "column": 29,
-                    "program": "overrideStaticFunc.ets"
+                    "program": "overrideStaticFunc.sts"
                   }
                 }
               },
@@ -121,12 +121,12 @@
                 "start": {
                   "line": 17,
                   "column": 18,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 },
                 "end": {
                   "line": 17,
                   "column": 29,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 }
               }
             },
@@ -136,12 +136,12 @@
               "start": {
                 "line": 17,
                 "column": 5,
-                "program": "overrideStaticFunc.ets"
+                "program": "overrideStaticFunc.sts"
               },
               "end": {
                 "line": 17,
                 "column": 29,
-                "program": "overrideStaticFunc.ets"
+                "program": "overrideStaticFunc.sts"
               }
             }
           },
@@ -155,12 +155,12 @@
                 "start": {
                   "line": 16,
                   "column": 12,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 12,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 }
               }
             },
@@ -180,12 +180,12 @@
                     "start": {
                       "line": 16,
                       "column": 12,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 12,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     }
                   }
                 },
@@ -200,12 +200,12 @@
                     "start": {
                       "line": 16,
                       "column": 12,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 12,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     }
                   }
                 },
@@ -213,12 +213,12 @@
                   "start": {
                     "line": 16,
                     "column": 12,
-                    "program": "overrideStaticFunc.ets"
+                    "program": "overrideStaticFunc.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 12,
-                    "program": "overrideStaticFunc.ets"
+                    "program": "overrideStaticFunc.sts"
                   }
                 }
               },
@@ -226,12 +226,12 @@
                 "start": {
                   "line": 16,
                   "column": 12,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 12,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 }
               }
             },
@@ -255,12 +255,12 @@
           "start": {
             "line": 16,
             "column": 11,
-            "program": "overrideStaticFunc.ets"
+            "program": "overrideStaticFunc.sts"
           },
           "end": {
             "line": 20,
             "column": 6,
-            "program": "overrideStaticFunc.ets"
+            "program": "overrideStaticFunc.sts"
           }
         }
       },
@@ -268,12 +268,12 @@
         "start": {
           "line": 16,
           "column": 1,
-          "program": "overrideStaticFunc.ets"
+          "program": "overrideStaticFunc.sts"
         },
         "end": {
           "line": 20,
           "column": 6,
-          "program": "overrideStaticFunc.ets"
+          "program": "overrideStaticFunc.sts"
         }
       }
     },
@@ -288,12 +288,12 @@
             "start": {
               "line": 20,
               "column": 7,
-              "program": "overrideStaticFunc.ets"
+              "program": "overrideStaticFunc.sts"
             },
             "end": {
               "line": 20,
               "column": 10,
-              "program": "overrideStaticFunc.ets"
+              "program": "overrideStaticFunc.sts"
             }
           }
         },
@@ -309,12 +309,12 @@
                 "start": {
                   "line": 20,
                   "column": 19,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 22,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 }
               }
             },
@@ -322,12 +322,12 @@
               "start": {
                 "line": 20,
                 "column": 19,
-                "program": "overrideStaticFunc.ets"
+                "program": "overrideStaticFunc.sts"
               },
               "end": {
                 "line": 20,
                 "column": 24,
-                "program": "overrideStaticFunc.ets"
+                "program": "overrideStaticFunc.sts"
               }
             }
           },
@@ -335,12 +335,12 @@
             "start": {
               "line": 20,
               "column": 19,
-              "program": "overrideStaticFunc.ets"
+              "program": "overrideStaticFunc.sts"
             },
             "end": {
               "line": 20,
               "column": 24,
-              "program": "overrideStaticFunc.ets"
+              "program": "overrideStaticFunc.sts"
             }
           }
         },
@@ -356,12 +356,12 @@
                 "start": {
                   "line": 21,
                   "column": 5,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 },
                 "end": {
                   "line": 21,
                   "column": 11,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 }
               }
             },
@@ -382,12 +382,12 @@
                     "start": {
                       "line": 21,
                       "column": 5,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     },
                     "end": {
                       "line": 21,
                       "column": 11,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     }
                   }
                 },
@@ -401,12 +401,12 @@
                     "start": {
                       "line": 21,
                       "column": 15,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     },
                     "end": {
                       "line": 21,
                       "column": 19,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     }
                   }
                 },
@@ -417,12 +417,12 @@
                     "start": {
                       "line": 21,
                       "column": 20,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     },
                     "end": {
                       "line": 21,
                       "column": 22,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     }
                   }
                 },
@@ -430,12 +430,12 @@
                   "start": {
                     "line": 21,
                     "column": 11,
-                    "program": "overrideStaticFunc.ets"
+                    "program": "overrideStaticFunc.sts"
                   },
                   "end": {
                     "line": 21,
                     "column": 22,
-                    "program": "overrideStaticFunc.ets"
+                    "program": "overrideStaticFunc.sts"
                   }
                 }
               },
@@ -443,12 +443,12 @@
                 "start": {
                   "line": 21,
                   "column": 11,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 },
                 "end": {
                   "line": 21,
                   "column": 22,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 }
               }
             },
@@ -458,12 +458,12 @@
               "start": {
                 "line": 21,
                 "column": 5,
-                "program": "overrideStaticFunc.ets"
+                "program": "overrideStaticFunc.sts"
               },
               "end": {
                 "line": 21,
                 "column": 22,
-                "program": "overrideStaticFunc.ets"
+                "program": "overrideStaticFunc.sts"
               }
             }
           },
@@ -477,12 +477,12 @@
                 "start": {
                   "line": 20,
                   "column": 24,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 24,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 }
               }
             },
@@ -502,12 +502,12 @@
                     "start": {
                       "line": 20,
                       "column": 24,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 24,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     }
                   }
                 },
@@ -522,12 +522,12 @@
                     "start": {
                       "line": 20,
                       "column": 24,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 24,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     }
                   }
                 },
@@ -535,12 +535,12 @@
                   "start": {
                     "line": 20,
                     "column": 24,
-                    "program": "overrideStaticFunc.ets"
+                    "program": "overrideStaticFunc.sts"
                   },
                   "end": {
                     "line": 20,
                     "column": 24,
-                    "program": "overrideStaticFunc.ets"
+                    "program": "overrideStaticFunc.sts"
                   }
                 }
               },
@@ -548,12 +548,12 @@
                 "start": {
                   "line": 20,
                   "column": 24,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 24,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 }
               }
             },
@@ -577,12 +577,12 @@
           "start": {
             "line": 20,
             "column": 23,
-            "program": "overrideStaticFunc.ets"
+            "program": "overrideStaticFunc.sts"
           },
           "end": {
             "line": 24,
             "column": 10,
-            "program": "overrideStaticFunc.ets"
+            "program": "overrideStaticFunc.sts"
           }
         }
       },
@@ -590,12 +590,12 @@
         "start": {
           "line": 20,
           "column": 1,
-          "program": "overrideStaticFunc.ets"
+          "program": "overrideStaticFunc.sts"
         },
         "end": {
           "line": 24,
           "column": 10,
-          "program": "overrideStaticFunc.ets"
+          "program": "overrideStaticFunc.sts"
         }
       }
     },
@@ -614,12 +614,12 @@
                 "start": {
                   "line": 25,
                   "column": 5,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 },
                 "end": {
                   "line": 25,
                   "column": 9,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 }
               }
             },
@@ -640,12 +640,12 @@
                     "start": {
                       "line": 25,
                       "column": 5,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     },
                     "end": {
                       "line": 25,
                       "column": 9,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     }
                   }
                 },
@@ -659,12 +659,12 @@
                     "start": {
                       "line": 25,
                       "column": 13,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     },
                     "end": {
                       "line": 25,
                       "column": 17,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     }
                   }
                 },
@@ -675,12 +675,12 @@
                     "start": {
                       "line": 25,
                       "column": 18,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     },
                     "end": {
                       "line": 25,
                       "column": 20,
-                      "program": "overrideStaticFunc.ets"
+                      "program": "overrideStaticFunc.sts"
                     }
                   }
                 },
@@ -688,12 +688,12 @@
                   "start": {
                     "line": 25,
                     "column": 9,
-                    "program": "overrideStaticFunc.ets"
+                    "program": "overrideStaticFunc.sts"
                   },
                   "end": {
                     "line": 25,
                     "column": 20,
-                    "program": "overrideStaticFunc.ets"
+                    "program": "overrideStaticFunc.sts"
                   }
                 }
               },
@@ -701,12 +701,12 @@
                 "start": {
                   "line": 25,
                   "column": 9,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 },
                 "end": {
                   "line": 25,
                   "column": 20,
-                  "program": "overrideStaticFunc.ets"
+                  "program": "overrideStaticFunc.sts"
                 }
               }
             },
@@ -716,12 +716,12 @@
               "start": {
                 "line": 25,
                 "column": 5,
-                "program": "overrideStaticFunc.ets"
+                "program": "overrideStaticFunc.sts"
               },
               "end": {
                 "line": 25,
                 "column": 20,
-                "program": "overrideStaticFunc.ets"
+                "program": "overrideStaticFunc.sts"
               }
             }
           }
@@ -730,12 +730,12 @@
           "start": {
             "line": 24,
             "column": 17,
-            "program": "overrideStaticFunc.ets"
+            "program": "overrideStaticFunc.sts"
           },
           "end": {
             "line": 26,
             "column": 2,
-            "program": "overrideStaticFunc.ets"
+            "program": "overrideStaticFunc.sts"
           }
         }
       },
@@ -747,12 +747,12 @@
           "start": {
             "line": 24,
             "column": 11,
-            "program": "overrideStaticFunc.ets"
+            "program": "overrideStaticFunc.sts"
           },
           "end": {
             "line": 24,
             "column": 16,
-            "program": "overrideStaticFunc.ets"
+            "program": "overrideStaticFunc.sts"
           }
         }
       },
@@ -761,12 +761,12 @@
         "start": {
           "line": 24,
           "column": 1,
-          "program": "overrideStaticFunc.ets"
+          "program": "overrideStaticFunc.sts"
         },
         "end": {
           "line": 27,
           "column": 1,
-          "program": "overrideStaticFunc.ets"
+          "program": "overrideStaticFunc.sts"
         }
       }
     },
@@ -781,12 +781,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "overrideStaticFunc.ets"
+              "program": "overrideStaticFunc.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "overrideStaticFunc.ets"
+              "program": "overrideStaticFunc.sts"
             }
           }
         },
@@ -890,12 +890,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "overrideStaticFunc.ets"
+                "program": "overrideStaticFunc.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "overrideStaticFunc.ets"
+                "program": "overrideStaticFunc.sts"
               }
             }
           },
@@ -996,12 +996,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "overrideStaticFunc.ets"
+                "program": "overrideStaticFunc.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "overrideStaticFunc.ets"
+                "program": "overrideStaticFunc.sts"
               }
             }
           }
@@ -1010,12 +1010,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "overrideStaticFunc.ets"
+            "program": "overrideStaticFunc.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "overrideStaticFunc.ets"
+            "program": "overrideStaticFunc.sts"
           }
         }
       },
@@ -1023,12 +1023,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "overrideStaticFunc.ets"
+          "program": "overrideStaticFunc.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "overrideStaticFunc.ets"
+          "program": "overrideStaticFunc.sts"
         }
       }
     }
@@ -1037,12 +1037,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "overrideStaticFunc.ets"
+      "program": "overrideStaticFunc.sts"
     },
     "end": {
       "line": 27,
       "column": 1,
-      "program": "overrideStaticFunc.ets"
+      "program": "overrideStaticFunc.sts"
     }
   }
 }

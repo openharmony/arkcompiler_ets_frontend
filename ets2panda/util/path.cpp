@@ -21,7 +21,7 @@
 namespace ark::es2panda::util {
 
 constexpr size_t ALLOWED_EXTENSIONS_SIZE = 8;
-static std::array<std::string, ALLOWED_EXTENSIONS_SIZE> supportedExtensions = {".d.ets", ".ets", ".d.sts", ".sts",
+static std::array<std::string, ALLOWED_EXTENSIONS_SIZE> supportedExtensions = {".d.sts", ".sts", ".d.ets", ".ets",
                                                                                ".d.ts",  ".ts",  ".js",    ".abc"};
 Path::Path() = default;
 

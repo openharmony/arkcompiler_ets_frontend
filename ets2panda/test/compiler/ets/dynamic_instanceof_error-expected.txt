@@ -10,12 +10,12 @@
           "start": {
             "line": 20,
             "column": 19,
-            "program": "dynamic_instanceof_error.ets"
+            "program": "dynamic_instanceof_error.sts"
           },
           "end": {
             "line": 20,
             "column": 44,
-            "program": "dynamic_instanceof_error.ets"
+            "program": "dynamic_instanceof_error.sts"
           }
         }
       },
@@ -30,12 +30,12 @@
               "start": {
                 "line": 20,
                 "column": 10,
-                "program": "dynamic_instanceof_error.ets"
+                "program": "dynamic_instanceof_error.sts"
               },
               "end": {
                 "line": 20,
                 "column": 11,
-                "program": "dynamic_instanceof_error.ets"
+                "program": "dynamic_instanceof_error.sts"
               }
             }
           },
@@ -47,12 +47,12 @@
               "start": {
                 "line": 20,
                 "column": 10,
-                "program": "dynamic_instanceof_error.ets"
+                "program": "dynamic_instanceof_error.sts"
               },
               "end": {
                 "line": 20,
                 "column": 11,
-                "program": "dynamic_instanceof_error.ets"
+                "program": "dynamic_instanceof_error.sts"
               }
             }
           },
@@ -60,12 +60,12 @@
             "start": {
               "line": 20,
               "column": 10,
-              "program": "dynamic_instanceof_error.ets"
+              "program": "dynamic_instanceof_error.sts"
             },
             "end": {
               "line": 20,
               "column": 11,
-              "program": "dynamic_instanceof_error.ets"
+              "program": "dynamic_instanceof_error.sts"
             }
           }
         }
@@ -74,12 +74,12 @@
         "start": {
           "line": 20,
           "column": 1,
-          "program": "dynamic_instanceof_error.ets"
+          "program": "dynamic_instanceof_error.sts"
         },
         "end": {
           "line": 20,
           "column": 44,
-          "program": "dynamic_instanceof_error.ets"
+          "program": "dynamic_instanceof_error.sts"
         }
       }
     },
@@ -94,12 +94,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "dynamic_instanceof_error.ets"
+              "program": "dynamic_instanceof_error.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "dynamic_instanceof_error.ets"
+              "program": "dynamic_instanceof_error.sts"
             }
           }
         },
@@ -203,12 +203,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "dynamic_instanceof_error.ets"
+                "program": "dynamic_instanceof_error.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "dynamic_instanceof_error.ets"
+                "program": "dynamic_instanceof_error.sts"
               }
             }
           },
@@ -309,12 +309,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "dynamic_instanceof_error.ets"
+                "program": "dynamic_instanceof_error.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "dynamic_instanceof_error.ets"
+                "program": "dynamic_instanceof_error.sts"
               }
             }
           },
@@ -328,12 +328,12 @@
                 "start": {
                   "line": 22,
                   "column": 10,
-                  "program": "dynamic_instanceof_error.ets"
+                  "program": "dynamic_instanceof_error.sts"
                 },
                 "end": {
                   "line": 22,
                   "column": 13,
-                  "program": "dynamic_instanceof_error.ets"
+                  "program": "dynamic_instanceof_error.sts"
                 }
               }
             },
@@ -354,12 +354,12 @@
                     "start": {
                       "line": 22,
                       "column": 10,
-                      "program": "dynamic_instanceof_error.ets"
+                      "program": "dynamic_instanceof_error.sts"
                     },
                     "end": {
                       "line": 22,
                       "column": 13,
-                      "program": "dynamic_instanceof_error.ets"
+                      "program": "dynamic_instanceof_error.sts"
                     }
                   }
                 },
@@ -373,12 +373,12 @@
                     "start": {
                       "line": 22,
                       "column": 17,
-                      "program": "dynamic_instanceof_error.ets"
+                      "program": "dynamic_instanceof_error.sts"
                     },
                     "end": {
                       "line": 22,
                       "column": 21,
-                      "program": "dynamic_instanceof_error.ets"
+                      "program": "dynamic_instanceof_error.sts"
                     }
                   }
                 },
@@ -398,12 +398,12 @@
                               "start": {
                                 "line": 23,
                                 "column": 7,
-                                "program": "dynamic_instanceof_error.ets"
+                                "program": "dynamic_instanceof_error.sts"
                               },
                               "end": {
                                 "line": 23,
                                 "column": 8,
-                                "program": "dynamic_instanceof_error.ets"
+                                "program": "dynamic_instanceof_error.sts"
                               }
                             }
                           },
@@ -414,12 +414,12 @@
                               "start": {
                                 "line": 23,
                                 "column": 11,
-                                "program": "dynamic_instanceof_error.ets"
+                                "program": "dynamic_instanceof_error.sts"
                               },
                               "end": {
                                 "line": 23,
                                 "column": 13,
-                                "program": "dynamic_instanceof_error.ets"
+                                "program": "dynamic_instanceof_error.sts"
                               }
                             }
                           },
@@ -427,12 +427,12 @@
                             "start": {
                               "line": 23,
                               "column": 7,
-                              "program": "dynamic_instanceof_error.ets"
+                              "program": "dynamic_instanceof_error.sts"
                             },
                             "end": {
                               "line": 23,
                               "column": 13,
-                              "program": "dynamic_instanceof_error.ets"
+                              "program": "dynamic_instanceof_error.sts"
                             }
                           }
                         }
@@ -442,12 +442,12 @@
                         "start": {
                           "line": 23,
                           "column": 3,
-                          "program": "dynamic_instanceof_error.ets"
+                          "program": "dynamic_instanceof_error.sts"
                         },
                         "end": {
                           "line": 23,
                           "column": 14,
-                          "program": "dynamic_instanceof_error.ets"
+                          "program": "dynamic_instanceof_error.sts"
                         }
                       }
                     },
@@ -464,12 +464,12 @@
                               "start": {
                                 "line": 24,
                                 "column": 7,
-                                "program": "dynamic_instanceof_error.ets"
+                                "program": "dynamic_instanceof_error.sts"
                               },
                               "end": {
                                 "line": 24,
                                 "column": 8,
-                                "program": "dynamic_instanceof_error.ets"
+                                "program": "dynamic_instanceof_error.sts"
                               }
                             }
                           },
@@ -484,12 +484,12 @@
                                 "start": {
                                   "line": 24,
                                   "column": 11,
-                                  "program": "dynamic_instanceof_error.ets"
+                                  "program": "dynamic_instanceof_error.sts"
                                 },
                                 "end": {
                                   "line": 24,
                                   "column": 12,
-                                  "program": "dynamic_instanceof_error.ets"
+                                  "program": "dynamic_instanceof_error.sts"
                                 }
                               }
                             },
@@ -505,12 +505,12 @@
                                     "start": {
                                       "line": 24,
                                       "column": 24,
-                                      "program": "dynamic_instanceof_error.ets"
+                                      "program": "dynamic_instanceof_error.sts"
                                     },
                                     "end": {
                                       "line": 24,
                                       "column": 25,
-                                      "program": "dynamic_instanceof_error.ets"
+                                      "program": "dynamic_instanceof_error.sts"
                                     }
                                   }
                                 },
@@ -518,12 +518,12 @@
                                   "start": {
                                     "line": 24,
                                     "column": 24,
-                                    "program": "dynamic_instanceof_error.ets"
+                                    "program": "dynamic_instanceof_error.sts"
                                   },
                                   "end": {
                                     "line": 24,
                                     "column": 26,
-                                    "program": "dynamic_instanceof_error.ets"
+                                    "program": "dynamic_instanceof_error.sts"
                                   }
                                 }
                               },
@@ -531,12 +531,12 @@
                                 "start": {
                                   "line": 24,
                                   "column": 24,
-                                  "program": "dynamic_instanceof_error.ets"
+                                  "program": "dynamic_instanceof_error.sts"
                                 },
                                 "end": {
                                   "line": 24,
                                   "column": 26,
-                                  "program": "dynamic_instanceof_error.ets"
+                                  "program": "dynamic_instanceof_error.sts"
                                 }
                               }
                             },
@@ -544,12 +544,12 @@
                               "start": {
                                 "line": 24,
                                 "column": 11,
-                                "program": "dynamic_instanceof_error.ets"
+                                "program": "dynamic_instanceof_error.sts"
                               },
                               "end": {
                                 "line": 24,
                                 "column": 26,
-                                "program": "dynamic_instanceof_error.ets"
+                                "program": "dynamic_instanceof_error.sts"
                               }
                             }
                           },
@@ -557,12 +557,12 @@
                             "start": {
                               "line": 24,
                               "column": 7,
-                              "program": "dynamic_instanceof_error.ets"
+                              "program": "dynamic_instanceof_error.sts"
                             },
                             "end": {
                               "line": 24,
                               "column": 26,
-                              "program": "dynamic_instanceof_error.ets"
+                              "program": "dynamic_instanceof_error.sts"
                             }
                           }
                         }
@@ -572,12 +572,12 @@
                         "start": {
                           "line": 24,
                           "column": 3,
-                          "program": "dynamic_instanceof_error.ets"
+                          "program": "dynamic_instanceof_error.sts"
                         },
                         "end": {
                           "line": 24,
                           "column": 26,
-                          "program": "dynamic_instanceof_error.ets"
+                          "program": "dynamic_instanceof_error.sts"
                         }
                       }
                     }
@@ -586,12 +586,12 @@
                     "start": {
                       "line": 22,
                       "column": 22,
-                      "program": "dynamic_instanceof_error.ets"
+                      "program": "dynamic_instanceof_error.sts"
                     },
                     "end": {
                       "line": 25,
                       "column": 2,
-                      "program": "dynamic_instanceof_error.ets"
+                      "program": "dynamic_instanceof_error.sts"
                     }
                   }
                 },
@@ -599,12 +599,12 @@
                   "start": {
                     "line": 22,
                     "column": 10,
-                    "program": "dynamic_instanceof_error.ets"
+                    "program": "dynamic_instanceof_error.sts"
                   },
                   "end": {
                     "line": 25,
                     "column": 2,
-                    "program": "dynamic_instanceof_error.ets"
+                    "program": "dynamic_instanceof_error.sts"
                   }
                 }
               },
@@ -612,12 +612,12 @@
                 "start": {
                   "line": 22,
                   "column": 10,
-                  "program": "dynamic_instanceof_error.ets"
+                  "program": "dynamic_instanceof_error.sts"
                 },
                 "end": {
                   "line": 25,
                   "column": 2,
-                  "program": "dynamic_instanceof_error.ets"
+                  "program": "dynamic_instanceof_error.sts"
                 }
               }
             },
@@ -627,12 +627,12 @@
               "start": {
                 "line": 22,
                 "column": 1,
-                "program": "dynamic_instanceof_error.ets"
+                "program": "dynamic_instanceof_error.sts"
               },
               "end": {
                 "line": 25,
                 "column": 2,
-                "program": "dynamic_instanceof_error.ets"
+                "program": "dynamic_instanceof_error.sts"
               }
             }
           }
@@ -641,12 +641,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "dynamic_instanceof_error.ets"
+            "program": "dynamic_instanceof_error.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "dynamic_instanceof_error.ets"
+            "program": "dynamic_instanceof_error.sts"
           }
         }
       },
@@ -654,12 +654,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "dynamic_instanceof_error.ets"
+          "program": "dynamic_instanceof_error.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "dynamic_instanceof_error.ets"
+          "program": "dynamic_instanceof_error.sts"
         }
       }
     },
@@ -1144,13 +1144,13 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "dynamic_instanceof_error.ets"
+      "program": "dynamic_instanceof_error.sts"
     },
     "end": {
       "line": 26,
       "column": 1,
-      "program": "dynamic_instanceof_error.ets"
+      "program": "dynamic_instanceof_error.sts"
     }
   }
 }
-TypeError: Bad operand type, the types of the operands must be same type. [dynamic_instanceof_error.ets:24:11]
+TypeError: Bad operand type, the types of the operands must be same type. [dynamic_instanceof_error.sts:24:11]

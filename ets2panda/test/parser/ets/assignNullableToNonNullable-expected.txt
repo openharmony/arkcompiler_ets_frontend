@@ -12,12 +12,12 @@
             "start": {
               "line": 16,
               "column": 7,
-              "program": "assignNullableToNonNullable.ets"
+              "program": "assignNullableToNonNullable.sts"
             },
             "end": {
               "line": 16,
               "column": 8,
-              "program": "assignNullableToNonNullable.ets"
+              "program": "assignNullableToNonNullable.sts"
             }
           }
         },
@@ -34,12 +34,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "assignNullableToNonNullable.ets"
+                  "program": "assignNullableToNonNullable.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 10,
-                  "program": "assignNullableToNonNullable.ets"
+                  "program": "assignNullableToNonNullable.sts"
                 }
               }
             },
@@ -59,12 +59,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "assignNullableToNonNullable.ets"
+                      "program": "assignNullableToNonNullable.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 10,
-                      "program": "assignNullableToNonNullable.ets"
+                      "program": "assignNullableToNonNullable.sts"
                     }
                   }
                 },
@@ -79,12 +79,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "assignNullableToNonNullable.ets"
+                      "program": "assignNullableToNonNullable.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 10,
-                      "program": "assignNullableToNonNullable.ets"
+                      "program": "assignNullableToNonNullable.sts"
                     }
                   }
                 },
@@ -92,12 +92,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "assignNullableToNonNullable.ets"
+                    "program": "assignNullableToNonNullable.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 10,
-                    "program": "assignNullableToNonNullable.ets"
+                    "program": "assignNullableToNonNullable.sts"
                   }
                 }
               },
@@ -105,12 +105,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "assignNullableToNonNullable.ets"
+                  "program": "assignNullableToNonNullable.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 10,
-                  "program": "assignNullableToNonNullable.ets"
+                  "program": "assignNullableToNonNullable.sts"
                 }
               }
             },
@@ -134,12 +134,12 @@
           "start": {
             "line": 16,
             "column": 9,
-            "program": "assignNullableToNonNullable.ets"
+            "program": "assignNullableToNonNullable.sts"
           },
           "end": {
             "line": 18,
             "column": 9,
-            "program": "assignNullableToNonNullable.ets"
+            "program": "assignNullableToNonNullable.sts"
           }
         }
       },
@@ -147,12 +147,12 @@
         "start": {
           "line": 16,
           "column": 1,
-          "program": "assignNullableToNonNullable.ets"
+          "program": "assignNullableToNonNullable.sts"
         },
         "end": {
           "line": 18,
           "column": 9,
-          "program": "assignNullableToNonNullable.ets"
+          "program": "assignNullableToNonNullable.sts"
         }
       }
     },
@@ -167,12 +167,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "assignNullableToNonNullable.ets"
+              "program": "assignNullableToNonNullable.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "assignNullableToNonNullable.ets"
+              "program": "assignNullableToNonNullable.sts"
             }
           }
         },
@@ -276,12 +276,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "assignNullableToNonNullable.ets"
+                "program": "assignNullableToNonNullable.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "assignNullableToNonNullable.ets"
+                "program": "assignNullableToNonNullable.sts"
               }
             }
           },
@@ -295,12 +295,12 @@
                 "start": {
                   "line": 18,
                   "column": 10,
-                  "program": "assignNullableToNonNullable.ets"
+                  "program": "assignNullableToNonNullable.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 14,
-                  "program": "assignNullableToNonNullable.ets"
+                  "program": "assignNullableToNonNullable.sts"
                 }
               }
             },
@@ -321,12 +321,12 @@
                     "start": {
                       "line": 18,
                       "column": 10,
-                      "program": "assignNullableToNonNullable.ets"
+                      "program": "assignNullableToNonNullable.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 14,
-                      "program": "assignNullableToNonNullable.ets"
+                      "program": "assignNullableToNonNullable.sts"
                     }
                   }
                 },
@@ -340,12 +340,12 @@
                     "start": {
                       "line": 18,
                       "column": 18,
-                      "program": "assignNullableToNonNullable.ets"
+                      "program": "assignNullableToNonNullable.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 22,
-                      "program": "assignNullableToNonNullable.ets"
+                      "program": "assignNullableToNonNullable.sts"
                     }
                   }
                 },
@@ -372,12 +372,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 13,
-                                      "program": "assignNullableToNonNullable.ets"
+                                      "program": "assignNullableToNonNullable.sts"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 19,
-                                      "program": "assignNullableToNonNullable.ets"
+                                      "program": "assignNullableToNonNullable.sts"
                                     }
                                   }
                                 },
@@ -385,12 +385,12 @@
                                   "start": {
                                     "line": 19,
                                     "column": 13,
-                                    "program": "assignNullableToNonNullable.ets"
+                                    "program": "assignNullableToNonNullable.sts"
                                   },
                                   "end": {
                                     "line": 19,
                                     "column": 20,
-                                    "program": "assignNullableToNonNullable.ets"
+                                    "program": "assignNullableToNonNullable.sts"
                                   }
                                 }
                               },
@@ -398,12 +398,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 13,
-                                  "program": "assignNullableToNonNullable.ets"
+                                  "program": "assignNullableToNonNullable.sts"
                                 },
                                 "end": {
                                   "line": 19,
                                   "column": 20,
-                                  "program": "assignNullableToNonNullable.ets"
+                                  "program": "assignNullableToNonNullable.sts"
                                 }
                               }
                             },
@@ -412,12 +412,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 9,
-                                "program": "assignNullableToNonNullable.ets"
+                                "program": "assignNullableToNonNullable.sts"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 10,
-                                "program": "assignNullableToNonNullable.ets"
+                                "program": "assignNullableToNonNullable.sts"
                               }
                             }
                           },
@@ -426,12 +426,12 @@
                             "start": {
                               "line": 19,
                               "column": 9,
-                              "program": "assignNullableToNonNullable.ets"
+                              "program": "assignNullableToNonNullable.sts"
                             },
                             "end": {
                               "line": 19,
                               "column": 10,
-                              "program": "assignNullableToNonNullable.ets"
+                              "program": "assignNullableToNonNullable.sts"
                             }
                           }
                         }
@@ -441,12 +441,12 @@
                         "start": {
                           "line": 19,
                           "column": 5,
-                          "program": "assignNullableToNonNullable.ets"
+                          "program": "assignNullableToNonNullable.sts"
                         },
                         "end": {
                           "line": 19,
                           "column": 20,
-                          "program": "assignNullableToNonNullable.ets"
+                          "program": "assignNullableToNonNullable.sts"
                         }
                       }
                     },
@@ -473,12 +473,12 @@
                                         "start": {
                                           "line": 20,
                                           "column": 14,
-                                          "program": "assignNullableToNonNullable.ets"
+                                          "program": "assignNullableToNonNullable.sts"
                                         },
                                         "end": {
                                           "line": 20,
                                           "column": 15,
-                                          "program": "assignNullableToNonNullable.ets"
+                                          "program": "assignNullableToNonNullable.sts"
                                         }
                                       }
                                     },
@@ -486,12 +486,12 @@
                                       "start": {
                                         "line": 20,
                                         "column": 14,
-                                        "program": "assignNullableToNonNullable.ets"
+                                        "program": "assignNullableToNonNullable.sts"
                                       },
                                       "end": {
                                         "line": 20,
                                         "column": 17,
-                                        "program": "assignNullableToNonNullable.ets"
+                                        "program": "assignNullableToNonNullable.sts"
                                       }
                                     }
                                   },
@@ -499,12 +499,12 @@
                                     "start": {
                                       "line": 20,
                                       "column": 14,
-                                      "program": "assignNullableToNonNullable.ets"
+                                      "program": "assignNullableToNonNullable.sts"
                                     },
                                     "end": {
                                       "line": 20,
                                       "column": 17,
-                                      "program": "assignNullableToNonNullable.ets"
+                                      "program": "assignNullableToNonNullable.sts"
                                     }
                                   }
                                 },
@@ -514,12 +514,12 @@
                                     "start": {
                                       "line": 20,
                                       "column": 18,
-                                      "program": "assignNullableToNonNullable.ets"
+                                      "program": "assignNullableToNonNullable.sts"
                                     },
                                     "end": {
                                       "line": 20,
                                       "column": 22,
-                                      "program": "assignNullableToNonNullable.ets"
+                                      "program": "assignNullableToNonNullable.sts"
                                     }
                                   }
                                 }
@@ -528,12 +528,12 @@
                                 "start": {
                                   "line": 20,
                                   "column": 14,
-                                  "program": "assignNullableToNonNullable.ets"
+                                  "program": "assignNullableToNonNullable.sts"
                                 },
                                 "end": {
                                   "line": 20,
                                   "column": 22,
-                                  "program": "assignNullableToNonNullable.ets"
+                                  "program": "assignNullableToNonNullable.sts"
                                 }
                               }
                             },
@@ -542,12 +542,12 @@
                               "start": {
                                 "line": 20,
                                 "column": 9,
-                                "program": "assignNullableToNonNullable.ets"
+                                "program": "assignNullableToNonNullable.sts"
                               },
                               "end": {
                                 "line": 20,
                                 "column": 11,
-                                "program": "assignNullableToNonNullable.ets"
+                                "program": "assignNullableToNonNullable.sts"
                               }
                             }
                           },
@@ -565,12 +565,12 @@
                                     "start": {
                                       "line": 20,
                                       "column": 29,
-                                      "program": "assignNullableToNonNullable.ets"
+                                      "program": "assignNullableToNonNullable.sts"
                                     },
                                     "end": {
                                       "line": 20,
                                       "column": 30,
-                                      "program": "assignNullableToNonNullable.ets"
+                                      "program": "assignNullableToNonNullable.sts"
                                     }
                                   }
                                 },
@@ -578,12 +578,12 @@
                                   "start": {
                                     "line": 20,
                                     "column": 29,
-                                    "program": "assignNullableToNonNullable.ets"
+                                    "program": "assignNullableToNonNullable.sts"
                                   },
                                   "end": {
                                     "line": 20,
                                     "column": 31,
-                                    "program": "assignNullableToNonNullable.ets"
+                                    "program": "assignNullableToNonNullable.sts"
                                   }
                                 }
                               },
@@ -591,12 +591,12 @@
                                 "start": {
                                   "line": 20,
                                   "column": 29,
-                                  "program": "assignNullableToNonNullable.ets"
+                                  "program": "assignNullableToNonNullable.sts"
                                 },
                                 "end": {
                                   "line": 20,
                                   "column": 31,
-                                  "program": "assignNullableToNonNullable.ets"
+                                  "program": "assignNullableToNonNullable.sts"
                                 }
                               }
                             },
@@ -605,12 +605,12 @@
                               "start": {
                                 "line": 20,
                                 "column": 25,
-                                "program": "assignNullableToNonNullable.ets"
+                                "program": "assignNullableToNonNullable.sts"
                               },
                               "end": {
                                 "line": 20,
                                 "column": 33,
-                                "program": "assignNullableToNonNullable.ets"
+                                "program": "assignNullableToNonNullable.sts"
                               }
                             }
                           },
@@ -618,12 +618,12 @@
                             "start": {
                               "line": 20,
                               "column": 9,
-                              "program": "assignNullableToNonNullable.ets"
+                              "program": "assignNullableToNonNullable.sts"
                             },
                             "end": {
                               "line": 20,
                               "column": 33,
-                              "program": "assignNullableToNonNullable.ets"
+                              "program": "assignNullableToNonNullable.sts"
                             }
                           }
                         }
@@ -633,12 +633,12 @@
                         "start": {
                           "line": 20,
                           "column": 5,
-                          "program": "assignNullableToNonNullable.ets"
+                          "program": "assignNullableToNonNullable.sts"
                         },
                         "end": {
                           "line": 20,
                           "column": 33,
-                          "program": "assignNullableToNonNullable.ets"
+                          "program": "assignNullableToNonNullable.sts"
                         }
                       }
                     },
@@ -655,12 +655,12 @@
                             "start": {
                               "line": 22,
                               "column": 5,
-                              "program": "assignNullableToNonNullable.ets"
+                              "program": "assignNullableToNonNullable.sts"
                             },
                             "end": {
                               "line": 22,
                               "column": 6,
-                              "program": "assignNullableToNonNullable.ets"
+                              "program": "assignNullableToNonNullable.sts"
                             }
                           }
                         },
@@ -672,12 +672,12 @@
                             "start": {
                               "line": 22,
                               "column": 9,
-                              "program": "assignNullableToNonNullable.ets"
+                              "program": "assignNullableToNonNullable.sts"
                             },
                             "end": {
                               "line": 22,
                               "column": 11,
-                              "program": "assignNullableToNonNullable.ets"
+                              "program": "assignNullableToNonNullable.sts"
                             }
                           }
                         },
@@ -685,12 +685,12 @@
                           "start": {
                             "line": 22,
                             "column": 5,
-                            "program": "assignNullableToNonNullable.ets"
+                            "program": "assignNullableToNonNullable.sts"
                           },
                           "end": {
                             "line": 22,
                             "column": 11,
-                            "program": "assignNullableToNonNullable.ets"
+                            "program": "assignNullableToNonNullable.sts"
                           }
                         }
                       },
@@ -698,12 +698,12 @@
                         "start": {
                           "line": 22,
                           "column": 5,
-                          "program": "assignNullableToNonNullable.ets"
+                          "program": "assignNullableToNonNullable.sts"
                         },
                         "end": {
                           "line": 22,
                           "column": 12,
-                          "program": "assignNullableToNonNullable.ets"
+                          "program": "assignNullableToNonNullable.sts"
                         }
                       }
                     }
@@ -712,12 +712,12 @@
                     "start": {
                       "line": 18,
                       "column": 23,
-                      "program": "assignNullableToNonNullable.ets"
+                      "program": "assignNullableToNonNullable.sts"
                     },
                     "end": {
                       "line": 23,
                       "column": 2,
-                      "program": "assignNullableToNonNullable.ets"
+                      "program": "assignNullableToNonNullable.sts"
                     }
                   }
                 },
@@ -725,12 +725,12 @@
                   "start": {
                     "line": 18,
                     "column": 10,
-                    "program": "assignNullableToNonNullable.ets"
+                    "program": "assignNullableToNonNullable.sts"
                   },
                   "end": {
                     "line": 23,
                     "column": 2,
-                    "program": "assignNullableToNonNullable.ets"
+                    "program": "assignNullableToNonNullable.sts"
                   }
                 }
               },
@@ -738,12 +738,12 @@
                 "start": {
                   "line": 18,
                   "column": 10,
-                  "program": "assignNullableToNonNullable.ets"
+                  "program": "assignNullableToNonNullable.sts"
                 },
                 "end": {
                   "line": 23,
                   "column": 2,
-                  "program": "assignNullableToNonNullable.ets"
+                  "program": "assignNullableToNonNullable.sts"
                 }
               }
             },
@@ -753,12 +753,12 @@
               "start": {
                 "line": 18,
                 "column": 1,
-                "program": "assignNullableToNonNullable.ets"
+                "program": "assignNullableToNonNullable.sts"
               },
               "end": {
                 "line": 23,
                 "column": 2,
-                "program": "assignNullableToNonNullable.ets"
+                "program": "assignNullableToNonNullable.sts"
               }
             }
           }
@@ -767,12 +767,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "assignNullableToNonNullable.ets"
+            "program": "assignNullableToNonNullable.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "assignNullableToNonNullable.ets"
+            "program": "assignNullableToNonNullable.sts"
           }
         }
       },
@@ -780,12 +780,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "assignNullableToNonNullable.ets"
+          "program": "assignNullableToNonNullable.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "assignNullableToNonNullable.ets"
+          "program": "assignNullableToNonNullable.sts"
         }
       }
     }
@@ -794,12 +794,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "assignNullableToNonNullable.ets"
+      "program": "assignNullableToNonNullable.sts"
     },
     "end": {
       "line": 24,
       "column": 1,
-      "program": "assignNullableToNonNullable.ets"
+      "program": "assignNullableToNonNullable.sts"
     }
   }
 }

@@ -12,12 +12,12 @@
             "start": {
               "line": 20,
               "column": 7,
-              "program": "func-ref-private.ets"
+              "program": "func-ref-private.sts"
             },
             "end": {
               "line": 20,
               "column": 8,
-              "program": "func-ref-private.ets"
+              "program": "func-ref-private.sts"
             }
           }
         },
@@ -34,12 +34,12 @@
                 "start": {
                   "line": 21,
                   "column": 12,
-                  "program": "func-ref-private.ets"
+                  "program": "func-ref-private.sts"
                 },
                 "end": {
                   "line": 21,
                   "column": 13,
-                  "program": "func-ref-private.ets"
+                  "program": "func-ref-private.sts"
                 }
               }
             },
@@ -60,12 +60,12 @@
                     "start": {
                       "line": 21,
                       "column": 12,
-                      "program": "func-ref-private.ets"
+                      "program": "func-ref-private.sts"
                     },
                     "end": {
                       "line": 21,
                       "column": 13,
-                      "program": "func-ref-private.ets"
+                      "program": "func-ref-private.sts"
                     }
                   }
                 },
@@ -84,12 +84,12 @@
                           "start": {
                             "line": 21,
                             "column": 17,
-                            "program": "func-ref-private.ets"
+                            "program": "func-ref-private.sts"
                           },
                           "end": {
                             "line": 21,
                             "column": 20,
-                            "program": "func-ref-private.ets"
+                            "program": "func-ref-private.sts"
                           }
                         }
                       },
@@ -98,12 +98,12 @@
                         "start": {
                           "line": 21,
                           "column": 14,
-                          "program": "func-ref-private.ets"
+                          "program": "func-ref-private.sts"
                         },
                         "end": {
                           "line": 21,
                           "column": 20,
-                          "program": "func-ref-private.ets"
+                          "program": "func-ref-private.sts"
                         }
                       }
                     },
@@ -111,12 +111,12 @@
                       "start": {
                         "line": 21,
                         "column": 14,
-                        "program": "func-ref-private.ets"
+                        "program": "func-ref-private.sts"
                       },
                       "end": {
                         "line": 21,
                         "column": 20,
-                        "program": "func-ref-private.ets"
+                        "program": "func-ref-private.sts"
                       }
                     }
                   }
@@ -128,12 +128,12 @@
                     "start": {
                       "line": 21,
                       "column": 22,
-                      "program": "func-ref-private.ets"
+                      "program": "func-ref-private.sts"
                     },
                     "end": {
                       "line": 21,
                       "column": 24,
-                      "program": "func-ref-private.ets"
+                      "program": "func-ref-private.sts"
                     }
                   }
                 },
@@ -141,12 +141,12 @@
                   "start": {
                     "line": 21,
                     "column": 13,
-                    "program": "func-ref-private.ets"
+                    "program": "func-ref-private.sts"
                   },
                   "end": {
                     "line": 21,
                     "column": 24,
-                    "program": "func-ref-private.ets"
+                    "program": "func-ref-private.sts"
                   }
                 }
               },
@@ -154,12 +154,12 @@
                 "start": {
                   "line": 21,
                   "column": 13,
-                  "program": "func-ref-private.ets"
+                  "program": "func-ref-private.sts"
                 },
                 "end": {
                   "line": 21,
                   "column": 24,
-                  "program": "func-ref-private.ets"
+                  "program": "func-ref-private.sts"
                 }
               }
             },
@@ -169,12 +169,12 @@
               "start": {
                 "line": 21,
                 "column": 4,
-                "program": "func-ref-private.ets"
+                "program": "func-ref-private.sts"
               },
               "end": {
                 "line": 21,
                 "column": 24,
-                "program": "func-ref-private.ets"
+                "program": "func-ref-private.sts"
               }
             }
           },
@@ -188,12 +188,12 @@
                 "start": {
                   "line": 23,
                   "column": 4,
-                  "program": "func-ref-private.ets"
+                  "program": "func-ref-private.sts"
                 },
                 "end": {
                   "line": 23,
                   "column": 8,
-                  "program": "func-ref-private.ets"
+                  "program": "func-ref-private.sts"
                 }
               }
             },
@@ -214,12 +214,12 @@
                     "start": {
                       "line": 23,
                       "column": 4,
-                      "program": "func-ref-private.ets"
+                      "program": "func-ref-private.sts"
                     },
                     "end": {
                       "line": 23,
                       "column": 8,
-                      "program": "func-ref-private.ets"
+                      "program": "func-ref-private.sts"
                     }
                   }
                 },
@@ -242,12 +242,12 @@
                             "start": {
                               "line": 24,
                               "column": 8,
-                              "program": "func-ref-private.ets"
+                              "program": "func-ref-private.sts"
                             },
                             "end": {
                               "line": 24,
                               "column": 13,
-                              "program": "func-ref-private.ets"
+                              "program": "func-ref-private.sts"
                             }
                           }
                         },
@@ -260,12 +260,12 @@
                                 "start": {
                                   "line": 24,
                                   "column": 14,
-                                  "program": "func-ref-private.ets"
+                                  "program": "func-ref-private.sts"
                                 },
                                 "end": {
                                   "line": 24,
                                   "column": 18,
-                                  "program": "func-ref-private.ets"
+                                  "program": "func-ref-private.sts"
                                 }
                               }
                             },
@@ -277,12 +277,12 @@
                                 "start": {
                                   "line": 24,
                                   "column": 19,
-                                  "program": "func-ref-private.ets"
+                                  "program": "func-ref-private.sts"
                                 },
                                 "end": {
                                   "line": 24,
                                   "column": 20,
-                                  "program": "func-ref-private.ets"
+                                  "program": "func-ref-private.sts"
                                 }
                               }
                             },
@@ -292,12 +292,12 @@
                               "start": {
                                 "line": 24,
                                 "column": 14,
-                                "program": "func-ref-private.ets"
+                                "program": "func-ref-private.sts"
                               },
                               "end": {
                                 "line": 24,
                                 "column": 20,
-                                "program": "func-ref-private.ets"
+                                "program": "func-ref-private.sts"
                               }
                             }
                           }
@@ -307,12 +307,12 @@
                           "start": {
                             "line": 24,
                             "column": 8,
-                            "program": "func-ref-private.ets"
+                            "program": "func-ref-private.sts"
                           },
                           "end": {
                             "line": 24,
                             "column": 21,
-                            "program": "func-ref-private.ets"
+                            "program": "func-ref-private.sts"
                           }
                         }
                       },
@@ -320,12 +320,12 @@
                         "start": {
                           "line": 24,
                           "column": 8,
-                          "program": "func-ref-private.ets"
+                          "program": "func-ref-private.sts"
                         },
                         "end": {
                           "line": 24,
                           "column": 21,
-                          "program": "func-ref-private.ets"
+                          "program": "func-ref-private.sts"
                         }
                       }
                     }
@@ -334,12 +334,12 @@
                     "start": {
                       "line": 23,
                       "column": 11,
-                      "program": "func-ref-private.ets"
+                      "program": "func-ref-private.sts"
                     },
                     "end": {
                       "line": 25,
                       "column": 5,
-                      "program": "func-ref-private.ets"
+                      "program": "func-ref-private.sts"
                     }
                   }
                 },
@@ -347,12 +347,12 @@
                   "start": {
                     "line": 23,
                     "column": 8,
-                    "program": "func-ref-private.ets"
+                    "program": "func-ref-private.sts"
                   },
                   "end": {
                     "line": 25,
                     "column": 5,
-                    "program": "func-ref-private.ets"
+                    "program": "func-ref-private.sts"
                   }
                 }
               },
@@ -360,12 +360,12 @@
                 "start": {
                   "line": 23,
                   "column": 8,
-                  "program": "func-ref-private.ets"
+                  "program": "func-ref-private.sts"
                 },
                 "end": {
                   "line": 25,
                   "column": 5,
-                  "program": "func-ref-private.ets"
+                  "program": "func-ref-private.sts"
                 }
               }
             },
@@ -375,12 +375,12 @@
               "start": {
                 "line": 23,
                 "column": 4,
-                "program": "func-ref-private.ets"
+                "program": "func-ref-private.sts"
               },
               "end": {
                 "line": 25,
                 "column": 5,
-                "program": "func-ref-private.ets"
+                "program": "func-ref-private.sts"
               }
             }
           },
@@ -394,12 +394,12 @@
                 "start": {
                   "line": 20,
                   "column": 10,
-                  "program": "func-ref-private.ets"
+                  "program": "func-ref-private.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 10,
-                  "program": "func-ref-private.ets"
+                  "program": "func-ref-private.sts"
                 }
               }
             },
@@ -419,12 +419,12 @@
                     "start": {
                       "line": 20,
                       "column": 10,
-                      "program": "func-ref-private.ets"
+                      "program": "func-ref-private.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 10,
-                      "program": "func-ref-private.ets"
+                      "program": "func-ref-private.sts"
                     }
                   }
                 },
@@ -439,12 +439,12 @@
                     "start": {
                       "line": 20,
                       "column": 10,
-                      "program": "func-ref-private.ets"
+                      "program": "func-ref-private.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 10,
-                      "program": "func-ref-private.ets"
+                      "program": "func-ref-private.sts"
                     }
                   }
                 },
@@ -452,12 +452,12 @@
                   "start": {
                     "line": 20,
                     "column": 10,
-                    "program": "func-ref-private.ets"
+                    "program": "func-ref-private.sts"
                   },
                   "end": {
                     "line": 20,
                     "column": 10,
-                    "program": "func-ref-private.ets"
+                    "program": "func-ref-private.sts"
                   }
                 }
               },
@@ -465,12 +465,12 @@
                 "start": {
                   "line": 20,
                   "column": 10,
-                  "program": "func-ref-private.ets"
+                  "program": "func-ref-private.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 10,
-                  "program": "func-ref-private.ets"
+                  "program": "func-ref-private.sts"
                 }
               }
             },
@@ -494,12 +494,12 @@
           "start": {
             "line": 20,
             "column": 9,
-            "program": "func-ref-private.ets"
+            "program": "func-ref-private.sts"
           },
           "end": {
             "line": 27,
             "column": 1,
-            "program": "func-ref-private.ets"
+            "program": "func-ref-private.sts"
           }
         }
       },
@@ -507,12 +507,12 @@
         "start": {
           "line": 20,
           "column": 1,
-          "program": "func-ref-private.ets"
+          "program": "func-ref-private.sts"
         },
         "end": {
           "line": 27,
           "column": 1,
-          "program": "func-ref-private.ets"
+          "program": "func-ref-private.sts"
         }
       }
     },
@@ -527,12 +527,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "func-ref-private.ets"
+              "program": "func-ref-private.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "func-ref-private.ets"
+              "program": "func-ref-private.sts"
             }
           }
         },
@@ -636,12 +636,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "func-ref-private.ets"
+                "program": "func-ref-private.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "func-ref-private.ets"
+                "program": "func-ref-private.sts"
               }
             }
           },
@@ -742,12 +742,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "func-ref-private.ets"
+                "program": "func-ref-private.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "func-ref-private.ets"
+                "program": "func-ref-private.sts"
               }
             }
           },
@@ -761,12 +761,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "func-ref-private.ets"
+                  "program": "func-ref-private.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 15,
-                  "program": "func-ref-private.ets"
+                  "program": "func-ref-private.sts"
                 }
               }
             },
@@ -787,12 +787,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "func-ref-private.ets"
+                      "program": "func-ref-private.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 15,
-                      "program": "func-ref-private.ets"
+                      "program": "func-ref-private.sts"
                     }
                   }
                 },
@@ -819,12 +819,12 @@
                                   "start": {
                                     "line": 16,
                                     "column": 24,
-                                    "program": "func-ref-private.ets"
+                                    "program": "func-ref-private.sts"
                                   },
                                   "end": {
                                     "line": 16,
                                     "column": 27,
-                                    "program": "func-ref-private.ets"
+                                    "program": "func-ref-private.sts"
                                   }
                                 }
                               },
@@ -833,12 +833,12 @@
                                 "start": {
                                   "line": 16,
                                   "column": 21,
-                                  "program": "func-ref-private.ets"
+                                  "program": "func-ref-private.sts"
                                 },
                                 "end": {
                                   "line": 16,
                                   "column": 27,
-                                  "program": "func-ref-private.ets"
+                                  "program": "func-ref-private.sts"
                                 }
                               }
                             },
@@ -846,12 +846,12 @@
                               "start": {
                                 "line": 16,
                                 "column": 21,
-                                "program": "func-ref-private.ets"
+                                "program": "func-ref-private.sts"
                               },
                               "end": {
                                 "line": 16,
                                 "column": 27,
-                                "program": "func-ref-private.ets"
+                                "program": "func-ref-private.sts"
                               }
                             }
                           }
@@ -862,12 +862,12 @@
                             "start": {
                               "line": 16,
                               "column": 32,
-                              "program": "func-ref-private.ets"
+                              "program": "func-ref-private.sts"
                             },
                             "end": {
                               "line": 16,
                               "column": 36,
-                              "program": "func-ref-private.ets"
+                              "program": "func-ref-private.sts"
                             }
                           }
                         },
@@ -875,12 +875,12 @@
                           "start": {
                             "line": 16,
                             "column": 20,
-                            "program": "func-ref-private.ets"
+                            "program": "func-ref-private.sts"
                           },
                           "end": {
                             "line": 16,
                             "column": 36,
-                            "program": "func-ref-private.ets"
+                            "program": "func-ref-private.sts"
                           }
                         }
                       },
@@ -889,12 +889,12 @@
                         "start": {
                           "line": 16,
                           "column": 16,
-                          "program": "func-ref-private.ets"
+                          "program": "func-ref-private.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 36,
-                          "program": "func-ref-private.ets"
+                          "program": "func-ref-private.sts"
                         }
                       }
                     },
@@ -902,12 +902,12 @@
                       "start": {
                         "line": 16,
                         "column": 16,
-                        "program": "func-ref-private.ets"
+                        "program": "func-ref-private.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 36,
-                        "program": "func-ref-private.ets"
+                        "program": "func-ref-private.sts"
                       }
                     }
                   }
@@ -927,12 +927,12 @@
                             "start": {
                               "line": 17,
                               "column": 5,
-                              "program": "func-ref-private.ets"
+                              "program": "func-ref-private.sts"
                             },
                             "end": {
                               "line": 17,
                               "column": 7,
-                              "program": "func-ref-private.ets"
+                              "program": "func-ref-private.sts"
                             }
                           }
                         },
@@ -944,12 +944,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 8,
-                                "program": "func-ref-private.ets"
+                                "program": "func-ref-private.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 10,
-                                "program": "func-ref-private.ets"
+                                "program": "func-ref-private.sts"
                               }
                             }
                           }
@@ -959,12 +959,12 @@
                           "start": {
                             "line": 17,
                             "column": 5,
-                            "program": "func-ref-private.ets"
+                            "program": "func-ref-private.sts"
                           },
                           "end": {
                             "line": 17,
                             "column": 11,
-                            "program": "func-ref-private.ets"
+                            "program": "func-ref-private.sts"
                           }
                         }
                       },
@@ -972,12 +972,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "func-ref-private.ets"
+                          "program": "func-ref-private.sts"
                         },
                         "end": {
                           "line": 17,
                           "column": 11,
-                          "program": "func-ref-private.ets"
+                          "program": "func-ref-private.sts"
                         }
                       }
                     }
@@ -986,12 +986,12 @@
                     "start": {
                       "line": 16,
                       "column": 38,
-                      "program": "func-ref-private.ets"
+                      "program": "func-ref-private.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 2,
-                      "program": "func-ref-private.ets"
+                      "program": "func-ref-private.sts"
                     }
                   }
                 },
@@ -999,12 +999,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "func-ref-private.ets"
+                    "program": "func-ref-private.sts"
                   },
                   "end": {
                     "line": 18,
                     "column": 2,
-                    "program": "func-ref-private.ets"
+                    "program": "func-ref-private.sts"
                   }
                 }
               },
@@ -1012,12 +1012,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "func-ref-private.ets"
+                  "program": "func-ref-private.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 2,
-                  "program": "func-ref-private.ets"
+                  "program": "func-ref-private.sts"
                 }
               }
             },
@@ -1027,12 +1027,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "func-ref-private.ets"
+                "program": "func-ref-private.sts"
               },
               "end": {
                 "line": 18,
                 "column": 2,
-                "program": "func-ref-private.ets"
+                "program": "func-ref-private.sts"
               }
             }
           }
@@ -1041,12 +1041,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "func-ref-private.ets"
+            "program": "func-ref-private.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "func-ref-private.ets"
+            "program": "func-ref-private.sts"
           }
         }
       },
@@ -1054,12 +1054,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "func-ref-private.ets"
+          "program": "func-ref-private.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "func-ref-private.ets"
+          "program": "func-ref-private.sts"
         }
       }
     }
@@ -1068,13 +1068,13 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "func-ref-private.ets"
+      "program": "func-ref-private.sts"
     },
     "end": {
       "line": 27,
       "column": 1,
-      "program": "func-ref-private.ets"
+      "program": "func-ref-private.sts"
     }
   }
 }
-TypeError: Private method is used as value [func-ref-private.ets:24:19]
+TypeError: Private method is used as value [func-ref-private.sts:24:19]

@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "class_interface_enum_only_top_level_4.ets"
+              "program": "class_interface_enum_only_top_level_4.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "class_interface_enum_only_top_level_4.ets"
+              "program": "class_interface_enum_only_top_level_4.sts"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "class_interface_enum_only_top_level_4.ets"
+                "program": "class_interface_enum_only_top_level_4.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "class_interface_enum_only_top_level_4.ets"
+                "program": "class_interface_enum_only_top_level_4.sts"
               }
             }
           },
@@ -140,12 +140,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "class_interface_enum_only_top_level_4.ets"
+                  "program": "class_interface_enum_only_top_level_4.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 14,
-                  "program": "class_interface_enum_only_top_level_4.ets"
+                  "program": "class_interface_enum_only_top_level_4.sts"
                 }
               }
             },
@@ -166,12 +166,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "class_interface_enum_only_top_level_4.ets"
+                      "program": "class_interface_enum_only_top_level_4.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 14,
-                      "program": "class_interface_enum_only_top_level_4.ets"
+                      "program": "class_interface_enum_only_top_level_4.sts"
                     }
                   }
                 },
@@ -185,12 +185,12 @@
                     "start": {
                       "line": 16,
                       "column": 19,
-                      "program": "class_interface_enum_only_top_level_4.ets"
+                      "program": "class_interface_enum_only_top_level_4.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 23,
-                      "program": "class_interface_enum_only_top_level_4.ets"
+                      "program": "class_interface_enum_only_top_level_4.sts"
                     }
                   }
                 },
@@ -212,12 +212,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 5,
-                                  "program": "class_interface_enum_only_top_level_4.ets"
+                                  "program": "class_interface_enum_only_top_level_4.sts"
                                 },
                                 "end": {
                                   "line": 19,
                                   "column": 8,
-                                  "program": "class_interface_enum_only_top_level_4.ets"
+                                  "program": "class_interface_enum_only_top_level_4.sts"
                                 }
                               }
                             },
@@ -238,12 +238,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 5,
-                                      "program": "class_interface_enum_only_top_level_4.ets"
+                                      "program": "class_interface_enum_only_top_level_4.sts"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 8,
-                                      "program": "class_interface_enum_only_top_level_4.ets"
+                                      "program": "class_interface_enum_only_top_level_4.sts"
                                     }
                                   }
                                 },
@@ -262,12 +262,12 @@
                                           "start": {
                                             "line": 19,
                                             "column": 12,
-                                            "program": "class_interface_enum_only_top_level_4.ets"
+                                            "program": "class_interface_enum_only_top_level_4.sts"
                                           },
                                           "end": {
                                             "line": 19,
                                             "column": 15,
-                                            "program": "class_interface_enum_only_top_level_4.ets"
+                                            "program": "class_interface_enum_only_top_level_4.sts"
                                           }
                                         }
                                       },
@@ -276,12 +276,12 @@
                                         "start": {
                                           "line": 19,
                                           "column": 9,
-                                          "program": "class_interface_enum_only_top_level_4.ets"
+                                          "program": "class_interface_enum_only_top_level_4.sts"
                                         },
                                         "end": {
                                           "line": 19,
                                           "column": 15,
-                                          "program": "class_interface_enum_only_top_level_4.ets"
+                                          "program": "class_interface_enum_only_top_level_4.sts"
                                         }
                                       }
                                     },
@@ -289,12 +289,12 @@
                                       "start": {
                                         "line": 19,
                                         "column": 9,
-                                        "program": "class_interface_enum_only_top_level_4.ets"
+                                        "program": "class_interface_enum_only_top_level_4.sts"
                                       },
                                       "end": {
                                         "line": 19,
                                         "column": 15,
-                                        "program": "class_interface_enum_only_top_level_4.ets"
+                                        "program": "class_interface_enum_only_top_level_4.sts"
                                       }
                                     }
                                   }
@@ -305,12 +305,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 18,
-                                      "program": "class_interface_enum_only_top_level_4.ets"
+                                      "program": "class_interface_enum_only_top_level_4.sts"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 21,
-                                      "program": "class_interface_enum_only_top_level_4.ets"
+                                      "program": "class_interface_enum_only_top_level_4.sts"
                                     }
                                   }
                                 },
@@ -318,12 +318,12 @@
                                   "start": {
                                     "line": 19,
                                     "column": 8,
-                                    "program": "class_interface_enum_only_top_level_4.ets"
+                                    "program": "class_interface_enum_only_top_level_4.sts"
                                   },
                                   "end": {
                                     "line": 19,
                                     "column": 21,
-                                    "program": "class_interface_enum_only_top_level_4.ets"
+                                    "program": "class_interface_enum_only_top_level_4.sts"
                                   }
                                 }
                               },
@@ -331,12 +331,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 8,
-                                  "program": "class_interface_enum_only_top_level_4.ets"
+                                  "program": "class_interface_enum_only_top_level_4.sts"
                                 },
                                 "end": {
                                   "line": 19,
                                   "column": 21,
-                                  "program": "class_interface_enum_only_top_level_4.ets"
+                                  "program": "class_interface_enum_only_top_level_4.sts"
                                 }
                               }
                             },
@@ -346,12 +346,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 5,
-                                "program": "class_interface_enum_only_top_level_4.ets"
+                                "program": "class_interface_enum_only_top_level_4.sts"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 22,
-                                "program": "class_interface_enum_only_top_level_4.ets"
+                                "program": "class_interface_enum_only_top_level_4.sts"
                               }
                             }
                           }
@@ -360,12 +360,12 @@
                           "start": {
                             "line": 18,
                             "column": 15,
-                            "program": "class_interface_enum_only_top_level_4.ets"
+                            "program": "class_interface_enum_only_top_level_4.sts"
                           },
                           "end": {
                             "line": 20,
                             "column": 4,
-                            "program": "class_interface_enum_only_top_level_4.ets"
+                            "program": "class_interface_enum_only_top_level_4.sts"
                           }
                         }
                       },
@@ -377,12 +377,12 @@
                           "start": {
                             "line": 18,
                             "column": 13,
-                            "program": "class_interface_enum_only_top_level_4.ets"
+                            "program": "class_interface_enum_only_top_level_4.sts"
                           },
                           "end": {
                             "line": 18,
                             "column": 14,
-                            "program": "class_interface_enum_only_top_level_4.ets"
+                            "program": "class_interface_enum_only_top_level_4.sts"
                           }
                         }
                       },
@@ -391,12 +391,12 @@
                         "start": {
                           "line": 18,
                           "column": 3,
-                          "program": "class_interface_enum_only_top_level_4.ets"
+                          "program": "class_interface_enum_only_top_level_4.sts"
                         },
                         "end": {
                           "line": 21,
                           "column": 2,
-                          "program": "class_interface_enum_only_top_level_4.ets"
+                          "program": "class_interface_enum_only_top_level_4.sts"
                         }
                       }
                     }
@@ -405,12 +405,12 @@
                     "start": {
                       "line": 17,
                       "column": 1,
-                      "program": "class_interface_enum_only_top_level_4.ets"
+                      "program": "class_interface_enum_only_top_level_4.sts"
                     },
                     "end": {
                       "line": 21,
                       "column": 2,
-                      "program": "class_interface_enum_only_top_level_4.ets"
+                      "program": "class_interface_enum_only_top_level_4.sts"
                     }
                   }
                 },
@@ -418,12 +418,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "class_interface_enum_only_top_level_4.ets"
+                    "program": "class_interface_enum_only_top_level_4.sts"
                   },
                   "end": {
                     "line": 21,
                     "column": 2,
-                    "program": "class_interface_enum_only_top_level_4.ets"
+                    "program": "class_interface_enum_only_top_level_4.sts"
                   }
                 }
               },
@@ -431,12 +431,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "class_interface_enum_only_top_level_4.ets"
+                  "program": "class_interface_enum_only_top_level_4.sts"
                 },
                 "end": {
                   "line": 21,
                   "column": 2,
-                  "program": "class_interface_enum_only_top_level_4.ets"
+                  "program": "class_interface_enum_only_top_level_4.sts"
                 }
               }
             },
@@ -446,12 +446,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "class_interface_enum_only_top_level_4.ets"
+                "program": "class_interface_enum_only_top_level_4.sts"
               },
               "end": {
                 "line": 21,
                 "column": 2,
-                "program": "class_interface_enum_only_top_level_4.ets"
+                "program": "class_interface_enum_only_top_level_4.sts"
               }
             }
           }
@@ -460,12 +460,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "class_interface_enum_only_top_level_4.ets"
+            "program": "class_interface_enum_only_top_level_4.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "class_interface_enum_only_top_level_4.ets"
+            "program": "class_interface_enum_only_top_level_4.sts"
           }
         }
       },
@@ -473,12 +473,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "class_interface_enum_only_top_level_4.ets"
+          "program": "class_interface_enum_only_top_level_4.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "class_interface_enum_only_top_level_4.ets"
+          "program": "class_interface_enum_only_top_level_4.sts"
         }
       }
     }
@@ -487,12 +487,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "class_interface_enum_only_top_level_4.ets"
+      "program": "class_interface_enum_only_top_level_4.sts"
     },
     "end": {
       "line": 22,
       "column": 1,
-      "program": "class_interface_enum_only_top_level_4.ets"
+      "program": "class_interface_enum_only_top_level_4.sts"
     }
   }
 }

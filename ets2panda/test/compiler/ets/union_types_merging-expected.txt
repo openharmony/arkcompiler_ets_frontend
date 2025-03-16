@@ -12,12 +12,12 @@
             "start": {
               "line": 29,
               "column": 7,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             },
             "end": {
               "line": 29,
               "column": 9,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             }
           }
         },
@@ -34,12 +34,12 @@
                 "start": {
                   "line": 29,
                   "column": 11,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 29,
                   "column": 11,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -59,12 +59,12 @@
                     "start": {
                       "line": 29,
                       "column": 11,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 29,
                       "column": 11,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -79,12 +79,12 @@
                     "start": {
                       "line": 29,
                       "column": 11,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 29,
                       "column": 11,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -92,12 +92,12 @@
                   "start": {
                     "line": 29,
                     "column": 11,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   },
                   "end": {
                     "line": 29,
                     "column": 11,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   }
                 }
               },
@@ -105,12 +105,12 @@
                 "start": {
                   "line": 29,
                   "column": 11,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 29,
                   "column": 11,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -134,12 +134,12 @@
           "start": {
             "line": 29,
             "column": 10,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           },
           "end": {
             "line": 30,
             "column": 6,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           }
         }
       },
@@ -147,12 +147,12 @@
         "start": {
           "line": 29,
           "column": 1,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         },
         "end": {
           "line": 30,
           "column": 6,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         }
       }
     },
@@ -167,12 +167,12 @@
             "start": {
               "line": 30,
               "column": 7,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             },
             "end": {
               "line": 30,
               "column": 9,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             }
           }
         },
@@ -188,12 +188,12 @@
                 "start": {
                   "line": 30,
                   "column": 18,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 30,
                   "column": 20,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -201,12 +201,12 @@
               "start": {
                 "line": 30,
                 "column": 18,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               },
               "end": {
                 "line": 30,
                 "column": 22,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               }
             }
           },
@@ -214,12 +214,12 @@
             "start": {
               "line": 30,
               "column": 18,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             },
             "end": {
               "line": 30,
               "column": 22,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             }
           }
         },
@@ -235,12 +235,12 @@
                 "start": {
                   "line": 30,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 30,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -260,12 +260,12 @@
                     "start": {
                       "line": 30,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 30,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -280,12 +280,12 @@
                     "start": {
                       "line": 30,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 30,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -293,12 +293,12 @@
                   "start": {
                     "line": 30,
                     "column": 22,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   },
                   "end": {
                     "line": 30,
                     "column": 22,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   }
                 }
               },
@@ -306,12 +306,12 @@
                 "start": {
                   "line": 30,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 30,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -335,12 +335,12 @@
           "start": {
             "line": 30,
             "column": 21,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           },
           "end": {
             "line": 31,
             "column": 6,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           }
         }
       },
@@ -348,12 +348,12 @@
         "start": {
           "line": 30,
           "column": 1,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         },
         "end": {
           "line": 31,
           "column": 6,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         }
       }
     },
@@ -368,12 +368,12 @@
             "start": {
               "line": 31,
               "column": 7,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             },
             "end": {
               "line": 31,
               "column": 9,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             }
           }
         },
@@ -389,12 +389,12 @@
                 "start": {
                   "line": 31,
                   "column": 18,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 31,
                   "column": 20,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -402,12 +402,12 @@
               "start": {
                 "line": 31,
                 "column": 18,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               },
               "end": {
                 "line": 31,
                 "column": 22,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               }
             }
           },
@@ -415,12 +415,12 @@
             "start": {
               "line": 31,
               "column": 18,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             },
             "end": {
               "line": 31,
               "column": 22,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             }
           }
         },
@@ -436,12 +436,12 @@
                 "start": {
                   "line": 31,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 31,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -461,12 +461,12 @@
                     "start": {
                       "line": 31,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 31,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -481,12 +481,12 @@
                     "start": {
                       "line": 31,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 31,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -494,12 +494,12 @@
                   "start": {
                     "line": 31,
                     "column": 22,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   },
                   "end": {
                     "line": 31,
                     "column": 22,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   }
                 }
               },
@@ -507,12 +507,12 @@
                 "start": {
                   "line": 31,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 31,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -536,12 +536,12 @@
           "start": {
             "line": 31,
             "column": 21,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           },
           "end": {
             "line": 32,
             "column": 6,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           }
         }
       },
@@ -549,12 +549,12 @@
         "start": {
           "line": 31,
           "column": 1,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         },
         "end": {
           "line": 32,
           "column": 6,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         }
       }
     },
@@ -569,12 +569,12 @@
             "start": {
               "line": 32,
               "column": 7,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             },
             "end": {
               "line": 32,
               "column": 9,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             }
           }
         },
@@ -590,12 +590,12 @@
                 "start": {
                   "line": 32,
                   "column": 18,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 32,
                   "column": 20,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -603,12 +603,12 @@
               "start": {
                 "line": 32,
                 "column": 18,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               },
               "end": {
                 "line": 32,
                 "column": 22,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               }
             }
           },
@@ -616,12 +616,12 @@
             "start": {
               "line": 32,
               "column": 18,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             },
             "end": {
               "line": 32,
               "column": 22,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             }
           }
         },
@@ -637,12 +637,12 @@
                 "start": {
                   "line": 32,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 32,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -662,12 +662,12 @@
                     "start": {
                       "line": 32,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 32,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -682,12 +682,12 @@
                     "start": {
                       "line": 32,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 32,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -695,12 +695,12 @@
                   "start": {
                     "line": 32,
                     "column": 22,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   },
                   "end": {
                     "line": 32,
                     "column": 22,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   }
                 }
               },
@@ -708,12 +708,12 @@
                 "start": {
                   "line": 32,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 32,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -737,12 +737,12 @@
           "start": {
             "line": 32,
             "column": 21,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           },
           "end": {
             "line": 33,
             "column": 6,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           }
         }
       },
@@ -750,12 +750,12 @@
         "start": {
           "line": 32,
           "column": 1,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         },
         "end": {
           "line": 33,
           "column": 6,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         }
       }
     },
@@ -770,12 +770,12 @@
             "start": {
               "line": 33,
               "column": 7,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             },
             "end": {
               "line": 33,
               "column": 9,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             }
           }
         },
@@ -791,12 +791,12 @@
                 "start": {
                   "line": 33,
                   "column": 18,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 33,
                   "column": 20,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -804,12 +804,12 @@
               "start": {
                 "line": 33,
                 "column": 18,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               },
               "end": {
                 "line": 33,
                 "column": 22,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               }
             }
           },
@@ -817,12 +817,12 @@
             "start": {
               "line": 33,
               "column": 18,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             },
             "end": {
               "line": 33,
               "column": 22,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             }
           }
         },
@@ -838,12 +838,12 @@
                 "start": {
                   "line": 33,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 33,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -863,12 +863,12 @@
                     "start": {
                       "line": 33,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 33,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -883,12 +883,12 @@
                     "start": {
                       "line": 33,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 33,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -896,12 +896,12 @@
                   "start": {
                     "line": 33,
                     "column": 22,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   },
                   "end": {
                     "line": 33,
                     "column": 22,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   }
                 }
               },
@@ -909,12 +909,12 @@
                 "start": {
                   "line": 33,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 33,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -938,12 +938,12 @@
           "start": {
             "line": 33,
             "column": 21,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           },
           "end": {
             "line": 35,
             "column": 6,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           }
         }
       },
@@ -951,12 +951,12 @@
         "start": {
           "line": 33,
           "column": 1,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         },
         "end": {
           "line": 35,
           "column": 6,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         }
       }
     },
@@ -971,12 +971,12 @@
             "start": {
               "line": 35,
               "column": 7,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             },
             "end": {
               "line": 35,
               "column": 9,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             }
           }
         },
@@ -993,12 +993,12 @@
                 "start": {
                   "line": 35,
                   "column": 11,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 35,
                   "column": 11,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -1018,12 +1018,12 @@
                     "start": {
                       "line": 35,
                       "column": 11,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 35,
                       "column": 11,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -1038,12 +1038,12 @@
                     "start": {
                       "line": 35,
                       "column": 11,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 35,
                       "column": 11,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -1051,12 +1051,12 @@
                   "start": {
                     "line": 35,
                     "column": 11,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   },
                   "end": {
                     "line": 35,
                     "column": 11,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   }
                 }
               },
@@ -1064,12 +1064,12 @@
                 "start": {
                   "line": 35,
                   "column": 11,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 35,
                   "column": 11,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -1093,12 +1093,12 @@
           "start": {
             "line": 35,
             "column": 10,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           },
           "end": {
             "line": 36,
             "column": 6,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           }
         }
       },
@@ -1106,12 +1106,12 @@
         "start": {
           "line": 35,
           "column": 1,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         },
         "end": {
           "line": 36,
           "column": 6,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         }
       }
     },
@@ -1126,12 +1126,12 @@
             "start": {
               "line": 36,
               "column": 7,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             },
             "end": {
               "line": 36,
               "column": 9,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             }
           }
         },
@@ -1147,12 +1147,12 @@
                 "start": {
                   "line": 36,
                   "column": 18,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 36,
                   "column": 20,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -1160,12 +1160,12 @@
               "start": {
                 "line": 36,
                 "column": 18,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               },
               "end": {
                 "line": 36,
                 "column": 22,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               }
             }
           },
@@ -1173,12 +1173,12 @@
             "start": {
               "line": 36,
               "column": 18,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             },
             "end": {
               "line": 36,
               "column": 22,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             }
           }
         },
@@ -1194,12 +1194,12 @@
                 "start": {
                   "line": 36,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 36,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -1219,12 +1219,12 @@
                     "start": {
                       "line": 36,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 36,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -1239,12 +1239,12 @@
                     "start": {
                       "line": 36,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 36,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -1252,12 +1252,12 @@
                   "start": {
                     "line": 36,
                     "column": 22,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   },
                   "end": {
                     "line": 36,
                     "column": 22,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   }
                 }
               },
@@ -1265,12 +1265,12 @@
                 "start": {
                   "line": 36,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 36,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -1294,12 +1294,12 @@
           "start": {
             "line": 36,
             "column": 21,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           },
           "end": {
             "line": 37,
             "column": 6,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           }
         }
       },
@@ -1307,12 +1307,12 @@
         "start": {
           "line": 36,
           "column": 1,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         },
         "end": {
           "line": 37,
           "column": 6,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         }
       }
     },
@@ -1327,12 +1327,12 @@
             "start": {
               "line": 37,
               "column": 7,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             },
             "end": {
               "line": 37,
               "column": 9,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             }
           }
         },
@@ -1348,12 +1348,12 @@
                 "start": {
                   "line": 37,
                   "column": 18,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 37,
                   "column": 20,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -1361,12 +1361,12 @@
               "start": {
                 "line": 37,
                 "column": 18,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               },
               "end": {
                 "line": 37,
                 "column": 22,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               }
             }
           },
@@ -1374,12 +1374,12 @@
             "start": {
               "line": 37,
               "column": 18,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             },
             "end": {
               "line": 37,
               "column": 22,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             }
           }
         },
@@ -1395,12 +1395,12 @@
                 "start": {
                   "line": 37,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 37,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -1420,12 +1420,12 @@
                     "start": {
                       "line": 37,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 37,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -1440,12 +1440,12 @@
                     "start": {
                       "line": 37,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 37,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -1453,12 +1453,12 @@
                   "start": {
                     "line": 37,
                     "column": 22,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   },
                   "end": {
                     "line": 37,
                     "column": 22,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   }
                 }
               },
@@ -1466,12 +1466,12 @@
                 "start": {
                   "line": 37,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 37,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -1495,12 +1495,12 @@
           "start": {
             "line": 37,
             "column": 21,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           },
           "end": {
             "line": 38,
             "column": 6,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           }
         }
       },
@@ -1508,12 +1508,12 @@
         "start": {
           "line": 37,
           "column": 1,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         },
         "end": {
           "line": 38,
           "column": 6,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         }
       }
     },
@@ -1528,12 +1528,12 @@
             "start": {
               "line": 38,
               "column": 7,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             },
             "end": {
               "line": 38,
               "column": 9,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             }
           }
         },
@@ -1549,12 +1549,12 @@
                 "start": {
                   "line": 38,
                   "column": 18,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 38,
                   "column": 20,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -1562,12 +1562,12 @@
               "start": {
                 "line": 38,
                 "column": 18,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               },
               "end": {
                 "line": 38,
                 "column": 22,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               }
             }
           },
@@ -1575,12 +1575,12 @@
             "start": {
               "line": 38,
               "column": 18,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             },
             "end": {
               "line": 38,
               "column": 22,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             }
           }
         },
@@ -1596,12 +1596,12 @@
                 "start": {
                   "line": 38,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 38,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -1621,12 +1621,12 @@
                     "start": {
                       "line": 38,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 38,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -1641,12 +1641,12 @@
                     "start": {
                       "line": 38,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 38,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -1654,12 +1654,12 @@
                   "start": {
                     "line": 38,
                     "column": 22,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   },
                   "end": {
                     "line": 38,
                     "column": 22,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   }
                 }
               },
@@ -1667,12 +1667,12 @@
                 "start": {
                   "line": 38,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 38,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -1696,12 +1696,12 @@
           "start": {
             "line": 38,
             "column": 21,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           },
           "end": {
             "line": 39,
             "column": 6,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           }
         }
       },
@@ -1709,12 +1709,12 @@
         "start": {
           "line": 38,
           "column": 1,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         },
         "end": {
           "line": 39,
           "column": 6,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         }
       }
     },
@@ -1729,12 +1729,12 @@
             "start": {
               "line": 39,
               "column": 7,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             },
             "end": {
               "line": 39,
               "column": 9,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             }
           }
         },
@@ -1750,12 +1750,12 @@
                 "start": {
                   "line": 39,
                   "column": 18,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 39,
                   "column": 20,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -1763,12 +1763,12 @@
               "start": {
                 "line": 39,
                 "column": 18,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               },
               "end": {
                 "line": 39,
                 "column": 22,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               }
             }
           },
@@ -1776,12 +1776,12 @@
             "start": {
               "line": 39,
               "column": 18,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             },
             "end": {
               "line": 39,
               "column": 22,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             }
           }
         },
@@ -1797,12 +1797,12 @@
                 "start": {
                   "line": 39,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 39,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -1822,12 +1822,12 @@
                     "start": {
                       "line": 39,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 39,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -1842,12 +1842,12 @@
                     "start": {
                       "line": 39,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 39,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -1855,12 +1855,12 @@
                   "start": {
                     "line": 39,
                     "column": 22,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   },
                   "end": {
                     "line": 39,
                     "column": 22,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   }
                 }
               },
@@ -1868,12 +1868,12 @@
                 "start": {
                   "line": 39,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 39,
                   "column": 22,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -1897,12 +1897,12 @@
           "start": {
             "line": 39,
             "column": 21,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           },
           "end": {
             "line": 39,
             "column": 23,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           }
         }
       },
@@ -1910,12 +1910,12 @@
         "start": {
           "line": 39,
           "column": 1,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         },
         "end": {
           "line": 39,
           "column": 23,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         }
       }
     },
@@ -1930,12 +1930,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "union_types_merging.ets"
+              "program": "union_types_merging.sts"
             }
           }
         },
@@ -2039,12 +2039,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               }
             }
           },
@@ -2058,12 +2058,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 14,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -2084,12 +2084,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 14,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -2103,12 +2103,12 @@
                     "start": {
                       "line": 16,
                       "column": 18,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 22,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -2138,12 +2138,12 @@
                                         "start": {
                                           "line": 17,
                                           "column": 16,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 17,
                                           "column": 18,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -2151,12 +2151,12 @@
                                       "start": {
                                         "line": 17,
                                         "column": 16,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 17,
                                         "column": 20,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -2164,12 +2164,12 @@
                                     "start": {
                                       "line": 17,
                                       "column": 16,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 17,
                                       "column": 20,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -2185,12 +2185,12 @@
                                         "start": {
                                           "line": 17,
                                           "column": 21,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 17,
                                           "column": 23,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -2198,12 +2198,12 @@
                                       "start": {
                                         "line": 17,
                                         "column": 21,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 17,
                                         "column": 25,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -2211,12 +2211,12 @@
                                     "start": {
                                       "line": 17,
                                       "column": 21,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 17,
                                       "column": 25,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -2232,12 +2232,12 @@
                                         "start": {
                                           "line": 17,
                                           "column": 26,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 17,
                                           "column": 28,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -2245,12 +2245,12 @@
                                       "start": {
                                         "line": 17,
                                         "column": 26,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 17,
                                         "column": 30,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -2258,12 +2258,12 @@
                                     "start": {
                                       "line": 17,
                                       "column": 26,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 17,
                                       "column": 30,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -2279,12 +2279,12 @@
                                         "start": {
                                           "line": 17,
                                           "column": 31,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 17,
                                           "column": 33,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -2292,12 +2292,12 @@
                                       "start": {
                                         "line": 17,
                                         "column": 31,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 17,
                                         "column": 35,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -2305,12 +2305,12 @@
                                     "start": {
                                       "line": 17,
                                       "column": 31,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 17,
                                       "column": 35,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -2326,12 +2326,12 @@
                                         "start": {
                                           "line": 17,
                                           "column": 36,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 17,
                                           "column": 38,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -2339,12 +2339,12 @@
                                       "start": {
                                         "line": 17,
                                         "column": 36,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 17,
                                         "column": 39,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -2352,12 +2352,12 @@
                                     "start": {
                                       "line": 17,
                                       "column": 36,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 17,
                                       "column": 39,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 }
@@ -2366,12 +2366,12 @@
                                 "start": {
                                   "line": 17,
                                   "column": 15,
-                                  "program": "union_types_merging.ets"
+                                  "program": "union_types_merging.sts"
                                 },
                                 "end": {
                                   "line": 17,
                                   "column": 39,
-                                  "program": "union_types_merging.ets"
+                                  "program": "union_types_merging.sts"
                                 }
                               }
                             },
@@ -2380,12 +2380,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 7,
-                                "program": "union_types_merging.ets"
+                                "program": "union_types_merging.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 13,
-                                "program": "union_types_merging.ets"
+                                "program": "union_types_merging.sts"
                               }
                             }
                           },
@@ -2394,12 +2394,12 @@
                             "start": {
                               "line": 17,
                               "column": 7,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             },
                             "end": {
                               "line": 17,
                               "column": 13,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             }
                           }
                         }
@@ -2409,12 +2409,12 @@
                         "start": {
                           "line": 17,
                           "column": 3,
-                          "program": "union_types_merging.ets"
+                          "program": "union_types_merging.sts"
                         },
                         "end": {
                           "line": 17,
                           "column": 40,
-                          "program": "union_types_merging.ets"
+                          "program": "union_types_merging.sts"
                         }
                       }
                     },
@@ -2441,12 +2441,12 @@
                                         "start": {
                                           "line": 18,
                                           "column": 16,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 18,
                                           "column": 18,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -2454,12 +2454,12 @@
                                       "start": {
                                         "line": 18,
                                         "column": 16,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 18,
                                         "column": 20,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -2467,12 +2467,12 @@
                                     "start": {
                                       "line": 18,
                                       "column": 16,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 18,
                                       "column": 20,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -2488,12 +2488,12 @@
                                         "start": {
                                           "line": 18,
                                           "column": 21,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 18,
                                           "column": 23,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -2501,12 +2501,12 @@
                                       "start": {
                                         "line": 18,
                                         "column": 21,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 18,
                                         "column": 25,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -2514,12 +2514,12 @@
                                     "start": {
                                       "line": 18,
                                       "column": 21,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 18,
                                       "column": 25,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -2535,12 +2535,12 @@
                                         "start": {
                                           "line": 18,
                                           "column": 26,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 18,
                                           "column": 28,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -2548,12 +2548,12 @@
                                       "start": {
                                         "line": 18,
                                         "column": 26,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 18,
                                         "column": 30,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -2561,12 +2561,12 @@
                                     "start": {
                                       "line": 18,
                                       "column": 26,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 18,
                                       "column": 30,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -2582,12 +2582,12 @@
                                         "start": {
                                           "line": 18,
                                           "column": 31,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 18,
                                           "column": 33,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -2595,12 +2595,12 @@
                                       "start": {
                                         "line": 18,
                                         "column": 31,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 18,
                                         "column": 35,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -2608,12 +2608,12 @@
                                     "start": {
                                       "line": 18,
                                       "column": 31,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 18,
                                       "column": 35,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -2629,12 +2629,12 @@
                                         "start": {
                                           "line": 18,
                                           "column": 36,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 18,
                                           "column": 38,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -2642,12 +2642,12 @@
                                       "start": {
                                         "line": 18,
                                         "column": 36,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 18,
                                         "column": 39,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -2655,12 +2655,12 @@
                                     "start": {
                                       "line": 18,
                                       "column": 36,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 18,
                                       "column": 39,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 }
@@ -2669,12 +2669,12 @@
                                 "start": {
                                   "line": 18,
                                   "column": 15,
-                                  "program": "union_types_merging.ets"
+                                  "program": "union_types_merging.sts"
                                 },
                                 "end": {
                                   "line": 18,
                                   "column": 39,
-                                  "program": "union_types_merging.ets"
+                                  "program": "union_types_merging.sts"
                                 }
                               }
                             },
@@ -2683,12 +2683,12 @@
                               "start": {
                                 "line": 18,
                                 "column": 7,
-                                "program": "union_types_merging.ets"
+                                "program": "union_types_merging.sts"
                               },
                               "end": {
                                 "line": 18,
                                 "column": 13,
-                                "program": "union_types_merging.ets"
+                                "program": "union_types_merging.sts"
                               }
                             }
                           },
@@ -2697,12 +2697,12 @@
                             "start": {
                               "line": 18,
                               "column": 7,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             },
                             "end": {
                               "line": 18,
                               "column": 13,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             }
                           }
                         }
@@ -2712,12 +2712,12 @@
                         "start": {
                           "line": 18,
                           "column": 3,
-                          "program": "union_types_merging.ets"
+                          "program": "union_types_merging.sts"
                         },
                         "end": {
                           "line": 18,
                           "column": 40,
-                          "program": "union_types_merging.ets"
+                          "program": "union_types_merging.sts"
                         }
                       }
                     },
@@ -2744,12 +2744,12 @@
                                         "start": {
                                           "line": 19,
                                           "column": 16,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 19,
                                           "column": 18,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -2757,12 +2757,12 @@
                                       "start": {
                                         "line": 19,
                                         "column": 16,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 19,
                                         "column": 20,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -2770,12 +2770,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 16,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 20,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -2791,12 +2791,12 @@
                                         "start": {
                                           "line": 19,
                                           "column": 21,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 19,
                                           "column": 23,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -2804,12 +2804,12 @@
                                       "start": {
                                         "line": 19,
                                         "column": 21,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 19,
                                         "column": 25,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -2817,12 +2817,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 21,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 25,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -2838,12 +2838,12 @@
                                         "start": {
                                           "line": 19,
                                           "column": 26,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 19,
                                           "column": 28,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -2851,12 +2851,12 @@
                                       "start": {
                                         "line": 19,
                                         "column": 26,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 19,
                                         "column": 30,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -2864,12 +2864,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 26,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 30,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -2885,12 +2885,12 @@
                                         "start": {
                                           "line": 19,
                                           "column": 31,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 19,
                                           "column": 33,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -2898,12 +2898,12 @@
                                       "start": {
                                         "line": 19,
                                         "column": 31,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 19,
                                         "column": 35,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -2911,12 +2911,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 31,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 35,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -2932,12 +2932,12 @@
                                         "start": {
                                           "line": 19,
                                           "column": 36,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 19,
                                           "column": 38,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -2945,12 +2945,12 @@
                                       "start": {
                                         "line": 19,
                                         "column": 36,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 19,
                                         "column": 40,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -2958,12 +2958,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 36,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 40,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -2979,12 +2979,12 @@
                                         "start": {
                                           "line": 19,
                                           "column": 41,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 19,
                                           "column": 43,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -2992,12 +2992,12 @@
                                       "start": {
                                         "line": 19,
                                         "column": 41,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 19,
                                         "column": 45,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -3005,12 +3005,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 41,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 45,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -3026,12 +3026,12 @@
                                         "start": {
                                           "line": 19,
                                           "column": 46,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 19,
                                           "column": 48,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -3039,12 +3039,12 @@
                                       "start": {
                                         "line": 19,
                                         "column": 46,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 19,
                                         "column": 50,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -3052,12 +3052,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 46,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 50,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -3073,12 +3073,12 @@
                                         "start": {
                                           "line": 19,
                                           "column": 51,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 19,
                                           "column": 53,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -3086,12 +3086,12 @@
                                       "start": {
                                         "line": 19,
                                         "column": 51,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 19,
                                         "column": 55,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -3099,12 +3099,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 51,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 55,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -3120,12 +3120,12 @@
                                         "start": {
                                           "line": 19,
                                           "column": 56,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 19,
                                           "column": 58,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -3133,12 +3133,12 @@
                                       "start": {
                                         "line": 19,
                                         "column": 56,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 19,
                                         "column": 60,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -3146,12 +3146,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 56,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 60,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -3167,12 +3167,12 @@
                                         "start": {
                                           "line": 19,
                                           "column": 61,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 19,
                                           "column": 63,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -3180,12 +3180,12 @@
                                       "start": {
                                         "line": 19,
                                         "column": 61,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 19,
                                         "column": 64,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -3193,12 +3193,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 61,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 64,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 }
@@ -3207,12 +3207,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 15,
-                                  "program": "union_types_merging.ets"
+                                  "program": "union_types_merging.sts"
                                 },
                                 "end": {
                                   "line": 19,
                                   "column": 64,
-                                  "program": "union_types_merging.ets"
+                                  "program": "union_types_merging.sts"
                                 }
                               }
                             },
@@ -3221,12 +3221,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 7,
-                                "program": "union_types_merging.ets"
+                                "program": "union_types_merging.sts"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 13,
-                                "program": "union_types_merging.ets"
+                                "program": "union_types_merging.sts"
                               }
                             }
                           },
@@ -3235,12 +3235,12 @@
                             "start": {
                               "line": 19,
                               "column": 7,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             },
                             "end": {
                               "line": 19,
                               "column": 13,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             }
                           }
                         }
@@ -3250,12 +3250,12 @@
                         "start": {
                           "line": 19,
                           "column": 3,
-                          "program": "union_types_merging.ets"
+                          "program": "union_types_merging.sts"
                         },
                         "end": {
                           "line": 19,
                           "column": 65,
-                          "program": "union_types_merging.ets"
+                          "program": "union_types_merging.sts"
                         }
                       }
                     },
@@ -3282,12 +3282,12 @@
                                         "start": {
                                           "line": 20,
                                           "column": 16,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 20,
                                           "column": 18,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -3295,12 +3295,12 @@
                                       "start": {
                                         "line": 20,
                                         "column": 16,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 20,
                                         "column": 20,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -3308,12 +3308,12 @@
                                     "start": {
                                       "line": 20,
                                       "column": 16,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 20,
                                       "column": 20,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -3329,12 +3329,12 @@
                                         "start": {
                                           "line": 20,
                                           "column": 21,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 20,
                                           "column": 23,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -3342,12 +3342,12 @@
                                       "start": {
                                         "line": 20,
                                         "column": 21,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 20,
                                         "column": 25,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -3355,12 +3355,12 @@
                                     "start": {
                                       "line": 20,
                                       "column": 21,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 20,
                                       "column": 25,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -3376,12 +3376,12 @@
                                         "start": {
                                           "line": 20,
                                           "column": 26,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 20,
                                           "column": 28,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -3389,12 +3389,12 @@
                                       "start": {
                                         "line": 20,
                                         "column": 26,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 20,
                                         "column": 30,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -3402,12 +3402,12 @@
                                     "start": {
                                       "line": 20,
                                       "column": 26,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 20,
                                       "column": 30,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -3423,12 +3423,12 @@
                                         "start": {
                                           "line": 20,
                                           "column": 31,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 20,
                                           "column": 33,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -3436,12 +3436,12 @@
                                       "start": {
                                         "line": 20,
                                         "column": 31,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 20,
                                         "column": 35,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -3449,12 +3449,12 @@
                                     "start": {
                                       "line": 20,
                                       "column": 31,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 20,
                                       "column": 35,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -3470,12 +3470,12 @@
                                         "start": {
                                           "line": 20,
                                           "column": 36,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 20,
                                           "column": 38,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -3483,12 +3483,12 @@
                                       "start": {
                                         "line": 20,
                                         "column": 36,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 20,
                                         "column": 40,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -3496,12 +3496,12 @@
                                     "start": {
                                       "line": 20,
                                       "column": 36,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 20,
                                       "column": 40,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -3517,12 +3517,12 @@
                                         "start": {
                                           "line": 20,
                                           "column": 41,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 20,
                                           "column": 47,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -3530,12 +3530,12 @@
                                       "start": {
                                         "line": 20,
                                         "column": 41,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 20,
                                         "column": 49,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -3543,12 +3543,12 @@
                                     "start": {
                                       "line": 20,
                                       "column": 41,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 20,
                                       "column": 49,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -3564,12 +3564,12 @@
                                         "start": {
                                           "line": 20,
                                           "column": 50,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 20,
                                           "column": 52,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -3577,12 +3577,12 @@
                                       "start": {
                                         "line": 20,
                                         "column": 50,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 20,
                                         "column": 54,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -3590,12 +3590,12 @@
                                     "start": {
                                       "line": 20,
                                       "column": 50,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 20,
                                       "column": 54,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -3611,12 +3611,12 @@
                                         "start": {
                                           "line": 20,
                                           "column": 55,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 20,
                                           "column": 57,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -3624,12 +3624,12 @@
                                       "start": {
                                         "line": 20,
                                         "column": 55,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 20,
                                         "column": 59,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -3637,12 +3637,12 @@
                                     "start": {
                                       "line": 20,
                                       "column": 55,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 20,
                                       "column": 59,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -3658,12 +3658,12 @@
                                         "start": {
                                           "line": 20,
                                           "column": 60,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 20,
                                           "column": 62,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -3671,12 +3671,12 @@
                                       "start": {
                                         "line": 20,
                                         "column": 60,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 20,
                                         "column": 64,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -3684,12 +3684,12 @@
                                     "start": {
                                       "line": 20,
                                       "column": 60,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 20,
                                       "column": 64,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -3705,12 +3705,12 @@
                                         "start": {
                                           "line": 20,
                                           "column": 65,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 20,
                                           "column": 67,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -3718,12 +3718,12 @@
                                       "start": {
                                         "line": 20,
                                         "column": 65,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 20,
                                         "column": 69,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -3731,12 +3731,12 @@
                                     "start": {
                                       "line": 20,
                                       "column": 65,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 20,
                                       "column": 69,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 },
@@ -3752,12 +3752,12 @@
                                         "start": {
                                           "line": 20,
                                           "column": 70,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         },
                                         "end": {
                                           "line": 20,
                                           "column": 72,
-                                          "program": "union_types_merging.ets"
+                                          "program": "union_types_merging.sts"
                                         }
                                       }
                                     },
@@ -3765,12 +3765,12 @@
                                       "start": {
                                         "line": 20,
                                         "column": 70,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       },
                                       "end": {
                                         "line": 20,
                                         "column": 73,
-                                        "program": "union_types_merging.ets"
+                                        "program": "union_types_merging.sts"
                                       }
                                     }
                                   },
@@ -3778,12 +3778,12 @@
                                     "start": {
                                       "line": 20,
                                       "column": 70,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     },
                                     "end": {
                                       "line": 20,
                                       "column": 73,
-                                      "program": "union_types_merging.ets"
+                                      "program": "union_types_merging.sts"
                                     }
                                   }
                                 }
@@ -3792,12 +3792,12 @@
                                 "start": {
                                   "line": 20,
                                   "column": 15,
-                                  "program": "union_types_merging.ets"
+                                  "program": "union_types_merging.sts"
                                 },
                                 "end": {
                                   "line": 20,
                                   "column": 73,
-                                  "program": "union_types_merging.ets"
+                                  "program": "union_types_merging.sts"
                                 }
                               }
                             },
@@ -3806,12 +3806,12 @@
                               "start": {
                                 "line": 20,
                                 "column": 7,
-                                "program": "union_types_merging.ets"
+                                "program": "union_types_merging.sts"
                               },
                               "end": {
                                 "line": 20,
                                 "column": 13,
-                                "program": "union_types_merging.ets"
+                                "program": "union_types_merging.sts"
                               }
                             }
                           },
@@ -3820,12 +3820,12 @@
                             "start": {
                               "line": 20,
                               "column": 7,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             },
                             "end": {
                               "line": 20,
                               "column": 13,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             }
                           }
                         }
@@ -3835,12 +3835,12 @@
                         "start": {
                           "line": 20,
                           "column": 3,
-                          "program": "union_types_merging.ets"
+                          "program": "union_types_merging.sts"
                         },
                         "end": {
                           "line": 20,
                           "column": 74,
-                          "program": "union_types_merging.ets"
+                          "program": "union_types_merging.sts"
                         }
                       }
                     },
@@ -3857,12 +3857,12 @@
                             "start": {
                               "line": 22,
                               "column": 3,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             },
                             "end": {
                               "line": 22,
                               "column": 9,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             }
                           }
                         },
@@ -3880,12 +3880,12 @@
                                   "start": {
                                     "line": 22,
                                     "column": 16,
-                                    "program": "union_types_merging.ets"
+                                    "program": "union_types_merging.sts"
                                   },
                                   "end": {
                                     "line": 22,
                                     "column": 18,
-                                    "program": "union_types_merging.ets"
+                                    "program": "union_types_merging.sts"
                                   }
                                 }
                               },
@@ -3893,12 +3893,12 @@
                                 "start": {
                                   "line": 22,
                                   "column": 16,
-                                  "program": "union_types_merging.ets"
+                                  "program": "union_types_merging.sts"
                                 },
                                 "end": {
                                   "line": 22,
                                   "column": 19,
-                                  "program": "union_types_merging.ets"
+                                  "program": "union_types_merging.sts"
                                 }
                               }
                             },
@@ -3906,12 +3906,12 @@
                               "start": {
                                 "line": 22,
                                 "column": 16,
-                                "program": "union_types_merging.ets"
+                                "program": "union_types_merging.sts"
                               },
                               "end": {
                                 "line": 22,
                                 "column": 19,
-                                "program": "union_types_merging.ets"
+                                "program": "union_types_merging.sts"
                               }
                             }
                           },
@@ -3920,12 +3920,12 @@
                             "start": {
                               "line": 22,
                               "column": 12,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             },
                             "end": {
                               "line": 22,
                               "column": 21,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             }
                           }
                         },
@@ -3933,12 +3933,12 @@
                           "start": {
                             "line": 22,
                             "column": 3,
-                            "program": "union_types_merging.ets"
+                            "program": "union_types_merging.sts"
                           },
                           "end": {
                             "line": 22,
                             "column": 21,
-                            "program": "union_types_merging.ets"
+                            "program": "union_types_merging.sts"
                           }
                         }
                       },
@@ -3946,12 +3946,12 @@
                         "start": {
                           "line": 22,
                           "column": 3,
-                          "program": "union_types_merging.ets"
+                          "program": "union_types_merging.sts"
                         },
                         "end": {
                           "line": 22,
                           "column": 21,
-                          "program": "union_types_merging.ets"
+                          "program": "union_types_merging.sts"
                         }
                       }
                     },
@@ -3968,12 +3968,12 @@
                             "start": {
                               "line": 23,
                               "column": 3,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             },
                             "end": {
                               "line": 23,
                               "column": 9,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             }
                           }
                         },
@@ -3991,12 +3991,12 @@
                                   "start": {
                                     "line": 23,
                                     "column": 16,
-                                    "program": "union_types_merging.ets"
+                                    "program": "union_types_merging.sts"
                                   },
                                   "end": {
                                     "line": 23,
                                     "column": 18,
-                                    "program": "union_types_merging.ets"
+                                    "program": "union_types_merging.sts"
                                   }
                                 }
                               },
@@ -4004,12 +4004,12 @@
                                 "start": {
                                   "line": 23,
                                   "column": 16,
-                                  "program": "union_types_merging.ets"
+                                  "program": "union_types_merging.sts"
                                 },
                                 "end": {
                                   "line": 23,
                                   "column": 19,
-                                  "program": "union_types_merging.ets"
+                                  "program": "union_types_merging.sts"
                                 }
                               }
                             },
@@ -4017,12 +4017,12 @@
                               "start": {
                                 "line": 23,
                                 "column": 16,
-                                "program": "union_types_merging.ets"
+                                "program": "union_types_merging.sts"
                               },
                               "end": {
                                 "line": 23,
                                 "column": 19,
-                                "program": "union_types_merging.ets"
+                                "program": "union_types_merging.sts"
                               }
                             }
                           },
@@ -4031,12 +4031,12 @@
                             "start": {
                               "line": 23,
                               "column": 12,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             },
                             "end": {
                               "line": 23,
                               "column": 21,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             }
                           }
                         },
@@ -4044,12 +4044,12 @@
                           "start": {
                             "line": 23,
                             "column": 3,
-                            "program": "union_types_merging.ets"
+                            "program": "union_types_merging.sts"
                           },
                           "end": {
                             "line": 23,
                             "column": 21,
-                            "program": "union_types_merging.ets"
+                            "program": "union_types_merging.sts"
                           }
                         }
                       },
@@ -4057,12 +4057,12 @@
                         "start": {
                           "line": 23,
                           "column": 3,
-                          "program": "union_types_merging.ets"
+                          "program": "union_types_merging.sts"
                         },
                         "end": {
                           "line": 23,
                           "column": 21,
-                          "program": "union_types_merging.ets"
+                          "program": "union_types_merging.sts"
                         }
                       }
                     },
@@ -4079,12 +4079,12 @@
                             "start": {
                               "line": 24,
                               "column": 3,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             },
                             "end": {
                               "line": 24,
                               "column": 9,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             }
                           }
                         },
@@ -4102,12 +4102,12 @@
                                   "start": {
                                     "line": 24,
                                     "column": 16,
-                                    "program": "union_types_merging.ets"
+                                    "program": "union_types_merging.sts"
                                   },
                                   "end": {
                                     "line": 24,
                                     "column": 18,
-                                    "program": "union_types_merging.ets"
+                                    "program": "union_types_merging.sts"
                                   }
                                 }
                               },
@@ -4115,12 +4115,12 @@
                                 "start": {
                                   "line": 24,
                                   "column": 16,
-                                  "program": "union_types_merging.ets"
+                                  "program": "union_types_merging.sts"
                                 },
                                 "end": {
                                   "line": 24,
                                   "column": 19,
-                                  "program": "union_types_merging.ets"
+                                  "program": "union_types_merging.sts"
                                 }
                               }
                             },
@@ -4128,12 +4128,12 @@
                               "start": {
                                 "line": 24,
                                 "column": 16,
-                                "program": "union_types_merging.ets"
+                                "program": "union_types_merging.sts"
                               },
                               "end": {
                                 "line": 24,
                                 "column": 19,
-                                "program": "union_types_merging.ets"
+                                "program": "union_types_merging.sts"
                               }
                             }
                           },
@@ -4142,12 +4142,12 @@
                             "start": {
                               "line": 24,
                               "column": 12,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             },
                             "end": {
                               "line": 24,
                               "column": 21,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             }
                           }
                         },
@@ -4155,12 +4155,12 @@
                           "start": {
                             "line": 24,
                             "column": 3,
-                            "program": "union_types_merging.ets"
+                            "program": "union_types_merging.sts"
                           },
                           "end": {
                             "line": 24,
                             "column": 21,
-                            "program": "union_types_merging.ets"
+                            "program": "union_types_merging.sts"
                           }
                         }
                       },
@@ -4168,12 +4168,12 @@
                         "start": {
                           "line": 24,
                           "column": 3,
-                          "program": "union_types_merging.ets"
+                          "program": "union_types_merging.sts"
                         },
                         "end": {
                           "line": 24,
                           "column": 21,
-                          "program": "union_types_merging.ets"
+                          "program": "union_types_merging.sts"
                         }
                       }
                     },
@@ -4190,12 +4190,12 @@
                             "start": {
                               "line": 25,
                               "column": 3,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             },
                             "end": {
                               "line": 25,
                               "column": 9,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             }
                           }
                         },
@@ -4213,12 +4213,12 @@
                                   "start": {
                                     "line": 25,
                                     "column": 16,
-                                    "program": "union_types_merging.ets"
+                                    "program": "union_types_merging.sts"
                                   },
                                   "end": {
                                     "line": 25,
                                     "column": 18,
-                                    "program": "union_types_merging.ets"
+                                    "program": "union_types_merging.sts"
                                   }
                                 }
                               },
@@ -4226,12 +4226,12 @@
                                 "start": {
                                   "line": 25,
                                   "column": 16,
-                                  "program": "union_types_merging.ets"
+                                  "program": "union_types_merging.sts"
                                 },
                                 "end": {
                                   "line": 25,
                                   "column": 19,
-                                  "program": "union_types_merging.ets"
+                                  "program": "union_types_merging.sts"
                                 }
                               }
                             },
@@ -4239,12 +4239,12 @@
                               "start": {
                                 "line": 25,
                                 "column": 16,
-                                "program": "union_types_merging.ets"
+                                "program": "union_types_merging.sts"
                               },
                               "end": {
                                 "line": 25,
                                 "column": 19,
-                                "program": "union_types_merging.ets"
+                                "program": "union_types_merging.sts"
                               }
                             }
                           },
@@ -4253,12 +4253,12 @@
                             "start": {
                               "line": 25,
                               "column": 12,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             },
                             "end": {
                               "line": 25,
                               "column": 21,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             }
                           }
                         },
@@ -4266,12 +4266,12 @@
                           "start": {
                             "line": 25,
                             "column": 3,
-                            "program": "union_types_merging.ets"
+                            "program": "union_types_merging.sts"
                           },
                           "end": {
                             "line": 25,
                             "column": 21,
-                            "program": "union_types_merging.ets"
+                            "program": "union_types_merging.sts"
                           }
                         }
                       },
@@ -4279,12 +4279,12 @@
                         "start": {
                           "line": 25,
                           "column": 3,
-                          "program": "union_types_merging.ets"
+                          "program": "union_types_merging.sts"
                         },
                         "end": {
                           "line": 25,
                           "column": 21,
-                          "program": "union_types_merging.ets"
+                          "program": "union_types_merging.sts"
                         }
                       }
                     },
@@ -4301,12 +4301,12 @@
                             "start": {
                               "line": 26,
                               "column": 3,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             },
                             "end": {
                               "line": 26,
                               "column": 9,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             }
                           }
                         },
@@ -4324,12 +4324,12 @@
                                   "start": {
                                     "line": 26,
                                     "column": 16,
-                                    "program": "union_types_merging.ets"
+                                    "program": "union_types_merging.sts"
                                   },
                                   "end": {
                                     "line": 26,
                                     "column": 22,
-                                    "program": "union_types_merging.ets"
+                                    "program": "union_types_merging.sts"
                                   }
                                 }
                               },
@@ -4337,12 +4337,12 @@
                                 "start": {
                                   "line": 26,
                                   "column": 16,
-                                  "program": "union_types_merging.ets"
+                                  "program": "union_types_merging.sts"
                                 },
                                 "end": {
                                   "line": 26,
                                   "column": 23,
-                                  "program": "union_types_merging.ets"
+                                  "program": "union_types_merging.sts"
                                 }
                               }
                             },
@@ -4350,12 +4350,12 @@
                               "start": {
                                 "line": 26,
                                 "column": 16,
-                                "program": "union_types_merging.ets"
+                                "program": "union_types_merging.sts"
                               },
                               "end": {
                                 "line": 26,
                                 "column": 23,
-                                "program": "union_types_merging.ets"
+                                "program": "union_types_merging.sts"
                               }
                             }
                           },
@@ -4364,12 +4364,12 @@
                             "start": {
                               "line": 26,
                               "column": 12,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             },
                             "end": {
                               "line": 26,
                               "column": 25,
-                              "program": "union_types_merging.ets"
+                              "program": "union_types_merging.sts"
                             }
                           }
                         },
@@ -4377,12 +4377,12 @@
                           "start": {
                             "line": 26,
                             "column": 3,
-                            "program": "union_types_merging.ets"
+                            "program": "union_types_merging.sts"
                           },
                           "end": {
                             "line": 26,
                             "column": 25,
-                            "program": "union_types_merging.ets"
+                            "program": "union_types_merging.sts"
                           }
                         }
                       },
@@ -4390,12 +4390,12 @@
                         "start": {
                           "line": 26,
                           "column": 3,
-                          "program": "union_types_merging.ets"
+                          "program": "union_types_merging.sts"
                         },
                         "end": {
                           "line": 26,
                           "column": 25,
-                          "program": "union_types_merging.ets"
+                          "program": "union_types_merging.sts"
                         }
                       }
                     }
@@ -4404,12 +4404,12 @@
                     "start": {
                       "line": 16,
                       "column": 23,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     },
                     "end": {
                       "line": 27,
                       "column": 2,
-                      "program": "union_types_merging.ets"
+                      "program": "union_types_merging.sts"
                     }
                   }
                 },
@@ -4417,12 +4417,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   },
                   "end": {
                     "line": 27,
                     "column": 2,
-                    "program": "union_types_merging.ets"
+                    "program": "union_types_merging.sts"
                   }
                 }
               },
@@ -4430,12 +4430,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 },
                 "end": {
                   "line": 27,
                   "column": 2,
-                  "program": "union_types_merging.ets"
+                  "program": "union_types_merging.sts"
                 }
               }
             },
@@ -4445,12 +4445,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               },
               "end": {
                 "line": 27,
                 "column": 2,
-                "program": "union_types_merging.ets"
+                "program": "union_types_merging.sts"
               }
             }
           }
@@ -4459,12 +4459,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "union_types_merging.ets"
+            "program": "union_types_merging.sts"
           }
         }
       },
@@ -4472,12 +4472,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "union_types_merging.ets"
+          "program": "union_types_merging.sts"
         }
       }
     }
@@ -4486,12 +4486,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "union_types_merging.ets"
+      "program": "union_types_merging.sts"
     },
     "end": {
       "line": 39,
       "column": 23,
-      "program": "union_types_merging.ets"
+      "program": "union_types_merging.sts"
     }
   }
 }

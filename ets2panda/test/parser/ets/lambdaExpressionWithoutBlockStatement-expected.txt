@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "lambdaExpressionWithoutBlockStatement.ets"
+              "program": "lambdaExpressionWithoutBlockStatement.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "lambdaExpressionWithoutBlockStatement.ets"
+              "program": "lambdaExpressionWithoutBlockStatement.sts"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "lambdaExpressionWithoutBlockStatement.ets"
+                "program": "lambdaExpressionWithoutBlockStatement.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "lambdaExpressionWithoutBlockStatement.ets"
+                "program": "lambdaExpressionWithoutBlockStatement.sts"
               }
             }
           },
@@ -140,12 +140,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "lambdaExpressionWithoutBlockStatement.ets"
+                  "program": "lambdaExpressionWithoutBlockStatement.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 14,
-                  "program": "lambdaExpressionWithoutBlockStatement.ets"
+                  "program": "lambdaExpressionWithoutBlockStatement.sts"
                 }
               }
             },
@@ -166,12 +166,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "lambdaExpressionWithoutBlockStatement.ets"
+                      "program": "lambdaExpressionWithoutBlockStatement.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 14,
-                      "program": "lambdaExpressionWithoutBlockStatement.ets"
+                      "program": "lambdaExpressionWithoutBlockStatement.sts"
                     }
                   }
                 },
@@ -185,12 +185,12 @@
                     "start": {
                       "line": 16,
                       "column": 18,
-                      "program": "lambdaExpressionWithoutBlockStatement.ets"
+                      "program": "lambdaExpressionWithoutBlockStatement.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 22,
-                      "program": "lambdaExpressionWithoutBlockStatement.ets"
+                      "program": "lambdaExpressionWithoutBlockStatement.sts"
                     }
                   }
                 },
@@ -211,12 +211,12 @@
                                 "start": {
                                   "line": 17,
                                   "column": 12,
-                                  "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                  "program": "lambdaExpressionWithoutBlockStatement.sts"
                                 },
                                 "end": {
                                   "line": 17,
                                   "column": 15,
-                                  "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                  "program": "lambdaExpressionWithoutBlockStatement.sts"
                                 }
                               }
                             },
@@ -225,12 +225,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 9,
-                                "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                "program": "lambdaExpressionWithoutBlockStatement.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 10,
-                                "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                "program": "lambdaExpressionWithoutBlockStatement.sts"
                               }
                             }
                           },
@@ -241,12 +241,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 18,
-                                "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                "program": "lambdaExpressionWithoutBlockStatement.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 20,
-                                "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                "program": "lambdaExpressionWithoutBlockStatement.sts"
                               }
                             }
                           },
@@ -254,12 +254,12 @@
                             "start": {
                               "line": 17,
                               "column": 9,
-                              "program": "lambdaExpressionWithoutBlockStatement.ets"
+                              "program": "lambdaExpressionWithoutBlockStatement.sts"
                             },
                             "end": {
                               "line": 17,
                               "column": 20,
-                              "program": "lambdaExpressionWithoutBlockStatement.ets"
+                              "program": "lambdaExpressionWithoutBlockStatement.sts"
                             }
                           }
                         }
@@ -269,12 +269,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "lambdaExpressionWithoutBlockStatement.ets"
+                          "program": "lambdaExpressionWithoutBlockStatement.sts"
                         },
                         "end": {
                           "line": 17,
                           "column": 21,
-                          "program": "lambdaExpressionWithoutBlockStatement.ets"
+                          "program": "lambdaExpressionWithoutBlockStatement.sts"
                         }
                       }
                     },
@@ -295,12 +295,12 @@
                                   "start": {
                                     "line": 18,
                                     "column": 18,
-                                    "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                    "program": "lambdaExpressionWithoutBlockStatement.sts"
                                   },
                                   "end": {
                                     "line": 18,
                                     "column": 21,
-                                    "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                    "program": "lambdaExpressionWithoutBlockStatement.sts"
                                   }
                                 }
                               },
@@ -308,12 +308,12 @@
                                 "start": {
                                   "line": 18,
                                   "column": 12,
-                                  "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                  "program": "lambdaExpressionWithoutBlockStatement.sts"
                                 },
                                 "end": {
                                   "line": 18,
                                   "column": 21,
-                                  "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                  "program": "lambdaExpressionWithoutBlockStatement.sts"
                                 }
                               }
                             },
@@ -322,12 +322,12 @@
                               "start": {
                                 "line": 18,
                                 "column": 9,
-                                "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                "program": "lambdaExpressionWithoutBlockStatement.sts"
                               },
                               "end": {
                                 "line": 18,
                                 "column": 10,
-                                "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                "program": "lambdaExpressionWithoutBlockStatement.sts"
                               }
                             }
                           },
@@ -346,12 +346,12 @@
                                   "start": {
                                     "line": 18,
                                     "column": 28,
-                                    "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                    "program": "lambdaExpressionWithoutBlockStatement.sts"
                                   },
                                   "end": {
                                     "line": 18,
                                     "column": 31,
-                                    "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                    "program": "lambdaExpressionWithoutBlockStatement.sts"
                                   }
                                 }
                               },
@@ -368,12 +368,12 @@
                                         "start": {
                                           "line": 18,
                                           "column": 35,
-                                          "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                          "program": "lambdaExpressionWithoutBlockStatement.sts"
                                         },
                                         "end": {
                                           "line": 18,
                                           "column": 36,
-                                          "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                          "program": "lambdaExpressionWithoutBlockStatement.sts"
                                         }
                                       }
                                     },
@@ -408,12 +408,12 @@
                                 "start": {
                                   "line": 18,
                                   "column": 24,
-                                  "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                  "program": "lambdaExpressionWithoutBlockStatement.sts"
                                 },
                                 "end": {
                                   "line": 18,
                                   "column": 36,
-                                  "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                  "program": "lambdaExpressionWithoutBlockStatement.sts"
                                 }
                               }
                             },
@@ -421,12 +421,12 @@
                               "start": {
                                 "line": 18,
                                 "column": 24,
-                                "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                "program": "lambdaExpressionWithoutBlockStatement.sts"
                               },
                               "end": {
                                 "line": 18,
                                 "column": 36,
-                                "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                "program": "lambdaExpressionWithoutBlockStatement.sts"
                               }
                             }
                           },
@@ -434,12 +434,12 @@
                             "start": {
                               "line": 18,
                               "column": 9,
-                              "program": "lambdaExpressionWithoutBlockStatement.ets"
+                              "program": "lambdaExpressionWithoutBlockStatement.sts"
                             },
                             "end": {
                               "line": 18,
                               "column": 36,
-                              "program": "lambdaExpressionWithoutBlockStatement.ets"
+                              "program": "lambdaExpressionWithoutBlockStatement.sts"
                             }
                           }
                         }
@@ -449,12 +449,12 @@
                         "start": {
                           "line": 18,
                           "column": 5,
-                          "program": "lambdaExpressionWithoutBlockStatement.ets"
+                          "program": "lambdaExpressionWithoutBlockStatement.sts"
                         },
                         "end": {
                           "line": 18,
                           "column": 37,
-                          "program": "lambdaExpressionWithoutBlockStatement.ets"
+                          "program": "lambdaExpressionWithoutBlockStatement.sts"
                         }
                       }
                     },
@@ -472,12 +472,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 5,
-                                "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                "program": "lambdaExpressionWithoutBlockStatement.sts"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 12,
-                                "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                "program": "lambdaExpressionWithoutBlockStatement.sts"
                               }
                             }
                           },
@@ -489,12 +489,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 13,
-                                "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                "program": "lambdaExpressionWithoutBlockStatement.sts"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 20,
-                                "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                "program": "lambdaExpressionWithoutBlockStatement.sts"
                               }
                             }
                           },
@@ -504,12 +504,12 @@
                             "start": {
                               "line": 19,
                               "column": 5,
-                              "program": "lambdaExpressionWithoutBlockStatement.ets"
+                              "program": "lambdaExpressionWithoutBlockStatement.sts"
                             },
                             "end": {
                               "line": 19,
                               "column": 20,
-                              "program": "lambdaExpressionWithoutBlockStatement.ets"
+                              "program": "lambdaExpressionWithoutBlockStatement.sts"
                             }
                           }
                         },
@@ -524,12 +524,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 21,
-                                  "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                  "program": "lambdaExpressionWithoutBlockStatement.sts"
                                 },
                                 "end": {
                                   "line": 19,
                                   "column": 22,
-                                  "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                  "program": "lambdaExpressionWithoutBlockStatement.sts"
                                 }
                               }
                             },
@@ -539,12 +539,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 21,
-                                "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                "program": "lambdaExpressionWithoutBlockStatement.sts"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 24,
-                                "program": "lambdaExpressionWithoutBlockStatement.ets"
+                                "program": "lambdaExpressionWithoutBlockStatement.sts"
                               }
                             }
                           }
@@ -554,12 +554,12 @@
                           "start": {
                             "line": 19,
                             "column": 5,
-                            "program": "lambdaExpressionWithoutBlockStatement.ets"
+                            "program": "lambdaExpressionWithoutBlockStatement.sts"
                           },
                           "end": {
                             "line": 19,
                             "column": 25,
-                            "program": "lambdaExpressionWithoutBlockStatement.ets"
+                            "program": "lambdaExpressionWithoutBlockStatement.sts"
                           }
                         }
                       },
@@ -567,12 +567,12 @@
                         "start": {
                           "line": 19,
                           "column": 5,
-                          "program": "lambdaExpressionWithoutBlockStatement.ets"
+                          "program": "lambdaExpressionWithoutBlockStatement.sts"
                         },
                         "end": {
                           "line": 19,
                           "column": 25,
-                          "program": "lambdaExpressionWithoutBlockStatement.ets"
+                          "program": "lambdaExpressionWithoutBlockStatement.sts"
                         }
                       }
                     }
@@ -581,12 +581,12 @@
                     "start": {
                       "line": 16,
                       "column": 23,
-                      "program": "lambdaExpressionWithoutBlockStatement.ets"
+                      "program": "lambdaExpressionWithoutBlockStatement.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 2,
-                      "program": "lambdaExpressionWithoutBlockStatement.ets"
+                      "program": "lambdaExpressionWithoutBlockStatement.sts"
                     }
                   }
                 },
@@ -594,12 +594,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "lambdaExpressionWithoutBlockStatement.ets"
+                    "program": "lambdaExpressionWithoutBlockStatement.sts"
                   },
                   "end": {
                     "line": 20,
                     "column": 2,
-                    "program": "lambdaExpressionWithoutBlockStatement.ets"
+                    "program": "lambdaExpressionWithoutBlockStatement.sts"
                   }
                 }
               },
@@ -607,12 +607,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "lambdaExpressionWithoutBlockStatement.ets"
+                  "program": "lambdaExpressionWithoutBlockStatement.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 2,
-                  "program": "lambdaExpressionWithoutBlockStatement.ets"
+                  "program": "lambdaExpressionWithoutBlockStatement.sts"
                 }
               }
             },
@@ -622,12 +622,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "lambdaExpressionWithoutBlockStatement.ets"
+                "program": "lambdaExpressionWithoutBlockStatement.sts"
               },
               "end": {
                 "line": 20,
                 "column": 2,
-                "program": "lambdaExpressionWithoutBlockStatement.ets"
+                "program": "lambdaExpressionWithoutBlockStatement.sts"
               }
             }
           }
@@ -636,12 +636,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "lambdaExpressionWithoutBlockStatement.ets"
+            "program": "lambdaExpressionWithoutBlockStatement.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "lambdaExpressionWithoutBlockStatement.ets"
+            "program": "lambdaExpressionWithoutBlockStatement.sts"
           }
         }
       },
@@ -649,12 +649,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "lambdaExpressionWithoutBlockStatement.ets"
+          "program": "lambdaExpressionWithoutBlockStatement.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "lambdaExpressionWithoutBlockStatement.ets"
+          "program": "lambdaExpressionWithoutBlockStatement.sts"
         }
       }
     }
@@ -663,12 +663,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "lambdaExpressionWithoutBlockStatement.ets"
+      "program": "lambdaExpressionWithoutBlockStatement.sts"
     },
     "end": {
       "line": 21,
       "column": 1,
-      "program": "lambdaExpressionWithoutBlockStatement.ets"
+      "program": "lambdaExpressionWithoutBlockStatement.sts"
     }
   }
 }

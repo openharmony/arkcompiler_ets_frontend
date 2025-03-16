@@ -43,10 +43,10 @@ check `lsp_api.ts` file
 import { Lsp } from "@es2panda/bindings"
 let lsp = new Lsp()
 
-let def = lsp.getDefinitionAtPosition("/path/to/panda/ets_frontend/ets2panda/foo/f2.ets", 70)
+let def = lsp.getDefinitionAtPosition("/path/to/panda/ets_frontend/ets2panda/foo/f2.sts", 70)
 console.log(def)
 
-let foo = lsp.getSemanticDiagnostics("/path/to/panda/ets_frontend/ets2panda/foo/f3.ets")
+let foo = lsp.getSemanticDiagnostics("/path/to/panda/ets_frontend/ets2panda/foo/f3.sts")
 console.log(foo)
 ```
 

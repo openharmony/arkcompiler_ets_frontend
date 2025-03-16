@@ -10,12 +10,12 @@
           "start": {
             "line": 16,
             "column": 20,
-            "program": "extdef.ets"
+            "program": "extdef.sts"
           },
           "end": {
             "line": 16,
             "column": 32,
-            "program": "extdef.ets"
+            "program": "extdef.sts"
           }
         }
       },
@@ -30,12 +30,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "extdef.ets"
+                "program": "extdef.sts"
               },
               "end": {
                 "line": 16,
                 "column": 13,
-                "program": "extdef.ets"
+                "program": "extdef.sts"
               }
             }
           },
@@ -47,12 +47,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "extdef.ets"
+                "program": "extdef.sts"
               },
               "end": {
                 "line": 16,
                 "column": 13,
-                "program": "extdef.ets"
+                "program": "extdef.sts"
               }
             }
           },
@@ -60,12 +60,12 @@
             "start": {
               "line": 16,
               "column": 9,
-              "program": "extdef.ets"
+              "program": "extdef.sts"
             },
             "end": {
               "line": 16,
               "column": 13,
-              "program": "extdef.ets"
+              "program": "extdef.sts"
             }
           }
         }
@@ -74,12 +74,12 @@
         "start": {
           "line": 16,
           "column": 1,
-          "program": "extdef.ets"
+          "program": "extdef.sts"
         },
         "end": {
           "line": 16,
           "column": 32,
-          "program": "extdef.ets"
+          "program": "extdef.sts"
         }
       }
     },
@@ -94,12 +94,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "extdef.ets"
+              "program": "extdef.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "extdef.ets"
+              "program": "extdef.sts"
             }
           }
         },
@@ -203,12 +203,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "extdef.ets"
+                "program": "extdef.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "extdef.ets"
+                "program": "extdef.sts"
               }
             }
           },
@@ -309,12 +309,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "extdef.ets"
+                "program": "extdef.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "extdef.ets"
+                "program": "extdef.sts"
               }
             }
           },
@@ -328,12 +328,12 @@
                 "start": {
                   "line": 18,
                   "column": 17,
-                  "program": "extdef.ets"
+                  "program": "extdef.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 24,
-                  "program": "extdef.ets"
+                  "program": "extdef.sts"
                 }
               }
             },
@@ -354,12 +354,12 @@
                     "start": {
                       "line": 18,
                       "column": 17,
-                      "program": "extdef.ets"
+                      "program": "extdef.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 24,
-                      "program": "extdef.ets"
+                      "program": "extdef.sts"
                     }
                   }
                 },
@@ -390,12 +390,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 13,
-                                      "program": "extdef.ets"
+                                      "program": "extdef.sts"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 17,
-                                      "program": "extdef.ets"
+                                      "program": "extdef.sts"
                                     }
                                   }
                                 },
@@ -403,12 +403,12 @@
                                   "start": {
                                     "line": 19,
                                     "column": 13,
-                                    "program": "extdef.ets"
+                                    "program": "extdef.sts"
                                   },
                                   "end": {
                                     "line": 19,
                                     "column": 19,
-                                    "program": "extdef.ets"
+                                    "program": "extdef.sts"
                                   }
                                 }
                               },
@@ -416,12 +416,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 13,
-                                  "program": "extdef.ets"
+                                  "program": "extdef.sts"
                                 },
                                 "end": {
                                   "line": 19,
                                   "column": 19,
-                                  "program": "extdef.ets"
+                                  "program": "extdef.sts"
                                 }
                               }
                             },
@@ -430,12 +430,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 9,
-                                "program": "extdef.ets"
+                                "program": "extdef.sts"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 10,
-                                "program": "extdef.ets"
+                                "program": "extdef.sts"
                               }
                             }
                           },
@@ -453,12 +453,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 24,
-                                      "program": "extdef.ets"
+                                      "program": "extdef.sts"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 28,
-                                      "program": "extdef.ets"
+                                      "program": "extdef.sts"
                                     }
                                   }
                                 },
@@ -466,12 +466,12 @@
                                   "start": {
                                     "line": 19,
                                     "column": 24,
-                                    "program": "extdef.ets"
+                                    "program": "extdef.sts"
                                   },
                                   "end": {
                                     "line": 19,
                                     "column": 29,
-                                    "program": "extdef.ets"
+                                    "program": "extdef.sts"
                                   }
                                 }
                               },
@@ -479,12 +479,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 24,
-                                  "program": "extdef.ets"
+                                  "program": "extdef.sts"
                                 },
                                 "end": {
                                   "line": 19,
                                   "column": 29,
-                                  "program": "extdef.ets"
+                                  "program": "extdef.sts"
                                 }
                               }
                             },
@@ -493,12 +493,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 20,
-                                "program": "extdef.ets"
+                                "program": "extdef.sts"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 31,
-                                "program": "extdef.ets"
+                                "program": "extdef.sts"
                               }
                             }
                           },
@@ -506,12 +506,12 @@
                             "start": {
                               "line": 19,
                               "column": 9,
-                              "program": "extdef.ets"
+                              "program": "extdef.sts"
                             },
                             "end": {
                               "line": 19,
                               "column": 31,
-                              "program": "extdef.ets"
+                              "program": "extdef.sts"
                             }
                           }
                         }
@@ -521,12 +521,12 @@
                         "start": {
                           "line": 19,
                           "column": 5,
-                          "program": "extdef.ets"
+                          "program": "extdef.sts"
                         },
                         "end": {
                           "line": 19,
                           "column": 31,
-                          "program": "extdef.ets"
+                          "program": "extdef.sts"
                         }
                       }
                     },
@@ -544,12 +544,12 @@
                               "start": {
                                 "line": 20,
                                 "column": 5,
-                                "program": "extdef.ets"
+                                "program": "extdef.sts"
                               },
                               "end": {
                                 "line": 20,
                                 "column": 12,
-                                "program": "extdef.ets"
+                                "program": "extdef.sts"
                               }
                             }
                           },
@@ -561,12 +561,12 @@
                               "start": {
                                 "line": 20,
                                 "column": 13,
-                                "program": "extdef.ets"
+                                "program": "extdef.sts"
                               },
                               "end": {
                                 "line": 20,
                                 "column": 20,
-                                "program": "extdef.ets"
+                                "program": "extdef.sts"
                               }
                             }
                           },
@@ -576,12 +576,12 @@
                             "start": {
                               "line": 20,
                               "column": 5,
-                              "program": "extdef.ets"
+                              "program": "extdef.sts"
                             },
                             "end": {
                               "line": 20,
                               "column": 20,
-                              "program": "extdef.ets"
+                              "program": "extdef.sts"
                             }
                           }
                         },
@@ -593,12 +593,12 @@
                               "start": {
                                 "line": 20,
                                 "column": 21,
-                                "program": "extdef.ets"
+                                "program": "extdef.sts"
                               },
                               "end": {
                                 "line": 20,
                                 "column": 24,
-                                "program": "extdef.ets"
+                                "program": "extdef.sts"
                               }
                             }
                           }
@@ -608,12 +608,12 @@
                           "start": {
                             "line": 20,
                             "column": 5,
-                            "program": "extdef.ets"
+                            "program": "extdef.sts"
                           },
                           "end": {
                             "line": 20,
                             "column": 25,
-                            "program": "extdef.ets"
+                            "program": "extdef.sts"
                           }
                         }
                       },
@@ -621,12 +621,12 @@
                         "start": {
                           "line": 20,
                           "column": 5,
-                          "program": "extdef.ets"
+                          "program": "extdef.sts"
                         },
                         "end": {
                           "line": 20,
                           "column": 25,
-                          "program": "extdef.ets"
+                          "program": "extdef.sts"
                         }
                       }
                     }
@@ -635,12 +635,12 @@
                     "start": {
                       "line": 18,
                       "column": 26,
-                      "program": "extdef.ets"
+                      "program": "extdef.sts"
                     },
                     "end": {
                       "line": 21,
                       "column": 2,
-                      "program": "extdef.ets"
+                      "program": "extdef.sts"
                     }
                   }
                 },
@@ -648,12 +648,12 @@
                   "start": {
                     "line": 18,
                     "column": 17,
-                    "program": "extdef.ets"
+                    "program": "extdef.sts"
                   },
                   "end": {
                     "line": 21,
                     "column": 2,
-                    "program": "extdef.ets"
+                    "program": "extdef.sts"
                   }
                 }
               },
@@ -661,12 +661,12 @@
                 "start": {
                   "line": 18,
                   "column": 17,
-                  "program": "extdef.ets"
+                  "program": "extdef.sts"
                 },
                 "end": {
                   "line": 21,
                   "column": 2,
-                  "program": "extdef.ets"
+                  "program": "extdef.sts"
                 }
               }
             },
@@ -676,12 +676,12 @@
               "start": {
                 "line": 18,
                 "column": 8,
-                "program": "extdef.ets"
+                "program": "extdef.sts"
               },
               "end": {
                 "line": 21,
                 "column": 2,
-                "program": "extdef.ets"
+                "program": "extdef.sts"
               }
             }
           }
@@ -690,12 +690,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "extdef.ets"
+            "program": "extdef.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "extdef.ets"
+            "program": "extdef.sts"
           }
         }
       },
@@ -703,12 +703,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "extdef.ets"
+          "program": "extdef.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "extdef.ets"
+          "program": "extdef.sts"
         }
       }
     }
@@ -717,12 +717,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "extdef.ets"
+      "program": "extdef.sts"
     },
     "end": {
       "line": 22,
       "column": 1,
-      "program": "extdef.ets"
+      "program": "extdef.sts"
     }
   }
 }

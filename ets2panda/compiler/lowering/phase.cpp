@@ -193,7 +193,7 @@ std::vector<Phase *> GetJSPhaseList()
 std::vector<Phase *> GetPhaseList(ScriptExtension ext)
 {
     switch (ext) {
-        case ScriptExtension::ETS:
+        case ScriptExtension::STS:
             return GetETSPhaseList();
         case ScriptExtension::AS:
             return GetASPhaseList();

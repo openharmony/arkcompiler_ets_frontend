@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "lambda.ets"
+              "program": "lambda.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "lambda.ets"
+              "program": "lambda.sts"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "lambda.ets"
+                "program": "lambda.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "lambda.ets"
+                "program": "lambda.sts"
               }
             }
           },
@@ -140,12 +140,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "lambda.ets"
+                  "program": "lambda.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 13,
-                  "program": "lambda.ets"
+                  "program": "lambda.sts"
                 }
               }
             },
@@ -166,12 +166,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "lambda.ets"
+                      "program": "lambda.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 13,
-                      "program": "lambda.ets"
+                      "program": "lambda.sts"
                     }
                   }
                 },
@@ -204,12 +204,12 @@
                                       "start": {
                                         "line": 16,
                                         "column": 30,
-                                        "program": "lambda.ets"
+                                        "program": "lambda.sts"
                                       },
                                       "end": {
                                         "line": 16,
                                         "column": 36,
-                                        "program": "lambda.ets"
+                                        "program": "lambda.sts"
                                       }
                                     }
                                   },
@@ -217,12 +217,12 @@
                                     "start": {
                                       "line": 16,
                                       "column": 30,
-                                      "program": "lambda.ets"
+                                      "program": "lambda.sts"
                                     },
                                     "end": {
                                       "line": 16,
                                       "column": 37,
-                                      "program": "lambda.ets"
+                                      "program": "lambda.sts"
                                     }
                                   }
                                 },
@@ -230,12 +230,12 @@
                                   "start": {
                                     "line": 16,
                                     "column": 30,
-                                    "program": "lambda.ets"
+                                    "program": "lambda.sts"
                                   },
                                   "end": {
                                     "line": 16,
                                     "column": 37,
-                                    "program": "lambda.ets"
+                                    "program": "lambda.sts"
                                   }
                                 }
                               },
@@ -244,12 +244,12 @@
                                 "start": {
                                   "line": 16,
                                   "column": 25,
-                                  "program": "lambda.ets"
+                                  "program": "lambda.sts"
                                 },
                                 "end": {
                                   "line": 16,
                                   "column": 37,
-                                  "program": "lambda.ets"
+                                  "program": "lambda.sts"
                                 }
                               }
                             },
@@ -257,12 +257,12 @@
                               "start": {
                                 "line": 16,
                                 "column": 25,
-                                "program": "lambda.ets"
+                                "program": "lambda.sts"
                               },
                               "end": {
                                 "line": 16,
                                 "column": 37,
-                                "program": "lambda.ets"
+                                "program": "lambda.sts"
                               }
                             }
                           }
@@ -273,12 +273,12 @@
                             "start": {
                               "line": 16,
                               "column": 41,
-                              "program": "lambda.ets"
+                              "program": "lambda.sts"
                             },
                             "end": {
                               "line": 16,
                               "column": 45,
-                              "program": "lambda.ets"
+                              "program": "lambda.sts"
                             }
                           }
                         },
@@ -286,12 +286,12 @@
                           "start": {
                             "line": 16,
                             "column": 24,
-                            "program": "lambda.ets"
+                            "program": "lambda.sts"
                           },
                           "end": {
                             "line": 16,
                             "column": 45,
-                            "program": "lambda.ets"
+                            "program": "lambda.sts"
                           }
                         }
                       },
@@ -300,12 +300,12 @@
                         "start": {
                           "line": 16,
                           "column": 14,
-                          "program": "lambda.ets"
+                          "program": "lambda.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 45,
-                          "program": "lambda.ets"
+                          "program": "lambda.sts"
                         }
                       }
                     },
@@ -313,12 +313,12 @@
                       "start": {
                         "line": 16,
                         "column": 14,
-                        "program": "lambda.ets"
+                        "program": "lambda.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 45,
-                        "program": "lambda.ets"
+                        "program": "lambda.sts"
                       }
                     }
                   }
@@ -329,12 +329,12 @@
                     "start": {
                       "line": 16,
                       "column": 48,
-                      "program": "lambda.ets"
+                      "program": "lambda.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 52,
-                      "program": "lambda.ets"
+                      "program": "lambda.sts"
                     }
                   }
                 },
@@ -353,12 +353,12 @@
                             "start": {
                               "line": 17,
                               "column": 5,
-                              "program": "lambda.ets"
+                              "program": "lambda.sts"
                             },
                             "end": {
                               "line": 17,
                               "column": 13,
-                              "program": "lambda.ets"
+                              "program": "lambda.sts"
                             }
                           }
                         },
@@ -370,12 +370,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 14,
-                                "program": "lambda.ets"
+                                "program": "lambda.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 21,
-                                "program": "lambda.ets"
+                                "program": "lambda.sts"
                               }
                             }
                           }
@@ -385,12 +385,12 @@
                           "start": {
                             "line": 17,
                             "column": 5,
-                            "program": "lambda.ets"
+                            "program": "lambda.sts"
                           },
                           "end": {
                             "line": 17,
                             "column": 22,
-                            "program": "lambda.ets"
+                            "program": "lambda.sts"
                           }
                         }
                       },
@@ -398,12 +398,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "lambda.ets"
+                          "program": "lambda.sts"
                         },
                         "end": {
                           "line": 17,
                           "column": 23,
-                          "program": "lambda.ets"
+                          "program": "lambda.sts"
                         }
                       }
                     }
@@ -412,12 +412,12 @@
                     "start": {
                       "line": 16,
                       "column": 53,
-                      "program": "lambda.ets"
+                      "program": "lambda.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 2,
-                      "program": "lambda.ets"
+                      "program": "lambda.sts"
                     }
                   }
                 },
@@ -425,12 +425,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "lambda.ets"
+                    "program": "lambda.sts"
                   },
                   "end": {
                     "line": 18,
                     "column": 2,
-                    "program": "lambda.ets"
+                    "program": "lambda.sts"
                   }
                 }
               },
@@ -438,12 +438,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "lambda.ets"
+                  "program": "lambda.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 2,
-                  "program": "lambda.ets"
+                  "program": "lambda.sts"
                 }
               }
             },
@@ -453,12 +453,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "lambda.ets"
+                "program": "lambda.sts"
               },
               "end": {
                 "line": 18,
                 "column": 2,
-                "program": "lambda.ets"
+                "program": "lambda.sts"
               }
             }
           },
@@ -472,12 +472,12 @@
                 "start": {
                   "line": 20,
                   "column": 10,
-                  "program": "lambda.ets"
+                  "program": "lambda.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 14,
-                  "program": "lambda.ets"
+                  "program": "lambda.sts"
                 }
               }
             },
@@ -498,12 +498,12 @@
                     "start": {
                       "line": 20,
                       "column": 10,
-                      "program": "lambda.ets"
+                      "program": "lambda.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 14,
-                      "program": "lambda.ets"
+                      "program": "lambda.sts"
                     }
                   }
                 },
@@ -517,12 +517,12 @@
                     "start": {
                       "line": 20,
                       "column": 18,
-                      "program": "lambda.ets"
+                      "program": "lambda.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 22,
-                      "program": "lambda.ets"
+                      "program": "lambda.sts"
                     }
                   }
                 },
@@ -541,12 +541,12 @@
                             "start": {
                               "line": 21,
                               "column": 5,
-                              "program": "lambda.ets"
+                              "program": "lambda.sts"
                             },
                             "end": {
                               "line": 21,
                               "column": 8,
-                              "program": "lambda.ets"
+                              "program": "lambda.sts"
                             }
                           }
                         },
@@ -577,12 +577,12 @@
                                             "start": {
                                               "line": 21,
                                               "column": 15,
-                                              "program": "lambda.ets"
+                                              "program": "lambda.sts"
                                             },
                                             "end": {
                                               "line": 21,
                                               "column": 21,
-                                              "program": "lambda.ets"
+                                              "program": "lambda.sts"
                                             }
                                           }
                                         },
@@ -590,12 +590,12 @@
                                           "start": {
                                             "line": 21,
                                             "column": 15,
-                                            "program": "lambda.ets"
+                                            "program": "lambda.sts"
                                           },
                                           "end": {
                                             "line": 21,
                                             "column": 22,
-                                            "program": "lambda.ets"
+                                            "program": "lambda.sts"
                                           }
                                         }
                                       },
@@ -603,12 +603,12 @@
                                         "start": {
                                           "line": 21,
                                           "column": 15,
-                                          "program": "lambda.ets"
+                                          "program": "lambda.sts"
                                         },
                                         "end": {
                                           "line": 21,
                                           "column": 22,
-                                          "program": "lambda.ets"
+                                          "program": "lambda.sts"
                                         }
                                       }
                                     },
@@ -617,12 +617,12 @@
                                       "start": {
                                         "line": 21,
                                         "column": 10,
-                                        "program": "lambda.ets"
+                                        "program": "lambda.sts"
                                       },
                                       "end": {
                                         "line": 21,
                                         "column": 22,
-                                        "program": "lambda.ets"
+                                        "program": "lambda.sts"
                                       }
                                     }
                                   },
@@ -630,12 +630,12 @@
                                     "start": {
                                       "line": 21,
                                       "column": 10,
-                                      "program": "lambda.ets"
+                                      "program": "lambda.sts"
                                     },
                                     "end": {
                                       "line": 21,
                                       "column": 22,
-                                      "program": "lambda.ets"
+                                      "program": "lambda.sts"
                                     }
                                   }
                                 }
@@ -646,12 +646,12 @@
                                   "start": {
                                     "line": 21,
                                     "column": 24,
-                                    "program": "lambda.ets"
+                                    "program": "lambda.sts"
                                   },
                                   "end": {
                                     "line": 21,
                                     "column": 28,
-                                    "program": "lambda.ets"
+                                    "program": "lambda.sts"
                                   }
                                 }
                               },
@@ -672,12 +672,12 @@
                                             "start": {
                                               "line": 22,
                                               "column": 9,
-                                              "program": "lambda.ets"
+                                              "program": "lambda.sts"
                                             },
                                             "end": {
                                               "line": 22,
                                               "column": 16,
-                                              "program": "lambda.ets"
+                                              "program": "lambda.sts"
                                             }
                                           }
                                         },
@@ -689,12 +689,12 @@
                                             "start": {
                                               "line": 22,
                                               "column": 17,
-                                              "program": "lambda.ets"
+                                              "program": "lambda.sts"
                                             },
                                             "end": {
                                               "line": 22,
                                               "column": 24,
-                                              "program": "lambda.ets"
+                                              "program": "lambda.sts"
                                             }
                                           }
                                         },
@@ -704,12 +704,12 @@
                                           "start": {
                                             "line": 22,
                                             "column": 9,
-                                            "program": "lambda.ets"
+                                            "program": "lambda.sts"
                                           },
                                           "end": {
                                             "line": 22,
                                             "column": 24,
-                                            "program": "lambda.ets"
+                                            "program": "lambda.sts"
                                           }
                                         }
                                       },
@@ -722,12 +722,12 @@
                                             "start": {
                                               "line": 22,
                                               "column": 25,
-                                              "program": "lambda.ets"
+                                              "program": "lambda.sts"
                                             },
                                             "end": {
                                               "line": 22,
                                               "column": 28,
-                                              "program": "lambda.ets"
+                                              "program": "lambda.sts"
                                             }
                                           }
                                         }
@@ -737,12 +737,12 @@
                                         "start": {
                                           "line": 22,
                                           "column": 9,
-                                          "program": "lambda.ets"
+                                          "program": "lambda.sts"
                                         },
                                         "end": {
                                           "line": 22,
                                           "column": 29,
-                                          "program": "lambda.ets"
+                                          "program": "lambda.sts"
                                         }
                                       }
                                     },
@@ -750,12 +750,12 @@
                                       "start": {
                                         "line": 22,
                                         "column": 9,
-                                        "program": "lambda.ets"
+                                        "program": "lambda.sts"
                                       },
                                       "end": {
                                         "line": 22,
                                         "column": 30,
-                                        "program": "lambda.ets"
+                                        "program": "lambda.sts"
                                       }
                                     }
                                   }
@@ -764,12 +764,12 @@
                                   "start": {
                                     "line": 21,
                                     "column": 32,
-                                    "program": "lambda.ets"
+                                    "program": "lambda.sts"
                                   },
                                   "end": {
                                     "line": 23,
                                     "column": 6,
-                                    "program": "lambda.ets"
+                                    "program": "lambda.sts"
                                   }
                                 }
                               },
@@ -777,12 +777,12 @@
                                 "start": {
                                   "line": 21,
                                   "column": 9,
-                                  "program": "lambda.ets"
+                                  "program": "lambda.sts"
                                 },
                                 "end": {
                                   "line": 23,
                                   "column": 6,
-                                  "program": "lambda.ets"
+                                  "program": "lambda.sts"
                                 }
                               }
                             },
@@ -790,12 +790,12 @@
                               "start": {
                                 "line": 21,
                                 "column": 9,
-                                "program": "lambda.ets"
+                                "program": "lambda.sts"
                               },
                               "end": {
                                 "line": 23,
                                 "column": 6,
-                                "program": "lambda.ets"
+                                "program": "lambda.sts"
                               }
                             }
                           }
@@ -805,12 +805,12 @@
                           "start": {
                             "line": 21,
                             "column": 5,
-                            "program": "lambda.ets"
+                            "program": "lambda.sts"
                           },
                           "end": {
                             "line": 23,
                             "column": 7,
-                            "program": "lambda.ets"
+                            "program": "lambda.sts"
                           }
                         }
                       },
@@ -818,12 +818,12 @@
                         "start": {
                           "line": 21,
                           "column": 5,
-                          "program": "lambda.ets"
+                          "program": "lambda.sts"
                         },
                         "end": {
                           "line": 23,
                           "column": 8,
-                          "program": "lambda.ets"
+                          "program": "lambda.sts"
                         }
                       }
                     }
@@ -832,12 +832,12 @@
                     "start": {
                       "line": 20,
                       "column": 23,
-                      "program": "lambda.ets"
+                      "program": "lambda.sts"
                     },
                     "end": {
                       "line": 24,
                       "column": 2,
-                      "program": "lambda.ets"
+                      "program": "lambda.sts"
                     }
                   }
                 },
@@ -845,12 +845,12 @@
                   "start": {
                     "line": 20,
                     "column": 10,
-                    "program": "lambda.ets"
+                    "program": "lambda.sts"
                   },
                   "end": {
                     "line": 24,
                     "column": 2,
-                    "program": "lambda.ets"
+                    "program": "lambda.sts"
                   }
                 }
               },
@@ -858,12 +858,12 @@
                 "start": {
                   "line": 20,
                   "column": 10,
-                  "program": "lambda.ets"
+                  "program": "lambda.sts"
                 },
                 "end": {
                   "line": 24,
                   "column": 2,
-                  "program": "lambda.ets"
+                  "program": "lambda.sts"
                 }
               }
             },
@@ -873,12 +873,12 @@
               "start": {
                 "line": 20,
                 "column": 1,
-                "program": "lambda.ets"
+                "program": "lambda.sts"
               },
               "end": {
                 "line": 24,
                 "column": 2,
-                "program": "lambda.ets"
+                "program": "lambda.sts"
               }
             }
           }
@@ -887,12 +887,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "lambda.ets"
+            "program": "lambda.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "lambda.ets"
+            "program": "lambda.sts"
           }
         }
       },
@@ -900,12 +900,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "lambda.ets"
+          "program": "lambda.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "lambda.ets"
+          "program": "lambda.sts"
         }
       }
     }
@@ -914,12 +914,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "lambda.ets"
+      "program": "lambda.sts"
     },
     "end": {
       "line": 26,
       "column": 1,
-      "program": "lambda.ets"
+      "program": "lambda.sts"
     }
   }
 }

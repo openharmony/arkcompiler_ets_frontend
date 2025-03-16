@@ -12,12 +12,12 @@
             "start": {
               "line": 16,
               "column": 14,
-              "program": "declare_enum.ets"
+              "program": "declare_enum.sts"
             },
             "end": {
               "line": 16,
               "column": 18,
-              "program": "declare_enum.ets"
+              "program": "declare_enum.sts"
             }
           }
         },
@@ -34,12 +34,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -55,12 +55,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -70,12 +70,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               },
               "end": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               }
             }
           },
@@ -89,12 +89,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -115,12 +115,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -139,12 +139,12 @@
                           "start": {
                             "line": 16,
                             "column": 9,
-                            "program": "declare_enum.ets"
+                            "program": "declare_enum.sts"
                           },
                           "end": {
                             "line": 16,
                             "column": 9,
-                            "program": "declare_enum.ets"
+                            "program": "declare_enum.sts"
                           }
                         }
                       },
@@ -153,12 +153,12 @@
                         "start": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         }
                       }
                     },
@@ -166,12 +166,12 @@
                       "start": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       }
                     }
                   }
@@ -192,12 +192,12 @@
                               "start": {
                                 "line": 16,
                                 "column": 9,
-                                "program": "declare_enum.ets"
+                                "program": "declare_enum.sts"
                               },
                               "end": {
                                 "line": 16,
                                 "column": 9,
-                                "program": "declare_enum.ets"
+                                "program": "declare_enum.sts"
                               }
                             }
                           },
@@ -209,12 +209,12 @@
                               "start": {
                                 "line": 16,
                                 "column": 9,
-                                "program": "declare_enum.ets"
+                                "program": "declare_enum.sts"
                               },
                               "end": {
                                 "line": 16,
                                 "column": 9,
-                                "program": "declare_enum.ets"
+                                "program": "declare_enum.sts"
                               }
                             }
                           },
@@ -224,12 +224,12 @@
                             "start": {
                               "line": 16,
                               "column": 9,
-                              "program": "declare_enum.ets"
+                              "program": "declare_enum.sts"
                             },
                             "end": {
                               "line": 16,
                               "column": 9,
-                              "program": "declare_enum.ets"
+                              "program": "declare_enum.sts"
                             }
                           }
                         },
@@ -241,12 +241,12 @@
                             "start": {
                               "line": 16,
                               "column": 9,
-                              "program": "declare_enum.ets"
+                              "program": "declare_enum.sts"
                             },
                             "end": {
                               "line": 16,
                               "column": 9,
-                              "program": "declare_enum.ets"
+                              "program": "declare_enum.sts"
                             }
                           }
                         },
@@ -254,12 +254,12 @@
                           "start": {
                             "line": 16,
                             "column": 9,
-                            "program": "declare_enum.ets"
+                            "program": "declare_enum.sts"
                           },
                           "end": {
                             "line": 16,
                             "column": 9,
-                            "program": "declare_enum.ets"
+                            "program": "declare_enum.sts"
                           }
                         }
                       },
@@ -267,12 +267,12 @@
                         "start": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         }
                       }
                     }
@@ -281,12 +281,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -294,12 +294,12 @@
                   "start": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   }
                 }
               },
@@ -307,12 +307,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -322,12 +322,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               },
               "end": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               }
             }
           },
@@ -341,12 +341,12 @@
                 "start": {
                   "line": 17,
                   "column": 5,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 17,
                   "column": 8,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -364,12 +364,12 @@
                       "start": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       }
                     }
                   },
@@ -377,12 +377,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -390,12 +390,12 @@
                   "start": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   }
                 }
               },
@@ -407,12 +407,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 }
@@ -421,12 +421,12 @@
                 "start": {
                   "line": 17,
                   "column": 8,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 17,
                   "column": 8,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -448,12 +448,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -461,12 +461,12 @@
                   "start": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   }
                 }
               },
@@ -474,12 +474,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -489,12 +489,12 @@
               "start": {
                 "line": 17,
                 "column": 5,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               },
               "end": {
                 "line": 17,
                 "column": 8,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               }
             }
           },
@@ -508,12 +508,12 @@
                 "start": {
                   "line": 18,
                   "column": 5,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 8,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -531,12 +531,12 @@
                       "start": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       }
                     }
                   },
@@ -544,12 +544,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -557,12 +557,12 @@
                   "start": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   }
                 }
               },
@@ -574,12 +574,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 }
@@ -588,12 +588,12 @@
                 "start": {
                   "line": 18,
                   "column": 8,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 8,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -615,12 +615,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -628,12 +628,12 @@
                   "start": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   }
                 }
               },
@@ -641,12 +641,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -656,12 +656,12 @@
               "start": {
                 "line": 18,
                 "column": 5,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               },
               "end": {
                 "line": 18,
                 "column": 8,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               }
             }
           },
@@ -675,12 +675,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -694,12 +694,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -710,12 +710,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 }
@@ -724,12 +724,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -753,12 +753,12 @@
                       "start": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       }
                     }
                   },
@@ -766,12 +766,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -779,12 +779,12 @@
                   "start": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   }
                 }
               },
@@ -793,12 +793,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -808,12 +808,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               },
               "end": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               }
             }
           },
@@ -827,12 +827,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -846,12 +846,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -862,12 +862,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 }
@@ -876,12 +876,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -899,12 +899,12 @@
                   "start": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   }
                 }
               },
@@ -913,12 +913,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -928,12 +928,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               },
               "end": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               }
             }
           },
@@ -947,12 +947,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -966,12 +966,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -982,12 +982,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 }
@@ -996,12 +996,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -1025,12 +1025,12 @@
                       "start": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       }
                     }
                   },
@@ -1038,12 +1038,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -1051,12 +1051,12 @@
                   "start": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   }
                 }
               },
@@ -1065,12 +1065,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -1080,12 +1080,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               },
               "end": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               }
             }
           },
@@ -1099,12 +1099,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -1121,12 +1121,12 @@
                       "start": {
                         "line": 16,
                         "column": 14,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 18,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       }
                     }
                   },
@@ -1138,12 +1138,12 @@
                       "start": {
                         "line": 17,
                         "column": 5,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       },
                       "end": {
                         "line": 17,
                         "column": 8,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       }
                     }
                   },
@@ -1153,12 +1153,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -1172,12 +1172,12 @@
                       "start": {
                         "line": 16,
                         "column": 14,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 18,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       }
                     }
                   },
@@ -1189,12 +1189,12 @@
                       "start": {
                         "line": 18,
                         "column": 5,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       },
                       "end": {
                         "line": 18,
                         "column": 8,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       }
                     }
                   },
@@ -1204,12 +1204,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 }
@@ -1218,12 +1218,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -1247,12 +1247,12 @@
                       "start": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       }
                     }
                   },
@@ -1260,12 +1260,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -1273,12 +1273,12 @@
                   "start": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   }
                 }
               },
@@ -1287,12 +1287,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -1302,12 +1302,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               },
               "end": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               }
             }
           },
@@ -1321,12 +1321,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -1347,12 +1347,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -1372,12 +1372,12 @@
                         "start": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         }
                       }
                     },
@@ -1385,12 +1385,12 @@
                       "start": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       }
                     }
                   },
@@ -1398,12 +1398,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -1412,12 +1412,12 @@
                   "start": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   }
                 }
               },
@@ -1425,12 +1425,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -1440,12 +1440,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               },
               "end": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               }
             }
           },
@@ -1459,12 +1459,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -1485,12 +1485,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -1515,12 +1515,12 @@
                               "start": {
                                 "line": 16,
                                 "column": 9,
-                                "program": "declare_enum.ets"
+                                "program": "declare_enum.sts"
                               },
                               "end": {
                                 "line": 16,
                                 "column": 9,
-                                "program": "declare_enum.ets"
+                                "program": "declare_enum.sts"
                               }
                             }
                           },
@@ -1528,12 +1528,12 @@
                             "start": {
                               "line": 16,
                               "column": 9,
-                              "program": "declare_enum.ets"
+                              "program": "declare_enum.sts"
                             },
                             "end": {
                               "line": 16,
                               "column": 9,
-                              "program": "declare_enum.ets"
+                              "program": "declare_enum.sts"
                             }
                           }
                         },
@@ -1541,12 +1541,12 @@
                           "start": {
                             "line": 16,
                             "column": 9,
-                            "program": "declare_enum.ets"
+                            "program": "declare_enum.sts"
                           },
                           "end": {
                             "line": 16,
                             "column": 9,
-                            "program": "declare_enum.ets"
+                            "program": "declare_enum.sts"
                           }
                         }
                       },
@@ -1555,12 +1555,12 @@
                         "start": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         }
                       }
                     },
@@ -1568,12 +1568,12 @@
                       "start": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       }
                     }
                   }
@@ -1590,12 +1590,12 @@
                         "start": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         }
                       }
                     },
@@ -1603,12 +1603,12 @@
                       "start": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       }
                     }
                   },
@@ -1616,12 +1616,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -1630,12 +1630,12 @@
                   "start": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   }
                 }
               },
@@ -1643,12 +1643,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -1658,12 +1658,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               },
               "end": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               }
             }
           },
@@ -1677,12 +1677,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -1703,12 +1703,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -1727,12 +1727,12 @@
                           "start": {
                             "line": 16,
                             "column": 9,
-                            "program": "declare_enum.ets"
+                            "program": "declare_enum.sts"
                           },
                           "end": {
                             "line": 16,
                             "column": 9,
-                            "program": "declare_enum.ets"
+                            "program": "declare_enum.sts"
                           }
                         }
                       },
@@ -1741,12 +1741,12 @@
                         "start": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         }
                       }
                     },
@@ -1754,12 +1754,12 @@
                       "start": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       }
                     }
                   }
@@ -1776,12 +1776,12 @@
                         "start": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         }
                       }
                     },
@@ -1789,12 +1789,12 @@
                       "start": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       }
                     }
                   },
@@ -1802,12 +1802,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -1816,12 +1816,12 @@
                   "start": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   }
                 }
               },
@@ -1829,12 +1829,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -1844,12 +1844,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               },
               "end": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               }
             }
           },
@@ -1863,12 +1863,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -1889,12 +1889,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -1908,12 +1908,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -1922,12 +1922,12 @@
                   "start": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   }
                 }
               },
@@ -1935,12 +1935,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -1950,12 +1950,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               },
               "end": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               }
             }
           },
@@ -1969,12 +1969,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -1995,12 +1995,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -2020,12 +2020,12 @@
                         "start": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         }
                       }
                     },
@@ -2033,12 +2033,12 @@
                       "start": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       }
                     }
                   },
@@ -2046,12 +2046,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -2060,12 +2060,12 @@
                   "start": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   }
                 }
               },
@@ -2073,12 +2073,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -2088,12 +2088,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               },
               "end": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               }
             }
           },
@@ -2107,12 +2107,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -2133,12 +2133,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -2160,12 +2160,12 @@
                           "start": {
                             "line": 16,
                             "column": 9,
-                            "program": "declare_enum.ets"
+                            "program": "declare_enum.sts"
                           },
                           "end": {
                             "line": 16,
                             "column": 9,
-                            "program": "declare_enum.ets"
+                            "program": "declare_enum.sts"
                           }
                         }
                       },
@@ -2173,12 +2173,12 @@
                         "start": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         }
                       }
                     },
@@ -2186,12 +2186,12 @@
                       "start": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       }
                     }
                   },
@@ -2200,12 +2200,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -2214,12 +2214,12 @@
                   "start": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   }
                 }
               },
@@ -2227,12 +2227,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -2242,12 +2242,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               },
               "end": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               }
             }
           },
@@ -2261,12 +2261,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -2287,12 +2287,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -2306,12 +2306,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -2320,12 +2320,12 @@
                   "start": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   }
                 }
               },
@@ -2333,12 +2333,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -2348,12 +2348,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               },
               "end": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               }
             }
           },
@@ -2367,12 +2367,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -2393,12 +2393,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -2423,12 +2423,12 @@
                               "start": {
                                 "line": 16,
                                 "column": 9,
-                                "program": "declare_enum.ets"
+                                "program": "declare_enum.sts"
                               },
                               "end": {
                                 "line": 16,
                                 "column": 9,
-                                "program": "declare_enum.ets"
+                                "program": "declare_enum.sts"
                               }
                             }
                           },
@@ -2436,12 +2436,12 @@
                             "start": {
                               "line": 16,
                               "column": 9,
-                              "program": "declare_enum.ets"
+                              "program": "declare_enum.sts"
                             },
                             "end": {
                               "line": 16,
                               "column": 9,
-                              "program": "declare_enum.ets"
+                              "program": "declare_enum.sts"
                             }
                           }
                         },
@@ -2449,12 +2449,12 @@
                           "start": {
                             "line": 16,
                             "column": 9,
-                            "program": "declare_enum.ets"
+                            "program": "declare_enum.sts"
                           },
                           "end": {
                             "line": 16,
                             "column": 9,
-                            "program": "declare_enum.ets"
+                            "program": "declare_enum.sts"
                           }
                         }
                       },
@@ -2463,12 +2463,12 @@
                         "start": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         }
                       }
                     },
@@ -2476,12 +2476,12 @@
                       "start": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       }
                     }
                   }
@@ -2498,12 +2498,12 @@
                         "start": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 9,
-                          "program": "declare_enum.ets"
+                          "program": "declare_enum.sts"
                         }
                       }
                     },
@@ -2511,12 +2511,12 @@
                       "start": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 9,
-                        "program": "declare_enum.ets"
+                        "program": "declare_enum.sts"
                       }
                     }
                   },
@@ -2524,12 +2524,12 @@
                     "start": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 9,
-                      "program": "declare_enum.ets"
+                      "program": "declare_enum.sts"
                     }
                   }
                 },
@@ -2538,12 +2538,12 @@
                   "start": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 9,
-                    "program": "declare_enum.ets"
+                    "program": "declare_enum.sts"
                   }
                 }
               },
@@ -2551,12 +2551,12 @@
                 "start": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 9,
-                  "program": "declare_enum.ets"
+                  "program": "declare_enum.sts"
                 }
               }
             },
@@ -2566,12 +2566,12 @@
               "start": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               },
               "end": {
                 "line": 16,
                 "column": 9,
-                "program": "declare_enum.ets"
+                "program": "declare_enum.sts"
               }
             }
           }
@@ -2580,12 +2580,12 @@
           "start": {
             "line": 16,
             "column": 9,
-            "program": "declare_enum.ets"
+            "program": "declare_enum.sts"
           },
           "end": {
             "line": 16,
             "column": 9,
-            "program": "declare_enum.ets"
+            "program": "declare_enum.sts"
           }
         }
       },
@@ -2613,12 +2613,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "declare_enum.ets"
+              "program": "declare_enum.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "declare_enum.ets"
+              "program": "declare_enum.sts"
             }
           }
         },
@@ -2629,12 +2629,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "declare_enum.ets"
+            "program": "declare_enum.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "declare_enum.ets"
+            "program": "declare_enum.sts"
           }
         }
       },
@@ -2642,12 +2642,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "declare_enum.ets"
+          "program": "declare_enum.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "declare_enum.ets"
+          "program": "declare_enum.sts"
         }
       }
     }
@@ -2656,12 +2656,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "declare_enum.ets"
+      "program": "declare_enum.sts"
     },
     "end": {
       "line": 20,
       "column": 1,
-      "program": "declare_enum.ets"
+      "program": "declare_enum.sts"
     }
   }
 }

@@ -12,12 +12,12 @@
             "start": {
               "line": 16,
               "column": 14,
-              "program": "export_class_with_getters_setters.ets"
+              "program": "export_class_with_getters_setters.sts"
             },
             "end": {
               "line": 16,
               "column": 23,
-              "program": "export_class_with_getters_setters.ets"
+              "program": "export_class_with_getters_setters.sts"
             }
           }
         },
@@ -34,12 +34,12 @@
                 "start": {
                   "line": 16,
                   "column": 25,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 25,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 }
               }
             },
@@ -59,12 +59,12 @@
                     "start": {
                       "line": 16,
                       "column": 25,
-                      "program": "export_class_with_getters_setters.ets"
+                      "program": "export_class_with_getters_setters.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 25,
-                      "program": "export_class_with_getters_setters.ets"
+                      "program": "export_class_with_getters_setters.sts"
                     }
                   }
                 },
@@ -79,12 +79,12 @@
                     "start": {
                       "line": 16,
                       "column": 25,
-                      "program": "export_class_with_getters_setters.ets"
+                      "program": "export_class_with_getters_setters.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 25,
-                      "program": "export_class_with_getters_setters.ets"
+                      "program": "export_class_with_getters_setters.sts"
                     }
                   }
                 },
@@ -92,12 +92,12 @@
                   "start": {
                     "line": 16,
                     "column": 25,
-                    "program": "export_class_with_getters_setters.ets"
+                    "program": "export_class_with_getters_setters.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 25,
-                    "program": "export_class_with_getters_setters.ets"
+                    "program": "export_class_with_getters_setters.sts"
                   }
                 }
               },
@@ -105,12 +105,12 @@
                 "start": {
                   "line": 16,
                   "column": 25,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 25,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 }
               }
             },
@@ -134,12 +134,12 @@
           "start": {
             "line": 16,
             "column": 24,
-            "program": "export_class_with_getters_setters.ets"
+            "program": "export_class_with_getters_setters.sts"
           },
           "end": {
             "line": 18,
             "column": 10,
-            "program": "export_class_with_getters_setters.ets"
+            "program": "export_class_with_getters_setters.sts"
           }
         }
       },
@@ -147,12 +147,12 @@
         "start": {
           "line": 16,
           "column": 8,
-          "program": "export_class_with_getters_setters.ets"
+          "program": "export_class_with_getters_setters.sts"
         },
         "end": {
           "line": 18,
           "column": 10,
-          "program": "export_class_with_getters_setters.ets"
+          "program": "export_class_with_getters_setters.sts"
         }
       }
     },
@@ -222,12 +222,12 @@
                         "start": {
                           "line": 19,
                           "column": 9,
-                          "program": "export_class_with_getters_setters.ets"
+                          "program": "export_class_with_getters_setters.sts"
                         },
                         "end": {
                           "line": 19,
                           "column": 18,
-                          "program": "export_class_with_getters_setters.ets"
+                          "program": "export_class_with_getters_setters.sts"
                         }
                       }
                     },
@@ -235,12 +235,12 @@
                       "start": {
                         "line": 19,
                         "column": 9,
-                        "program": "export_class_with_getters_setters.ets"
+                        "program": "export_class_with_getters_setters.sts"
                       },
                       "end": {
                         "line": 20,
                         "column": 2,
-                        "program": "export_class_with_getters_setters.ets"
+                        "program": "export_class_with_getters_setters.sts"
                       }
                     }
                   },
@@ -248,12 +248,12 @@
                     "start": {
                       "line": 19,
                       "column": 9,
-                      "program": "export_class_with_getters_setters.ets"
+                      "program": "export_class_with_getters_setters.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 2,
-                      "program": "export_class_with_getters_setters.ets"
+                      "program": "export_class_with_getters_setters.sts"
                     }
                   }
                 },
@@ -261,12 +261,12 @@
                   "start": {
                     "line": 19,
                     "column": 3,
-                    "program": "export_class_with_getters_setters.ets"
+                    "program": "export_class_with_getters_setters.sts"
                   },
                   "end": {
                     "line": 20,
                     "column": 2,
-                    "program": "export_class_with_getters_setters.ets"
+                    "program": "export_class_with_getters_setters.sts"
                   }
                 }
               },
@@ -274,12 +274,12 @@
                 "start": {
                   "line": 19,
                   "column": 3,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 2,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 }
               }
             },
@@ -350,12 +350,12 @@
                                   "start": {
                                     "line": 19,
                                     "column": 9,
-                                    "program": "export_class_with_getters_setters.ets"
+                                    "program": "export_class_with_getters_setters.sts"
                                   },
                                   "end": {
                                     "line": 19,
                                     "column": 18,
-                                    "program": "export_class_with_getters_setters.ets"
+                                    "program": "export_class_with_getters_setters.sts"
                                   }
                                 }
                               },
@@ -363,12 +363,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 9,
-                                  "program": "export_class_with_getters_setters.ets"
+                                  "program": "export_class_with_getters_setters.sts"
                                 },
                                 "end": {
                                   "line": 20,
                                   "column": 2,
-                                  "program": "export_class_with_getters_setters.ets"
+                                  "program": "export_class_with_getters_setters.sts"
                                 }
                               }
                             },
@@ -376,12 +376,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 9,
-                                "program": "export_class_with_getters_setters.ets"
+                                "program": "export_class_with_getters_setters.sts"
                               },
                               "end": {
                                 "line": 20,
                                 "column": 2,
-                                "program": "export_class_with_getters_setters.ets"
+                                "program": "export_class_with_getters_setters.sts"
                               }
                             }
                           },
@@ -390,12 +390,12 @@
                             "start": {
                               "line": 19,
                               "column": 3,
-                              "program": "export_class_with_getters_setters.ets"
+                              "program": "export_class_with_getters_setters.sts"
                             },
                             "end": {
                               "line": 19,
                               "column": 7,
-                              "program": "export_class_with_getters_setters.ets"
+                              "program": "export_class_with_getters_setters.sts"
                             }
                           }
                         },
@@ -403,12 +403,12 @@
                           "start": {
                             "line": 19,
                             "column": 3,
-                            "program": "export_class_with_getters_setters.ets"
+                            "program": "export_class_with_getters_setters.sts"
                           },
                           "end": {
                             "line": 19,
                             "column": 7,
-                            "program": "export_class_with_getters_setters.ets"
+                            "program": "export_class_with_getters_setters.sts"
                           }
                         }
                       }
@@ -417,12 +417,12 @@
                       "start": {
                         "line": 19,
                         "column": 3,
-                        "program": "export_class_with_getters_setters.ets"
+                        "program": "export_class_with_getters_setters.sts"
                       },
                       "end": {
                         "line": 20,
                         "column": 2,
-                        "program": "export_class_with_getters_setters.ets"
+                        "program": "export_class_with_getters_setters.sts"
                       }
                     }
                   },
@@ -430,12 +430,12 @@
                     "start": {
                       "line": 19,
                       "column": 3,
-                      "program": "export_class_with_getters_setters.ets"
+                      "program": "export_class_with_getters_setters.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 2,
-                      "program": "export_class_with_getters_setters.ets"
+                      "program": "export_class_with_getters_setters.sts"
                     }
                   }
                 },
@@ -445,12 +445,12 @@
                   "start": {
                     "line": 19,
                     "column": 3,
-                    "program": "export_class_with_getters_setters.ets"
+                    "program": "export_class_with_getters_setters.sts"
                   },
                   "end": {
                     "line": 20,
                     "column": 2,
-                    "program": "export_class_with_getters_setters.ets"
+                    "program": "export_class_with_getters_setters.sts"
                   }
                 }
               }
@@ -460,12 +460,12 @@
               "start": {
                 "line": 19,
                 "column": 3,
-                "program": "export_class_with_getters_setters.ets"
+                "program": "export_class_with_getters_setters.sts"
               },
               "end": {
                 "line": 20,
                 "column": 2,
-                "program": "export_class_with_getters_setters.ets"
+                "program": "export_class_with_getters_setters.sts"
               }
             }
           },
@@ -535,12 +535,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 9,
-                                "program": "export_class_with_getters_setters.ets"
+                                "program": "export_class_with_getters_setters.sts"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 18,
-                                "program": "export_class_with_getters_setters.ets"
+                                "program": "export_class_with_getters_setters.sts"
                               }
                             }
                           },
@@ -548,12 +548,12 @@
                             "start": {
                               "line": 19,
                               "column": 9,
-                              "program": "export_class_with_getters_setters.ets"
+                              "program": "export_class_with_getters_setters.sts"
                             },
                             "end": {
                               "line": 20,
                               "column": 2,
-                              "program": "export_class_with_getters_setters.ets"
+                              "program": "export_class_with_getters_setters.sts"
                             }
                           }
                         },
@@ -561,12 +561,12 @@
                           "start": {
                             "line": 19,
                             "column": 9,
-                            "program": "export_class_with_getters_setters.ets"
+                            "program": "export_class_with_getters_setters.sts"
                           },
                           "end": {
                             "line": 20,
                             "column": 2,
-                            "program": "export_class_with_getters_setters.ets"
+                            "program": "export_class_with_getters_setters.sts"
                           }
                         }
                       },
@@ -575,12 +575,12 @@
                         "start": {
                           "line": 19,
                           "column": 3,
-                          "program": "export_class_with_getters_setters.ets"
+                          "program": "export_class_with_getters_setters.sts"
                         },
                         "end": {
                           "line": 19,
                           "column": 7,
-                          "program": "export_class_with_getters_setters.ets"
+                          "program": "export_class_with_getters_setters.sts"
                         }
                       }
                     },
@@ -588,12 +588,12 @@
                       "start": {
                         "line": 19,
                         "column": 3,
-                        "program": "export_class_with_getters_setters.ets"
+                        "program": "export_class_with_getters_setters.sts"
                       },
                       "end": {
                         "line": 19,
                         "column": 7,
-                        "program": "export_class_with_getters_setters.ets"
+                        "program": "export_class_with_getters_setters.sts"
                       }
                     }
                   }
@@ -602,12 +602,12 @@
                   "start": {
                     "line": 19,
                     "column": 3,
-                    "program": "export_class_with_getters_setters.ets"
+                    "program": "export_class_with_getters_setters.sts"
                   },
                   "end": {
                     "line": 20,
                     "column": 2,
-                    "program": "export_class_with_getters_setters.ets"
+                    "program": "export_class_with_getters_setters.sts"
                   }
                 }
               },
@@ -615,12 +615,12 @@
                 "start": {
                   "line": 19,
                   "column": 3,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 2,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 }
               }
             },
@@ -630,12 +630,12 @@
               "start": {
                 "line": 19,
                 "column": 3,
-                "program": "export_class_with_getters_setters.ets"
+                "program": "export_class_with_getters_setters.sts"
               },
               "end": {
                 "line": 20,
                 "column": 2,
-                "program": "export_class_with_getters_setters.ets"
+                "program": "export_class_with_getters_setters.sts"
               }
             }
           }
@@ -644,12 +644,12 @@
           "start": {
             "line": 18,
             "column": 24,
-            "program": "export_class_with_getters_setters.ets"
+            "program": "export_class_with_getters_setters.sts"
           },
           "end": {
             "line": 20,
             "column": 2,
-            "program": "export_class_with_getters_setters.ets"
+            "program": "export_class_with_getters_setters.sts"
           }
         }
       },
@@ -661,12 +661,12 @@
           "start": {
             "line": 18,
             "column": 11,
-            "program": "export_class_with_getters_setters.ets"
+            "program": "export_class_with_getters_setters.sts"
           },
           "end": {
             "line": 18,
             "column": 23,
-            "program": "export_class_with_getters_setters.ets"
+            "program": "export_class_with_getters_setters.sts"
           }
         }
       },
@@ -675,12 +675,12 @@
         "start": {
           "line": 18,
           "column": 1,
-          "program": "export_class_with_getters_setters.ets"
+          "program": "export_class_with_getters_setters.sts"
         },
         "end": {
           "line": 22,
           "column": 7,
-          "program": "export_class_with_getters_setters.ets"
+          "program": "export_class_with_getters_setters.sts"
         }
       }
     },
@@ -695,12 +695,12 @@
             "start": {
               "line": 22,
               "column": 14,
-              "program": "export_class_with_getters_setters.ets"
+              "program": "export_class_with_getters_setters.sts"
             },
             "end": {
               "line": 22,
               "column": 23,
-              "program": "export_class_with_getters_setters.ets"
+              "program": "export_class_with_getters_setters.sts"
             }
           }
         },
@@ -720,12 +720,12 @@
                     "start": {
                       "line": 22,
                       "column": 35,
-                      "program": "export_class_with_getters_setters.ets"
+                      "program": "export_class_with_getters_setters.sts"
                     },
                     "end": {
                       "line": 22,
                       "column": 47,
-                      "program": "export_class_with_getters_setters.ets"
+                      "program": "export_class_with_getters_setters.sts"
                     }
                   }
                 },
@@ -733,12 +733,12 @@
                   "start": {
                     "line": 22,
                     "column": 35,
-                    "program": "export_class_with_getters_setters.ets"
+                    "program": "export_class_with_getters_setters.sts"
                   },
                   "end": {
                     "line": 22,
                     "column": 49,
-                    "program": "export_class_with_getters_setters.ets"
+                    "program": "export_class_with_getters_setters.sts"
                   }
                 }
               },
@@ -746,12 +746,12 @@
                 "start": {
                   "line": 22,
                   "column": 35,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 },
                 "end": {
                   "line": 22,
                   "column": 49,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 }
               }
             },
@@ -759,12 +759,12 @@
               "start": {
                 "line": 22,
                 "column": 35,
-                "program": "export_class_with_getters_setters.ets"
+                "program": "export_class_with_getters_setters.sts"
               },
               "end": {
                 "line": 22,
                 "column": 49,
-                "program": "export_class_with_getters_setters.ets"
+                "program": "export_class_with_getters_setters.sts"
               }
             }
           }
@@ -780,12 +780,12 @@
                 "start": {
                   "line": 23,
                   "column": 3,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 },
                 "end": {
                   "line": 23,
                   "column": 7,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 }
               }
             },
@@ -803,12 +803,12 @@
                       "start": {
                         "line": 23,
                         "column": 25,
-                        "program": "export_class_with_getters_setters.ets"
+                        "program": "export_class_with_getters_setters.sts"
                       },
                       "end": {
                         "line": 23,
                         "column": 34,
-                        "program": "export_class_with_getters_setters.ets"
+                        "program": "export_class_with_getters_setters.sts"
                       }
                     }
                   },
@@ -816,12 +816,12 @@
                     "start": {
                       "line": 23,
                       "column": 25,
-                      "program": "export_class_with_getters_setters.ets"
+                      "program": "export_class_with_getters_setters.sts"
                     },
                     "end": {
                       "line": 23,
                       "column": 35,
-                      "program": "export_class_with_getters_setters.ets"
+                      "program": "export_class_with_getters_setters.sts"
                     }
                   }
                 },
@@ -829,12 +829,12 @@
                   "start": {
                     "line": 23,
                     "column": 25,
-                    "program": "export_class_with_getters_setters.ets"
+                    "program": "export_class_with_getters_setters.sts"
                   },
                   "end": {
                     "line": 23,
                     "column": 35,
-                    "program": "export_class_with_getters_setters.ets"
+                    "program": "export_class_with_getters_setters.sts"
                   }
                 }
               },
@@ -843,12 +843,12 @@
                 "start": {
                   "line": 23,
                   "column": 21,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 },
                 "end": {
                   "line": 24,
                   "column": 2,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 }
               }
             },
@@ -870,12 +870,12 @@
                     "start": {
                       "line": 23,
                       "column": 9,
-                      "program": "export_class_with_getters_setters.ets"
+                      "program": "export_class_with_getters_setters.sts"
                     },
                     "end": {
                       "line": 23,
                       "column": 18,
-                      "program": "export_class_with_getters_setters.ets"
+                      "program": "export_class_with_getters_setters.sts"
                     }
                   }
                 },
@@ -883,12 +883,12 @@
                   "start": {
                     "line": 23,
                     "column": 9,
-                    "program": "export_class_with_getters_setters.ets"
+                    "program": "export_class_with_getters_setters.sts"
                   },
                   "end": {
                     "line": 23,
                     "column": 20,
-                    "program": "export_class_with_getters_setters.ets"
+                    "program": "export_class_with_getters_setters.sts"
                   }
                 }
               },
@@ -896,12 +896,12 @@
                 "start": {
                   "line": 23,
                   "column": 9,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 },
                 "end": {
                   "line": 23,
                   "column": 20,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 }
               }
             },
@@ -911,12 +911,12 @@
               "start": {
                 "line": 23,
                 "column": 3,
-                "program": "export_class_with_getters_setters.ets"
+                "program": "export_class_with_getters_setters.sts"
               },
               "end": {
                 "line": 24,
                 "column": 2,
-                "program": "export_class_with_getters_setters.ets"
+                "program": "export_class_with_getters_setters.sts"
               }
             }
           },
@@ -930,12 +930,12 @@
                 "start": {
                   "line": 22,
                   "column": 49,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 },
                 "end": {
                   "line": 22,
                   "column": 49,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 }
               }
             },
@@ -955,12 +955,12 @@
                     "start": {
                       "line": 22,
                       "column": 49,
-                      "program": "export_class_with_getters_setters.ets"
+                      "program": "export_class_with_getters_setters.sts"
                     },
                     "end": {
                       "line": 22,
                       "column": 49,
-                      "program": "export_class_with_getters_setters.ets"
+                      "program": "export_class_with_getters_setters.sts"
                     }
                   }
                 },
@@ -975,12 +975,12 @@
                     "start": {
                       "line": 22,
                       "column": 49,
-                      "program": "export_class_with_getters_setters.ets"
+                      "program": "export_class_with_getters_setters.sts"
                     },
                     "end": {
                       "line": 22,
                       "column": 49,
-                      "program": "export_class_with_getters_setters.ets"
+                      "program": "export_class_with_getters_setters.sts"
                     }
                   }
                 },
@@ -988,12 +988,12 @@
                   "start": {
                     "line": 22,
                     "column": 49,
-                    "program": "export_class_with_getters_setters.ets"
+                    "program": "export_class_with_getters_setters.sts"
                   },
                   "end": {
                     "line": 22,
                     "column": 49,
-                    "program": "export_class_with_getters_setters.ets"
+                    "program": "export_class_with_getters_setters.sts"
                   }
                 }
               },
@@ -1001,12 +1001,12 @@
                 "start": {
                   "line": 22,
                   "column": 49,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 },
                 "end": {
                   "line": 22,
                   "column": 49,
-                  "program": "export_class_with_getters_setters.ets"
+                  "program": "export_class_with_getters_setters.sts"
                 }
               }
             },
@@ -1030,12 +1030,12 @@
           "start": {
             "line": 22,
             "column": 48,
-            "program": "export_class_with_getters_setters.ets"
+            "program": "export_class_with_getters_setters.sts"
           },
           "end": {
             "line": 25,
             "column": 1,
-            "program": "export_class_with_getters_setters.ets"
+            "program": "export_class_with_getters_setters.sts"
           }
         }
       },
@@ -1043,12 +1043,12 @@
         "start": {
           "line": 22,
           "column": 8,
-          "program": "export_class_with_getters_setters.ets"
+          "program": "export_class_with_getters_setters.sts"
         },
         "end": {
           "line": 25,
           "column": 1,
-          "program": "export_class_with_getters_setters.ets"
+          "program": "export_class_with_getters_setters.sts"
         }
       }
     },
@@ -1063,12 +1063,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "export_class_with_getters_setters.ets"
+              "program": "export_class_with_getters_setters.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "export_class_with_getters_setters.ets"
+              "program": "export_class_with_getters_setters.sts"
             }
           }
         },
@@ -1172,12 +1172,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "export_class_with_getters_setters.ets"
+                "program": "export_class_with_getters_setters.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "export_class_with_getters_setters.ets"
+                "program": "export_class_with_getters_setters.sts"
               }
             }
           },
@@ -1278,12 +1278,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "export_class_with_getters_setters.ets"
+                "program": "export_class_with_getters_setters.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "export_class_with_getters_setters.ets"
+                "program": "export_class_with_getters_setters.sts"
               }
             }
           }
@@ -1292,12 +1292,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "export_class_with_getters_setters.ets"
+            "program": "export_class_with_getters_setters.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "export_class_with_getters_setters.ets"
+            "program": "export_class_with_getters_setters.sts"
           }
         }
       },
@@ -1305,12 +1305,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "export_class_with_getters_setters.ets"
+          "program": "export_class_with_getters_setters.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "export_class_with_getters_setters.ets"
+          "program": "export_class_with_getters_setters.sts"
         }
       }
     }
@@ -1319,12 +1319,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "export_class_with_getters_setters.ets"
+      "program": "export_class_with_getters_setters.sts"
     },
     "end": {
       "line": 25,
       "column": 1,
-      "program": "export_class_with_getters_setters.ets"
+      "program": "export_class_with_getters_setters.sts"
     }
   }
 }

@@ -556,7 +556,7 @@ ir::Expression *ParserImpl::ParseAssignmentExpressionHelper()
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
         if (lexer::Token::IsPunctuatorToken(lexer_->GetToken().Type())) {
             // typo happened like ';'
-            // unexpected_token_41.ets - bad test
+            // unexpected_token_41.sts - bad test
             LogExpectedToken(lexer::TokenType::PUNCTUATOR_COLON);
             lexer_->NextToken();  // eat ':'
         } else {
@@ -2022,8 +2022,8 @@ ir::Expression *ParserImpl::ParsePropertyKey(ExpressionParseFlags flags)
             key = ParseExpression(flags | ExpressionParseFlags::ACCEPT_COMMA);
 
             if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
-                // the same test for ts, ets and js extension
-                // unexpected_token_52.ets
+                // the same test for ts, sts and js extension
+                // unexpected_token_52.sts
                 LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
             }
             lexer_->NextToken();

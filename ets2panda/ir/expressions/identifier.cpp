@@ -75,7 +75,7 @@ Identifier *Identifier::Clone(ArenaAllocator *const allocator, AstNode *const pa
 Identifier *Identifier::CloneReference(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const clone = Clone(allocator, parent);
-    if (clone->IsReference(ScriptExtension::ETS)) {
+    if (clone->IsReference(ScriptExtension::STS)) {
         clone->SetTsTypeAnnotation(nullptr);
     }
     return clone;

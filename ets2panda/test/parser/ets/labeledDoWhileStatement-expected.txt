@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "labeledDoWhileStatement.ets"
+              "program": "labeledDoWhileStatement.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "labeledDoWhileStatement.ets"
+              "program": "labeledDoWhileStatement.sts"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "labeledDoWhileStatement.ets"
+                "program": "labeledDoWhileStatement.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "labeledDoWhileStatement.ets"
+                "program": "labeledDoWhileStatement.sts"
               }
             }
           },
@@ -227,12 +227,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "labeledDoWhileStatement.ets"
+                "program": "labeledDoWhileStatement.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "labeledDoWhileStatement.ets"
+                "program": "labeledDoWhileStatement.sts"
               }
             }
           },
@@ -246,12 +246,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "labeledDoWhileStatement.ets"
+                  "program": "labeledDoWhileStatement.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 30,
-                  "program": "labeledDoWhileStatement.ets"
+                  "program": "labeledDoWhileStatement.sts"
                 }
               }
             },
@@ -272,12 +272,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "labeledDoWhileStatement.ets"
+                      "program": "labeledDoWhileStatement.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 30,
-                      "program": "labeledDoWhileStatement.ets"
+                      "program": "labeledDoWhileStatement.sts"
                     }
                   }
                 },
@@ -291,12 +291,12 @@
                     "start": {
                       "line": 16,
                       "column": 34,
-                      "program": "labeledDoWhileStatement.ets"
+                      "program": "labeledDoWhileStatement.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 38,
-                      "program": "labeledDoWhileStatement.ets"
+                      "program": "labeledDoWhileStatement.sts"
                     }
                   }
                 },
@@ -316,12 +316,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 7,
-                                "program": "labeledDoWhileStatement.ets"
+                                "program": "labeledDoWhileStatement.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 8,
-                                "program": "labeledDoWhileStatement.ets"
+                                "program": "labeledDoWhileStatement.sts"
                               }
                             }
                           },
@@ -332,12 +332,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 11,
-                                "program": "labeledDoWhileStatement.ets"
+                                "program": "labeledDoWhileStatement.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 12,
-                                "program": "labeledDoWhileStatement.ets"
+                                "program": "labeledDoWhileStatement.sts"
                               }
                             }
                           },
@@ -345,12 +345,12 @@
                             "start": {
                               "line": 17,
                               "column": 7,
-                              "program": "labeledDoWhileStatement.ets"
+                              "program": "labeledDoWhileStatement.sts"
                             },
                             "end": {
                               "line": 17,
                               "column": 12,
-                              "program": "labeledDoWhileStatement.ets"
+                              "program": "labeledDoWhileStatement.sts"
                             }
                           }
                         }
@@ -360,12 +360,12 @@
                         "start": {
                           "line": 17,
                           "column": 3,
-                          "program": "labeledDoWhileStatement.ets"
+                          "program": "labeledDoWhileStatement.sts"
                         },
                         "end": {
                           "line": 17,
                           "column": 13,
-                          "program": "labeledDoWhileStatement.ets"
+                          "program": "labeledDoWhileStatement.sts"
                         }
                       }
                     },
@@ -379,12 +379,12 @@
                           "start": {
                             "line": 19,
                             "column": 3,
-                            "program": "labeledDoWhileStatement.ets"
+                            "program": "labeledDoWhileStatement.sts"
                           },
                           "end": {
                             "line": 19,
                             "column": 9,
-                            "program": "labeledDoWhileStatement.ets"
+                            "program": "labeledDoWhileStatement.sts"
                           }
                         }
                       },
@@ -406,12 +406,12 @@
                                     "start": {
                                       "line": 21,
                                       "column": 5,
-                                      "program": "labeledDoWhileStatement.ets"
+                                      "program": "labeledDoWhileStatement.sts"
                                     },
                                     "end": {
                                       "line": 21,
                                       "column": 6,
-                                      "program": "labeledDoWhileStatement.ets"
+                                      "program": "labeledDoWhileStatement.sts"
                                     }
                                   }
                                 },
@@ -422,12 +422,12 @@
                                     "start": {
                                       "line": 21,
                                       "column": 10,
-                                      "program": "labeledDoWhileStatement.ets"
+                                      "program": "labeledDoWhileStatement.sts"
                                     },
                                     "end": {
                                       "line": 21,
                                       "column": 11,
-                                      "program": "labeledDoWhileStatement.ets"
+                                      "program": "labeledDoWhileStatement.sts"
                                     }
                                   }
                                 },
@@ -435,12 +435,12 @@
                                   "start": {
                                     "line": 21,
                                     "column": 5,
-                                    "program": "labeledDoWhileStatement.ets"
+                                    "program": "labeledDoWhileStatement.sts"
                                   },
                                   "end": {
                                     "line": 21,
                                     "column": 11,
-                                    "program": "labeledDoWhileStatement.ets"
+                                    "program": "labeledDoWhileStatement.sts"
                                   }
                                 }
                               },
@@ -448,12 +448,12 @@
                                 "start": {
                                   "line": 21,
                                   "column": 5,
-                                  "program": "labeledDoWhileStatement.ets"
+                                  "program": "labeledDoWhileStatement.sts"
                                 },
                                 "end": {
                                   "line": 21,
                                   "column": 12,
-                                  "program": "labeledDoWhileStatement.ets"
+                                  "program": "labeledDoWhileStatement.sts"
                                 }
                               }
                             },
@@ -473,12 +473,12 @@
                                       "start": {
                                         "line": 22,
                                         "column": 9,
-                                        "program": "labeledDoWhileStatement.ets"
+                                        "program": "labeledDoWhileStatement.sts"
                                       },
                                       "end": {
                                         "line": 22,
                                         "column": 10,
-                                        "program": "labeledDoWhileStatement.ets"
+                                        "program": "labeledDoWhileStatement.sts"
                                       }
                                     }
                                   },
@@ -489,12 +489,12 @@
                                       "start": {
                                         "line": 22,
                                         "column": 13,
-                                        "program": "labeledDoWhileStatement.ets"
+                                        "program": "labeledDoWhileStatement.sts"
                                       },
                                       "end": {
                                         "line": 22,
                                         "column": 14,
-                                        "program": "labeledDoWhileStatement.ets"
+                                        "program": "labeledDoWhileStatement.sts"
                                       }
                                     }
                                   },
@@ -502,12 +502,12 @@
                                     "start": {
                                       "line": 22,
                                       "column": 9,
-                                      "program": "labeledDoWhileStatement.ets"
+                                      "program": "labeledDoWhileStatement.sts"
                                     },
                                     "end": {
                                       "line": 22,
                                       "column": 14,
-                                      "program": "labeledDoWhileStatement.ets"
+                                      "program": "labeledDoWhileStatement.sts"
                                     }
                                   }
                                 },
@@ -518,12 +518,12 @@
                                     "start": {
                                       "line": 22,
                                       "column": 18,
-                                      "program": "labeledDoWhileStatement.ets"
+                                      "program": "labeledDoWhileStatement.sts"
                                     },
                                     "end": {
                                       "line": 22,
                                       "column": 19,
-                                      "program": "labeledDoWhileStatement.ets"
+                                      "program": "labeledDoWhileStatement.sts"
                                     }
                                   }
                                 },
@@ -531,12 +531,12 @@
                                   "start": {
                                     "line": 22,
                                     "column": 9,
-                                    "program": "labeledDoWhileStatement.ets"
+                                    "program": "labeledDoWhileStatement.sts"
                                   },
                                   "end": {
                                     "line": 22,
                                     "column": 19,
-                                    "program": "labeledDoWhileStatement.ets"
+                                    "program": "labeledDoWhileStatement.sts"
                                   }
                                 }
                               },
@@ -553,12 +553,12 @@
                                         "start": {
                                           "line": 23,
                                           "column": 16,
-                                          "program": "labeledDoWhileStatement.ets"
+                                          "program": "labeledDoWhileStatement.sts"
                                         },
                                         "end": {
                                           "line": 23,
                                           "column": 22,
-                                          "program": "labeledDoWhileStatement.ets"
+                                          "program": "labeledDoWhileStatement.sts"
                                         }
                                       }
                                     },
@@ -566,12 +566,12 @@
                                       "start": {
                                         "line": 23,
                                         "column": 7,
-                                        "program": "labeledDoWhileStatement.ets"
+                                        "program": "labeledDoWhileStatement.sts"
                                       },
                                       "end": {
                                         "line": 23,
                                         "column": 23,
-                                        "program": "labeledDoWhileStatement.ets"
+                                        "program": "labeledDoWhileStatement.sts"
                                       }
                                     }
                                   }
@@ -580,12 +580,12 @@
                                   "start": {
                                     "line": 22,
                                     "column": 21,
-                                    "program": "labeledDoWhileStatement.ets"
+                                    "program": "labeledDoWhileStatement.sts"
                                   },
                                   "end": {
                                     "line": 24,
                                     "column": 6,
-                                    "program": "labeledDoWhileStatement.ets"
+                                    "program": "labeledDoWhileStatement.sts"
                                   }
                                 }
                               },
@@ -602,12 +602,12 @@
                                         "start": {
                                           "line": 25,
                                           "column": 13,
-                                          "program": "labeledDoWhileStatement.ets"
+                                          "program": "labeledDoWhileStatement.sts"
                                         },
                                         "end": {
                                           "line": 25,
                                           "column": 19,
-                                          "program": "labeledDoWhileStatement.ets"
+                                          "program": "labeledDoWhileStatement.sts"
                                         }
                                       }
                                     },
@@ -615,12 +615,12 @@
                                       "start": {
                                         "line": 25,
                                         "column": 7,
-                                        "program": "labeledDoWhileStatement.ets"
+                                        "program": "labeledDoWhileStatement.sts"
                                       },
                                       "end": {
                                         "line": 25,
                                         "column": 20,
-                                        "program": "labeledDoWhileStatement.ets"
+                                        "program": "labeledDoWhileStatement.sts"
                                       }
                                     }
                                   }
@@ -629,12 +629,12 @@
                                   "start": {
                                     "line": 24,
                                     "column": 12,
-                                    "program": "labeledDoWhileStatement.ets"
+                                    "program": "labeledDoWhileStatement.sts"
                                   },
                                   "end": {
                                     "line": 26,
                                     "column": 6,
-                                    "program": "labeledDoWhileStatement.ets"
+                                    "program": "labeledDoWhileStatement.sts"
                                   }
                                 }
                               },
@@ -642,12 +642,12 @@
                                 "start": {
                                   "line": 22,
                                   "column": 5,
-                                  "program": "labeledDoWhileStatement.ets"
+                                  "program": "labeledDoWhileStatement.sts"
                                 },
                                 "end": {
                                   "line": 26,
                                   "column": 6,
-                                  "program": "labeledDoWhileStatement.ets"
+                                  "program": "labeledDoWhileStatement.sts"
                                 }
                               }
                             }
@@ -656,12 +656,12 @@
                             "start": {
                               "line": 20,
                               "column": 6,
-                              "program": "labeledDoWhileStatement.ets"
+                              "program": "labeledDoWhileStatement.sts"
                             },
                             "end": {
                               "line": 27,
                               "column": 4,
-                              "program": "labeledDoWhileStatement.ets"
+                              "program": "labeledDoWhileStatement.sts"
                             }
                           }
                         },
@@ -676,12 +676,12 @@
                               "start": {
                                 "line": 27,
                                 "column": 12,
-                                "program": "labeledDoWhileStatement.ets"
+                                "program": "labeledDoWhileStatement.sts"
                               },
                               "end": {
                                 "line": 27,
                                 "column": 13,
-                                "program": "labeledDoWhileStatement.ets"
+                                "program": "labeledDoWhileStatement.sts"
                               }
                             }
                           },
@@ -692,12 +692,12 @@
                               "start": {
                                 "line": 27,
                                 "column": 16,
-                                "program": "labeledDoWhileStatement.ets"
+                                "program": "labeledDoWhileStatement.sts"
                               },
                               "end": {
                                 "line": 27,
                                 "column": 18,
-                                "program": "labeledDoWhileStatement.ets"
+                                "program": "labeledDoWhileStatement.sts"
                               }
                             }
                           },
@@ -705,12 +705,12 @@
                             "start": {
                               "line": 27,
                               "column": 12,
-                              "program": "labeledDoWhileStatement.ets"
+                              "program": "labeledDoWhileStatement.sts"
                             },
                             "end": {
                               "line": 27,
                               "column": 18,
-                              "program": "labeledDoWhileStatement.ets"
+                              "program": "labeledDoWhileStatement.sts"
                             }
                           }
                         },
@@ -718,12 +718,12 @@
                           "start": {
                             "line": 20,
                             "column": 3,
-                            "program": "labeledDoWhileStatement.ets"
+                            "program": "labeledDoWhileStatement.sts"
                           },
                           "end": {
                             "line": 27,
                             "column": 19,
-                            "program": "labeledDoWhileStatement.ets"
+                            "program": "labeledDoWhileStatement.sts"
                           }
                         }
                       },
@@ -731,12 +731,12 @@
                         "start": {
                           "line": 19,
                           "column": 3,
-                          "program": "labeledDoWhileStatement.ets"
+                          "program": "labeledDoWhileStatement.sts"
                         },
                         "end": {
                           "line": 27,
                           "column": 19,
-                          "program": "labeledDoWhileStatement.ets"
+                          "program": "labeledDoWhileStatement.sts"
                         }
                       }
                     }
@@ -745,12 +745,12 @@
                     "start": {
                       "line": 16,
                       "column": 39,
-                      "program": "labeledDoWhileStatement.ets"
+                      "program": "labeledDoWhileStatement.sts"
                     },
                     "end": {
                       "line": 28,
                       "column": 2,
-                      "program": "labeledDoWhileStatement.ets"
+                      "program": "labeledDoWhileStatement.sts"
                     }
                   }
                 },
@@ -758,12 +758,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "labeledDoWhileStatement.ets"
+                    "program": "labeledDoWhileStatement.sts"
                   },
                   "end": {
                     "line": 28,
                     "column": 2,
-                    "program": "labeledDoWhileStatement.ets"
+                    "program": "labeledDoWhileStatement.sts"
                   }
                 }
               },
@@ -771,12 +771,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "labeledDoWhileStatement.ets"
+                  "program": "labeledDoWhileStatement.sts"
                 },
                 "end": {
                   "line": 28,
                   "column": 2,
-                  "program": "labeledDoWhileStatement.ets"
+                  "program": "labeledDoWhileStatement.sts"
                 }
               }
             },
@@ -786,12 +786,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "labeledDoWhileStatement.ets"
+                "program": "labeledDoWhileStatement.sts"
               },
               "end": {
                 "line": 28,
                 "column": 2,
-                "program": "labeledDoWhileStatement.ets"
+                "program": "labeledDoWhileStatement.sts"
               }
             }
           }
@@ -800,12 +800,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "labeledDoWhileStatement.ets"
+            "program": "labeledDoWhileStatement.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "labeledDoWhileStatement.ets"
+            "program": "labeledDoWhileStatement.sts"
           }
         }
       },
@@ -813,12 +813,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "labeledDoWhileStatement.ets"
+          "program": "labeledDoWhileStatement.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "labeledDoWhileStatement.ets"
+          "program": "labeledDoWhileStatement.sts"
         }
       }
     }
@@ -827,12 +827,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "labeledDoWhileStatement.ets"
+      "program": "labeledDoWhileStatement.sts"
     },
     "end": {
       "line": 29,
       "column": 1,
-      "program": "labeledDoWhileStatement.ets"
+      "program": "labeledDoWhileStatement.sts"
     }
   }
 }

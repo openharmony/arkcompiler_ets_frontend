@@ -12,12 +12,12 @@
             "start": {
               "line": 16,
               "column": 14,
-              "program": "unary_operations.ets"
+              "program": "unary_operations.sts"
             },
             "end": {
               "line": 16,
               "column": 30,
-              "program": "unary_operations.ets"
+              "program": "unary_operations.sts"
             }
           }
         },
@@ -34,12 +34,12 @@
                 "start": {
                   "line": 17,
                   "column": 13,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 17,
                   "column": 14,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -50,12 +50,12 @@
                 "start": {
                   "line": 17,
                   "column": 22,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 17,
                   "column": 23,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -71,12 +71,12 @@
                 "start": {
                   "line": 17,
                   "column": 16,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 17,
                   "column": 19,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -86,12 +86,12 @@
               "start": {
                 "line": 17,
                 "column": 13,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               },
               "end": {
                 "line": 17,
                 "column": 23,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               }
             }
           },
@@ -105,12 +105,12 @@
                 "start": {
                   "line": 18,
                   "column": 13,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 18,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -126,12 +126,12 @@
                     "start": {
                       "line": 18,
                       "column": 27,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 31,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     }
                   }
                 },
@@ -143,12 +143,12 @@
                     "start": {
                       "line": 18,
                       "column": 32,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 33,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     }
                   }
                 },
@@ -158,12 +158,12 @@
                   "start": {
                     "line": 18,
                     "column": 27,
-                    "program": "unary_operations.ets"
+                    "program": "unary_operations.sts"
                   },
                   "end": {
                     "line": 18,
                     "column": 33,
-                    "program": "unary_operations.ets"
+                    "program": "unary_operations.sts"
                   }
                 }
               },
@@ -171,12 +171,12 @@
                 "start": {
                   "line": 18,
                   "column": 26,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 33,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -192,12 +192,12 @@
                 "start": {
                   "line": 18,
                   "column": 20,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 23,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -207,12 +207,12 @@
               "start": {
                 "line": 18,
                 "column": 13,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               },
               "end": {
                 "line": 18,
                 "column": 33,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               }
             }
           },
@@ -226,12 +226,12 @@
                 "start": {
                   "line": 19,
                   "column": 13,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 19,
                   "column": 18,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -247,12 +247,12 @@
                     "start": {
                       "line": 19,
                       "column": 27,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     },
                     "end": {
                       "line": 19,
                       "column": 31,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     }
                   }
                 },
@@ -264,12 +264,12 @@
                     "start": {
                       "line": 19,
                       "column": 32,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     },
                     "end": {
                       "line": 19,
                       "column": 33,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     }
                   }
                 },
@@ -279,12 +279,12 @@
                   "start": {
                     "line": 19,
                     "column": 27,
-                    "program": "unary_operations.ets"
+                    "program": "unary_operations.sts"
                   },
                   "end": {
                     "line": 19,
                     "column": 33,
-                    "program": "unary_operations.ets"
+                    "program": "unary_operations.sts"
                   }
                 }
               },
@@ -292,12 +292,12 @@
                 "start": {
                   "line": 19,
                   "column": 26,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 19,
                   "column": 33,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -313,12 +313,12 @@
                 "start": {
                   "line": 19,
                   "column": 20,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 19,
                   "column": 23,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -328,12 +328,12 @@
               "start": {
                 "line": 19,
                 "column": 13,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               },
               "end": {
                 "line": 19,
                 "column": 33,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               }
             }
           },
@@ -347,12 +347,12 @@
                 "start": {
                   "line": 20,
                   "column": 13,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 18,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -368,12 +368,12 @@
                     "start": {
                       "line": 20,
                       "column": 28,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 32,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     }
                   }
                 },
@@ -385,12 +385,12 @@
                     "start": {
                       "line": 20,
                       "column": 33,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 34,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     }
                   }
                 },
@@ -400,12 +400,12 @@
                   "start": {
                     "line": 20,
                     "column": 28,
-                    "program": "unary_operations.ets"
+                    "program": "unary_operations.sts"
                   },
                   "end": {
                     "line": 20,
                     "column": 34,
-                    "program": "unary_operations.ets"
+                    "program": "unary_operations.sts"
                   }
                 }
               },
@@ -413,12 +413,12 @@
                 "start": {
                   "line": 20,
                   "column": 26,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 34,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -434,12 +434,12 @@
                 "start": {
                   "line": 20,
                   "column": 20,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 23,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -449,12 +449,12 @@
               "start": {
                 "line": 20,
                 "column": 13,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               },
               "end": {
                 "line": 20,
                 "column": 34,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               }
             }
           },
@@ -468,12 +468,12 @@
                 "start": {
                   "line": 21,
                   "column": 13,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 21,
                   "column": 18,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -489,12 +489,12 @@
                     "start": {
                       "line": 21,
                       "column": 28,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     },
                     "end": {
                       "line": 21,
                       "column": 32,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     }
                   }
                 },
@@ -506,12 +506,12 @@
                     "start": {
                       "line": 21,
                       "column": 33,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     },
                     "end": {
                       "line": 21,
                       "column": 34,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     }
                   }
                 },
@@ -521,12 +521,12 @@
                   "start": {
                     "line": 21,
                     "column": 28,
-                    "program": "unary_operations.ets"
+                    "program": "unary_operations.sts"
                   },
                   "end": {
                     "line": 21,
                     "column": 34,
-                    "program": "unary_operations.ets"
+                    "program": "unary_operations.sts"
                   }
                 }
               },
@@ -534,12 +534,12 @@
                 "start": {
                   "line": 21,
                   "column": 26,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 21,
                   "column": 34,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -555,12 +555,12 @@
                 "start": {
                   "line": 21,
                   "column": 20,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 21,
                   "column": 23,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -570,12 +570,12 @@
               "start": {
                 "line": 21,
                 "column": 13,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               },
               "end": {
                 "line": 21,
                 "column": 34,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               }
             }
           },
@@ -589,12 +589,12 @@
                 "start": {
                   "line": 22,
                   "column": 13,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 22,
                   "column": 18,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -610,12 +610,12 @@
                     "start": {
                       "line": 22,
                       "column": 27,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     },
                     "end": {
                       "line": 22,
                       "column": 31,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     }
                   }
                 },
@@ -627,12 +627,12 @@
                     "start": {
                       "line": 22,
                       "column": 32,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     },
                     "end": {
                       "line": 22,
                       "column": 33,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     }
                   }
                 },
@@ -642,12 +642,12 @@
                   "start": {
                     "line": 22,
                     "column": 27,
-                    "program": "unary_operations.ets"
+                    "program": "unary_operations.sts"
                   },
                   "end": {
                     "line": 22,
                     "column": 33,
-                    "program": "unary_operations.ets"
+                    "program": "unary_operations.sts"
                   }
                 }
               },
@@ -655,12 +655,12 @@
                 "start": {
                   "line": 22,
                   "column": 26,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 22,
                   "column": 33,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -676,12 +676,12 @@
                 "start": {
                   "line": 22,
                   "column": 20,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 22,
                   "column": 23,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -691,12 +691,12 @@
               "start": {
                 "line": 22,
                 "column": 13,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               },
               "end": {
                 "line": 22,
                 "column": 33,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               }
             }
           },
@@ -710,12 +710,12 @@
                 "start": {
                   "line": 23,
                   "column": 13,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 23,
                   "column": 14,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -726,12 +726,12 @@
                 "start": {
                   "line": 23,
                   "column": 26,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 23,
                   "column": 31,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -747,12 +747,12 @@
                 "start": {
                   "line": 23,
                   "column": 16,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 23,
                   "column": 23,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -762,12 +762,12 @@
               "start": {
                 "line": 23,
                 "column": 13,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               },
               "end": {
                 "line": 23,
                 "column": 31,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               }
             }
           },
@@ -781,12 +781,12 @@
                 "start": {
                   "line": 24,
                   "column": 13,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 24,
                   "column": 18,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -802,12 +802,12 @@
                     "start": {
                       "line": 24,
                       "column": 31,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     },
                     "end": {
                       "line": 24,
                       "column": 35,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     }
                   }
                 },
@@ -819,12 +819,12 @@
                     "start": {
                       "line": 24,
                       "column": 36,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     },
                     "end": {
                       "line": 24,
                       "column": 37,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     }
                   }
                 },
@@ -834,12 +834,12 @@
                   "start": {
                     "line": 24,
                     "column": 31,
-                    "program": "unary_operations.ets"
+                    "program": "unary_operations.sts"
                   },
                   "end": {
                     "line": 24,
                     "column": 37,
-                    "program": "unary_operations.ets"
+                    "program": "unary_operations.sts"
                   }
                 }
               },
@@ -847,12 +847,12 @@
                 "start": {
                   "line": 24,
                   "column": 30,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 24,
                   "column": 37,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -868,12 +868,12 @@
                 "start": {
                   "line": 24,
                   "column": 20,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 24,
                   "column": 27,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -883,12 +883,12 @@
               "start": {
                 "line": 24,
                 "column": 13,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               },
               "end": {
                 "line": 24,
                 "column": 37,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               }
             }
           },
@@ -902,12 +902,12 @@
                 "start": {
                   "line": 25,
                   "column": 13,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 25,
                   "column": 18,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -923,12 +923,12 @@
                     "start": {
                       "line": 25,
                       "column": 26,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     },
                     "end": {
                       "line": 25,
                       "column": 30,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     }
                   }
                 },
@@ -940,12 +940,12 @@
                     "start": {
                       "line": 25,
                       "column": 31,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     },
                     "end": {
                       "line": 25,
                       "column": 32,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     }
                   }
                 },
@@ -955,12 +955,12 @@
                   "start": {
                     "line": 25,
                     "column": 26,
-                    "program": "unary_operations.ets"
+                    "program": "unary_operations.sts"
                   },
                   "end": {
                     "line": 25,
                     "column": 32,
-                    "program": "unary_operations.ets"
+                    "program": "unary_operations.sts"
                   }
                 }
               },
@@ -968,12 +968,12 @@
                 "start": {
                   "line": 25,
                   "column": 26,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 25,
                   "column": 34,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -989,12 +989,12 @@
                 "start": {
                   "line": 25,
                   "column": 20,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 25,
                   "column": 23,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -1004,12 +1004,12 @@
               "start": {
                 "line": 25,
                 "column": 13,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               },
               "end": {
                 "line": 25,
                 "column": 34,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               }
             }
           },
@@ -1023,12 +1023,12 @@
                 "start": {
                   "line": 26,
                   "column": 13,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 26,
                   "column": 18,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -1044,12 +1044,12 @@
                     "start": {
                       "line": 26,
                       "column": 26,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     },
                     "end": {
                       "line": 26,
                       "column": 30,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     }
                   }
                 },
@@ -1061,12 +1061,12 @@
                     "start": {
                       "line": 26,
                       "column": 31,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     },
                     "end": {
                       "line": 26,
                       "column": 32,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     }
                   }
                 },
@@ -1076,12 +1076,12 @@
                   "start": {
                     "line": 26,
                     "column": 26,
-                    "program": "unary_operations.ets"
+                    "program": "unary_operations.sts"
                   },
                   "end": {
                     "line": 26,
                     "column": 32,
-                    "program": "unary_operations.ets"
+                    "program": "unary_operations.sts"
                   }
                 }
               },
@@ -1089,12 +1089,12 @@
                 "start": {
                   "line": 26,
                   "column": 26,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 26,
                   "column": 34,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -1110,12 +1110,12 @@
                 "start": {
                   "line": 26,
                   "column": 20,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 26,
                   "column": 23,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -1125,12 +1125,12 @@
               "start": {
                 "line": 26,
                 "column": 13,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               },
               "end": {
                 "line": 26,
                 "column": 34,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               }
             }
           },
@@ -1144,12 +1144,12 @@
                 "start": {
                   "line": 16,
                   "column": 33,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 33,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -1169,12 +1169,12 @@
                     "start": {
                       "line": 16,
                       "column": 33,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 33,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     }
                   }
                 },
@@ -1189,12 +1189,12 @@
                     "start": {
                       "line": 16,
                       "column": 33,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 33,
-                      "program": "unary_operations.ets"
+                      "program": "unary_operations.sts"
                     }
                   }
                 },
@@ -1202,12 +1202,12 @@
                   "start": {
                     "line": 16,
                     "column": 33,
-                    "program": "unary_operations.ets"
+                    "program": "unary_operations.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 33,
-                    "program": "unary_operations.ets"
+                    "program": "unary_operations.sts"
                   }
                 }
               },
@@ -1215,12 +1215,12 @@
                 "start": {
                   "line": 16,
                   "column": 33,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 33,
-                  "program": "unary_operations.ets"
+                  "program": "unary_operations.sts"
                 }
               }
             },
@@ -1244,12 +1244,12 @@
           "start": {
             "line": 16,
             "column": 32,
-            "program": "unary_operations.ets"
+            "program": "unary_operations.sts"
           },
           "end": {
             "line": 28,
             "column": 1,
-            "program": "unary_operations.ets"
+            "program": "unary_operations.sts"
           }
         }
       },
@@ -1257,12 +1257,12 @@
         "start": {
           "line": 16,
           "column": 8,
-          "program": "unary_operations.ets"
+          "program": "unary_operations.sts"
         },
         "end": {
           "line": 28,
           "column": 1,
-          "program": "unary_operations.ets"
+          "program": "unary_operations.sts"
         }
       }
     },
@@ -1277,12 +1277,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "unary_operations.ets"
+              "program": "unary_operations.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "unary_operations.ets"
+              "program": "unary_operations.sts"
             }
           }
         },
@@ -1386,12 +1386,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               }
             }
           },
@@ -1492,12 +1492,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "unary_operations.ets"
+                "program": "unary_operations.sts"
               }
             }
           }
@@ -1506,12 +1506,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "unary_operations.ets"
+            "program": "unary_operations.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "unary_operations.ets"
+            "program": "unary_operations.sts"
           }
         }
       },
@@ -1519,12 +1519,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "unary_operations.ets"
+          "program": "unary_operations.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "unary_operations.ets"
+          "program": "unary_operations.sts"
         }
       }
     }
@@ -1533,12 +1533,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "unary_operations.ets"
+      "program": "unary_operations.sts"
     },
     "end": {
       "line": 28,
       "column": 1,
-      "program": "unary_operations.ets"
+      "program": "unary_operations.sts"
     }
   }
 }

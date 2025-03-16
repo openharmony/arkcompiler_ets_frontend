@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "Dollar_dollar_1.ets"
+              "program": "Dollar_dollar_1.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "Dollar_dollar_1.ets"
+              "program": "Dollar_dollar_1.sts"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "Dollar_dollar_1.ets"
+                "program": "Dollar_dollar_1.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "Dollar_dollar_1.ets"
+                "program": "Dollar_dollar_1.sts"
               }
             }
           },
@@ -195,12 +195,12 @@
                             "start": {
                               "line": 16,
                               "column": 5,
-                              "program": "Dollar_dollar_1.ets"
+                              "program": "Dollar_dollar_1.sts"
                             },
                             "end": {
                               "line": 16,
                               "column": 8,
-                              "program": "Dollar_dollar_1.ets"
+                              "program": "Dollar_dollar_1.sts"
                             }
                           }
                         },
@@ -211,12 +211,12 @@
                             "start": {
                               "line": 16,
                               "column": 11,
-                              "program": "Dollar_dollar_1.ets"
+                              "program": "Dollar_dollar_1.sts"
                             },
                             "end": {
                               "line": 16,
                               "column": 15,
-                              "program": "Dollar_dollar_1.ets"
+                              "program": "Dollar_dollar_1.sts"
                             }
                           }
                         },
@@ -224,12 +224,12 @@
                           "start": {
                             "line": 16,
                             "column": 5,
-                            "program": "Dollar_dollar_1.ets"
+                            "program": "Dollar_dollar_1.sts"
                           },
                           "end": {
                             "line": 16,
                             "column": 15,
-                            "program": "Dollar_dollar_1.ets"
+                            "program": "Dollar_dollar_1.sts"
                           }
                         }
                       },
@@ -237,12 +237,12 @@
                         "start": {
                           "line": 16,
                           "column": 5,
-                          "program": "Dollar_dollar_1.ets"
+                          "program": "Dollar_dollar_1.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 15,
-                          "program": "Dollar_dollar_1.ets"
+                          "program": "Dollar_dollar_1.sts"
                         }
                       }
                     }
@@ -292,12 +292,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "Dollar_dollar_1.ets"
+                "program": "Dollar_dollar_1.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "Dollar_dollar_1.ets"
+                "program": "Dollar_dollar_1.sts"
               }
             }
           },
@@ -311,12 +311,12 @@
                 "start": {
                   "line": 16,
                   "column": 5,
-                  "program": "Dollar_dollar_1.ets"
+                  "program": "Dollar_dollar_1.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 8,
-                  "program": "Dollar_dollar_1.ets"
+                  "program": "Dollar_dollar_1.sts"
                 }
               }
             },
@@ -327,12 +327,12 @@
                 "start": {
                   "line": 16,
                   "column": 11,
-                  "program": "Dollar_dollar_1.ets"
+                  "program": "Dollar_dollar_1.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 15,
-                  "program": "Dollar_dollar_1.ets"
+                  "program": "Dollar_dollar_1.sts"
                 }
               }
             },
@@ -348,12 +348,12 @@
               "start": {
                 "line": 16,
                 "column": 5,
-                "program": "Dollar_dollar_1.ets"
+                "program": "Dollar_dollar_1.sts"
               },
               "end": {
                 "line": 16,
                 "column": 15,
-                "program": "Dollar_dollar_1.ets"
+                "program": "Dollar_dollar_1.sts"
               }
             }
           }
@@ -362,12 +362,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "Dollar_dollar_1.ets"
+            "program": "Dollar_dollar_1.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "Dollar_dollar_1.ets"
+            "program": "Dollar_dollar_1.sts"
           }
         }
       },
@@ -375,12 +375,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "Dollar_dollar_1.ets"
+          "program": "Dollar_dollar_1.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "Dollar_dollar_1.ets"
+          "program": "Dollar_dollar_1.sts"
         }
       }
     }
@@ -389,12 +389,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "Dollar_dollar_1.ets"
+      "program": "Dollar_dollar_1.sts"
     },
     "end": {
       "line": 17,
       "column": 1,
-      "program": "Dollar_dollar_1.ets"
+      "program": "Dollar_dollar_1.sts"
     }
   }
 }

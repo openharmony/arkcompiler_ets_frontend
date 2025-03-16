@@ -78,7 +78,7 @@ public:
 
     [[nodiscard]] ScriptExtension Extension() const noexcept override
     {
-        return ScriptExtension::ETS;
+        return ScriptExtension::STS;
     }
 
     [[nodiscard]] ResolveBindingOptions BindingOptions() const noexcept override

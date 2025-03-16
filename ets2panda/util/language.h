@@ -92,7 +92,7 @@ private:
         std::tuple {Id::AS, "as", false},
         {Id::JS, "js", true},
         {Id::TS, "ts", true},
-        {Id::ETS, "ets", false},
+        {Id::ETS, "sts", false},
     };
 
 public:

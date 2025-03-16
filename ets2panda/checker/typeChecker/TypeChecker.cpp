@@ -29,7 +29,7 @@ void ETSTypeChecker::VisitArrowFunctionExpression(ir::ArrowFunctionExpression *n
 bool RunTypeChecker(Checker *checker, ScriptExtension ext, ir::AstNode *node)
 {
     switch (ext) {
-        case ScriptExtension::ETS:
+        case ScriptExtension::STS:
             return ETSTypeChecker(checker).Check(node);
         case ScriptExtension::JS:
             return JSTypeChecker(checker).Check(node);

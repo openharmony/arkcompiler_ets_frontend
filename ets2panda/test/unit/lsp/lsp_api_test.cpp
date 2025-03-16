@@ -28,7 +28,7 @@ using ark::es2panda::lsp::Initializer;
 TEST_F(LSPAPITests, GetTouchingToken1)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("not-found-node.ets", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("not-found-node.sts", ES2PANDA_STATE_CHECKED,
                                                       "function A(a:number, b:number) {\n  return a + b;\n}\nA(1, 2);");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     size_t const offset = 50;
@@ -43,7 +43,7 @@ TEST_F(LSPAPITests, GetTouchingToken1)
 TEST_F(LSPAPITests, GetTouchingToken2)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("nested-node.ets", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("nested-node.sts", ES2PANDA_STATE_CHECKED,
                                                       "function A(a:number, b:number) {\n  return a + b;\n}\nA(1, 2);");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     size_t const offset = 51;
@@ -60,7 +60,7 @@ TEST_F(LSPAPITests, GetTouchingToken2)
 TEST_F(LSPAPITests, GetTouchingToken3)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("first-node.ets", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("first-node.sts", ES2PANDA_STATE_CHECKED,
                                                       "function A(a:number, b:number) {\n  return a + b;\n}\nA(1, 2);");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
     size_t const offset = 51;
@@ -146,7 +146,7 @@ TEST_F(LSPAPITests, CreateDiagnosticForNode1)
     using ark::es2panda::ir::AstNode;
     using ark::es2panda::public_lib::Context;
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("file1.ets", ES2PANDA_STATE_CHECKED, "function main() {}");
+    es2panda_Context *ctx = initializer.CreateContext("file1.sts", ES2PANDA_STATE_CHECKED, "function main() {}");
     auto astNode = GetAstFromContext<es2panda_AstNode>(ctx);
     int const dataValue = 42;
     std::variant<int, std::string> data = dataValue;
@@ -175,7 +175,7 @@ TEST_F(LSPAPITests, CreateDiagnosticForNode2)
     using ark::es2panda::ir::AstNode;
     using ark::es2panda::public_lib::Context;
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("file1.ets", ES2PANDA_STATE_CHECKED, "function main() {}");
+    es2panda_Context *ctx = initializer.CreateContext("file1.sts", ES2PANDA_STATE_CHECKED, "function main() {}");
     auto astNode = GetAstFromContext<es2panda_AstNode>(ctx);
     int const dataValue = 42;
     std::variant<int, std::string> data = dataValue;
@@ -206,7 +206,7 @@ TEST_F(LSPAPITests, CreateDiagnosticForNode3)
     using ark::es2panda::public_lib::Context;
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("file1.ets", ES2PANDA_STATE_CHECKED, "let a =     () => {\n  return 1;\n}");
+        initializer.CreateContext("file1.sts", ES2PANDA_STATE_CHECKED, "let a =     () => {\n  return 1;\n}");
     auto astNode = reinterpret_cast<AstNode *>(GetAstFromContext<ark::es2panda::ir::AstNode>(ctx));
     astNode = astNode->FindChild([](ark::es2panda::ir::AstNode *child) { return child->IsArrowFunctionExpression(); });
     int const dataValue = 42;
@@ -236,7 +236,7 @@ TEST_F(LSPAPITests, CreateDiagnosticForNode3)
 TEST_F(LSPAPITests, GetFileReferencesImpl1)
 {
     using ark::es2panda::public_lib::Context;
-    std::vector<std::string> files = {"lsp_api_test_export_1.ets", "lsp_api_test_file_1.ets"};
+    std::vector<std::string> files = {"lsp_api_test_export_1.sts", "lsp_api_test_file_1.sts"};
     std::vector<std::string> texts = {
         R"(export function A(a:number, b:number): number {
   return a + b;
@@ -245,7 +245,7 @@ export function B(a:number, b:number): number {
   return a + b;
 })",
         R"(import {A} from "./lsp_api_test_export_1";
-import {B} from "./lsp_api_test_export_1.ets";
+import {B} from "./lsp_api_test_export_1.sts";
 A(1, 2);
 B(1, 2);)"};
     auto filePaths = CreateTempFile(files, texts);
@@ -285,7 +285,7 @@ B(1, 2);)"};
 TEST_F(LSPAPITests, GetFileReferencesImpl2)
 {
     using ark::es2panda::public_lib::Context;
-    std::vector<std::string> files = {"lsp_api_test_export_2.ts", "lsp_api_test_file_2.ets"};
+    std::vector<std::string> files = {"lsp_api_test_export_2.ts", "lsp_api_test_file_2.sts"};
     std::vector<std::string> texts = {
         R"(export function A(a:number, b:number): number {
   return a + b;
@@ -334,7 +334,7 @@ B(1, 2);)"};
 TEST_F(LSPAPITests, GetFileReferencesImpl3)
 {
     using ark::es2panda::public_lib::Context;
-    std::vector<std::string> files = {"package-module.ets"};
+    std::vector<std::string> files = {"package-module.sts"};
     std::vector<std::string> texts = {R"(import { PI } from "std/math";
 console.log(PI);)"};
     auto filePaths = CreateTempFile(files, texts);
@@ -347,7 +347,7 @@ console.log(PI);)"};
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto baseUrl = reinterpret_cast<Context *>(ctx)->config->options->ArkTSConfig()->BaseUrl();
-    auto searchFileName = baseUrl + "/plugins/ets/stdlib/std/math/math.ets";
+    auto searchFileName = baseUrl + "/plugins/ets/stdlib/std/math/math.sts";
     auto result = References();
     ark::es2panda::lsp::GetFileReferencesImpl(ctx, searchFileName.c_str(), true, &result);
     auto expectedFileName = filePaths[0];
@@ -368,7 +368,7 @@ TEST_F(LSPAPITests, GetPrecedingToken1)
     Initializer initializer = Initializer();
     es2panda_Context *context = initializer.CreateContext(
 
-        "precedingtoken_literal.ets", ES2PANDA_STATE_CHECKED,
+        "precedingtoken_literal.sts", ES2PANDA_STATE_CHECKED,
         "let number_literal: number = 1234;\nlet string_literal: string = \"hello\";\nconst str_property = "
         "\"foo\";\n");
     ASSERT_EQ(ContextState(context), ES2PANDA_STATE_CHECKED);
@@ -402,7 +402,7 @@ TEST_F(LSPAPITests, GetPrecedingToken2)
     LSPAPI const *lspApi = GetImpl();
     Initializer initializer = Initializer();
     es2panda_Context *context = initializer.CreateContext(
-        "precedingtoken_function.ets", ES2PANDA_STATE_CHECKED,
+        "precedingtoken_function.sts", ES2PANDA_STATE_CHECKED,
         "    \n\n\n\nfunction f() {\n    le\n    let a = 123;\n}\n\n\n\nconst s = \"hello\";\n\n\n");
     auto ast = GetAstFromContext<AstNode>(context);
 
@@ -447,7 +447,7 @@ TEST_F(LSPAPITests, GetTypeOfSymbolAtLocation1)
     using ark::es2panda::public_lib::Context;
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("types.ets", ES2PANDA_STATE_CHECKED,
+        initializer.CreateContext("types.sts", ES2PANDA_STATE_CHECKED,
                                   "let a: number;\nlet b: byte;\nlet c: short;\nlet d: int;\nlet e: long;\nlet f: "
                                   "float;\nlet g: double;\nlet h: char;\nlet i: boolean;");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
@@ -507,7 +507,7 @@ TEST_F(LSPAPITests, GetTypeOfSymbolAtLocation2)
     using ark::es2panda::public_lib::Context;
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext(
-        "types.ets", ES2PANDA_STATE_CHECKED,
+        "types.sts", ES2PANDA_STATE_CHECKED,
         "let j: object;\nlet k: string;\nlet l: [];\nlet m: bigint;\nlet n: never;\nlet o: null;\nlet p: "
         "undefined;\nlet tuple: [number, number] = [1, 2];\nlet union: int | null;");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
@@ -563,7 +563,7 @@ TEST_F(LSPAPITests, GetTypeOfSymbolAtLocation2)
 
 TEST_F(LSPAPITests, GetCurrentTokenValue)
 {
-    std::vector<std::string> files = {"current_token.ets"};
+    std::vector<std::string> files = {"current_token.sts"};
     std::vector<std::string> texts = {"ab"};
     auto filePaths = CreateTempFile(files, texts);
     LSPAPI const *lspApi = GetImpl();
@@ -575,7 +575,7 @@ TEST_F(LSPAPITests, GetCurrentTokenValue)
 TEST_F(LSPAPITests, GetCurrentTokenValue1)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("file1.ets", ES2PANDA_STATE_CHECKED, "\"ab\"");
+    es2panda_Context *ctx = initializer.CreateContext("file1.sts", ES2PANDA_STATE_CHECKED, "\"ab\"");
     size_t offset = 3;
     std::string result = ark::es2panda::lsp::GetCurrentTokenValueImpl(ctx, offset);
     std::string expect = "ab";
@@ -586,7 +586,7 @@ TEST_F(LSPAPITests, GetCurrentTokenValue1)
 TEST_F(LSPAPITests, GetCurrentTokenValue2)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("file1.ets", ES2PANDA_STATE_CHECKED, "\'ab\'");
+    es2panda_Context *ctx = initializer.CreateContext("file1.sts", ES2PANDA_STATE_CHECKED, "\'ab\'");
     size_t offset = 3;
     std::string result = ark::es2panda::lsp::GetCurrentTokenValueImpl(ctx, offset);
     std::string expect = "ab";
@@ -597,7 +597,7 @@ TEST_F(LSPAPITests, GetCurrentTokenValue2)
 TEST_F(LSPAPITests, GetCurrentTokenValue3)
 {
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("file1.ets", ES2PANDA_STATE_CHECKED, "abc");
+    es2panda_Context *ctx = initializer.CreateContext("file1.sts", ES2PANDA_STATE_CHECKED, "abc");
     size_t offset = 2;
     std::string result = ark::es2panda::lsp::GetCurrentTokenValueImpl(ctx, offset);
     std::string expect = "ab";
@@ -610,7 +610,7 @@ TEST_F(LSPAPITests, GetTokenPosOfNode1)
     using ark::es2panda::ir::AstNode;
 
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("token-pos-identifier.ets", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("token-pos-identifier.sts", ES2PANDA_STATE_CHECKED,
                                                       "function A(a:number, b:number) {\n  return a + b;\n}\nA(1, 2);");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
@@ -631,7 +631,7 @@ TEST_F(LSPAPITests, GetTokenPosOfNode2)
     using ark::es2panda::ir::AstNode;
 
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("token-pos-expression.ets", ES2PANDA_STATE_CHECKED,
+    es2panda_Context *ctx = initializer.CreateContext("token-pos-expression.sts", ES2PANDA_STATE_CHECKED,
                                                       "function A(a:number, b:number) {\n  return a + b;\n}\nA(1, 2);");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
@@ -652,7 +652,7 @@ TEST_F(LSPAPITests, GetTokenPosOfNode3)
 
     Initializer initializer = Initializer();
     es2panda_Context *ctx = initializer.CreateContext(
-        "token-pos-literal.ets", ES2PANDA_STATE_CHECKED,
+        "token-pos-literal.sts", ES2PANDA_STATE_CHECKED,
         "let number_literal: number = 1234;\nlet string_literal: string = \"hello\";\nconst str_property = "
         "\"foo\";\n");
     ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);

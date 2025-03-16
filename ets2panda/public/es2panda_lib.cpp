@@ -258,8 +258,8 @@ __attribute__((unused)) static es2panda_Context *CreateContext(es2panda_Config *
         return reinterpret_cast<es2panda_Context *>(res);
     }
 
-    if (cfg->options->GetExtension() != ScriptExtension::ETS) {
-        res->errorMessage = "Invalid extension. Plugin API supports only ETS.";
+    if (cfg->options->GetExtension() != ScriptExtension::STS) {
+        res->errorMessage = "Invalid extension. Plugin API supports only STS.";
         res->state = ES2PANDA_STATE_ERROR;
         return reinterpret_cast<es2panda_Context *>(res);
     }
@@ -281,7 +281,7 @@ __attribute__((unused)) static es2panda_Context *CreateContext(es2panda_Config *
 
     varbinder->SetContext(res);
     res->codeGenCb = CompileJob;
-    res->phases = compiler::GetPhaseList(ScriptExtension::ETS);
+    res->phases = compiler::GetPhaseList(ScriptExtension::STS);
     res->currentPhase = 0;
     res->emitter = new compiler::ETSEmitter(res);
     res->program = nullptr;

@@ -16,12 +16,12 @@
                 "start": {
                   "line": 17,
                   "column": 3,
-                  "program": "interfaceMethodWithOptional.ets"
+                  "program": "interfaceMethodWithOptional.sts"
                 },
                 "end": {
                   "line": 17,
                   "column": 6,
-                  "program": "interfaceMethodWithOptional.ets"
+                  "program": "interfaceMethodWithOptional.sts"
                 }
               }
             },
@@ -42,12 +42,12 @@
                     "start": {
                       "line": 17,
                       "column": 3,
-                      "program": "interfaceMethodWithOptional.ets"
+                      "program": "interfaceMethodWithOptional.sts"
                     },
                     "end": {
                       "line": 17,
                       "column": 6,
-                      "program": "interfaceMethodWithOptional.ets"
+                      "program": "interfaceMethodWithOptional.sts"
                     }
                   }
                 },
@@ -72,12 +72,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 11,
-                                "program": "interfaceMethodWithOptional.ets"
+                                "program": "interfaceMethodWithOptional.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 17,
-                                "program": "interfaceMethodWithOptional.ets"
+                                "program": "interfaceMethodWithOptional.sts"
                               }
                             }
                           },
@@ -85,12 +85,12 @@
                             "start": {
                               "line": 17,
                               "column": 11,
-                              "program": "interfaceMethodWithOptional.ets"
+                              "program": "interfaceMethodWithOptional.sts"
                             },
                             "end": {
                               "line": 17,
                               "column": 18,
-                              "program": "interfaceMethodWithOptional.ets"
+                              "program": "interfaceMethodWithOptional.sts"
                             }
                           }
                         },
@@ -98,12 +98,12 @@
                           "start": {
                             "line": 17,
                             "column": 11,
-                            "program": "interfaceMethodWithOptional.ets"
+                            "program": "interfaceMethodWithOptional.sts"
                           },
                           "end": {
                             "line": 17,
                             "column": 18,
-                            "program": "interfaceMethodWithOptional.ets"
+                            "program": "interfaceMethodWithOptional.sts"
                           }
                         }
                       },
@@ -112,12 +112,12 @@
                         "start": {
                           "line": 17,
                           "column": 7,
-                          "program": "interfaceMethodWithOptional.ets"
+                          "program": "interfaceMethodWithOptional.sts"
                         },
                         "end": {
                           "line": 17,
                           "column": 18,
-                          "program": "interfaceMethodWithOptional.ets"
+                          "program": "interfaceMethodWithOptional.sts"
                         }
                       }
                     },
@@ -125,12 +125,12 @@
                       "start": {
                         "line": 17,
                         "column": 7,
-                        "program": "interfaceMethodWithOptional.ets"
+                        "program": "interfaceMethodWithOptional.sts"
                       },
                       "end": {
                         "line": 17,
                         "column": 18,
-                        "program": "interfaceMethodWithOptional.ets"
+                        "program": "interfaceMethodWithOptional.sts"
                       }
                     }
                   }
@@ -142,12 +142,12 @@
                     "start": {
                       "line": 17,
                       "column": 18,
-                      "program": "interfaceMethodWithOptional.ets"
+                      "program": "interfaceMethodWithOptional.sts"
                     },
                     "end": {
                       "line": 17,
                       "column": 20,
-                      "program": "interfaceMethodWithOptional.ets"
+                      "program": "interfaceMethodWithOptional.sts"
                     }
                   }
                 },
@@ -155,12 +155,12 @@
                   "start": {
                     "line": 17,
                     "column": 6,
-                    "program": "interfaceMethodWithOptional.ets"
+                    "program": "interfaceMethodWithOptional.sts"
                   },
                   "end": {
                     "line": 17,
                     "column": 20,
-                    "program": "interfaceMethodWithOptional.ets"
+                    "program": "interfaceMethodWithOptional.sts"
                   }
                 }
               },
@@ -168,12 +168,12 @@
                 "start": {
                   "line": 17,
                   "column": 6,
-                  "program": "interfaceMethodWithOptional.ets"
+                  "program": "interfaceMethodWithOptional.sts"
                 },
                 "end": {
                   "line": 17,
                   "column": 20,
-                  "program": "interfaceMethodWithOptional.ets"
+                  "program": "interfaceMethodWithOptional.sts"
                 }
               }
             },
@@ -183,12 +183,12 @@
               "start": {
                 "line": 17,
                 "column": 3,
-                "program": "interfaceMethodWithOptional.ets"
+                "program": "interfaceMethodWithOptional.sts"
               },
               "end": {
                 "line": 17,
                 "column": 20,
-                "program": "interfaceMethodWithOptional.ets"
+                "program": "interfaceMethodWithOptional.sts"
               }
             }
           }
@@ -197,12 +197,12 @@
           "start": {
             "line": 16,
             "column": 13,
-            "program": "interfaceMethodWithOptional.ets"
+            "program": "interfaceMethodWithOptional.sts"
           },
           "end": {
             "line": 18,
             "column": 2,
-            "program": "interfaceMethodWithOptional.ets"
+            "program": "interfaceMethodWithOptional.sts"
           }
         }
       },
@@ -214,12 +214,12 @@
           "start": {
             "line": 16,
             "column": 11,
-            "program": "interfaceMethodWithOptional.ets"
+            "program": "interfaceMethodWithOptional.sts"
           },
           "end": {
             "line": 16,
             "column": 12,
-            "program": "interfaceMethodWithOptional.ets"
+            "program": "interfaceMethodWithOptional.sts"
           }
         }
       },
@@ -228,12 +228,12 @@
         "start": {
           "line": 16,
           "column": 1,
-          "program": "interfaceMethodWithOptional.ets"
+          "program": "interfaceMethodWithOptional.sts"
         },
         "end": {
           "line": 19,
           "column": 1,
-          "program": "interfaceMethodWithOptional.ets"
+          "program": "interfaceMethodWithOptional.sts"
         }
       }
     },
@@ -248,12 +248,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "interfaceMethodWithOptional.ets"
+              "program": "interfaceMethodWithOptional.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "interfaceMethodWithOptional.ets"
+              "program": "interfaceMethodWithOptional.sts"
             }
           }
         },
@@ -357,12 +357,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "interfaceMethodWithOptional.ets"
+                "program": "interfaceMethodWithOptional.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "interfaceMethodWithOptional.ets"
+                "program": "interfaceMethodWithOptional.sts"
               }
             }
           },
@@ -463,12 +463,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "interfaceMethodWithOptional.ets"
+                "program": "interfaceMethodWithOptional.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "interfaceMethodWithOptional.ets"
+                "program": "interfaceMethodWithOptional.sts"
               }
             }
           }
@@ -477,12 +477,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "interfaceMethodWithOptional.ets"
+            "program": "interfaceMethodWithOptional.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "interfaceMethodWithOptional.ets"
+            "program": "interfaceMethodWithOptional.sts"
           }
         }
       },
@@ -490,12 +490,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "interfaceMethodWithOptional.ets"
+          "program": "interfaceMethodWithOptional.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "interfaceMethodWithOptional.ets"
+          "program": "interfaceMethodWithOptional.sts"
         }
       }
     }
@@ -504,12 +504,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "interfaceMethodWithOptional.ets"
+      "program": "interfaceMethodWithOptional.sts"
     },
     "end": {
       "line": 19,
       "column": 1,
-      "program": "interfaceMethodWithOptional.ets"
+      "program": "interfaceMethodWithOptional.sts"
     }
   }
 }

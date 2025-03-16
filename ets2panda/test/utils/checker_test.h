@@ -99,7 +99,7 @@ public:
         ark::es2panda::Compiler compiler(options->GetExtension(), options->GetThread());
         ark::es2panda::SourceFile input(fileName, src, options->IsModule());
         compiler_alias::CompilationUnit unit {input, *options, 0, options->GetExtension(), diagnosticEngine_};
-        auto getPhases = compiler_alias::GetPhaseList(ark::es2panda::ScriptExtension::ETS);
+        auto getPhases = compiler_alias::GetPhaseList(ark::es2panda::ScriptExtension::STS);
 
         auto parser = Parser(program, unit.options, diagnosticEngine_,
                              static_cast<parser_alias::ParserStatus>(unit.rawParserStatus));

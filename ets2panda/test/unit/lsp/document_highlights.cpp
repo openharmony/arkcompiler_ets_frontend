@@ -19,7 +19,7 @@ class LspDocumentHighlights : public LSPAPITests {};
 
 TEST_F(LspDocumentHighlights, getDocumentHighlights1)
 {
-    std::vector<std::string> files = {"getDocumentHighlights1.ets"};
+    std::vector<std::string> files = {"getDocumentHighlights1.sts"};
     std::vector<std::string> texts = {R"delimiter(
 let aaa = 123;
 let bbb = aaa + 111;
@@ -53,7 +53,7 @@ let ccc = bbb + aaa + 234;
 
 TEST_F(LspDocumentHighlights, getDocumentHighlights2)
 {
-    std::vector<std::string> files = {"getDocumentHighlights2.ets"};
+    std::vector<std::string> files = {"getDocumentHighlights2.sts"};
     std::vector<std::string> texts = {R"delimiter(
 let aaa = 123;
 let bbb = aaa + 111;
@@ -104,7 +104,7 @@ function f1(aaa: number) {
 
 TEST_F(LspDocumentHighlights, getDocumentHighlights3)
 {
-    std::vector<std::string> files = {"getDocumentHighlights3.ets"};
+    std::vector<std::string> files = {"getDocumentHighlights3.sts"};
     std::vector<std::string> texts = {R"delimiter(
 class Foo {
     aaa: number = 0;
@@ -146,7 +146,7 @@ function f2() {
 
 TEST_F(LspDocumentHighlights, getDocumentHighlights4)
 {
-    std::vector<std::string> files = {"getDocumentHighlights3.ets"};
+    std::vector<std::string> files = {"getDocumentHighlights3.sts"};
     std::vector<std::string> texts = {R"delimiter(
 class Foo {
     aaa: number = 0;
@@ -193,7 +193,7 @@ function f2() {
 
 TEST_F(LspDocumentHighlights, getDocumentHighlights5)
 {
-    std::vector<std::string> files = {"getDocumentHighlights5.ets"};
+    std::vector<std::string> files = {"getDocumentHighlights5.sts"};
     std::vector<std::string> texts = {R"delimiter(
 function add(x: number, y: number) {
     return x + y;
@@ -235,7 +235,7 @@ class Bar {
 
 TEST_F(LspDocumentHighlights, getDocumentHighlights6)
 {
-    std::vector<std::string> files = {"getDocumentHighlights6.ets"};
+    std::vector<std::string> files = {"getDocumentHighlights6.sts"};
     std::vector<std::string> texts = {R"delimiter(
 class ListNode<T> {
     value: T;
@@ -269,7 +269,7 @@ class ListNode<T> {
 
 TEST_F(LspDocumentHighlights, getDocumentHighlights7)
 {
-    std::vector<std::string> files = {"getDocumentHighlights7.ets"};
+    std::vector<std::string> files = {"getDocumentHighlights7.sts"};
     std::vector<std::string> texts = {R"delimiter(
 function fib(n: number) {
     if (n === 0) {

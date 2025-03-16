@@ -12,12 +12,12 @@
             "start": {
               "line": 20,
               "column": 7,
-              "program": "throwingFunctionCheck6.ets"
+              "program": "throwingFunctionCheck6.sts"
             },
             "end": {
               "line": 20,
               "column": 16,
-              "program": "throwingFunctionCheck6.ets"
+              "program": "throwingFunctionCheck6.sts"
             }
           }
         },
@@ -34,12 +34,12 @@
                 "start": {
                   "line": 21,
                   "column": 3,
-                  "program": "throwingFunctionCheck6.ets"
+                  "program": "throwingFunctionCheck6.sts"
                 },
                 "end": {
                   "line": 21,
                   "column": 13,
-                  "program": "throwingFunctionCheck6.ets"
+                  "program": "throwingFunctionCheck6.sts"
                 }
               }
             },
@@ -60,12 +60,12 @@
                     "start": {
                       "line": 21,
                       "column": 3,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     },
                     "end": {
                       "line": 21,
                       "column": 13,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     }
                   }
                 },
@@ -79,12 +79,12 @@
                     "start": {
                       "line": 21,
                       "column": 17,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     },
                     "end": {
                       "line": 21,
                       "column": 21,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     }
                   }
                 },
@@ -107,12 +107,12 @@
                                 "start": {
                                   "line": 22,
                                   "column": 15,
-                                  "program": "throwingFunctionCheck6.ets"
+                                  "program": "throwingFunctionCheck6.sts"
                                 },
                                 "end": {
                                   "line": 22,
                                   "column": 24,
-                                  "program": "throwingFunctionCheck6.ets"
+                                  "program": "throwingFunctionCheck6.sts"
                                 }
                               }
                             },
@@ -120,12 +120,12 @@
                               "start": {
                                 "line": 22,
                                 "column": 15,
-                                "program": "throwingFunctionCheck6.ets"
+                                "program": "throwingFunctionCheck6.sts"
                               },
                               "end": {
                                 "line": 22,
                                 "column": 25,
-                                "program": "throwingFunctionCheck6.ets"
+                                "program": "throwingFunctionCheck6.sts"
                               }
                             }
                           },
@@ -133,12 +133,12 @@
                             "start": {
                               "line": 22,
                               "column": 15,
-                              "program": "throwingFunctionCheck6.ets"
+                              "program": "throwingFunctionCheck6.sts"
                             },
                             "end": {
                               "line": 22,
                               "column": 25,
-                              "program": "throwingFunctionCheck6.ets"
+                              "program": "throwingFunctionCheck6.sts"
                             }
                           }
                         },
@@ -147,12 +147,12 @@
                           "start": {
                             "line": 22,
                             "column": 11,
-                            "program": "throwingFunctionCheck6.ets"
+                            "program": "throwingFunctionCheck6.sts"
                           },
                           "end": {
                             "line": 22,
                             "column": 27,
-                            "program": "throwingFunctionCheck6.ets"
+                            "program": "throwingFunctionCheck6.sts"
                           }
                         }
                       },
@@ -160,12 +160,12 @@
                         "start": {
                           "line": 22,
                           "column": 5,
-                          "program": "throwingFunctionCheck6.ets"
+                          "program": "throwingFunctionCheck6.sts"
                         },
                         "end": {
                           "line": 22,
                           "column": 27,
-                          "program": "throwingFunctionCheck6.ets"
+                          "program": "throwingFunctionCheck6.sts"
                         }
                       }
                     }
@@ -174,12 +174,12 @@
                     "start": {
                       "line": 21,
                       "column": 29,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     },
                     "end": {
                       "line": 23,
                       "column": 4,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     }
                   }
                 },
@@ -188,12 +188,12 @@
                   "start": {
                     "line": 21,
                     "column": 13,
-                    "program": "throwingFunctionCheck6.ets"
+                    "program": "throwingFunctionCheck6.sts"
                   },
                   "end": {
                     "line": 23,
                     "column": 4,
-                    "program": "throwingFunctionCheck6.ets"
+                    "program": "throwingFunctionCheck6.sts"
                   }
                 }
               },
@@ -201,12 +201,12 @@
                 "start": {
                   "line": 21,
                   "column": 13,
-                  "program": "throwingFunctionCheck6.ets"
+                  "program": "throwingFunctionCheck6.sts"
                 },
                 "end": {
                   "line": 23,
                   "column": 4,
-                  "program": "throwingFunctionCheck6.ets"
+                  "program": "throwingFunctionCheck6.sts"
                 }
               }
             },
@@ -216,12 +216,12 @@
               "start": {
                 "line": 21,
                 "column": 3,
-                "program": "throwingFunctionCheck6.ets"
+                "program": "throwingFunctionCheck6.sts"
               },
               "end": {
                 "line": 23,
                 "column": 4,
-                "program": "throwingFunctionCheck6.ets"
+                "program": "throwingFunctionCheck6.sts"
               }
             }
           },
@@ -235,12 +235,12 @@
                 "start": {
                   "line": 20,
                   "column": 18,
-                  "program": "throwingFunctionCheck6.ets"
+                  "program": "throwingFunctionCheck6.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 18,
-                  "program": "throwingFunctionCheck6.ets"
+                  "program": "throwingFunctionCheck6.sts"
                 }
               }
             },
@@ -260,12 +260,12 @@
                     "start": {
                       "line": 20,
                       "column": 18,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 18,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     }
                   }
                 },
@@ -280,12 +280,12 @@
                     "start": {
                       "line": 20,
                       "column": 18,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 18,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     }
                   }
                 },
@@ -293,12 +293,12 @@
                   "start": {
                     "line": 20,
                     "column": 18,
-                    "program": "throwingFunctionCheck6.ets"
+                    "program": "throwingFunctionCheck6.sts"
                   },
                   "end": {
                     "line": 20,
                     "column": 18,
-                    "program": "throwingFunctionCheck6.ets"
+                    "program": "throwingFunctionCheck6.sts"
                   }
                 }
               },
@@ -306,12 +306,12 @@
                 "start": {
                   "line": 20,
                   "column": 18,
-                  "program": "throwingFunctionCheck6.ets"
+                  "program": "throwingFunctionCheck6.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 18,
-                  "program": "throwingFunctionCheck6.ets"
+                  "program": "throwingFunctionCheck6.sts"
                 }
               }
             },
@@ -335,12 +335,12 @@
           "start": {
             "line": 20,
             "column": 17,
-            "program": "throwingFunctionCheck6.ets"
+            "program": "throwingFunctionCheck6.sts"
           },
           "end": {
             "line": 26,
             "column": 9,
-            "program": "throwingFunctionCheck6.ets"
+            "program": "throwingFunctionCheck6.sts"
           }
         }
       },
@@ -348,12 +348,12 @@
         "start": {
           "line": 20,
           "column": 1,
-          "program": "throwingFunctionCheck6.ets"
+          "program": "throwingFunctionCheck6.sts"
         },
         "end": {
           "line": 26,
           "column": 9,
-          "program": "throwingFunctionCheck6.ets"
+          "program": "throwingFunctionCheck6.sts"
         }
       }
     },
@@ -368,12 +368,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "throwingFunctionCheck6.ets"
+              "program": "throwingFunctionCheck6.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "throwingFunctionCheck6.ets"
+              "program": "throwingFunctionCheck6.sts"
             }
           }
         },
@@ -477,12 +477,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "throwingFunctionCheck6.ets"
+                "program": "throwingFunctionCheck6.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "throwingFunctionCheck6.ets"
+                "program": "throwingFunctionCheck6.sts"
               }
             }
           },
@@ -496,12 +496,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "throwingFunctionCheck6.ets"
+                  "program": "throwingFunctionCheck6.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 22,
-                  "program": "throwingFunctionCheck6.ets"
+                  "program": "throwingFunctionCheck6.sts"
                 }
               }
             },
@@ -522,12 +522,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 22,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     }
                   }
                 },
@@ -541,12 +541,12 @@
                     "start": {
                       "line": 16,
                       "column": 26,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 30,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     }
                   }
                 },
@@ -569,12 +569,12 @@
                                 "start": {
                                   "line": 17,
                                   "column": 13,
-                                  "program": "throwingFunctionCheck6.ets"
+                                  "program": "throwingFunctionCheck6.sts"
                                 },
                                 "end": {
                                   "line": 17,
                                   "column": 22,
-                                  "program": "throwingFunctionCheck6.ets"
+                                  "program": "throwingFunctionCheck6.sts"
                                 }
                               }
                             },
@@ -582,12 +582,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 13,
-                                "program": "throwingFunctionCheck6.ets"
+                                "program": "throwingFunctionCheck6.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 23,
-                                "program": "throwingFunctionCheck6.ets"
+                                "program": "throwingFunctionCheck6.sts"
                               }
                             }
                           },
@@ -595,12 +595,12 @@
                             "start": {
                               "line": 17,
                               "column": 13,
-                              "program": "throwingFunctionCheck6.ets"
+                              "program": "throwingFunctionCheck6.sts"
                             },
                             "end": {
                               "line": 17,
                               "column": 23,
-                              "program": "throwingFunctionCheck6.ets"
+                              "program": "throwingFunctionCheck6.sts"
                             }
                           }
                         },
@@ -609,12 +609,12 @@
                           "start": {
                             "line": 17,
                             "column": 9,
-                            "program": "throwingFunctionCheck6.ets"
+                            "program": "throwingFunctionCheck6.sts"
                           },
                           "end": {
                             "line": 17,
                             "column": 25,
-                            "program": "throwingFunctionCheck6.ets"
+                            "program": "throwingFunctionCheck6.sts"
                           }
                         }
                       },
@@ -622,12 +622,12 @@
                         "start": {
                           "line": 17,
                           "column": 3,
-                          "program": "throwingFunctionCheck6.ets"
+                          "program": "throwingFunctionCheck6.sts"
                         },
                         "end": {
                           "line": 17,
                           "column": 25,
-                          "program": "throwingFunctionCheck6.ets"
+                          "program": "throwingFunctionCheck6.sts"
                         }
                       }
                     }
@@ -636,12 +636,12 @@
                     "start": {
                       "line": 16,
                       "column": 38,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 2,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     }
                   }
                 },
@@ -650,12 +650,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "throwingFunctionCheck6.ets"
+                    "program": "throwingFunctionCheck6.sts"
                   },
                   "end": {
                     "line": 18,
                     "column": 2,
-                    "program": "throwingFunctionCheck6.ets"
+                    "program": "throwingFunctionCheck6.sts"
                   }
                 }
               },
@@ -663,12 +663,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "throwingFunctionCheck6.ets"
+                  "program": "throwingFunctionCheck6.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 2,
-                  "program": "throwingFunctionCheck6.ets"
+                  "program": "throwingFunctionCheck6.sts"
                 }
               }
             },
@@ -678,12 +678,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "throwingFunctionCheck6.ets"
+                "program": "throwingFunctionCheck6.sts"
               },
               "end": {
                 "line": 18,
                 "column": 2,
-                "program": "throwingFunctionCheck6.ets"
+                "program": "throwingFunctionCheck6.sts"
               }
             }
           },
@@ -697,12 +697,12 @@
                 "start": {
                   "line": 26,
                   "column": 10,
-                  "program": "throwingFunctionCheck6.ets"
+                  "program": "throwingFunctionCheck6.sts"
                 },
                 "end": {
                   "line": 26,
                   "column": 14,
-                  "program": "throwingFunctionCheck6.ets"
+                  "program": "throwingFunctionCheck6.sts"
                 }
               }
             },
@@ -723,12 +723,12 @@
                     "start": {
                       "line": 26,
                       "column": 10,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     },
                     "end": {
                       "line": 26,
                       "column": 14,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     }
                   }
                 },
@@ -742,12 +742,12 @@
                     "start": {
                       "line": 26,
                       "column": 18,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     },
                     "end": {
                       "line": 26,
                       "column": 22,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     }
                   }
                 },
@@ -767,12 +767,12 @@
                               "start": {
                                 "line": 27,
                                 "column": 7,
-                                "program": "throwingFunctionCheck6.ets"
+                                "program": "throwingFunctionCheck6.sts"
                               },
                               "end": {
                                 "line": 27,
                                 "column": 16,
-                                "program": "throwingFunctionCheck6.ets"
+                                "program": "throwingFunctionCheck6.sts"
                               }
                             }
                           },
@@ -790,12 +790,12 @@
                                     "start": {
                                       "line": 27,
                                       "column": 23,
-                                      "program": "throwingFunctionCheck6.ets"
+                                      "program": "throwingFunctionCheck6.sts"
                                     },
                                     "end": {
                                       "line": 27,
                                       "column": 32,
-                                      "program": "throwingFunctionCheck6.ets"
+                                      "program": "throwingFunctionCheck6.sts"
                                     }
                                   }
                                 },
@@ -803,12 +803,12 @@
                                   "start": {
                                     "line": 27,
                                     "column": 23,
-                                    "program": "throwingFunctionCheck6.ets"
+                                    "program": "throwingFunctionCheck6.sts"
                                   },
                                   "end": {
                                     "line": 27,
                                     "column": 33,
-                                    "program": "throwingFunctionCheck6.ets"
+                                    "program": "throwingFunctionCheck6.sts"
                                   }
                                 }
                               },
@@ -816,12 +816,12 @@
                                 "start": {
                                   "line": 27,
                                   "column": 23,
-                                  "program": "throwingFunctionCheck6.ets"
+                                  "program": "throwingFunctionCheck6.sts"
                                 },
                                 "end": {
                                   "line": 27,
                                   "column": 33,
-                                  "program": "throwingFunctionCheck6.ets"
+                                  "program": "throwingFunctionCheck6.sts"
                                 }
                               }
                             },
@@ -830,12 +830,12 @@
                               "start": {
                                 "line": 27,
                                 "column": 19,
-                                "program": "throwingFunctionCheck6.ets"
+                                "program": "throwingFunctionCheck6.sts"
                               },
                               "end": {
                                 "line": 27,
                                 "column": 35,
-                                "program": "throwingFunctionCheck6.ets"
+                                "program": "throwingFunctionCheck6.sts"
                               }
                             }
                           },
@@ -843,12 +843,12 @@
                             "start": {
                               "line": 27,
                               "column": 7,
-                              "program": "throwingFunctionCheck6.ets"
+                              "program": "throwingFunctionCheck6.sts"
                             },
                             "end": {
                               "line": 27,
                               "column": 35,
-                              "program": "throwingFunctionCheck6.ets"
+                              "program": "throwingFunctionCheck6.sts"
                             }
                           }
                         }
@@ -858,12 +858,12 @@
                         "start": {
                           "line": 27,
                           "column": 3,
-                          "program": "throwingFunctionCheck6.ets"
+                          "program": "throwingFunctionCheck6.sts"
                         },
                         "end": {
                           "line": 27,
                           "column": 35,
-                          "program": "throwingFunctionCheck6.ets"
+                          "program": "throwingFunctionCheck6.sts"
                         }
                       }
                     },
@@ -884,12 +884,12 @@
                                   "start": {
                                     "line": 30,
                                     "column": 5,
-                                    "program": "throwingFunctionCheck6.ets"
+                                    "program": "throwingFunctionCheck6.sts"
                                   },
                                   "end": {
                                     "line": 30,
                                     "column": 17,
-                                    "program": "throwingFunctionCheck6.ets"
+                                    "program": "throwingFunctionCheck6.sts"
                                   }
                                 }
                               },
@@ -899,12 +899,12 @@
                                 "start": {
                                   "line": 30,
                                   "column": 5,
-                                  "program": "throwingFunctionCheck6.ets"
+                                  "program": "throwingFunctionCheck6.sts"
                                 },
                                 "end": {
                                   "line": 30,
                                   "column": 19,
-                                  "program": "throwingFunctionCheck6.ets"
+                                  "program": "throwingFunctionCheck6.sts"
                                 }
                               }
                             },
@@ -912,12 +912,12 @@
                               "start": {
                                 "line": 30,
                                 "column": 5,
-                                "program": "throwingFunctionCheck6.ets"
+                                "program": "throwingFunctionCheck6.sts"
                               },
                               "end": {
                                 "line": 30,
                                 "column": 20,
-                                "program": "throwingFunctionCheck6.ets"
+                                "program": "throwingFunctionCheck6.sts"
                               }
                             }
                           },
@@ -935,12 +935,12 @@
                                     "start": {
                                       "line": 31,
                                       "column": 5,
-                                      "program": "throwingFunctionCheck6.ets"
+                                      "program": "throwingFunctionCheck6.sts"
                                     },
                                     "end": {
                                       "line": 31,
                                       "column": 14,
-                                      "program": "throwingFunctionCheck6.ets"
+                                      "program": "throwingFunctionCheck6.sts"
                                     }
                                   }
                                 },
@@ -952,12 +952,12 @@
                                     "start": {
                                       "line": 31,
                                       "column": 15,
-                                      "program": "throwingFunctionCheck6.ets"
+                                      "program": "throwingFunctionCheck6.sts"
                                     },
                                     "end": {
                                       "line": 31,
                                       "column": 25,
-                                      "program": "throwingFunctionCheck6.ets"
+                                      "program": "throwingFunctionCheck6.sts"
                                     }
                                   }
                                 },
@@ -967,12 +967,12 @@
                                   "start": {
                                     "line": 31,
                                     "column": 5,
-                                    "program": "throwingFunctionCheck6.ets"
+                                    "program": "throwingFunctionCheck6.sts"
                                   },
                                   "end": {
                                     "line": 31,
                                     "column": 25,
-                                    "program": "throwingFunctionCheck6.ets"
+                                    "program": "throwingFunctionCheck6.sts"
                                   }
                                 }
                               },
@@ -982,12 +982,12 @@
                                 "start": {
                                   "line": 31,
                                   "column": 5,
-                                  "program": "throwingFunctionCheck6.ets"
+                                  "program": "throwingFunctionCheck6.sts"
                                 },
                                 "end": {
                                   "line": 31,
                                   "column": 27,
-                                  "program": "throwingFunctionCheck6.ets"
+                                  "program": "throwingFunctionCheck6.sts"
                                 }
                               }
                             },
@@ -995,12 +995,12 @@
                               "start": {
                                 "line": 31,
                                 "column": 5,
-                                "program": "throwingFunctionCheck6.ets"
+                                "program": "throwingFunctionCheck6.sts"
                               },
                               "end": {
                                 "line": 31,
                                 "column": 28,
-                                "program": "throwingFunctionCheck6.ets"
+                                "program": "throwingFunctionCheck6.sts"
                               }
                             }
                           }
@@ -1009,12 +1009,12 @@
                           "start": {
                             "line": 29,
                             "column": 7,
-                            "program": "throwingFunctionCheck6.ets"
+                            "program": "throwingFunctionCheck6.sts"
                           },
                           "end": {
                             "line": 32,
                             "column": 4,
-                            "program": "throwingFunctionCheck6.ets"
+                            "program": "throwingFunctionCheck6.sts"
                           }
                         }
                       },
@@ -1028,12 +1028,12 @@
                               "start": {
                                 "line": 32,
                                 "column": 15,
-                                "program": "throwingFunctionCheck6.ets"
+                                "program": "throwingFunctionCheck6.sts"
                               },
                               "end": {
                                 "line": 32,
                                 "column": 17,
-                                "program": "throwingFunctionCheck6.ets"
+                                "program": "throwingFunctionCheck6.sts"
                               }
                             }
                           },
@@ -1045,12 +1045,12 @@
                               "start": {
                                 "line": 32,
                                 "column": 12,
-                                "program": "throwingFunctionCheck6.ets"
+                                "program": "throwingFunctionCheck6.sts"
                               },
                               "end": {
                                 "line": 32,
                                 "column": 13,
-                                "program": "throwingFunctionCheck6.ets"
+                                "program": "throwingFunctionCheck6.sts"
                               }
                             }
                           },
@@ -1058,12 +1058,12 @@
                             "start": {
                               "line": 32,
                               "column": 5,
-                              "program": "throwingFunctionCheck6.ets"
+                              "program": "throwingFunctionCheck6.sts"
                             },
                             "end": {
                               "line": 32,
                               "column": 17,
-                              "program": "throwingFunctionCheck6.ets"
+                              "program": "throwingFunctionCheck6.sts"
                             }
                           }
                         }
@@ -1073,12 +1073,12 @@
                         "start": {
                           "line": 29,
                           "column": 3,
-                          "program": "throwingFunctionCheck6.ets"
+                          "program": "throwingFunctionCheck6.sts"
                         },
                         "end": {
                           "line": 32,
                           "column": 17,
-                          "program": "throwingFunctionCheck6.ets"
+                          "program": "throwingFunctionCheck6.sts"
                         }
                       }
                     }
@@ -1087,12 +1087,12 @@
                     "start": {
                       "line": 26,
                       "column": 23,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     },
                     "end": {
                       "line": 33,
                       "column": 2,
-                      "program": "throwingFunctionCheck6.ets"
+                      "program": "throwingFunctionCheck6.sts"
                     }
                   }
                 },
@@ -1100,12 +1100,12 @@
                   "start": {
                     "line": 26,
                     "column": 10,
-                    "program": "throwingFunctionCheck6.ets"
+                    "program": "throwingFunctionCheck6.sts"
                   },
                   "end": {
                     "line": 33,
                     "column": 2,
-                    "program": "throwingFunctionCheck6.ets"
+                    "program": "throwingFunctionCheck6.sts"
                   }
                 }
               },
@@ -1113,12 +1113,12 @@
                 "start": {
                   "line": 26,
                   "column": 10,
-                  "program": "throwingFunctionCheck6.ets"
+                  "program": "throwingFunctionCheck6.sts"
                 },
                 "end": {
                   "line": 33,
                   "column": 2,
-                  "program": "throwingFunctionCheck6.ets"
+                  "program": "throwingFunctionCheck6.sts"
                 }
               }
             },
@@ -1128,12 +1128,12 @@
               "start": {
                 "line": 26,
                 "column": 1,
-                "program": "throwingFunctionCheck6.ets"
+                "program": "throwingFunctionCheck6.sts"
               },
               "end": {
                 "line": 33,
                 "column": 2,
-                "program": "throwingFunctionCheck6.ets"
+                "program": "throwingFunctionCheck6.sts"
               }
             }
           }
@@ -1142,12 +1142,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "throwingFunctionCheck6.ets"
+            "program": "throwingFunctionCheck6.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "throwingFunctionCheck6.ets"
+            "program": "throwingFunctionCheck6.sts"
           }
         }
       },
@@ -1155,12 +1155,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "throwingFunctionCheck6.ets"
+          "program": "throwingFunctionCheck6.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "throwingFunctionCheck6.ets"
+          "program": "throwingFunctionCheck6.sts"
         }
       }
     }
@@ -1169,12 +1169,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "throwingFunctionCheck6.ets"
+      "program": "throwingFunctionCheck6.sts"
     },
     "end": {
       "line": 34,
       "column": 1,
-      "program": "throwingFunctionCheck6.ets"
+      "program": "throwingFunctionCheck6.sts"
     }
   }
 }

@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "async_func_return_type.ets"
+              "program": "async_func_return_type.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "async_func_return_type.ets"
+              "program": "async_func_return_type.sts"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "async_func_return_type.ets"
+                "program": "async_func_return_type.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "async_func_return_type.ets"
+                "program": "async_func_return_type.sts"
               }
             }
           },
@@ -227,12 +227,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "async_func_return_type.ets"
+                "program": "async_func_return_type.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "async_func_return_type.ets"
+                "program": "async_func_return_type.sts"
               }
             }
           },
@@ -246,12 +246,12 @@
                 "start": {
                   "line": 16,
                   "column": 17,
-                  "program": "async_func_return_type.ets"
+                  "program": "async_func_return_type.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 30,
-                  "program": "async_func_return_type.ets"
+                  "program": "async_func_return_type.sts"
                 }
               }
             },
@@ -272,12 +272,12 @@
                     "start": {
                       "line": 16,
                       "column": 17,
-                      "program": "async_func_return_type.ets"
+                      "program": "async_func_return_type.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 30,
-                      "program": "async_func_return_type.ets"
+                      "program": "async_func_return_type.sts"
                     }
                   }
                 },
@@ -297,12 +297,12 @@
                         "start": {
                           "line": 16,
                           "column": 34,
-                          "program": "async_func_return_type.ets"
+                          "program": "async_func_return_type.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 41,
-                          "program": "async_func_return_type.ets"
+                          "program": "async_func_return_type.sts"
                         }
                       }
                     },
@@ -315,12 +315,12 @@
                             "start": {
                               "line": 16,
                               "column": 42,
-                              "program": "async_func_return_type.ets"
+                              "program": "async_func_return_type.sts"
                             },
                             "end": {
                               "line": 16,
                               "column": 48,
-                              "program": "async_func_return_type.ets"
+                              "program": "async_func_return_type.sts"
                             }
                           }
                         }
@@ -329,12 +329,12 @@
                         "start": {
                           "line": 16,
                           "column": 41,
-                          "program": "async_func_return_type.ets"
+                          "program": "async_func_return_type.sts"
                         },
                         "end": {
                           "line": 16,
                           "column": 49,
-                          "program": "async_func_return_type.ets"
+                          "program": "async_func_return_type.sts"
                         }
                       }
                     },
@@ -342,12 +342,12 @@
                       "start": {
                         "line": 16,
                         "column": 34,
-                        "program": "async_func_return_type.ets"
+                        "program": "async_func_return_type.sts"
                       },
                       "end": {
                         "line": 16,
                         "column": 50,
-                        "program": "async_func_return_type.ets"
+                        "program": "async_func_return_type.sts"
                       }
                     }
                   },
@@ -355,12 +355,12 @@
                     "start": {
                       "line": 16,
                       "column": 34,
-                      "program": "async_func_return_type.ets"
+                      "program": "async_func_return_type.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 50,
-                      "program": "async_func_return_type.ets"
+                      "program": "async_func_return_type.sts"
                     }
                   }
                 },
@@ -368,12 +368,12 @@
                   "start": {
                     "line": 16,
                     "column": 17,
-                    "program": "async_func_return_type.ets"
+                    "program": "async_func_return_type.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 30,
-                    "program": "async_func_return_type.ets"
+                    "program": "async_func_return_type.sts"
                   }
                 }
               },
@@ -381,12 +381,12 @@
                 "start": {
                   "line": 16,
                   "column": 17,
-                  "program": "async_func_return_type.ets"
+                  "program": "async_func_return_type.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 30,
-                  "program": "async_func_return_type.ets"
+                  "program": "async_func_return_type.sts"
                 }
               }
             },
@@ -396,12 +396,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "async_func_return_type.ets"
+                "program": "async_func_return_type.sts"
               },
               "end": {
                 "line": 16,
                 "column": 30,
-                "program": "async_func_return_type.ets"
+                "program": "async_func_return_type.sts"
               }
             }
           },
@@ -415,12 +415,12 @@
                 "start": {
                   "line": 18,
                   "column": 16,
-                  "program": "async_func_return_type.ets"
+                  "program": "async_func_return_type.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 19,
-                  "program": "async_func_return_type.ets"
+                  "program": "async_func_return_type.sts"
                 }
               }
             },
@@ -441,12 +441,12 @@
                     "start": {
                       "line": 18,
                       "column": 16,
-                      "program": "async_func_return_type.ets"
+                      "program": "async_func_return_type.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 19,
-                      "program": "async_func_return_type.ets"
+                      "program": "async_func_return_type.sts"
                     }
                   }
                 },
@@ -466,12 +466,12 @@
                         "start": {
                           "line": 18,
                           "column": 23,
-                          "program": "async_func_return_type.ets"
+                          "program": "async_func_return_type.sts"
                         },
                         "end": {
                           "line": 18,
                           "column": 30,
-                          "program": "async_func_return_type.ets"
+                          "program": "async_func_return_type.sts"
                         }
                       }
                     },
@@ -484,12 +484,12 @@
                             "start": {
                               "line": 18,
                               "column": 31,
-                              "program": "async_func_return_type.ets"
+                              "program": "async_func_return_type.sts"
                             },
                             "end": {
                               "line": 18,
                               "column": 34,
-                              "program": "async_func_return_type.ets"
+                              "program": "async_func_return_type.sts"
                             }
                           }
                         }
@@ -498,12 +498,12 @@
                         "start": {
                           "line": 18,
                           "column": 30,
-                          "program": "async_func_return_type.ets"
+                          "program": "async_func_return_type.sts"
                         },
                         "end": {
                           "line": 18,
                           "column": 35,
-                          "program": "async_func_return_type.ets"
+                          "program": "async_func_return_type.sts"
                         }
                       }
                     },
@@ -511,12 +511,12 @@
                       "start": {
                         "line": 18,
                         "column": 23,
-                        "program": "async_func_return_type.ets"
+                        "program": "async_func_return_type.sts"
                       },
                       "end": {
                         "line": 18,
                         "column": 37,
-                        "program": "async_func_return_type.ets"
+                        "program": "async_func_return_type.sts"
                       }
                     }
                   },
@@ -524,12 +524,12 @@
                     "start": {
                       "line": 18,
                       "column": 23,
-                      "program": "async_func_return_type.ets"
+                      "program": "async_func_return_type.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 37,
-                      "program": "async_func_return_type.ets"
+                      "program": "async_func_return_type.sts"
                     }
                   }
                 },
@@ -545,12 +545,12 @@
                           "start": {
                             "line": 19,
                             "column": 12,
-                            "program": "async_func_return_type.ets"
+                            "program": "async_func_return_type.sts"
                           },
                           "end": {
                             "line": 19,
                             "column": 13,
-                            "program": "async_func_return_type.ets"
+                            "program": "async_func_return_type.sts"
                           }
                         }
                       },
@@ -558,12 +558,12 @@
                         "start": {
                           "line": 19,
                           "column": 5,
-                          "program": "async_func_return_type.ets"
+                          "program": "async_func_return_type.sts"
                         },
                         "end": {
                           "line": 19,
                           "column": 14,
-                          "program": "async_func_return_type.ets"
+                          "program": "async_func_return_type.sts"
                         }
                       }
                     }
@@ -572,12 +572,12 @@
                     "start": {
                       "line": 18,
                       "column": 36,
-                      "program": "async_func_return_type.ets"
+                      "program": "async_func_return_type.sts"
                     },
                     "end": {
                       "line": 20,
                       "column": 2,
-                      "program": "async_func_return_type.ets"
+                      "program": "async_func_return_type.sts"
                     }
                   }
                 },
@@ -585,12 +585,12 @@
                   "start": {
                     "line": 18,
                     "column": 16,
-                    "program": "async_func_return_type.ets"
+                    "program": "async_func_return_type.sts"
                   },
                   "end": {
                     "line": 20,
                     "column": 2,
-                    "program": "async_func_return_type.ets"
+                    "program": "async_func_return_type.sts"
                   }
                 }
               },
@@ -598,12 +598,12 @@
                 "start": {
                   "line": 18,
                   "column": 16,
-                  "program": "async_func_return_type.ets"
+                  "program": "async_func_return_type.sts"
                 },
                 "end": {
                   "line": 20,
                   "column": 2,
-                  "program": "async_func_return_type.ets"
+                  "program": "async_func_return_type.sts"
                 }
               }
             },
@@ -613,12 +613,12 @@
               "start": {
                 "line": 18,
                 "column": 1,
-                "program": "async_func_return_type.ets"
+                "program": "async_func_return_type.sts"
               },
               "end": {
                 "line": 20,
                 "column": 2,
-                "program": "async_func_return_type.ets"
+                "program": "async_func_return_type.sts"
               }
             }
           },
@@ -632,12 +632,12 @@
                 "start": {
                   "line": 22,
                   "column": 16,
-                  "program": "async_func_return_type.ets"
+                  "program": "async_func_return_type.sts"
                 },
                 "end": {
                   "line": 22,
                   "column": 19,
-                  "program": "async_func_return_type.ets"
+                  "program": "async_func_return_type.sts"
                 }
               }
             },
@@ -658,12 +658,12 @@
                     "start": {
                       "line": 22,
                       "column": 16,
-                      "program": "async_func_return_type.ets"
+                      "program": "async_func_return_type.sts"
                     },
                     "end": {
                       "line": 22,
                       "column": 19,
-                      "program": "async_func_return_type.ets"
+                      "program": "async_func_return_type.sts"
                     }
                   }
                 },
@@ -682,12 +682,12 @@
                           "start": {
                             "line": 22,
                             "column": 26,
-                            "program": "async_func_return_type.ets"
+                            "program": "async_func_return_type.sts"
                           },
                           "end": {
                             "line": 22,
                             "column": 33,
-                            "program": "async_func_return_type.ets"
+                            "program": "async_func_return_type.sts"
                           }
                         }
                       },
@@ -696,12 +696,12 @@
                         "start": {
                           "line": 22,
                           "column": 20,
-                          "program": "async_func_return_type.ets"
+                          "program": "async_func_return_type.sts"
                         },
                         "end": {
                           "line": 22,
                           "column": 33,
-                          "program": "async_func_return_type.ets"
+                          "program": "async_func_return_type.sts"
                         }
                       }
                     },
@@ -709,12 +709,12 @@
                       "start": {
                         "line": 22,
                         "column": 20,
-                        "program": "async_func_return_type.ets"
+                        "program": "async_func_return_type.sts"
                       },
                       "end": {
                         "line": 22,
                         "column": 33,
-                        "program": "async_func_return_type.ets"
+                        "program": "async_func_return_type.sts"
                       }
                     }
                   }
@@ -731,12 +731,12 @@
                         "start": {
                           "line": 22,
                           "column": 36,
-                          "program": "async_func_return_type.ets"
+                          "program": "async_func_return_type.sts"
                         },
                         "end": {
                           "line": 22,
                           "column": 43,
-                          "program": "async_func_return_type.ets"
+                          "program": "async_func_return_type.sts"
                         }
                       }
                     },
@@ -749,12 +749,12 @@
                             "start": {
                               "line": 22,
                               "column": 44,
-                              "program": "async_func_return_type.ets"
+                              "program": "async_func_return_type.sts"
                             },
                             "end": {
                               "line": 22,
                               "column": 50,
-                              "program": "async_func_return_type.ets"
+                              "program": "async_func_return_type.sts"
                             }
                           }
                         }
@@ -763,12 +763,12 @@
                         "start": {
                           "line": 22,
                           "column": 43,
-                          "program": "async_func_return_type.ets"
+                          "program": "async_func_return_type.sts"
                         },
                         "end": {
                           "line": 22,
                           "column": 51,
-                          "program": "async_func_return_type.ets"
+                          "program": "async_func_return_type.sts"
                         }
                       }
                     },
@@ -776,12 +776,12 @@
                       "start": {
                         "line": 22,
                         "column": 36,
-                        "program": "async_func_return_type.ets"
+                        "program": "async_func_return_type.sts"
                       },
                       "end": {
                         "line": 22,
                         "column": 53,
-                        "program": "async_func_return_type.ets"
+                        "program": "async_func_return_type.sts"
                       }
                     }
                   },
@@ -789,12 +789,12 @@
                     "start": {
                       "line": 22,
                       "column": 36,
-                      "program": "async_func_return_type.ets"
+                      "program": "async_func_return_type.sts"
                     },
                     "end": {
                       "line": 22,
                       "column": 53,
-                      "program": "async_func_return_type.ets"
+                      "program": "async_func_return_type.sts"
                     }
                   }
                 },
@@ -811,12 +811,12 @@
                           "start": {
                             "line": 23,
                             "column": 9,
-                            "program": "async_func_return_type.ets"
+                            "program": "async_func_return_type.sts"
                           },
                           "end": {
                             "line": 23,
                             "column": 13,
-                            "program": "async_func_return_type.ets"
+                            "program": "async_func_return_type.sts"
                           }
                         }
                       },
@@ -832,12 +832,12 @@
                                 "start": {
                                   "line": 24,
                                   "column": 16,
-                                  "program": "async_func_return_type.ets"
+                                  "program": "async_func_return_type.sts"
                                 },
                                 "end": {
                                   "line": 24,
                                   "column": 19,
-                                  "program": "async_func_return_type.ets"
+                                  "program": "async_func_return_type.sts"
                                 }
                               }
                             },
@@ -845,12 +845,12 @@
                               "start": {
                                 "line": 24,
                                 "column": 9,
-                                "program": "async_func_return_type.ets"
+                                "program": "async_func_return_type.sts"
                               },
                               "end": {
                                 "line": 24,
                                 "column": 20,
-                                "program": "async_func_return_type.ets"
+                                "program": "async_func_return_type.sts"
                               }
                             }
                           }
@@ -859,12 +859,12 @@
                           "start": {
                             "line": 23,
                             "column": 15,
-                            "program": "async_func_return_type.ets"
+                            "program": "async_func_return_type.sts"
                           },
                           "end": {
                             "line": 25,
                             "column": 6,
-                            "program": "async_func_return_type.ets"
+                            "program": "async_func_return_type.sts"
                           }
                         }
                       },
@@ -883,12 +883,12 @@
                                   "start": {
                                     "line": 26,
                                     "column": 16,
-                                    "program": "async_func_return_type.ets"
+                                    "program": "async_func_return_type.sts"
                                   },
                                   "end": {
                                     "line": 26,
                                     "column": 29,
-                                    "program": "async_func_return_type.ets"
+                                    "program": "async_func_return_type.sts"
                                   }
                                 }
                               },
@@ -898,12 +898,12 @@
                                 "start": {
                                   "line": 26,
                                   "column": 16,
-                                  "program": "async_func_return_type.ets"
+                                  "program": "async_func_return_type.sts"
                                 },
                                 "end": {
                                   "line": 26,
                                   "column": 31,
-                                  "program": "async_func_return_type.ets"
+                                  "program": "async_func_return_type.sts"
                                 }
                               }
                             },
@@ -911,12 +911,12 @@
                               "start": {
                                 "line": 26,
                                 "column": 9,
-                                "program": "async_func_return_type.ets"
+                                "program": "async_func_return_type.sts"
                               },
                               "end": {
                                 "line": 26,
                                 "column": 32,
-                                "program": "async_func_return_type.ets"
+                                "program": "async_func_return_type.sts"
                               }
                             }
                           }
@@ -925,12 +925,12 @@
                           "start": {
                             "line": 25,
                             "column": 12,
-                            "program": "async_func_return_type.ets"
+                            "program": "async_func_return_type.sts"
                           },
                           "end": {
                             "line": 27,
                             "column": 6,
-                            "program": "async_func_return_type.ets"
+                            "program": "async_func_return_type.sts"
                           }
                         }
                       },
@@ -938,12 +938,12 @@
                         "start": {
                           "line": 23,
                           "column": 5,
-                          "program": "async_func_return_type.ets"
+                          "program": "async_func_return_type.sts"
                         },
                         "end": {
                           "line": 27,
                           "column": 6,
-                          "program": "async_func_return_type.ets"
+                          "program": "async_func_return_type.sts"
                         }
                       }
                     }
@@ -952,12 +952,12 @@
                     "start": {
                       "line": 22,
                       "column": 52,
-                      "program": "async_func_return_type.ets"
+                      "program": "async_func_return_type.sts"
                     },
                     "end": {
                       "line": 28,
                       "column": 2,
-                      "program": "async_func_return_type.ets"
+                      "program": "async_func_return_type.sts"
                     }
                   }
                 },
@@ -965,12 +965,12 @@
                   "start": {
                     "line": 22,
                     "column": 16,
-                    "program": "async_func_return_type.ets"
+                    "program": "async_func_return_type.sts"
                   },
                   "end": {
                     "line": 28,
                     "column": 2,
-                    "program": "async_func_return_type.ets"
+                    "program": "async_func_return_type.sts"
                   }
                 }
               },
@@ -978,12 +978,12 @@
                 "start": {
                   "line": 22,
                   "column": 16,
-                  "program": "async_func_return_type.ets"
+                  "program": "async_func_return_type.sts"
                 },
                 "end": {
                   "line": 28,
                   "column": 2,
-                  "program": "async_func_return_type.ets"
+                  "program": "async_func_return_type.sts"
                 }
               }
             },
@@ -993,12 +993,12 @@
               "start": {
                 "line": 22,
                 "column": 1,
-                "program": "async_func_return_type.ets"
+                "program": "async_func_return_type.sts"
               },
               "end": {
                 "line": 28,
                 "column": 2,
-                "program": "async_func_return_type.ets"
+                "program": "async_func_return_type.sts"
               }
             }
           }
@@ -1007,12 +1007,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "async_func_return_type.ets"
+            "program": "async_func_return_type.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "async_func_return_type.ets"
+            "program": "async_func_return_type.sts"
           }
         }
       },
@@ -1020,12 +1020,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "async_func_return_type.ets"
+          "program": "async_func_return_type.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "async_func_return_type.ets"
+          "program": "async_func_return_type.sts"
         }
       }
     }
@@ -1034,12 +1034,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "async_func_return_type.ets"
+      "program": "async_func_return_type.sts"
     },
     "end": {
       "line": 29,
       "column": 1,
-      "program": "async_func_return_type.ets"
+      "program": "async_func_return_type.sts"
     }
   }
 }

@@ -50,7 +50,7 @@ public:
 
 TEST_F(LSPGetFileReferencesTests, GetFileReferences1)
 {
-    std::vector<std::string> files = {"refer-1.ets", "file-references1.ets"};
+    std::vector<std::string> files = {"refer-1.sts", "file-references1.sts"};
     std::vector<std::string> texts = {
         R"(export function A(a:number, b:number): number {
   return a + b;
@@ -59,7 +59,7 @@ export function B(a:number, b:number): number {
   return a + b;
 })",
         R"(import {A} from "./refer-1";
-import {B} from "./refer-1.ets";
+import {B} from "./refer-1.sts";
 A(1, 2);
 B(1, 2);)"};
     auto filePaths = CreateTempFile(files, texts);
@@ -80,7 +80,7 @@ B(1, 2);)"};
 
 TEST_F(LSPGetFileReferencesTests, GetFileReferences2)
 {
-    std::vector<std::string> files = {"refer-2.ts", "file-references2.ets"};
+    std::vector<std::string> files = {"refer-2.ts", "file-references2.sts"};
     std::vector<std::string> texts = {
         R"(export function A(a:number, b:number): number {
   return a + b;

@@ -30,13 +30,13 @@ options:
 # Parser
 - name: extension
   type: std::string
-  default: ets
+  default: sts
   description: Parse the input as the given extension
   enum: &ScriptExtension
   - js
   - ts
   - as
-  - ets
+  - sts
   possible_values: *ScriptExtension
 
 - name: module

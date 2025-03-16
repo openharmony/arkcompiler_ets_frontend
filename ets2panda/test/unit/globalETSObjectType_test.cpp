@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -52,7 +52,7 @@ TEST_F(GlobalETSObjectTypeTest, TypeDeclNodeTest)
         << "         if (a.testBool) {\n"
         << "}\n}\n}" << std::endl;
 
-    InitializeChecker("_.ets", src.str());
+    InitializeChecker("_.sts", src.str());
     auto *checker = Checker();
     auto *globalETSObjectType = checker->GlobalETSObjectType();
     [[maybe_unused]] auto *declNode = globalETSObjectType->Variable()->Declaration()->Node();
@@ -67,7 +67,7 @@ TEST_F(GlobalETSObjectTypeTest, ObjectPartialGenTest)
         << "    testObj: Object;\n}\n"
         << "let a = new A<int>({})\n;" << std::endl;
 
-    InitializeChecker("_.ets", src.str());
+    InitializeChecker("_.sts", src.str());
     auto checker = Checker();
     ASSERT(checker);
     auto *globalETSObjectType = checker->GlobalETSObjectType();
@@ -94,7 +94,7 @@ TEST_F(GlobalETSObjectTypeTest, ETSArrayContainGlobalETSObject)
         << "        this.prop = 1.0;}\n}"
         << "let a = new A<Object>();\n let b = new B<Object>();";
 
-    InitializeChecker("_.ets", src.str());
+    InitializeChecker("_.sts", src.str());
     auto checker = Checker();
     ASSERT(checker);
     auto *globalETSObjectType = checker->GlobalETSObjectType();

@@ -29,7 +29,7 @@ TEST_F(BraceMatchingTests, GetBraceMatchingAtPositionAtEndOfFile)
 
     // Initialize context with an empty function
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("at-eof.ets", ES2PANDA_STATE_CHECKED, "function main() {}");
+    es2panda_Context *ctx = initializer.CreateContext("at-eof.sts", ES2PANDA_STATE_CHECKED, "function main() {}");
 
     // Test position at the end of the file
     const size_t eofPos = 18;
@@ -50,7 +50,7 @@ TEST_F(BraceMatchingTests, GetBraceMatchingAtPositionMiddleOfToken)
     // Initialize context with a function containing braces
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("middleoftoken.ets", ES2PANDA_STATE_CHECKED, "function main() { let x = 10; }");
+        initializer.CreateContext("middleoftoken.sts", ES2PANDA_STATE_CHECKED, "function main() { let x = 10; }");
 
     // Test position inside a keyword ("function" at position 5)
     const size_t insideTokenPos = 5;
@@ -69,7 +69,7 @@ TEST_F(BraceMatchingTests, GetBraceMatchingAtPositionEmptyBraces)
     using ark::es2panda::public_lib::Context;
 
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("emptybraces.ets", ES2PANDA_STATE_CHECKED, "function main() { }");
+    es2panda_Context *ctx = initializer.CreateContext("emptybraces.sts", ES2PANDA_STATE_CHECKED, "function main() { }");
 
     const size_t position = 16;  // pos of {
     const int expectedMapSize = 2;
@@ -94,7 +94,7 @@ TEST_F(BraceMatchingTests, GetBraceMatchingAtPositionValidBraces)
 
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("validbraces.ets", ES2PANDA_STATE_CHECKED, "function main() { let x = (2 + 3); }");
+        initializer.CreateContext("validbraces.sts", ES2PANDA_STATE_CHECKED, "function main() { let x = (2 + 3); }");
 
     // Test opening brace '{'
     const size_t openBracePos = 16;
@@ -118,7 +118,7 @@ TEST_F(BraceMatchingTests, GetBraceMatchingAtPositionParamInstantiation)
 
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("paraminst.ets", ES2PANDA_STATE_CHECKED, "let z = new Map<Object, number>()");
+        initializer.CreateContext("paraminst.sts", ES2PANDA_STATE_CHECKED, "let z = new Map<Object, number>()");
 
     // Test '<'
     const size_t pos = 15;
@@ -141,7 +141,7 @@ TEST_F(BraceMatchingTests, GetBraceMatchingAtPositionParamDeclaration)
     using ark::es2panda::public_lib::Context;
 
     Initializer initializer = Initializer();
-    es2panda_Context *ctx = initializer.CreateContext("paramdec.ets", ES2PANDA_STATE_CHECKED, "export class B<T>{}");
+    es2panda_Context *ctx = initializer.CreateContext("paramdec.sts", ES2PANDA_STATE_CHECKED, "export class B<T>{}");
 
     // Test '<'
     const size_t pos = 14;
@@ -165,7 +165,7 @@ TEST_F(BraceMatchingTests, GetBraceMatchingAtPositionInnerBlock)
 
     Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        initializer.CreateContext("paramdec.ets", ES2PANDA_STATE_CHECKED, "function main() { { Math.random() < 5; } }");
+        initializer.CreateContext("paramdec.sts", ES2PANDA_STATE_CHECKED, "function main() { { Math.random() < 5; } }");
 
     // Test inner '{'
     const size_t pos = 18;

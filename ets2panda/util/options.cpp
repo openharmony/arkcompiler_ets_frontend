@@ -228,7 +228,7 @@ bool Options::Parse(Span<const char *const> args)
         return false;
     }
 
-    if ((WasSetDumpEtsSrcBeforePhases() || WasSetDumpEtsSrcAfterPhases()) && extension_ != ScriptExtension::ETS) {
+    if ((WasSetDumpEtsSrcBeforePhases() || WasSetDumpEtsSrcAfterPhases()) && extension_ != ScriptExtension::STS) {
         diagnosticEngine_.LogFatalError("--dump-ets-src-* option is valid only with ETS extension");
         return false;
     }
@@ -322,11 +322,11 @@ void Options::InitializeWarnings()
 bool Options::DetermineExtension()
 {
     if (compilationMode_ == CompilationMode::PROJECT) {
-        if (WasSetExtension() && gen::Options::GetExtension() != "ets") {
-            diagnosticEngine_.LogFatalError("Error: only '--extension=ets' is supported for project compilation mode.");
+        if (WasSetExtension() && gen::Options::GetExtension() != "sts") {
+            diagnosticEngine_.LogFatalError("Error: only '--extension=sts' is supported for project compilation mode.");
             return false;
         }
-        extension_ = ScriptExtension::ETS;
+        extension_ = ScriptExtension::STS;
         return true;
     }
     std::string sourceFileExtension = SourceFileName().substr(SourceFileName().find_last_of('.') + 1);
@@ -337,13 +337,13 @@ bool Options::DetermineExtension()
                                       ", Manual(used): ", std::string_view(gen::Options::GetExtension())});
     }
 #endif  // ENABLE_AFTER_21192
-    // Note: the file suffix `.ets` is a valid suffix for compiler, which is equivalent to `.ets`
-    sourceFileExtension = sourceFileExtension == "ets" ? "ets" : sourceFileExtension;
+    // Note: the file suffix `.ets` is a valid suffix for compiler, which is equivalent to `.sts`
+    sourceFileExtension = sourceFileExtension == "ets" ? "sts" : sourceFileExtension;
     auto tempExtension = WasSetExtension() ? gen::Options::GetExtension() : sourceFileExtension;
     if (gen::extension::FromString(tempExtension) == ScriptExtension::INVALID) {
         diagnosticEngine_.LogFatalError(
             "Unknown extension of sourcefile, set the '--extension' option or change the file extension "
-            "(available options: js, ts, as, ets)");
+            "(available options: js, ts, as, sts)");
         return false;
     }
 
@@ -355,7 +355,7 @@ bool Options::DetermineExtension()
             return false;
         }
 #endif
-        case ScriptExtension::ETS: {
+        case ScriptExtension::STS: {
             std::ifstream inputStream(GetArktsconfig());
             if (inputStream.fail()) {
                 diagnosticEngine_.LogFatalError(
@@ -371,7 +371,7 @@ bool Options::DetermineExtension()
 
 bool Options::ProcessEtsSpecificOptions()
 {
-    if (GetExtension() != ScriptExtension::ETS) {
+    if (GetExtension() != ScriptExtension::STS) {
         return true;
     }
 

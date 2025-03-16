@@ -10,12 +10,12 @@
           "start": {
             "line": 20,
             "column": 19,
-            "program": "instanceof_dyndecl_dynvalue.ets"
+            "program": "instanceof_dyndecl_dynvalue.sts"
           },
           "end": {
             "line": 20,
             "column": 44,
-            "program": "instanceof_dyndecl_dynvalue.ets"
+            "program": "instanceof_dyndecl_dynvalue.sts"
           }
         }
       },
@@ -30,12 +30,12 @@
               "start": {
                 "line": 20,
                 "column": 10,
-                "program": "instanceof_dyndecl_dynvalue.ets"
+                "program": "instanceof_dyndecl_dynvalue.sts"
               },
               "end": {
                 "line": 20,
                 "column": 11,
-                "program": "instanceof_dyndecl_dynvalue.ets"
+                "program": "instanceof_dyndecl_dynvalue.sts"
               }
             }
           },
@@ -47,12 +47,12 @@
               "start": {
                 "line": 20,
                 "column": 10,
-                "program": "instanceof_dyndecl_dynvalue.ets"
+                "program": "instanceof_dyndecl_dynvalue.sts"
               },
               "end": {
                 "line": 20,
                 "column": 11,
-                "program": "instanceof_dyndecl_dynvalue.ets"
+                "program": "instanceof_dyndecl_dynvalue.sts"
               }
             }
           },
@@ -60,12 +60,12 @@
             "start": {
               "line": 20,
               "column": 10,
-              "program": "instanceof_dyndecl_dynvalue.ets"
+              "program": "instanceof_dyndecl_dynvalue.sts"
             },
             "end": {
               "line": 20,
               "column": 11,
-              "program": "instanceof_dyndecl_dynvalue.ets"
+              "program": "instanceof_dyndecl_dynvalue.sts"
             }
           }
         }
@@ -74,12 +74,12 @@
         "start": {
           "line": 20,
           "column": 1,
-          "program": "instanceof_dyndecl_dynvalue.ets"
+          "program": "instanceof_dyndecl_dynvalue.sts"
         },
         "end": {
           "line": 20,
           "column": 44,
-          "program": "instanceof_dyndecl_dynvalue.ets"
+          "program": "instanceof_dyndecl_dynvalue.sts"
         }
       }
     },
@@ -92,12 +92,12 @@
           "start": {
             "line": 21,
             "column": 27,
-            "program": "instanceof_dyndecl_dynvalue.ets"
+            "program": "instanceof_dyndecl_dynvalue.sts"
           },
           "end": {
             "line": 21,
             "column": 68,
-            "program": "instanceof_dyndecl_dynvalue.ets"
+            "program": "instanceof_dyndecl_dynvalue.sts"
           }
         }
       },
@@ -112,12 +112,12 @@
               "start": {
                 "line": 21,
                 "column": 10,
-                "program": "instanceof_dyndecl_dynvalue.ets"
+                "program": "instanceof_dyndecl_dynvalue.sts"
               },
               "end": {
                 "line": 21,
                 "column": 19,
-                "program": "instanceof_dyndecl_dynvalue.ets"
+                "program": "instanceof_dyndecl_dynvalue.sts"
               }
             }
           },
@@ -129,12 +129,12 @@
               "start": {
                 "line": 21,
                 "column": 10,
-                "program": "instanceof_dyndecl_dynvalue.ets"
+                "program": "instanceof_dyndecl_dynvalue.sts"
               },
               "end": {
                 "line": 21,
                 "column": 19,
-                "program": "instanceof_dyndecl_dynvalue.ets"
+                "program": "instanceof_dyndecl_dynvalue.sts"
               }
             }
           },
@@ -142,12 +142,12 @@
             "start": {
               "line": 21,
               "column": 10,
-              "program": "instanceof_dyndecl_dynvalue.ets"
+              "program": "instanceof_dyndecl_dynvalue.sts"
             },
             "end": {
               "line": 21,
               "column": 19,
-              "program": "instanceof_dyndecl_dynvalue.ets"
+              "program": "instanceof_dyndecl_dynvalue.sts"
             }
           }
         }
@@ -156,12 +156,12 @@
         "start": {
           "line": 21,
           "column": 1,
-          "program": "instanceof_dyndecl_dynvalue.ets"
+          "program": "instanceof_dyndecl_dynvalue.sts"
         },
         "end": {
           "line": 21,
           "column": 68,
-          "program": "instanceof_dyndecl_dynvalue.ets"
+          "program": "instanceof_dyndecl_dynvalue.sts"
         }
       }
     },
@@ -176,12 +176,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "instanceof_dyndecl_dynvalue.ets"
+              "program": "instanceof_dyndecl_dynvalue.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "instanceof_dyndecl_dynvalue.ets"
+              "program": "instanceof_dyndecl_dynvalue.sts"
             }
           }
         },
@@ -285,12 +285,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "instanceof_dyndecl_dynvalue.ets"
+                "program": "instanceof_dyndecl_dynvalue.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "instanceof_dyndecl_dynvalue.ets"
+                "program": "instanceof_dyndecl_dynvalue.sts"
               }
             }
           },
@@ -391,12 +391,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "instanceof_dyndecl_dynvalue.ets"
+                "program": "instanceof_dyndecl_dynvalue.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "instanceof_dyndecl_dynvalue.ets"
+                "program": "instanceof_dyndecl_dynvalue.sts"
               }
             }
           },
@@ -410,12 +410,12 @@
                 "start": {
                   "line": 23,
                   "column": 10,
-                  "program": "instanceof_dyndecl_dynvalue.ets"
+                  "program": "instanceof_dyndecl_dynvalue.sts"
                 },
                 "end": {
                   "line": 23,
                   "column": 12,
-                  "program": "instanceof_dyndecl_dynvalue.ets"
+                  "program": "instanceof_dyndecl_dynvalue.sts"
                 }
               }
             },
@@ -436,12 +436,12 @@
                     "start": {
                       "line": 23,
                       "column": 10,
-                      "program": "instanceof_dyndecl_dynvalue.ets"
+                      "program": "instanceof_dyndecl_dynvalue.sts"
                     },
                     "end": {
                       "line": 23,
                       "column": 12,
-                      "program": "instanceof_dyndecl_dynvalue.ets"
+                      "program": "instanceof_dyndecl_dynvalue.sts"
                     }
                   }
                 },
@@ -466,12 +466,12 @@
                               "start": {
                                 "line": 23,
                                 "column": 16,
-                                "program": "instanceof_dyndecl_dynvalue.ets"
+                                "program": "instanceof_dyndecl_dynvalue.sts"
                               },
                               "end": {
                                 "line": 23,
                                 "column": 25,
-                                "program": "instanceof_dyndecl_dynvalue.ets"
+                                "program": "instanceof_dyndecl_dynvalue.sts"
                               }
                             }
                           },
@@ -479,12 +479,12 @@
                             "start": {
                               "line": 23,
                               "column": 16,
-                              "program": "instanceof_dyndecl_dynvalue.ets"
+                              "program": "instanceof_dyndecl_dynvalue.sts"
                             },
                             "end": {
                               "line": 23,
                               "column": 26,
-                              "program": "instanceof_dyndecl_dynvalue.ets"
+                              "program": "instanceof_dyndecl_dynvalue.sts"
                             }
                           }
                         },
@@ -492,12 +492,12 @@
                           "start": {
                             "line": 23,
                             "column": 16,
-                            "program": "instanceof_dyndecl_dynvalue.ets"
+                            "program": "instanceof_dyndecl_dynvalue.sts"
                           },
                           "end": {
                             "line": 23,
                             "column": 26,
-                            "program": "instanceof_dyndecl_dynvalue.ets"
+                            "program": "instanceof_dyndecl_dynvalue.sts"
                           }
                         }
                       },
@@ -506,12 +506,12 @@
                         "start": {
                           "line": 23,
                           "column": 13,
-                          "program": "instanceof_dyndecl_dynvalue.ets"
+                          "program": "instanceof_dyndecl_dynvalue.sts"
                         },
                         "end": {
                           "line": 23,
                           "column": 26,
-                          "program": "instanceof_dyndecl_dynvalue.ets"
+                          "program": "instanceof_dyndecl_dynvalue.sts"
                         }
                       }
                     },
@@ -519,12 +519,12 @@
                       "start": {
                         "line": 23,
                         "column": 13,
-                        "program": "instanceof_dyndecl_dynvalue.ets"
+                        "program": "instanceof_dyndecl_dynvalue.sts"
                       },
                       "end": {
                         "line": 23,
                         "column": 26,
-                        "program": "instanceof_dyndecl_dynvalue.ets"
+                        "program": "instanceof_dyndecl_dynvalue.sts"
                       }
                     }
                   }
@@ -535,12 +535,12 @@
                     "start": {
                       "line": 23,
                       "column": 28,
-                      "program": "instanceof_dyndecl_dynvalue.ets"
+                      "program": "instanceof_dyndecl_dynvalue.sts"
                     },
                     "end": {
                       "line": 23,
                       "column": 35,
-                      "program": "instanceof_dyndecl_dynvalue.ets"
+                      "program": "instanceof_dyndecl_dynvalue.sts"
                     }
                   }
                 },
@@ -560,12 +560,12 @@
                             "start": {
                               "line": 24,
                               "column": 12,
-                              "program": "instanceof_dyndecl_dynvalue.ets"
+                              "program": "instanceof_dyndecl_dynvalue.sts"
                             },
                             "end": {
                               "line": 24,
                               "column": 13,
-                              "program": "instanceof_dyndecl_dynvalue.ets"
+                              "program": "instanceof_dyndecl_dynvalue.sts"
                             }
                           }
                         },
@@ -581,12 +581,12 @@
                                 "start": {
                                   "line": 24,
                                   "column": 25,
-                                  "program": "instanceof_dyndecl_dynvalue.ets"
+                                  "program": "instanceof_dyndecl_dynvalue.sts"
                                 },
                                 "end": {
                                   "line": 24,
                                   "column": 26,
-                                  "program": "instanceof_dyndecl_dynvalue.ets"
+                                  "program": "instanceof_dyndecl_dynvalue.sts"
                                 }
                               }
                             },
@@ -594,12 +594,12 @@
                               "start": {
                                 "line": 24,
                                 "column": 25,
-                                "program": "instanceof_dyndecl_dynvalue.ets"
+                                "program": "instanceof_dyndecl_dynvalue.sts"
                               },
                               "end": {
                                 "line": 24,
                                 "column": 27,
-                                "program": "instanceof_dyndecl_dynvalue.ets"
+                                "program": "instanceof_dyndecl_dynvalue.sts"
                               }
                             }
                           },
@@ -607,12 +607,12 @@
                             "start": {
                               "line": 24,
                               "column": 25,
-                              "program": "instanceof_dyndecl_dynvalue.ets"
+                              "program": "instanceof_dyndecl_dynvalue.sts"
                             },
                             "end": {
                               "line": 24,
                               "column": 27,
-                              "program": "instanceof_dyndecl_dynvalue.ets"
+                              "program": "instanceof_dyndecl_dynvalue.sts"
                             }
                           }
                         },
@@ -620,12 +620,12 @@
                           "start": {
                             "line": 24,
                             "column": 12,
-                            "program": "instanceof_dyndecl_dynvalue.ets"
+                            "program": "instanceof_dyndecl_dynvalue.sts"
                           },
                           "end": {
                             "line": 24,
                             "column": 27,
-                            "program": "instanceof_dyndecl_dynvalue.ets"
+                            "program": "instanceof_dyndecl_dynvalue.sts"
                           }
                         }
                       },
@@ -633,12 +633,12 @@
                         "start": {
                           "line": 24,
                           "column": 5,
-                          "program": "instanceof_dyndecl_dynvalue.ets"
+                          "program": "instanceof_dyndecl_dynvalue.sts"
                         },
                         "end": {
                           "line": 24,
                           "column": 27,
-                          "program": "instanceof_dyndecl_dynvalue.ets"
+                          "program": "instanceof_dyndecl_dynvalue.sts"
                         }
                       }
                     }
@@ -647,12 +647,12 @@
                     "start": {
                       "line": 23,
                       "column": 36,
-                      "program": "instanceof_dyndecl_dynvalue.ets"
+                      "program": "instanceof_dyndecl_dynvalue.sts"
                     },
                     "end": {
                       "line": 25,
                       "column": 2,
-                      "program": "instanceof_dyndecl_dynvalue.ets"
+                      "program": "instanceof_dyndecl_dynvalue.sts"
                     }
                   }
                 },
@@ -660,12 +660,12 @@
                   "start": {
                     "line": 23,
                     "column": 10,
-                    "program": "instanceof_dyndecl_dynvalue.ets"
+                    "program": "instanceof_dyndecl_dynvalue.sts"
                   },
                   "end": {
                     "line": 25,
                     "column": 2,
-                    "program": "instanceof_dyndecl_dynvalue.ets"
+                    "program": "instanceof_dyndecl_dynvalue.sts"
                   }
                 }
               },
@@ -673,12 +673,12 @@
                 "start": {
                   "line": 23,
                   "column": 10,
-                  "program": "instanceof_dyndecl_dynvalue.ets"
+                  "program": "instanceof_dyndecl_dynvalue.sts"
                 },
                 "end": {
                   "line": 25,
                   "column": 2,
-                  "program": "instanceof_dyndecl_dynvalue.ets"
+                  "program": "instanceof_dyndecl_dynvalue.sts"
                 }
               }
             },
@@ -688,12 +688,12 @@
               "start": {
                 "line": 23,
                 "column": 1,
-                "program": "instanceof_dyndecl_dynvalue.ets"
+                "program": "instanceof_dyndecl_dynvalue.sts"
               },
               "end": {
                 "line": 25,
                 "column": 2,
-                "program": "instanceof_dyndecl_dynvalue.ets"
+                "program": "instanceof_dyndecl_dynvalue.sts"
               }
             }
           }
@@ -702,12 +702,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "instanceof_dyndecl_dynvalue.ets"
+            "program": "instanceof_dyndecl_dynvalue.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "instanceof_dyndecl_dynvalue.ets"
+            "program": "instanceof_dyndecl_dynvalue.sts"
           }
         }
       },
@@ -715,12 +715,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "instanceof_dyndecl_dynvalue.ets"
+          "program": "instanceof_dyndecl_dynvalue.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "instanceof_dyndecl_dynvalue.ets"
+          "program": "instanceof_dyndecl_dynvalue.sts"
         }
       }
     },
@@ -1205,13 +1205,13 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "instanceof_dyndecl_dynvalue.ets"
+      "program": "instanceof_dyndecl_dynvalue.sts"
     },
     "end": {
       "line": 27,
       "column": 1,
-      "program": "instanceof_dyndecl_dynvalue.ets"
+      "program": "instanceof_dyndecl_dynvalue.sts"
     }
   }
 }
-TypeError: Right-hand side of instanceof expression must represent a type. [instanceof_dyndecl_dynvalue.ets:24:12]
+TypeError: Right-hand side of instanceof expression must represent a type. [instanceof_dyndecl_dynvalue.sts:24:12]

@@ -12,12 +12,12 @@
             "start": {
               "line": 16,
               "column": 7,
-              "program": "class_def_varargs_1.ets"
+              "program": "class_def_varargs_1.sts"
             },
             "end": {
               "line": 16,
               "column": 10,
-              "program": "class_def_varargs_1.ets"
+              "program": "class_def_varargs_1.sts"
             }
           }
         },
@@ -34,12 +34,12 @@
                   "start": {
                     "line": 16,
                     "column": 11,
-                    "program": "class_def_varargs_1.ets"
+                    "program": "class_def_varargs_1.sts"
                   },
                   "end": {
                     "line": 16,
                     "column": 12,
-                    "program": "class_def_varargs_1.ets"
+                    "program": "class_def_varargs_1.sts"
                   }
                 }
               },
@@ -47,12 +47,12 @@
                 "start": {
                   "line": 16,
                   "column": 11,
-                  "program": "class_def_varargs_1.ets"
+                  "program": "class_def_varargs_1.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 13,
-                  "program": "class_def_varargs_1.ets"
+                  "program": "class_def_varargs_1.sts"
                 }
               }
             }
@@ -61,12 +61,12 @@
             "start": {
               "line": 16,
               "column": 10,
-              "program": "class_def_varargs_1.ets"
+              "program": "class_def_varargs_1.sts"
             },
             "end": {
               "line": 16,
               "column": 13,
-              "program": "class_def_varargs_1.ets"
+              "program": "class_def_varargs_1.sts"
             }
           }
         },
@@ -134,12 +134,12 @@
                           "start": {
                             "line": 17,
                             "column": 20,
-                            "program": "class_def_varargs_1.ets"
+                            "program": "class_def_varargs_1.sts"
                           },
                           "end": {
                             "line": 17,
                             "column": 21,
-                            "program": "class_def_varargs_1.ets"
+                            "program": "class_def_varargs_1.sts"
                           }
                         }
                       },
@@ -157,12 +157,12 @@
                                 "start": {
                                   "line": 17,
                                   "column": 23,
-                                  "program": "class_def_varargs_1.ets"
+                                  "program": "class_def_varargs_1.sts"
                                 },
                                 "end": {
                                   "line": 17,
                                   "column": 24,
-                                  "program": "class_def_varargs_1.ets"
+                                  "program": "class_def_varargs_1.sts"
                                 }
                               }
                             },
@@ -170,12 +170,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 23,
-                                "program": "class_def_varargs_1.ets"
+                                "program": "class_def_varargs_1.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 25,
-                                "program": "class_def_varargs_1.ets"
+                                "program": "class_def_varargs_1.sts"
                               }
                             }
                           },
@@ -183,12 +183,12 @@
                             "start": {
                               "line": 17,
                               "column": 23,
-                              "program": "class_def_varargs_1.ets"
+                              "program": "class_def_varargs_1.sts"
                             },
                             "end": {
                               "line": 17,
                               "column": 25,
-                              "program": "class_def_varargs_1.ets"
+                              "program": "class_def_varargs_1.sts"
                             }
                           }
                         },
@@ -197,12 +197,12 @@
                           "start": {
                             "line": 17,
                             "column": 24,
-                            "program": "class_def_varargs_1.ets"
+                            "program": "class_def_varargs_1.sts"
                           },
                           "end": {
                             "line": 17,
                             "column": 26,
-                            "program": "class_def_varargs_1.ets"
+                            "program": "class_def_varargs_1.sts"
                           }
                         }
                       },
@@ -210,12 +210,12 @@
                         "start": {
                           "line": 17,
                           "column": 17,
-                          "program": "class_def_varargs_1.ets"
+                          "program": "class_def_varargs_1.sts"
                         },
                         "end": {
                           "line": 17,
                           "column": 26,
-                          "program": "class_def_varargs_1.ets"
+                          "program": "class_def_varargs_1.sts"
                         }
                       }
                     },
@@ -223,12 +223,12 @@
                       "start": {
                         "line": 17,
                         "column": 17,
-                        "program": "class_def_varargs_1.ets"
+                        "program": "class_def_varargs_1.sts"
                       },
                       "end": {
                         "line": 17,
                         "column": 26,
-                        "program": "class_def_varargs_1.ets"
+                        "program": "class_def_varargs_1.sts"
                       }
                     }
                   }
@@ -240,12 +240,12 @@
                     "start": {
                       "line": 17,
                       "column": 28,
-                      "program": "class_def_varargs_1.ets"
+                      "program": "class_def_varargs_1.sts"
                     },
                     "end": {
                       "line": 17,
                       "column": 30,
-                      "program": "class_def_varargs_1.ets"
+                      "program": "class_def_varargs_1.sts"
                     }
                   }
                 },
@@ -253,12 +253,12 @@
                   "start": {
                     "line": 17,
                     "column": 16,
-                    "program": "class_def_varargs_1.ets"
+                    "program": "class_def_varargs_1.sts"
                   },
                   "end": {
                     "line": 17,
                     "column": 30,
-                    "program": "class_def_varargs_1.ets"
+                    "program": "class_def_varargs_1.sts"
                   }
                 }
               },
@@ -266,12 +266,12 @@
                 "start": {
                   "line": 17,
                   "column": 16,
-                  "program": "class_def_varargs_1.ets"
+                  "program": "class_def_varargs_1.sts"
                 },
                 "end": {
                   "line": 17,
                   "column": 30,
-                  "program": "class_def_varargs_1.ets"
+                  "program": "class_def_varargs_1.sts"
                 }
               }
             },
@@ -281,12 +281,12 @@
               "start": {
                 "line": 17,
                 "column": 5,
-                "program": "class_def_varargs_1.ets"
+                "program": "class_def_varargs_1.sts"
               },
               "end": {
                 "line": 17,
                 "column": 30,
-                "program": "class_def_varargs_1.ets"
+                "program": "class_def_varargs_1.sts"
               }
             }
           },
@@ -300,12 +300,12 @@
                 "start": {
                   "line": 18,
                   "column": 12,
-                  "program": "class_def_varargs_1.ets"
+                  "program": "class_def_varargs_1.sts"
                 },
                 "end": {
                   "line": 18,
                   "column": 14,
-                  "program": "class_def_varargs_1.ets"
+                  "program": "class_def_varargs_1.sts"
                 }
               }
             },
@@ -326,12 +326,12 @@
                     "start": {
                       "line": 18,
                       "column": 12,
-                      "program": "class_def_varargs_1.ets"
+                      "program": "class_def_varargs_1.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 14,
-                      "program": "class_def_varargs_1.ets"
+                      "program": "class_def_varargs_1.sts"
                     }
                   }
                 },
@@ -351,12 +351,12 @@
                           "start": {
                             "line": 18,
                             "column": 21,
-                            "program": "class_def_varargs_1.ets"
+                            "program": "class_def_varargs_1.sts"
                           },
                           "end": {
                             "line": 18,
                             "column": 23,
-                            "program": "class_def_varargs_1.ets"
+                            "program": "class_def_varargs_1.sts"
                           }
                         }
                       },
@@ -368,12 +368,12 @@
                             "start": {
                               "line": 18,
                               "column": 25,
-                              "program": "class_def_varargs_1.ets"
+                              "program": "class_def_varargs_1.sts"
                             },
                             "end": {
                               "line": 18,
                               "column": 28,
-                              "program": "class_def_varargs_1.ets"
+                              "program": "class_def_varargs_1.sts"
                             }
                           }
                         },
@@ -382,12 +382,12 @@
                           "start": {
                             "line": 18,
                             "column": 28,
-                            "program": "class_def_varargs_1.ets"
+                            "program": "class_def_varargs_1.sts"
                           },
                           "end": {
                             "line": 18,
                             "column": 30,
-                            "program": "class_def_varargs_1.ets"
+                            "program": "class_def_varargs_1.sts"
                           }
                         }
                       },
@@ -395,12 +395,12 @@
                         "start": {
                           "line": 18,
                           "column": 18,
-                          "program": "class_def_varargs_1.ets"
+                          "program": "class_def_varargs_1.sts"
                         },
                         "end": {
                           "line": 18,
                           "column": 30,
-                          "program": "class_def_varargs_1.ets"
+                          "program": "class_def_varargs_1.sts"
                         }
                       }
                     },
@@ -408,12 +408,12 @@
                       "start": {
                         "line": 18,
                         "column": 18,
-                        "program": "class_def_varargs_1.ets"
+                        "program": "class_def_varargs_1.sts"
                       },
                       "end": {
                         "line": 18,
                         "column": 30,
-                        "program": "class_def_varargs_1.ets"
+                        "program": "class_def_varargs_1.sts"
                       }
                     }
                   }
@@ -430,12 +430,12 @@
                         "start": {
                           "line": 18,
                           "column": 34,
-                          "program": "class_def_varargs_1.ets"
+                          "program": "class_def_varargs_1.sts"
                         },
                         "end": {
                           "line": 18,
                           "column": 37,
-                          "program": "class_def_varargs_1.ets"
+                          "program": "class_def_varargs_1.sts"
                         }
                       }
                     },
@@ -454,12 +454,12 @@
                                 "start": {
                                   "line": 18,
                                   "column": 38,
-                                  "program": "class_def_varargs_1.ets"
+                                  "program": "class_def_varargs_1.sts"
                                 },
                                 "end": {
                                   "line": 18,
                                   "column": 39,
-                                  "program": "class_def_varargs_1.ets"
+                                  "program": "class_def_varargs_1.sts"
                                 }
                               }
                             },
@@ -467,12 +467,12 @@
                               "start": {
                                 "line": 18,
                                 "column": 38,
-                                "program": "class_def_varargs_1.ets"
+                                "program": "class_def_varargs_1.sts"
                               },
                               "end": {
                                 "line": 18,
                                 "column": 40,
-                                "program": "class_def_varargs_1.ets"
+                                "program": "class_def_varargs_1.sts"
                               }
                             }
                           },
@@ -480,12 +480,12 @@
                             "start": {
                               "line": 18,
                               "column": 38,
-                              "program": "class_def_varargs_1.ets"
+                              "program": "class_def_varargs_1.sts"
                             },
                             "end": {
                               "line": 18,
                               "column": 40,
-                              "program": "class_def_varargs_1.ets"
+                              "program": "class_def_varargs_1.sts"
                             }
                           }
                         }
@@ -494,12 +494,12 @@
                         "start": {
                           "line": 18,
                           "column": 37,
-                          "program": "class_def_varargs_1.ets"
+                          "program": "class_def_varargs_1.sts"
                         },
                         "end": {
                           "line": 18,
                           "column": 40,
-                          "program": "class_def_varargs_1.ets"
+                          "program": "class_def_varargs_1.sts"
                         }
                       }
                     },
@@ -507,12 +507,12 @@
                       "start": {
                         "line": 18,
                         "column": 34,
-                        "program": "class_def_varargs_1.ets"
+                        "program": "class_def_varargs_1.sts"
                       },
                       "end": {
                         "line": 18,
                         "column": 42,
-                        "program": "class_def_varargs_1.ets"
+                        "program": "class_def_varargs_1.sts"
                       }
                     }
                   },
@@ -520,12 +520,12 @@
                     "start": {
                       "line": 18,
                       "column": 34,
-                      "program": "class_def_varargs_1.ets"
+                      "program": "class_def_varargs_1.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 42,
-                      "program": "class_def_varargs_1.ets"
+                      "program": "class_def_varargs_1.sts"
                     }
                   }
                 },
@@ -542,12 +542,12 @@
                           "start": {
                             "line": 18,
                             "column": 15,
-                            "program": "class_def_varargs_1.ets"
+                            "program": "class_def_varargs_1.sts"
                           },
                           "end": {
                             "line": 18,
                             "column": 16,
-                            "program": "class_def_varargs_1.ets"
+                            "program": "class_def_varargs_1.sts"
                           }
                         }
                       },
@@ -555,12 +555,12 @@
                         "start": {
                           "line": 18,
                           "column": 15,
-                          "program": "class_def_varargs_1.ets"
+                          "program": "class_def_varargs_1.sts"
                         },
                         "end": {
                           "line": 18,
                           "column": 17,
-                          "program": "class_def_varargs_1.ets"
+                          "program": "class_def_varargs_1.sts"
                         }
                       }
                     }
@@ -569,12 +569,12 @@
                     "start": {
                       "line": 18,
                       "column": 14,
-                      "program": "class_def_varargs_1.ets"
+                      "program": "class_def_varargs_1.sts"
                     },
                     "end": {
                       "line": 18,
                       "column": 17,
-                      "program": "class_def_varargs_1.ets"
+                      "program": "class_def_varargs_1.sts"
                     }
                   }
                 },
@@ -594,12 +594,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 15,
-                                "program": "class_def_varargs_1.ets"
+                                "program": "class_def_varargs_1.sts"
                               },
                               "end": {
                                 "line": 19,
                                 "column": 16,
-                                "program": "class_def_varargs_1.ets"
+                                "program": "class_def_varargs_1.sts"
                               }
                             }
                           },
@@ -617,12 +617,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 23,
-                                      "program": "class_def_varargs_1.ets"
+                                      "program": "class_def_varargs_1.sts"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 26,
-                                      "program": "class_def_varargs_1.ets"
+                                      "program": "class_def_varargs_1.sts"
                                     }
                                   }
                                 },
@@ -641,12 +641,12 @@
                                             "start": {
                                               "line": 19,
                                               "column": 27,
-                                              "program": "class_def_varargs_1.ets"
+                                              "program": "class_def_varargs_1.sts"
                                             },
                                             "end": {
                                               "line": 19,
                                               "column": 28,
-                                              "program": "class_def_varargs_1.ets"
+                                              "program": "class_def_varargs_1.sts"
                                             }
                                           }
                                         },
@@ -654,12 +654,12 @@
                                           "start": {
                                             "line": 19,
                                             "column": 27,
-                                            "program": "class_def_varargs_1.ets"
+                                            "program": "class_def_varargs_1.sts"
                                           },
                                           "end": {
                                             "line": 19,
                                             "column": 29,
-                                            "program": "class_def_varargs_1.ets"
+                                            "program": "class_def_varargs_1.sts"
                                           }
                                         }
                                       },
@@ -667,12 +667,12 @@
                                         "start": {
                                           "line": 19,
                                           "column": 27,
-                                          "program": "class_def_varargs_1.ets"
+                                          "program": "class_def_varargs_1.sts"
                                         },
                                         "end": {
                                           "line": 19,
                                           "column": 29,
-                                          "program": "class_def_varargs_1.ets"
+                                          "program": "class_def_varargs_1.sts"
                                         }
                                       }
                                     }
@@ -681,12 +681,12 @@
                                     "start": {
                                       "line": 19,
                                       "column": 26,
-                                      "program": "class_def_varargs_1.ets"
+                                      "program": "class_def_varargs_1.sts"
                                     },
                                     "end": {
                                       "line": 19,
                                       "column": 29,
-                                      "program": "class_def_varargs_1.ets"
+                                      "program": "class_def_varargs_1.sts"
                                     }
                                   }
                                 },
@@ -694,12 +694,12 @@
                                   "start": {
                                     "line": 19,
                                     "column": 23,
-                                    "program": "class_def_varargs_1.ets"
+                                    "program": "class_def_varargs_1.sts"
                                   },
                                   "end": {
                                     "line": 19,
                                     "column": 30,
-                                    "program": "class_def_varargs_1.ets"
+                                    "program": "class_def_varargs_1.sts"
                                   }
                                 }
                               },
@@ -707,12 +707,12 @@
                                 "start": {
                                   "line": 19,
                                   "column": 23,
-                                  "program": "class_def_varargs_1.ets"
+                                  "program": "class_def_varargs_1.sts"
                                 },
                                 "end": {
                                   "line": 19,
                                   "column": 30,
-                                  "program": "class_def_varargs_1.ets"
+                                  "program": "class_def_varargs_1.sts"
                                 }
                               }
                             },
@@ -721,12 +721,12 @@
                               "start": {
                                 "line": 19,
                                 "column": 19,
-                                "program": "class_def_varargs_1.ets"
+                                "program": "class_def_varargs_1.sts"
                               },
                               "end": {
                                 "line": 20,
                                 "column": 15,
-                                "program": "class_def_varargs_1.ets"
+                                "program": "class_def_varargs_1.sts"
                               }
                             }
                           },
@@ -734,12 +734,12 @@
                             "start": {
                               "line": 19,
                               "column": 15,
-                              "program": "class_def_varargs_1.ets"
+                              "program": "class_def_varargs_1.sts"
                             },
                             "end": {
                               "line": 20,
                               "column": 15,
-                              "program": "class_def_varargs_1.ets"
+                              "program": "class_def_varargs_1.sts"
                             }
                           }
                         }
@@ -749,12 +749,12 @@
                         "start": {
                           "line": 19,
                           "column": 9,
-                          "program": "class_def_varargs_1.ets"
+                          "program": "class_def_varargs_1.sts"
                         },
                         "end": {
                           "line": 20,
                           "column": 15,
-                          "program": "class_def_varargs_1.ets"
+                          "program": "class_def_varargs_1.sts"
                         }
                       }
                     },
@@ -768,12 +768,12 @@
                           "start": {
                             "line": 20,
                             "column": 16,
-                            "program": "class_def_varargs_1.ets"
+                            "program": "class_def_varargs_1.sts"
                           },
                           "end": {
                             "line": 20,
                             "column": 17,
-                            "program": "class_def_varargs_1.ets"
+                            "program": "class_def_varargs_1.sts"
                           }
                         }
                       },
@@ -781,12 +781,12 @@
                         "start": {
                           "line": 20,
                           "column": 9,
-                          "program": "class_def_varargs_1.ets"
+                          "program": "class_def_varargs_1.sts"
                         },
                         "end": {
                           "line": 20,
                           "column": 17,
-                          "program": "class_def_varargs_1.ets"
+                          "program": "class_def_varargs_1.sts"
                         }
                       }
                     }
@@ -795,12 +795,12 @@
                     "start": {
                       "line": 18,
                       "column": 41,
-                      "program": "class_def_varargs_1.ets"
+                      "program": "class_def_varargs_1.sts"
                     },
                     "end": {
                       "line": 21,
                       "column": 6,
-                      "program": "class_def_varargs_1.ets"
+                      "program": "class_def_varargs_1.sts"
                     }
                   }
                 },
@@ -808,12 +808,12 @@
                   "start": {
                     "line": 18,
                     "column": 14,
-                    "program": "class_def_varargs_1.ets"
+                    "program": "class_def_varargs_1.sts"
                   },
                   "end": {
                     "line": 21,
                     "column": 6,
-                    "program": "class_def_varargs_1.ets"
+                    "program": "class_def_varargs_1.sts"
                   }
                 }
               },
@@ -821,12 +821,12 @@
                 "start": {
                   "line": 18,
                   "column": 14,
-                  "program": "class_def_varargs_1.ets"
+                  "program": "class_def_varargs_1.sts"
                 },
                 "end": {
                   "line": 21,
                   "column": 6,
-                  "program": "class_def_varargs_1.ets"
+                  "program": "class_def_varargs_1.sts"
                 }
               }
             },
@@ -836,12 +836,12 @@
               "start": {
                 "line": 18,
                 "column": 5,
-                "program": "class_def_varargs_1.ets"
+                "program": "class_def_varargs_1.sts"
               },
               "end": {
                 "line": 21,
                 "column": 6,
-                "program": "class_def_varargs_1.ets"
+                "program": "class_def_varargs_1.sts"
               }
             }
           }
@@ -850,12 +850,12 @@
           "start": {
             "line": 16,
             "column": 14,
-            "program": "class_def_varargs_1.ets"
+            "program": "class_def_varargs_1.sts"
           },
           "end": {
             "line": 23,
             "column": 1,
-            "program": "class_def_varargs_1.ets"
+            "program": "class_def_varargs_1.sts"
           }
         }
       },
@@ -863,12 +863,12 @@
         "start": {
           "line": 16,
           "column": 1,
-          "program": "class_def_varargs_1.ets"
+          "program": "class_def_varargs_1.sts"
         },
         "end": {
           "line": 23,
           "column": 1,
-          "program": "class_def_varargs_1.ets"
+          "program": "class_def_varargs_1.sts"
         }
       }
     },
@@ -883,12 +883,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "class_def_varargs_1.ets"
+              "program": "class_def_varargs_1.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "class_def_varargs_1.ets"
+              "program": "class_def_varargs_1.sts"
             }
           }
         },
@@ -992,12 +992,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "class_def_varargs_1.ets"
+                "program": "class_def_varargs_1.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "class_def_varargs_1.ets"
+                "program": "class_def_varargs_1.sts"
               }
             }
           },
@@ -1098,12 +1098,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "class_def_varargs_1.ets"
+                "program": "class_def_varargs_1.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "class_def_varargs_1.ets"
+                "program": "class_def_varargs_1.sts"
               }
             }
           }
@@ -1112,12 +1112,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "class_def_varargs_1.ets"
+            "program": "class_def_varargs_1.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "class_def_varargs_1.ets"
+            "program": "class_def_varargs_1.sts"
           }
         }
       },
@@ -1125,12 +1125,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "class_def_varargs_1.ets"
+          "program": "class_def_varargs_1.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "class_def_varargs_1.ets"
+          "program": "class_def_varargs_1.sts"
         }
       }
     }
@@ -1139,12 +1139,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "class_def_varargs_1.ets"
+      "program": "class_def_varargs_1.sts"
     },
     "end": {
       "line": 23,
       "column": 1,
-      "program": "class_def_varargs_1.ets"
+      "program": "class_def_varargs_1.sts"
     }
   }
 }

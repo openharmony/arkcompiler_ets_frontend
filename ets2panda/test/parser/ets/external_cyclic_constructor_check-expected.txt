@@ -12,12 +12,12 @@
             "start": {
               "line": 1,
               "column": 1,
-              "program": "external_cyclic_constructor_check.ets"
+              "program": "external_cyclic_constructor_check.sts"
             },
             "end": {
               "line": 1,
               "column": 1,
-              "program": "external_cyclic_constructor_check.ets"
+              "program": "external_cyclic_constructor_check.sts"
             }
           }
         },
@@ -121,12 +121,12 @@
               "start": {
                 "line": 1,
                 "column": 1,
-                "program": "external_cyclic_constructor_check.ets"
+                "program": "external_cyclic_constructor_check.sts"
               },
               "end": {
                 "line": 1,
                 "column": 1,
-                "program": "external_cyclic_constructor_check.ets"
+                "program": "external_cyclic_constructor_check.sts"
               }
             }
           },
@@ -140,12 +140,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "external_cyclic_constructor_check.ets"
+                  "program": "external_cyclic_constructor_check.sts"
                 },
                 "end": {
                   "line": 16,
                   "column": 14,
-                  "program": "external_cyclic_constructor_check.ets"
+                  "program": "external_cyclic_constructor_check.sts"
                 }
               }
             },
@@ -166,12 +166,12 @@
                     "start": {
                       "line": 16,
                       "column": 10,
-                      "program": "external_cyclic_constructor_check.ets"
+                      "program": "external_cyclic_constructor_check.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 14,
-                      "program": "external_cyclic_constructor_check.ets"
+                      "program": "external_cyclic_constructor_check.sts"
                     }
                   }
                 },
@@ -185,12 +185,12 @@
                     "start": {
                       "line": 16,
                       "column": 18,
-                      "program": "external_cyclic_constructor_check.ets"
+                      "program": "external_cyclic_constructor_check.sts"
                     },
                     "end": {
                       "line": 16,
                       "column": 21,
-                      "program": "external_cyclic_constructor_check.ets"
+                      "program": "external_cyclic_constructor_check.sts"
                     }
                   }
                 },
@@ -210,12 +210,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 9,
-                                "program": "external_cyclic_constructor_check.ets"
+                                "program": "external_cyclic_constructor_check.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 10,
-                                "program": "external_cyclic_constructor_check.ets"
+                                "program": "external_cyclic_constructor_check.sts"
                               }
                             }
                           },
@@ -233,12 +233,12 @@
                                     "start": {
                                       "line": 17,
                                       "column": 17,
-                                      "program": "external_cyclic_constructor_check.ets"
+                                      "program": "external_cyclic_constructor_check.sts"
                                     },
                                     "end": {
                                       "line": 17,
                                       "column": 28,
-                                      "program": "external_cyclic_constructor_check.ets"
+                                      "program": "external_cyclic_constructor_check.sts"
                                     }
                                   }
                                 },
@@ -246,12 +246,12 @@
                                   "start": {
                                     "line": 17,
                                     "column": 17,
-                                    "program": "external_cyclic_constructor_check.ets"
+                                    "program": "external_cyclic_constructor_check.sts"
                                   },
                                   "end": {
                                     "line": 17,
                                     "column": 29,
-                                    "program": "external_cyclic_constructor_check.ets"
+                                    "program": "external_cyclic_constructor_check.sts"
                                   }
                                 }
                               },
@@ -259,12 +259,12 @@
                                 "start": {
                                   "line": 17,
                                   "column": 17,
-                                  "program": "external_cyclic_constructor_check.ets"
+                                  "program": "external_cyclic_constructor_check.sts"
                                 },
                                 "end": {
                                   "line": 17,
                                   "column": 29,
-                                  "program": "external_cyclic_constructor_check.ets"
+                                  "program": "external_cyclic_constructor_check.sts"
                                 }
                               }
                             },
@@ -276,12 +276,12 @@
                                   "start": {
                                     "line": 17,
                                     "column": 29,
-                                    "program": "external_cyclic_constructor_check.ets"
+                                    "program": "external_cyclic_constructor_check.sts"
                                   },
                                   "end": {
                                     "line": 17,
                                     "column": 30,
-                                    "program": "external_cyclic_constructor_check.ets"
+                                    "program": "external_cyclic_constructor_check.sts"
                                   }
                                 }
                               }
@@ -290,12 +290,12 @@
                               "start": {
                                 "line": 17,
                                 "column": 13,
-                                "program": "external_cyclic_constructor_check.ets"
+                                "program": "external_cyclic_constructor_check.sts"
                               },
                               "end": {
                                 "line": 17,
                                 "column": 32,
-                                "program": "external_cyclic_constructor_check.ets"
+                                "program": "external_cyclic_constructor_check.sts"
                               }
                             }
                           },
@@ -303,12 +303,12 @@
                             "start": {
                               "line": 17,
                               "column": 9,
-                              "program": "external_cyclic_constructor_check.ets"
+                              "program": "external_cyclic_constructor_check.sts"
                             },
                             "end": {
                               "line": 17,
                               "column": 32,
-                              "program": "external_cyclic_constructor_check.ets"
+                              "program": "external_cyclic_constructor_check.sts"
                             }
                           }
                         }
@@ -318,12 +318,12 @@
                         "start": {
                           "line": 17,
                           "column": 5,
-                          "program": "external_cyclic_constructor_check.ets"
+                          "program": "external_cyclic_constructor_check.sts"
                         },
                         "end": {
                           "line": 17,
                           "column": 32,
-                          "program": "external_cyclic_constructor_check.ets"
+                          "program": "external_cyclic_constructor_check.sts"
                         }
                       }
                     },
@@ -336,12 +336,12 @@
                           "start": {
                             "line": 18,
                             "column": 12,
-                            "program": "external_cyclic_constructor_check.ets"
+                            "program": "external_cyclic_constructor_check.sts"
                           },
                           "end": {
                             "line": 18,
                             "column": 13,
-                            "program": "external_cyclic_constructor_check.ets"
+                            "program": "external_cyclic_constructor_check.sts"
                           }
                         }
                       },
@@ -349,12 +349,12 @@
                         "start": {
                           "line": 18,
                           "column": 5,
-                          "program": "external_cyclic_constructor_check.ets"
+                          "program": "external_cyclic_constructor_check.sts"
                         },
                         "end": {
                           "line": 18,
                           "column": 14,
-                          "program": "external_cyclic_constructor_check.ets"
+                          "program": "external_cyclic_constructor_check.sts"
                         }
                       }
                     }
@@ -363,12 +363,12 @@
                     "start": {
                       "line": 16,
                       "column": 22,
-                      "program": "external_cyclic_constructor_check.ets"
+                      "program": "external_cyclic_constructor_check.sts"
                     },
                     "end": {
                       "line": 19,
                       "column": 2,
-                      "program": "external_cyclic_constructor_check.ets"
+                      "program": "external_cyclic_constructor_check.sts"
                     }
                   }
                 },
@@ -376,12 +376,12 @@
                   "start": {
                     "line": 16,
                     "column": 10,
-                    "program": "external_cyclic_constructor_check.ets"
+                    "program": "external_cyclic_constructor_check.sts"
                   },
                   "end": {
                     "line": 19,
                     "column": 2,
-                    "program": "external_cyclic_constructor_check.ets"
+                    "program": "external_cyclic_constructor_check.sts"
                   }
                 }
               },
@@ -389,12 +389,12 @@
                 "start": {
                   "line": 16,
                   "column": 10,
-                  "program": "external_cyclic_constructor_check.ets"
+                  "program": "external_cyclic_constructor_check.sts"
                 },
                 "end": {
                   "line": 19,
                   "column": 2,
-                  "program": "external_cyclic_constructor_check.ets"
+                  "program": "external_cyclic_constructor_check.sts"
                 }
               }
             },
@@ -404,12 +404,12 @@
               "start": {
                 "line": 16,
                 "column": 1,
-                "program": "external_cyclic_constructor_check.ets"
+                "program": "external_cyclic_constructor_check.sts"
               },
               "end": {
                 "line": 19,
                 "column": 2,
-                "program": "external_cyclic_constructor_check.ets"
+                "program": "external_cyclic_constructor_check.sts"
               }
             }
           }
@@ -418,12 +418,12 @@
           "start": {
             "line": 1,
             "column": 1,
-            "program": "external_cyclic_constructor_check.ets"
+            "program": "external_cyclic_constructor_check.sts"
           },
           "end": {
             "line": 1,
             "column": 1,
-            "program": "external_cyclic_constructor_check.ets"
+            "program": "external_cyclic_constructor_check.sts"
           }
         }
       },
@@ -431,12 +431,12 @@
         "start": {
           "line": 1,
           "column": 1,
-          "program": "external_cyclic_constructor_check.ets"
+          "program": "external_cyclic_constructor_check.sts"
         },
         "end": {
           "line": 1,
           "column": 1,
-          "program": "external_cyclic_constructor_check.ets"
+          "program": "external_cyclic_constructor_check.sts"
         }
       }
     }
@@ -445,12 +445,12 @@
     "start": {
       "line": 1,
       "column": 1,
-      "program": "external_cyclic_constructor_check.ets"
+      "program": "external_cyclic_constructor_check.sts"
     },
     "end": {
       "line": 20,
       "column": 1,
-      "program": "external_cyclic_constructor_check.ets"
+      "program": "external_cyclic_constructor_check.sts"
     }
   }
 }
