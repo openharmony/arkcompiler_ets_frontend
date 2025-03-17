@@ -33,7 +33,7 @@ public:
     Iterator(PandaGen *pg, const ir::AstNode *node, IteratorType type);
     DEFAULT_COPY_SEMANTIC(Iterator);
     DEFAULT_MOVE_SEMANTIC(Iterator);
-    ~Iterator() = default;
+    virtual ~Iterator() = default;
 
     IteratorType Type() const
     {
