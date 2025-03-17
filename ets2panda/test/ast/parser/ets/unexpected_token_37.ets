@@ -26,4 +26,4 @@
 /* @@? 17:39 Error SyntaxError: Unexpected token ':'. */
 /* @@? 17:61 Error SyntaxError: Unexpected token ')'. */
 /* @@? 19:26 Error SyntaxError: Unexpected token '{'. */
-/* @@? 30:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 30:1 Error SyntaxError: Expected '}', got 'end of stream'. */

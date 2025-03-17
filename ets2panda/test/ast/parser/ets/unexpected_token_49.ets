@@ -21,4 +21,4 @@ let output = identity<string>/* @@ label */"hehe"
 /* @@? 19:14 Error TypeError: Expected 1 arguments, got 0. */
 /* @@? 19:14 Error TypeError: No matching call signature */
 /* @@? 19:44 Error SyntaxError: Unexpected token, expected '('. */
-/* @@? 25:1 Error SyntaxError: Expected ')', got 'eos'. */
+/* @@? 25:1 Error SyntaxError: Expected ')', got 'end of stream'. */

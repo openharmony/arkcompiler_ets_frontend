@@ -274,4 +274,4 @@ function main(): void {
 /* @@? 165:5 Error TypeError: This expression is not callable. */
 /* @@? 166:5 Error TypeError: Expected 1 arguments, got 0. */
 /* @@? 166:5 Error TypeError: No matching call signature */
-/* @@? 278:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 278:1 Error SyntaxError: Expected '}', got 'end of stream'. */

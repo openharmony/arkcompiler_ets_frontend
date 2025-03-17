@@ -20,5 +20,5 @@ function main() : void{
 
 /* @@@ label Error SyntaxError: Unexpected token '=>'. */
 /* @@@ label1 Error SyntaxError: Unexpected token, expected ')'. */
-/* @@@ label2 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@@ label2 Error SyntaxError: Expected '}', got 'end of stream'. */
 /* @@ label2 */

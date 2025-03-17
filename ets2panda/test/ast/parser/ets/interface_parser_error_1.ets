@@ -64,4 +64,4 @@ function mdin() {    let a = new A();
 /* @@? 31:2 Error SyntaxError: Unexpected token '*'. */
 /* @@? 32:1 Error SyntaxError: Nested functions are not allowed. */
 /* @@? 32:1 Error SyntaxError: Unexpected token 'function'. */
-/* @@? 68:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 68:1 Error SyntaxError: Expected '}', got 'end of stream'. */

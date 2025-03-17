@@ -30,4 +30,4 @@ let y: G<{a:String}, B> // Error
 /* @@? 19:20 Error SyntaxError: Unexpected token ','. */
 /* @@? 19:22 Error TypeError: Type name 'B' used in the wrong context */
 /* @@? 19:22 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
-/* @@? 34:1 Error SyntaxError: Unexpected token 'eos'. */
+/* @@? 34:1 Error SyntaxError: Unexpected token 'end of stream'. */

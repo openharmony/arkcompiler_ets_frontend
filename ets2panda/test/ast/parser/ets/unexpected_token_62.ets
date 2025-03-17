@@ -68,4 +68,4 @@ int = 10
 /* @@? 26:36 Error TypeError: Type 'B' has no call signatures. */
 /* @@? 26:40 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 27:2 Error TypeError: Unresolved reference ó */
-/* @@? 71:60 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 71:70 Error SyntaxError: Expected '}', got 'end of stream'. */

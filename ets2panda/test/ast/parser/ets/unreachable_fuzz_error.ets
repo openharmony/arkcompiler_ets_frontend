@@ -27,4 +27,4 @@ classtext: string, reviver: ((key: string, value: NullishType) => NullishType) |
 /* @@? 22:29 Error SyntaxError: Label must be followed by a loop statement. */
 /* @@? 22:91 Error SyntaxError: Unexpected token ','. */ 
 /* @@? 22:99 Error SyntaxError: Label must be followed by a loop statement. */
-/* @@? 30:60 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 30:70 Error SyntaxError: Expected '}', got 'end of stream'. */

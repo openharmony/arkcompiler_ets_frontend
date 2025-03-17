@@ -46,5 +46,5 @@ foo(/* @@ label8 */,)
 /* @@@ label6 Error SyntaxError: Unexpected token 'a'. */
 /* @@@ label7 Error SyntaxError: Unexpected token ')'. */
 /* @@@ label8 Error SyntaxError: Unexpected token ','. */
-/* @@@ label9 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@@ label9 Error SyntaxError: Expected '}', got 'end of stream'. */
 /* @@ label9 */

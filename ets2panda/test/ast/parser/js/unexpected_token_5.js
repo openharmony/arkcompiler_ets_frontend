@@ -18,4 +18,4 @@
 /* @@? 16:3 Error SyntaxError: Unexpected token, expected '=>'. */
 /* @@? 16:5 Error SyntaxError: Unterminated RegExp. */
 /* @@? 16:11 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@? 16:11 Error SyntaxError: Unexpected token 'eos'. */
+/* @@? 16:11 Error SyntaxError: Unexpected token 'end of stream'. */
