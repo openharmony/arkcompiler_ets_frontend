@@ -481,6 +481,7 @@ void ETSChecker::ResolveReturnStatement(checker::Type *funcReturnType, checker::
             funcReturnType = argumentType;
             containingFunc->Signature()->SetReturnType(funcReturnType);
             containingFunc->Signature()->AddSignatureFlag(checker::SignatureFlags::INFERRED_RETURN_TYPE);
+            st->Argument()->SetTsType(funcReturnType);
         } else if (!Relation()->IsAssignableTo(argumentType, funcReturnType)) {
             LogError(diagnostic::RETURN_DIFFERENT_PRIM, {funcReturnType, argumentType}, st->Argument()->Start());
         }
