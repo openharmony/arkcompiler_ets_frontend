@@ -92,19 +92,19 @@ module Enums
     data.macros&.each do |macros|
       case macros.name
       when 'AST_NODE_MAPPING'
-        node_type_enum_flags.concat(macros.values&.map { |x| x[0] })
+        node_type_enum_flags.concat(macros.values.map { |x| x[0] })
       when 'AST_NODE_REINTERPRET_MAPPING'
-        node_type_enum_flags.concat(macros.values&.map { |x| x[0..1] }&.flatten)
+        node_type_enum_flags.concat(macros.values.flat_map { |x| x[0..1] })
       when 'SCOPE_TYPES'
-        scope_type_enum_flags.concat(macros.values&.map { |x| x[0] })
+        scope_type_enum_flags.concat(macros.values.map { |x| x[0] })
       end
     end
     data.varbinder&.macros&.each do |macros|
       case macros.name
       when 'SCOPE_TYPES'
-        scope_type_enum_flags.concat(macros.values&.map { |x| x[0] })
+        scope_type_enum_flags.concat(macros.values.map { |x| x[0] })
       when 'DECLARATION_KINDS'
-        decl_type_enum_flags.concat(macros.values&.map { |x| x[0] })
+        decl_type_enum_flags.concat(macros.values.map { |x| x[0] })
       end
     end
 
