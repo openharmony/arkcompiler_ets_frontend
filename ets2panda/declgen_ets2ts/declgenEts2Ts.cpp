@@ -137,8 +137,6 @@ void TSDeclGen::GenDeclarations()
         ResetState();
         if (globalStatement->IsETSImportDeclaration()) {
             GenImportDeclaration(globalStatement->AsETSImportDeclaration());
-        } else if (globalStatement->IsTSEnumDeclaration()) {
-            GenEnumDeclaration(globalStatement->AsTSEnumDeclaration());
         } else if (globalStatement->IsClassDeclaration()) {
             GenClassDeclaration(globalStatement->AsClassDeclaration());
         } else if (globalStatement->IsTSInterfaceDeclaration()) {
@@ -479,36 +477,6 @@ void TSDeclGen::GenFunctionType(const checker::ETSFunctionType *etsFunctionType,
     }
 }
 
-void TSDeclGen::GenEnumMember(const ir::TSEnumDeclaration *enumDecl)
-{
-    for (auto *member : enumDecl->Members()) {
-        auto indent = GetIndent();
-        OutDts(INDENT);
-        OutTs(indent);
-        if (!member->IsTSEnumMember()) {
-            LogError(diagnostic::INCORRECT_ENUM_MEMBER, {}, member->Start());
-        }
-
-        const auto *enumMember = member->AsTSEnumMember();
-        OutDts(GetKeyIdent(enumMember->Key())->Name().Mutf8());
-        OutTs(GetKeyIdent(enumMember->Key())->Name().Mutf8());
-        const auto *init = enumMember->Init();
-        if (init != nullptr) {
-            OutDts(" = ");
-            OutTs(" = ");
-            if (!init->IsLiteral()) {
-                LogError(diagnostic::NOT_LITERAL_ENUM_INITIALIZER, {}, member->Start());
-            }
-
-            GenLiteral(init->AsLiteral());
-        }
-        OutTs(",");
-        OutEndlTs();
-        OutDts(",");
-        OutEndlDts();
-    }
-}
-
 void TSDeclGen::GenUnionType(const checker::ETSUnionType *unionType)
 {
     state_.inUnionBodyStack.push(true);
@@ -572,13 +540,12 @@ void TSDeclGen::GenObjectType(const checker::ETSObjectType *objectType)
         return;
     }
 
-    auto typeName = objectType->Name();
-    if (typeName.Empty()) {
+    std::string typeStr = objectType->Name().Mutf8();
+    if (objectType->Name().Empty()) {
         LogWarning(diagnostic::EMPTY_TYPE_NAME);
         OutDts("any");
     } else {
-        std::string typeStr = typeName.Mutf8();
-        if (typeStr == "Exception") {
+        if (typeStr == "Exception" || typeStr == "NullPointerError") {
             OutDts("Error");
         } else if (size_t partialPos = typeStr.find("$partial"); partialPos != std::string::npos) {
             OutDts("Partial<", typeStr.substr(0, partialPos), ">");
@@ -591,7 +558,13 @@ void TSDeclGen::GenObjectType(const checker::ETSObjectType *objectType)
     const auto &typeArgs = objectType->TypeArguments();
     if (!typeArgs.empty()) {
         OutDts("<");
-        GenSeparated(typeArgs, [this](checker::Type *arg) { GenType(arg); });
+        GenSeparated(typeArgs, [this, typeStr](checker::Type *arg) {
+            if (typeStr == "Promise" && arg && arg->HasTypeFlag(checker::TypeFlag::ETS_UNDEFINED)) {
+                OutDts("void");
+            } else if (arg != nullptr) {
+                GenType(arg);
+            }
+        });
         OutDts(">");
     }
 }
@@ -614,18 +587,27 @@ void TSDeclGen::GenTypeParameters(const ir::TSTypeParameterDeclaration *typePara
 
 void TSDeclGen::GenTypeParameters(const ir::TSTypeParameterInstantiation *typeParams)
 {
-    if (typeParams != nullptr) {
-        OutDts("<");
-        GenSeparated(typeParams->Params(), [this](ir::TypeNode *param) {
-            if (param->IsETSTypeReference()) {
-                const auto paramName = param->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name();
-                OutDts(paramName);
-            } else {
-                GenType(param->GetType(checker_));
-            }
-        });
-        OutDts(">");
+    if (typeParams == nullptr) {
+        return;
     }
+    OutDts("<");
+    GenSeparated(typeParams->Params(), [this](ir::TypeNode *param) {
+        if (param->IsETSTypeReference()) {
+            const auto paramName = param->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name().Mutf8();
+            if (stringTypes_.count(paramName)) {
+                OutDts("string");
+            } else if (numberTypes_.count(paramName)) {
+                OutDts("number");
+            } else if (paramName == "NullPointerError") {
+                OutDts("Error");
+            } else {
+                OutDts(paramName);
+            }
+        } else {
+            GenType(param->GetType(checker_));
+        }
+    });
+    OutDts(">");
 }
 
 void TSDeclGen::GenExport(const ir::Identifier *symbol)
@@ -702,7 +684,7 @@ void TSDeclGen::GenModifier(const T *node, bool isProp)
     if (node->IsStatic()) {
         OutDts("static ");
     }
-    if (node->IsReadonly()) {
+    if (node->IsReadonly() && isProp) {
         OutDts("readonly ");
     }
 }
@@ -827,12 +809,14 @@ void TSDeclGen::GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAl
     OutDts(" = ");
     if (typeAnnotation->IsETSTypeReference()) {
         const auto part = typeAnnotation->AsETSTypeReference()->Part();
-        const auto partName = part->Name()->AsIdentifier()->Name().Mutf8();
-        OutDts(partName);
+        const auto partName = part->Name()->AsIdentifier()->Name();
+        OutDts(partName.Is("Exception") ? "Error" : partName);
         const auto partParams = part->TypeParams();
         if (partParams != nullptr) {
             GenTypeParameters(partParams->AsTSTypeParameterInstantiation());
         }
+    } else if (typeAnnotation->IsETSStringLiteralType()) {
+        OutDts(aliasedType->ToString());
     } else {
         GenType(aliasedType);
     }
@@ -847,23 +831,34 @@ void TSDeclGen::GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAl
     OutEndlTs();
 }
 
-void TSDeclGen::GenEnumDeclaration(const ir::TSEnumDeclaration *enumDecl)
+void TSDeclGen::GenEnumDeclaration(const ir::ClassProperty *enumMember)
 {
-    const auto enumIdent = GetKeyIdent(enumDecl->Key());
-    const auto enumName = enumIdent->Name().Mutf8();
-    DebugPrint("GenEnumDeclaration: " + enumName);
-    if (!ShouldEmitDeclarationSymbol(enumIdent)) {
+    const auto *originEnumMember = enumMember->OriginEnumMember();
+    if (originEnumMember == nullptr) {
         return;
     }
-    OutDts("export declare enum ", enumName, " {");
-    OutEndlDts();
-    OutTs("export const enum ", enumName, " {");
+
+    auto indent = GetIndent();
+    OutDts(INDENT);
+    OutTs(indent);
+
+    OutDts(GetKeyIdent(enumMember->Key())->Name());
+    OutTs(GetKeyIdent(enumMember->Key())->Name());
+
+    const auto *init = originEnumMember->Init();
+    if (init != nullptr) {
+        OutDts(" = ");
+        OutTs(" = ");
+        if (!init->IsLiteral()) {
+            LogError(diagnostic::NOT_LITERAL_ENUM_INITIALIZER, {}, init->Start());
+        }
+
+        GenLiteral(init->AsLiteral());
+    }
+
+    OutTs(",");
     OutEndlTs();
-    ES2PANDA_ASSERT(enumDecl->TsType()->IsETSIntEnumType());
-    GenEnumMember(enumDecl);
-    OutTs("}");
-    OutEndlTs();
-    OutDts("}");
+    OutDts(",");
     OutEndlDts();
 }
 
@@ -909,13 +904,29 @@ void TSDeclGen::ProcessMethodDefinition(const ir::MethodDefinition *methodDef,
                                         std::unordered_set<std::string> &processedMethods)
 {
     const auto methodName = GetKeyIdent(methodDef->Key())->Name().Mutf8();
-    if (methodDef->Kind() == ir::MethodDefinitionKind::SET) {
+    if (methodDef->Kind() == ir::MethodDefinitionKind::SET || methodDef->Kind() == ir::MethodDefinitionKind::GET) {
         if (processedMethods.find(methodName) != processedMethods.end()) {
             return;
         }
-        processedMethods.insert(methodName);
+        GenMethodDeclaration(methodDef);
     }
-    GenMethodDeclaration(methodDef);
+    if (processedMethods.find(methodName) != processedMethods.end()) {
+        return;
+    }
+    processedMethods.insert(methodName);
+    if (!methodDef->Overloads().empty()) {
+        for (const auto *overload : methodDef->Overloads()) {
+            if (overload->Kind() == ir::MethodDefinitionKind::GET ||
+                overload->Kind() == ir::MethodDefinitionKind::SET) {
+                GenMethodDeclaration(overload);
+            }
+        }
+        return;
+    }
+    if (methodDef->Kind() == ir::MethodDefinitionKind::CONSTRUCTOR ||
+        methodDef->Kind() == ir::MethodDefinitionKind::METHOD) {
+        GenMethodDeclaration(methodDef);
+    }
 }
 
 void TSDeclGen::PrepareClassDeclaration(const ir::ClassDefinition *classDef)
@@ -941,6 +952,9 @@ void TSDeclGen::EmitClassDeclaration(const ir::ClassDefinition *classDef, const 
     if (classDef->IsNamespaceTransformed()) {
         OutDts(classNode_.indentLevel > 1 ? "namespace " : "export declare namespace ", className);
         OutTs("export namespace ", className, " {");
+    } else if (classDef->IsEnumTransformed()) {
+        OutDts(classNode_.indentLevel > 1 ? "enum " : "export declare enum ", className);
+        OutTs("export const enum ", className, " {");
     } else if (classNode_.isIndirect) {
         OutDts("declare class ", className);
     } else if (classDef->IsAbstract()) {
@@ -954,6 +968,21 @@ void TSDeclGen::EmitClassDeclaration(const ir::ClassDefinition *classDef, const 
 std::string TSDeclGen::GetIndent() const
 {
     return std::string(classNode_.indentLevel * INDENT.size(), ' ');
+}
+
+void TSDeclGen::GenPartName(std::string &partName)
+{
+    if (partName == "Boolean") {
+        partName = "boolean";
+    } else if (stringTypes_.count(partName)) {
+        partName = "string";
+    } else if (numberTypes_.count(partName)) {
+        partName = "number";
+    } else if (partName == "ESObject") {
+        partName = "any";
+    } else if (partName == "BigInt") {
+        partName = "number";
+    }
 }
 
 void TSDeclGen::ProcessIndent()
@@ -1010,12 +1039,15 @@ void TSDeclGen::EmitClassGlueCode(const ir::ClassDefinition *classDef, const std
 
 void TSDeclGen::ProcessClassBody(const ir::ClassDefinition *classDef)
 {
+    std::unordered_set<std::string> processedMethods;
     for (const auto *prop : classDef->Body()) {
-        if (prop->IsMethodDefinition()) {
-            GenMethodDeclaration(prop->AsMethodDefinition());
-            for (const auto *methodDef : prop->AsMethodDefinition()->Overloads()) {
-                GenMethodDeclaration(methodDef);
+        if (classDef->IsEnumTransformed()) {
+            if (prop->IsClassProperty()) {
+                state_.inEnum = true;
+                GenPropDeclaration(prop->AsClassProperty());
             }
+        } else if (prop->IsMethodDefinition()) {
+            ProcessMethodDefinition(prop->AsMethodDefinition(), processedMethods);
         } else if (prop->IsClassProperty()) {
             const auto classProp = prop->AsClassProperty();
             const auto propName = GetKeyIdent(classProp->Key())->Name().Mutf8();
@@ -1061,17 +1093,36 @@ void TSDeclGen::GenClassDeclaration(const ir::ClassDeclaration *classDecl)
     }
     if (!state_.inGlobalClass && ShouldEmitDeclarationSymbol(classDef->Ident())) {
         HandleClassDeclarationTypeInfo(classDef, className);
-        if (!classDef->IsNamespaceTransformed()) {
+        if (!classDef->IsNamespaceTransformed() && !classDef->IsEnumTransformed()) {
             EmitClassGlueCode(classDef, className);
         }
         ProcessClassBody(classDef);
         classNode_.indentLevel > 0 ? classNode_.indentLevel-- : classNode_.indentLevel = 0;
         CloseClassBlock(true);
     }
-    if (classNode_.hasNestedClass || state_.inNamespace) {
+    if (classNode_.hasNestedClass || state_.inNamespace || state_.inEnum) {
         ES2PANDA_ASSERT(classNode_.indentLevel != static_cast<decltype(classNode_.indentLevel)>(-1));
         CloseClassBlock(false);
     }
+}
+
+bool TSDeclGen::ShouldSkipMethodDeclaration(const ir::MethodDefinition *methodDef)
+{
+    const auto methodIdent = GetKeyIdent(methodDef->Key());
+    const auto methodName = methodIdent->Name().Mutf8();
+    if (methodName.find('#') != std::string::npos || methodName.find("$asyncimpl") != std::string::npos ||
+        (!state_.inGlobalClass && methodName == compiler::Signatures::INIT_METHOD)) {
+        return true;
+    }
+    if (methodDef->IsPrivate() && !methodDef->IsConstructor()) {
+        return true;
+    }
+    if (methodName == compiler::Signatures::INIT_METHOD) {
+        OutTs("ETSGLOBAL.", methodName, "();");
+        OutEndlTs();
+        return true;
+    }
+    return false;
 }
 
 void TSDeclGen::EmitMethodGlueCode(const std::string &methodName, const ir::Identifier *methodIdentifier)
@@ -1102,13 +1153,7 @@ void TSDeclGen::GenMethodDeclaration(const ir::MethodDefinition *methodDef)
 {
     const auto methodIdent = GetKeyIdent(methodDef->Key());
     const auto methodName = methodIdent->Name().Mutf8();
-    if (methodName.find('#') != std::string::npos || methodName.find("$asyncimpl") != std::string::npos ||
-        (!state_.inGlobalClass && methodName == compiler::Signatures::INIT_METHOD)) {
-        return;
-    }
-    if (methodName == compiler::Signatures::INIT_METHOD) {
-        OutTs("ETSGLOBAL.", methodName, "();");
-        OutEndlTs();
+    if (ShouldSkipMethodDeclaration(methodDef)) {
         return;
     }
     if (state_.inGlobalClass) {
@@ -1179,6 +1224,9 @@ void TSDeclGen::GenPropDeclaration(const ir::ClassProperty *classProp)
         GenGlobalVarDeclaration(classProp);
         return;
     }
+    if (classProp->IsPrivate()) {
+        return;
+    }
 
     const auto propName = GetKeyIdent(classProp->Key())->Name().Mutf8();
     // The class property generated for enums starts with "#" are invalid properties, and should not be generated.
@@ -1186,24 +1234,54 @@ void TSDeclGen::GenPropDeclaration(const ir::ClassProperty *classProp)
         DebugPrint("  Skip Generate enum PropDeclaration: " + propName);
         return;
     }
+
+    if (state_.inEnum) {
+        GenEnumDeclaration(classProp);
+        return;
+    }
+
     DebugPrint("  GenPropDeclaration: " + propName);
 
     ProcessIndent();
-    GenModifier(classProp, true);
-    OutDts(propName);
 
-    OutDts(": ");
-    if (classProp->IsStatic()) {
-        OutDts("any");
+    if (!state_.inInterface && !state_.inNamespace) {
+        GenPropAccessor(classProp, "get ");
+        if (!classProp->IsReadonly()) {
+            ProcessIndent();
+            GenPropAccessor(classProp, "set ");
+        }
     } else {
-        GenType(classProp->TsType());
+        GenModifier(classProp, true);
+        OutDts(propName);
+        OutDts(": ");
+        classProp->IsStatic() ? OutDts("any") : GenType(classProp->TsType());
+        OutDts(";");
+        OutEndlDts();
     }
-    OutDts(";");
-    OutEndlDts();
 
     if (classNode_.hasNestedClass || state_.inNamespace) {
         EmitPropGlueCode(classProp, propName);
     }
+}
+
+void TSDeclGen::GenPropAccessor(const ir::ClassProperty *classProp, const std::string &accessorKind)
+{
+    if (accessorKind != "set " && accessorKind != "get ") {
+        return;
+    }
+    GenModifier(classProp);
+
+    const auto propName = GetKeyIdent(classProp->Key())->Name().Mutf8();
+    if (accessorKind == "set ") {
+        OutDts(accessorKind + propName + "(value: ");
+        GenType(classProp->TsType());
+        OutDts(");");
+    } else {
+        OutDts(accessorKind + propName + "(): ");
+        GenType(classProp->TsType());
+        OutDts(";");
+    }
+    OutEndlDts();
 }
 
 void TSDeclGen::GenGlobalVarDeclaration(const ir::ClassProperty *globalVar)
@@ -1218,7 +1296,19 @@ void TSDeclGen::GenGlobalVarDeclaration(const ir::ClassProperty *globalVar)
     DebugPrint("GenGlobalVarDeclaration: " + varName);
 
     OutDts(isConst ? "export declare const " : "export declare let ", varName, ": ");
-    GenType(globalVar->TsType());
+    if (globalVar->TypeAnnotation() != nullptr && globalVar->TypeAnnotation()->IsETSStringLiteralType()) {
+        const auto *aliasedType = globalVar->TypeAnnotation()->GetType(checker_);
+        OutDts(aliasedType->ToString());
+    } else if (globalVar->TypeAnnotation() != nullptr && globalVar->TypeAnnotation()->IsETSTypeReference()) {
+        const auto part = globalVar->TypeAnnotation()->AsETSTypeReference()->Part();
+        if (part->Name()->IsIdentifier()) {
+            auto partName = part->Name()->AsIdentifier()->Name().Mutf8();
+            GenPartName(partName);
+            OutDts(partName);
+        }
+    } else {
+        GenType(globalVar->TsType());
+    }
     OutDts(";");
     OutEndlDts();
 
