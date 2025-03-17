@@ -212,47 +212,6 @@ Type *ETSChecker::HandlePartialInterface(ir::TSInterfaceDeclaration *interfaceDe
     return partialType;
 }
 
-ir::ClassProperty *ETSChecker::CreateNullishPropertyFromAccessorInInterface(
-    ir::MethodDefinition *const accessor, ir::TSInterfaceDeclaration *const newTSInterfaceDefinition)
-{
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *ident = accessor->Id()->Clone(Allocator(), nullptr);
-    auto modifierFlag = ir::ModifierFlags::NONE;
-    if (accessor->Function()->IsGetter() && accessor->Overloads().empty()) {
-        modifierFlag |= ir::ModifierFlags::READONLY;
-    }
-
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *prop = Allocator()->New<ir::ClassProperty>(ident, nullptr, nullptr, modifierFlag, Allocator(), false);
-
-    prop->SetParent(newTSInterfaceDefinition);
-    ident->SetParent(prop);
-
-    prop->SetTypeAnnotation(accessor->Function()->IsGetter()
-                                ? accessor->Function()->ReturnTypeAnnotation()
-                                : accessor->Function()->Params()[0]->AsETSParameterExpression()->TypeAnnotation());
-
-    if (prop->TypeAnnotation() != nullptr) {
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        return CreateNullishProperty(prop, newTSInterfaceDefinition);
-    }
-
-    if (accessor->TsType() == nullptr) {
-        accessor->Parent()->Check(this);
-    }
-
-    ES2PANDA_ASSERT(accessor->TsType() != nullptr);
-    auto callSign = accessor->TsType()->AsETSFunctionType()->CallSignatures()[0];
-
-    auto tsType = accessor->Function()->IsGetter() ? callSign->ReturnType() : callSign->Params()[0]->TsType();
-
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    prop->SetTypeAnnotation(Allocator()->New<ir::OpaqueTypeNode>(tsType, Allocator()));
-
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    return CreateNullishProperty(prop, newTSInterfaceDefinition);
-}
-
 ir::ClassProperty *ETSChecker::CreateNullishPropertyFromAccessor(ir::MethodDefinition *const accessor,
                                                                  ir::ClassDefinition *const newClassDefinition)
 {
@@ -505,14 +464,13 @@ void ETSChecker::CreatePartialClassDeclaration(ir::ClassDefinition *const newCla
 
         if (prop->IsMethodDefinition() && (prop->AsMethodDefinition()->Function()->IsGetter() ||
                                            prop->AsMethodDefinition()->Function()->IsSetter())) {
-            auto *propMethod = prop->AsMethodDefinition();
-            if (newClassDefinition->Scope()->FindLocal(propMethod->Id()->Name(),
+            auto *method = prop->AsMethodDefinition();
+            if (newClassDefinition->Scope()->FindLocal(method->Id()->Name(),
                                                        varbinder::ResolveBindingOptions::VARIABLES) != nullptr) {
                 continue;
             }
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            auto *newProp = CreateNullishPropertyFromAccessor(propMethod, newClassDefinition);
-            newClassDefinition->Body().emplace_back(newProp);
+            newClassDefinition->Body().emplace_back(CreateNullishPropertyFromAccessor(method, newClassDefinition));
         }
     }
     if (classDef->IsDeclare()) {
@@ -645,30 +603,47 @@ void ETSChecker::CreatePartialTypeInterfaceMethods(ir::TSInterfaceDeclaration *c
                                                    ir::TSInterfaceDeclaration *partialInterface)
 {
     auto &partialInterfaceMethods = partialInterface->Body()->Body();
-    for (auto *const prop : interfaceDecl->Body()->Body()) {
-        if (prop->IsMethodDefinition() && (prop->AsMethodDefinition()->Function()->IsGetter() ||
-                                           prop->AsMethodDefinition()->Function()->IsSetter())) {
-            auto *propMethod = prop->AsMethodDefinition();
-            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            auto *method = CreateNullishAccessor(propMethod, partialInterface);
-            partialInterfaceMethods.emplace_back(method);
+
+    auto const addNullishAccessor = [&partialInterfaceMethods](ir::MethodDefinition *accessor) -> void {
+        auto const it = std::find_if(partialInterfaceMethods.begin(), partialInterfaceMethods.end(),
+                                     [accessor](ir::AstNode const *node) -> bool {
+                                         return node->AsMethodDefinition()->Id()->Name() == accessor->Id()->Name();
+                                     });
+        if (it == partialInterfaceMethods.end()) {
+            accessor->Function()->ClearFlag(ir::ScriptFunctionFlags::OVERLOAD);
+            partialInterfaceMethods.emplace_back(accessor);
+        } else if (accessor->Function()->IsSetter()) {
+            ES2PANDA_ASSERT_POS((*it)->AsMethodDefinition()->Function()->IsGetter(), (*it)->Start());
+            (*it)->AsMethodDefinition()->AddOverload(accessor);
+            accessor->SetParent(*it);
+            accessor->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
+        } else {
+            ES2PANDA_ASSERT_POS((*it)->AsMethodDefinition()->Function()->IsSetter(), (*it)->Start());
+            auto setter = (*it)->AsMethodDefinition();
+            accessor->AddOverload(setter);
+            setter->SetParent(accessor);
+            setter->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
+            partialInterfaceMethods.erase(it);
+            partialInterfaceMethods.emplace_back(accessor);
         }
-    }
+    };
 
-    // In order to set the getter/setter overload, need to ensure that the method is ordered by name and getter/setter
-    std::sort(partialInterfaceMethods.begin(), partialInterfaceMethods.end(), [](ir::AstNode *a, ir::AstNode *b) {
-        return a->AsMethodDefinition()->Id()->Name() == b->AsMethodDefinition()->Id()->Name()
-                   ? a->AsMethodDefinition()->Function()->IsGetter()
-                   : a->AsMethodDefinition()->Id()->Name() > b->AsMethodDefinition()->Id()->Name();
-    });
+    for (auto *const prop : interfaceDecl->Body()->Body()) {
+        if (!prop->IsMethodDefinition()) {
+            continue;
+        }
 
-    ir::MethodDefinition *getter = nullptr;
-    for (auto *partialInterfaceMethod : partialInterfaceMethods) {
-        if (partialInterfaceMethod->AsMethodDefinition()->Function()->IsGetter()) {
-            getter = partialInterfaceMethod->AsMethodDefinition();
-        } else if (getter->Id()->Name() == partialInterfaceMethod->AsMethodDefinition()->Id()->Name()) {
-            getter->AddOverload(partialInterfaceMethod->AsMethodDefinition());
-            partialInterfaceMethod->AsMethodDefinition()->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
+        auto *const method = prop->AsMethodDefinition();
+        ES2PANDA_ASSERT((method->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD) == 0U);
+
+        if (method->Function()->IsGetter() || method->Function()->IsSetter()) {
+            addNullishAccessor(CreateNullishAccessor(method, partialInterface));
+        }
+
+        for (auto *overload : method->Overloads()) {
+            if (overload->Function()->IsGetter() || overload->Function()->IsSetter()) {
+                addNullishAccessor(CreateNullishAccessor(overload, partialInterface));
+            }
         }
     }
 }

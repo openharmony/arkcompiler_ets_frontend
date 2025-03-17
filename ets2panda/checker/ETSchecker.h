@@ -691,8 +691,6 @@ public:
                                              ir::TSInterfaceDeclaration *const newTSInterfaceDefinition);
     ir::MethodDefinition *CreateNullishAccessor(ir::MethodDefinition *const accessor,
                                                 ir::TSInterfaceDeclaration *interface);
-    ir::ClassProperty *CreateNullishPropertyFromAccessorInInterface(
-        ir::MethodDefinition *const accessor, ir::TSInterfaceDeclaration *const newTSInterfaceDefinition);
     ir::ClassProperty *CreateNullishPropertyFromAccessor(ir::MethodDefinition *const accessor,
                                                          ir::ClassDefinition *newClassDefinition);
     void CreatePartialClassDeclaration(ir::ClassDefinition *newClassDefinition, ir::ClassDefinition *classDef);

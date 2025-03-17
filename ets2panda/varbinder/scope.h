@@ -216,9 +216,12 @@ public:
 
     Variable *AddDecl(ArenaAllocator *allocator, Decl *decl, ScriptExtension extension)
     {
-        decls_.emplace_back(decl);
-        return AddBinding(allocator, FindLocal(decl->Name(), varbinder::ResolveBindingOptions::BINDINGS), decl,
-                          extension);
+        auto *var =
+            AddBinding(allocator, FindLocal(decl->Name(), varbinder::ResolveBindingOptions::BINDINGS), decl, extension);
+        if (var != nullptr) {
+            decls_.emplace_back(decl);
+        }
+        return var;
     }
 
     Variable *AddTsDecl(ArenaAllocator *allocator, Decl *decl, ScriptExtension extension)

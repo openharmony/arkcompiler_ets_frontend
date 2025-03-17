@@ -159,8 +159,8 @@ std::vector<Phase *> GetETSPhaseList()
         &g_stringConstructorLowering,
         &g_stringComparisonLowering,
         &g_partialExportClassGen,
-        &g_genericBridgesLowering,
         &g_optionalArgumentsLowering, // #22952 could be moved to earlier phase
+        &g_genericBridgesLowering,
         &g_pluginsAfterLowerings,  // pluginsAfterLowerings has to come at the very end, nothing should go after it
     };
     // clang-format on

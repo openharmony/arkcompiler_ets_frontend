@@ -525,6 +525,29 @@ void ScopesInitPhase::Prepare(ScopesInitPhase::PhaseContext *ctx, parser::Progra
 
 void ScopesInitPhase::Finalize()
 {
+    ES2PANDA_ASSERT(program_->Ast() != nullptr);
+
+    auto const removeDuplicates = [](ir::AstNode *ast) -> void {
+        if (!ast->IsTSInterfaceBody()) {
+            return;
+        }
+
+        auto &body = ast->AsTSInterfaceBody()->Body();
+        auto it = body.begin();
+        while (it != body.end()) {
+            if ((*it)->IsMethodDefinition() &&
+                ((*it)->AsMethodDefinition()->Function()->Flags() &
+                 (ir::ScriptFunctionFlags::OVERLOAD | ir::ScriptFunctionFlags::EXTERNAL_OVERLOAD)) != 0U) {
+                it = body.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    };
+
+    //  Remove duplicates for overloaded methods.
+    program_->Ast()->IterateRecursively(removeDuplicates);
+
     AnalyzeExports();
 }
 
@@ -969,12 +992,14 @@ void InitScopesPhaseETS::MaybeAddOverload(ir::MethodDefinition *method, ir::Iden
         if (methodName->Name().Is(compiler::Signatures::MAIN) && clsScope->Parent()->IsGlobalScope()) {
             LogSemanticError("Main overload is not enabled", methodName->Start());
         }
+        ES2PANDA_ASSERT((method->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD) == 0U);
+
         AddOverload(method, found);
         method->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
 
         // default params overloads
         for (auto *overload : method->Overloads()) {
-            ES2PANDA_ASSERT((overload->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD));
+            ES2PANDA_ASSERT((overload->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD) != 0U);
             AddOverload(overload, found);
         }
         method->ClearOverloads();
@@ -1034,6 +1059,10 @@ void InitScopesPhaseETS::VisitTSEnumMember(ir::TSEnumMember *enumMember)
 
 void InitScopesPhaseETS::VisitMethodDefinition(ir::MethodDefinition *method)
 {
+    if (method->Function()->Scope() != nullptr) {
+        return;
+    }
+
     auto *curScope = VarBinder()->GetScope();
     const auto methodName = method->Id();
     auto res =
