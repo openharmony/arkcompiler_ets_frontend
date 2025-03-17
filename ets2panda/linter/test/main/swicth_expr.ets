@@ -54,7 +54,7 @@ switch (isT) {
 }
 
 const number1 = 1;
-switch (isT) {
+switch (number1) {
   case 1:
     console.log('It\'s 1');
     break;
@@ -74,5 +74,35 @@ switch (test) {
     break;
   case Test.B:
     console.log('It\'s B')
+    break;
+}
+
+const number2 = -1.1;
+switch (number2) {
+  case -1.1:
+    console.log('It\'s 1');
+    break;
+  case 2:
+    console.log('It\'s 2')
+    break;
+}
+
+const number3 = Number.NaN;
+switch (number3) {
+  case -1.1:
+    console.log('It\'s 1');
+    break;
+  case 2:
+    console.log('It\'s 2');
+    break;
+}
+
+const number4 = Number.MAX_VALUE;
+switch (number4) {
+  case -1.1:
+    console.log('It\'s 1');
+    break;
+  case 2:
+    console.log('It\'s 2');
     break;
 }

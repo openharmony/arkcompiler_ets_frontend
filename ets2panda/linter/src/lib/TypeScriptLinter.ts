@@ -3571,12 +3571,16 @@ export class TypeScriptLinter {
   }
 
   private static isSwitchAllowedType(type: ts.Type): boolean {
-    const flags = type.flags;
-    return (
-      (flags & ts.TypeFlags.NumberLike) !== 0 ||
-      (flags & ts.TypeFlags.StringLike) !== 0 ||
-      (flags & ts.TypeFlags.EnumLike) !== 0
-    );
+    if (type.flags & (ts.TypeFlags.StringLike | ts.TypeFlags.EnumLike)) {
+      return true;
+    }
+
+    if (type.flags & ts.TypeFlags.NumberLiteral) {
+      const value = (type as ts.NumberLiteralType).value;
+      return Number.isInteger(value);
+    }
+
+    return false;
   }
 
   private handleLimitedLiteralType(literalTypeNode: ts.LiteralTypeNode): void {
