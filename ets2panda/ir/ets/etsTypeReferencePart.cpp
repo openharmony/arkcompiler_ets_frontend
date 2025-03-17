@@ -137,11 +137,26 @@ checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *co
         return HandlePartialType(checker, ident);
     }
 
+    if (ident->Name() == compiler::Signatures::FIXED_ARRAY_TYPE_NAME) {
+        return HandleFixedArrayType(checker);
+    }
+
     if (ident->IsErrorPlaceHolder()) {
         return checker->GlobalTypeError();
     }
 
     return nullptr;
+}
+
+checker::Type *ETSTypeReferencePart::HandleFixedArrayType(checker::ETSChecker *const checker)
+{
+    if (typeParams_ == nullptr || typeParams_->Params().size() != 1) {
+        checker->LogError(diagnostic::FIXED_ARRAY_PARAM_ERROR, {}, Start());
+        return checker->GlobalTypeError();
+    }
+    checker::Type *type = checker->CreateETSArrayType(typeParams_->Params()[0]->GetType(checker), IsReadonlyType());
+    SetTsType(type);
+    return type;
 }
 
 checker::Type *ETSTypeReferencePart::HandlePartialType(checker::ETSChecker *const checker,

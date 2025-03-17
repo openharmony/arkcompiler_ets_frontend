@@ -26,7 +26,7 @@ public:
     bool Match()
     {
         auto res = IsLengthProp() || IsEmptyName() || IsInObjectExpr() || IsInPackageDecl() || IsUtilityType() ||
-                   IsUnionMemberAccess();
+                   IsUnionMemberAccess() || IsFixedArrayType();
         return res;
     }
 
@@ -74,6 +74,11 @@ private:
         // NOTE(mmartin): find a better solution to handle utility type resolution
         return ast_->Name().Is(Signatures::PARTIAL_TYPE_NAME) || ast_->Name().Is(Signatures::REQUIRED_TYPE_NAME) ||
                ast_->Name().Is(Signatures::READONLY_TYPE_NAME);
+    }
+
+    bool IsFixedArrayType()
+    {
+        return ast_->Name().Is(Signatures::FIXED_ARRAY_TYPE_NAME);
     }
 
     bool IsUnionMemberAccess()
