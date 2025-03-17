@@ -318,6 +318,40 @@ bool ETSParser::IsClassMethodModifier(lexer::TokenType type) noexcept
     return false;
 }
 
+ir::AstNode *ETSParser::HandleAmbientDeclaration(ir::ModifierFlags &memberModifiers,
+                                                 const std::function<ir::AstNode *(ir::Identifier *)> &parseClassMethod)
+{
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
+        // Special case for processing of special '(param: type): returnType` identifier using in ambient context
+        auto ident = CreateInvokeIdentifier();
+        memberModifiers |= ir::ModifierFlags::STATIC;
+        return parseClassMethod(ident);
+    }
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
+        const auto startPosAmbient = Lexer()->GetToken().Start();
+        auto const savePos = Lexer()->Save();
+        Lexer()->NextToken();
+        if (Lexer()->GetToken().Ident().Is(compiler::Signatures::SYMBOL)) {
+            Lexer()->Rewind(savePos);
+            auto *memberName = ExpectIdentifier(false, false, TypeAnnotationParsingOptions::NO_OPTS);
+            if (memberName == nullptr) {
+                LogUnexpectedToken(Lexer()->GetToken());
+                const auto &rangeToken = Lexer()->GetToken().Loc();
+                Lexer()->NextToken();
+                return AllocBrokenStatement(rangeToken);
+            }
+
+            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
+                Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
+                return parseClassMethod(memberName);
+            }
+        } else {
+            return ParseAmbientSignature(startPosAmbient);
+        }
+    }
+    return nullptr;
+}
+
 // Helper method for ir::ModifierFlags ETSParser::ParseClassMethodModifiers(bool seenStatic)
 ir::ModifierFlags ETSParser::ParseClassMethodModifierFlag()
 {
@@ -826,7 +860,9 @@ ir::ClassDefinition *ETSParser::ParseClassDefinition(ir::ClassDefinitionModifier
 
 ir::ModifierFlags ETSParser::ParseInterfaceMethodModifiers()
 {
-    if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
+    if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT ||
+        Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET ||
+        Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
         return ir::ModifierFlags::PUBLIC;
     }
 
@@ -835,7 +871,6 @@ ir::ModifierFlags ETSParser::ParseInterfaceMethodModifiers()
             LogError(diagnostic::LOCAL_CLASS_ACCESS_MOD, {}, Lexer()->GetToken().Start());
         }
     }
-
     if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_PRIVATE) {
         LogError(diagnostic::UNEXPECTED_TOKEN_PRIVATE_ID);
     }
@@ -844,10 +879,29 @@ ir::ModifierFlags ETSParser::ParseInterfaceMethodModifiers()
     return ir::ModifierFlags::PRIVATE;
 }
 
-ir::ClassProperty *ETSParser::ParseInterfaceField()
+ir::AstNode *ETSParser::ParseInterfaceField()
 {
-    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT ||
+                    Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET ||
+                    Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+    ir::ModifierFlags fieldModifiers = ir::ModifierFlags::PUBLIC;
+    auto startLoc = Lexer()->GetToken().Start();
+
     auto *name = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+
+    auto parseClassMethod = [&fieldModifiers, &startLoc, this](ir::Identifier *methodName) {
+        auto *classMethod = ParseClassMethodDefinition(methodName, fieldModifiers);
+        classMethod->SetStart(startLoc);
+        return classMethod;
+    };
+    if (InAmbientContext()) {
+        fieldModifiers |= ir::ModifierFlags::DECLARE;
+        auto property = HandleAmbientDeclaration(fieldModifiers, parseClassMethod);
+        if (property != nullptr) {
+            return property;
+        }
+    }
+
     name->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
     bool optionalField = false;
@@ -858,7 +912,8 @@ ir::ClassProperty *ETSParser::ParseInterfaceField()
     }
 
     ir::TypeNode *typeAnnotation = nullptr;
-    if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
+    if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON) &&
+        Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         // interfaces3.ets
         LogError(diagnostic::INTERFACE_FIELDS_TYPE_ANNOTATION);
 
@@ -869,17 +924,11 @@ ir::ClassProperty *ETSParser::ParseInterfaceField()
     typeAnnotation = ParseTypeAnnotation(&options);
     name->SetTsTypeAnnotation(typeAnnotation);
     typeAnnotation->SetParent(name);
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_EQUAL) {
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_EQUAL &&
+        Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         LogError(diagnostic::INITIALIZERS_INTERFACE_PROPS);
         Lexer()->NextToken();  // Error processing: eat '='.
     }
-
-    ir::ModifierFlags fieldModifiers = ir::ModifierFlags::PUBLIC;
-
-    if (InAmbientContext()) {
-        fieldModifiers |= ir::ModifierFlags::DECLARE;
-    }
-
     auto *field = AllocNode<ir::ClassProperty>(name, nullptr, typeAnnotation->Clone(Allocator(), nullptr),
                                                fieldModifiers, Allocator(), false);
     if (optionalField) {
@@ -1015,7 +1064,9 @@ ir::AstNode *ETSParser::ParseTypeLiteralOrInterfaceMember()
     }
 
     ir::ModifierFlags modfiers = ParseInterfaceMethodModifiers();
-    if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+    if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT &&
+        Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET &&
+        Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
         LogError(diagnostic::ID_EXPECTED);
         return AllocBrokenExpression(Lexer()->GetToken().Loc());
     }
