@@ -987,7 +987,7 @@ ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::Modifi
         return ParseSingleExport(modifiers);
     }
     if ((modifiers & ir::ModifierFlags::DEFAULT_EXPORT) != 0) {
-        LogSyntaxError("Cannot use 'export default' in re-export context");
+        LogError(diagnostic::EXPORT_DEFAULT_NO_REEXPORT);
     }
     // re-export directive
     ir::ImportSource *reExportSource = ParseSourceFromClause(true);

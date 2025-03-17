@@ -987,3 +987,7 @@ syntax:
 - name: UNHANDLED_THROW_IN_INITIALIZER
   id: 244
   message: "Unhandled throw statement."
+
+- name: EXPORT_DEFAULT_NO_REEXPORT
+  id: 245
+  message: "Cannot use 'export default' in re-export context"
