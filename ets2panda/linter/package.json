@@ -16,7 +16,7 @@
     "compile": "npm run tsc",
     "postcompile": "node scripts/testRunner/post-compile.mjs",
     "build": "npm run clean && npm run compile && npm run webpack && npm run pack:linter",
-    "postinstall": "node scripts/install-ohos-typescript.mjs && npm run build",
+    "install-ohos-typescript": "node scripts/install-ohos-typescript.mjs",
     "pack:linter": "rimraf bundle && mkdir bundle && npm pack --pack-destination bundle",
     "pretest": " npm run fix",
     "test": "npm run test_all && npm run test_all_sdk && npm run test_ts_import_ets",
