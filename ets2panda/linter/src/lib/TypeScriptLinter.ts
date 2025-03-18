@@ -186,6 +186,7 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.NamespaceImport, this.handleNamespaceImport],
     [ts.SyntaxKind.TypeAssertionExpression, this.handleTypeAssertionExpression],
     [ts.SyntaxKind.MethodDeclaration, this.handleMethodDeclaration],
+    [ts.SyntaxKind.TupleType, this.handleTupleType],
     [ts.SyntaxKind.MethodSignature, this.handleMethodSignature],
     [ts.SyntaxKind.ClassStaticBlockDeclaration, this.handleClassStaticBlockDeclaration],
     [ts.SyntaxKind.Identifier, this.handleIdentifier],
@@ -1881,6 +1882,21 @@ export class TypeScriptLinter {
         this.incrementCounters(tsTypeAlias.type, FaultID.SendableTypeAliasDeclaration);
       }
     }
+    if (this.options.arkts2 && tsTypeAlias.type.kind === ts.SyntaxKind.VoidKeyword) {
+      this.incrementCounters(tsTypeAlias.type, FaultID.LimitedVoidType);
+    }
+  }
+
+  private handleTupleType(node: ts.TupleTypeNode): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    node.elements.forEach((elementType) => {
+      if (elementType.kind === ts.SyntaxKind.VoidKeyword) {
+        this.incrementCounters(elementType, FaultID.LimitedVoidType);
+      }
+    });
   }
 
   private handleImportClause(node: ts.Node): void {
@@ -2746,6 +2762,9 @@ export class TypeScriptLinter {
     this.checkPartialType(node);
 
     const typeNameType = this.tsTypeChecker.getTypeAtLocation(typeRef.typeName);
+    if (this.options.arkts2 && (typeNameType.flags & ts.TypeFlags.Void) !== 0) {
+      this.incrementCounters(typeRef, FaultID.LimitedVoidType);
+    }
     if (this.tsUtils.isSendableClassOrInterface(typeNameType)) {
       this.checkSendableTypeArguments(typeRef);
     }

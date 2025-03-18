@@ -23,16 +23,6 @@
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
             "severity": "ERROR"
-        },
-        {
-            "line": 16,
-            "column": 1,
-            "endLine": 16,
-            "endColumn": 12,
-            "problem": "DecoratorsNotSupported",
-            "suggest": "",
-            "rule": "Decorators are not supported(arkts-no-ts-decorators)",
-            "severity": "ERROR"
         }
     ]
 }
