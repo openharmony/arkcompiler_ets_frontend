@@ -34,3 +34,6 @@ dayjs_test
 
 #21251
 validator_test
+
+#23990
+hamcrest_test
