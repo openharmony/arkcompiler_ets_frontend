@@ -24,7 +24,6 @@ using ark::es2panda::checker::ETSChecker;
 using ark::es2panda::compiler::ast_verifier::GetterSetterValidation;
 using ark::es2panda::ir::ETSParameterExpression;
 using ark::es2panda::ir::Identifier;
-using ark::es2panda::ir::MethodDefinitionKind;
 using ark::es2panda::util::DiagnosticEngine;
 namespace {
 TEST_F(ASTVerifierTest, ValidateGetterReturnTypeAnnotation)
@@ -49,7 +48,7 @@ TEST_F(ASTVerifierTest, ValidateGetterReturnTypeAnnotation)
     auto cb = [&checker](ark::es2panda::ir::AstNode *child) {
         if (child->IsMethodDefinition()) {
             auto *const method = child->AsMethodDefinition();
-            if (method->Kind() == MethodDefinitionKind::GET && method->Value()->IsFunctionExpression()) {
+            if (method->IsGetter() && method->Value()->IsFunctionExpression()) {
                 auto *const function = method->Value()->AsFunctionExpression()->Function();
                 ASSERT_NE(function->ReturnTypeAnnotation(), nullptr);
                 function->ReturnTypeAnnotation()->SetTsType(checker.GlobalVoidType());
@@ -86,7 +85,7 @@ TEST_F(ASTVerifierTest, ValidateGetterHasReturnStatement)
     auto cb = [](ark::es2panda::ir::AstNode *child) {
         if (child->IsMethodDefinition()) {
             auto *const method = child->AsMethodDefinition();
-            if (method->Kind() == MethodDefinitionKind::GET && method->Value()->IsFunctionExpression()) {
+            if (method->IsGetter() && method->Value()->IsFunctionExpression()) {
                 auto *const function = method->Value()->AsFunctionExpression()->Function();
                 auto &returns = function->ReturnStatements();
                 returns.clear();
@@ -123,7 +122,7 @@ TEST_F(ASTVerifierTest, ValidateGetterVoidReturnStatement)
     auto cb = [&checker](ark::es2panda::ir::AstNode *child) {
         if (child->IsMethodDefinition()) {
             auto *const method = child->AsMethodDefinition();
-            if (method->Kind() == MethodDefinitionKind::GET && method->Value()->IsFunctionExpression()) {
+            if (method->IsGetter() && method->Value()->IsFunctionExpression()) {
                 auto *const function = method->Value()->AsFunctionExpression()->Function();
                 auto &returns = function->ReturnStatements();
                 ASSERT_EQ(returns.size(), 1);
@@ -165,7 +164,7 @@ TEST_F(ASTVerifierTest, ValidateGetterArguments)
     auto cb = [param](ark::es2panda::ir::AstNode *child) {
         if (child->IsMethodDefinition()) {
             auto *const method = child->AsMethodDefinition();
-            if (method->Kind() == MethodDefinitionKind::GET && method->Value()->IsFunctionExpression()) {
+            if (method->IsGetter() && method->Value()->IsFunctionExpression()) {
                 auto *const function = method->Value()->AsFunctionExpression()->Function();
                 auto &params = function->Params();
                 ASSERT_EQ(params.size(), 0);
@@ -203,7 +202,7 @@ TEST_F(ASTVerifierTest, ValidateSetterReturnType)
     auto cb = [&checker](ark::es2panda::ir::AstNode *child) {
         if (child->IsMethodDefinition()) {
             auto *const method = child->AsMethodDefinition();
-            if (method->Kind() == MethodDefinitionKind::SET && method->Value()->IsFunctionExpression()) {
+            if (method->IsSetter() && method->Value()->IsFunctionExpression()) {
                 auto *const function = method->Value()->AsFunctionExpression()->Function();
                 ASSERT_EQ(function->ReturnTypeAnnotation(), nullptr);
                 auto *const thisType = function->Signature()->Params()[0]->TsType();
@@ -244,7 +243,7 @@ TEST_F(ASTVerifierTest, ValidateSetterArguments)
     auto cb = [](ark::es2panda::ir::AstNode *child) {
         if (child->IsMethodDefinition()) {
             auto *const method = child->AsMethodDefinition();
-            if (method->Kind() == MethodDefinitionKind::SET && method->Value()->IsFunctionExpression()) {
+            if (method->IsSetter() && method->Value()->IsFunctionExpression()) {
                 auto *const function = method->Value()->AsFunctionExpression()->Function();
                 auto &params = function->Params();
                 ASSERT_EQ(params.size(), 1);

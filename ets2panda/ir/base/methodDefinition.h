@@ -82,10 +82,25 @@ public:
         return kind_ == MethodDefinitionKind::CONSTRUCTOR;
     }
 
+    [[nodiscard]] bool IsMethod() const noexcept
+    {
+        return kind_ == MethodDefinitionKind::METHOD;
+    }
+
     [[nodiscard]] bool IsExtensionMethod() const noexcept
     {
         return (kind_ == MethodDefinitionKind::EXTENSION_METHOD) || (kind_ == MethodDefinitionKind::EXTENSION_GET) ||
                (kind_ == MethodDefinitionKind::EXTENSION_SET);
+    }
+
+    [[nodiscard]] bool IsGetter() const noexcept
+    {
+        return kind_ == MethodDefinitionKind::GET;
+    }
+
+    [[nodiscard]] bool IsSetter() const noexcept
+    {
+        return kind_ == MethodDefinitionKind::SET;
     }
 
     [[nodiscard]] const OverloadsT &Overloads() const noexcept
