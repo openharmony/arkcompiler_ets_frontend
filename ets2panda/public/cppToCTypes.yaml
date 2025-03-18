@@ -53,7 +53,7 @@ change_types:
             \t*|return_args.0.name| = resultVector|accessor|size();\n
             \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
             \tfor (size_t i = 0; i < *|return_args.0.name|; ++i) {\n
-            \tauto toPush = |reverse_template_nested_expression_1_start|(resultVector|accessor|at(i))|reverse_template_nested_expression_1_end|;\n
+            \t\tauto toPush = |reverse_template_nested_expression_1_start|(resultVector|accessor|at(i))|reverse_template_nested_expression_1_end|;\n
             \t\tapiRes[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
@@ -99,7 +99,7 @@ change_types:
             \t*|return_args.0.name| = resultVector|accessor|size();\n
             \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
             \tfor (size_t i = 0; i < *|return_args.0.name|; ++i) {\n
-            \tauto toPush = |reverse_template_nested_expression_1_start|(resultVector|accessor|at(i))|reverse_template_nested_expression_1_end|;\n
+            \t\tauto toPush = |reverse_template_nested_expression_1_start|(resultVector|accessor|at(i))|reverse_template_nested_expression_1_end|;\n
             \t\tapiRes[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
@@ -143,8 +143,8 @@ change_types:
             \t*|return_args.0.name| = resultVector|accessor|size();\n
             \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
             \tfor (size_t i = 0; i < *|return_args.0.name|; ++i) {\n
-            \tauto toPush = |reverse_template_nested_expression_1_start|(resultVector|accessor|at(i))|reverse_template_nested_expression_1_end|;\n
-            \t\tapiRes[i] = (|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|)(toPush);\n
+            \t\tauto toPush = |reverse_template_nested_expression_1_start|(resultVector|accessor|at(i))|reverse_template_nested_expression_1_end|;\n
+            \t\tapiRes[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
   - es2panda_arg:
@@ -191,7 +191,7 @@ change_types:
             \t*|return_args.0.name| = resultVector|accessor|size();\n
             \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
             \tfor (size_t i = 0; i < *|return_args.0.name|; ++i) {\n
-            \tauto toPush = |reverse_template_nested_expression_1_start|(resultVector|accessor|at(i))|reverse_template_nested_expression_1_end|;\n
+            \t\tauto toPush = |reverse_template_nested_expression_1_start|(resultVector|accessor|at(i))|reverse_template_nested_expression_1_end|;\n
             \t\tapiRes[i] = (|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|)(toPush);\n
             \t}"
 
