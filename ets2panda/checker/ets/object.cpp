@@ -1060,11 +1060,19 @@ void ETSChecker::AddImplementedSignature(std::vector<Signature *> *implementedSi
 
 void ETSChecker::CheckLocalClass(ir::ClassDefinition *classDef, CheckerStatus &checkerStatus)
 {
-    if (classDef->IsLocal()) {
-        checkerStatus |= CheckerStatus::IN_LOCAL_CLASS;
-        if (!classDef->Parent()->Parent()->IsBlockStatement()) {
-            LogError(diagnostic::LOCAL_CLASS_INVALID_CTX, {}, classDef->Start());
-        }
+    if (!classDef->IsLocal()) {
+        return;
+    }
+    checkerStatus |= CheckerStatus::IN_LOCAL_CLASS;
+    if (!classDef->Parent()->Parent()->IsBlockStatement()) {
+        LogError(diagnostic::LOCAL_CLASS_INVALID_CTX, {}, classDef->Start());
+    }
+    // NOTE(dkofanov): Related to spec 17.9.3 expecting CTE (native methods in local classes).
+    // Actually, if I'm not mistaken, the only reason to forbid this is problematic binding of native method to the
+    // mangled local class method, which is not really a reason for such restrictions. The spec should be revisited in
+    // the future.
+    if (classDef->HasNativeMethod()) {
+        LogError(diagnostic::LOCAL_CLASS_NATIVE_METHOD, {classDef->Ident()->Name()}, classDef->Start());
     }
 }
 

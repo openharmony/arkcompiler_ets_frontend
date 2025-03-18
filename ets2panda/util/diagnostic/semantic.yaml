@@ -1118,3 +1118,7 @@ semantic:
 - name: FIXED_ARRAY_PARAM_ERROR
   id: 277
   message: "FixedArray<T> must have only one type parameter."
+
+- name: LOCAL_CLASS_NATIVE_METHOD
+  id: 278
+  message: "Local class '{}' shouldn't have native methods/constructors"
