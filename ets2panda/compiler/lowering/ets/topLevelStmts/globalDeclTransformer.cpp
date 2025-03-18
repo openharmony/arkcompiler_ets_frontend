@@ -28,7 +28,8 @@ void GlobalDeclTransformer::FilterDeclarations(ArenaVector<ir::Statement *> &stm
 GlobalDeclTransformer::ResultT GlobalDeclTransformer::TransformStatements(const ArenaVector<ir::Statement *> &stmts)
 {
     result_.classProperties.clear();
-    result_.initStatements.clear();
+    result_.initializers_[0].clear();
+    result_.initializers_[1].clear();
     for (auto stmt : stmts) {
         stmt->Accept(this);
     }
@@ -92,9 +93,53 @@ void GlobalDeclTransformer::VisitVariableDeclaration(ir::VariableDeclaration *va
 
         result_.classProperties.emplace_back(field);
         if (auto stmt = InitTopLevelProperty(field); stmt != nullptr) {
-            result_.initStatements.emplace_back(stmt);
+            result_.initializers_[0].emplace_back(stmt);
         }
     }
+}
+
+static bool IsFinalBlockOfTryStatement(ir::AstNode const *node)
+{
+    if (!node->IsBlockStatement() || node->Parent() == nullptr) {
+        return false;
+    }
+
+    auto parent = node->Parent();
+    if (parent->IsTryStatement() && parent->AsTryStatement()->FinallyBlock() == node) {
+        return true;
+    }
+
+    return false;
+}
+
+// Note: Extract the expressions from ClassStaticBlock to Initializer block.
+void GlobalDeclTransformer::VisitClassStaticBlock(ir::ClassStaticBlock *classStaticBlock)
+{
+    auto containUnhandledThrow = [&](ir::AstNode *ast) {
+        if (!ast->IsThrowStatement()) {
+            return;
+        }
+
+        auto const *parent = ast->Parent();
+        while (parent != nullptr) {
+            if (parent->IsTryStatement() && !parent->AsTryStatement()->CatchClauses().empty()) {
+                return;
+            }
+
+            if (parent->IsCatchClause() || IsFinalBlockOfTryStatement(parent)) {
+                break;
+            }
+            parent = parent->Parent();
+        }
+        parser_->LogError(diagnostic::UNHANDLED_THROW_IN_INITIALIZER, {}, ast->Start());
+    };
+
+    auto *staticBlock = classStaticBlock->Function();
+    ES2PANDA_ASSERT((staticBlock->Flags() & ir::ScriptFunctionFlags::STATIC_BLOCK) != 0);
+    classStaticBlock->IterateRecursivelyPostorder(containUnhandledThrow);
+    auto &initStatements = staticBlock->Body()->AsBlockStatement()->Statements();
+    result_.initializers_[1].insert(result_.initializers_[1].begin(), initStatements.begin(), initStatements.end());
+    ++initializerBlockCount;
 }
 
 ir::Identifier *GlobalDeclTransformer::RefIdent(const util::StringView &name)
@@ -139,7 +184,7 @@ void GlobalDeclTransformer::HandleNode(ir::AstNode *node)
     ES2PANDA_ASSERT(node->IsStatement());
     if (typeDecl_.count(node->Type()) == 0U) {
         ES2PANDA_ASSERT(!propertiesDecl_.count(node->Type()));
-        result_.initStatements.emplace_back(node->AsStatement());
+        result_.initializers_[0].emplace_back(node->AsStatement());
     }
 }
 

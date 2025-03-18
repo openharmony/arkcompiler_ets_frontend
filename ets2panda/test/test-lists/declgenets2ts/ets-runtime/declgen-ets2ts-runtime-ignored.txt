@@ -37,6 +37,11 @@ lambda_with_receiver/lambda_with_receiver_trailing_in_function_return_this_rotat
 multisource_inheritance-2.ets
 multisource_inheritance.ets
 namespace_tests/namespace_execution_statements_test02.ets
+namespace_tests/namespace_initializer.ets
+namespace_tests/namespace_merge_test.ets
+namespace_tests/namespace_merged.ets
+namespace_tests/namespace_nested.ets
+namespace_tests/namespace_qualified.ets
 namespace_tests/namespace_with_annotations.ets
 nestedNameSpaceWithStaticField.ets
 override_for_partial_01.ets

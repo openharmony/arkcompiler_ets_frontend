@@ -22,6 +22,8 @@ defines:
     ref: ETS_GLOBAL
   - name: _$init$_
     ref: INIT_METHOD
+  - name: _$initializerBlockInit$_
+    ref: INITIALIZER_BLOCK_INIT
   - name: $_get
     ref: GET_INDEX_METHOD
   - name: $_set

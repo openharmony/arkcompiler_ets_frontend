@@ -226,6 +226,7 @@ public:
     void ApplyAnnotationsToNode(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
                                 lexer::SourcePosition pos,
                                 TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::NO_OPTS);
+    [[nodiscard]] bool IsInitializerBlockStart() const;
 
     uint32_t GetNamespaceNestedRank()
     {

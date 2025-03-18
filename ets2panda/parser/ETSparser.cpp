@@ -603,6 +603,11 @@ ir::Statement *ETSParser::ParseTypeDeclaration(bool allowStatic)
                 return ParseInterfaceDeclaration(true);
             }
 
+            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+                Lexer()->Rewind(savedPos);
+                return ParseClassStaticBlock();
+            }
+
             Lexer()->Rewind(savedPos);
             [[fallthrough]];
         case lexer::TokenType::KEYW_ABSTRACT:

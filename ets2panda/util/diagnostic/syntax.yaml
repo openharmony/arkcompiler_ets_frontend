@@ -983,3 +983,7 @@ syntax:
 - name: USING_RESERVED_NAME_AS_VARIABLE_OR_TYPE_NAME
   id: 243
   message: "'{}' is reserved and cannot be used as a variable/type name"
+
+- name: UNHANDLED_THROW_IN_INITIALIZER
+  id: 244
+  message: "Unhandled throw statement."
