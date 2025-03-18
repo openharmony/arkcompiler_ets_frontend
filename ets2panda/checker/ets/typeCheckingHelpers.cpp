@@ -1165,6 +1165,7 @@ void ETSChecker::MaybeAddBoxingFlagInRelation(TypeRelation *relation, Type *targ
 {
     auto boxingResult = MaybeBoxInRelation(target);
     if ((boxingResult != nullptr) && !relation->OnlyCheckBoxingUnboxing()) {
+        relation->GetNode()->RemoveBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOXING_FLAG);
         relation->GetNode()->AddBoxingUnboxingFlags(GetBoxingFlag(boxingResult));
         relation->Result(true);
     }
