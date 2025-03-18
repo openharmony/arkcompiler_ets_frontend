@@ -799,6 +799,8 @@ class CompilerProjectTest(Test):
         self.project_mod_path = os.path.join(os.path.join(self.projects_path, self.project), 'mod')
         self.modules_cache_path = os.path.join(os.path.join(self.projects_path, self.project), 'modulescache.cache')
         self.deps_json_path = os.path.join(os.path.join(self.projects_path, self.project), 'deps-json.json')
+        # Merge hap need to modify package name
+        self.modifyPkgNamePath = os.path.join(os.path.join(self.projects_path, self.project), 'modify_pkg_name.txt')
 
     def remove_project(self, runner):
         project_path = runner.build_dir + "/" + self.project
@@ -1039,7 +1041,13 @@ class CompilerProjectTest(Test):
                     os.makedirs(file_absolute_path)
                 test_abc_name = ("%s.abc" % (path.splitext(file_name)[0]))
                 output_abc_name = path.join(file_absolute_path, test_abc_name)
-
+        if "merge_hap" in self.projects_path:
+            exec_file_path = os.path.join(self.projects_path, self.project)
+            exec_file_path = os.path.join(exec_file_path, "main_hap")
+            [file_absolute_path, file_name] = self.get_file_absolute_path_and_name(runner)
+            if not path.exists(file_absolute_path):
+                os.makedirs(file_absolute_path)
+            output_abc_name = path.join(file_absolute_path, "merge_hap.abc")
         # reverse merge-abc flag
         if "merge_abc_consistence_check" in self.path:
             if "--merge-abc" in self.flags:
@@ -1055,6 +1063,12 @@ class CompilerProjectTest(Test):
         compile_context_info_path = path.join(path.join(self.projects_path, self.project), "compileContextInfo.json")
         if path.exists(compile_context_info_path):
             es2abc_cmd.append("%s%s" % ("--compile-context-info=", compile_context_info_path))
+        if path.exists(self.modifyPkgNamePath):
+            with open(self.modifyPkgNamePath, 'r') as file:
+                modifyPkgName = file.readline().rstrip('\n')
+                pkgNames = modifyPkgName.split(":")
+                es2abc_cmd.append("--src-package-name=%s" % pkgNames[0])
+                es2abc_cmd.append("--dst-package-name=%s" % pkgNames[1])
         process = run_subprocess_with_beta3(self, es2abc_cmd)
         self.path = exec_file_path
         out, err = [None, None]
@@ -2713,6 +2727,9 @@ def add_directory_for_compiler(runners, args):
     compiler_test_infos.append(CompilerTestInfo("compiler/ts/shared_module/projects", "ts",
                                                 ["--module", "--merge-abc", "--dump-assembly"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/protobin", "ts", []))
+    compiler_test_infos.append(CompilerTestInfo("compiler/merge_hap/projects", "ts",
+                                                ["--merge-abc", "--dump-assembly", "--enable-abc-input",
+                                                 "--dump-literal-buffer", "--dump-string", "--abc-class-threads=4"]))
 
     if args.enable_arkguard:
         prepare_for_obfuscation(compiler_test_infos, runner.test_root)

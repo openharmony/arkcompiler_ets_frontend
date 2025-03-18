@@ -440,6 +440,12 @@ bool Options::Parse(int argc, const char **argv)
         " from abc file and remove redundant source file, which is effective when the compile-context-info switch"\
         "  is turned on and there is abc input");
     panda::PandArg<bool> opDumpString("dump-string", false, "Dump program strings");
+    panda::PandArg<std::string> srcPkgName("src-package-name", "", "This is for modify pacakge name in input abc"\
+        " file and should aways be used with dstPkgName. srcPkgName is for finding the targeting package name to be"\
+        " modified.");
+    panda::PandArg<std::string> dstPkgName("dst-package-name", "", "This is for modify pacakge name in input abc"\
+        " file, and should always be used with srcPkgName. dstPkgName what targeting package name will be"\
+        " modified to.");
 
     // aop transform
     panda::PandArg<std::string> transformLib("transform-lib", "", "aop transform lib file path");
@@ -509,6 +515,9 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opDumpString);
 
     argparser_->Add(&transformLib);
+
+    argparser_->Add(&srcPkgName);
+    argparser_->Add(&dstPkgName);
 
     argparser_->PushBackTail(&inputFile);
     argparser_->EnableTail();
@@ -713,6 +722,10 @@ bool Options::Parse(int argc, const char **argv)
 
     compilerOptions_.patchFixOptions.dumpSymbolTable = opDumpSymbolTable.GetValue();
     compilerOptions_.patchFixOptions.symbolTable = opInputSymbolTable.GetValue();
+
+    if (!srcPkgName.GetValue().empty() && !dstPkgName.GetValue().empty()) {
+        compilerOptions_.modifiedPkgName = srcPkgName.GetValue() + util::COLON_SEPARATOR + dstPkgName.GetValue();
+    }
 
     bool generatePatch = opGeneratePatch.GetValue();
     bool hotReload = opHotReload.GetValue();
