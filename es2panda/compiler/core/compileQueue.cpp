@@ -228,6 +228,9 @@ void CompileAbcClassJob::Run()
     compiler_.CompileAbcClass(recordId, *program, record_name);
     program->isGeneratedFromMergedAbc = true;
 
+    if (!options_.modifiedPkgName.empty()) {
+        UpdatePkgNameOfImportOhmurl(program, options_);
+    }
     // Update ohmurl for abc input when needed
     if (options_.compileContextInfo.needModifyRecord ||
         (options_.updatePkgVersionForAbcInput && pkgVersionUpdateRequiredInAbc_)) {
@@ -278,7 +281,7 @@ void CompileAbcClassJob::UpdateDynamicImport(panda::pandasm::Program *prog,
     const std::map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo)
 {
     for (auto &[name, function] : prog->function_table) {
-        util::VisitDyanmicImports<false>(function, [this, &prog, pkgContextInfo](std::string &ohmurl) {
+        util::VisitDyanmicImports<false>(function, [this, pkgContextInfo](std::string &ohmurl) {
             if (this->options_.compileContextInfo.needModifyRecord) {
                 this->UpdateBundleNameOfOhmurl(ohmurl);
             }
@@ -287,7 +290,6 @@ void CompileAbcClassJob::UpdateDynamicImport(panda::pandasm::Program *prog,
                 return;
             }
             this->SetOhmurlBeenChanged(true);
-            prog->strings.insert(newOhmurl);
             ohmurl = newOhmurl;
         });
     }
@@ -322,6 +324,41 @@ void CompileAbcClassJob::UpdateImportOhmurl(panda::pandasm::Program *prog,
     UpdateStaticImport(prog, pkgContextInfo);
     // Replace for dynamic import
     UpdateDynamicImport(prog, pkgContextInfo);
+}
+/**
+ * Need to modify the package name of the original package to the package name of the target package when
+ * you merging two packages.
+ */
+void CompileAbcClassJob::UpdatePkgNameOfImportOhmurl(panda::pandasm::Program *prog,
+    const panda::es2panda::CompilerOptions &options)
+{
+    for (auto &[recordName, record] : prog->record_table) {
+        util::VisitStaticImports<false>(*prog, record, [this, options](std::string &ohmurl) {
+            const auto &newOhmurl = util::UpdatePackageNameIfNeeded(ohmurl, options.modifiedPkgName);
+            if (newOhmurl == ohmurl) {
+                return;
+            }
+            this->SetOhmurlBeenChanged(true);
+            ohmurl = newOhmurl;
+        });
+    }
+    for (auto &[name, function] : prog->function_table) {
+        util::VisitDyanmicImports<false>(function, [this, options](std::string &ohmurl) {
+            const auto &newOhmurl = util::UpdatePackageNameIfNeeded(ohmurl, options.modifiedPkgName);
+            if (newOhmurl == ohmurl) {
+                return;
+            }
+            this->SetOhmurlBeenChanged(true);
+            ohmurl = newOhmurl;
+        });
+    }
+    if (hasOhmurlBeenChanged_) {
+        prog->strings.clear();
+        for (const auto &[_, function] : prog->function_table) {
+            const auto &funcStringSet = function.CollectStringsFromFunctionInsns();
+            prog->strings.insert(funcStringSet.begin(), funcStringSet.end());
+        }
+    }
 }
 
 void PostAnalysisOptimizeFileJob::Run()

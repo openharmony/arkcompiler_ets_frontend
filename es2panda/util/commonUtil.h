@@ -47,6 +47,9 @@ constexpr char NORMALIZED_OHMURL_SEPARATOR = '&';
 constexpr char NORMALIZED_OHMURL_PREFIX = '@';
 constexpr char SLASH_TAG = '/';
 constexpr char CHAR_VERTICAL_LINE = '|';
+constexpr char COLON_SEPARATOR = ':';
+constexpr size_t ORIGINAL_PKG_NAME_POS = 0U;
+constexpr size_t TARGET_PKG_NAME_POS = 1U;
 
 constexpr size_t MODULE_NAME_POS = 1U;
 constexpr size_t BUNDLE_NAME_POS = 2U;
@@ -61,6 +64,7 @@ std::string GetPkgNameFromNormalizedOhmurl(const std::string &ohmurl);
 std::string GetPkgNameFromNormalizedImport(const std::string &normalizedImport);
 std::string UpdatePackageVersionIfNeeded(const std::string &ohmurl,
                                          const std::map<std::string, PkgInfo> &pkgContextInfo);
+std::string UpdatePackageNameIfNeeded(const std::string &ohmurl, const std::string &modifiedPkgName);
 std::string UpdateBundleNameIfNeeded(std::string &ohmurl, const std::string &bundleName,
                                      const std::set<std::string> &externalPkgNames);
 bool RecordNotGeneratedFromBytecode(std::string recordName);
