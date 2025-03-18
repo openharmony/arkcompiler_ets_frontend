@@ -144,6 +144,8 @@ defines:
     ref: FIXED_ARRAY_TYPE_NAME
   - name: 'Required'
     ref: REQUIRED_TYPE_NAME
+  - name: 'Array'
+    ref: ARRAY
   - name: '<property>'
     ref: PROPERTY
   - name: 'never'
