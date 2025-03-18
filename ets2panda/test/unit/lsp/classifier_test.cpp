@@ -379,8 +379,7 @@ TEST_F(LspClassificationTests, GetSemanticClassifications3)
     size_t const length = 5;
     auto result = ark::es2panda::lsp::GetSemanticClassifications(ctx, start, length);
     const size_t expectedCount = 1;
-    // Enum was transformed to class before checker phase
-    std::string expectedName = "class name";
+    std::string expectedName = "enum name";
     ASSERT_EQ(result.size(), expectedCount);
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);

@@ -23,6 +23,18 @@
 
 namespace ark::es2panda::lsp {
 
+ir::AstNode *GetEnumMemberByName(ir::AstNode *node, const util::StringView &name)
+{
+    if (node->Type() != ir::AstNodeType::TS_ENUM_DECLARATION) {
+        return nullptr;
+    }
+    auto enumDecl = node->AsTSEnumDeclaration();
+    auto enumMember = enumDecl->FindChild([&name](ir::AstNode *child) {
+        return child->IsTSEnumMember() && child->AsTSEnumMember()->Key()->AsIdentifier()->Name() == name;
+    });
+    return enumMember == nullptr ? nullptr : enumMember;
+}
+
 bool IsIncludedToken(const ir::AstNode *node)
 {
     auto type = node->Type();
@@ -178,10 +190,16 @@ ir::AstNode *GetNodeAtLocation(ir::AstNode *node)
     }
     if (node->Type() == ir::AstNodeType::IDENTIFIER) {
         if (IsDeclaration(parent) || IsDefinition(parent)) {
+            if (compiler::ClassDefinitionIsEnumTransformed(parent)) {
+                parent = parent->AsClassDefinition()->OrigEnumDecl()->AsTSEnumDeclaration();
+            }
             return parent;
         }
         if (parent->Type() == ir::AstNodeType::MEMBER_EXPRESSION) {
             auto declNode = compiler::DeclarationFromIdentifier(parent->AsMemberExpression()->Object()->AsIdentifier());
+            if (compiler::ClassDefinitionIsEnumTransformed(declNode)) {
+                declNode = declNode->AsClassDefinition()->OrigEnumDecl()->AsTSEnumDeclaration();
+            }
             return declNode;
         }
         return compiler::DeclarationFromIdentifier(node->AsIdentifier());
@@ -1068,34 +1086,30 @@ QuickInfo GetQuickInfo(ir::AstNode *node, ir::AstNode *containerNode, ir::AstNod
     if (IsClass(node)) {
         displayParts = CreateDisplayForClass(node);
         kind = "class";
-    }
-    if (node->Type() == ir::AstNodeType::ETS_PARAMETER_EXPRESSION) {
+    } else if (node->Type() == ir::AstNodeType::ETS_PARAMETER_EXPRESSION) {
         displayParts = CreateDisplayForETSParameterExpression(node);
-    }
-    if (node->Type() == ir::AstNodeType::CLASS_PROPERTY) {
-        displayParts = CreateDisplayForClassProperty(node, kindModifiers);
-        kind = "property";
-    }
-    if (node->Type() == ir::AstNodeType::TS_INTERFACE_DECLARATION) {
+    } else if (node->Type() == ir::AstNodeType::CLASS_PROPERTY) {
+        // After enum refactoring, enum declaration is transformed to a class declaration
+        if (compiler::ClassDefinitionIsEnumTransformed(node->Parent())) {
+            auto enumDecl = node->Parent()->AsClassDefinition()->OrigEnumDecl()->AsTSEnumDeclaration();
+            auto enumMember = GetEnumMemberByName(enumDecl, node->AsClassProperty()->Key()->AsIdentifier()->Name());
+            displayParts = CreateDisplayForEnumMember(enumMember);
+        } else {
+            displayParts = CreateDisplayForClassProperty(node, kindModifiers);
+            kind = "property";
+        }
+    } else if (node->Type() == ir::AstNodeType::TS_INTERFACE_DECLARATION) {
         displayParts = CreateDisplayForInterface(node);
         kind = "interface";
-    }
-    if (node->Type() == ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION) {
+    } else if (node->Type() == ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION) {
         displayParts = CreateDisplayForTypeAlias(node);
-    }
-    if (node->Type() == ir::AstNodeType::TS_ENUM_DECLARATION) {
+    } else if (node->Type() == ir::AstNodeType::TS_ENUM_DECLARATION) {
         displayParts = CreateDisplayForEnum(node);
-    }
-    if (node->Type() == ir::AstNodeType::TS_ENUM_MEMBER) {
-        displayParts = CreateDisplayForEnumMember(node);
-    }
-    if (node->Type() == ir::AstNodeType::IMPORT_DECLARATION) {
+    } else if (node->Type() == ir::AstNodeType::IMPORT_DECLARATION) {
         displayParts = CreateDisplayForImportDeclaration(node);
-    }
-    if (node->Type() == ir::AstNodeType::TS_TYPE_PARAMETER) {
+    } else if (node->Type() == ir::AstNodeType::TS_TYPE_PARAMETER) {
         displayParts = CreateDisplayForTypeParameter(node);
-    }
-    if (node->Type() == ir::AstNodeType::METHOD_DEFINITION) {
+    } else if (node->Type() == ir::AstNodeType::METHOD_DEFINITION) {
         displayParts = CreateDisplayForMethodDefinition(node, kindModifiers);
         kind = "function";
         if (node->Parent() != nullptr && node->Parent()->Type() == ir::AstNodeType::TS_INTERFACE_BODY) {

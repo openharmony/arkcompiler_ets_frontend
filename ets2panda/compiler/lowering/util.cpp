@@ -180,4 +180,9 @@ bool IsAnonymousClassType(const checker::Type *type)
     auto declNode = type->AsETSObjectType()->GetDeclNode();
     return declNode != nullptr && declNode->IsClassDefinition() && declNode->AsClassDefinition()->IsAnonymous();
 }
+
+bool ClassDefinitionIsEnumTransformed(const ir::AstNode *node)
+{
+    return node != nullptr && node->IsClassDefinition() && node->AsClassDefinition()->IsEnumTransformed();
+}
 }  // namespace ark::es2panda::compiler
