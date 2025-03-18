@@ -93,11 +93,27 @@ checker::VerifiedType ETSTypeReferencePart::Check(checker::ETSChecker *checker)
     return {this, checker->GetAnalyzer()->Check(this)};
 }
 
-checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *const checker,
-                                                         const Identifier *const ident)
+checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *const checker)
 {
-    if ((ident->Variable() != nullptr) && (ident->Variable()->Declaration()->IsTypeAliasDecl())) {
-        return checker->HandleTypeAlias(name_, typeParams_);
+    ES2PANDA_ASSERT(name_->IsIdentifier() || name_->IsTSQualifiedName());
+
+    Identifier *ident = GetIdent();
+    varbinder::Variable *variable = nullptr;
+
+    if (name_->IsIdentifier()) {
+        variable = ident->Variable();
+    } else {
+        if (name_->AsTSQualifiedName()->Left()->Variable() != nullptr &&
+            name_->AsTSQualifiedName()->Left()->Variable()->TsType() != nullptr &&
+            name_->AsTSQualifiedName()->Left()->Variable()->TsType()->IsETSObjectType()) {
+            variable = name_->AsTSQualifiedName()->Left()->Variable()->TsType()->AsETSObjectType()->GetProperty(
+                ident->Name(), checker::PropertySearchFlags::SEARCH_DECL);
+        }
+    }
+
+    if (variable != nullptr && variable->Declaration()->IsTypeAliasDecl()) {
+        return checker->HandleTypeAlias(name_, typeParams_,
+                                        variable->Declaration()->AsTypeAliasDecl()->Node()->AsTSTypeAliasDeclaration());
     }
 
     if (ident->Name() == compiler::Signatures::UNDEFINED) {
@@ -154,8 +170,8 @@ checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
         }
     }
     if (prev_ == nullptr) {
-        if (name_->IsIdentifier()) {
-            SetTsType(HandleInternalTypes(checker, name_->AsIdentifier()));
+        if (name_->IsIdentifier() || name_->IsTSQualifiedName()) {
+            SetTsType(HandleInternalTypes(checker));
         }
 
         if (TsType() == nullptr) {

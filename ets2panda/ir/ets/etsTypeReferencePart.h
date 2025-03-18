@@ -78,7 +78,7 @@ public:
 
 private:
     checker::Type *HandlePartialType(checker::ETSChecker *const checker, const Identifier *const ident);
-    checker::Type *HandleInternalTypes(checker::ETSChecker *checker, const Identifier *ident);
+    checker::Type *HandleInternalTypes(checker::ETSChecker *checker);
 
     ir::Expression *name_;
     ir::TSTypeParameterInstantiation *typeParams_ {};

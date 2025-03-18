@@ -1332,14 +1332,9 @@ ir::TypeNode *ETSChecker::ResolveTypeNodeForTypeArg(const ir::TSTypeAliasDeclara
     return typeAliasNode->TypeParams()->Params().at(idx)->DefaultType();
 }
 
-Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypeParameterInstantiation *const typeParams)
+Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypeParameterInstantiation *const typeParams,
+                                  ir::TSTypeAliasDeclaration *const typeAliasNode)
 {
-    ES2PANDA_ASSERT(name->IsIdentifier() && name->AsIdentifier()->Variable() &&
-                    name->AsIdentifier()->Variable()->Declaration()->IsTypeAliasDecl());
-
-    auto *const typeAliasNode =
-        name->AsIdentifier()->Variable()->Declaration()->AsTypeAliasDecl()->Node()->AsTSTypeAliasDeclaration();
-
     // NOTE (mmartin): modify for default params
     if ((typeParams == nullptr) != (typeAliasNode->TypeParams() == nullptr)) {
         if (typeParams == nullptr) {
