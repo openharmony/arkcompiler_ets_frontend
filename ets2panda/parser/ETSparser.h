@@ -336,7 +336,7 @@ private:
     ir::TypeNode *ParseFunctionReturnType(ParserStatus status) override;
     ir::ScriptFunctionFlags ParseFunctionThrowMarker(bool isRethrowsAllowed) override;
     ir::Expression *CreateParameterThis(ir::TypeNode *typeAnnotation) override;
-    ir::TypeNode *ConvertToOptionalUnionType(ir::TypeNode *typeNode);
+    ir::TypeNode *ConvertToOptionalUnionType(ir::TypeNode *typeAnno);
     // NOLINTNEXTLINE(google-default-arguments)
     void ParseClassFieldDefinition(ir::Identifier *fieldName, ir::ModifierFlags modifiers,
                                    ArenaVector<ir::AstNode *> *declarations);
