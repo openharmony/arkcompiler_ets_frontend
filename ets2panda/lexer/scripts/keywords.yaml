@@ -77,15 +77,17 @@ keywords:
   - name: 'break'
     token: KEYW_BREAK
     keyword: [js, ts, as, ets]
+    flags: [reserved_type_name]
 
   - name: 'byte'
     token: KEYW_BYTE
     keyword_like: [ets]
-    flags: [definable_type_name]
+    flags: [reserved_type_name, definable_type_name]
 
   - name: 'case'
     token: KEYW_CASE
     keyword: [js, ts, as, ets]
+    flags: [reserved_type_name]
 
   - name: 'catch'
     token: KEYW_CATCH
@@ -95,11 +97,12 @@ keywords:
   - name: 'char'
     token: KEYW_CHAR
     keyword_like: [ets]
-    flags: [definable_type_name]
+    flags: [reserved_type_name, definable_type_name]
 
   - name: 'class'
     token: KEYW_CLASS
     keyword: [js, ts, as, ets]
+    flags: [reserved_type_name]
 
   - name: 'const'
     token: KEYW_CONST
@@ -112,6 +115,7 @@ keywords:
   - name: 'continue'
     token: KEYW_CONTINUE
     keyword: [js, ts, as, ets]
+    flags: [reserved_type_name]
 
   - name: 'dataref'
     token: KEYW_DATAREF
@@ -128,6 +132,7 @@ keywords:
   - name: 'default'
     token: KEYW_DEFAULT
     keyword: [js, ts, as, ets]
+    flags: [reserved_type_name]
 
   - name: 'delete'
     token: KEYW_DELETE
@@ -141,15 +146,17 @@ keywords:
   - name: 'double'
     token: KEYW_DOUBLE
     keyword_like: [ets]
-    flags: [definable_type_name]
+    flags: [reserved_type_name, definable_type_name]
 
   - name: 'else'
     token: KEYW_ELSE
     keyword: [js, ts, as, ets]
+    flags: [reserved_type_name]
 
   - name: 'enum'
     token: KEYW_ENUM
     keyword: [js, as, ets, ts]
+    flags: [reserved_type_name]
 
   - name: 'eqref'
     token: KEYW_EQREF
@@ -162,10 +169,12 @@ keywords:
   - name: 'export'
     token: KEYW_EXPORT
     keyword: [as, js, ets, ts]
+    flags: [reserved_type_name]
 
   - name: 'extends'
     token: KEYW_EXTENDS
     keyword: [as, js, ets, ts]
+    flags: [reserved_type_name]
 
   - name: 'externref'
     token: KEYW_EXTERNREF
@@ -182,20 +191,23 @@ keywords:
   - name: 'false'
     token: LITERAL_FALSE
     keyword: [as, js, ets, ts]
+    flags: [reserved_type_name]
 
   - name: 'finally'
     token: KEYW_FINALLY
     keyword: [js, ts]
     keyword_like: [ets]
+    flags: [reserved_type_name]
 
   - name: 'float'
     token: KEYW_FLOAT
     keyword_like: [ets]
-    flags: [definable_type_name]
+    flags: [reserved_type_name, definable_type_name]
 
   - name: 'for'
     token: KEYW_FOR
     keyword: [as, js, ets, ts]
+    flags: [reserved_type_name]
 
   - name: 'from'
     token: KEYW_FROM
@@ -208,6 +220,7 @@ keywords:
   - name: 'function'
     token: KEYW_FUNCTION
     keyword: [as, js, ets, ts]
+    flags: [reserved_type_name]
 
   - name: 'get'
     token: KEYW_GET
@@ -240,6 +253,7 @@ keywords:
   - name: 'if'
     token: KEYW_IF
     keyword: [as, js, ets, ts]
+    flags: [reserved_type_name]
 
   - name: 'implements'
     token: KEYW_IMPLEMENTS
@@ -267,7 +281,7 @@ keywords:
   - name: 'int'
     token: KEYW_INT
     keyword_like: [ets]
-    flags: [definable_type_name]
+    flags: [reserved_type_name, definable_type_name]
 
   - name: 'interface'
     token: KEYW_INTERFACE
@@ -297,7 +311,7 @@ keywords:
   - name: 'long'
     token: KEYW_LONG
     keyword_like: [ets]
-    flags: [definable_type_name]
+    flags: [reserved_type_name, definable_type_name]
 
   - name: 'meta'
     token: KEYW_META
@@ -328,6 +342,7 @@ keywords:
   - name: 'null'
     token: LITERAL_NULL
     keyword: [as, js, ets, ts]
+    flags: [reserved_type_name]
 
   - name: 'number'
     token: KEYW_NUMBER
@@ -399,7 +414,7 @@ keywords:
   - name: 'short'
     token: KEYW_SHORT
     keyword_like: [ets]
-    flags: [definable_type_name]
+    flags: [reserved_type_name, definable_type_name]
 
   - name: 'static'
     token: KEYW_STATIC
@@ -441,6 +456,7 @@ keywords:
   - name: 'true'
     token: LITERAL_TRUE
     keyword: [as, js, ets, ts]
+    flags: [reserved_type_name]
 
   - name: 'try'
     token: KEYW_TRY
@@ -454,7 +470,7 @@ keywords:
   - name: 'typeof'
     token: KEYW_TYPEOF
     keyword: [js, ets, ts]
-    flags: [unary, definable_type_name]
+    flags: [unary, reserved_type_name, definable_type_name]
 
   - name: 'u8'
     token: KEYW_U8
@@ -476,7 +492,7 @@ keywords:
     token: KEYW_UNDEFINED
     keyword: [ets]
     keyword_like: [js, ts]
-    flags: [definable_type_name]
+    flags: [reserved_type_name, definable_type_name]
 
   - name: 'unknown'
     token: KEYW_UNKNOWN
@@ -494,7 +510,7 @@ keywords:
   - name: 'var'
     token: KEYW_VAR
     keyword: [as, js, ets, ts]
-    flags: [definable_type_name]
+    flags: [reserved_type_name, definable_type_name]
 
   - name: 'void'
     token: KEYW_VOID
