@@ -242,6 +242,8 @@ public:
     {
         namespaceNestedRank_--;
     }
+    void AddExternalSource(const std::vector<Program *> &programs);
+    std::vector<Program *> ParseSources(bool firstSource = false);
 
 private:
     NodeFormatType GetFormatPlaceholderType();
@@ -293,7 +295,6 @@ private:
     void ParseSourceList(const util::ImportPathManager::ParseInfo &parseListIdx, util::UString *extSrc,
                          const ArenaVector<util::StringView> &directImportsFromMainSource,
                          std::vector<Program *> &programs);
-    std::vector<Program *> ParseSources(bool firstSource = false);
     std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool requireFrom);
     bool IsDefaultImport();
     void ParseNamedSpecifiesDefaultImport(ArenaVector<ir::ImportDefaultSpecifier *> *resultDefault,
@@ -304,7 +305,6 @@ private:
     ir::Statement *ParseImportDeclarationHelper(lexer::SourcePosition startLoc, ArenaVector<ir::AstNode *> &specifiers,
                                                 ir::ImportKinds importKind);
     parser::Program *ParseSource(const SourceFile &sourceFile);
-    void AddExternalSource(const std::vector<Program *> &programs);
     ir::ETSModule *ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements);
     ir::ETSModule *ParseImportsOnly(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements);
     ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers) override;

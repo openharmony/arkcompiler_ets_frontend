@@ -746,6 +746,25 @@ extern "C" __attribute__((unused)) int GenerateTsDeclarationsFromContext(es2pand
                                                                                                                   : 1;
 }
 
+extern "C" void InsertETSImportDeclarationAfterParse(es2panda_Context *context, es2panda_AstNode *importDeclaration)
+{
+    auto *ctx = reinterpret_cast<Context *>(context);
+    auto *importDeclarationE2p = reinterpret_cast<ir::ETSImportDeclaration *>(importDeclaration);
+
+    ctx->parserProgram->Ast()->Statements().insert(ctx->parserProgram->Ast()->Statements().begin(),
+                                                   importDeclarationE2p);
+    ctx->parser->AsETSParser()->GetImportPathManager()->AddToParseList(
+        importDeclarationE2p->ResolvedSource()->Str(), util::ImportFlags::NONE, lexer::SourcePosition());
+    ctx->parser->AsETSParser()->AddExternalSource(ctx->parser->AsETSParser()->ParseSources());
+
+    for (auto *specific : importDeclarationE2p->Specifiers()) {
+        if (specific->Parent() == nullptr) {
+            specific->SetParent(importDeclarationE2p);
+        }
+    }
+    importDeclarationE2p->SetParent(ctx->parserProgram->Ast());
+}
+
 es2panda_Impl g_impl = {
     ES2PANDA_LIB_VERSION,
 
@@ -793,6 +812,7 @@ es2panda_Impl g_impl = {
     Es2pandaEnumToString,
     DeclarationFromIdentifier,
     GenerateTsDeclarationsFromContext,
+    InsertETSImportDeclarationAfterParse,
 
 #include "generated/es2panda_lib/es2panda_lib_list.inc"
 

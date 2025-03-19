@@ -176,8 +176,8 @@ es2panda_Type *classInstance/*return_args:*/, size_t *returnTypeLen)
  	    *returnTypeLen = resultVector.size();
  	    auto apiRes = ctxAllocator->New<es2panda_Variable *[]>(*returnTypeLen);
  	    for (size_t i = 0; i < *returnTypeLen; ++i) {
- 	        auto toPush = reinterpret_cast<es2panda_Variable *>(resultVector.at(i));
- 		    apiRes[i] = (es2panda_Variable *)(toPush);
+            auto toPush = reinterpret_cast<es2panda_Variable *>(resultVector.at(i));
+ 		    apiRes[i] = reinterpret_cast<es2panda_Variable *>(toPush);
  	    };
 	    return apiRes;
     }
