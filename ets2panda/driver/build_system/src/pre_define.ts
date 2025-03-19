@@ -23,8 +23,14 @@ export const ABC_SUFFIX: string = '.abc';
 
 export const BUILD_TYPE_BUILD: string = 'build';
 export enum BUILD_MODE {
-    DEBUG = 'Debug',
-    RELEASE = 'Release'
+  DEBUG = 'Debug',
+  RELEASE = 'Release'
+};
+
+export enum LANGUAGE_VERSION {
+  ARKTS_1_2 = '1.2',
+  ARKTS_1_1 = '1.1',
+  ARKTS_HYBRID = 'hybrid',
 };
 
 export const PANDA_SDK_PATH_FROM_SDK: string = './build-tools/ets2panda';

@@ -24,6 +24,7 @@ import {
   BUILD_MODE,
   DECL_ETS_SUFFIX,
   ETS_SUFFIX,
+  LANGUAGE_VERSION,
   LINKER_INPUT_FILE,
   MERGED_ABC_FILE,
   SYSTEM_SDK_PATH_FROM_SDK,
@@ -32,7 +33,6 @@ import {
   changeFileExtension,
   ensurePathExists
 } from '../utils';
-import { BuildConfig } from '../init/process_build_config';
 import {
   PluginDriver,
   PluginHook
@@ -43,51 +43,18 @@ import {
   LogDataFactory
 } from '../logger'
 import { ErrorCode } from '../error_code'
-
-interface ArkTSConfigObject {
-  compilerOptions: {
-    package: string,
-    baseUrl: string,
-    paths: Record<string, string[]>;
-    dependencies: string[] | undefined;
-    entry: string;
-  }
-};
-
-interface CompileFileInfo {
-  filePath: string,
-  dependentFiles: string[],
-  abcFilePath: string,
-  arktsConfigFile: string,
-  moduleInfo: ModuleInfo
-};
-
-interface ModuleInfo {
-  isMainModule: boolean,
-  packageName: string,
-  moduleRootPath: string,
-  moduleType: string,
-  sourceRoots: string[],
-  entryFile: string,
-  arktsConfigFile: string,
-  compileFileInfos: CompileFileInfo[],
-  declgenDeclEtsOutPath: string | undefined,
-  declgenEtsOutPath: string | undefined,
-  dependencies?: string[]
-}
-
-interface DependentModule {
-  packageName: string,
-  moduleName: string,
-  moduleType: string,
-  modulePath: string,
-  sourceRoots: string[],
-  entryFile: string
-}
+import {
+  BuildConfig,
+  DependentModuleConfig,
+  ModuleInfo,
+  CompileFileInfo
+} from '../types';
+import { ArkTSConfigGenerator } from './generate_arktsconfig';
 
 export abstract class BaseMode {
   buildConfig: BuildConfig;
   entryFiles: Set<string>;
+  compileFiles: Map<string, CompileFileInfo>;
   outputDir: string;
   cacheDir: string;
   pandaSdkPath: string;
@@ -96,15 +63,16 @@ export abstract class BaseMode {
   sourceRoots: string[];
   moduleRootPath: string;
   moduleType: string;
-  dependentModuleList: DependentModule[];
+  dependentModuleList: DependentModuleConfig[];
   moduleInfos: Map<string, ModuleInfo>;
   mergedAbcFile: string;
   abcLinkerCmd: string[];
   logger: Logger;
   isDebug: boolean;
   enableDeclgenEts2Ts: boolean;
-  declgenDeclEtsOutPath: string | undefined;
-  declgenEtsOutPath: string | undefined;
+  declgenV1OutPath: string | undefined;
+  declgenBridgeCodePath: string | undefined;
+  hasMainModule: boolean;
 
   constructor(buildConfig: BuildConfig) {
     this.buildConfig = buildConfig;
@@ -117,14 +85,16 @@ export abstract class BaseMode {
     this.sourceRoots = buildConfig.sourceRoots as string[];
     this.moduleRootPath = buildConfig.moduleRootPath as string;
     this.moduleType = buildConfig.moduleType as string;
-    this.dependentModuleList = buildConfig.dependentModuleList as DependentModule[];
+    this.dependentModuleList = buildConfig.dependentModuleList;
     this.isDebug = buildConfig.buildMode as string === BUILD_MODE.DEBUG;
+    this.hasMainModule = buildConfig.hasMainModule;
 
     this.enableDeclgenEts2Ts = buildConfig.enableDeclgenEts2Ts as boolean;
-    this.declgenDeclEtsOutPath = buildConfig.declgenDeclEtsOutPath as string | undefined;
-    this.declgenEtsOutPath = buildConfig.declgenEtsOutPath as string | undefined;
+    this.declgenV1OutPath = buildConfig.declgenV1OutPath as string | undefined;
+    this.declgenBridgeCodePath = buildConfig.declgenBridgeCodePath as string | undefined;
 
     this.moduleInfos = new Map<string, ModuleInfo>();
+    this.compileFiles = new Map<string, CompileFileInfo>();
     this.mergedAbcFile = path.resolve(this.outputDir, MERGED_ABC_FILE);
     this.abcLinkerCmd = ['"' + this.buildConfig.abcLinkerPath + '"'];
 
@@ -133,37 +103,50 @@ export abstract class BaseMode {
 
   public declgen(fileInfo: CompileFileInfo): void {
     const source = fs.readFileSync(fileInfo.filePath, 'utf8');
-    let filePathFromModuleRoot: string = path.relative(fileInfo.moduleInfo.moduleRootPath, fileInfo.filePath);
+    let moduleInfo: ModuleInfo = this.moduleInfos.get(fileInfo.packageName)!;
+    let filePathFromModuleRoot: string = path.relative(moduleInfo.moduleRootPath, fileInfo.filePath);
     let declEtsOutputPath: string = changeFileExtension(
-      path.join(fileInfo.moduleInfo.declgenDeclEtsOutPath as string, fileInfo.moduleInfo.packageName, filePathFromModuleRoot),
+      path.join(moduleInfo.declgenV1OutPath as string, moduleInfo.packageName, filePathFromModuleRoot),
       DECL_ETS_SUFFIX
     );
     let etsOutputPath: string = changeFileExtension(
-      path.join(fileInfo.moduleInfo.declgenEtsOutPath as string, fileInfo.moduleInfo.packageName, filePathFromModuleRoot),
+      path.join(moduleInfo.declgenBridgeCodePath as string, moduleInfo.packageName, filePathFromModuleRoot),
       ETS_SUFFIX
     );
     ensurePathExists(declEtsOutputPath);
     ensurePathExists(etsOutputPath);
     let arktsGlobal = this.buildConfig.arktsGlobal as any;
     let arkts = this.buildConfig.arkts as any;
-    arktsGlobal.config = arkts.createConfig([
-        '_',
-        '--extension',
-        'ets',
-        '--arktsconfig',
-        fileInfo.arktsConfigFile,
-        fileInfo.filePath
-    ]);
-    arktsGlobal.context = arkts.createContextFromString(arktsGlobal.config, source, fileInfo.filePath);
-    arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED);
-    arkts.generateTsDeclarationsFromContext(
-      arktsGlobal.context,
-      declEtsOutputPath,
-      etsOutputPath,
-      false
-    ); // Generate 1.0 declaration files & 1.0 glue code
-    arkts.destroyConfig(arktsGlobal.config);
-    console.log("declaration files generated");
+    try {
+      arktsGlobal.filePath = fileInfo.filePath;
+      arktsGlobal.config = arkts.Config.create([
+          '_',
+          '--extension',
+          'ets',
+          '--arktsconfig',
+          fileInfo.arktsConfigFile,
+          fileInfo.filePath
+      ]).peer;
+      arktsGlobal.compilerContext = arkts.Context.createFromString(source);
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+      arkts.generateTsDeclarationsFromContext(
+        declEtsOutputPath,
+        etsOutputPath,
+        false
+      ); // Generate 1.0 declaration files & 1.0 glue code
+      this.logger.printInfo("declaration files generated");
+    } catch (error) {
+      if (error instanceof Error) {
+        const logData: LogData = LogDataFactory.newInstance(
+          ErrorCode.BUILDSYSTEM_DECLGEN_FAIL,
+          'Generate declaration files failed.',
+          error.message
+        );
+        this.logger.printError(logData);
+      }
+    } finally {
+      arkts.destroyConfig(arktsGlobal.config);
+    }
   }
 
   public compile(fileInfo: CompileFileInfo): void {
@@ -262,48 +245,21 @@ export abstract class BaseMode {
     }
   }
 
-  private generateSystemSdkPathSection(pathSection: Record<string, string[]>): void {
-    let systemSdkPath: string = path.resolve(this.buildSdkPath, SYSTEM_SDK_PATH_FROM_SDK);
-    function traverse(currentDir: string, relativePath: string = '', isExcludedDir: boolean = false) {
-      const items = fs.readdirSync(currentDir);
-      for (const item of items) {
-        const itemPath = path.join(currentDir, item);
-        const stat = fs.statSync(itemPath);
+  private getDependentModules(moduleInfo: ModuleInfo): Map<string, ModuleInfo>[] {
+    let dynamicDepModules: Map<string, ModuleInfo> = new Map<string, ModuleInfo>();
+    let staticDepModules: Map<string, ModuleInfo> = new Map<string, ModuleInfo>();
 
-        if (stat.isFile()) {
-          const basename = path.basename(item, '.d.ets');
-          const key = isExcludedDir ? basename : (relativePath ? `${relativePath}.${basename}` : basename);
-          pathSection[key] = [changeFileExtension(itemPath, '', '.d.ets')];
-        }
-        if (stat.isDirectory()) {
-          const isCurrentDirExcluded = path.basename(currentDir) === 'api' && item === 'arkui';
-          const newRelativePath = isCurrentDirExcluded ? '' : (relativePath ? `${relativePath}.${item}` : item);
-          traverse(path.resolve(currentDir, item), newRelativePath, isCurrentDirExcluded || isExcludedDir);
-        }
-      }
-    }
-
-    let apiPath: string = path.resolve(systemSdkPath, 'api');
-    let arktsPath: string = path.resolve(systemSdkPath, 'arkts');
-    let kitsPath: string = path.resolve(systemSdkPath, 'kits');
-    if (!fs.existsSync(apiPath) || !fs.existsSync(arktsPath) || !fs.existsSync(kitsPath)) {
-      const logData: LogData = LogDataFactory.newInstance(
-        ErrorCode.BUILDSYSTEM_SDK_NOT_EXIST_FAIL,
-        `sdk path ${apiPath} or ${arktsPath} or ${kitsPath} not exist.`
-      );
-      this.logger.printErrorAndExit(logData);
-    }
-    traverse(apiPath);
-    traverse(arktsPath);
-    traverse(kitsPath);
-  }
-
-  private getDependentModules(moduleInfo: ModuleInfo): Map<string, ModuleInfo> {
     if (moduleInfo.isMainModule) {
-      return this.moduleInfos;
+      this.moduleInfos.forEach((module: ModuleInfo, packageName: string) => {
+        if (module.isMainModule) {
+          return;
+        }
+        module.language === LANGUAGE_VERSION.ARKTS_1_2 ?
+        staticDepModules.set(packageName, module) : dynamicDepModules.set(packageName, module);
+      });
+      return [dynamicDepModules, staticDepModules];
     }
 
-    let depModules: Map<string, ModuleInfo> = new Map<string, ModuleInfo>();
     if (moduleInfo.dependencies) {
       moduleInfo.dependencies.forEach((packageName: string) => {
         let depModuleInfo: ModuleInfo | undefined = this.moduleInfos.get(packageName);
@@ -314,70 +270,30 @@ export abstract class BaseMode {
           );
           this.logger.printErrorAndExit(logData);
         } else {
-          depModules.set(packageName, depModuleInfo);
+          depModuleInfo.language === LANGUAGE_VERSION.ARKTS_1_2 ?
+            staticDepModules.set(packageName, depModuleInfo) : dynamicDepModules.set(packageName, depModuleInfo);
         }
       });
     }
-    return depModules;
-  }
-
-  private generateDependenciesSection(moduleInfo: ModuleInfo, dependenciesSection: string[]): void {
-    let depModules: Map<string, ModuleInfo> = this.getDependentModules(moduleInfo);
-    depModules.forEach((depModuleInfo: ModuleInfo) => {
-      if (depModuleInfo.isMainModule) {
-        return;
-      }
-      dependenciesSection.push(depModuleInfo.arktsConfigFile);
-    });
-  }
-
-  private writeArkTSConfigFile(moduleInfo: ModuleInfo, pathSection: Record<string, string[]>,
-    dependenciesSection: string[]): void {
-    if (!moduleInfo.sourceRoots || moduleInfo.sourceRoots.length == 0) {
-      const logData: LogData = LogDataFactory.newInstance(
-        ErrorCode.BUILDSYSTEM_SOURCEROOTS_NOT_SET_FAIL,
-        'SourceRoots not set from hvigor.'
-      );
-      this.logger.printErrorAndExit(logData);
-    }
-
-    let baseUrl: string = path.resolve(moduleInfo.moduleRootPath, moduleInfo.sourceRoots[0]);
-    pathSection[moduleInfo.packageName] = [baseUrl];
-    let arktsConfig: ArkTSConfigObject = {
-      compilerOptions: {
-        package: moduleInfo.packageName,
-        baseUrl: baseUrl,
-        paths: pathSection,
-        dependencies: dependenciesSection.length === 0 ? undefined : dependenciesSection,
-        entry: moduleInfo.entryFile
-      }
-    };
-
-    ensurePathExists(moduleInfo.arktsConfigFile);
-    fs.writeFileSync(moduleInfo.arktsConfigFile, JSON.stringify(arktsConfig, null, 2), 'utf-8');
+    return [dynamicDepModules, staticDepModules];
   }
 
   private generateArkTSConfigForModules(): void {
-    let pathSection: Record<string, string[]> = {};
-    pathSection['std'] = [path.resolve(this.pandaSdkPath, 'lib', 'stdlib', 'std')];
-    pathSection['escompat'] = [path.resolve(this.pandaSdkPath, 'lib', 'stdlib', 'escompat')];
-    this.generateSystemSdkPathSection(pathSection);
-
-    this.moduleInfos.forEach((moduleInfo: ModuleInfo, moduleRootPath: string) => {
-      pathSection[moduleInfo.packageName] = [
-        path.resolve(moduleRootPath, moduleInfo.sourceRoots[0])
-      ]
-    });
-
     this.moduleInfos.forEach((moduleInfo: ModuleInfo, moduleRootPath: string)=> {
-      let dependenciesSection: string[] = [];
-      this.generateDependenciesSection(moduleInfo, dependenciesSection);
-      this.writeArkTSConfigFile(moduleInfo, pathSection, dependenciesSection);
+      ArkTSConfigGenerator.getInstance(this.buildConfig, this.moduleInfos).writeArkTSConfigFile(moduleInfo);
+    });
+  }
+
+  private collectDepModuleInfos(): void {
+    this.moduleInfos.forEach((moduleInfo) => {
+      let [dynamicDepModules, staticDepModules] = this.getDependentModules(moduleInfo);
+      moduleInfo.dynamicDepModuleInfos = dynamicDepModules;
+      moduleInfo.staticDepModuleInfos = staticDepModules;
     });
   }
 
   private collectModuleInfos(): void {
-    if (!this.packageName || !this.moduleRootPath || !this.sourceRoots) { // BUILDSYSTEM_MODULE_INFO_NOT_CORRECT_FAIL
+    if (this.hasMainModule && (!this.packageName || !this.moduleRootPath || !this.sourceRoots)) {
       const logData: LogData = LogDataFactory.newInstance(
         ErrorCode.BUILDSYSTEM_MODULE_INFO_NOT_CORRECT_FAIL,
         'Main module info from hvigor is not correct.'
@@ -385,19 +301,21 @@ export abstract class BaseMode {
       this.logger.printError(logData);
     }
     let mainModuleInfo: ModuleInfo = {
-      isMainModule: true,
+      isMainModule: this.hasMainModule,
       packageName: this.packageName,
       moduleRootPath: this.moduleRootPath,
       moduleType: this.moduleType,
       sourceRoots: this.sourceRoots,
       entryFile: '',
       arktsConfigFile: path.resolve(this.cacheDir, this.packageName, ARKTSCONFIG_JSON_FILE),
+      dynamicDepModuleInfos: new Map<string, ModuleInfo>(),
+      staticDepModuleInfos: new Map<string, ModuleInfo>(),
       compileFileInfos: [],
-      declgenDeclEtsOutPath: this.declgenDeclEtsOutPath,
-      declgenEtsOutPath: this.declgenEtsOutPath
+      declgenV1OutPath: this.declgenV1OutPath,
+      declgenBridgeCodePath: this.declgenBridgeCodePath
     }
-    this.moduleInfos.set(this.moduleRootPath, mainModuleInfo);
-    this.dependentModuleList.forEach((module: DependentModule) => {
+    this.moduleInfos.set(this.packageName, mainModuleInfo);
+    this.dependentModuleList.forEach((module: DependentModuleConfig) => {
       if (!module.packageName || !module.modulePath || !module.sourceRoots || !module.entryFile) {
         const logData: LogData = LogDataFactory.newInstance(
           ErrorCode.BUILDSYSTEM_DEPENDENT_MODULE_INFO_NOT_CORRECT_FAIL,
@@ -414,31 +332,39 @@ export abstract class BaseMode {
         entryFile: module.entryFile,
         arktsConfigFile: path.resolve(this.cacheDir, module.packageName, ARKTSCONFIG_JSON_FILE),
         compileFileInfos: [],
-        declgenDeclEtsOutPath: undefined,
-        declgenEtsOutPath: undefined
+        dynamicDepModuleInfos: new Map<string, ModuleInfo>(),
+        staticDepModuleInfos: new Map<string, ModuleInfo>(),
+        declgenV1OutPath: undefined,
+        declgenBridgeCodePath: undefined,
+        language: module.language,
+        declFilesPath: module.declFilesPath,
+        dependencies: module.dependencies
       }
-      this.moduleInfos.set(module.modulePath, moduleInfo);
+      this.moduleInfos.set(module.packageName, moduleInfo);
     });
+    this.collectDepModuleInfos();
   }
 
-  private collectEntryFiles(): void {
+  private collectCompileFiles(): void {
     this.entryFiles.forEach((file: string) => {
-      for (const [modulePath, moduleInfo] of this.moduleInfos) {
-        if (file.startsWith(modulePath)) {
-          let filePathFromModuleRoot: string = path.relative(modulePath, file);
-          let filePathInCache: string = path.join(this.cacheDir, moduleInfo.packageName, filePathFromModuleRoot);
-          let abcFilePath: string = path.resolve(changeFileExtension(filePathInCache, ABC_SUFFIX));
-
-          let fileInfo: CompileFileInfo = {
-            filePath: file,
-            dependentFiles: [],
-            abcFilePath: abcFilePath,
-            arktsConfigFile: moduleInfo.arktsConfigFile,
-            moduleInfo: moduleInfo
-          };
-          moduleInfo.compileFileInfos.push(fileInfo);
-          return;
+      for (const [packageName, moduleInfo] of this.moduleInfos) {
+        if (!file.startsWith(moduleInfo.moduleRootPath)) {
+          continue;
         }
+        let filePathFromModuleRoot: string = path.relative(moduleInfo.moduleRootPath, file);
+        let filePathInCache: string = path.join(this.cacheDir, moduleInfo.packageName, filePathFromModuleRoot);
+        let abcFilePath: string = path.resolve(changeFileExtension(filePathInCache, ABC_SUFFIX));
+
+        let fileInfo: CompileFileInfo = {
+          filePath: file,
+          dependentFiles: [],
+          abcFilePath: abcFilePath,
+          arktsConfigFile: moduleInfo.arktsConfigFile,
+          packageName: moduleInfo.packageName
+        };
+        moduleInfo.compileFileInfos.push(fileInfo);
+        this.compileFiles.set(file, fileInfo);
+        return;
       }
       const logData: LogData = LogDataFactory.newInstance(
         ErrorCode.BUILDSYSTEM_FILE_NOT_BELONG_TO_ANY_MODULE_FAIL,
@@ -452,24 +378,22 @@ export abstract class BaseMode {
 
   private generateModuleInfos(): void {
     this.collectModuleInfos();
-    this.collectEntryFiles();
+    this.collectCompileFiles();
+    console.log(this.moduleInfos);
   }
 
-  public generateDeclaration(): void {
+  public async generateDeclaration(): Promise<void> {
     this.generateModuleInfos();
     this.generateArkTSConfigForModules();
 
-    this.moduleInfos.forEach((moduleInfo) => {
-      if (
-        moduleInfo.declgenDeclEtsOutPath &&
-        moduleInfo.declgenEtsOutPath &&
-        (moduleInfo.moduleType === 'har' || moduleInfo.moduleType ==='shared')
-      ) {
-        moduleInfo.compileFileInfos.forEach((fileInfo) => {
-          this.declgen(fileInfo);
-        });
-      }
+    const compilePromises: Promise<void>[] = [];
+    this.compileFiles.forEach((fileInfo: CompileFileInfo, file: string) => {
+      compilePromises.push(new Promise<void>((resolve) => {
+        this.declgen(fileInfo);
+        resolve();
+      }));
     });
+    await Promise.all(compilePromises);
   }
 
   public async run(): Promise<void> {
@@ -477,13 +401,11 @@ export abstract class BaseMode {
     this.generateArkTSConfigForModules();
 
     const compilePromises: Promise<void>[] = [];
-    this.moduleInfos.forEach((moduleInfo) => {
-      moduleInfo.compileFileInfos.forEach((fileInfo) => {
-        compilePromises.push(new Promise<void>((resolve) => {
-          this.compile(fileInfo);
-          resolve();
-        }));
-      });
+    this.compileFiles.forEach((fileInfo: CompileFileInfo, file: string) => {
+      compilePromises.push(new Promise<void>((resolve) => {
+        this.compile(fileInfo);
+        resolve();
+      }));
     });
     await Promise.all(compilePromises);
 

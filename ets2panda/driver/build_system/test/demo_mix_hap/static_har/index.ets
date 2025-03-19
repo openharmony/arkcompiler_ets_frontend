@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-function main() {
-  let a: string = "hello world"
-  console.log(a)
+export function getMessageStatic(): string {
+  return "hello world from static har!";
 }

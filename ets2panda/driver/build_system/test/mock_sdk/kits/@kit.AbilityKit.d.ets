@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-function main() {
-  let a: string = "hello world"
-  console.log(a)
-}
+import {UIAbility} from '@ohos.app.ability.UIAbility'
+import {Lang} from '@arkts.lang'
+import {Hilog} from '@ohos.hilog'
+
+export {UIAbility, Lang}
