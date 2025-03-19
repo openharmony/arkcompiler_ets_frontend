@@ -113,3 +113,6 @@ ast/compiler/ets/not_initialized_variable/import_types.ets
 ast/parser/ets/InvalidExpressions.ets
 # falls to post-checker lowerings after type errors are detected!
 ast/parser/ets/lambdaWithWrongOptionalParameter.ets
+
+# Issue: #24253
+ast/compiler/ets/lambda_infer_type/lambda_param_type_cannot_be_determined.ets

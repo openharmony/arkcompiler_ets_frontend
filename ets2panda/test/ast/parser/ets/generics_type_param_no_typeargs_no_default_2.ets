@@ -34,13 +34,11 @@ function printBoxedValue<T>(x : Boxx<T>) {
 
 function doSomethingUseful() {
     let box1 = new /* @@ label */Boxx(123)
-    /* @@ label1 */printBoxedValue(box1)
-    let box2 = new /* @@ label2 */Boxx("hello")
-    /* @@ label3 */printBoxedValue(box2)
+    printBoxedValue(box1)
+    let box2 = new /* @@ label1 */Boxx("hello")
+    printBoxedValue(box2)
 }
 
 
 /* @@@ label Error TypeError: Type 'Boxx<T>' is generic but type argument were not provided.  */
-/* @@@ label1 Error TypeError: No matching call signature for printBoxedValue(box1)  */
-/* @@@ label2 Error TypeError: Type 'Boxx<T>' is generic but type argument were not provided.  */
-/* @@@ label3 Error TypeError: No matching call signature for printBoxedValue(box2)  */
+/* @@@ label1 Error TypeError: Type 'Boxx<T>' is generic but type argument were not provided.  */

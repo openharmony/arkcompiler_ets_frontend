@@ -129,7 +129,8 @@ static const Substitution *BuildImplicitSubstitutionForArguments(ETSChecker *che
                 continue;
             }
             if (newTypeParam->GetDefaultType() == nullptr) {
-                return nullptr;
+                checker->EmplaceSubstituted(substitution, newTypeParam, checker->GlobalETSNeverType());
+                continue;
             }
             auto dflt = newTypeParam->GetDefaultType()->Substitute(checker->Relation(), substitution);
             if (!checker->EnhanceSubstitutionForType(sigInfo->typeParams, newTypeParam, dflt, substitution)) {
