@@ -513,7 +513,9 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_READONLY) {
         Lexer()->NextToken();  // eat 'readonly'
         typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
-        if (!typeAnnotation->IsTSArrayType() && !typeAnnotation->IsETSTuple()) {
+        if (!typeAnnotation->IsTSArrayType() && !typeAnnotation->IsETSTuple() &&
+            !(typeAnnotation->IsETSTypeReference() &&
+              typeAnnotation->AsETSTypeReference()->BaseName()->Name() == compiler::Signatures::ARRAY)) {
             if (!ParseReadonlyInTypeAnnotation()) {
                 LogError(diagnostic::READONLY_ONLY_ON_ARRAY_OR_TUPLE);
             } else {

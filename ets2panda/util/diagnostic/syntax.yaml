@@ -574,7 +574,7 @@ syntax:
 
 - name: READONLY_ONLY_ON_ARRAY_OR_TUPLE
   id: 141
-  message: "'readonly' type modifier is only permitted on array and tuple types."
+  message: "'readonly' type modifier is only permitted on resizable array and tuple types."
 
 - name: OPTIONAL_TYPES_IN_TUPLE_NOT_IMPLEMENTED
   id: 142

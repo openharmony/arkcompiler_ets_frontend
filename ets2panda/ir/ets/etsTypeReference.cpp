@@ -100,10 +100,14 @@ checker::VerifiedType ETSTypeReference::Check(checker::ETSChecker *checker)
 }
 checker::Type *ETSTypeReference::GetType(checker::ETSChecker *checker)
 {
-    if (TsType() == nullptr) {
-        SetTsType(part_->GetType(checker));
+    if (TsType() != nullptr) {
+        return TsType();
     }
-    return TsType();
+    auto *type = part_->GetType(checker);
+    if (IsReadonlyType()) {
+        type = checker->GetReadonlyType(type);
+    }
+    return SetTsType(type);
 }
 
 ETSTypeReference *ETSTypeReference::Clone(ArenaAllocator *const allocator, AstNode *const parent)
