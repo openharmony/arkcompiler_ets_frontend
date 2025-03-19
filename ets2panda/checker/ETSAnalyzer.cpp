@@ -1379,7 +1379,14 @@ checker::Type *ETSAnalyzer::GetCallExpressionReturnType(ir::CallExpression *expr
 
     auto owner = const_cast<ETSObjectType *>(util::Helpers::GetContainingObjectType(signature->Function()));
     SavedCheckerContext savedCtx(ReconstructOwnerClassContext(checker, owner));
-    signature->OwnerVar()->Declaration()->Node()->Check(checker);
+
+    ir::AstNode *methodDef = signature->Function();
+    while (!methodDef->IsMethodDefinition()) {
+        methodDef = methodDef->Parent();
+        ES2PANDA_ASSERT(methodDef != nullptr);
+    }
+    ES2PANDA_ASSERT(methodDef->IsMethodDefinition());
+    methodDef->Check(checker);
 
     if (!signature->Function()->HasBody()) {
         return signature->ReturnType();
