@@ -33,16 +33,6 @@
             "suggest": "",
             "rule": "\"@Extend\" decorator is not supported (arkui-no-extend-decorator)",
             "severity": "ERROR"
-        },
-        {
-            "line": 28,
-            "column": 1,
-            "endLine": 28,
-            "endColumn": 16,
-            "problem": "DecoratorsNotSupported",
-            "suggest": "",
-            "rule": "Decorators are not supported(arkts-no-ts-decorators)",
-            "severity": "ERROR"
         }
     ]
 }

@@ -164,3 +164,11 @@ function f3(): void | Promise<void> {} // type `void` is not allowed in union ty
 class B {
   m(): void | number {} // type `void` is not allowed in union type
 }
+
+type ss = void;
+let sspar: ss;
+
+type ff = string;
+let ffpar: ff;
+
+let sread: readonly [void] = [undefined];

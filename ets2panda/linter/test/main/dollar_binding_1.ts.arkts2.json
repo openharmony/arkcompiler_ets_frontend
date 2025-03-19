@@ -15,17 +15,6 @@
     ],
     "result": [
         {
-            "line": 18,
-            
-            "column": 3,
-            "endLine": 18,
-            "endColumn": 9,
-            "problem": "DecoratorsNotSupported",
-            "suggest": "",
-            "rule": "Decorators are not supported(arkts-no-ts-decorators)",
-            "severity": "ERROR"
-        },
-        {
             "line": 22,
             "column": 9,
             "endLine": 22,
@@ -33,16 +22,6 @@
             "problem": "DollarBindingNotSupported",
             "suggest": "",
             "rule": "\"${variable}\" for decorator binding is not supported (arkui-link-decorator-passing)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 30,
-            "column": 3,
-            "endLine": 30,
-            "endColumn": 8,
-            "problem": "DecoratorsNotSupported",
-            "suggest": "",
-            "rule": "Decorators are not supported(arkts-no-ts-decorators)",
             "severity": "ERROR"
         }
     ]

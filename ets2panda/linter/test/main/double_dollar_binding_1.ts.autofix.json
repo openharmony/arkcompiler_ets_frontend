@@ -15,16 +15,6 @@
     ],
     "result": [
         {
-            "line": 18,
-            "column": 3,
-            "endLine": 18,
-            "endColumn": 9,
-            "problem": "DecoratorsNotSupported",
-            "suggest": "",
-            "rule": "Decorators are not supported(arkts-no-ts-decorators)",
-            "severity": "ERROR"
-        },
-        {
             "line": 22,
             "column": 16,
             "endLine": 22,
@@ -39,16 +29,6 @@
             ],
             "suggest": "",
             "rule": "\"$$\" for bidirectional data binding is not supported (arkui-no-$$-bidirectional-data-binding)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 30,
-            "column": 3,
-            "endLine": 30,
-            "endColumn": 9,
-            "problem": "DecoratorsNotSupported",
-            "suggest": "",
-            "rule": "Decorators are not supported(arkts-no-ts-decorators)",
             "severity": "ERROR"
         },
         {

@@ -23,6 +23,46 @@
             "suggest": "",
             "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
             "severity": "ERROR"
+        },
+        {
+            "line": 442,
+            "column": 10,
+            "endLine": 442,
+            "endColumn": 24,
+            "problem": "LimitedReturnTypeInference",
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 458,
+            "column": 10,
+            "endLine": 458,
+            "endColumn": 24,
+            "problem": "LimitedReturnTypeInference",
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 465,
+            "column": 24,
+            "endLine": 465,
+            "endColumn": 25,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 490,
+            "column": 18,
+            "endLine": 490,
+            "endColumn": 29,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
         }
     ]
 }
