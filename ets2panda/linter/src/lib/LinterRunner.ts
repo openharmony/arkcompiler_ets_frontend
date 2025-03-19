@@ -37,6 +37,7 @@ import {
 import { mergeArrayMaps } from './utils/functions/MergeArrayMaps';
 import { clearPathHelperCache, pathContainsDirectory } from './utils/functions/PathHelper';
 import { LibraryTypeCallDiagnosticChecker } from './utils/functions/LibraryTypeCallDiagnosticChecker';
+import { compileLintOptions } from '../cli/Compiler';
 import * as qEd from './autofixes/QuasiEditor';
 
 export function consoleLog(linterOptions: LinterOptions, ...args: unknown[]): void {
@@ -147,16 +148,22 @@ export function lint(config: LinterConfig, etsLoaderPath: string | undefined): L
 function applyFixes(srcFile: ts.SourceFile, linter: TypeScriptLinter | InteropTypescriptLinter): void {
   for ( let pass = 0; pass < qEd.MAX_AUTOFIX_PASSES; pass++ ) {
     let qe:qEd.QuasiEditor = new qEd.QuasiEditor(srcFile);
-    qe.applyFixes([...linter.problemsInfos]);
+    if (pass === 0) {
+      qe.backupSrcFile();
+    }
+    qe.applyFixes(linter.problemsInfos);
     if (qe.wasError) {
       Logger.error(`Error: fix-all converged for (${srcFile.fileName}) on pass #${pass}`);
       break;
     }
-    let recompiledFile = linterConfig.tscCompiledProgram.getProgram().getSourceFile(srcFile.fileName);
+    const tmpLinterConfig = compileLintOptions( linterConfig.cmdOptions );
+    let recompiledFile = tmpLinterConfig.tscCompiledProgram.getProgram().getSourceFile(srcFile.fileName);
+
     if ( !recompiledFile ) {
       Logger.error(`Error: recompilation failed for (${srcFile.fileName}) on pass #${pass}`);
       break;
     }
+    linter.problemsInfos = [];
     linter.lint(recompiledFile);
   }
 }
@@ -248,7 +255,7 @@ function countProblemFiles(
       ' lines'
     );
   }
-  
+
   return filesNumber;
 }
 
