@@ -30,6 +30,10 @@
 #include "compiler/compiler_options.h"
 #endif
 
+#ifdef ES2PANDA_COMPILE_BY_GN
+#include "generated/es2panda_build_info.h"
+#endif
+
 namespace ark::es2panda::util {
 
 static std::string Usage(const ark::PandArgParser &argparser)
