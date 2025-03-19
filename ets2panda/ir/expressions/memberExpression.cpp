@@ -362,6 +362,9 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
     checker::Signature *signature = checker->ValidateSignatures(signatures, nullptr, arguments, Start(), "indexing",
                                                                 checker::TypeRelationFlag::NO_THROW);
     if (signature == nullptr) {
+        if (isSetter) {
+            Parent()->AsAssignmentExpression()->Right()->SetParent(Parent());
+        }
         checker->LogError(diagnostic::MISSING_INDEX_ACCESSOR_WITH_SIG, {}, Property()->Start());
         return nullptr;
     }

@@ -24,5 +24,3 @@ function main(): void {
 }
 
 /* @@@ label Error TypeError: Cannot find index access method with the required signature.  */
-/* @@? 23:35 Error TypeError: Type 'int' is not compatible with type '(p1: Double) => String' at index 2 */
-/* @@? 23:5 Error TypeError: No matching call signature for $_set(int, int) */
