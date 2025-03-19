@@ -516,7 +516,7 @@ static void CompileLogical(compiler::ETSGen *etsg, const ir::BinaryExpression *e
     auto orgValue = etsg->AllocReg();
 
     etsg->StoreAccumulator(expr->Left(), orgValue);
-    etsg->ApplyConversionAndStoreAccumulator(expr->Left(), endValue, expr->TsType());
+    etsg->ApplyConversionAndStoreAccumulator(expr->Left(), endValue, expr->OperationType());
     auto *endLabel = etsg->AllocLabel();
 
     etsg->LoadAccumulator(expr, orgValue);
@@ -528,12 +528,12 @@ static void CompileLogical(compiler::ETSGen *etsg, const ir::BinaryExpression *e
     }
 
     etsg->CompileAndCheck(expr->Right());
-    etsg->ApplyConversionAndStoreAccumulator(expr->Right(), endValue, expr->TsType());
+    etsg->ApplyConversionAndStoreAccumulator(expr->Right(), endValue, expr->OperationType());
     etsg->SetLabel(expr, endLabel);
     etsg->LoadAccumulator(expr, endValue);
+    etsg->ApplyConversion(expr, expr->TsType());
 
     etsg->SetAccumulatorType(expr->TsType());
-    ES2PANDA_ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
 }
 
 static void CompileInstanceof(compiler::ETSGen *etsg, const ir::BinaryExpression *expr)

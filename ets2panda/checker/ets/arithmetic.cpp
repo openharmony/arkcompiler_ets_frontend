@@ -974,7 +974,7 @@ static std::tuple<Type *, Type *> CheckBinaryOperatorHelper(ETSChecker *checker,
         case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
             tsType = checker->CheckBinaryOperatorLogical(left, right, binaryParams.expr->AsBinaryExpression(), leftType,
                                                          rightType, typeParams.unboxedL, typeParams.unboxedR);
-            return {tsType, left->TsType()};
+            break;
         }
         case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL:
