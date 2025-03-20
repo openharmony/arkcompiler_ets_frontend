@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,10 +13,11 @@
  * limitations under the License.
  */
 
-enum InvalidInitTypeEnum {
-  Red,
-  Green = /* @@ label */0x7FFFFFFFFFFFFFFF,
-  Blue
-}
+ enum E {
+    FIRST = 1,
+    SECOND = 12345678910
+ }
 
-/* @@? 19:7 Error SyntaxError: Invalid enum initialization value  */
+ let a: int = /* @@ label */E.FIRST
+
+ /* @@@ label Error TypeError: Type 'long' cannot be assigned to type 'int' */
