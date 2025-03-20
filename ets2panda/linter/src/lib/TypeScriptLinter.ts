@@ -2388,7 +2388,11 @@ export class TypeScriptLinter {
       const faultId = this.options.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
       this.incrementCounters(node, faultId);
     }
-    if (!ts.isExpressionStatement(tsCallExpr.parent) && !ts.isVoidExpression(tsCallExpr.parent)) {
+    if (
+      !ts.isExpressionStatement(tsCallExpr.parent) &&
+      !ts.isVoidExpression(tsCallExpr.parent) &&
+      !ts.isArrowFunction(tsCallExpr.parent)
+    ) {
       this.handleLimitedVoidWithCall(tsCallExpr);
     }
   }

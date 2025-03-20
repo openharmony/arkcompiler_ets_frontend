@@ -172,3 +172,20 @@ type ff = string;
 let ffpar: ff;
 
 let sread: readonly [void] = [undefined];
+
+interface BT {
+  qaq: Function;
+}
+
+class C {
+  private cc?:BT;
+
+  private d():void {
+    this.cc = {
+      qaq: (caller?:string):void => this.qaqq(caller)
+    }
+  }
+  private qaqq(caller?:string):void {
+    return;
+  }
+}
