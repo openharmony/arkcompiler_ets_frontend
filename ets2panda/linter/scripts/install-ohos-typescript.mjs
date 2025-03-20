@@ -103,15 +103,15 @@ function getTypescript(detectedOS) {
         exit(1)
     }
     
-    const npm_package = shell.exec('npm pack').stdout
+    const npm_package = shell.exec('npm pack').stdout.trim()
     shell.cd(linter)
     shell.exec(`npm install --no-save ${typescript_dir}/${npm_package}`)
-    shell.rm(`${typescript_dir}/${npm_package}`)
     
     const node_modules = linter + '/node_modules'
     
     fs.rmSync(node_modules + '/typescript', {recursive: true, force: true})
-    fs.cpSync(node_modules + '/ohos-typescript', node_modules + '/typescript', {recursive: true})
+    shell.exec(`tar -xzf "${typescript_dir}/${npm_package}" -C node_modules --strip-components 1 --one-top-level=typescript`);
+    shell.rm(`${typescript_dir}/${npm_package}`)
 }
 
 const detectedOS = detectOS()

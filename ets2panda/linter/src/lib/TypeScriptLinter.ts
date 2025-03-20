@@ -240,7 +240,7 @@ export class TypeScriptLinter {
     if ((this.options.ideMode || this.options.migratorMode) && !this.options.ideInteractive) {
       this.incrementCountersIdeMode(node, faultId, autofix);
     } else if (this.options.ideInteractive) {
-      this.incrementCountersCLI2(node, faultId, autofix);
+      this.incrementCountersIdeInteractiveMode(node, faultId, autofix);
     } else {
       const faultDescr = faultDesc[faultId];
       const faultType = LinterConfig.tsSyntaxKindNames[node.kind];
@@ -308,7 +308,7 @@ export class TypeScriptLinter {
     }
   }
 
-  private incrementCountersCLI2(node: ts.Node | ts.CommentRange, faultId: number, autofix?: Autofix[]): void {
+  private incrementCountersIdeInteractiveMode(node: ts.Node | ts.CommentRange, faultId: number, autofix?: Autofix[]): void {
     if (!this.options.ideInteractive) {
       return;
     }
