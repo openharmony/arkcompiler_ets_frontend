@@ -24,7 +24,7 @@
                 {
                     "start": 605,
                     "end": 688,
-                    "replacementText": "@AnimatableExtend\nfunction animatableWidth(this: TextAttribute, width: number): TextAttribute {\n    this.width(width);\n    return this;\n}"
+                    "replacementText": "@AnimatableExtend\nfunction animatableWidth(this: TextAttribute, width: number): this {\n    this.width(width);\n    return this;\n}"
                 }
             ],
             "suggest": "",

@@ -40,3 +40,10 @@ function cardStyle()
     y: 0
   });
 }
+
+@Extend(Column)
+function superCard(padding: number)
+{
+  .cardStyle()
+  .padding(10)
+}

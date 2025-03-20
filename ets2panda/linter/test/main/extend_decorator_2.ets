@@ -25,7 +25,7 @@ struct MyCard {
 
 const mycolor: string = "#ffffff"
 
-function cardStyle(this: ColumnAttribute): ColumnAttribute {
+function cardStyle(this: ColumnAttribute): this {
   this.backgroundColor("#ffff00");
   this.backgroundColor("#00ffff");
   this.backgroundColor("#ff00ff");
@@ -38,4 +38,9 @@ function cardStyle(this: ColumnAttribute): ColumnAttribute {
     y: 0
   });
   return this;
+}
+
+function superCard(this: ColumnAttribute, padding: number): this {
+  .cardStyle()
+  .padding(10)
 }

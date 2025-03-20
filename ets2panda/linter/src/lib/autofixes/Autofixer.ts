@@ -2195,14 +2195,14 @@ export class Autofixer {
   }
 
   fixBidirectionalDataBinding(twoWayExpr: ts.NonNullExpression): Autofix[] | undefined {
-    if (ts.isNonNullExpression(twoWayExpr.expression)) {
-      const originalExpr = twoWayExpr.expression.expression;
-      const doubleDollarIdentifier = ts.factory.createIdentifier(DOUBLE_DOLLAR_IDENTIFIER);
-      const callExpr = ts.factory.createCallExpression(doubleDollarIdentifier, undefined, [originalExpr]);
-      const text = this.printer.printNode(ts.EmitHint.Unspecified, callExpr, twoWayExpr.getSourceFile());
-      return [{ start: twoWayExpr.getStart(), end: twoWayExpr.getEnd(), replacementText: text }];
+    if (!ts.isNonNullExpression(twoWayExpr.expression)) {
+      return undefined;
     }
-    return undefined;
+    const originalExpr = twoWayExpr.expression.expression;
+    const doubleDollarIdentifier = ts.factory.createIdentifier(DOUBLE_DOLLAR_IDENTIFIER);
+    const callExpr = ts.factory.createCallExpression(doubleDollarIdentifier, undefined, [originalExpr]);
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, callExpr, twoWayExpr.getSourceFile());
+    return [{ start: twoWayExpr.getStart(), end: twoWayExpr.getEnd(), replacementText: text }];
   }
 
   fixDoubleDollar(dollarExpr: ts.PropertyAccessExpression): Autofix[] {
@@ -2240,12 +2240,104 @@ export class Autofixer {
 
     const block = funcDecl.body;
     const parameters: ts.MemberName[] = [];
-    const values: ts.Expression[] = [];
-    const statements = block.statements;
+    const values: ts.Expression[][] = [];
+    const statements = block?.statements;
+    this.getParamsAndValues(statements, parameters, values);
+    const returnStatement = ts.factory.createReturnStatement(ts.factory.createThis());
+    const newBlock = Autofixer.createBlock(parameters, values, ts.factory.createThis(), returnStatement);
+
+    const componentName = extendDecorator.expression.arguments[0]?.getText();
+    if (!componentName) {
+      return undefined;
+    }
+    const decoratorName = extendDecorator.expression.expression.getText();
+    const typeName = componentName + ATTRIBUTE_SUFFIX;
+    const parameDecl = ts.factory.createParameterDeclaration(
+      undefined,
+      undefined,
+      ts.factory.createIdentifier(THIS_IDENTIFIER),
+      undefined,
+      ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(typeName), undefined),
+      undefined
+    );
+    const returnType = ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(THIS_IDENTIFIER), undefined);
+    const newFuncDecl = Autofixer.createFunctionDeclaration(parameDecl, funcDecl, undefined, returnType, newBlock);
+
+    let text = this.printer.printNode(ts.EmitHint.Unspecified, newFuncDecl, funcDecl.getSourceFile());
+    if (preserveDecorator) {
+      text = '@' + decoratorName + '\n' + text;
+    }
+    return [{ start: funcDecl.getStart(), end: funcDecl.getEnd(), replacementText: text }];
+  }
+
+  private static createFunctionDeclaration(
+    paramDecl: ts.ParameterDeclaration,
+    funcDecl: ts.FunctionDeclaration,
+    typeParameters: ts.TypeParameterDeclaration[] | undefined,
+    returnType: ts.TypeNode,
+    block: ts.Block
+  ): ts.FunctionDeclaration {
+    return ts.factory.createFunctionDeclaration(
+      undefined,
+      undefined,
+      funcDecl.name,
+      typeParameters,
+      [paramDecl, ...funcDecl.parameters],
+      returnType,
+      block
+    );
+  }
+
+  private static createBlock(
+    parameters: ts.MemberName[],
+    values: ts.Expression[][],
+    arg: ts.Expression,
+    returnStatement?: ts.Statement
+  ): ts.Block {
+    const statements: ts.Statement[] = [];
+    for (let i = 0; i < parameters.length; i++) {
+      const parameter = parameters[i];
+      const value = values[i];
+      const statement = ts.factory.createExpressionStatement(
+        ts.factory.createCallExpression(ts.factory.createPropertyAccessExpression(arg, parameter), undefined, value)
+      );
+      statements.push(statement);
+    }
+    if (returnStatement) {
+      statements.push(returnStatement);
+    }
+    const block = ts.factory.createBlock(statements, true);
+    return block;
+  }
+
+  traverseNodes(node: ts.Node, parameters: ts.MemberName[], values: ts.Expression[][]): void {
+    if (ts.isCallExpression(node)) {
+      if (ts.isPropertyAccessExpression(node.expression)) {
+        const propertyAccess = node.expression;
+        parameters.push(propertyAccess.name);
+      } else if (ts.isIdentifier(node.expression)) {
+        parameters.push(node.expression);
+      }
+      values.push(Array.from(node.arguments));
+    }
+
+    ts.forEachChild(node, (child) => {
+      this.traverseNodes(child, parameters, values);
+    });
+  }
+
+  getParamsAndValues(
+    statements: ts.NodeArray<ts.Statement> | undefined,
+    parameters: ts.MemberName[],
+    values: ts.Expression[][]
+  ): void {
+    if (!statements) {
+      return;
+    }
     for (let i = 0; i < statements.length; i++) {
       const statement = statements[i];
       const tempParas: ts.MemberName[] = [];
-      const tempVals: ts.Expression[] = [];
+      const tempVals: ts.Expression[][] = [];
       this.traverseNodes(statement, tempParas, tempVals);
       if (
         ts.isExpressionStatement(statement) &&
@@ -2260,83 +2352,6 @@ export class Autofixer {
         values.push(tempVals[j]);
       }
     }
-    const newBlock = Autofixer.createBlock(parameters, values, ts.factory.createThis());
-
-    const componentName = extendDecorator.expression.arguments[0]?.getText();
-    if (!componentName) {
-      return undefined;
-    }
-    const decoratorName = extendDecorator.expression.expression.getText();
-    const typeName = componentName + ATTRIBUTE_SUFFIX;
-    const newFuncDecl = Autofixer.createFunctionDeclaration(funcDecl, undefined, typeName, newBlock);
-
-    let text = this.printer.printNode(ts.EmitHint.Unspecified, newFuncDecl, funcDecl.getSourceFile());
-    if (preserveDecorator) {
-      text = '@' + decoratorName + '\n' + text;
-    }
-    return [{ start: funcDecl.getStart(), end: funcDecl.getEnd(), replacementText: text }];
-  }
-
-  private static createFunctionDeclaration(
-    funcDecl: ts.FunctionDeclaration,
-    typeParameters: ts.TypeParameterDeclaration[] | undefined,
-    typeName: string,
-    block: ts.Block
-  ): ts.FunctionDeclaration {
-    const parameter = ts.factory.createParameterDeclaration(
-      undefined,
-      undefined,
-      ts.factory.createIdentifier(THIS_IDENTIFIER),
-      undefined,
-      ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(typeName), undefined),
-      undefined
-    );
-
-    const returnType = ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(typeName), undefined);
-    return ts.factory.createFunctionDeclaration(
-      undefined,
-      undefined,
-      funcDecl.name,
-      typeParameters,
-      [parameter, ...funcDecl.parameters],
-      returnType,
-      block
-    );
-  }
-
-  private static createBlock(parameters: ts.MemberName[], values: ts.Expression[], arg: ts.Expression): ts.Block {
-    const statements: ts.Statement[] = [];
-    for (let i = 0; i < parameters.length; i++) {
-      const parameter = parameters[i];
-      const value = values[i];
-      const statement = ts.factory.createExpressionStatement(
-        ts.factory.createCallExpression(ts.factory.createPropertyAccessExpression(arg, parameter), undefined, [value])
-      );
-      statements.push(statement);
-    }
-    const returnStatement = ts.factory.createReturnStatement(ts.factory.createThis());
-    statements.push(returnStatement);
-    const block = ts.factory.createBlock(statements, true);
-    return block;
-  }
-
-  traverseNodes(node: ts.Node, parameters: ts.MemberName[], values: ts.Expression[]): void {
-    if (ts.isCallExpression(node)) {
-      if (ts.isPropertyAccessExpression(node.expression)) {
-        const propertyAccess = node.expression;
-        parameters.push(propertyAccess.name);
-      } else if (ts.isIdentifier(node.expression)) {
-        parameters.push(node.expression);
-      }
-
-      if (node.arguments.length > 0) {
-        values.push(node.arguments[0]);
-      }
-    }
-
-    ts.forEachChild(node, (child) => {
-      this.traverseNodes(child, parameters, values);
-    });
   }
 
   private resolveActualTypeNode(typeNode: ts.TypeNode): ts.TypeNode {
