@@ -235,11 +235,10 @@ void ETSEmitter::GenAnnotation()
     }
 
     for (auto [extProg, recordTable] : varbinder->GetExternalRecordTable()) {
-        (void)extProg;
         if (recordTable == varbinder->GetRecordTable()) {
             continue;
         }
-        GenExternalRecord(recordTable);
+        GenExternalRecord(recordTable, extProg);
     }
 
     const auto *checker = static_cast<checker::ETSChecker *>(Context()->checker);
@@ -249,7 +248,15 @@ void ETSEmitter::GenAnnotation()
     }
 }
 
-void ETSEmitter::GenExternalRecord(varbinder::RecordTable *recordTable)
+static bool IsFromSelfHeadFile(const std::string &name, const parser::Program *curProg, const parser::Program *extProg)
+{
+    const auto *curBinder = static_cast<const varbinder::ETSBinder *>(curProg->VarBinder());
+    return extProg->FileName() == curProg->FileName() &&
+           std::any_of(curBinder->Functions().begin(), curBinder->Functions().end(),
+                       [&](auto function) { return function->InternalName().Is(name); });
+}
+
+void ETSEmitter::GenExternalRecord(varbinder::RecordTable *recordTable, const parser::Program *extProg)
 {
     bool isGenStdLib = recordTable->Program()->VarBinder()->IsGenStdLib();
     const auto *varbinder = static_cast<const varbinder::ETSBinder *>(Context()->parserProgram->VarBinder());
@@ -273,6 +280,11 @@ void ETSEmitter::GenExternalRecord(varbinder::RecordTable *recordTable)
         if (!isGenStdLib) {
             func.metadata->SetAttribute(Signatures::EXTERNAL);
         }
+
+        if (func.metadata->IsForeign() && IsFromSelfHeadFile(func.name, Context()->parserProgram, extProg)) {
+            return;
+        }
+
         if (Program()->functionStaticTable.find(func.name) == Program()->functionStaticTable.cend()) {
             Program()->AddToFunctionTable(std::move(func));
         }
