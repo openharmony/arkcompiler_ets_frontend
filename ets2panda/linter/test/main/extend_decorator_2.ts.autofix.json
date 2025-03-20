@@ -103,26 +103,6 @@
             "suggest": "",
             "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
             "severity": "ERROR"
-        },
-        {
-            "line": 28,
-            "column": 44,
-            "endLine": 28,
-            "endColumn": 48,
-            "problem": "ThisType",
-            "suggest": "",
-            "rule": "Type notation using \"this\" is not supported (arkts-no-typing-with-this)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 43,
-            "column": 61,
-            "endLine": 43,
-            "endColumn": 65,
-            "problem": "ThisType",
-            "suggest": "",
-            "rule": "Type notation using \"this\" is not supported (arkts-no-typing-with-this)",
-            "severity": "ERROR"
         }
     ]
 }

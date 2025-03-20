@@ -13,6 +13,10 @@
  * limitations under the License.
  */
 
+import { number } from './invalid_identifier_number.js'
+
+import abstract from './invalid_identifier_number.js'
+
 const asVar:string = '';
 
 const abstract: string = "abstract";
@@ -143,14 +147,48 @@ const Short: number = 32767;
 
 const char: string = "a";
 
-const long: number = 123456789;
-
 const string: string = "hello";
 
 const Char: string = "a";
 
 const Long: number = 123456789;
 
-const String: String = "hello";
-
 const void: void = undefined;
+
+class String {
+    
+    private const: string = "const";
+
+    string: string = "hello";
+    
+    constructor(string: string) {
+    }
+
+    private static Long() {
+    }
+
+    public void() {
+    }
+
+    test(string: string): string {
+        return string;
+    }
+}
+
+function test1(string: string): string {
+    return string;
+}
+
+const test2: string = (string: string): string => {
+    return string;
+};
+
+function long(string: string): string {
+    return string;
+}
+
+interface Test3 {
+    string: string;
+}
+
+

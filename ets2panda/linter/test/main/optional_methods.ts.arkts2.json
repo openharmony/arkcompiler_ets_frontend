@@ -25,6 +25,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 17,
+            "column": 3,
+            "endLine": 17,
+            "endColumn": 14,
+            "problem": "InvalidIdentifier",
+            "suggest": "",
+            "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
+            "severity": "ERROR"
+        },
+        {
             "line": 21,
             "column": 8,
             "endLine": 21,
@@ -32,6 +42,16 @@
             "problem": "OptionalMethod",
             "suggest": "",
             "rule": "Optional methods are not supported (arkts-optional-methods)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 3,
+            "endLine": 21,
+            "endColumn": 17,
+            "problem": "InvalidIdentifier",
+            "suggest": "",
+            "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
             "severity": "ERROR"
         }
     ]

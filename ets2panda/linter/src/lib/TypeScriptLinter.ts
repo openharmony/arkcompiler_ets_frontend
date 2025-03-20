@@ -605,6 +605,7 @@ export class TypeScriptLinter {
     });
     this.handleDeclarationDestructuring(tsParam);
     this.handleDeclarationInferredType(tsParam);
+    this.handleInvalidIdentifier(tsParam);
     const typeNode = tsParam.type;
     if (this.options.arkts2 && typeNode && typeNode.kind === ts.SyntaxKind.VoidKeyword) {
       this.incrementCounters(typeNode, FaultID.LimitedVoidType);
@@ -754,6 +755,7 @@ export class TypeScriptLinter {
 
     // handle no side effect import in sendable module
     this.handleSharedModuleNoSideEffectImport(importDeclNode);
+    this.handleInvalidIdentifier(importDeclNode);
   }
 
   private handleSharedModuleNoSideEffectImport(node: ts.ImportDeclaration): void {
@@ -885,6 +887,7 @@ export class TypeScriptLinter {
     this.handleDefiniteAssignmentAssertion(node);
     this.handleSendableClassProperty(node);
     this.checkAssignmentNumericSemanticslyPro(node);
+    this.handleInvalidIdentifier(node);
   }
 
   private handleSendableClassProperty(node: ts.PropertyDeclaration): void {
@@ -971,6 +974,7 @@ export class TypeScriptLinter {
       this.incrementCounters(node.name, FaultID.LiteralAsPropertyName, autofix);
     }
     this.handleSendableInterfaceProperty(node);
+    this.handleInvalidIdentifier(node);
   }
 
   private handleInterfaceProperty(node: ts.PropertySignature): void {
@@ -1248,6 +1252,7 @@ export class TypeScriptLinter {
     }
     this.handleTSOverload(tsFunctionDeclaration);
     this.checkAssignmentNumericSemanticsFuntion(tsFunctionDeclaration);
+    this.handleInvalidIdentifier(tsFunctionDeclaration);
   }
 
   private handleMissingReturnType(
@@ -1833,6 +1838,7 @@ export class TypeScriptLinter {
 
     this.processClassStaticBlocks(tsClassDecl);
     this.handleClassStaticPropInit(tsClassDecl);
+    this.handleInvalidIdentifier(tsClassDecl);
   }
 
   private handleNotSupportCustomDecorators(decorator: ts.Decorator): void {
@@ -2091,6 +2097,7 @@ export class TypeScriptLinter {
     if (this.options.arkts2 && tsMethodDecl.questionToken) {
       this.incrementCounters(tsMethodDecl.questionToken, FaultID.OptionalMethod);
     }
+    this.handleInvalidIdentifier(tsMethodDecl);
   }
 
   private checkClassImplementsMethod(classDecl: ts.ClassDeclaration, methodName: string): boolean {
@@ -2128,6 +2135,7 @@ export class TypeScriptLinter {
     if (this.options.arkts2 && tsMethodSign.questionToken) {
       this.incrementCounters(tsMethodSign.questionToken, FaultID.OptionalMethod);
     }
+    this.handleInvalidIdentifier(tsMethodSign);
   }
 
   private interfaceExtendsInterface(interDecl: ts.InterfaceDeclaration, interfaceName: string): boolean {
@@ -4125,13 +4133,37 @@ export class TypeScriptLinter {
     }
   }
 
-  private handleInvalidIdentifier(decl: ts.VariableDeclaration): void {
+  private handleInvalidIdentifier(
+    decl: ts.VariableDeclaration
+      | ts.FunctionDeclaration
+      | ts.MethodSignature
+      | ts.ClassDeclaration
+      | ts.PropertyDeclaration
+      | ts.MethodDeclaration
+      | ts.ParameterDeclaration
+      | ts.PropertySignature
+      | ts.ImportDeclaration
+  ): void {
     if (!this.options.arkts2) {
       return;
     }
-    const identifier = decl.name as ts.Identifier;
-    if (identifier && INVALID_IDENTIFIER_KEYWORDS.includes(identifier.text)) {
-      this.incrementCounters(decl, FaultID.InvalidIdentifier);
+  
+    const checkIdentifier = (identifier: ts.Identifier | undefined) => {
+      if (identifier && INVALID_IDENTIFIER_KEYWORDS.includes(identifier.text)) {
+        this.incrementCounters(decl, FaultID.InvalidIdentifier);
+      }
+    }
+  
+    if (ts.isImportDeclaration(decl)) {
+      const importClause = decl.importClause;
+      if (importClause?.namedBindings && ts.isNamedImports(importClause?.namedBindings)) {
+        importClause.namedBindings.elements.forEach((importSpecifier) => {
+          checkIdentifier(importSpecifier.name);
+        });
+      }
+      checkIdentifier(importClause?.name);
+    } else {
+      checkIdentifier(decl.name as ts.Identifier);
     }
   }
 
