@@ -947,6 +947,18 @@ export class TypeScriptLinter {
     return allClasses;
   }
 
+  private static getAllInterfaceFromSourceFile(sourceFile: ts.SourceFile): ts.InterfaceDeclaration[] {
+    const allInterfaces: ts.InterfaceDeclaration[] = [];
+    function visit(node: ts.Node): void {
+      if (ts.isInterfaceDeclaration(node)) {
+        allInterfaces.push(node);
+      }
+      ts.forEachChild(node, visit);
+    }
+    visit(sourceFile);
+    return allInterfaces;
+  }
+
   private handlePropertySignature(node: ts.PropertySignature): void {
     const propName = node.name;
     this.handleInterfaceProperty(node);
@@ -967,7 +979,38 @@ export class TypeScriptLinter {
         const interfaceName = node.parent.name.getText();
         const propertyName = node.name.getText();
         const allClasses = TypeScriptLinter.getAllClassesFromSourceFile(this.sourceFile!);
+        const allInterfaces = TypeScriptLinter.getAllInterfaceFromSourceFile(this.sourceFile!);
         this.visitClassMembers(allClasses, interfaceName, propertyName);
+        this.visitInterfaceMembers(allInterfaces, interfaceName, propertyName);
+      }
+    }
+  }
+
+  private visitInterfaceMembers(interfaces: ts.InterfaceDeclaration[], interfaceName: string, propertyName: string): void {
+    void this;
+    interfaces.some((interfaceDecl) => {
+      const implementsClause = this.getExtendsClause(interfaceDecl);
+      if (
+        implementsClause?.types.some((type) => {
+          return type.getText() === interfaceName;
+        })
+      ) {
+        this.checkInterfaceForProperty(interfaceDecl, propertyName);
+      }
+    });
+  }
+
+  private getExtendsClause(interfaceDecl: ts.InterfaceDeclaration): ts.HeritageClause | undefined {
+    void this;
+    return interfaceDecl.heritageClauses?.find((clause) => {
+      return clause.token === ts.SyntaxKind.ExtendsKeyword;
+    });
+  }
+
+  private checkInterfaceForProperty(interfaceDecl: ts.InterfaceDeclaration, propertyName: string): void {
+    for (const member of interfaceDecl.members) {
+      if (ts.isMethodSignature(member) && member.name.getText() === propertyName) {
+        this.incrementCounters(member, FaultID.MethodOverridingField);
       }
     }
   }
@@ -2067,9 +2110,15 @@ export class TypeScriptLinter {
       const methodName = node.name.getText();
       const interfaceName = node.parent.name.getText();
       const allClasses = TypeScriptLinter.getAllClassesFromSourceFile(this.sourceFile!);
+      const allInterfaces = TypeScriptLinter.getAllInterfaceFromSourceFile(this.sourceFile!);
       allClasses.forEach((classDecl) => {
         if (this.classImplementsInterface(classDecl, interfaceName)) {
           this.checkClassImplementsMethod(classDecl, methodName);
+        }
+      });
+      allInterfaces.forEach((interDecl) => {
+        if (this.interfaceExtendsInterface(interDecl, interfaceName)) {
+          this.checkInterfaceExtendsMethod(interDecl, methodName);
         }
       });
     }
@@ -2078,6 +2127,32 @@ export class TypeScriptLinter {
     }
     if (this.options.arkts2 && tsMethodSign.questionToken) {
       this.incrementCounters(tsMethodSign.questionToken, FaultID.OptionalMethod);
+    }
+  }
+
+  private interfaceExtendsInterface(interDecl: ts.InterfaceDeclaration, interfaceName: string): boolean {
+    void this;
+    if (!interDecl.heritageClauses) {
+      return false;
+    }
+    return interDecl.heritageClauses.some((clause) => {
+      return clause.types.some((type) => {
+        return (
+          ts.isExpressionWithTypeArguments(type) &&
+          ts.isIdentifier(type.expression) &&
+          type.expression.text === interfaceName
+        );
+      });
+    });
+  }
+
+  private checkInterfaceExtendsMethod(interDecl: ts.InterfaceDeclaration, methodName: string): void {
+    for (const member of interDecl.members) {
+      if (member.name?.getText() === methodName) {
+        if (ts.isPropertySignature(member)) {
+          this.incrementCounters(member, FaultID.MethodOverridingField);
+        }
+      }
     }
   }
 
