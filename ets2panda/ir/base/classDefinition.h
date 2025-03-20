@@ -54,6 +54,7 @@ enum class ClassDefinitionModifiers : uint32_t {
     NAMESPACE_TRANSFORMED = 1U << 13U,
     STRING_ENUM_TRANSFORMED = 1U << 14U,
     INT_ENUM_TRANSFORMED = 1U << 15U,
+    FROM_STRUCT = 1U << 16U,
     DECLARATION_ID_REQUIRED = DECLARATION | ID_REQUIRED,
     ETS_MODULE = NAMESPACE_TRANSFORMED | GLOBAL
 };
@@ -247,6 +248,11 @@ public:
         return (modifiers_ & ClassDefinitionModifiers::NAMESPACE_TRANSFORMED) != 0;
     }
 
+    [[nodiscard]] bool IsFromStruct() const noexcept
+    {
+        return (modifiers_ & ClassDefinitionModifiers::FROM_STRUCT) != 0;
+    }
+
     [[nodiscard]] bool IsModule() const noexcept
     {
         return IsGlobal() || IsNamespaceTransformed();
@@ -280,6 +286,11 @@ public:
     void SetNamespaceTransformed() noexcept
     {
         modifiers_ |= ClassDefinitionModifiers::NAMESPACE_TRANSFORMED;
+    }
+
+    void SetFromStructModifier() noexcept
+    {
+        modifiers_ |= ClassDefinitionModifiers::FROM_STRUCT;
     }
 
     [[nodiscard]] ClassDefinitionModifiers Modifiers() const noexcept

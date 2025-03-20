@@ -91,6 +91,7 @@ set(PLUGIN_TESTS
     "plugin_proceed_to_state_create_as_expression compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_create_interface_declaration compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_create_import compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_set_from_struct_modifier compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
 )
 
 set(RUNTIME_ARGUMENTS
