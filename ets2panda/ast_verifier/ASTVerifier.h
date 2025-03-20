@@ -25,7 +25,6 @@
 #include "ast_verifier/checkContext.h"
 #include "ast_verifier/sequenceExpressionHasLastType.h"
 #include "ast_verifier/checkAbstractMethod.h"
-#include "ast_verifier/checkInfiniteLoop.h"
 #include "ast_verifier/everyChildHasValidParent.h"
 #include "ast_verifier/everyChildInParentRange.h"
 #include "ast_verifier/getterSetterValidation.h"
@@ -104,9 +103,9 @@ using InvariantsRegistry =
     InvariantsRegistryImpl<NodeHasParent, NodeHasSourceRange, EveryChildHasValidParent, EveryChildInParentRange,
                            CheckStructDeclaration, VariableHasScope, NodeHasType, NoPrimitiveTypes,
                            IdentifierHasVariable, ReferenceTypeAnnotationIsNull, ArithmeticOperationValid,
-                           SequenceExpressionHasLastType, CheckInfiniteLoop, ForLoopCorrectlyInitialized,
-                           VariableHasEnclosingScope, ModifierAccessValid, VariableNameIdentifierNameSame,
-                           CheckAbstractMethod, GetterSetterValidation, CheckScopeDeclaration, CheckConstProperties>;
+                           SequenceExpressionHasLastType, ForLoopCorrectlyInitialized, VariableHasEnclosingScope,
+                           ModifierAccessValid, VariableNameIdentifierNameSame, CheckAbstractMethod,
+                           GetterSetterValidation, CheckScopeDeclaration, CheckConstProperties>;
 
 /*
  * ASTVerifier checks whether various conditions are invariant (across AST transformations).

@@ -63,7 +63,7 @@ options:
   type: bool
   default: false
   description: Dump AST with synthetic nodes for dynamic languages
-  
+
 - name: dump-ast-only-silent
   type: bool
   default: false
@@ -73,7 +73,7 @@ options:
   type: bool
   default: false
   description: Print names of files that are part of compilation
-   
+
 # Compiler
 - name: dump-assembly
   type: bool
@@ -233,7 +233,6 @@ options:
     - ReferenceTypeAnnotationIsNull
     - ArithmeticOperationValid
     - SequenceExpressionHasLastType
-    - CheckInfiniteLoop
     - ForLoopCorrectlyInitialized
     - VariableHasEnclosingScope
     - ModifierAccessValid
@@ -247,7 +246,7 @@ options:
   - name: warnings
     type: arg_list_t
     description: Print warnings and continue compilation even if AST tree is incorrect.
-    default: [ CheckInfiniteLoop ]
+    default: [ ]
     possible_values: *VerifierInvariants
     delimiter: ':'
   - name: errors
@@ -257,7 +256,6 @@ options:
     - ArithmeticOperationValid
     - CheckAbstractMethod
     # - CheckConstProperties
-    # - CheckInfiniteLoop
     # - CheckScopeDeclaration
     - CheckStructDeclaration
     - EveryChildHasValidParent

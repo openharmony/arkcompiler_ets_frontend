@@ -18,11 +18,10 @@
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsTupleType.h"
 #include "checker/ets/typeRelationContext.h"
+#include "checker/ets/typeConverter.h"
 #include "evaluate/scopedDebugInfoPlugin.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
-#include "utils/arena_containers.h"
-#include "util/ustring.h"
 
 namespace ark::es2panda::checker {
 varbinder::Variable *ETSChecker::FindVariableInFunctionScope(const util::StringView name)
@@ -809,7 +808,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
         }
 
         if (IsOmitConstInit(flags) && ShouldPreserveConstantTypeInVariableDeclaration(annotationType, initType)) {
-            bindingVar->SetTsType(init->TsType());
+            VariableTypeFromInitializer(bindingVar, MaybeUnboxType(annotationType), initType);
         }
     } else {
         CheckEnumType(init, initType, ident->Name());
@@ -820,6 +819,22 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     }
 
     return FixOptionalVariableType(bindingVar, flags, init);
+}
+
+void ETSChecker::VariableTypeFromInitializer(varbinder::Variable *variable, Type *annotationType, Type *initType)
+{
+    if (!initType->IsConstantType()) {
+        return;
+    }
+
+    if (!initType->IsETSPrimitiveType()) {
+        variable->SetTsType(initType);
+        return;
+    }
+
+    ES2PANDA_ASSERT(annotationType->IsETSPrimitiveType());
+    //  We suppose here that all required checks were passed and correct conversion is possible without accuracy loss
+    variable->SetTsType(TypeConverter::ConvertConstantTypes(initType, annotationType, Allocator()));
 }
 
 static checker::Type *ResolveGetter(checker::ETSChecker *checker, ir::MemberExpression *const expr,

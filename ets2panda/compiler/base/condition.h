@@ -35,7 +35,6 @@ public:
 
     static void Compile(PandaGen *pg, const ir::Expression *expr, Label *falseLabel);
     static void Compile(ETSGen *etsg, const ir::Expression *expr, Label *falseLabel);
-    static Result CheckConstantExpr(ETSGen *etsg, const ir::Expression *expr);
 
 private:
     static bool CompileBinaryExpr(PandaGen *pg, const ir::BinaryExpression *binExpr, Label *falseLabel);

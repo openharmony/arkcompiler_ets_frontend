@@ -1036,58 +1036,6 @@ void ETSGen::LoadConstantObject(const ir::Expression *node, const checker::Type 
     }
 }
 
-bool ETSGen::TryLoadConstantExpression(const ir::Expression *node)
-{
-    const auto *type = node->TsType();
-
-    if (!type->HasTypeFlag(checker::TypeFlag::CONSTANT) || type->IsETSObjectType()) {
-        return false;
-    }
-    // bug: this should be forbidden for most expression types!
-
-    auto typeKind = checker::ETSChecker::TypeKind(type);
-
-    switch (typeKind) {
-        case checker::TypeFlag::CHAR: {
-            LoadAccumulatorChar(node, type->AsCharType()->GetValue());
-            break;
-        }
-        case checker::TypeFlag::ETS_BOOLEAN: {
-            LoadAccumulatorBoolean(node, type->AsETSBooleanType()->GetValue());
-            break;
-        }
-        case checker::TypeFlag::BYTE: {
-            LoadAccumulatorByte(node, type->AsByteType()->GetValue());
-            break;
-        }
-        case checker::TypeFlag::SHORT: {
-            LoadAccumulatorShort(node, type->AsShortType()->GetValue());
-            break;
-        }
-        case checker::TypeFlag::INT: {
-            LoadAccumulatorInt(node, type->AsIntType()->GetValue());
-            break;
-        }
-        case checker::TypeFlag::LONG: {
-            LoadAccumulatorWideInt(node, type->AsLongType()->GetValue());
-            break;
-        }
-        case checker::TypeFlag::FLOAT: {
-            LoadAccumulatorFloat(node, type->AsFloatType()->GetValue());
-            break;
-        }
-        case checker::TypeFlag::DOUBLE: {
-            LoadAccumulatorDouble(node, type->AsDoubleType()->GetValue());
-            break;
-        }
-        default: {
-            ES2PANDA_UNREACHABLE();
-        }
-    }
-
-    return true;
-}
-
 void ETSGen::ApplyConversionCast(const ir::AstNode *node, const checker::Type *targetType)
 {
     switch (checker::ETSChecker::TypeKind(targetType)) {
@@ -1103,8 +1051,20 @@ void ETSGen::ApplyConversionCast(const ir::AstNode *node, const checker::Type *t
             CastToLong(node);
             break;
         }
+        case checker::TypeFlag::INT: {
+            CastToInt(node);
+            break;
+        }
         case checker::TypeFlag::CHAR: {
             CastToChar(node);
+            break;
+        }
+        case checker::TypeFlag::SHORT: {
+            CastToShort(node);
+            break;
+        }
+        case checker::TypeFlag::BYTE: {
+            CastToByte(node);
             break;
         }
         case checker::TypeFlag::ETS_ARRAY:
@@ -1224,6 +1184,18 @@ void ETSGen::ApplyCast(const ir::AstNode *node, const checker::Type *targetType)
         }
         case checker::TypeFlag::INT: {
             CastToInt(node);
+            break;
+        }
+        case checker::TypeFlag::SHORT: {
+            CastToShort(node);
+            break;
+        }
+        case checker::TypeFlag::BYTE: {
+            CastToByte(node);
+            break;
+        }
+        case checker::TypeFlag::CHAR: {
+            CastToChar(node);
             break;
         }
         case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
@@ -1978,9 +1950,9 @@ void ETSGen::BinaryLogic(const ir::AstNode *node, lexer::TokenType op, VReg lhs)
             ES2PANDA_UNREACHABLE();
         }
     }
+
     ES2PANDA_ASSERT(node->IsAssignmentExpression() || node->IsBinaryExpression());
-    ES2PANDA_ASSERT(Checker()->Relation()->IsIdenticalTo(const_cast<checker::Type *>(GetAccumulatorType()),
-                                                         const_cast<checker::Type *>(node->AsExpression()->TsType())));
+    ES2PANDA_ASSERT(Checker()->Relation()->IsIdenticalTo(GetAccumulatorType(), node->AsExpression()->TsType()));
 }
 
 void ETSGen::BinaryArithmLogic(const ir::AstNode *node, lexer::TokenType op, VReg lhs)
@@ -2015,9 +1987,9 @@ void ETSGen::BinaryArithmLogic(const ir::AstNode *node, lexer::TokenType op, VRe
             break;
         }
     }
+
     ES2PANDA_ASSERT(node->IsAssignmentExpression() || node->IsBinaryExpression());
-    ES2PANDA_ASSERT(Checker()->Relation()->IsIdenticalTo(const_cast<checker::Type *>(GetAccumulatorType()),
-                                                         const_cast<checker::Type *>(node->AsExpression()->TsType())));
+    ES2PANDA_ASSERT(Checker()->Relation()->IsIdenticalTo(GetAccumulatorType(), node->AsExpression()->TsType()));
 }
 
 void ETSGen::Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs)
@@ -2061,9 +2033,9 @@ void ETSGen::Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs)
             break;
         }
     }
+
     ES2PANDA_ASSERT(node->IsAssignmentExpression() || node->IsBinaryExpression());
-    ES2PANDA_ASSERT(Checker()->Relation()->IsIdenticalTo(const_cast<checker::Type *>(GetAccumulatorType()),
-                                                         const_cast<checker::Type *>(node->AsExpression()->TsType())));
+    ES2PANDA_ASSERT(Checker()->Relation()->IsIdenticalTo(GetAccumulatorType(), node->AsExpression()->TsType()));
 }
 
 void ETSGen::Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs, Label *ifFalse)
@@ -2452,7 +2424,6 @@ void ETSGen::BinaryRelation(const ir::AstNode *node, VReg lhs, Label *ifFalse)
 {
     BinaryRelationCondition<IntCompare, CondCompare>(node, lhs, ifFalse);
     ToBinaryResult(node, ifFalse);
-    SetAccumulatorType(Checker()->GlobalETSBooleanType());
 }
 
 template <typename IntCompare, typename CondCompare>
@@ -2507,8 +2478,11 @@ void ETSGen::BinaryArithmetic(const ir::AstNode *node, VReg lhs)
         }
         default: {
             BinaryBitwiseArithmetic<IntOp, LongOp>(node, lhs);
+            break;
         }
     }
+
+    ApplyCast(node, node->AsExpression()->TsType());
 }
 
 template <typename IntOp, typename LongOp>
@@ -2539,6 +2513,8 @@ void ETSGen::BinaryBitwiseArithmetic(const ir::AstNode *node, VReg lhs)
             ES2PANDA_UNREACHABLE();
         }
     }
+
+    ApplyCast(node, node->AsExpression()->TsType());
 }
 
 template <bool IS_STRICT>

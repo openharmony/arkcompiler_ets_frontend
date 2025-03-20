@@ -59,10 +59,8 @@ void ETSCompiler::Compile(const ir::ClassProperty *st) const
     if (st->Value() == nullptr) {
         etsg->LoadDefaultValue(st, st->TsType());
     } else {
-        if (!etsg->TryLoadConstantExpression(st->Value())) {
-            st->Value()->Compile(etsg);
-            etsg->ApplyConversion(st->Value(), st->TsType());
-        }
+        st->Value()->Compile(etsg);
+        etsg->ApplyConversion(st->Value(), st->TsType());
         st->Value()->SetBoxingUnboxingFlags(flags);
     }
 
@@ -386,18 +384,16 @@ void ETSCompiler::Compile(const ir::ArrayExpression *expr) const
     etsg->NewArray(expr, arr, dim, arrayExprType);
 
     const auto indexReg = etsg->AllocReg();
+    auto const *const elementType = arrayExprType->AsETSArrayType()->ElementType();
+
     for (std::uint32_t i = 0; i < expr->Elements().size(); ++i) {
         const auto *const expression = expr->Elements()[i];
         etsg->LoadAccumulatorInt(expr, i);
         etsg->StoreAccumulator(expr, indexReg);
 
-        const compiler::TargetTypeContext ttctx2(etsg, arrayExprType->AsETSArrayType()->ElementType());
-        if (!etsg->TryLoadConstantExpression(expression)) {
-            expression->Compile(etsg);
-        }
-
-        etsg->ApplyConversion(expression, nullptr);
-        etsg->ApplyConversion(expression);
+        const compiler::TargetTypeContext ttctx2(etsg, elementType);
+        expression->Compile(etsg);
+        etsg->ApplyConversion(expression, elementType);
 
         if (expression->TsType()->IsETSArrayType()) {
             etsg->StoreArrayElement(expr, arr, indexReg, expression->TsType());
@@ -637,10 +633,6 @@ void ETSCompiler::Compile(const ir::BinaryExpression *expr) const
         return;
     }
 
-    if (etsg->TryLoadConstantExpression(expr)) {
-        return;
-    }
-
     if (expr->IsLogical()) {
         CompileLogical(etsg, expr);
         return;
@@ -855,8 +847,9 @@ void ETSCompiler::Compile(const ir::Identifier *expr) const
         if (!etsg->Checker()->AsETSChecker()->Relation()->IsSupertypeOf(smartType, etsg->GetAccumulatorType())) {
             etsg->CastToReftype(expr, smartType, false);
         }
+    } else if (smartType->IsETSPrimitiveType()) {
+        etsg->ApplyConversionCast(expr, smartType);
     }
-
     etsg->SetAccumulatorType(smartType);
 }
 
@@ -972,24 +965,25 @@ bool ETSCompiler::HandleArrayTypeLengthProperty(const ir::MemberExpression *expr
 
 bool ETSCompiler::HandleStaticProperties(const ir::MemberExpression *expr, ETSGen *etsg) const
 {
-    auto &propName = expr->PropVar()->Name();
-    auto const *const variable = expr->PropVar();
-    if (checker::ETSChecker::IsVariableStatic(variable)) {
+    if (auto const *const variable = expr->PropVar(); checker::ETSChecker::IsVariableStatic(variable)) {
         auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
 
-        if (expr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
-            checker::Signature *sig = variable->TsType()->AsETSFunctionType()->FindGetter();
+        if (auto const *const varType = variable->TsType(); varType->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
+            checker::Signature *sig = varType->AsETSFunctionType()->FindGetter();
             etsg->CallExact(expr, sig->InternalName());
             etsg->SetAccumulatorType(expr->TsType());
-            return true;
+        } else {
+            util::StringView const fullName =
+                etsg->FormClassPropReference(expr->Object()->TsType()->AsETSObjectType(), variable->Name());
+            etsg->LoadStaticProperty(expr, varType, fullName);
+            etsg->ApplyConversion(expr, expr->TsType());
         }
 
-        util::StringView fullName = etsg->FormClassPropReference(expr->Object()->TsType()->AsETSObjectType(), propName);
-        etsg->LoadStaticProperty(expr, expr->TsType(), fullName);
-
         ES2PANDA_ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
+
         return true;
     }
+
     return false;
 }
 
@@ -1088,16 +1082,13 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TypeofExpression *expr) con
 void ETSCompiler::Compile(const ir::UnaryExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
-    auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
+    auto ttctx = compiler::TargetTypeContext(etsg, expr->Argument()->TsType());
 
-    if (!etsg->TryLoadConstantExpression(expr->Argument())) {
-        expr->Argument()->Compile(etsg);
-    }
-
-    etsg->ApplyConversion(expr->Argument(), nullptr);
-    etsg->ApplyCast(expr->Argument(), expr->TsType());
+    expr->Argument()->Compile(etsg);
+    etsg->ApplyConversion(expr->Argument(), expr->Argument()->TsType());
 
     etsg->Unary(expr, expr->OperatorType());
+    etsg->ApplyConversion(expr, expr->TsType());
 
     ES2PANDA_ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
 }
@@ -1337,20 +1328,6 @@ void ETSCompiler::Compile(const ir::ForUpdateStatement *st) const
 void ETSCompiler::Compile(const ir::IfStatement *st) const
 {
     ETSGen *etsg = GetETSGen();
-    auto res = compiler::Condition::CheckConstantExpr(etsg, st->Test());
-    if (res == compiler::Condition::Result::CONST_TRUE) {
-        st->Test()->Compile(etsg);
-        st->Consequent()->Compile(etsg);
-        return;
-    }
-
-    if (res == compiler::Condition::Result::CONST_FALSE) {
-        st->Test()->Compile(etsg);
-        if (st->Alternate() != nullptr) {
-            st->Alternate()->Compile(etsg);
-        }
-        return;
-    }
 
     auto *consequentEnd = etsg->AllocLabel();
     compiler::Label *statementEnd = consequentEnd;
@@ -1387,8 +1364,9 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
     ETSGen *etsg = GetETSGen();
 
     bool isAsyncImpl = st->IsAsyncImplReturn();
+    auto *const argument = st->Argument();
 
-    if (st->Argument() == nullptr) {
+    if (argument == nullptr) {
         if (etsg->ExtendWithFinalizer(st->Parent(), st)) {
             return;
         }
@@ -1408,9 +1386,8 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
         return;
     }
 
-    if (st->Argument()->IsCallExpression() &&
-        st->Argument()->AsCallExpression()->Signature()->ReturnType()->IsETSVoidType()) {
-        st->Argument()->Compile(etsg);
+    if (argument->IsCallExpression() && argument->AsCallExpression()->Signature()->ReturnType()->IsETSVoidType()) {
+        argument->Compile(etsg);
 
         if (isAsyncImpl) {
             etsg->LoadAccumulatorUndefined(st);
@@ -1423,12 +1400,8 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
     }
 
     auto ttctx = compiler::TargetTypeContext(etsg, etsg->ReturnType());
-
-    if (!etsg->TryLoadConstantExpression(st->Argument())) {
-        st->Argument()->Compile(etsg);
-    }
-
-    etsg->ApplyConversion(st->Argument(), st->ReturnType());
+    argument->Compile(etsg);
+    etsg->ApplyConversion(argument, etsg->ReturnType());
 
     if (etsg->ExtendWithFinalizer(st->Parent(), st)) {
         return;
@@ -1534,10 +1507,8 @@ void ETSCompiler::Compile(const ir::VariableDeclarator *st) const
     auto ttctx = compiler::TargetTypeContext(etsg, st->TsType());
 
     if (st->Init() != nullptr) {
-        if (!etsg->TryLoadConstantExpression(st->Init())) {
-            st->Init()->Compile(etsg);
-            etsg->ApplyConversion(st->Init(), nullptr);
-        }
+        st->Init()->Compile(etsg);
+        etsg->ApplyConversion(st->Init(), st->Id()->AsIdentifier()->Variable()->TsType());
     } else {
         etsg->LoadDefaultValue(st, st->Id()->AsIdentifier()->Variable()->TsType());
     }
@@ -1696,13 +1667,11 @@ void ETSCompiler::CompileCast(const ir::TSAsExpression *expr) const
 void ETSCompiler::Compile(const ir::TSAsExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
-    auto ttctx = compiler::TargetTypeContext(etsg, nullptr);
-    if (!etsg->TryLoadConstantExpression(expr->Expr())) {
-        expr->Expr()->Compile(etsg);
-    }
+    expr->Expr()->Compile(etsg);
 
     const auto *const targetType = etsg->Checker()->GetApparentType(expr->TsType());
 
+    auto ttctx = compiler::TargetTypeContext(etsg, nullptr);
     if ((expr->Expr()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
         etsg->ApplyUnboxingConversion(expr->Expr());
     }

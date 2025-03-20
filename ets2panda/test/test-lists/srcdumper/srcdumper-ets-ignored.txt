@@ -11,6 +11,7 @@ runtime/ets/annotation_tests/AnnotationForDifferentTypes.ets
 runtime/ets/annotation_tests/AnnotationForTypesInDifferentCase.ets
 ast/compiler/ets/async_import_1.ets
 ast/compiler/ets/optionalClassProperty1.ets
+ast/compiler/ets/ambient_interface/use_interface.ets
 ast/parser/ets/import_tests/enum/import.ets
 ast/parser/ets/import_tests/export_and_import_class.ets
 ast/parser/ets/import_tests/export_and_import_top_level.ets

@@ -1012,10 +1012,10 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
 
     auto [rightType, relationNode] = CheckAssignmentExprOperatorType(expr, leftType);
     if (rightType->IsTypeError()) {
-        return expr->SetTsType(checker->GlobalTypeError());
+        return expr->SetTsType(leftType);
     }
 
-    checker::Type *smartType = leftType;
+    checker::Type *smartType = rightType;
     if (!leftType->IsTypeError()) {
         if (auto ctx = checker::AssignmentContext(
                 // CC-OFFNXT(G.FMT.06-CPP) project code style
@@ -1025,8 +1025,6 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
             ctx.IsAssignable()) {
             smartType = GetSmartType(expr, leftType, rightType);
         }
-    } else {
-        smartType = rightType;
     }
 
     return expr->SetTsType(smartType);
@@ -2021,12 +2019,12 @@ checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
         }
     }
 
-    SetTsTypeForUnaryExpression(checker, expr, operandType);
-
     if ((argType != nullptr) && argType->IsETSObjectType() && (unboxedOperandType != nullptr) &&
         unboxedOperandType->IsETSPrimitiveType()) {
         expr->Argument()->AddBoxingUnboxingFlags(checker->GetUnboxingFlag(unboxedOperandType));
     }
+
+    SetTsTypeForUnaryExpression(checker, expr, operandType);
 
     checker->Context().CheckUnarySmartCastCondition(expr);
 

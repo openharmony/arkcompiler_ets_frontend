@@ -169,7 +169,6 @@ set(ES2PANDA_LIB_SRC
   ast_verifier/arithmeticOperationValid.cpp
   ast_verifier/checkAbstractMethod.cpp
   ast_verifier/checkConstProperties.cpp
-  ast_verifier/checkInfiniteLoop.cpp
   ast_verifier/checkScopeDeclaration.cpp
   ast_verifier/checkStructDeclaration.cpp
   ast_verifier/everyChildHasValidParent.cpp
