@@ -1080,6 +1080,13 @@ void CheckerContext::InvalidateNecessarySmartCastsInLogicalAnd(std::optional<Sma
     }
 }
 
+ReassignedVariableMap CheckerContext::GetReassignedVariablesInNode(const ir::AstNode *const node) const
+{
+    ReassignedVariableMap changedVariables {};
+    node->Iterate([this, &changedVariables](ir::AstNode *childNode) { CheckAssignments(childNode, changedVariables); });
+    return changedVariables;
+}
+
 void CheckerContext::CheckTestSmartCastCondition(lexer::TokenType operatorType)
 {
     if (operatorType != lexer::TokenType::EOS && operatorType != lexer::TokenType::PUNCTUATOR_LOGICAL_AND &&

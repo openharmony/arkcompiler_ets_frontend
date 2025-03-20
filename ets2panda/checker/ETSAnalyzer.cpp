@@ -2399,7 +2399,7 @@ checker::Type *ETSAnalyzer::Check(ir::DoWhileStatement *st) const
     checker::ScopeContext scopeCtx(checker, st->Scope());
 
     //  NOTE: Smart casts are not processed correctly within the loops now, thus clear them at this point.
-    auto [smartCasts, clearFlag] = checker->Context().EnterLoop(*st);
+    auto [smartCasts, clearFlag] = checker->Context().EnterLoop(*st, std::nullopt);
 
     checker->CheckTruthinessOfType(st->Test());
     st->Body()->Check(checker);
@@ -2457,7 +2457,7 @@ checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *const st) const
     checker::ScopeContext scopeCtx(checker, st->Scope());
 
     //  NOTE: Smart casts are not processed correctly within the loops now, thus clear them at this point.
-    auto [smartCasts, clearFlag] = checker->Context().EnterLoop(*st);
+    auto [smartCasts, clearFlag] = checker->Context().EnterLoop(*st, std::nullopt);
 
     checker::Type *const exprType = st->Right()->Check(checker);
     if (exprType == nullptr) {
@@ -2498,7 +2498,7 @@ checker::Type *ETSAnalyzer::Check(ir::ForUpdateStatement *st) const
     checker::ScopeContext scopeCtx(checker, st->Scope());
 
     //  NOTE: Smart casts are not processed correctly within the loops now, thus clear them at this point.
-    auto [smartCasts, clearFlag] = checker->Context().EnterLoop(*st);
+    auto [smartCasts, clearFlag] = checker->Context().EnterLoop(*st, std::nullopt);
 
     if (st->Init() != nullptr) {
         st->Init()->Check(checker);
@@ -2876,13 +2876,24 @@ checker::Type *ETSAnalyzer::Check(ir::WhileStatement *st) const
     ETSChecker *checker = GetETSChecker();
     checker::ScopeContext scopeCtx(checker, st->Scope());
 
-    //  NOTE: Smart casts are not processed correctly within the loops now, thus clear them at this point.
-    auto [smartCasts, clearFlag] = checker->Context().EnterLoop(*st);
+    // Invalidate smart cast for variables in the test condition, that will be reassigned in the loop body
+    const auto reassignedVars = checker->Context().GetReassignedVariablesInNode(st->Body());
+    for (const auto &[var, _] : reassignedVars) {
+        checker->Context().RemoveSmartCast(var);
+    }
 
+    SmartCastArray savedSmartCasts = checker->Context().EnterTestExpression();
     checker->CheckTruthinessOfType(st->Test());
-    st->Body()->Check(checker);
+    SmartCastTypes testedTypes = checker->Context().ExitTestExpression();
+    if (testedTypes.has_value()) {
+        for (auto [variable, consequentType, _] : *testedTypes) {
+            checker->ApplySmartCast(variable, consequentType);
+        }
+    }
 
-    checker->Context().ExitLoop(smartCasts, clearFlag, st);
+    auto [smartCasts, clearFlag] = checker->Context().EnterLoop(*st, testedTypes);
+    st->Body()->Check(checker);
+    checker->Context().ExitLoop(savedSmartCasts, clearFlag, st);
     return ReturnTypeForStatement(st);
 }
 
