@@ -48,6 +48,51 @@
 #include "generated/diagnostic.h"
 
 namespace ark::es2panda::checker {
+
+static bool CheckGetterSetterDecl(varbinder::LocalVariable const *child, varbinder::LocalVariable const *parent)
+{
+    auto readonlyCheck = [](varbinder::LocalVariable const *var, bool isParent, bool isReadonly) {
+        if (!var->TsType()->IsETSFunctionType() || var->TsType()->IsETSArrowType()) {
+            return true;
+        }
+
+        auto *functionType = var->TsType()->AsETSFunctionType();
+        auto getter = functionType->FindGetter();
+        if (getter == nullptr) {
+            return false;
+        }
+
+        auto setter = functionType->FindSetter();
+        if (!isParent && setter == nullptr && !isReadonly) {
+            return false;
+        }
+
+        if (isParent && setter != nullptr && isReadonly) {
+            return false;
+        }
+
+        return true;
+    };
+
+    bool checkChild = readonlyCheck(child, false, parent->Declaration()->Type() == varbinder::DeclType::READONLY);
+    bool checkParent = readonlyCheck(parent, true, child->Declaration()->Type() == varbinder::DeclType::READONLY);
+    return checkChild && checkParent && (child->TsType()->IsETSFunctionType() || parent->TsType()->IsETSFunctionType());
+}
+
+static bool CheckFunctionDecl(varbinder::LocalVariable *child, varbinder::LocalVariable *parent)
+{
+    ES2PANDA_ASSERT(child->Declaration()->Type() == parent->Declaration()->Type());
+    if (!child->TsType()->IsETSFunctionType()) {
+        return true;
+    }
+
+    const auto *childType = child->TsType()->AsETSFunctionType();
+    const auto *parentType = parent->TsType()->AsETSFunctionType();
+    bool childIsField = (childType->FindGetter() != nullptr) || (childType->FindSetter() != nullptr);
+    bool parentIsField = (parentType->FindGetter() != nullptr) || (parentType->FindSetter() != nullptr);
+    return childIsField == parentIsField;
+}
+
 ETSObjectType *ETSChecker::GetSuperType(ETSObjectType *type)
 {
     ComputeSuperType(type);
@@ -2203,53 +2248,48 @@ void ETSChecker::CheckProperties(ETSObjectType *classType, ir::ClassDefinition *
         GetTypeOfVariable(found);
     }
 
-    if (!IsSameDeclarationType(it, found)) {
-        if (IsVariableStatic(it) != IsVariableStatic(found)) {
-            return;
-        }
+    if (IsVariableStatic(it) != IsVariableStatic(found)) {
+        return;
+    }
 
+    if (!IsSameDeclarationType(it, found)) {
         if (it->Declaration()->Type() == varbinder::DeclType::LET &&
             found->Declaration()->Type() == varbinder::DeclType::READONLY) {
             return;
         }
 
-        if (it->TsType()->IsETSFunctionType()) {
-            auto getter = it->TsType()->AsETSFunctionType()->FindGetter();
-            if (getter != nullptr && Relation()->IsIdenticalTo(getter->ReturnType(), found->TsType())) {
-                return;
-            }
-            auto setter = it->TsType()->AsETSFunctionType()->FindSetter();
-            if (setter != nullptr && Relation()->IsIdenticalTo(setter->ReturnType(), found->TsType())) {
-                return;
-            }
-        }
-
-        const char *targetType {};
-
-        if (it->HasFlag(varbinder::VariableFlags::PROPERTY)) {
-            targetType = "field";
-        } else if (it->HasFlag(varbinder::VariableFlags::METHOD)) {
-            targetType = "method";
-        } else if (it->HasFlag(varbinder::VariableFlags::CLASS)) {
-            targetType = "class";
-        } else if (it->HasFlag(varbinder::VariableFlags::INTERFACE)) {
-            targetType = "interface";
-        } else if (it->HasFlag(varbinder::VariableFlags::NAMESPACE)) {
-            targetType = "namespace";
-        } else if (it->HasFlag(varbinder::VariableFlags::ENUM_LITERAL)) {
-            targetType = "enum";
-        } else {
-            ES2PANDA_UNREACHABLE();
-        }
-
-        if (interfaceFound != nullptr) {
-            LogError(diagnostic::INHERITED_INTERFACE_TYPE_MISMATCH, {interfaceFound->Name(), targetType, it->Name()},
-                     interfaceFound->GetDeclNode()->Start());
+        if (CheckGetterSetterDecl(it, found)) {
             return;
         }
-        LogError(diagnostic::INHERITED_CLASS_TYPE_MISMATCH, {classType->SuperType()->Name(), targetType, it->Name()},
-                 classDef->Super()->Start());
+    } else if (CheckFunctionDecl(it, found)) {
+        return;
     }
+
+    const char *targetType {};
+
+    if (it->HasFlag(varbinder::VariableFlags::PROPERTY)) {
+        targetType = "field";
+    } else if (it->HasFlag(varbinder::VariableFlags::METHOD)) {
+        targetType = "method";
+    } else if (it->HasFlag(varbinder::VariableFlags::CLASS)) {
+        targetType = "class";
+    } else if (it->HasFlag(varbinder::VariableFlags::INTERFACE)) {
+        targetType = "interface";
+    } else if (it->HasFlag(varbinder::VariableFlags::NAMESPACE)) {
+        targetType = "namespace";
+    } else if (it->HasFlag(varbinder::VariableFlags::ENUM_LITERAL)) {
+        targetType = "enum";
+    } else {
+        ES2PANDA_UNREACHABLE();
+    }
+
+    if (interfaceFound != nullptr) {
+        LogError(diagnostic::INHERITED_INTERFACE_TYPE_MISMATCH, {interfaceFound->Name(), targetType, it->Name()},
+                 interfaceFound->GetDeclNode()->Start());
+        return;
+    }
+    LogError(diagnostic::INHERITED_CLASS_TYPE_MISMATCH, {classType->SuperType()->Name(), targetType, it->Name()},
+             classDef->Super()->Start());
 }
 
 void ETSChecker::TransformProperties(ETSObjectType *classType)
