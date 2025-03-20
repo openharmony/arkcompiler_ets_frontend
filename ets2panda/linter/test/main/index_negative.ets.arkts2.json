@@ -195,16 +195,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 58,
-            "column": 5,
-            "endLine": 58,
-            "endColumn": 6,
-            "problem": "ArrayIndexExprType",
-            "suggest": "",
-            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
-            "severity": "ERROR"
-        },
-        {
             "line": 60,
             "column": 1,
             "endLine": 60,
@@ -272,16 +262,6 @@
             "problem": "IndexNegative",
             "suggest": "",
             "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 69,
-            "column": 5,
-            "endLine": 69,
-            "endColumn": 6,
-            "problem": "ArrayIndexExprType",
-            "suggest": "",
-            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
             "severity": "ERROR"
         },
         {

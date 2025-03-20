@@ -12,27 +12,6 @@
         "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
         "See the License for the specific language governing permissions and",
         "limitations under the License."
-    ],
-    "result": [
-        {
-            "line": 33,
-            "column": 11,
-            "endLine": 33,
-            "endColumn": 15,
-            "problem": "FunctionContainsThis",
-            "suggest": "",
-            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 33,
-            "column": 28,
-            "endLine": 33,
-            "endColumn": 32,
-            "problem": "FunctionContainsThis",
-            "suggest": "",
-            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
-            "severity": "ERROR"
-        }
-    ]
+    ],  
+    "result": []
 }
