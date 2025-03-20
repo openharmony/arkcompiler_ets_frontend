@@ -104,6 +104,19 @@ void ReturnStatement::SetArgument(Expression *arg)
     }
 }
 
+bool ReturnStatement::IsAsyncImplReturn() const
+{
+    const auto *parent = Parent();
+
+    while (parent != nullptr) {
+        if (parent->IsScriptFunction()) {
+            return parent->AsScriptFunction()->IsAsyncImplFunc();
+        }
+        parent = parent->Parent();
+    }
+    return false;
+}
+
 ReturnStatement *ReturnStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     ir::ReturnStatement *clone = allocator->New<ir::ReturnStatement>();

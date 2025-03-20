@@ -1426,6 +1426,9 @@ void ETSCompiler::Compile(const ir::LabelledStatement *st) const
 void ETSCompiler::Compile(const ir::ReturnStatement *st) const
 {
     ETSGen *etsg = GetETSGen();
+
+    bool isAsyncImpl = st->IsAsyncImplReturn();
+
     if (st->Argument() == nullptr) {
         if (etsg->ExtendWithFinalizer(st->Parent(), st)) {
             return;
@@ -1433,6 +1436,12 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
 
         if (etsg->CheckControlFlowChange()) {
             etsg->ControlFlowChangeBreak();
+        }
+
+        if (isAsyncImpl) {
+            etsg->LoadAccumulatorUndefined(st);
+            etsg->ReturnAcc(st);
+            return;
         }
 
         etsg->EmitReturnVoid(st);
@@ -1443,6 +1452,13 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
     if (st->Argument()->IsCallExpression() &&
         st->Argument()->AsCallExpression()->Signature()->ReturnType()->IsETSVoidType()) {
         st->Argument()->Compile(etsg);
+
+        if (isAsyncImpl) {
+            etsg->LoadAccumulatorUndefined(st);
+            etsg->ReturnAcc(st);
+            return;
+        }
+
         etsg->EmitReturnVoid(st);
         return;
     }
