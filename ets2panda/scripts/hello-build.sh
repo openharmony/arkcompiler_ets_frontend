@@ -16,6 +16,7 @@
 # Must run this script in arkguard root directory.
 
 set -ex
+set -o pipefail
 
 SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
 source "${SCRIPT_DIR}"/arkui-setup.sh
