@@ -75,6 +75,7 @@ import type { LinterOptions } from './LinterOptions';
 import { BUILTIN_GENERIC_CONSTRUCTORS } from './utils/consts/BuiltinGenericConstructor';
 import { DEFAULT_DECORATOR_WHITE_LIST } from './utils/consts/DefaultDecoratorWhitelist';
 import { INVALID_IDENTIFIER_KEYWORDS } from './utils/consts/InValidIndentifierKeywords';
+import { WORKER_MODULES, WORKER_TEXT } from './utils/consts/WorkerAPI';
 
 const EXTEND_DECORATOR_NAME = 'Extend';
 const ANIMATABLE_EXTEND_DECORATOR_NAME = 'AnimatableExtend';
@@ -2047,6 +2048,10 @@ export class TypeScriptLinter {
     if (isArkTs2 && this.tsTypeChecker.isArgumentsSymbol(tsIdentSym)) {
       this.incrementCounters(node, FaultID.ArgumentsObject);
     }
+
+    if (isArkTs2) {
+      this.checkWorkerSymbol(tsIdentSym, node);
+    }
   }
 
   private handleGlobalThisCase(node: ts.Identifier, isArkTs2: boolean | undefined): void {
@@ -3810,6 +3815,20 @@ export class TypeScriptLinter {
         return;
       }
       this.incrementCounters(decorator, FaultID.LimitedStdLibApi);
+    }
+  }
+
+  private checkWorkerSymbol(symbol: ts.Symbol, node: ts.Node): void {
+    if (symbol.name === WORKER_TEXT) {
+      const decl = TsUtils.getDeclaration(symbol);
+
+      if (!decl) {
+        return;
+      }
+      const sourceFile = decl.getSourceFile();
+      if (WORKER_MODULES.includes(path.basename(sourceFile.fileName).toLowerCase())) {
+        this.incrementCounters(node, FaultID.LimitedStdLibApi);
+      }
     }
   }
 }
