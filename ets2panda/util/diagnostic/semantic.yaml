@@ -1110,3 +1110,7 @@ semantic:
 - name: INTERFACE_INSTANTIATION
   id: 275
   message: "{} is an interface therefore cannot be instantiated."
+
+- name: KEYOF_REFERENCE_TYPE
+  id: 276
+  message: "The `keyof` keyword can only be used for class or interface type."

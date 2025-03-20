@@ -423,4 +423,56 @@ ETSObjectType *ETSChecker::CreatePromiseOf(Type *type)
     return promiseType->Substitute(Relation(), substitution);
 }
 
+Type *ETSChecker::CreateUnionFromKeyofType(ETSObjectType *const type)
+{
+    ArenaVector<checker::Type *> stringLiterals(Allocator()->Adapter());
+
+    std::deque<checker::ETSObjectType *> superTypes;
+    superTypes.push_back(type);
+    auto addToUnion = [this, &stringLiterals](checker::ETSObjectType *it) {
+        if (it == GlobalETSObjectType()) {
+            return;
+        }
+        for (auto *method : it->Methods()) {
+            if (method->HasFlag(varbinder::VariableFlags::PRIVATE) ||
+                method->HasFlag(varbinder::VariableFlags::PROTECTED)) {
+                continue;
+            }
+            stringLiterals.push_back(this->CreateETSStringLiteralType(method->Name()));
+        }
+        for (auto *field : it->Fields()) {
+            if (field->HasFlag(varbinder::VariableFlags::PRIVATE) ||
+                field->HasFlag(varbinder::VariableFlags::PROTECTED)) {
+                continue;
+            }
+            stringLiterals.push_back(this->CreateETSStringLiteralType(field->Name()));
+        }
+    };
+
+    auto addObjToDeque = [&superTypes](checker::ETSObjectType *it) {
+        if (it->SuperType() != nullptr) {
+            superTypes.push_back(it->SuperType());
+        }
+        if (it->Interfaces().empty()) {
+            return;
+        }
+        for (auto inteface : it->Interfaces()) {
+            superTypes.push_back(inteface);
+        }
+    };
+
+    while (!superTypes.empty()) {
+        auto *extendsObject = superTypes.front();
+        superTypes.pop_front();
+        addToUnion(extendsObject);
+        addObjToDeque(extendsObject);
+    }
+
+    if (stringLiterals.empty()) {
+        return GlobalETSNeverType();
+    }
+
+    return CreateETSUnionType(std::move(stringLiterals));
+}
+
 }  // namespace ark::es2panda::checker

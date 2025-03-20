@@ -140,6 +140,16 @@ public:
         return false;
     }
 
+    bool TryEatTokenFromKeywordType(lexer::TokenType type)
+    {
+        auto token = GetToken();
+        if (token.KeywordType() == type) {
+            NextToken();
+            return true;
+        }
+        return false;
+    }
+
     util::DiagnosticEngine &DiagnosticEngine()
     {
         return diagnosticEngine_;
