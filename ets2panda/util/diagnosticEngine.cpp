@@ -68,17 +68,20 @@ void DiagnosticEngine::FlushDiagnostic()
         printer_->Print(**it);
     }
 }
-
+#ifndef FUZZING_EXIT_ON_FAILED_ASSERT
 static void SigSegvHandler([[maybe_unused]] int sig)
 {
     CompilerBugAction(lexer::SourcePosition {});
     ark::PrintStack(ark::GetStacktrace(), std::cerr);
     std::abort();  // CC-OFF(G.STD.16-CPP) fatal error
 }
+#endif
 
 void DiagnosticEngine::InitializeSignalHandlers()
 {
+#ifndef FUZZING_EXIT_ON_FAILED_ASSERT
     std::signal(SIGSEGV, SigSegvHandler);
+#endif
 }
 
 bool DiagnosticEngine::IsAnyError() const noexcept
