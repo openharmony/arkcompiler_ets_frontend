@@ -155,6 +155,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 53,
+            "column": 3,
+            "endLine": 53,
+            "endColumn": 22,
+            "problem": "TsOverload",
+            "suggest": "",
+            "rule": "Class TS overloading is not supported(arkts-no-ts-overload)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 54,
+            "column": 3,
+            "endLine": 54,
+            "endColumn": 19,
+            "problem": "TsOverload",
+            "suggest": "",
+            "rule": "Class TS overloading is not supported(arkts-no-ts-overload)",
+            "severity": "ERROR"
+        },
+        {
             "line": 56,
             "column": 5,
             "endLine": 56,

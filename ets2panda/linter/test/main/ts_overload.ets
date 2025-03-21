@@ -25,3 +25,33 @@ function makeDate(mOrTimestamp: number, d?: number, y?: number): Date {
 const d1 = makeDate(12345678);
 const d2 = makeDate(5, 5, 5);
 const d3 = makeDate(1, 3);
+
+class Vector {
+  abstract foo(): void
+  abstract foo(x: string): void
+  abstract foo(x?: string): void {
+    /body/
+  }
+
+  public fun(): void
+  public fun(x: string): void
+  public fun(x?: string): void {
+    /body/
+  }
+}
+
+abstract class absClass {
+  abstract foo(): void
+  abstract foo(x: string): void
+  abstract foo(x?: string): void {
+    /body/
+  }
+
+  constructor(x: number, y: number);
+
+  constructor(magnitude: number);
+
+  constructor(...args: number[]) {
+      /* ... */
+    }
+}

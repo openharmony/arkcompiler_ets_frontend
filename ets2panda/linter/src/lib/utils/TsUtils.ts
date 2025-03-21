@@ -896,6 +896,23 @@ export class TsUtils {
     return false;
   }
 
+  isAbstractMethodInAbstractClass(node: ts.Node): boolean {
+    const type = this.tsTypeChecker.getTypeAtLocation(node);
+    const funcDeclParentType = this.tsTypeChecker.getTypeAtLocation(node.parent);
+    if (
+      TsUtils.isAbstractClass(funcDeclParentType) &&
+      type.symbol.declarations &&
+      type.symbol.declarations.length > 0
+    ) {
+      const declClass = type.symbol.declarations[0] as ts.MethodDeclaration;
+      const classMods = ts.getModifiers(declClass);
+      if (TsUtils.hasModifier(classMods, ts.SyntaxKind.AbstractKeyword)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   static validateObjectLiteralType(type: ts.Type | undefined): boolean {
     if (!type) {
       return false;
