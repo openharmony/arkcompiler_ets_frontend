@@ -311,7 +311,11 @@ export class TypeScriptLinter {
     }
   }
 
-  private incrementCountersIdeInteractiveMode(node: ts.Node | ts.CommentRange, faultId: number, autofix?: Autofix[]): void {
+  private incrementCountersIdeInteractiveMode(
+    node: ts.Node | ts.CommentRange,
+    faultId: number,
+    autofix?: Autofix[]
+  ): void {
     if (!this.options.ideInteractive) {
       return;
     }
@@ -2207,6 +2211,15 @@ export class TypeScriptLinter {
       !ts.isVariableDeclaration(sym.valueDeclaration) ||
       !TsUtils.isAmbientNode(sym.valueDeclaration)
     ) {
+      return false;
+    }
+
+    /*
+     * issue 24075: TS supports calling the constructor of built-in types
+     * as function (without 'new' keyword): `const a = Number('10')`
+     * Such cases need to be filtered out.
+     */
+    if (ts.isCallExpression(ident.parent) && ident.parent.expression === ident) {
       return false;
     }
 
