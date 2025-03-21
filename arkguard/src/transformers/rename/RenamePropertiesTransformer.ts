@@ -53,7 +53,8 @@ import type {TransformPlugin} from '../TransformPlugin';
 import {TransformerOrder} from '../TransformPlugin';
 import {NodeUtils} from '../../utils/NodeUtils';
 import { ArkObfuscator, performancePrinter } from '../../ArkObfuscator';
-import { EventList, endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
+import { endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
+import { EventList } from '../../utils/PrinterTimeAndMemUtils';
 import {
   isInPropertyWhitelist,
   isReservedProperty,
@@ -95,9 +96,19 @@ namespace secharmony {
 
         const recordInfo = ArkObfuscator.recordStage(MemoryDottingDefine.PROPERTY_OBFUSCATION);
         startSingleFileEvent(EventList.PROPERTY_OBFUSCATION, performancePrinter.timeSumPrinter);
+
+        startSingleFileEvent(EventList.RENAME_PROPERTIES);
         let ret: Node = renameProperties(node);
+        endSingleFileEvent(EventList.RENAME_PROPERTIES);
+
+        startSingleFileEvent(EventList.UPDATE_MEMBER_METHOD_NAME);
         UpdateMemberMethodName(nameCache, PropCollections.globalMangledTable, classInfoInMemberMethodCache);
+        endSingleFileEvent(EventList.UPDATE_MEMBER_METHOD_NAME);
+
+        startSingleFileEvent(EventList.SET_PARENT_RECURSIVE);
         let parentNodes = setParentRecursive(ret, true);
+        endSingleFileEvent(EventList.SET_PARENT_RECURSIVE);
+
         endSingleFileEvent(EventList.PROPERTY_OBFUSCATION, performancePrinter.timeSumPrinter);
         ArkObfuscator.stopRecordStage(recordInfo);
         return parentNodes;

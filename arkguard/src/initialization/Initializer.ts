@@ -20,6 +20,7 @@ import { ArkObfuscator, blockPrinter, renameIdentifierModule } from '../ArkObfus
 import { collectResevedFileNameInIDEConfig, MergedConfig, ObConfigResolver, readNameCache } from './ConfigResolver';
 import { type IOptions } from '../configs/IOptions';
 import type { HvigorErrorInfo } from '../common/type';
+import { getObfuscationCacheDir } from '../utils/PrinterTimeAndMemUtils';
 
 // Record all unobfuscated properties and reasons.
 export const historyUnobfuscatedPropMap: Map<string, string[]> = new Map<string, string[]>();
@@ -43,10 +44,32 @@ export const printerConfig = {
   mOutputPath: '',
 };
 
+export const printerTimeAndMemConfig = {
+  // A sub-switch of mTimeAndMemPrinter used to control the obfuscation performance printing of files
+  mFilesPrinter: false,
+  // A sub-switch of mTimeAndMemPrinter used to control the obfuscation performance printing of singlefile
+  mSingleFilePrinter: false,
+};
+
+export const printerTimeAndMemDataConfig = {
+  // The switch for printing obfuscation performance data and memory data
+  mTimeAndMemPrinter: false,
+  // Print more obfuscation time data to obtain more detailed time performance data
+  mMoreTimePrint: false,
+};
+
+// Initialize the configuration of the TimeAndMem performance printer
+export function initPrinterTimeAndMemConfig() {
+  printerTimeAndMemConfig.mFilesPrinter = true;
+  printerTimeAndMemConfig.mSingleFilePrinter = true;
+  printerTimeAndMemDataConfig.mTimeAndMemPrinter = true;
+}
+
 export function initObfuscationConfig(projectConfig: any, arkProjectConfig: any, printObfLogger: Function): void {
   const obConfig: ObConfigResolver = new ObConfigResolver(projectConfig, printObfLogger, true);
   const mergedObConfig: MergedConfig = obConfig.resolveObfuscationConfigs();
   const isHarCompiled: boolean = projectConfig.compileHar;
+  getObfuscationCacheDir(projectConfig);
   if (mergedObConfig.options.disableObfuscation) {
     blockPrinter();
     return;
@@ -116,6 +139,7 @@ function initArkGuardConfig(
     },
     mExportObfuscation: mergedObConfig.options.enableExportObfuscation,
     mPerformancePrinter: printerConfig,
+    mPerformanceTimeAndMemPrinter: printerTimeAndMemConfig,
     mKeepFileSourceCode: {
       mKeepSourceOfPaths: new Set(),
       mkeepFilesAndDependencies: new Set(),

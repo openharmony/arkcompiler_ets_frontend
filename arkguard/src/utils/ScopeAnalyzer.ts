@@ -73,6 +73,8 @@ import type {
 import { NodeUtils } from './NodeUtils';
 import { isParameterPropertyModifier, isViewPUBasedClass } from './OhsUtil';
 import { TypeUtils } from './TypeUtils';
+import { endSingleFileEvent, startSingleFileEvent } from '../utils/PrinterUtils';
+import { EventList } from '../utils/PrinterTimeAndMemUtils';
 /**
  * kind of a scope
  */
@@ -387,7 +389,9 @@ namespace secharmony {
       switch (node.kind) {
         // global
         case SyntaxKind.SourceFile:
+          startSingleFileEvent(EventList.ANALYZE_SOURCE_FILE);
           analyzeSourceFile(node as SourceFile);
+          endSingleFileEvent(EventList.ANALYZE_SOURCE_FILE);
           break;
 
         // namespace or module
@@ -403,14 +407,18 @@ namespace secharmony {
         case SyntaxKind.Constructor:
         case SyntaxKind.FunctionExpression:
         case SyntaxKind.ArrowFunction:
+          startSingleFileEvent(EventList.ANALYZE_FUNCTION_LIKE);
           analyzeFunctionLike(node as FunctionLikeDeclaration);
+          endSingleFileEvent(EventList.ANALYZE_FUNCTION_LIKE);
           break;
 
         // class like
         case SyntaxKind.ClassExpression:
         case SyntaxKind.ClassDeclaration:
         case SyntaxKind.StructDeclaration:
+          startSingleFileEvent(EventList.ANALYZE_CLASS_LIKE);
           analyzeClassLike(node as ClassLikeDeclaration);
+          endSingleFileEvent(EventList.ANALYZE_CLASS_LIKE);
           break;
 
         // for like
