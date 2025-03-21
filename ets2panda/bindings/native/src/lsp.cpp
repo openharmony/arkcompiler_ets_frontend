@@ -32,7 +32,7 @@ using ark::es2panda::lsp::ClassPropertyItem;
 
 char *GetStringCopy(KStringPtr &ptr)
 {
-    return strdup(ptr.c_str());
+    return strdup(ptr.CStr());
 }
 
 KNativePointer impl_getCurrentTokenValue(KNativePointer context, KInt position)
@@ -792,19 +792,19 @@ KNativePointer impl_getDefinitionAtPosition(KNativePointer context, KInt positio
 }
 TS_INTEROP_2(getDefinitionAtPosition, KNativePointer, KNativePointer, KInt)
 
-KNativePointer impl_getFileNameFromDef(KNativePointer defPtr)
+KNativePointer impl_GetFileNameFromDef(KNativePointer defPtr)
 {
     auto *defInfo = reinterpret_cast<DefinitionInfo *>(defPtr);
     return new std::string(defInfo->fileName);
 }
-TS_INTEROP_1(getFileNameFromDef, KNativePointer, KNativePointer)
+TS_INTEROP_1(GetFileNameFromDef, KNativePointer, KNativePointer)
 
-KInt impl_getStartFromDef(KNativePointer defPtr)
+KInt impl_GetStartFromDef(KNativePointer defPtr)
 {
     auto *defInfo = reinterpret_cast<DefinitionInfo *>(defPtr);
     return defInfo->start;
 }
-TS_INTEROP_1(getStartFromDef, KInt, KNativePointer)
+TS_INTEROP_1(GetStartFromDef, KInt, KNativePointer)
 
 KInt impl_getLengthFromDef(KNativePointer defPtr)
 {
@@ -1804,7 +1804,7 @@ TS_INTEROP_2(getSignatureHelpItems, KNativePointer, KNativePointer, KInt)
 KInt impl_getOffsetByColAndLine(KStringPtr &sourceCodePtr, KInt line, KInt column)
 {
     LSPAPI const *impl = GetImpl();
-    return impl->getOffsetByColAndLine(sourceCodePtr.data(), line, column);
+    return impl->getOffsetByColAndLine(sourceCodePtr.Data(), line, column);
 }
 TS_INTEROP_3(getOffsetByColAndLine, KInt, KStringPtr, KInt, KInt)
 
@@ -1812,7 +1812,7 @@ KNativePointer impl_getClassDefinition(KNativePointer astNodePtr, KStringPtr &no
 {
     auto ast = reinterpret_cast<es2panda_AstNode *>(astNodePtr);
     LSPAPI const *impl = GetImpl();
-    return impl->getClassDefinition(ast, nodeNamePtr.data());
+    return impl->getClassDefinition(ast, nodeNamePtr.Data());
 }
 TS_INTEROP_2(getClassDefinition, KNativePointer, KNativePointer, KStringPtr)
 
@@ -1820,7 +1820,7 @@ KNativePointer impl_getIdentifier(KNativePointer astNodePtr, KStringPtr &nodeNam
 {
     auto ast = reinterpret_cast<es2panda_AstNode *>(astNodePtr);
     LSPAPI const *impl = GetImpl();
-    return impl->getIdentifier(ast, nodeNamePtr.data());
+    return impl->getIdentifier(ast, nodeNamePtr.Data());
 }
 TS_INTEROP_2(getIdentifier, KNativePointer, KNativePointer, KStringPtr)
 
@@ -1836,7 +1836,7 @@ KNativePointer impl_getDefinitionDataFromNode(KNativePointer astNodePtr, KString
 {
     auto ast = reinterpret_cast<es2panda_AstNode *>(astNodePtr);
     LSPAPI const *impl = GetImpl();
-    return new DefinitionInfo(impl->getDefinitionDataFromNode(ast, nodeNamePtr.data()));
+    return new DefinitionInfo(impl->getDefinitionDataFromNode(ast, nodeNamePtr.Data()));
 }
 TS_INTEROP_2(getDefinitionDataFromNode, KNativePointer, KNativePointer, KStringPtr)
 
@@ -1857,6 +1857,6 @@ TS_INTEROP_1(getSourceLocationColumn, KInt, KNativePointer)
 KNativePointer impl_getColAndLineByOffset(KStringPtr &sourceCodePtr, KInt offset)
 {
     LSPAPI const *impl = GetImpl();
-    return new std::pair<size_t, size_t>(impl->getColAndLineByOffset(sourceCodePtr.data(), offset));
+    return new std::pair<size_t, size_t>(impl->getColAndLineByOffset(sourceCodePtr.Data(), offset));
 }
 TS_INTEROP_2(getColAndLineByOffset, KNativePointer, KStringPtr, KInt)

@@ -137,13 +137,13 @@ export class LspDiagnosticNode extends LspNode {
       .map((elPeer: KNativePointer) => new LspRelatedInfo(elPeer));
     let codeVarPtr = global.es2panda._getDiagCode(peer);
     if (global.interop._getTypeOfVariant(codeVarPtr) === VariantTypes.VARIANT_INT) {
-      this.code = global.interop._getIntFromVariant(codeVarPtr);
+      this.code = global.interop._GetIntFromVariant(codeVarPtr);
     } else {
       this.code = unpackString(global.interop._getStringFromVariant(codeVarPtr));
     }
     let dataPtr = global.es2panda._getDiagData(peer);
     if (global.interop._getTypeOfVariant(dataPtr) === VariantTypes.VARIANT_INT) {
-      this.data = global.interop._getIntFromVariant(dataPtr);
+      this.data = global.interop._GetIntFromVariant(dataPtr);
     } else {
       this.data = unpackString(global.interop._getStringFromVariant(dataPtr));
     }
@@ -176,8 +176,8 @@ export class LspDiagsNode extends LspNode {
 export class LspDefinitionData extends LspNode {
   constructor(peer: KNativePointer) {
     super(peer);
-    this.fileName = unpackString(global.es2panda._getFileNameFromDef(peer));
-    this.start = global.es2panda._getStartFromDef(peer);
+    this.fileName = unpackString(global.es2panda._GetFileNameFromDef(peer));
+    this.start = global.es2panda._GetStartFromDef(peer);
     this.length = global.es2panda._getLengthFromDef(peer);
   }
   readonly fileName: String;

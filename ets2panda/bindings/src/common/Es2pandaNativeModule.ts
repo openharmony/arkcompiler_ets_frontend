@@ -459,11 +459,11 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
-  _getFileNameFromDef(ptr: KNativePointer): KPtr {
+  _GetFileNameFromDef(ptr: KNativePointer): KPtr {
     throw new Error('Not implemented');
   }
 
-  _getStartFromDef(ptr: KPtr): KInt {
+  _GetStartFromDef(ptr: KPtr): KInt {
     throw new Error('Not implemented');
   }
 
