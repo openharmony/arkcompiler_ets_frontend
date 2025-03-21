@@ -142,11 +142,6 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::ETSUnionType *node) const
     ES2PANDA_UNREACHABLE();
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::ETSKeyofType *node) const
-{
-    ES2PANDA_UNREACHABLE();
-}
-
 void ETSCompiler::Compile([[maybe_unused]] const ir::ArrowFunctionExpression *expr) const
 {
     // Should have been handled by LambdaLowering
