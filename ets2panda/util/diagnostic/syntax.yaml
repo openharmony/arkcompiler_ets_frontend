@@ -146,7 +146,7 @@ syntax:
 
 - name: MULTIPLE_STATIC_BLOCK
   id: 34
-  message: "Only one static block is allowed."
+  message: "Only one static block is allowed in one namespace or class."
 
 - name: INVALID_ENUM_TYPE
   id: 35
@@ -1159,3 +1159,31 @@ syntax:
 - name: RETURN_WITH_VALUE
   id: 287
   message: "Unexpected return value."
+
+- name: INVALID_INIT_IN_PACKAGE
+  id: 288
+  message: "Non-constant initializer of Package should be apply in Initializer Block."
+
+- name: PACKAGE_MULTIPLE_STATIC_BLOCK
+  id: 289
+  message: "static block cannot apply to multi-files for one package"
+
+- name: CONSTANT_MULTI_INITIALIZED_IN_STATIC_BLOCK
+  id: 290
+  message: "package constant property initialization can only be applied once in static block"
+
+- name: INVALID_PACKAGE_TOP_LEVEL_STMT
+  id: 291
+  message: "Invalid package toplevel statement"
+
+- name: ONLY_CONSTANT_ALLOWED
+  id: 292
+  message: "Only constant expression is expected in the field"
+
+- name: ENUM_OR_ANNOTATION_DIVIDE_BY_ZERO
+  id: 293
+  message: "Division by zero are not allowed in Enum or Annotation"
+
+- name: MISSING_INIT_FOR_CONST_PACKAGE_PROP
+  id: 294
+  message: "Missing initialization for const package property"

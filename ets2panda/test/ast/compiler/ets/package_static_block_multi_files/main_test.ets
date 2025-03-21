@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,28 +13,6 @@
  * limitations under the License.
  */
 
-package mypackage;
+import {nn3, nn4} from "./P1"
 
-function ClassTypeTest(a0: C1){
-    assertEQ(C1.stmemb, "c1_stmemb")
-    assertEQ(a0.memb, 2)
-    assertEQ(a0.bar(), 3)
-    assertEQ(a0.baz(), 4)
-}
-
-function main(): void {
-    ClassTypeTest(new C1());
-    let locVar: mytype = new A();
-    assertEQ(locVar.aMemb, 5)
-    assertEQ(globVar1, 7)
-    assertEQ(globVar2, 7)
-}
-
-let globVar2: number;
-static {
-    globVar2 = globVar1;
-}
-
-function func2(a0: number): void {
-    assertEQ(a0, 6)
-}
+/* @@? P1_1.ets:20:5 Error SyntaxError: static block cannot apply to multi-files for one package */

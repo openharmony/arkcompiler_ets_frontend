@@ -75,6 +75,7 @@ enum class ParserStatus : uint64_t {
 
     STATIC_BLOCK = 1ULL << 40ULL,
     ALLOW_JS_DOC_START = 1ULL << 41ULL,
+    IN_PACKAGE = 1ULL << 42ULL,
 };
 
 }  // namespace ark::es2panda::parser

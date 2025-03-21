@@ -16,4 +16,8 @@
 package mypackage;
 import {myvar} from "./../subpackage_2/separate_module_1"
 
-let foo: () => number = (): number => { return myvar; };
+let foo: () => number; 
+static {
+    foo = (): number => { return myvar; };
+}
+

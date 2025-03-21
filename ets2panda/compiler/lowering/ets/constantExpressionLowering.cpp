@@ -878,6 +878,13 @@ ir::AstNode *ConstantExpressionLowering::UnfoldConstIdentifiers(ir::AstNode *con
     return constantNode;
 }
 
+static bool IsPotentialConstant(const ir::AstNodeType type)
+{
+    return type == ir::AstNodeType::TEMPLATE_LITERAL || type == ir::AstNodeType::TS_AS_EXPRESSION ||
+           type == ir::AstNodeType::UNARY_EXPRESSION || type == ir::AstNodeType::BINARY_EXPRESSION ||
+           type == ir::AstNodeType::CONDITIONAL_EXPRESSION || type == ir::AstNodeType::IDENTIFIER;
+}
+
 ir::AstNode *ConstantExpressionLowering::FoldConstant(ir::AstNode *constantNode)
 {
     ir::NodeTransformer handleFoldConstant = [this](ir::AstNode *const node) {
@@ -922,6 +929,70 @@ ir::AstNode *ConstantExpressionLowering::FoldConstant(ir::AstNode *constantNode)
     return constantNode;
 }
 
+// Note: memberExpression can be constant when it is enum property access, this check will be enabled after Issue23082.
+// for package, we need to check whether its every immediate-initializers is const expression.
+void ConstantExpressionLowering::IsInitByConstant(ir::AstNode *node)
+{
+    ir::AstNode *initTobeChecked = nullptr;
+    if (node->IsExpressionStatement() && node->AsExpressionStatement()->GetExpression()->IsAssignmentExpression()) {
+        auto assignExpr = node->AsExpressionStatement()->GetExpression()->AsAssignmentExpression();
+        initTobeChecked = assignExpr->Right();
+        if (initTobeChecked->IsExpression() && IsSupportedLiteral(initTobeChecked->AsExpression())) {
+            return;
+        }
+
+        if (!IsPotentialConstant(initTobeChecked->Type())) {
+            LogError(diagnostic::INVALID_INIT_IN_PACKAGE, {}, initTobeChecked->Start());
+            return;
+        }
+        assignExpr->SetRight(FoldConstant(UnfoldConstIdentifiers(initTobeChecked))->AsExpression());
+    }
+
+    if (node->IsClassProperty()) {
+        auto classProp = node->AsClassProperty();
+        initTobeChecked = classProp->Value();
+        if (initTobeChecked == nullptr) {
+            return;
+        }
+
+        if (initTobeChecked->IsExpression() && IsSupportedLiteral(initTobeChecked->AsExpression())) {
+            return;
+        }
+
+        if (!IsPotentialConstant(initTobeChecked->Type())) {
+            LogError(diagnostic::INVALID_INIT_IN_PACKAGE, {}, initTobeChecked->Start());
+            return;
+        }
+        classProp->SetValue(FoldConstant(UnfoldConstIdentifiers(initTobeChecked))->AsExpression());
+    }
+}
+
+void ConstantExpressionLowering::TryFoldInitializerOfPackage(ir::ClassDefinition *globalClass)
+{
+    for (auto element : globalClass->Body()) {
+        if (element->IsMethodDefinition()) {
+            auto const *classMethod = element->AsMethodDefinition();
+            if (!classMethod->Key()->IsIdentifier() ||
+                !classMethod->Key()->AsIdentifier()->Name().Is(compiler::Signatures::INIT_METHOD)) {
+                continue;
+            }
+
+            auto const *methodBody = classMethod->Value()->AsFunctionExpression()->Function()->Body();
+            if (methodBody == nullptr || !methodBody->IsBlockStatement()) {
+                continue;
+            }
+            auto const &initStatements = methodBody->AsBlockStatement()->Statements();
+            std::for_each(initStatements.begin(), initStatements.end(),
+                          [this](ir::AstNode *node) { IsInitByConstant(node); });
+        }
+
+        if (element->IsClassProperty() && element->AsClassProperty()->IsConst() &&
+            !element->AsClassProperty()->NeedInitInStaticBlock()) {
+            IsInitByConstant(element);
+        }
+    }
+}
+
 bool ConstantExpressionLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     context_ = ctx;
@@ -934,6 +1005,11 @@ bool ConstantExpressionLowering::PerformForModule(public_lib::Context *ctx, pars
             }
             if (node->IsTSEnumDeclaration()) {
                 return FoldConstant(UnFoldEnumMemberExpression(UnfoldConstIdentifiers(node)));
+            }
+
+            // Note: Package need to check whether its immediate initializer is const expression.
+            if (this->program_->IsPackage() && node->IsClassDefinition() && node->AsClassDefinition()->IsGlobal()) {
+                TryFoldInitializerOfPackage(node->AsClassDefinition());
             }
             return node;
         },
