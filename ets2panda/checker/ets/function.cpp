@@ -440,8 +440,13 @@ Signature *ETSChecker::ValidateSignature(
     const std::vector<bool> &argTypeInferenceRequired, const bool unique)
 {
     auto [baseSignature, typeArguments, flags] = info;
+    // In case of overloads, it is necessary to iterate through the compatible signatures again,
+    // setting the boxing/unboxing flag for the arguments if needed.
+    // So handle substitution arguments only in the case of unique function or collecting signature phase.
     Signature *const signature =
-        MaybeSubstituteTypeParameters(this, baseSignature, typeArguments, arguments, pos, flags);
+        ((flags & TypeRelationFlag::ONLY_CHECK_BOXING_UNBOXING) == 0 && !unique)
+            ? baseSignature
+            : MaybeSubstituteTypeParameters(this, baseSignature, typeArguments, arguments, pos, flags);
     if (signature == nullptr) {
         return nullptr;
     }
@@ -571,11 +576,21 @@ ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> 
         collectSignatures(flags);
     } else {
         for (auto flags : GetFlagVariants()) {
-            flags = flags | resolveFlags;
+            // CollectSignatures gathers the possible signatures, but in doing so, it also sets the boxing/unboxing
+            // flags where necessary. Since these might not be the actually used functions in every cases,
+            // this setting needs to be delayed for compatibleSignatures. In case of only one signature,
+            // it is not required, only when the signatures.size() > 1
+            flags = flags | resolveFlags | TypeRelationFlag::ONLY_CHECK_BOXING_UNBOXING;
             collectSignatures(flags);
-            if (!compatibleSignatures.empty()) {
-                break;
+            if (compatibleSignatures.empty()) {
+                continue;
             }
+            for (auto signature : compatibleSignatures) {
+                flags &= ~TypeRelationFlag::ONLY_CHECK_BOXING_UNBOXING;
+                ValidateSignature(std::make_tuple(signature, typeArguments, flags), arguments, pos,
+                                  argTypeInferenceRequired, signatures.size() == 1);
+            }
+            break;
         }
     }
 
