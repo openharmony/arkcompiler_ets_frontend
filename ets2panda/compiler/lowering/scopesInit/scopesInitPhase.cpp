@@ -1134,9 +1134,17 @@ void InitScopesPhaseETS::VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration 
 
 void InitScopesPhaseETS::VisitTSEnumDeclaration(ir::TSEnumDeclaration *enumDecl)
 {
-    const auto enumCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), enumDecl);
-    BindScopeNode(enumCtx.GetScope(), enumDecl);
-    Iterate(enumDecl);
+    {
+        const auto enumCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), enumDecl);
+        BindScopeNode(enumCtx.GetScope(), enumDecl);
+        Iterate(enumDecl);
+    }
+    auto name = FormInterfaceOrEnumDeclarationIdBinding(enumDecl->Key());
+    if (auto *decl = AddOrGetDecl<varbinder::EnumLiteralDecl>(VarBinder(), name, enumDecl, enumDecl->Key()->Start(),
+                                                              name, enumDecl, enumDecl->IsConst());
+        decl != nullptr) {
+        decl->BindScope(enumDecl->Scope());
+    }
 }
 
 void InitScopesPhaseETS::VisitTSTypeAliasDeclaration(ir::TSTypeAliasDeclaration *typeAlias)

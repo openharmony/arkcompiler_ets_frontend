@@ -744,6 +744,59 @@ ir::AstNode *ConstantExpressionLowering::FoldMultilineString(ir::TemplateLiteral
     return result;
 }
 
+ir::AstNode *ConstantExpressionLowering::UnFoldEnumMemberExpression(ir::AstNode *constantNode)
+{
+    ir::NodeTransformer handleUnfoldEnumMember = [this, constantNode](ir::AstNode *const node) {
+        if (node->IsMemberExpression() && !node->Parent()->IsMemberExpression()) {
+            auto memExp = node->AsMemberExpression();
+            return FindAndReplaceEnumMember(memExp, constantNode);
+        }
+
+        return node;
+    };
+    constantNode->TransformChildrenRecursivelyPostorder(handleUnfoldEnumMember, Name());
+    return constantNode;
+}
+
+ir::AstNode *ConstantExpressionLowering::FindNameInEnumMember(ArenaVector<ir::AstNode *> *members,
+                                                              util::StringView targetName)
+{
+    auto it = std::find_if(members->begin(), members->end(), [&targetName](ir::AstNode *member) {
+        return member->AsTSEnumMember()->Key()->AsIdentifier()->Name() == targetName;
+    });
+    return (it != members->end()) ? *it : nullptr;
+}
+
+ir::AstNode *ConstantExpressionLowering::FindAndReplaceEnumMember(ir::MemberExpression *expr, ir::AstNode *node)
+{
+    if (!expr->Object()->IsIdentifier()) {
+        return expr;
+    }
+
+    auto objectName = expr->Object()->AsIdentifier()->Name();
+    auto propertyName = expr->Property()->AsIdentifier()->Name();
+    for (auto curScope = node->Scope(); curScope != nullptr; curScope = curScope->Parent()) {
+        auto *foundDecl = curScope->FindDecl(objectName);
+        if (foundDecl == nullptr || !foundDecl->Node()->IsTSEnumDeclaration()) {
+            continue;
+        }
+
+        auto members = foundDecl->Node()->AsTSEnumDeclaration()->Members();
+        auto member = FindNameInEnumMember(&members, propertyName);
+        if (member != nullptr) {
+            auto *transformedInit = member->AsTSEnumMember()->Init();
+            if (transformedInit == nullptr) {
+                return expr;
+            }
+
+            auto clonedInit = transformedInit->Clone(context_->allocator, transformedInit->Parent());
+            clonedInit->SetRange(expr->Range());
+            return UnFoldEnumMemberExpression(clonedInit);
+        }
+    }
+    return expr;
+}
+
 varbinder::Variable *ConstantExpressionLowering::FindIdentifier(ir::Identifier *ident)
 {
     auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, NearestScope(ident));
@@ -845,8 +898,11 @@ bool ConstantExpressionLowering::PerformForModule(public_lib::Context *ctx, pars
     varbinder_ = ctx->parserProgram->VarBinder()->AsETSBinder();
     program->Ast()->TransformChildrenRecursively(
         [this](ir::AstNode *const node) -> AstNodePtr {
-            if (node->IsAnnotationDeclaration() || node->IsAnnotationUsage() || node->IsTSEnumDeclaration()) {
+            if (node->IsAnnotationDeclaration() || node->IsAnnotationUsage()) {
                 return FoldConstant(UnfoldConstIdentifiers(node));
+            }
+            if (node->IsTSEnumDeclaration()) {
+                return FoldConstant(UnFoldEnumMemberExpression(UnfoldConstIdentifiers(node)));
             }
             return node;
         },
