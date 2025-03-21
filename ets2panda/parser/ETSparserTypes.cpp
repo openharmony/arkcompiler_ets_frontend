@@ -513,7 +513,8 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
     ir::TypeNode *typeAnnotation = nullptr;
     auto startPos = Lexer()->GetToken().Start();
     // if there is prefix readonly parameter type, change the return result to ETSTypeReference, like Readonly<>
-    if (Lexer()->TryEatTokenFromKeywordType(lexer::TokenType::KEYW_READONLY)) {
+    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_READONLY) {
+        Lexer()->NextToken();  // eat 'readonly'
         typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
         if (!typeAnnotation->IsTSArrayType() && !typeAnnotation->IsETSTuple()) {
             if (!ParseReadonlyInTypeAnnotation()) {

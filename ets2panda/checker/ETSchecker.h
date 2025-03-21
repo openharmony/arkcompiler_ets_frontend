@@ -286,7 +286,6 @@ public:
     {
         return CreateETSUnionType(Span<Type *const>(constituentTypes));
     }
-    Type *CreateUnionFromKeyofType(ETSObjectType *const type);
     ETSTypeAliasType *CreateETSTypeAliasType(util::StringView name, const ir::AstNode *declNode,
                                              bool isRecursive = false);
     ETSFunctionType *CreateETSArrowType(Signature *signature);

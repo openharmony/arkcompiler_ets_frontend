@@ -169,11 +169,6 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSUnionType *node) const
     ES2PANDA_UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSKeyofType *node) const
-{
-    ES2PANDA_UNREACHABLE();
-}
-
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSWildcardType *node) const
 {
     ES2PANDA_UNREACHABLE();
