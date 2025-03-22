@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,10 +13,6 @@
  * limitations under the License.
  */
 
-function foo<T>(f: (i: T) => undefined) {}
+function func(fn:(x:int,y:int)=>int){}
+func((x)=>1)
 
-function main() {
-    /* @@ label */foo((value) => {})
-}
-
-/* @@@ label Error TypeError: No matching call signature for foo((value: *ERROR_TYPE*) => void)  */

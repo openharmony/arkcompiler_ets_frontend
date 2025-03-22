@@ -183,6 +183,11 @@ bool ETSChecker::EnhanceSubstitutionForFunction(const ArenaVector<Type *> &typeP
         bool res = true;
         size_t const commonArity = std::min(argumentSignature->ArgCount(), parameterSignature->ArgCount());
         for (size_t idx = 0; idx < commonArity; idx++) {
+            auto *declNode = argumentSignature->Params()[idx]->Declaration()->Node();
+            if (declNode->IsETSParameterExpression() &&
+                declNode->AsETSParameterExpression()->Ident()->TypeAnnotation() == nullptr) {
+                continue;
+            }
             res &= enhance(parameterSignature->Params()[idx]->TsType(), argumentSignature->Params()[idx]->TsType());
         }
 
@@ -1133,9 +1138,11 @@ static bool AppendSignatureInfoParam(ETSChecker *checker, SignatureInfo *sigInfo
         if (param->Ident()->TsType() != nullptr) {
             return param->Ident()->TsType();
         }
-        if (!param->Ident()->IsErrorPlaceHolder()) {
+
+        if (!param->Ident()->IsErrorPlaceHolder() && !checker->HasStatus(checker::CheckerStatus::IN_TYPE_INFER)) {
             checker->LogError(diagnostic::INFER_FAILURE_FUNC_PARAM, {param->Ident()->Name()}, param->Start());
         }
+
         return checker->GlobalTypeError();
     }());
     if (variable == nullptr) {  // #23134
@@ -1219,7 +1226,9 @@ void ETSChecker::BuildFunctionSignature(ir::ScriptFunction *func, bool isConstru
     }
 
     auto *signatureInfo = ComposeSignatureInfo(func->TypeParams(), func->Params());
-    auto *returnType = ComposeReturnType(func->ReturnTypeAnnotation(), func->IsAsyncFunc());
+    auto *returnType = func->GetPreferredReturnType() != nullptr
+                           ? func->GetPreferredReturnType()
+                           : ComposeReturnType(func->ReturnTypeAnnotation(), func->IsAsyncFunc());
     auto *signature = ComposeSignature(func, signatureInfo, returnType, nameVar);
     if (signature == nullptr) {  // #23134
         ES2PANDA_ASSERT(IsAnyError());

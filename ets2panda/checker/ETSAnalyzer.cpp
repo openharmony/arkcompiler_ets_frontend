@@ -1074,6 +1074,11 @@ std::tuple<Type *, ir::Expression *> ETSAnalyzer::CheckAssignmentExprOperatorTyp
                 expr->Right()->AsObjectExpression()->SetPreferredType(leftType);
             }
 
+            if (expr->Right()->IsArrowFunctionExpression() && leftType->IsETSArrowType() &&
+                leftType->AsETSFunctionType()->CallSignaturesOfMethodOrArrow().size() > 0) {
+                checker->TryInferTypeForLambdaTypeAlias(expr, leftType->AsETSFunctionType());
+            }
+
             sourceType = expr->Right()->Check(checker);
             break;
         }
@@ -2576,7 +2581,7 @@ static bool CheckIsValidReturnTypeAnnotation(ir::ReturnStatement *st, ir::Script
                                              ir::TypeNode *returnTypeAnnotation, ETSChecker *checker)
 {
     // check valid `this` type as return type
-    if (!returnTypeAnnotation->IsTSThisType()) {
+    if (containingFunc->GetPreferredReturnType() != nullptr || !returnTypeAnnotation->IsTSThisType()) {
         return true;
     }
 
@@ -2602,8 +2607,9 @@ bool ETSAnalyzer::CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::S
         return false;
     }
 
-    funcReturnType = containingFunc->ReturnTypeAnnotation()->GetType(checker);
-
+    funcReturnType = containingFunc->ReturnTypeAnnotation() != nullptr
+                         ? containingFunc->ReturnTypeAnnotation()->GetType(checker)
+                         : containingFunc->GetPreferredReturnType();
     // Case when function's return type is defined explicitly:
     if (st->argument_ == nullptr) {
         if (!funcReturnType->IsETSVoidType() && funcReturnType != checker->GlobalVoidType() &&
@@ -2639,12 +2645,14 @@ bool ETSAnalyzer::CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::S
 checker::Type *ETSAnalyzer::GetFunctionReturnType(ir::ReturnStatement *st, ir::ScriptFunction *containingFunc) const
 {
     ES2PANDA_ASSERT(containingFunc->ReturnTypeAnnotation() != nullptr ||
-                    containingFunc->Signature()->ReturnType() != nullptr);
+                    containingFunc->Signature()->ReturnType() != nullptr ||
+                    containingFunc->GetPreferredReturnType() != nullptr);
 
     ETSChecker *checker = GetETSChecker();
     checker::Type *funcReturnType = nullptr;
 
-    if (auto *const returnTypeAnnotation = containingFunc->ReturnTypeAnnotation(); returnTypeAnnotation != nullptr) {
+    if (auto *const returnTypeAnnotation = containingFunc->ReturnTypeAnnotation();
+        returnTypeAnnotation != nullptr || containingFunc->GetPreferredReturnType() != nullptr) {
         if (!CheckInferredFunctionReturnType(st, containingFunc, funcReturnType, returnTypeAnnotation, checker)) {
             return checker->GlobalTypeError();
         }

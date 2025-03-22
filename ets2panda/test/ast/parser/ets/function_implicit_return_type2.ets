@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-let fn: (i: int) => int = /* @@ label */() => { return; };
+let fn: (i: int) => int = () => {/* @@ label */return; };
 
-/* @@@ label Error TypeError: Type '() => void' cannot be assigned to type '(i: Int) => Int'  */
+/* @@@ label Error TypeError: Missing return value. */

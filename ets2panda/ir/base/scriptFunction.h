@@ -321,6 +321,21 @@ public:
         return lang_;
     }
 
+    void SetPreferredReturnType(checker::Type *preferredReturnType) noexcept
+    {
+        preferredReturnType_ = preferredReturnType;
+    }
+
+    [[nodiscard]] checker::Type *GetPreferredReturnType() noexcept
+    {
+        return preferredReturnType_;
+    }
+
+    [[nodiscard]] checker::Type const *GetPreferredReturnType() const noexcept
+    {
+        return preferredReturnType_;
+    }
+
     [[nodiscard]] ScriptFunction *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
@@ -345,6 +360,7 @@ private:
     varbinder::FunctionScope *scope_ {nullptr};
     ir::ScriptFunctionFlags funcFlags_;
     checker::Signature *signature_ {};
+    checker::Type *preferredReturnType_ {};
     es2panda::Language lang_;
     ArenaVector<ReturnStatement *> returnStatements_;
 };
