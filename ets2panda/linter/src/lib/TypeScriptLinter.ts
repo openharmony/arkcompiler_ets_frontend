@@ -3671,10 +3671,17 @@ export class TypeScriptLinter {
       return;
     }
 
-    if (ts.isNonNullExpression(node) && ts.isNonNullExpression(node.expression)) {
-      const autofix = this.autofixer?.fixBidirectionalDataBinding(node);
-      this.incrementCounters(node, FaultID.DoubleExclaBindingNotSupported, autofix);
+    if (
+      !ts.isNonNullExpression(node) ||
+      !ts.isNonNullExpression(node.expression) ||
+      ts.isNonNullExpression(node.parent) ||
+      ts.isNonNullExpression(node.expression.expression)
+    ) {
+      return;
     }
+
+    const autofix = this.autofixer?.fixBidirectionalDataBinding(node);
+    this.incrementCounters(node, FaultID.DoubleExclaBindingNotSupported, autofix);
   }
 
   private handleDoubleDollar(node: ts.Node): void {

@@ -36,3 +36,39 @@ struct Test {
     }
   }
 }
+
+@Component
+struct Myomponent {
+  @State value: number = 0;
+  build() {
+    Row() {
+      Slider({
+        value: this.value!!!
+      })
+    }
+  }
+}
+
+@Component
+struct Myomponent {
+  @State value: number = 0;
+  build() {
+    Row() {
+      Slider({
+        value: this.value!!!!
+      })
+    }
+  }
+}
+
+@Component
+struct Myomponent {
+  @State value: number = 0;
+  build() {
+    Row() {
+      Slider({
+        value: this.value!!!!!
+      })
+    }
+  }
+}
