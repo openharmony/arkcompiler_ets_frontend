@@ -554,7 +554,248 @@ struct SuspenseExample {
 @Component
 struct XmlExample {
     build() {
-        // 这里可以根据需要处理 XML 内容
         Text('XML component')
+    }
+}
+
+// 35. @Concurrent
+@Concurrent
+@Component
+struct ConcurrentExample {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @Concurrent')
+        }
+    }
+}
+
+// 36. @Preview
+@Preview
+@Component
+struct PreviewExample {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @Preview')
+        }
+    }
+}
+
+// 37. @LocalBuilder
+@LocalBuilder
+@Component
+struct LocalBuilderExample {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @LocalBuilder')
+        }
+    }
+}
+
+// 38. @Require
+@Require
+@Component
+struct RequireExample {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @Require')
+        }
+    }
+}
+
+// 39. @Reusable
+@Reusable
+@Component
+struct ReusableExample {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @Reusable')
+        }
+    }
+}
+
+// 40. @Observed
+@Observed
+@Component
+struct ObservedExample {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @Observed')
+        }
+    }
+}
+
+// 41. @LocalStorageProp
+@LocalStorageProp
+@Component
+struct LocalStoragePropExample {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @LocalStorageProp')
+        }
+    }
+}
+
+// 42. @LocalStorageLink
+@LocalStorageLink
+@Component
+struct LocalStorageLinkExample {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @LocalStorageLink')
+        }
+    }
+}
+
+// 43. @StorageProp
+@StorageProp
+@Component
+struct StoragePropExample {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @StorageProp')
+        }
+    }
+}
+
+// 44. @Watch
+@Watch
+@Component
+struct WatchExample {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @Watch')
+        }
+    }
+}
+
+// 45. @Track
+@Track
+@Component
+struct TrackExample {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @Track')
+        }
+    }
+}
+
+// 46. @ObservedV2
+@ObservedV2
+@Component
+struct ObservedV2Example {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @ObservedV2')
+        }
+    }
+}
+
+// 47. @Trace
+@Trace
+@Component
+struct TraceExample {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @Trace')
+        }
+    }
+}
+
+// 48. @ComponentV2
+@ComponentV2
+@Component
+struct ComponentV2Example {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @ComponentV2')
+        }
+    }
+}
+
+// 49. @Local
+@Local
+@Component
+struct LocalExample {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @Local')
+        }
+    }
+}
+
+// 50. @Once
+@Once
+@Component
+struct OnceExample {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @Once')
+        }
+    }
+}
+
+// 51. @Provider
+@Provider
+@Component
+struct ProviderExample {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @Provider')
+        }
+    }
+}
+
+// 52. @Consumer
+@Consumer
+@Component
+struct ConsumerExample {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @Consumer')
+        }
+    }
+}
+
+// 53. @Monitor
+@Monitor
+@Component
+struct MonitorExample {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @Monitor')
+        }
+    }
+}
+
+// 54. @Computed
+@Computed
+@Component
+struct ComputedExample {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @Computed')
+        }
+    }
+}
+
+// 55. @Type
+@Type
+@Component
+struct TypeExample {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @Type')
+        }
+    }
+}
+
+// 56. @ReusableV2
+@ReusableV2
+@Component
+struct ReusableV2Example {
+    build() {
+        Column({ space: 50 }) {
+            Text('This component is decorated with @ReusableV2')
+        }
     }
 }
