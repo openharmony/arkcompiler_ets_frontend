@@ -198,6 +198,8 @@ ast/compiler/ets/namespace_tests/namespace_ambient_export02.ets
 ast/compiler/ets/namespace_tests/namespace_ambient_export03.ets
 runtime/ets/namespace_tests/namespace_import_type_test/namespace_import.ets
 runtime/ets/namespace_tests/namespace_initializer.ets
+runtime/ets/interface_with_optional_property_cycle_import/class_file.ets
+runtime/ets/interface_with_optional_property_cycle_import/interface_file.ets
 
 # #21051 should be log warnings, but there aren't
 ast/compiler/ets/not_initialized_variable/import_types.ets

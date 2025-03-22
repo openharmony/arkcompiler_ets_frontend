@@ -1067,7 +1067,7 @@
             "static": false,
             "readonly": false,
             "declare": false,
-            "optional": true,
+            "optional": false,
             "computed": false,
             "typeAnnotation": {
               "type": "ETSUnionType",
@@ -1157,6 +1157,21 @@
                     "start": {
                       "line": 23,
                       "column": 23,
+                      "program": "optional_field_interfaceUnion.ets"
+                    },
+                    "end": {
+                      "line": 23,
+                      "column": 30,
+                      "program": "optional_field_interfaceUnion.ets"
+                    }
+                  }
+                },
+                {
+                  "type": "ETSUndefinedType",
+                  "loc": {
+                    "start": {
+                      "line": 23,
+                      "column": 14,
                       "program": "optional_field_interfaceUnion.ets"
                     },
                     "end": {

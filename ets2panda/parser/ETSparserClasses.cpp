@@ -396,6 +396,33 @@ ir::ModifierFlags ETSParser::ParseClassMethodModifiers(bool seenStatic)
     return flags;
 }
 
+ir::TypeNode *ETSParser::ConvertToOptionalUnionType(ir::TypeNode *typeAnno)
+{
+    if (!typeAnno->IsETSUnionType()) {
+        ArenaVector<ir::TypeNode *> types(Allocator()->Adapter());
+        types.push_back(typeAnno);
+        types.push_back(AllocNode<ir::ETSUndefinedType>(Allocator()));
+        types.back()->SetRange(typeAnno->Range());
+        auto *newTypeAnno = AllocNode<ir::ETSUnionType>(std::move(types), Allocator());
+        newTypeAnno->SetRange(typeAnno->Range());
+        return newTypeAnno;
+    }
+
+    auto unionTypes = typeAnno->AsETSUnionType()->Types();
+    for (const auto &type : unionTypes) {
+        if (type->IsETSUndefinedType()) {
+            return typeAnno;
+        }
+    }
+
+    ArenaVector<ir::TypeNode *> types(typeAnno->AsETSUnionType()->Types(), Allocator()->Adapter());
+    types.push_back(AllocNode<ir::ETSUndefinedType>(Allocator()));
+    types.back()->SetRange(typeAnno->Range());
+    auto *newTypeAnno = AllocNode<ir::ETSUnionType>(std::move(types), Allocator());
+    newTypeAnno->SetRange(typeAnno->Range());
+    return newTypeAnno;
+}
+
 // NOLINTNEXTLINE(google-default-arguments)
 void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::ModifierFlags modifiers,
                                           ArenaVector<ir::AstNode *> *declarations)
@@ -413,6 +440,8 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
         endLoc = typeAnnotation->End();
     }
 
+    typeAnnotation = optionalField ? ConvertToOptionalUnionType(typeAnnotation) : typeAnnotation;
+
     ir::Expression *initializer = nullptr;
     if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_SUBSTITUTION)) {
         initializer = ParseExpression();
@@ -428,9 +457,6 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
 
     auto *field = AllocNode<ir::ClassProperty>(fieldName, initializer, typeAnnotation, modifiers, Allocator(), false);
     field->SetRange({fieldName->Start(), initializer != nullptr ? initializer->End() : endLoc});
-    if (optionalField) {
-        field->AddModifier(ir::ModifierFlags::OPTIONAL);
-    }
 
     declarations->push_back(field);
 }
