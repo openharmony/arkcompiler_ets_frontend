@@ -18,6 +18,7 @@
 #include <vector>
 #include "checker/ETSchecker.h"
 #include "checker/checker.h"
+#include "compiler/lowering/util.h"
 #include "generated/tokenType.h"
 #include "internal_api.h"
 #include "ir/astNode.h"
@@ -170,7 +171,12 @@ std::unordered_map<std::string, ir::AstNode *> GetDecls(ir::AstNode *astNode)
     std::unordered_map<std::string, ir::AstNode *> declNames = {};
     for (auto decl : decls) {
         auto name = std::string(decl->Name());
-        declNames[name] = decl->Node();
+        auto node = decl->Node();
+        // After enum refactoring, enum declaration is transformed to a class declaration
+        if (node != nullptr && compiler::ClassDefinitionIsEnumTransformed(node)) {
+            node = node->AsClassDefinition()->OrigEnumDecl()->AsTSEnumDeclaration();
+        }
+        declNames[name] = node;
     }
     return declNames;
 }

@@ -244,14 +244,16 @@ std::vector<CompletionEntry> GetPropertyCompletions(ir::AstNode *preNode, const 
         decl = decl->AsClassDeclaration()->Definition();
     }
     if (decl != nullptr && decl->IsClassDefinition()) {
-        auto bodyNodes = decl->AsClassDefinition()->Body();
-        auto propertyNodes = FilterFromBody(bodyNodes, triggerWord);
-        completions = GetEntriesForClassDeclaration(propertyNodes);
-    }
-    if (decl != nullptr && decl->IsTSEnumDeclaration()) {
-        auto members = decl->AsTSEnumDeclaration()->Members();
-        auto qualifiedMembers = FilterFromEnumMember(members, triggerWord);
-        completions = GetEntriesForEnumDeclaration(qualifiedMembers);
+        // After enum refactoring, enum declaration is transformed to a class declaration
+        if (compiler::ClassDefinitionIsEnumTransformed(decl)) {
+            auto members = decl->AsClassDefinition()->OrigEnumDecl()->AsTSEnumDeclaration()->Members();
+            auto qualifiedMembers = FilterFromEnumMember(members, triggerWord);
+            completions = GetEntriesForEnumDeclaration(qualifiedMembers);
+        } else {
+            auto bodyNodes = decl->AsClassDefinition()->Body();
+            auto propertyNodes = FilterFromBody(bodyNodes, triggerWord);
+            completions = GetEntriesForClassDeclaration(propertyNodes);
+        }
     }
     return completions;
 }

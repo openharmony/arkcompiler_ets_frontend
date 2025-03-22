@@ -241,3 +241,29 @@ let numOfSpace: space.classi)delimiter"};
                         std::string(ark::es2panda::lsp::sort_text::MEMBER_DECLARED_BY_SPREAD_ASSIGNMENT));
     ASSERT_EQ(entry1, entries[0]);
 }
+
+TEST_F(LSPCompletionsTests, MemberCompletionsForClassTest4)
+{
+    std::vector<std::string> files = {"getCompletionsAtPosition6.ets"};
+    std::vector<std::string> texts = {R"delimiter(
+enum Color {
+  Red = "red",
+  Blue = "blue"
+}
+let myColor: Color = Color.R)delimiter"};
+    auto filePaths = CreateTempFile(files, texts);
+    int const expectedFileCount = 1;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+
+    LSPAPI const *lspApi = GetImpl();
+    const size_t offset = 74;
+    auto res = lspApi->getCompletionsAtPosition(filePaths[0].c_str(), offset);
+    auto entries = res.GetEntries();
+    ASSERT_TRUE(entries.size() == 1);
+
+    std::string propertyName1 = "Red";
+    CompletionEntry entry1 =
+        CompletionEntry(propertyName1, CompletionEntryKind::ENUM_MEMBER,
+                        std::string(ark::es2panda::lsp::sort_text::MEMBER_DECLARED_BY_SPREAD_ASSIGNMENT));
+    ASSERT_EQ(entry1, entries[0]);
+}
