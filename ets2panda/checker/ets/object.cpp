@@ -70,7 +70,7 @@ static bool CheckObjectTypeAndSuperType(ETSChecker *checker, ETSObjectType *type
     auto *classDef = type->GetDeclNode()->AsClassDefinition();
     auto cName = classDef->Ident()->Name();
     if (cName == compiler::Signatures::PARTIAL_TYPE_NAME || cName == compiler::Signatures::READONLY_TYPE_NAME ||
-        cName == compiler::Signatures::REQUIRED_TYPE_NAME) {
+        cName == compiler::Signatures::REQUIRED_TYPE_NAME || cName == compiler::Signatures::FIXED_ARRAY_TYPE_NAME) {
         checker->LogError(diagnostic::USING_RESERVED_NAME_AS_VARIABLE_OR_TYPE_NAME, {cName},
                           type->GetDeclNode()->Start());
         type->SetSuperType(checker->GlobalETSObjectType());

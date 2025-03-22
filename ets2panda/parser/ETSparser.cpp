@@ -1403,6 +1403,12 @@ void ETSParser::SkipInvalidType() const
     }
 }
 
+bool ETSParser::IsFixedArrayTypeNode(ir::AstNode *node)
+{
+    return node->IsETSTypeReference() &&
+           node->AsETSTypeReference()->BaseName()->Name() == compiler::Signatures::FIXED_ARRAY_TYPE_NAME;
+}
+
 ir::Expression *ETSParser::ParseFunctionParameter()
 {
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT) {
@@ -1433,7 +1439,8 @@ ir::Expression *ETSParser::ParseFunctionParameter()
             // the compiler can't process "declare class A { static foo(x: {key: string}[]):void; }" correctly
             // and resolve "{key: string}" as function body, so skip invalid types
             SkipInvalidType();
-        } else if (paramIdent->IsRestElement() && !typeAnnotation->IsTSArrayType()) {
+        } else if (paramIdent->IsRestElement() && !typeAnnotation->IsTSArrayType() &&
+                   !IsFixedArrayTypeNode(typeAnnotation)) {
             // NOTE (mmartin): implement tuple types for rest parameters
             LogError(diagnostic::ONLY_ARRAY_FOR_REST);
         }

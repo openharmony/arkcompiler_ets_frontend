@@ -169,7 +169,7 @@ public:
                                           const ir::ETSImportDeclaration *import,
                                           const ArenaVector<parser::Program *> &recordRes,
                                           std::vector<ir::ETSImportDeclaration *> viewedReExport);
-    void ValidateImportVariable(const ir::AstNode *var, const ir::ETSImportDeclaration *const import,
+    void ValidateImportVariable(const ir::AstNode *node, const ir::ETSImportDeclaration *const import,
                                 const util::StringView &imported, const ir::StringLiteral *const importPath);
     Variable *FindImportSpecifiersVariable(const util::StringView &imported,
                                            const varbinder::Scope::VariableMap &globalBindings,
