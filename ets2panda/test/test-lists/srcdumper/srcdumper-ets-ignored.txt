@@ -191,6 +191,7 @@ runtime/ets/annotation_tests/AnnotationForUnionType.ets
 #New failures at #FailKind.SRC_DUMPER_FAI
 runtime/ets/namespace_tests/namespace_execution_statements_test02.ets
 ast/compiler/ets/default_export/import_default.ets
+ast/compiler/ets/default_export/import_default1.ets
 ast/compiler/ets/namespace_tests/namespace.ets
 ast/compiler/ets/namespace_tests/namespace_ambient_export01.ets
 ast/compiler/ets/namespace_tests/namespace_ambient_export02.ets

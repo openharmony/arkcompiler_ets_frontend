@@ -1024,11 +1024,9 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
         if (selectMap2 != selectMap.end()) {
             auto item1 = std::find_if(selectMap2->second.begin(), selectMap2->second.end(), predicateFunc1);
             if (item1 != selectMap2->second.end()) {
-                auto item2 = globalBindings.find(item1->first);
-                ES2PANDA_ASSERT(item2 != globalBindings.end());
-                specifier->AsImportDefaultSpecifier()->Local()->SetVariable(item2->second);
-                InsertForeignBinding(specifier, import, specifier->AsImportDefaultSpecifier()->Local()->Name(),
-                                     item2->second);
+                auto item2 = FindImportSpecifiersVariable(item1->first, globalBindings, record);
+                specifier->AsImportDefaultSpecifier()->Local()->SetVariable(item2);
+                InsertForeignBinding(specifier, import, specifier->AsImportDefaultSpecifier()->Local()->Name(), item2);
                 return;
             }
         }
