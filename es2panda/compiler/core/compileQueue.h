@@ -121,6 +121,7 @@ public:
     {
         hasOhmurlBeenChanged_ = hasOhmurlBeenChanged;
     }
+    void UpdatePkgNameOfImportOhmurl(panda::pandasm::Program *prog, const panda::es2panda::CompilerOptions &options);
 
     NO_COPY_SEMANTIC(CompileAbcClassJob);
     NO_MOVE_SEMANTIC(CompileAbcClassJob);

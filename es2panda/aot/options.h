@@ -25,6 +25,7 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <util/base64.h>
+#include <util/commonUtil.h>
 
 namespace panda {
 class PandArgParser;
