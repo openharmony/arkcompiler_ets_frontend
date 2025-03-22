@@ -17,7 +17,7 @@ import { Logger } from '../lib/Logger';
 import { logTscDiagnostic } from '../lib/utils/functions/LogTscDiagnostic';
 import type { CommandLineOptions } from '../lib/CommandLineOptions';
 import type { OptionValues } from 'commander';
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import * as ts from 'typescript';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -149,8 +149,12 @@ function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
 
 function createCommand(): Command {
   const program = new Command();
-  program.name('tslinter').description('Linter for TypeScript sources').
-    version('0.0.2');
+  program.
+    name('tslinter').
+    description('Linter for TypeScript sources').
+    version('0.0.2').
+    configureHelp({ helpWidth: 100 }).
+    exitOverride();
   program.
     option('-E, --TSC_Errors', 'show error messages from Tsc').
     option('--check-ts-as-source', 'check TS files as source files').
@@ -169,12 +173,12 @@ function createCommand(): Command {
     option('-d, --sdk-default-api-path <path>', 'paths to default API files').
     option('--ide-interactive', 'Migration Helper IDE interactive mode').
     option('-w, --arkts-whole-project-path <path>', 'path to whole project').
-    option('--warnings-as-errors', 'treat warnings as errors').
-    option('--no-check-ts-as-source', 'check TS files as third-party libary').
-    option('--no-use-rt-logic', 'run linter with SDK logic').
     option('--migrate', 'run as ArkTS migrator').
-    option('--deveco-plugin-mode', 'run as IDE plugin (obsolete)');
-  program.arguments('[srcFile...]').description('files to be verified');
+    addOption(new Option('--warnings-as-errors', 'treat warnings as errors').hideHelp(true)).
+    addOption(new Option('--no-check-ts-as-source', 'check TS files as third-party libary').hideHelp(true)).
+    addOption(new Option('--no-use-rt-logic', 'run linter with SDK logic').hideHelp(true)).
+    addOption(new Option('--deveco-plugin-mode', 'run as IDE plugin (obsolete)').hideHelp(true));
+  program.argument('[srcFile...]', 'files to be verified');
   return program;
 }
 
