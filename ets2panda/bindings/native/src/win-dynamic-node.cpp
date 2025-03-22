@@ -46,7 +46,9 @@
                                                                 op(napi_release_threadsafe_function)                   \
                                                                     op(napi_call_threadsafe_function)                  \
                                                                         op(napi_is_dataview) op(napi_is_arraybuffer)   \
-                                                                            op(napi_get_dataview_info)
+                                                                            op(napi_get_dataview_info)                 \
+                                                                                op(napi_get_boolean)                   \
+                                                                                    op(napi_create_uint32)
 
 // CC-OFFNXT(G.PRE.09) code generation
 // CC-OFFNXT(G.PRE.02) code style
@@ -519,4 +521,16 @@ NAPI_EXTERN napi_status NAPI_CDECL napi_set_named_property(napi_env env, napi_va
 {
     LoadNapiFunctions();
     return p_napi_set_named_property(env, object, utf8name, value);
+}
+
+NAPI_EXTERN napi_status NAPI_CDECL napi_get_boolean(napi_env env, bool value, napi_value *result)
+{
+    LoadNapiFunctions();
+    return p_napi_get_boolean(env, value, result);
+}
+
+NAPI_EXTERN napi_status NAPI_CDECL napi_create_uint32(napi_env env, uint32_t value, napi_value *result)
+{
+    LoadNapiFunctions();
+    return p_napi_create_uint32(env, value, result);
 }
