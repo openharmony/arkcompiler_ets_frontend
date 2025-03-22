@@ -386,8 +386,15 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
 checker::Type *MemberExpression::CheckTupleAccessMethod(checker::ETSChecker *checker, checker::Type *baseType)
 {
     ES2PANDA_ASSERT(baseType->IsETSTupleType());
+    checker::Type *type = nullptr;
+    if (Property()->HasBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOXING_FLAG)) {
+        ES2PANDA_ASSERT(Property()->Variable()->Declaration()->Node()->AsClassElement()->Value());
+        type = Property()->Variable()->Declaration()->Node()->AsClassElement()->Value()->TsType();
+    } else {
+        type = Property()->TsType();
+    }
 
-    auto idxIfAny = checker->GetTupleElementAccessValue(Property()->TsType());
+    auto idxIfAny = checker->GetTupleElementAccessValue(type);
     if (!idxIfAny.has_value()) {
         return nullptr;
     }
