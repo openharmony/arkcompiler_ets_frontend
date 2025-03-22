@@ -22,4 +22,3 @@ function main(): void {
 }
 
 /* @@? 20:12 Error TypeError: Type '(param: String) => String' is not compatible with type '(param: Double) => String' at index 2  */
-/* @@? 1:1 Error TypeError: No matching call signature  */
