@@ -83,3 +83,9 @@ let promise1 = new Promise((resolve, reject) => {});
 let weakMap1 = new WeakMap();
 let weakSet1 = new WeakSet();
 
+class Box1<T> {
+}
+const stringBox1: Box1<string> = new Box1(); // NOK
+const stringBox2: Box1 = new Box1<string>(); // OK
+const stringBox3: Box1<string> = new Box1<string>(); // OK
+const stringBox4 = new Box1(); // NOK

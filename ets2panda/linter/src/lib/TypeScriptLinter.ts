@@ -2486,19 +2486,25 @@ export class TypeScriptLinter {
 
     const resolvedTypeArgs = signDecl.typeArguments;
     const startTypeArg = callLikeExpr.typeArguments?.length ?? 0;
-    for (let i = startTypeArg; i < resolvedTypeArgs.length; ++i) {
-      const typeNode = resolvedTypeArgs[i];
-
-      /*
-       * if compiler infers 'unknown' type there are 2 possible cases:
-       *   1. Compiler unable to infer type from arguments and use 'unknown'
-       *   2. Compiler infer 'unknown' from arguments
-       * We report error in both cases. It is ok because we cannot use 'unknown'
-       * in ArkTS and already have separate check for it.
-       */
-      if (typeNode.kind === ts.SyntaxKind.UnknownKeyword) {
+    if (this.options.arkts2 && callLikeExpr.kind === ts.SyntaxKind.NewExpression) {
+      if (startTypeArg !== resolvedTypeArgs.length) {
         this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs);
-        break;
+      }
+    } else {
+      for (let i = startTypeArg; i < resolvedTypeArgs.length; ++i) {
+        const typeNode = resolvedTypeArgs[i];
+
+        /*
+         * if compiler infers 'unknown' type there are 2 possible cases:
+         *   1. Compiler unable to infer type from arguments and use 'unknown'
+         *   2. Compiler infer 'unknown' from arguments
+         * We report error in both cases. It is ok because we cannot use 'unknown'
+         * in ArkTS and already have separate check for it.
+         */
+        if (typeNode.kind === ts.SyntaxKind.UnknownKeyword) {
+          this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs);
+          break;
+        }
       }
     }
   }
