@@ -19,16 +19,6 @@ if (ark_standalone_build) {
   import("//build/ohos.gni")
 }
 
-if (!(ark_standalone_build ||
-      (defined(ark_static_standalone_build) && ark_static_standalone_build))) {
-  ohos_prebuilt_etc("bootpath_cfg") {
-    source = "//build/config/components/ets_frontend/bootpath.json"
-    module_install_dir = "framework"
-    subsystem_name = "arkcompiler"
-    part_name = "ets_frontend"
-  }
-}
-
 ohos_executable("ets2panda") {
   sources = [ "main.cpp" ]
 
@@ -52,11 +42,6 @@ ohos_executable("ets2panda") {
     "$ark_es2panda_root:libes2panda_frontend_static",
     "$ark_es2panda_root:libes2panda_public_frontend_static",
   ]
-
-  if (!(ark_standalone_build ||
-        (defined(ark_static_standalone_build) && ark_static_standalone_build))) {
-    deps += [ ":bootpath_cfg" ]
-  }
 
   if (ark_standalone_build) {
     deps += [

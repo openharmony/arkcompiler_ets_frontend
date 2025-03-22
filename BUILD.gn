@@ -18,9 +18,4 @@ group("ets_frontend_build") {
     "./es2panda:es2panda_build",
     "./merge_abc:merge_proto_abc_build",
   ]
-
-  if (!(ark_standalone_build ||
-        (defined(ark_static_standalone_build) && ark_static_standalone_build))) {
-    deps += [ "./ets2panda/aot:bootpath_cfg" ]
-  }
 }
