@@ -151,7 +151,7 @@ public:
 
     bool IsAstVerifierBeforePhases() const
     {
-        return astVerifierBeforePhases_;
+        return astVerifierBeforePhases_ || astVerifierEachPhase_;
     }
 
     bool IsAstVerifierEachPhase() const
@@ -161,12 +161,12 @@ public:
 
     bool IsAstVerifierAfterPhases() const
     {
-        return astVerifierAfterPhases_;
+        return astVerifierAfterPhases_ || astVerifierEachPhase_;
     }
 
     bool HasVerifierPhase(std::string_view phase) const
     {
-        return astVerifierPhases_.find(std::string(phase)) != astVerifierPhases_.end();
+        return astVerifierEachPhase_ || astVerifierPhases_.find(std::string(phase)) != astVerifierPhases_.end();
     }
 
 private:
