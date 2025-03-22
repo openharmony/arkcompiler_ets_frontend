@@ -146,8 +146,8 @@ export function lint(config: LinterConfig, etsLoaderPath: string | undefined): L
 }
 
 function applyFixes(srcFile: ts.SourceFile, linter: TypeScriptLinter | InteropTypescriptLinter): void {
-  for ( let pass = 0; pass < qEd.MAX_AUTOFIX_PASSES; pass++ ) {
-    let qe:qEd.QuasiEditor = new qEd.QuasiEditor(srcFile);
+  for (let pass = 0; pass < qEd.MAX_AUTOFIX_PASSES; pass++) {
+    const qe: qEd.QuasiEditor = new qEd.QuasiEditor(srcFile);
     if (pass === 0) {
       qe.backupSrcFile();
     }
@@ -156,10 +156,10 @@ function applyFixes(srcFile: ts.SourceFile, linter: TypeScriptLinter | InteropTy
       Logger.error(`Error: fix-all converged for (${srcFile.fileName}) on pass #${pass}`);
       break;
     }
-    const tmpLinterConfig = compileLintOptions( linterConfig.cmdOptions );
-    let recompiledFile = tmpLinterConfig.tscCompiledProgram.getProgram().getSourceFile(srcFile.fileName);
+    const tmpLinterConfig = compileLintOptions(linterConfig.cmdOptions);
+    const recompiledFile = tmpLinterConfig.tscCompiledProgram.getProgram().getSourceFile(srcFile.fileName);
 
-    if ( !recompiledFile ) {
+    if (!recompiledFile) {
       Logger.error(`Error: recompilation failed for (${srcFile.fileName}) on pass #${pass}`);
       break;
     }
@@ -190,7 +190,9 @@ function lintFiles(srcFiles: ts.SourceFile[], linter: TypeScriptLinter | Interop
     problemsInfos.set(path.normalize(srcFile.fileName), [...linter.problemsInfos]);
     linter.problemsInfos.length = 0;
     problemFiles = countProblemFiles(
-      nodeCounters, problemFiles, srcFile,
+      nodeCounters,
+      problemFiles,
+      srcFile,
       linter.totalVisitedNodes - prevVisitedNodes,
       linter.totalErrorLines - prevErrorLines,
       linter.totalWarningLines - prevWarningLines,
@@ -255,7 +257,6 @@ function countProblemFiles(
       ' lines'
     );
   }
-
   return filesNumber;
 }
 

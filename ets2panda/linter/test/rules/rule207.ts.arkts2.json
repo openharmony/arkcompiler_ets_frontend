@@ -112,16 +112,6 @@
         },
         {
             "line": 39,
-            "column": 9,
-            "endLine": 39,
-            "endColumn": 53,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 39,
             "column": 22,
             "endLine": 39,
             "endColumn": 31,
@@ -202,16 +192,6 @@
         },
         {
             "line": 52,
-            "column": 9,
-            "endLine": 52,
-            "endColumn": 53,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 52,
             "column": 22,
             "endLine": 52,
             "endColumn": 31,
@@ -278,16 +258,6 @@
             "problem": "ArgumentsObject",
             "suggest": "",
             "rule": "Special arguments object inside functions are not supported (arkts-no-arguments-obj)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 78,
-            "column": 7,
-            "endLine": 78,
-            "endColumn": 18,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

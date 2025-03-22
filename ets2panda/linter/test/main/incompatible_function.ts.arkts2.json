@@ -25,26 +25,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 18,
-            "column": 6,
-            "endLine": 20,
-            "endColumn": 3,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 22,
-            "column": 6,
-            "endLine": 26,
-            "endColumn": 3,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 28,
             "column": 8,
             "endLine": 28,
@@ -65,16 +45,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 38,
-            "column": 6,
-            "endLine": 40,
-            "endColumn": 3,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 42,
             "column": 7,
             "endLine": 42,
@@ -85,16 +55,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 50,
-            "column": 6,
-            "endLine": 52,
-            "endColumn": 3,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 56,
             "column": 23,
             "endLine": 56,
@@ -102,16 +62,6 @@
             "problem": "IncompationbleFunctionType",
             "suggest": "",
             "rule": "Stricter assignments into variables of function type (arkts-incompatible-function-types)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 56,
-            "column": 6,
-            "endLine": 58,
-            "endColumn": 3,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -135,26 +85,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 66,
-            "column": 5,
-            "endLine": 68,
-            "endColumn": 2,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 74,
-            "column": 5,
-            "endLine": 76,
-            "endColumn": 2,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 80,
             "column": 35,
             "endLine": 82,
@@ -162,16 +92,6 @@
             "problem": "IncompationbleFunctionType",
             "suggest": "",
             "rule": "Stricter assignments into variables of function type (arkts-incompatible-function-types)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 80,
-            "column": 5,
-            "endLine": 82,
-            "endColumn": 2,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

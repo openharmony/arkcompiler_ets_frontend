@@ -75,16 +75,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 33,
-            "column": 7,
-            "endLine": 33,
-            "endColumn": 37,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 34,
             "column": 12,
             "endLine": 34,
@@ -96,52 +86,12 @@
         },
         {
             "line": 34,
-            "column": 7,
-            "endLine": 34,
-            "endColumn": 34,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 34,
             "column": 19,
             "endLine": 34,
             "endColumn": 27,
             "problem": "ClassAsObjectError",
             "suggest": "",
             "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 35,
-            "column": 7,
-            "endLine": 35,
-            "endColumn": 35,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 38,
-            "column": 5,
-            "endLine": 38,
-            "endColumn": 16,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 44,
-            "column": 7,
-            "endLine": 48,
-            "endColumn": 2,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -465,10 +415,10 @@
             "severity": "ERROR"
         },
         {
-            "line": 104,
-            "column": 5,
-            "endLine": 104,
-            "endColumn": 34,
+            "line": 101,
+            "column": 1,
+            "endLine": 101,
+            "endColumn": 28,
             "problem": "NumericSemantics",
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
@@ -755,26 +705,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 121,
-            "column": 5,
-            "endLine": 121,
-            "endColumn": 21,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 122,
-            "column": 5,
-            "endLine": 122,
-            "endColumn": 27,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 127,
             "column": 12,
             "endLine": 127,
@@ -782,36 +712,6 @@
             "problem": "IndexMember",
             "suggest": "",
             "rule": "Indexed signatures are not supported (arkts-no-indexed-signatures)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 128,
-            "column": 7,
-            "endLine": 128,
-            "endColumn": 53,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 129,
-            "column": 7,
-            "endLine": 129,
-            "endColumn": 66,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 130,
-            "column": 7,
-            "endLine": 130,
-            "endColumn": 46,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -826,16 +726,6 @@
         },
         {
             "line": 131,
-            "column": 7,
-            "endLine": 131,
-            "endColumn": 50,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 131,
             "column": 29,
             "endLine": 131,
             "endColumn": 35,
@@ -846,32 +736,12 @@
         },
         {
             "line": 132,
-            "column": 7,
-            "endLine": 132,
-            "endColumn": 42,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 132,
             "column": 21,
             "endLine": 132,
             "endColumn": 27,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 133,
-            "column": 7,
-            "endLine": 133,
-            "endColumn": 71,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {

@@ -25,16 +25,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 19,
-            "column": 7,
-            "endLine": 19,
-            "endColumn": 81,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 21,
             "column": 7,
             "endLine": 21,
@@ -42,16 +32,6 @@
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 21,
-            "column": 7,
-            "endLine": 21,
-            "endColumn": 52,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
@@ -65,16 +45,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 23,
-            "column": 7,
-            "endLine": 23,
-            "endColumn": 85,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
-            "severity": "ERROR"
-        },
-        {
             "line": 25,
             "column": 7,
             "endLine": 25,
@@ -82,16 +52,6 @@
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 25,
-            "column": 7,
-            "endLine": 25,
-            "endColumn": 37,
-            "problem": "NumericSemantics",
-            "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         }
     ]

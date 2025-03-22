@@ -27,4 +27,46 @@ function foo(index:number){
   let h = an_array[12.]
   let i = an_array[12.0]
   let j = an_array[0]
+  let k = an_array[Number.MAX_VALUE]
+  let l = an_array[Number.MIN_VALUE]
+  let m = an_array[Number.MAX_SAFE_INTEGER]
 }
+
+let array = [1,2,3]
+const index_1: number = 1.3;
+let index_2: number = 1.3;
+let index_3: number = 1;
+array[index_1];
+array[index_2];
+array[index_3];
+let index_4: int = 2
+array[index_4];
+const index_5: number = 1.0;
+array[index_5];
+
+function getIndex(): number {
+  return Math.random() * 10;
+}
+let array1 = [1, 2, 3];
+array1[getIndex()];
+
+let array2 = [1, 2, 3];
+for (let i: number = 0; i < array2.length; i++) {
+  console.log(array2[i]);
+}
+
+for (let i: int = 0; i < array2.length; i++) {
+  console.log(array2[i]);
+}
+
+let arr1:number[] = [1, 2, 3]
+enum TE{
+  AA = 1.12
+  BB = 0
+}
+arr1[TE.AA];
+arr1[TE.BB];
+arr1[+0];
+arr1[-0];
+arr1[+1];
+arr1[-1];
