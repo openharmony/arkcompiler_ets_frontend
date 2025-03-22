@@ -27,11 +27,11 @@ set idx(this: A, a: Int) {
 
 function main() {
     let a = new A()
-    let b = /* @@ label1 */a.idx = 1
-    if (/* @@ label2 */a.idx = 1) {}
-    console.log(/* @@ label3 */a.idx = 1)
+    let b = a./* @@ label1 */idx = 1
+    if (a./* @@ label2 */idx = 1) {}
+    console.log(a./* @@ label3 */idx = 1)
 }
 
-/* @@@ label1 Error TypeError: Extension getter in wrong usage  */
-/* @@@ label2 Error TypeError: Extension getter in wrong usage  */
-/* @@@ label3 Error TypeError: Extension getter in wrong usage  */
+/* @@@ label1 Error TypeError: Property 'idx' does not exist on type 'A'  */
+/* @@@ label2 Error TypeError: Property 'idx' does not exist on type 'A'  */
+/* @@@ label3 Error TypeError: Property 'idx' does not exist on type 'A'  */

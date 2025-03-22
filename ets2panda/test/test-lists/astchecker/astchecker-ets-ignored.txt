@@ -57,10 +57,6 @@ ast/compiler/ets/expression/this_expression/undefined_class_for_this_2.ets
 # Issue: #22663
 ast/compiler/ets/implicit_this_method_trailing.ets
 
-# Issue: #22664
-ast/compiler/ets/recordWithLambdaFunction2.ets
-ast/compiler/ets/extension_accessor_tests/extensionGetterInWrongUsage.ets
-
 # Checked only as imported modules. If these files are parsed directly, there will be
 # errors located in other files (import_type_error_in_class.ets/import_type_error_top_level.ets),
 # and such case cannot be checked in astchecker
