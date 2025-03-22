@@ -186,11 +186,16 @@ static size_t GetIRNodeWholeLength(const IRNode *node)
     return len;
 }
 
-static std::string WholeLine(const util::StringView &source, lexer::SourceRange range)
+static std::string WholeLine(const lexer::SourceRange &range)
 {
-    if (source.Empty()) {
+    // NOTE(rsipka, #24105): The program shouldn't be nullptr
+    auto program = range.start.Program();
+    if (program == nullptr || program->SourceCode().Empty()) {
         return {};
     }
+
+    auto source = program->SourceCode();
+
     ES2PANDA_ASSERT(range.end.index <= source.Length());
     ES2PANDA_ASSERT(range.end.index >= range.start.index);
     return source.Substr(range.start.index, range.end.index).EscapeSymbol<util::StringView::Mutf8Encode>();
@@ -220,7 +225,7 @@ void FunctionEmitter::GenInstructionDebugInfo(const IRNode *ins, pandasm::Ins *p
         }
 
         offset_ += insLen;
-        pandaIns->insDebug.wholeLine = WholeLine(SourceCode(), nodeRange);
+        pandaIns->insDebug.wholeLine = WholeLine(nodeRange);
     }
 }
 
