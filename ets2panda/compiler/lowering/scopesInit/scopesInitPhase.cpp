@@ -470,16 +470,19 @@ void ScopesInitPhase::BindClassDefinition(ir::ClassDefinition *classDef)
 std::tuple<varbinder::Decl *, varbinder::Variable *> ScopesInitPhase::AddOrGetVarDecl(ir::VariableDeclaratorFlag flag,
                                                                                       const ir::Identifier *id)
 {
+    auto name = id->Name();
+    auto scope = VarBinder()->GetScope();
     if (auto var = id->Variable(); var != nullptr) {
+        if (!name.Is(ERROR_LITERAL) && !scope->FindLocal(name, varbinder::ResolveBindingOptions::ALL_VARIABLES)) {
+            var = scope->AddDecl(Allocator(), var->Declaration(), VarBinder()->Extension());
+        }
         return {var->Declaration(), var};
     }
 
-    auto name = id->Name();
     if (name.Is(ERROR_LITERAL)) {
         name = compiler::GenName(Allocator()).View();
     } else if (VarBinder()->IsETSBinder()) {
-        if (auto var = VarBinder()->GetScope()->FindLocal(name, varbinder::ResolveBindingOptions::ALL_VARIABLES);
-            var != nullptr) {
+        if (auto var = scope->FindLocal(name, varbinder::ResolveBindingOptions::ALL_VARIABLES); var != nullptr) {
             VarBinder()->ThrowRedeclaration(id->Start(), name);
             return {var->Declaration(), var};
         }
