@@ -753,6 +753,7 @@ HEADERS_TO_BE_PARSED = [
   "es2panda.h",
   "ast_verifier/ASTVerifier.h",
   "ast_verifier/checkContext.h",
+  "util/importPathManager.h",
 ]
 
 ES2PANDA_API_GENERATED = [
@@ -1019,6 +1020,7 @@ ES2PANDA_API_GENERATED = [
   "$LIBGEN_DIR/gen/headers/parser/program/program.yaml",
   "$LIBGEN_DIR/gen/headers/ast_verifier/ASTVerifier.yaml",
   "$LIBGEN_DIR/gen/headers/ast_verifier/checkContext.yaml",
+  "$LIBGEN_DIR/gen/headers/util/importPathManager.yaml",
 ]
 
 ES2PANDA_API = [
