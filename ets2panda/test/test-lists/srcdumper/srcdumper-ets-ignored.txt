@@ -9,34 +9,13 @@ parser/ets/string_template_4.ets
 # FailKind.SRC_DUMPER_FAIL (Issue #20458)
 runtime/ets/annotation_tests/AnnotationForDifferentTypes.ets
 runtime/ets/annotation_tests/AnnotationForTypesInDifferentCase.ets
-runtime/ets/annotation_tests/annotationUsageSingleFileds01.ets
-runtime/ets/annotation_tests/annotationUsageSingleFileds02.ets
-runtime/ets/annotation_tests/annotationUsageSingleFileds03.ets
-runtime/ets/annotation_tests/annotationUsageSingleFileds04.ets
-runtime/ets/annotation_tests/annotationUsageSingleFileds05.ets
-runtime/ets/annotation_tests/annotationUsageSingleFileds06.ets
-runtime/ets/annotation_tests/annotationUsageSingleFileds07.ets
-runtime/ets/annotation_tests/annotationUsage_scope_check01.ets
-runtime/ets/annotation_tests/annotationUsage_scope_check02.ets
-runtime/ets/annotation_tests/annotationUsage_scope_check03.ets
-runtime/ets/annotation_tests/AnnotationForLambdaExpression.ets
 ast/compiler/ets/async_import_1.ets
-ast/compiler/ets/async_import_2.ets
-ast/compiler/ets/async_import_3.ets
-ast/compiler/ets/async_import_4.ets
-ast/compiler/ets/import_tests/selective_export_tests/namespace_import_wrong_access_name.ets
 ast/compiler/ets/optionalClassProperty1.ets
-ast/compiler/ets/optionalClassProperty2.ets
-ast/parser/ets/InterfacePrivateMethod.ets
 ast/parser/ets/import_tests/enum/import.ets
 ast/parser/ets/import_tests/export_and_import_class.ets
 ast/parser/ets/import_tests/export_and_import_top_level.ets
-ast/parser/ets/import_tests/import_type_error_in_class.ets
-ast/parser/ets/import_tests/import_type_error_top_level.ets
-ast/parser/ets/loops.ets
 ast/parser/ets/re_export/import_11.ets
 ast/parser/ets/re_export/import_12.ets
-ast/parser/ets/re_export/import_5.ets
 ast/parser/ets/re_export/re_export_11.ets
 ast/parser/ets/re_export/re_export_12.ets
 ast/parser/ets/re_export/re_export_5.ets
@@ -176,20 +155,14 @@ runtime/ets/re_export/import.ets
 # FailKind.ES2PANDA_FAIL
 runtime/ets/StringFasta.ets
 runtime/ets/struct-identifier.ets
-runtime/ets/struct-init.ets
 runtime/ets/struct-init2.ets
-runtime/ets/struct_implements.ets
-runtime/ets/top_level_03.ets
 ast/compiler/ets/DeclareIndexerTest.ets
 ast/parser/ets/import_tests/import_class_with_static_field/import_class_with_static_field.ets
-runtime/ets/ArrowFunctionWithNestedNameSpace.ets
 
 #Issue 21065
-runtime/ets/annotation_tests/AnnotationForFunctionType.ets
 runtime/ets/annotation_tests/AnnotationForUnionType.ets
 
 #New failures at #FailKind.SRC_DUMPER_FAI
-runtime/ets/namespace_tests/namespace_execution_statements_test02.ets
 ast/compiler/ets/default_export/import_default.ets
 ast/compiler/ets/default_export/import_default1.ets
 ast/compiler/ets/namespace_tests/namespace.ets
@@ -203,6 +176,3 @@ runtime/ets/interface_with_optional_property_cycle_import/interface_file.ets
 
 # #21051 should be log warnings, but there aren't
 ast/compiler/ets/not_initialized_variable/import_types.ets
-
-#Issue 22182
-ast/compiler/ets/implicit_package_import/package_test_5/package_module_1.ets

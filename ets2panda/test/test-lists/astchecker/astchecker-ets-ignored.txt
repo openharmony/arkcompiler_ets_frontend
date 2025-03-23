@@ -43,9 +43,6 @@ ast/parser/js/unexpected_token_8.js
 # Issue: #20876
 ast/parser/js/rest_params_1.js
 
-# Issue: #21522
-ast/compiler/ts/varRedeclaration9.ts
-
 # Issue #22140
 ast/parser/ets/InvalidLexer.ets
 ast/parser/ts/InvalidLexer.ts
@@ -96,17 +93,12 @@ ast/parser/ets/rest_parameter_03.ets
 # Issue: #23074
 # inccorect context of method usage
 ast/compiler/ets/FunctionType1.ets
-ast/compiler/ets/FunctionType6.ets
-ast/compiler/ets/FunctionType7.ets
 ast/compiler/ets/FunctionType8.ets
-ast/compiler/ets/FunctionType9.ets
 # should report return type mismatch
 ast/parser/ets/lambda-type-inference-neg2.ets
 # after the fix the test fails to detect another type error
 ast/parser/ets/unexpected_token_51.ets
 
-# #21051 should be log warnings, but there aren't
-ast/compiler/ets/not_initialized_variable/import_types.ets
 
 # Issue: #23134
 # Can't insert "/* TypeError: Postcondition check failed for DefaultParametersLowering */" test directive
