@@ -84,7 +84,8 @@ ScriptFunction *ScriptFunction::Clone(ArenaAllocator *allocator, AstNode *parent
                                         : nullptr,
                 std::move(params),
                 ReturnTypeAnnotation() != nullptr ? ReturnTypeAnnotation()->Clone(allocator, nullptr)->AsTypeNode()
-                                                  : nullptr},
+                                                  : nullptr,
+                HasReceiver()},
             funcFlags_, flags_, lang_});
     res->SetParent(parent);
     res->SetAnnotations(std::move(annotationUsages));

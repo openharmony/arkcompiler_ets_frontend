@@ -304,6 +304,7 @@ static ir::MethodDefinition *SetUpCalleeMethod(public_lib::Context *ctx, LambdaI
     return method;
 }
 
+using ISS = ir::ScriptFunction::ScriptFunctionData;
 static ir::MethodDefinition *CreateCalleeMethod(public_lib::Context *ctx, ir::ArrowFunctionExpression *lambda,
                                                 LambdaInfo const *info, CalleeMethodInfo const *cmInfo)
 {
@@ -340,9 +341,10 @@ static ir::MethodDefinition *CreateCalleeMethod(public_lib::Context *ctx, ir::Ar
 
     auto func = util::NodeAllocator::ForceSetParent<ir::ScriptFunction>(
         allocator, allocator,
-        ir::ScriptFunction::ScriptFunctionData {
-            cmInfo->body, ir::FunctionSignature(newTypeParams, std::move(params), returnTypeAnnotation), funcFlags,
-            modifierFlags});
+        ISS {cmInfo->body,
+             ir::FunctionSignature(newTypeParams, std::move(params), returnTypeAnnotation,
+                                   lambda->Function()->HasReceiver()),
+             funcFlags, modifierFlags});
     auto *funcScope = cmInfo->body == nullptr ? allocator->New<varbinder::FunctionScope>(allocator, paramScope)
                                               : cmInfo->body->Scope()->AsFunctionScope();
     funcScope->BindName(info->calleeClass->Definition()->TsType()->AsETSObjectType()->AssemblerName());
@@ -671,15 +673,13 @@ static void CreateLambdaClassInvokeMethod(public_lib::Context *ctx, LambdaInfo c
         wrapToObject ? anyType
                      : lciInfo->lambdaSignature->ReturnType()->Substitute(checker->Relation(), lciInfo->substitution),
         allocator);
-    ir::ScriptFunctionFlags functionFlag =
-        lciInfo->lambdaSignature->HasSignatureFlag(checker::SignatureFlags::EXTENSION_FUNCTION)
-            ? ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD
-            : ir::ScriptFunctionFlags::METHOD;
+    bool hasReceiver = lciInfo->lambdaSignature->HasSignatureFlag(checker::SignatureFlags::EXTENSION_FUNCTION);
+    ir::ScriptFunctionFlags functionFlag = ir::ScriptFunctionFlags::METHOD;
     auto *func = util::NodeAllocator::ForceSetParent<ir::ScriptFunction>(
         allocator, allocator,
-        ir::ScriptFunction::ScriptFunctionData {CreateLambdaClassInvokeBody(ctx, info, lciInfo, wrapToObject),
-                                                ir::FunctionSignature(nullptr, std::move(params), returnType2),
-                                                functionFlag});
+        ir::ScriptFunction::ScriptFunctionData {
+            CreateLambdaClassInvokeBody(ctx, info, lciInfo, wrapToObject),
+            ir::FunctionSignature(nullptr, std::move(params), returnType2, hasReceiver), functionFlag});
 
     auto *invokeId = allocator->New<ir::Identifier>(methodName, allocator);
     func->SetIdent(invokeId);
@@ -1025,6 +1025,11 @@ static ir::AstNode *ConvertFunctionReference(public_lib::Context *ctx, ir::Expre
     return constructorCall;
 }
 
+static bool IsVariableOriginalAccessor(const varbinder::Variable *var)
+{
+    return checker::ETSChecker::IsVariableGetterSetter(var) && !(checker::ETSChecker::IsVariableExtensionAccessor(var));
+}
+
 static bool IsFunctionOrMethodCall(ir::CallExpression const *node)
 {
     auto const *callee = node->Callee();
@@ -1034,13 +1039,13 @@ static bool IsFunctionOrMethodCall(ir::CallExpression const *node)
 
     varbinder::Variable *var = nullptr;
     if (callee->IsMemberExpression() &&
-        callee->AsMemberExpression()->Kind() == ir::MemberExpressionKind::PROPERTY_ACCESS) {
+        (callee->AsMemberExpression()->Kind() & ir::MemberExpressionKind::PROPERTY_ACCESS) != 0) {
         var = callee->AsMemberExpression()->Property()->Variable();
     } else if (callee->IsIdentifier()) {
         var = callee->AsIdentifier()->Variable();
     }
-    return var != nullptr && !checker::ETSChecker::IsVariableGetterSetter(var) &&
-           (var->Flags() & varbinder::VariableFlags::METHOD) != 0;
+
+    return var != nullptr && !IsVariableOriginalAccessor(var) && (var->Flags() & varbinder::VariableFlags::METHOD) != 0;
 }
 
 static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpression *call)

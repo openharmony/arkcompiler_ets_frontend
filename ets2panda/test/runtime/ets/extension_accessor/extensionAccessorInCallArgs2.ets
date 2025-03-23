@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,17 +13,23 @@
  * limitations under the License.
  */
 
-
-class Dog {
-    name: String;
-    legs: Int;
+class A {
+    static xstate: int = 0;
 }
 
-let dog: Dog = {
-    name: "Scooby"
+get x(this: A): int { return A.xstate }
+set x(this: A, v: int) { A.xstate = v }
+
+class B {
+    get y(): A {
+        return new A();
+    }
 }
 
-let hasSting = dog?.hasSting;
-
-/* @@? 26:21 Error TypeError: Property 'hasSting' does not exist on type 'Dog'  */
-/* @@? 26:21 Error TypeError: Property 'hasSting' does not exist on type 'Dog'  */
+function main():void {
+    let b = new B();
+    b.y.x = 123;
+    assertEQ(A.xstate, 123);
+    assertEQ(b.y.x, 123);
+    assertTrue(b.y.x == 123);
+}

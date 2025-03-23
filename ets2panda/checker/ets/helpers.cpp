@@ -66,7 +66,13 @@ bool ETSChecker::IsVariableStatic(const varbinder::Variable *var)
 
 bool ETSChecker::IsVariableGetterSetter(const varbinder::Variable *var)
 {
-    return var->TsType() != nullptr && var->TsType()->HasTypeFlag(TypeFlag::GETTER_SETTER);
+    return var != nullptr && var->TsType() != nullptr && var->TsType()->HasTypeFlag(TypeFlag::GETTER_SETTER);
+}
+
+bool ETSChecker::IsVariableExtensionAccessor(const varbinder::Variable *var)
+{
+    return var != nullptr && var->TsType() != nullptr && var->TsType()->IsETSFunctionType() &&
+           var->TsType()->AsETSFunctionType()->IsExtensionAccessorType();
 }
 
 void ETSChecker::LogUnresolvedReferenceError(ir::Identifier *const ident)
@@ -820,6 +826,123 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     }
 
     return FixOptionalVariableType(bindingVar, flags, init);
+}
+
+static checker::Type *ResolveGetter(checker::ETSChecker *checker, ir::MemberExpression *const expr,
+                                    ETSFunctionType *funcType)
+{
+    auto signature = checker->FindRelativeExtensionGetter(expr, funcType);
+    if (signature != nullptr) {
+        return signature->ReturnType();
+    }
+
+    PropertySearchFlags flags = PropertySearchFlags::SEARCH_INSTANCE_METHOD | PropertySearchFlags::SEARCH_IN_BASE |
+                                PropertySearchFlags::SEARCH_IN_INTERFACES | PropertySearchFlags::IS_GETTER;
+    auto objType = expr->ObjType();
+    auto searchName = objType->GetReExportAliasValue(expr->Property()->AsIdentifier()->Name());
+    auto *prop = objType->GetProperty(searchName, flags);
+    if (prop == nullptr || prop->TsType() == nullptr ||
+        !prop->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
+        return nullptr;
+    }
+    auto *propType = prop->TsType()->AsETSFunctionType();
+    auto originalGetter = propType->FindGetter();
+    if (originalGetter == nullptr) {
+        return nullptr;
+    }
+
+    checker->ValidateSignatureAccessibility(objType, nullptr, originalGetter, expr->Start());
+    return originalGetter->ReturnType();
+}
+
+Signature *ETSChecker::FindRelativeExtensionGetter(ir::MemberExpression *const expr, ETSFunctionType *funcType)
+{
+    ES2PANDA_ASSERT(expr->ObjType() != nullptr);
+    ES2PANDA_ASSERT(funcType != nullptr && funcType->IsExtensionAccessorType());
+    ES2PANDA_ASSERT(expr->Property()->AsIdentifier()->Name() == funcType->Name());
+    if (auto sig = FindExtensionGetterInMap(funcType->Name(), expr->ObjType()); sig != nullptr) {
+        return sig;
+    }
+
+    ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
+    arguments.insert(arguments.begin(), expr->Object());
+    Signature *signature = ValidateSignatures(funcType->GetExtensionAccessorSigs(), nullptr, arguments, expr->Start(),
+                                              "call", TypeRelationFlag::NO_THROW);
+    if (signature != nullptr) {
+        InsertExtensionGetterToMap(funcType->Name(), expr->ObjType(), signature);
+    }
+    return signature;
+}
+
+Signature *ETSChecker::FindRelativeExtensionSetter(ir::MemberExpression *expr, ETSFunctionType *funcType)
+{
+    ES2PANDA_ASSERT(expr->ObjType() != nullptr);
+    ES2PANDA_ASSERT(funcType != nullptr && funcType->IsExtensionAccessorType());
+    ES2PANDA_ASSERT(expr->Property()->AsIdentifier()->Name() == funcType->Name());
+    ES2PANDA_ASSERT(expr->Parent()->IsAssignmentExpression() || expr->Parent()->IsUpdateExpression());
+    if (auto const sig = FindExtensionSetterInMap(funcType->Name(), expr->ObjType()); sig != nullptr) {
+        return sig;
+    }
+
+    Signature *signature = nullptr;
+    ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
+    arguments.insert(arguments.begin(), expr->Object());
+    if (expr->Parent()->IsAssignmentExpression()) {
+        arguments.emplace_back(expr->Parent()->AsAssignmentExpression()->Right());
+        signature = ValidateSignatures(funcType->GetExtensionAccessorSigs(), nullptr, arguments, expr->Start(), "call",
+                                       TypeRelationFlag::NO_THROW);
+    } else {
+        // When handle ++a.m, a.m++, is mean to check whether a.m(xx, 1) existed.
+        Type *getterReturnType = ResolveGetter(this, expr, funcType);
+        expr->SetTsType(getterReturnType);
+        arguments.emplace_back(expr);
+        signature = ValidateSignatures(funcType->GetExtensionAccessorSigs(), nullptr, arguments, expr->Start(), "call",
+                                       TypeRelationFlag::NO_THROW);
+    }
+
+    if (signature == nullptr) {
+        return nullptr;
+    }
+    InsertExtensionSetterToMap(funcType->Name(), expr->ObjType(), signature);
+    return signature;
+}
+
+// Note: extension accessor looks same as member expression in checker phase, but its return type is FunctionType,
+// we need to get type of extension accessor in checker. For getter, its type is the return type of the function.
+// and for setter, it was a member expression set as left child of an assignment expression, we temporarily set its
+// type the same as the right child type. Further work will be done in lowering.
+checker::Type *ETSChecker::GetExtensionAccessorReturnType(ir::MemberExpression *expr)
+{
+    ES2PANDA_ASSERT(IsExtensionETSFunctionType(expr->TsType()));
+
+    auto eAccType = expr->TsType()->AsETSFunctionType();
+    auto assignExpr = expr->Parent();
+    bool isExtensionSetterLike =
+        assignExpr->IsAssignmentExpression() && (assignExpr->AsAssignmentExpression()->Left() == expr);
+    if (isExtensionSetterLike) {
+        if (!assignExpr->Parent()->IsExpressionStatement()) {
+            LogError(diagnostic::EXTENSION_GETTER_INVALID_CTX, {}, assignExpr->Start());
+            return GlobalTypeError();
+        }
+        auto signature = FindRelativeExtensionSetter(expr, eAccType);
+        if (signature != nullptr && !expr->Parent()->IsUpdateExpression()) {
+            // for a.m += otherExpr, we need to validateSignature again.
+            ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
+            ArenaVector<Signature *> candidateSig(Allocator()->Adapter());
+            candidateSig.emplace_back(signature);
+            arguments.emplace_back(expr->Object());
+            arguments.emplace_back(expr->Parent()->AsAssignmentExpression()->Right());
+            signature =
+                ValidateSignatures(candidateSig, nullptr, arguments, expr->Start(), "call", TypeRelationFlag::NO_THROW);
+        }
+
+        if (signature == nullptr) {
+            LogError(diagnostic::MISSING_EXTENSION_ACCESSOR, {}, expr->Start());
+            return GlobalTypeError();
+        }
+    }
+    expr->SetExtensionAccessorType(eAccType);
+    return ResolveGetter(this, expr, eAccType);
 }
 
 //==============================================================================//
@@ -2976,21 +3099,6 @@ void ETSChecker::ETSObjectTypeDeclNode(ETSChecker *checker, ETSObjectType *const
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         checker->CheckClassDefinition(declNode->AsClassDefinition());
     }
-}
-
-checker::Type *ETSChecker::TryGetTypeFromExtensionAccessor(ir::Expression *expr)
-{
-    if (expr->TsType() == nullptr) {
-        expr->Check(this);
-    }
-
-    if (!expr->IsMemberExpression() ||
-        !expr->AsMemberExpression()->HasMemberKind(ir::MemberExpressionKind::EXTENSION_ACCESSOR)) {
-        return expr->TsType();
-    }
-
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    return expr->AsMemberExpression()->GetExtensionAccessorReturnType(this);
 }
 
 ir::CallExpression *ETSChecker::CreateExtensionAccessorCall(ETSChecker *checker, ir::MemberExpression *expr,

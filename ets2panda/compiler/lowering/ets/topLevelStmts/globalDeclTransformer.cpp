@@ -42,7 +42,7 @@ void GlobalDeclTransformer::VisitFunctionDeclaration(ir::FunctionDeclaration *fu
     funcDecl->Function()->SetStart(funcDecl->Function()->Id()->Start());
     funcExpr->SetRange(funcDecl->Function()->Range());
     ir::MethodDefinitionKind methodKind;
-    if (funcDecl->Function()->IsExtensionMethod()) {
+    if (funcDecl->Function()->HasReceiver()) {
         if (funcDecl->Function()->IsGetter()) {
             methodKind = ir::MethodDefinitionKind::EXTENSION_GET;
         } else if (funcDecl->Function()->IsSetter()) {

@@ -518,6 +518,10 @@ Type *ETSChecker::GetTypeFromVariableDeclaration(varbinder::Variable *const var)
 
 Type *ETSChecker::GetTypeOfVariable(varbinder::Variable *const var)
 {
+    if (IsVariableExtensionAccessor(var)) {
+        return var->TsType();
+    }
+
     if (IsVariableGetterSetter(var)) {
         return GetTypeOfSetterGetter(var);
     }
@@ -1435,7 +1439,7 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
 }
 
 // #22951 requires complete refactoring
-bool ETSChecker::IsExtensionETSFunctionType(checker::Type *type)
+bool ETSChecker::IsExtensionETSFunctionType(const checker::Type *type)
 {
     if (type == nullptr || (!type->IsETSFunctionType() && !type->IsETSObjectType())) {
         return false;
@@ -1446,35 +1450,24 @@ bool ETSChecker::IsExtensionETSFunctionType(checker::Type *type)
     }
 
     if (type->IsETSArrowType()) {
-        return type->AsETSFunctionType()->ArrowSignature()->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION);
+        return type->AsETSFunctionType()->ArrowSignature()->IsExtensionFunction();
     }
 
-    for (auto *signature : type->AsETSFunctionType()->CallSignatures()) {
-        if (signature->HasFunction() && signature->Function()->IsExtensionMethod()) {
-            return true;
-        }
-    }
-    return false;
+    return type->AsETSFunctionType()->IsExtensionFunctionType();
 }
 
 // #22951 requires complete refactoring
-bool ETSChecker::IsExtensionAccessorFunctionType(checker::Type *type)
+bool ETSChecker::IsExtensionAccessorFunctionType(const checker::Type *type)
 {
     if (type == nullptr || !type->IsETSFunctionType()) {
         return false;
     }
+
     if (type->IsETSArrowType()) {
-        return type->AsETSFunctionType()->ArrowSignature()->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION) &&
-               type->AsETSFunctionType()->ArrowSignature()->HasSignatureFlag(SignatureFlags::GETTER_OR_SETTER);
+        return type->AsETSFunctionType()->ArrowSignature()->IsExtensionAccessor();
     }
 
-    for (auto *signature : type->AsETSFunctionType()->CallSignatures()) {
-        if (signature->HasFunction() && signature->Function()->IsExtensionAccessor()) {
-            return true;
-        }
-    }
-
-    return false;
+    return type->AsETSFunctionType()->IsExtensionAccessorType();
 }
 
 void ETSChecker::CheckExceptionClauseType(const std::vector<checker::ETSObjectType *> &exceptions,

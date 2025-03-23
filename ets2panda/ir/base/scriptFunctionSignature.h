@@ -18,6 +18,8 @@
 
 #include "ir/expression.h"
 
+#include <ir/ets/etsParameterExpression.h>
+
 namespace ark::es2panda::ir {
 class TSTypeParameterDeclaration;
 class TypeNode;

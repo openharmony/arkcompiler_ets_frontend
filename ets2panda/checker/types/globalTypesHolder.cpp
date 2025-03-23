@@ -669,4 +669,35 @@ void GlobalTypesHolder::InitializeBuiltin(const util::StringView name, Type *typ
     }
     globalTypes_.at(static_cast<size_t>(typeId->second)) = type;
 }
+
+Signature *GlobalTypesHolder::FindExtensionAccessorInMap(util::StringView name, ETSObjectType *type,
+                                                         ExtensionAccessorMap &maps) const
+{
+    auto it = maps.find(name);
+    if (it == maps.end()) {
+        return nullptr;
+    }
+
+    auto targetSig = it->second.find(type);
+    if (targetSig != it->second.end()) {
+        return targetSig->second;
+    }
+
+    return nullptr;
+}
+
+void GlobalTypesHolder::InsertExtensionAccessorToMap(util::StringView name, ETSObjectType *type, Signature *sig,
+                                                     ExtensionAccessorMap &maps)
+{
+    auto it = maps.find(name);
+    if (it == maps.end()) {
+        std::unordered_map<ETSObjectType *, Signature *> newSigMap {};
+        newSigMap.emplace(type, sig);
+        maps.emplace(name, newSigMap);
+        return;
+    }
+
+    auto targetMap = it->second;
+    targetMap.emplace(type, sig);
+}
 }  // namespace ark::es2panda::checker

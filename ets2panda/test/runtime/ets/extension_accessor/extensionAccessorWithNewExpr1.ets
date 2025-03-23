@@ -21,7 +21,7 @@ class A {
 get field(this: A): Int { return A.field_ }
 set field(this: A, v: int) { A.field_ = v }
 get bfield(this: A): boolean { return A.bfield_; }
-set bfield(this: A, b: boolean) { this.bfield_ = b; }
+set bfield(this: A, b: boolean) { A.bfield_ = b; }
 
 function main(): void {
     A.field_ = 30;

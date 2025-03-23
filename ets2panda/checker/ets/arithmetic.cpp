@@ -30,8 +30,8 @@ struct BinaryArithmOperands {
 
 static inline BinaryArithmOperands GetBinaryOperands(ETSChecker *checker, ir::BinaryExpression *expr)
 {
-    auto typeL = checker->TryGetTypeFromExtensionAccessor(expr->Left());
-    auto typeR = checker->TryGetTypeFromExtensionAccessor(expr->Right());
+    auto typeL = expr->Left()->Check(checker);
+    auto typeR = expr->Right()->Check(checker);
     auto unboxedL = checker->MaybeUnboxType(typeL);
     auto unboxedR = checker->MaybeUnboxType(typeR);
     return {expr, typeL, typeR, unboxedL, unboxedR};
@@ -1174,7 +1174,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
                                                            lexer::SourcePosition pos, bool forcePromotion)
 {
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    checker::Type *leftType = TryGetTypeFromExtensionAccessor(left);
+    checker::Type *leftType = left->Check(this);
 
     if (leftType == nullptr) {
         LogError(diagnostic::BINOP_UNEXPECTED_ERROR, {}, left->Start());
@@ -1188,7 +1188,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
 
     Context().CheckTestSmartCastCondition(operationType);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    checker::Type *rightType = TryGetTypeFromExtensionAccessor(right);
+    checker::Type *rightType = right->Check(this);
 
     if (rightType == nullptr) {
         rightType = right->Check(this);

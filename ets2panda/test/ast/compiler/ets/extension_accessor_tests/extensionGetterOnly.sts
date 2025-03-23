@@ -14,24 +14,18 @@
  */
 
 class A {
-    idx_: Int = 1;
+    field_: int;
 }
 
-get idx(this: A): Int {
-    return this.idx_;
+get field(this: A): int {
+    return this.field_;
 }
+new A()./* @@ label1 */field = 1;
+new A()./* @@ label2 */field += 1;
+new A()./* @@ label3 */field++;
+++new A()./* @@ label4 */field;
 
-set idx(this: A, a: Int) {
-    this.idx_ = a;
-}
-
-function main() {
-    let a = new A()
-    let b = /* @@ label1 */a.idx = 1
-    if (/* @@ label2 */a.idx = 1) {}
-    console.log(/* @@ label3 */a.idx = 1)
-}
-
-/* @@@ label1 Error TypeError: Extension getter in wrong usage  */
-/* @@@ label2 Error TypeError: Extension getter in wrong usage  */
-/* @@@ label3 Error TypeError: Extension getter in wrong usage  */
+/* @@@ label1 Error TypeError: Cannot assign to this property because it is readonly. */
+/* @@@ label2 Error TypeError: Cannot assign to this property because it is readonly. */
+/* @@@ label3 Error TypeError: Cannot assign to this property because it is readonly. */
+/* @@@ label4 Error TypeError: Cannot assign to this property because it is readonly. */

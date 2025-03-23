@@ -189,6 +189,9 @@ enum class GlobalTypeId : std::size_t {
     COUNT,
 };
 
+using ExtensionAccessorMap =
+    std::unordered_map<util::StringView, std::unordered_map<checker::ETSObjectType *, Signature *>>;
+
 class GlobalTypesHolder {
 public:
     explicit GlobalTypesHolder(ArenaAllocator *allocator);
@@ -325,9 +328,35 @@ public:
         return std::nullopt;
     }
 
+    Signature *FindExtensionSetterInMap(util::StringView name, ETSObjectType *type)
+    {
+        return FindExtensionAccessorInMap(name, type, extensionSetterMaps_);
+    }
+
+    Signature *FindExtensionGetterInMap(util::StringView name, ETSObjectType *type)
+    {
+        return FindExtensionAccessorInMap(name, type, extensionGetterMaps_);
+    }
+
+    void InsertExtensionSetterToMap(util::StringView name, ETSObjectType *type, Signature *sig)
+    {
+        InsertExtensionAccessorToMap(name, type, sig, extensionSetterMaps_);
+    }
+
+    void InsertExtensionGetterToMap(util::StringView name, ETSObjectType *type, Signature *sig)
+    {
+        InsertExtensionAccessorToMap(name, type, sig, extensionGetterMaps_);
+    }
+
 private:
+    Signature *FindExtensionAccessorInMap(util::StringView name, ETSObjectType *type, ExtensionAccessorMap &maps) const;
+    void InsertExtensionAccessorToMap(util::StringView name, ETSObjectType *type, Signature *sig,
+                                      ExtensionAccessorMap &maps);
+
     Holder globalTypes_ {};
     ArenaMap<util::StringView, GlobalTypeId> builtinNameMappings_;
+    ExtensionAccessorMap extensionGetterMaps_ {};
+    ExtensionAccessorMap extensionSetterMaps_ {};
 };
 }  // namespace ark::es2panda::checker
 

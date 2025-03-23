@@ -351,7 +351,8 @@ checker::Type *ETSAnalyzer::Check(ir::ETSFunctionType *node) const
 
     auto *signatureInfo = checker->ComposeSignatureInfo(node->TypeParams(), node->Params());
     auto *returnType = checker->ComposeReturnType(node->ReturnType(), node->IsAsync());
-    auto *const signature = checker->CreateSignature(signatureInfo, returnType, node->Flags());
+    auto *const signature =
+        checker->CreateSignature(signatureInfo, returnType, node->Flags(), node->IsExtensionFunction());
     if (signature == nullptr) {  // #23134
         ES2PANDA_ASSERT(GetChecker()->IsAnyError());
         return node->SetTsType(checker->GlobalTypeError());
@@ -870,7 +871,7 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
     }
     checker::ScopeContext scopeCtx(checker, expr->Function()->Scope());
 
-    if (checker->HasStatus(checker::CheckerStatus::IN_EXTENSION_METHOD) && !expr->Function()->IsExtensionMethod()) {
+    if (checker->HasStatus(checker::CheckerStatus::IN_EXTENSION_METHOD) && !expr->Function()->HasReceiver()) {
         /*
         example code:
         ```
@@ -905,7 +906,7 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
         return checker->InvalidateType(expr);
     }
 
-    if (expr->Function()->IsExtensionMethod()) {
+    if (expr->Function()->HasReceiver()) {
         checker->AddStatus(checker::CheckerStatus::IN_EXTENSION_METHOD);
         CheckExtensionMethod(checker, expr->Function(), expr);
     }
@@ -1222,19 +1223,11 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
 
     if (checker->IsExtensionETSFunctionType(calleeType)) {
         auto *signature = ResolveCallExtensionFunction(calleeType, checker, expr);
-        bool isReturnTypeLambda = (signature != nullptr) && signature->ReturnType()->IsETSObjectType() &&
-                                  signature->ReturnType()->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL);
-        bool isSignatureExtensionAccessor =
-            (signature != nullptr) && (signature->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION) &&
-                                       signature->HasSignatureFlag(SignatureFlags::GETTER_OR_SETTER));
-        if (isSignatureExtensionAccessor && !isReturnTypeLambda &&
+        if (signature != nullptr && signature->IsExtensionAccessor() &&
             !checker->HasStatus(CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK)) {
             checker->LogError(diagnostic::EXTENSION_ACCESSOR_INVALID_CALL, {}, expr->Start());
             return nullptr;
         }
-        // NOTE(xingshunxiang): we can't use extension accessor as a call,
-        // except when the return type of the extension getter is a function type, such a feature is to be
-        // completed.
         return signature;
     }
     auto &signatures = expr->IsETSConstructorCall() ? calleeType->AsETSObjectType()->ConstructSignatures()
@@ -2593,9 +2586,9 @@ static bool CheckIsValidReturnTypeAnnotation(ir::ReturnStatement *st, ir::Script
     // only extension function and class method could return `this`;
     bool inValidNormalFuncReturnThisType = st->Argument() == nullptr || !st->Argument()->IsThisExpression();
     bool inValidExtensionFuncReturnThisType =
-        !containingFunc->IsExtensionMethod() ||
-        (containingFunc->IsExtensionMethod() && (st->Argument() == nullptr || !st->Argument()->IsIdentifier() ||
-                                                 !st->Argument()->AsIdentifier()->IsReceiver()));
+        !containingFunc->HasReceiver() ||
+        (containingFunc->HasReceiver() && (st->Argument() == nullptr || !st->Argument()->IsIdentifier() ||
+                                           !st->Argument()->AsIdentifier()->IsReceiver()));
     if (inValidNormalFuncReturnThisType && inValidExtensionFuncReturnThisType) {
         checker->LogError(diagnostic::RETURN_THIS_OUTSIDE_METHOD, {}, st->Start());
         return false;

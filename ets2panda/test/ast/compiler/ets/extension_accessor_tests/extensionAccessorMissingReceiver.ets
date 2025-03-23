@@ -21,9 +21,8 @@ get field(a: A): int /* @@ label1 */{
     return a.field_;
 }
 
-/* @@ label3 */set field/* @@ label4 */() /* @@ label2 */{}
+/* @@ label2 */set field() /* @@ label3 */{}
 
 /* @@@ label1 Error SyntaxError: Extension Accessor must have a receiver.  */
-/* @@@ label2 Error SyntaxError: Extension Accessor must have a receiver.  */
-/* @@@ label3 Error SyntaxError: Extension Setter can only have 2 parameters.  */
-/* @@@ label4 Error TypeError: Extension function can only defined for class, interface or array. */
+/* @@@ label2 Error SyntaxError: Extension Setter can only have 2 parameters.  */
+/* @@@ label3 Error SyntaxError: Extension Accessor must have a receiver.  */

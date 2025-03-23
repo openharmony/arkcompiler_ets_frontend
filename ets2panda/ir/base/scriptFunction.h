@@ -262,9 +262,10 @@ public:
         return lang_.IsDynamic();
     }
 
+    // Note: This method has been written into CAPI, cannot remove it simply.
     [[nodiscard]] bool IsExtensionMethod() const noexcept
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD) != 0;
+        return HasReceiver();
     }
 
     [[nodiscard]] ir::ScriptFunctionFlags Flags() const noexcept

@@ -116,7 +116,7 @@ public:
 
     bool IsExtensionFunction() const
     {
-        return (funcFlags_ & ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD) != 0;
+        return signature_.HasReceiver();
     }
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;

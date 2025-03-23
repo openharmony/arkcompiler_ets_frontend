@@ -308,7 +308,7 @@ public:
     ETSObjectType *CreatePromiseOf(Type *type);
 
     Signature *CreateSignature(SignatureInfo *info, Type *returnType, ir::ScriptFunction *func);
-    Signature *CreateSignature(SignatureInfo *info, Type *returnType, ir::ScriptFunctionFlags sff);
+    Signature *CreateSignature(SignatureInfo *info, Type *returnType, ir::ScriptFunctionFlags sff, bool hasReceiver);
     SignatureInfo *CreateSignatureInfo();
 
     // Arithmetic
@@ -626,6 +626,7 @@ public:
     void ValidateResolvedIdentifier(ir::Identifier *ident);
     static bool IsVariableStatic(const varbinder::Variable *var);
     static bool IsVariableGetterSetter(const varbinder::Variable *var);
+    static bool IsVariableExtensionAccessor(const varbinder::Variable *var);
     bool IsSameDeclarationType(varbinder::LocalVariable *target, varbinder::LocalVariable *compare);
     void SaveCapturedVariable(varbinder::Variable *var, ir::Identifier *ident);
     bool SaveCapturedVariableInLocalClass(varbinder::Variable *var, ir::Identifier *ident);
@@ -655,8 +656,8 @@ public:
     util::StringView GetHashFromFunctionType(ir::ETSFunctionType *type);
     static ETSObjectType *GetOriginalBaseType(Type *object);
     void SetArrayPreferredTypeForNestedMemberExpressions(ir::MemberExpression *expr, Type *annotationType);
-    bool IsExtensionETSFunctionType(checker::Type *type);
-    bool IsExtensionAccessorFunctionType(checker::Type *type);
+    bool IsExtensionETSFunctionType(const checker::Type *type);
+    bool IsExtensionAccessorFunctionType(const checker::Type *type);
     bool IsArrayExprSizeValidForTuple(const ir::ArrayExpression *arrayExpr, const ETSTupleType *tuple);
     void ModifyPreferredType(ir::ArrayExpression *arrayExpr, Type *newPreferredType);
     Type *SelectGlobalIntegerTypeForNumeric(Type *type);
@@ -678,7 +679,9 @@ public:
     ir::CallExpression *CreateExtensionAccessorCall(ETSChecker *checker, ir::MemberExpression *expr,
                                                     ArenaVector<ir::Expression *> &&args);
     static void SetPreferredTypeIfPossible(ir::Expression *expr, Type *targetType);
-    checker::Type *TryGetTypeFromExtensionAccessor(ir::Expression *expr);
+    Signature *FindRelativeExtensionGetter(ir::MemberExpression *const expr, ETSFunctionType *funcType);
+    Signature *FindRelativeExtensionSetter(ir::MemberExpression *const expr, ETSFunctionType *funcType);
+    Type *GetExtensionAccessorReturnType(ir::MemberExpression *expr);
     // Utility type handler functions
     std::optional<ir::TypeNode *> GetUtilityTypeTypeParamNode(const ir::TSTypeParameterInstantiation *typeParams,
                                                               const std::string_view &utilityTypeName);
@@ -765,6 +768,10 @@ public:
 
     // Extension function
     void HandleUpdatedCallExpressionNode(ir::CallExpression *callExpr);
+    Signature *FindExtensionSetterInMap(util::StringView name, ETSObjectType *type);
+    Signature *FindExtensionGetterInMap(util::StringView name, ETSObjectType *type);
+    void InsertExtensionSetterToMap(util::StringView name, ETSObjectType *type, Signature *sig);
+    void InsertExtensionGetterToMap(util::StringView name, ETSObjectType *type, Signature *sig);
 
     // Static invoke
     void CheckInvokeMethodsLegitimacy(ETSObjectType *classType);
@@ -851,8 +858,11 @@ private:
     void ValidateMemberIdentifier(ir::Identifier *const ident);
     void ValidateAssignmentIdentifier(ir::Identifier *const ident, Type *const type);
     bool ValidateBinaryExpressionIdentifier(ir::Identifier *const ident, Type *const type);
-    void ValidateGetterSetter(const ir::MemberExpression *const memberExpr, const varbinder::LocalVariable *const prop,
-                              PropertySearchFlags searchFlag);
+    ETSFunctionType *ResolveAccessorTypeByFlag(ir::MemberExpression *const memberExpr, ETSFunctionType *propType,
+                                               ETSFunctionType *funcType, PropertySearchFlags searchFlag);
+    std::vector<ResolveResult *> ValidateAccessor(ir::MemberExpression *const memberExpr,
+                                                  varbinder::LocalVariable *const oAcc, varbinder::Variable *const eAcc,
+                                                  PropertySearchFlags searchFlag);
     ir::ClassProperty *FindClassProperty(const ETSObjectType *objectType, const ETSFunctionType *propType);
     bool IsInitializedProperty(const ir::ClassDefinition *classDefinition, const ir::ClassProperty *prop);
     bool FindPropertyInAssignment(const ir::AstNode *it, const std::string &targetName);
