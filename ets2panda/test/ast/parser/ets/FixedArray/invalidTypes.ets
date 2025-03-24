@@ -90,8 +90,8 @@ let var6: [a0: , a1: ];
 /* @@? 30:18 Error SyntaxError: Unexpected token ':'. */
 /* @@? 30:20 Error SyntaxError: Unexpected token '...'. */
 /* @@? 30:20 Error SyntaxError: Unexpected token '...'. */
-/* @@? 30:23 Error TypeError: Unresolved reference int */
-/* @@? 30:26 Error SyntaxError: Unexpected token ']'. */
+/* @@? 30:23 Error SyntaxError: Unexpected token 'int'. */
+/* @@? 30:23 Error SyntaxError: Unexpected token 'int'. */
 /* @@? 30:26 Error SyntaxError: Unexpected token ']'. */
 /* @@? 30:26 Error SyntaxError: Unexpected token ']'. */
 /* @@? 32:19 Error SyntaxError: Unexpected token, expected ',' or ']'. */

@@ -1145,6 +1145,25 @@ bool ETSParser::IsDefaultImport()
     return false;
 }
 
+bool TypedParser::IsPrimitiveType(const lexer::TokenType &tokenType)
+{
+    switch (tokenType) {
+        case lexer::TokenType::KEYW_BIGINT:
+        case lexer::TokenType::KEYW_BOOLEAN:
+        case lexer::TokenType::KEYW_BYTE:
+        case lexer::TokenType::KEYW_CHAR:
+        case lexer::TokenType::KEYW_DOUBLE:
+        case lexer::TokenType::KEYW_FLOAT:
+        case lexer::TokenType::KEYW_INT:
+        case lexer::TokenType::KEYW_LONG:
+        case lexer::TokenType::KEYW_SHORT:
+        case lexer::TokenType::KEYW_VOID:
+            return true;
+        default:
+            return false;
+    }
+}
+
 void ETSParser::ParseNamedSpecifiesDefaultImport(ArenaVector<ir::ImportDefaultSpecifier *> *resultDefault,
                                                  const std::string &fileName)
 {

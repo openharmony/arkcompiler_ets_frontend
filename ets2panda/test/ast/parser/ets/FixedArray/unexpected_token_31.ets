@@ -25,8 +25,8 @@ function foo(...^number: FixedArray<int>): int {
 /* @@? 16:41 Error SyntaxError: Unexpected token ')'. */
 /* @@? 16:42 Error SyntaxError: Unexpected token ':'. */
 /* @@? 16:42 Error SyntaxError: Unexpected token ':'. */
-/* @@? 16:44 Error TypeError: Unresolved reference int */
-/* @@? 16:48 Error SyntaxError: Unexpected token '{'. */
+/* @@? 16:44 Error SyntaxError: Unexpected token 'int'. */
+/* @@? 16:44 Error SyntaxError: Unexpected token 'int'. */
 /* @@? 17:5 Error SyntaxError: return keyword should be used in function body. */
 /* @@? 17:12 Error TypeError: Type name 'number' used in the wrong context */
 /* @@? 17:12 Error TypeError: Indexed access is not supported for such expression type. */
