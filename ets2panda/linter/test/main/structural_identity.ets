@@ -43,15 +43,15 @@ class B {
 }
 function foo(a1: A, ...a2: A[]): void {
 }
-foo(new B, new A, new B);
+foo(new B, new A, new B);//ERROR
 
 let a =  new A;
-a = new B;
+a = new B;//ERROR
 
-let b: B = new A;
+let b: B = new A;//ERROR
 
 function bar(bArr: B[]): void {
-  bArr[0] = new A;
+  bArr[0] = new A;//ERROR
 }
 
 let name = (new B as A).getName();
@@ -587,28 +587,86 @@ class B_20 {}
 
 // Return statement
 function foo_20(): A_20 {
-  return new B_20();
+  return new B_20();// ERROR
 }
 function bar_20(): B_20 {
-  return new A_20();
+  return new A_20();// ERROR
 }
 
 // Array literal expression
 const a_20 = new A_20();
 const b_20 = new B_20();
-const arrA_20: A_20[] = [a_20, b_20];
-const arrB_20: B_20[] = [a_20, b_20];
+const arrA_20: A_20[] = [a_20, b_20];// ERROR
+const arrB_20: B_20[] = [a_20, b_20];// ERROR
 
 // Property declaration
 class C_20 {
-  a: A_20 = new B_20();
-  b: B_20 = new A_20();
+  a: A_20 = new B_20();// ERROR
+  b: B_20 = new A_20();// ERROR
 }
 
-class A {
+class A_10 {
   v: number = 0
  }
-class B {
+class B_10 {
   v: number = 0
 }
-let a: A = new B() as A
+let aa: A_10 = new B_10() as A_10; // ERROR
+
+
+class F<T> {
+}
+class D extends B_10 {}
+
+const imageSet: Set<aod.ImageType> = new Set(this.context.triggers?.map((t) => t.imageType));
+const orderedImage: aod.ImageType[] = Array.from(imageSet); 
+
+let obj1: A_10 = new A_10();
+let obj2: B_10 = new B_10();
+let obj3: B_10 = obj1; // Not OK
+let obj4: B_10 = obj1 as B_10; // NOT OK
+let obj5: B_10 = new A_10() as B_10; // NOT OK
+let obj6: B_10 = new D() as B_10; // OK
+let obj7: A_10 = test() as A_10; // NOT OK
+
+let bb: F<B_10> = new F<A_10>(); // NOT OK
+let cc1: F<B_10 | string> = new F<A_10>(); // NOT OK
+let cc2: F<B_10 | A_10> = new F<A_10 | D>(); // OK
+let cc3: F<A_10> = new F<A_10 | string>(); // OK
+let arr1: Array<A_10> = [obj2] // NOT OK
+let arr2: Array<A_10> = [obj1, obj2] // obj2 NOT OK
+let arr3: Array<A_10 | string> = [obj1, obj2, 'hello'] // obj2 NOT OK
+let arr4: Array<A_10 | B_10> = [obj1, obj2] // OK
+
+function test(): B_10 {
+  return obj2;
+}
+
+function test1(): B_10 {
+  return obj1; // NOT OK
+}
+
+class D_10 {
+  obj1: A_10 = new A_10();
+  obj2: B_10 = new B_10();
+  obj3: B_10 = obj1; // Not OK
+  obj4: B_10 = obj1 as B_10; // NOT OK
+  obj5: B_10 = new A_10() as B_10; // NOT OK
+  obj6: B_10 = new D() as B_10; // OK
+  arr1: Array<A_10> = [obj2] // NOT OK
+  arr2: Array<A_10> = [obj1, obj2] // NOT OK
+  arr3: Array<A_10 | string> = [obj1, obj2, 'hello'] // obj2 NOT OK
+  b: F<B_10> = new F<A_10>(); // NOT OK
+  c: F<B_10 | string> = new F<A_10>(); // NOT OK
+  cc: F<B_10 | A_10> = new F<A_10 | D>(); // OK
+
+  test(): B_10{
+    let obj1: A_10 = new A_10();
+    return obj1; // NOT OK
+  }
+}
+
+function test_10(): B_10 {
+  let obj1: A_10 = new A_10();
+  return obj1; // NOT OK
+}
