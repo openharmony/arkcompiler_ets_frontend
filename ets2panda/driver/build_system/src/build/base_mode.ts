@@ -23,11 +23,10 @@ import {
   ARKTSCONFIG_JSON_FILE,
   BUILD_MODE,
   DECL_ETS_SUFFIX,
-  ETS_SUFFIX,
   LANGUAGE_VERSION,
   LINKER_INPUT_FILE,
   MERGED_ABC_FILE,
-  SYSTEM_SDK_PATH_FROM_SDK,
+  TS_SUFFIX,
 } from '../pre_define';
 import {
   changeFileExtension,
@@ -111,7 +110,7 @@ export abstract class BaseMode {
     );
     let etsOutputPath: string = changeFileExtension(
       path.join(moduleInfo.declgenBridgeCodePath as string, moduleInfo.packageName, filePathFromModuleRoot),
-      ETS_SUFFIX
+      TS_SUFFIX
     );
     ensurePathExists(declEtsOutputPath);
     ensurePathExists(etsOutputPath);
