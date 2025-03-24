@@ -16,20 +16,23 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import {
+  PerfMode,
   TimeAndMemTimeTracker,
   clearTimeAndMemPrinterData,
+  configurePerformancePrinter,
+  disablePrinterTimeAndMemConfig,
   enableTimeAndMemoryPrint,
   endSingleFileForMoreTimeEvent,
   getObfuscationCacheDir,
   getMemoryPerformanceData,
   getTimePerformanceData,
   initPerformanceTimeAndMemPrinter,
+  initPrinterTimeAndMemConfig,
   startSingleFileForMoreTimeEvent,
   writeTimeAndMemoryPerformanceData,
 } from '../../../src/utils/PrinterTimeAndMemUtils';
 import { expect } from 'chai';
 import { performanceTimeAndMemPrinter } from '../../../src/ArkObfuscator';
-import type { IOptions } from '../../../src/configs/IOptions';
 import { printerTimeAndMemDataConfig } from '../../../src/initialization/Initializer';
 
 describe('test Cases for <PrinterTimAndMemUtils>.', function () {
@@ -67,35 +70,50 @@ describe('test Cases for <PrinterTimAndMemUtils>.', function () {
   });
 
   describe('Tester Cases for <initPerformanceTimeAndMemPrinter>', () => {
-    it('Printer config is not set', () => {
-      const mCustomProfiles: IOptions = {};
-      initPerformanceTimeAndMemPrinter(mCustomProfiles);
-      expect(performanceTimeAndMemPrinter.filesPrinter).to.be.undefined;
+    it('should block performance printer when mTimeAndMemPrinter is false', () => {
+      printerTimeAndMemDataConfig.mTimeAndMemPrinter = false;
+      performanceTimeAndMemPrinter.singleFilePrinter = new TimeAndMemTimeTracker();
+      performanceTimeAndMemPrinter.filesPrinter = new TimeAndMemTimeTracker();
+  
+      initPerformanceTimeAndMemPrinter();
+  
       expect(performanceTimeAndMemPrinter.singleFilePrinter).to.be.undefined;
-    });
-
-    it('Printer config is set all false', () => {
-      const mCustomProfiles: IOptions = {
-        mPerformanceTimeAndMemPrinter: {
-          mFilesPrinter: false,
-          mSingleFilePrinter: false,
-        },
-      };
-      initPerformanceTimeAndMemPrinter(mCustomProfiles);
       expect(performanceTimeAndMemPrinter.filesPrinter).to.be.undefined;
-      expect(performanceTimeAndMemPrinter.singleFilePrinter).to.be.undefined;
     });
-
-    it('Printer config is set not all false', () => {
-      const mCustomProfiles: IOptions = {
-        mPerformanceTimeAndMemPrinter: {
-          mFilesPrinter: false,
-          mSingleFilePrinter: true,
-        },
-      };
-      initPerformanceTimeAndMemPrinter(mCustomProfiles);
-      expect(performanceTimeAndMemPrinter.filesPrinter).to.not.be.undefined;
+  
+    it('should not block performance printer when mTimeAndMemPrinter is true', () => {
+      printerTimeAndMemDataConfig.mTimeAndMemPrinter = true;
+      performanceTimeAndMemPrinter.singleFilePrinter = new TimeAndMemTimeTracker();
+      performanceTimeAndMemPrinter.filesPrinter = new TimeAndMemTimeTracker();
+  
+      initPerformanceTimeAndMemPrinter();
+  
       expect(performanceTimeAndMemPrinter.singleFilePrinter).to.not.be.undefined;
+      expect(performanceTimeAndMemPrinter.filesPrinter).to.not.be.undefined;
+    });
+  });
+
+  describe('Tester Cases for <configurePerformancePrinter>', () => {
+    it('should configure performance printer for advanced mode', () => {
+      printerTimeAndMemDataConfig.mTimeAndMemPrinter = false;
+      performanceTimeAndMemPrinter.singleFilePrinter = undefined;
+      performanceTimeAndMemPrinter.filesPrinter = undefined;
+
+      configurePerformancePrinter(PerfMode.ADVANCED);
+
+      expect(performanceTimeAndMemPrinter.singleFilePrinter).to.not.be.undefined;
+      expect(performanceTimeAndMemPrinter.filesPrinter).to.not.be.undefined;
+      expect(printerTimeAndMemDataConfig.mTimeAndMemPrinter).to.be.true;
+    });
+
+    it('should block performance printer for normal mode', () => {
+      performanceTimeAndMemPrinter.singleFilePrinter = new TimeAndMemTimeTracker();
+      performanceTimeAndMemPrinter.filesPrinter = new TimeAndMemTimeTracker();
+
+      configurePerformancePrinter(PerfMode.NORMAL);
+
+      expect(performanceTimeAndMemPrinter.singleFilePrinter).to.be.undefined;
+      expect(performanceTimeAndMemPrinter.filesPrinter).to.be.undefined;
     });
   });
 
@@ -146,6 +164,22 @@ describe('test Cases for <PrinterTimAndMemUtils>.', function () {
       clearTimeAndMemPrinterData();
       expect(performanceTimeAndMemPrinter.filesPrinter === undefined).to.be.true;
       expect(performanceTimeAndMemPrinter.singleFilePrinter === undefined).to.be.true;
+    });
+  });
+
+  describe('Tester Cases for <initPrinterTimeAndMemConfig>', () => {
+    it('start a initPrinterTimeAndMemConfig', () => {
+      printerTimeAndMemDataConfig.mTimeAndMemPrinter = false;
+      initPrinterTimeAndMemConfig();
+      expect(printerTimeAndMemDataConfig.mTimeAndMemPrinter).to.be.true;
+    });
+  });
+
+  describe('Tester Cases for <disablePrinterTimeAndMemConfig>', () => {
+    it('start a disablePrinterTimeAndMemConfig', () => {
+      printerTimeAndMemDataConfig.mTimeAndMemPrinter = true;
+      disablePrinterTimeAndMemConfig();
+      expect(printerTimeAndMemDataConfig.mTimeAndMemPrinter).to.be.false;
     });
   });
 
@@ -273,6 +307,7 @@ describe('test Cases for <PrinterTimAndMemUtils>.', function () {
       });
 
       await enableTimeAndMemoryPrint();
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       expect(fs.existsSync(timePerformanceFilePath)).to.be.true;
       expect(fs.existsSync(memoryPerformanceFilePath)).to.be.true;
