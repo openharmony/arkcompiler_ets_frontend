@@ -106,12 +106,32 @@
         },
         {
             "line": 28,
+            "column": 20,
+            "endLine": 28,
+            "endColumn": 41,
+            "problem": "InvalidIdentifier",
+            "suggest": "",
+            "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
             "column": 44,
             "endLine": 28,
             "endColumn": 48,
             "problem": "ThisType",
             "suggest": "",
             "rule": "Type notation using \"this\" is not supported (arkts-no-typing-with-this)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
+            "column": 20,
+            "endLine": 43,
+            "endColumn": 41,
+            "problem": "InvalidIdentifier",
+            "suggest": "",
+            "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
             "severity": "ERROR"
         },
         {

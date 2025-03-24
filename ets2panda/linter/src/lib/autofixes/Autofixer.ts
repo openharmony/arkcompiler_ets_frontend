@@ -2530,4 +2530,61 @@ export class Autofixer {
       }
     ];
   }
+
+  checkEnumMemberNameConflict(tsEnumMember: ts.EnumMember, autofix: Autofix[] | undefined): void {
+    if (!autofix?.length) {
+      return;
+    }
+
+    const parentEnum = tsEnumMember.parent;
+    if (!this.hasNameConflict(parentEnum, tsEnumMember, autofix)) {
+      return;
+    }
+
+    const existingNames = this.collectExistingNames(parentEnum, tsEnumMember);
+    this.adjustAutofixNames(autofix, existingNames);
+  }
+
+  hasNameConflict(parentEnum: ts.EnumDeclaration, tsEnumMember: ts.EnumMember, autofix: Autofix[]): boolean {
+    void this;
+    return parentEnum.members.some((member) => {
+      return (
+        member !== tsEnumMember &&
+        (ts.isStringLiteral(member.name) || member.name.getText() === autofix[0].replacementText)
+      );
+    });
+  }
+
+  collectExistingNames(parentEnum: ts.EnumDeclaration, tsEnumMember: ts.EnumMember): Set<string> {
+    void this;
+    return new Set(
+      parentEnum.members.
+        filter((m) => {
+          return m !== tsEnumMember;
+        }).
+        map((m) => {
+          const nameNode = m.name;
+          if (ts.isStringLiteral(nameNode)) {
+            const fix = this.fixLiteralAsPropertyNamePropertyName(nameNode);
+            return fix?.[0]?.replacementText || nameNode.text;
+          }
+          return nameNode.getText();
+        })
+    );
+  }
+
+  adjustAutofixNames(autofix: Autofix[], existingNames: Set<string>): void {
+    void this;
+    const baseName = autofix[0].replacementText;
+    let newName = baseName;
+    let counter = 1;
+
+    while (existingNames.has(newName)) {
+      newName = `${baseName}_${counter++}`;
+    }
+
+    autofix.forEach((fix) => {
+      fix.replacementText = newName;
+    });
+  }
 }

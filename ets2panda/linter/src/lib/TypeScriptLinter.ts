@@ -227,7 +227,8 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.ArrayType, this.handleArrayType],
     [ts.SyntaxKind.LiteralType, this.handleLimitedLiteralType],
     [ts.SyntaxKind.NonNullExpression, this.handleNonNullExpression],
-    [ts.SyntaxKind.HeritageClause, this.checkExtendsExpression]
+    [ts.SyntaxKind.HeritageClause, this.checkExtendsExpression],
+    [ts.SyntaxKind.TaggedTemplateExpression, this.handleTaggedTemplatesExpression]
   ]);
 
   private getLineAndCharacterOfNode(node: ts.Node | ts.CommentRange): ts.LineAndCharacter {
@@ -311,7 +312,11 @@ export class TypeScriptLinter {
     }
   }
 
-  private incrementCountersIdeInteractiveMode(node: ts.Node | ts.CommentRange, faultId: number, autofix?: Autofix[]): void {
+  private incrementCountersIdeInteractiveMode(
+    node: ts.Node | ts.CommentRange,
+    faultId: number,
+    autofix?: Autofix[]
+  ): void {
     if (!this.options.ideInteractive) {
       return;
     }
@@ -605,6 +610,7 @@ export class TypeScriptLinter {
     });
     this.handleDeclarationDestructuring(tsParam);
     this.handleDeclarationInferredType(tsParam);
+    this.handleInvalidIdentifier(tsParam);
     const typeNode = tsParam.type;
     if (this.options.arkts2 && typeNode && typeNode.kind === ts.SyntaxKind.VoidKeyword) {
       this.incrementCounters(typeNode, FaultID.LimitedVoidType);
@@ -754,6 +760,7 @@ export class TypeScriptLinter {
 
     // handle no side effect import in sendable module
     this.handleSharedModuleNoSideEffectImport(importDeclNode);
+    this.handleInvalidIdentifier(importDeclNode);
   }
 
   private handleSharedModuleNoSideEffectImport(node: ts.ImportDeclaration): void {
@@ -885,6 +892,8 @@ export class TypeScriptLinter {
     this.handleDefiniteAssignmentAssertion(node);
     this.handleSendableClassProperty(node);
     this.checkAssignmentNumericSemanticslyPro(node);
+    this.handleInvalidIdentifier(node);
+    this.handleExplicitFunctionType(node);
   }
 
   private handleSendableClassProperty(node: ts.PropertyDeclaration): void {
@@ -947,6 +956,18 @@ export class TypeScriptLinter {
     return allClasses;
   }
 
+  private static getAllInterfaceFromSourceFile(sourceFile: ts.SourceFile): ts.InterfaceDeclaration[] {
+    const allInterfaces: ts.InterfaceDeclaration[] = [];
+    function visit(node: ts.Node): void {
+      if (ts.isInterfaceDeclaration(node)) {
+        allInterfaces.push(node);
+      }
+      ts.forEachChild(node, visit);
+    }
+    visit(sourceFile);
+    return allInterfaces;
+  }
+
   private handlePropertySignature(node: ts.PropertySignature): void {
     const propName = node.name;
     this.handleInterfaceProperty(node);
@@ -959,6 +980,8 @@ export class TypeScriptLinter {
       this.incrementCounters(node.name, FaultID.LiteralAsPropertyName, autofix);
     }
     this.handleSendableInterfaceProperty(node);
+    this.handleInvalidIdentifier(node);
+    this.handleExplicitFunctionType(node);
   }
 
   private handleInterfaceProperty(node: ts.PropertySignature): void {
@@ -967,7 +990,42 @@ export class TypeScriptLinter {
         const interfaceName = node.parent.name.getText();
         const propertyName = node.name.getText();
         const allClasses = TypeScriptLinter.getAllClassesFromSourceFile(this.sourceFile!);
+        const allInterfaces = TypeScriptLinter.getAllInterfaceFromSourceFile(this.sourceFile!);
         this.visitClassMembers(allClasses, interfaceName, propertyName);
+        this.visitInterfaceMembers(allInterfaces, interfaceName, propertyName);
+      }
+    }
+  }
+
+  private visitInterfaceMembers(
+    interfaces: ts.InterfaceDeclaration[],
+    interfaceName: string,
+    propertyName: string
+  ): void {
+    void this;
+    interfaces.some((interfaceDecl) => {
+      const implementsClause = this.getExtendsClause(interfaceDecl);
+      if (
+        implementsClause?.types.some((type) => {
+          return type.getText() === interfaceName;
+        })
+      ) {
+        this.checkInterfaceForProperty(interfaceDecl, propertyName);
+      }
+    });
+  }
+
+  private getExtendsClause(interfaceDecl: ts.InterfaceDeclaration): ts.HeritageClause | undefined {
+    void this;
+    return interfaceDecl.heritageClauses?.find((clause) => {
+      return clause.token === ts.SyntaxKind.ExtendsKeyword;
+    });
+  }
+
+  private checkInterfaceForProperty(interfaceDecl: ts.InterfaceDeclaration, propertyName: string): void {
+    for (const member of interfaceDecl.members) {
+      if (ts.isMethodSignature(member) && member.name.getText() === propertyName) {
+        this.incrementCounters(member, FaultID.MethodOverridingField);
       }
     }
   }
@@ -1205,6 +1263,7 @@ export class TypeScriptLinter {
     }
     this.handleTSOverload(tsFunctionDeclaration);
     this.checkAssignmentNumericSemanticsFuntion(tsFunctionDeclaration);
+    this.handleInvalidIdentifier(tsFunctionDeclaration);
   }
 
   private handleMissingReturnType(
@@ -1602,21 +1661,22 @@ export class TypeScriptLinter {
     this.checkAssignmentNumericSemanticsly(tsVarDecl);
   }
 
-  private handleExplicitFunctionType(node: ts.VariableDeclaration): void {
+  private handleExplicitFunctionType(
+    node: ts.VariableDeclaration | ts.PropertyDeclaration | ts.PropertySignature
+  ): void {
     if (!this.options.arkts2) {
       return;
     }
     const type = node.type;
     const initializer = node.initializer;
-    const isFunctionType = type?.kind === ts.SyntaxKind.FunctionType;
     const isFunctionLiteral =
       type?.kind === ts.SyntaxKind.TypeReference &&
       (type as ts.TypeReferenceNode).typeName?.getText() === LIKE_FUNCTION;
     const isNewFunctionConstructor =
       initializer && ts.isNewExpression(initializer) && initializer.expression.getText() === LIKE_FUNCTION;
 
-    if (type && (isFunctionType || isFunctionLiteral) || initializer && isNewFunctionConstructor) {
-      this.incrementCounters(node, FaultID.ExplicitFunctionType);
+    if (type && isFunctionLiteral || initializer && isNewFunctionConstructor) {
+      this.incrementCounters(node, FaultID.LimitedStdLibApi);
     }
   }
 
@@ -1790,6 +1850,7 @@ export class TypeScriptLinter {
 
     this.processClassStaticBlocks(tsClassDecl);
     this.handleClassStaticPropInit(tsClassDecl);
+    this.handleInvalidIdentifier(tsClassDecl);
   }
 
   private handleNotSupportCustomDecorators(decorator: ts.Decorator): void {
@@ -2048,6 +2109,7 @@ export class TypeScriptLinter {
     if (this.options.arkts2 && tsMethodDecl.questionToken) {
       this.incrementCounters(tsMethodDecl.questionToken, FaultID.OptionalMethod);
     }
+    this.handleInvalidIdentifier(tsMethodDecl);
   }
 
   private checkClassImplementsMethod(classDecl: ts.ClassDeclaration, methodName: string): boolean {
@@ -2067,9 +2129,15 @@ export class TypeScriptLinter {
       const methodName = node.name.getText();
       const interfaceName = node.parent.name.getText();
       const allClasses = TypeScriptLinter.getAllClassesFromSourceFile(this.sourceFile!);
+      const allInterfaces = TypeScriptLinter.getAllInterfaceFromSourceFile(this.sourceFile!);
       allClasses.forEach((classDecl) => {
         if (this.classImplementsInterface(classDecl, interfaceName)) {
           this.checkClassImplementsMethod(classDecl, methodName);
+        }
+      });
+      allInterfaces.forEach((interDecl) => {
+        if (this.interfaceExtendsInterface(interDecl, interfaceName)) {
+          this.checkInterfaceExtendsMethod(interDecl, methodName);
         }
       });
     }
@@ -2078,6 +2146,33 @@ export class TypeScriptLinter {
     }
     if (this.options.arkts2 && tsMethodSign.questionToken) {
       this.incrementCounters(tsMethodSign.questionToken, FaultID.OptionalMethod);
+    }
+    this.handleInvalidIdentifier(tsMethodSign);
+  }
+
+  private interfaceExtendsInterface(interDecl: ts.InterfaceDeclaration, interfaceName: string): boolean {
+    void this;
+    if (!interDecl.heritageClauses) {
+      return false;
+    }
+    return interDecl.heritageClauses.some((clause) => {
+      return clause.types.some((type) => {
+        return (
+          ts.isExpressionWithTypeArguments(type) &&
+          ts.isIdentifier(type.expression) &&
+          type.expression.text === interfaceName
+        );
+      });
+    });
+  }
+
+  private checkInterfaceExtendsMethod(interDecl: ts.InterfaceDeclaration, methodName: string): void {
+    for (const member of interDecl.members) {
+      if (member.name?.getText() === methodName) {
+        if (ts.isPropertySignature(member)) {
+          this.incrementCounters(member, FaultID.MethodOverridingField);
+        }
+      }
     }
   }
 
@@ -2395,8 +2490,7 @@ export class TypeScriptLinter {
     const constVal = this.tsTypeChecker.getConstantValue(tsEnumMember);
     const tsEnumMemberName = tsEnumMember.name;
     if (this.options.arkts2 && ts.isStringLiteral(tsEnumMemberName)) {
-      const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(tsEnumMemberName);
-      this.incrementCounters(node, FaultID.LiteralAsPropertyName, autofix);
+      this.handleStringLiteralEnumMember(tsEnumMember, tsEnumMemberName, node);
     }
 
     if (tsEnumMember.initializer && !this.tsUtils.isValidEnumMemberInit(tsEnumMember.initializer)) {
@@ -2432,6 +2526,16 @@ export class TypeScriptLinter {
     if (firstEnumMemberType !== tsEnumMemberType) {
       this.incrementCounters(node, FaultID.EnumMemberNonConstInit);
     }
+  }
+
+  private handleStringLiteralEnumMember(
+    tsEnumMember: ts.EnumMember,
+    tsEnumMemberName: ts.StringLiteral,
+    node: ts.Node
+  ): void {
+    const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(tsEnumMemberName);
+    this.autofixer?.checkEnumMemberNameConflict(tsEnumMember, autofix);
+    this.incrementCounters(node, FaultID.LiteralAsPropertyName, autofix);
   }
 
   private handleEnumNotSupportFloat(enumMember: ts.EnumMember): void {
@@ -4050,13 +4154,38 @@ export class TypeScriptLinter {
     }
   }
 
-  private handleInvalidIdentifier(decl: ts.VariableDeclaration): void {
+  private handleInvalidIdentifier(
+    decl:
+      | ts.VariableDeclaration
+      | ts.FunctionDeclaration
+      | ts.MethodSignature
+      | ts.ClassDeclaration
+      | ts.PropertyDeclaration
+      | ts.MethodDeclaration
+      | ts.ParameterDeclaration
+      | ts.PropertySignature
+      | ts.ImportDeclaration
+  ): void {
     if (!this.options.arkts2) {
       return;
     }
-    const identifier = decl.name as ts.Identifier;
-    if (identifier && INVALID_IDENTIFIER_KEYWORDS.includes(identifier.text)) {
-      this.incrementCounters(decl, FaultID.InvalidIdentifier);
+
+    const checkIdentifier = (identifier: ts.Identifier | undefined): void => {
+      if (identifier && INVALID_IDENTIFIER_KEYWORDS.includes(identifier.text)) {
+        this.incrementCounters(decl, FaultID.InvalidIdentifier);
+      }
+    };
+
+    if (ts.isImportDeclaration(decl)) {
+      const importClause = decl.importClause;
+      if (importClause?.namedBindings && ts.isNamedImports(importClause?.namedBindings)) {
+        importClause.namedBindings.elements.forEach((importSpecifier) => {
+          checkIdentifier(importSpecifier.name);
+        });
+      }
+      checkIdentifier(importClause?.name);
+    } else {
+      checkIdentifier(decl.name as ts.Identifier);
     }
   }
 

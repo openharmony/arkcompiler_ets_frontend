@@ -415,6 +415,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 85,
+            "column": 19,
+            "endLine": 85,
+            "endColumn": 31,
+            "problem": "InvalidIdentifier",
+            "suggest": "",
+            "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
+            "severity": "ERROR"
+        },
+        {
             "line": 86,
             "column": 8,
             "endLine": 86,
@@ -952,6 +962,16 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 177,
+            "column": 3,
+            "endLine": 177,
+            "endColumn": 17,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
             "severity": "ERROR"
         }
     ]

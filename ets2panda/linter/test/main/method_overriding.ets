@@ -38,3 +38,19 @@ class A {
 class B extends A {
     cb: () => void = () => {} // Should report error
 }
+
+interface Person7 {
+  fun: () => void
+}
+
+interface Person7_1 extends Person7 {
+  fun():void
+}
+
+interface Person8 {
+  fun():void
+}
+
+interface Person8_1 extends Person8 {
+  fun: () => void
+}
