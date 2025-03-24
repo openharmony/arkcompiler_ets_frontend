@@ -103,6 +103,9 @@ private:
 
     template <class T>
     void GenModifier(const T *node, bool isProp = false);
+
+    template <class T>
+    void GenAnnotations(const T *node);
     void GenTypeParameters(const ir::TSTypeParameterDeclaration *typeParams);
     void GenTypeParameters(const ir::TSTypeParameterInstantiation *typeParams);
     void GenExport(const ir::Identifier *symbol);
@@ -203,6 +206,7 @@ private:
     struct ClassNode {
         bool hasNestedClass {false};
         bool isIndirect {false};
+        bool isStruct {false};
         size_t indentLevel {1};
     } classNode_ {};
 

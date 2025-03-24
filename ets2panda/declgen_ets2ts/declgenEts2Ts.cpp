@@ -727,6 +727,18 @@ std::string TSDeclGen::RemoveModuleExtensionName(const std::string &filepath)
     return filepath;
 }
 
+template <class T>
+void TSDeclGen::GenAnnotations(const T *node)
+{
+    GenSeparated(
+        node->Annotations(),
+        [this](ir::AnnotationUsage *anno) {
+            OutDts("@", anno->GetBaseName()->Name());
+            OutEndlDts();
+        },
+        "");
+}
+
 void TSDeclGen::GenImportDeclaration(const ir::ETSImportDeclaration *importDeclaration)
 {
     DebugPrint("GenImportDeclaration");
@@ -845,6 +857,7 @@ void TSDeclGen::GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAl
     }
     const auto typeAnnotation = typeAlias->TypeAnnotation();
     const auto *aliasedType = typeAnnotation->GetType(checker_);
+    GenAnnotations(typeAlias);
     OutDts("export type ", name);
     GenTypeParameters(typeAlias->TypeParams());
     OutDts(" = ");
@@ -912,6 +925,7 @@ void TSDeclGen::GenInterfaceDeclaration(const ir::TSInterfaceDeclaration *interf
     if (!ShouldEmitDeclarationSymbol(interfaceDecl->Id())) {
         return;
     }
+    GenAnnotations(interfaceDecl);
     if (classNode_.isIndirect) {
         OutDts("declare interface ", interfaceName);
     } else {
@@ -975,6 +989,7 @@ void TSDeclGen::PrepareClassDeclaration(const ir::ClassDefinition *classDef)
     } else {
         state_.isClassInNamespace = true;
     }
+    classNode_.isStruct = classDef->IsFromStruct();
     classNode_.isIndirect = false;
 }
 
@@ -992,6 +1007,8 @@ void TSDeclGen::EmitClassDeclaration(const ir::ClassDefinition *classDef, const 
     } else if (classDef->IsEnumTransformed()) {
         OutDts(classNode_.indentLevel > 1 ? "enum " : "export declare enum ", className);
         OutTs("export const enum ", className, " {");
+    } else if (classDef->IsFromStruct()) {
+        OutDts("export declare struct ", className);
     } else if (classNode_.isIndirect) {
         OutDts("declare class ", className);
     } else if (classDef->IsAbstract()) {
@@ -1038,6 +1055,7 @@ void TSDeclGen::HandleClassDeclarationTypeInfo(const ir::ClassDefinition *classD
     if (!ShouldEmitDeclarationSymbol(classDef->Ident())) {
         return;
     }
+    GenAnnotations(classDef);
     EmitClassDeclaration(classDef, className);
     GenTypeParameters(classDef->TypeParams());
 
@@ -1098,6 +1116,8 @@ void TSDeclGen::ProcessClassBody(const ir::ClassDefinition *classDef)
             OutDts(indent);
             OutTs(indent);
             classNode_.indentLevel++;
+            GenClassDeclaration(prop->AsClassDeclaration());
+        } else if (prop->IsClassDeclaration() && classDef->IsFromStruct()) {
             GenClassDeclaration(prop->AsClassDeclaration());
         }
     }
@@ -1164,6 +1184,9 @@ bool TSDeclGen::ShouldSkipMethodDeclaration(const ir::MethodDefinition *methodDe
     if (methodName == compiler::Signatures::INIT_METHOD) {
         return true;
     }
+    if (classNode_.isStruct && methodDef->IsConstructor()) {
+        return true;
+    }
     return false;
 }
 
@@ -1204,6 +1227,10 @@ void TSDeclGen::GenMethodDeclaration(const ir::MethodDefinition *methodDef)
         }
         OutDts("export declare function ");
     } else {
+        if (!methodDef->Function()->Annotations().empty()) {
+            ProcessIndent();
+            GenAnnotations(methodDef->Function());
+        }
         ProcessIndent();
         GenModifier(methodDef);
     }
@@ -1286,14 +1313,20 @@ void TSDeclGen::GenPropDeclaration(const ir::ClassProperty *classProp)
 
     ProcessIndent();
 
-    if ((!state_.inInterface && !state_.inNamespace) || state_.isClassInNamespace) {
+    if ((!state_.inInterface && !state_.inNamespace && !classNode_.isStruct && !state_.isClassInNamespace)) {
         GenPropAccessor(classProp, "get ");
         if (!classProp->IsReadonly()) {
             ProcessIndent();
             GenPropAccessor(classProp, "set ");
         }
     } else {
-        GenModifier(classProp, true);
+        if (!classProp->Annotations().empty()) {
+            GenAnnotations(classProp);
+            ProcessIndent();
+        }
+        if (!classNode_.isStruct) {
+            GenModifier(classProp, true);
+        }
         OutDts(propName);
         OutDts(": ");
         classProp->IsStatic() ? OutDts("any") : GenType(classProp->TsType());
@@ -1310,6 +1343,10 @@ void TSDeclGen::GenPropAccessor(const ir::ClassProperty *classProp, const std::s
 {
     if (accessorKind != "set " && accessorKind != "get ") {
         return;
+    }
+    if (!classProp->Annotations().empty()) {
+        GenAnnotations(classProp);
+        ProcessIndent();
     }
     GenModifier(classProp);
 
