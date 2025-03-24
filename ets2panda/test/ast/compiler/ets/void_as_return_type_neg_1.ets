@@ -17,4 +17,7 @@ async function foo():Promise<void>{
     return void;
 }
 
-/* @@? 17:12 Error TypeError: Unresolved reference void */
+/* @@? 17:12 Error SyntaxError: Unexpected token 'void'. */
+/* @@? 17:12 Error SyntaxError: Unexpected token 'void'. */
+/* @@? 17:12 Error SyntaxError: Unexpected token 'void'. */
+/* @@? 17:12 Error SyntaxError: Unexpected token 'void'. */

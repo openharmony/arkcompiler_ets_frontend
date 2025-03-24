@@ -26,11 +26,17 @@ for (i in 50) {
   a += 10
 }
 /* @@? 20:9 Error SyntaxError: Type annotation is not allowed when existing variable is used as loop iterator in 'for' statement. */
-/* @@? 20:11 Error SyntaxError: Expected ';', got 'identification literal'. */
-/* @@? 20:11 Error TypeError: Unresolved reference double */
-/* @@? 20:18 Error SyntaxError: Expected ';', got 'identification literal'. */
+/* @@? 20:11 Error SyntaxError: Expected ';', got 'double'. */
+/* @@? 20:11 Error SyntaxError: Unexpected token 'double'. */
+/* @@? 20:11 Error SyntaxError: Unexpected token 'double'. */
+/* @@? 20:11 Error SyntaxError: Unexpected token 'double'. */
+/* @@? 20:11 Error SyntaxError: Unexpected token 'double'. */
+/* @@? 20:11 Error SyntaxError: Expected ')', got 'double'. */
+/* @@? 20:11 Error SyntaxError: Unexpected token 'double'. */
+/* @@? 20:11 Error SyntaxError: Expected ';', got 'double'. */
+/* @@? 20:11 Error SyntaxError: Unexpected token 'double'.  */
 /* @@? 20:18 Error TypeError: Unresolved reference of */
-/* @@? 20:21 Error SyntaxError: Expected ')', got 'identification literal'. */
+/* @@? 20:21 Error SyntaxError: Unexpected token 'a'. */
 /* @@? 20:21 Error TypeError: Unresolved reference a */
 /* @@? 20:22 Error SyntaxError: Unexpected token ')'. */
 /* @@? 20:22 Error SyntaxError: Unexpected token ')'. */

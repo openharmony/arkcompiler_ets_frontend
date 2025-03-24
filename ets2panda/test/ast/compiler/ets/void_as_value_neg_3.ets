@@ -15,7 +15,12 @@
 
 function foo<T>(x: T) {}
 
-foo<void>(/* @@ label */void) 
+foo<void>(void) 
 
-/* @@@ label Error TypeError: Unresolved reference void  */
-
+/* @@? 18:11 Error SyntaxError: Unexpected token 'void'. */
+/* @@? 18:11 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 18:11 Error SyntaxError: Unexpected token 'void'. */
+/* @@? 18:11 Error SyntaxError: Unexpected token 'void'. */
+/* @@? 18:11 Error SyntaxError: Unexpected token 'void'. */
+/* @@? 18:15 Error SyntaxError: Unexpected token ')'. */
+/* @@? 18:15 Error SyntaxError: Unexpected token ')'. */
