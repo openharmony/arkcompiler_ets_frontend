@@ -15,7 +15,7 @@
 enum Color {Blue, Red, Green}
 
 @interface MyValue {
-    size: Color[]
+    size: FixedArray<Color>
 }
 @MyValue([Color.Blue,])
 class A{
