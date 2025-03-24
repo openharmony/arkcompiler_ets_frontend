@@ -123,6 +123,18 @@ ir::Expression *TypedParser::ParseExpression(ExpressionParseFlags flags)
     return assignmentExpression;
 }
 
+bool TypedParser::IsNamespaceDecl()
+{
+    if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_NAMESPACE) {
+        return false;
+    }
+    auto savedPos = Lexer()->Save();
+    Lexer()->NextToken();
+    bool isNamespaceDecl = Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT;
+    Lexer()->Rewind(savedPos);
+    return isNamespaceDecl;
+}
+
 ir::Statement *TypedParser::ParsePotentialExpressionStatement(StatementParsingFlags flags)
 {
     ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
@@ -145,9 +157,13 @@ ir::Statement *TypedParser::ParsePotentialExpressionStatement(StatementParsingFl
             return ParseClassStatement(flags, ir::ClassDefinitionModifiers::NONE, ir::ModifierFlags::ABSTRACT);
         }
         case lexer::TokenType::KEYW_GLOBAL:
-        case lexer::TokenType::KEYW_MODULE:
-        case lexer::TokenType::KEYW_NAMESPACE: {
+        case lexer::TokenType::KEYW_MODULE: {
             return ParseModuleDeclaration();
+        }
+        case lexer::TokenType::KEYW_NAMESPACE: {
+            if (((GetContext().Status() & ParserStatus::IN_AMBIENT_CONTEXT) != 0U) || IsNamespaceDecl()) {
+                return ParseModuleDeclaration();
+            }
         }
         default: {
             break;

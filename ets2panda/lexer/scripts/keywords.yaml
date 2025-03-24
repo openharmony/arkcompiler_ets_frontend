@@ -323,8 +323,8 @@ keywords:
 
   - name: 'namespace'
     token: KEYW_NAMESPACE
-    keyword: [ets]
-    keyword_like: [as, ts]
+    keyword_like: [as, ets, ts]
+    flags: [definable_type_name]
 
   - name: 'native'
     token: KEYW_NATIVE
@@ -428,6 +428,7 @@ keywords:
   - name: 'struct'
     token: KEYW_STRUCT
     keyword_like: [ets]
+    flags: [definable_type_name]
 
   - name: 'super'
     token: KEYW_SUPER
@@ -509,7 +510,8 @@ keywords:
 
   - name: 'var'
     token: KEYW_VAR
-    keyword: [as, js, ets, ts]
+    keyword: [as, js, ts]
+    keyword_like: [ets]
     flags: [reserved_type_name, definable_type_name]
 
   - name: 'void'
@@ -528,6 +530,6 @@ keywords:
 
   - name: 'yield'
     token: KEYW_YIELD
-    keyword: [ets]
+    keyword_like: [ets]
     custom_handler: [js, ts]
     flags: [definable_type_name]

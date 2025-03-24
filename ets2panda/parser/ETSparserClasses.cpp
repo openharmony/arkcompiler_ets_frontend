@@ -596,6 +596,8 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
         case lexer::TokenType::LITERAL_IDENT: {
             if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STRUCT) {
                 result = ParseInnerTypeDeclaration(memberModifiers, savedPos, isStepToken, seenStatic);
+            } else if (IsNamespaceDecl()) {
+                result = ParseNamespace(flags);
             } else {
                 result = ParseInnerRest(properties, modifiers, memberModifiers, startLoc);
             }
@@ -603,9 +605,6 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
         }
         case lexer::TokenType::KEYW_CONSTRUCTOR:
             result = ParseInnerConstructorDeclaration(memberModifiers, startLoc);
-            break;
-        case lexer::TokenType::KEYW_NAMESPACE:
-            result = ParseNamespace(memberModifiers);
             break;
         case lexer::TokenType::KEYW_PUBLIC:
         case lexer::TokenType::KEYW_PRIVATE:
