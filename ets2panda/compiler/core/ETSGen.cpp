@@ -2324,7 +2324,10 @@ void ETSGen::BranchIfNullish(const ir::AstNode *node, Label *ifNullish)
 {
     auto *const type = GetAccumulatorType();
 
-    if (type->DefinitelyNotETSNullish()) {
+    if (type->IsETSVoidType()) {
+        // NOTE(): #19701 need void refactoring
+        Sa().Emit<Jmp>(node, ifNullish);
+    } else if (type->DefinitelyNotETSNullish()) {
         // no action
     } else if (type->DefinitelyETSNullish()) {
         Sa().Emit<Jmp>(node, ifNullish);
