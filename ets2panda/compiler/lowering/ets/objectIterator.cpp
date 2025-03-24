@@ -97,8 +97,8 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(parser::ETSParser *
 
     ir::Identifier *const iterIdent = Gensym(allocator);
     ir::Identifier *const nextIdent = Gensym(allocator);
-    std::string loopVariableName;
     bool declared = true;
+    ir::Identifier *loopVariableIdent = nullptr;
 
     //  Replace the for-of loop with the while loop using the provided iterator interface
     std::string whileStatement = "let @@I1 = (@@E2)." + std::string {compiler::Signatures::ITERATOR_METHOD} + "(); ";
@@ -109,22 +109,22 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(parser::ETSParser *
         auto *const declaration = left->AsVariableDeclaration();
         whileStatement +=
             declaration->Kind() != ir::VariableDeclaration::VariableDeclarationKind::CONST ? "let " : "const ";
-        loopVariableName = declaration->Declarators().at(0U)->Id()->AsIdentifier()->Name().Mutf8();
+        loopVariableIdent = declaration->Declarators().at(0U)->Id()->AsIdentifier()->Clone(allocator, nullptr);
     } else if (left->IsIdentifier()) {
         declared = false;
-        loopVariableName = left->AsIdentifier()->Name().Mutf8();
+        loopVariableIdent = left->AsIdentifier()->Clone(allocator, nullptr);
     } else {
         ES2PANDA_UNREACHABLE();
     }
 
-    whileStatement += loopVariableName + " = @@I6.value!; ";
+    whileStatement += "@@I6 = @@I7.value!; ";
     //  later on here we will insert the current for-of-loop body.
-    whileStatement += "@@I7 = @@I8.next(); }";
+    whileStatement += "@@I8 = @@I9.next(); }";
 
     // Parse ArkTS code string and create corresponding AST nodes
     auto *const loweringResult = parser->CreateFormattedStatement(
         whileStatement, iterIdent, forOfStatement->Right(), nextIdent, iterIdent->Clone(allocator, nullptr),
-        nextIdent->Clone(allocator, nullptr), nextIdent->Clone(allocator, nullptr),
+        nextIdent->Clone(allocator, nullptr), loopVariableIdent, nextIdent->Clone(allocator, nullptr),
         nextIdent->Clone(allocator, nullptr), iterIdent->Clone(allocator, nullptr));
     loweringResult->SetParent(forOfStatement->Parent());
 

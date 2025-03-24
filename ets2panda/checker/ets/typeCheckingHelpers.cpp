@@ -348,6 +348,11 @@ bool Type::IsETSPrimitiveType() const
     return HasTypeFlag(ETS_PRIMITIVE);
 }
 
+bool Type::IsETSResizableArrayType() const
+{
+    return IsETSObjectType() && AsETSObjectType()->Name() == compiler::Signatures::ARRAY;
+}
+
 bool Type::IsETSPrimitiveOrEnumType() const
 {
     return IsETSPrimitiveType() || IsETSEnumType();

@@ -67,7 +67,7 @@ ir::Identifier *CreateNewArrayLengthStatement(public_lib::Context *ctx, ir::Arra
         if (spaId->TsType() != nullptr && spaId->TsType()->IsETSTupleType()) {
             lengthString << "(" << spaId->TsType()->AsETSTupleType()->GetTupleTypesList().size() << ") + ";
         } else {
-            lengthString << "@@I" << (argumentCount++) << ".length + ";
+            lengthString << "(@@I" << (argumentCount++) << ".length as int) + ";
             nodesWaitingInsert.emplace_back(spaId->Clone(allocator, nullptr));
         }
     }
