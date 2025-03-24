@@ -20,7 +20,6 @@ class G <T> {
 }
 
 let a = new G<String>();
-/* @@ label */a./* @@ label1 */y();
+a./* @@ label */y();
 
-/* @@@ label1 Error TypeError: 'y' is a static property of 'G'  */
-/* @@@ label Error TypeError: No matching call signature  */
+/* @@@ label Error TypeError: 'y' is a static property of 'G'  */

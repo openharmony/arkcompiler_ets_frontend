@@ -22,11 +22,9 @@ function f(): A {
 }
 
 function main() {
-  /* @@ label1 */f()./* @@ label2 */foo()
-  /* @@ label3 */f()!./* @@ label4 */foo()
+  f()./* @@ label1 */foo()
+  f()!./* @@ label2 */foo()
 }
 
+/* @@@ label1 Error TypeError: 'foo' is a static property of 'A' */
 /* @@@ label2 Error TypeError: 'foo' is a static property of 'A' */
-/* @@@ label1 Error TypeError: No matching call signature */
-/* @@@ label4 Error TypeError: 'foo' is a static property of 'A' */
-/* @@@ label3 Error TypeError: No matching call signature */

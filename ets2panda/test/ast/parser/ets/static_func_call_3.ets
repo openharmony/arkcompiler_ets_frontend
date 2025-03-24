@@ -18,7 +18,6 @@ class A {
 }
 
 let a = new A()
-/* @@ label1 */a./* @@ label2 */bar()
+a./* @@ label */bar()
 
-/* @@@ label2 Error TypeError: 'bar' is a static property of 'A' */
-/* @@@ label1 Error TypeError: No matching call signature */
+/* @@@ label Error TypeError: 'bar' is a static property of 'A' */

@@ -21,7 +21,7 @@ class A {
 
 class B extends A {
     alma() {
-        return /* @@ label1 */super./* @@ label2 */korte();
+        return super./* @@ label */korte();
     }
 }
 
@@ -30,5 +30,4 @@ function main() : void {
     x.alma();
 }
 
-/* @@@ label2 Error TypeError: 'korte' is a static property of 'A' */
-/* @@@ label1 Error TypeError: No matching call signature  */
+/* @@@ label Error TypeError: 'korte' is a static property of 'A' */
