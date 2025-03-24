@@ -675,10 +675,6 @@ semantic:
   id: 166
   message: "Variable has same value with another switch case"
 
-- name: RETHROW_WITHOUT_THROWING_FUNC_PARAM
-  id: 167
-  message: "A rethrowing function must have a throwing function parameter"
-
 - name: INVALID_TYPE_PARAM
   id: 168
   message: "Type '{}' is not valid for generic type arguments"
@@ -939,14 +935,6 @@ semantic:
   id: 232
   message: "'void' used as type annotation."
 
-- name: MISSING_EXCEPTION_HANDLING
-  id: 233
-  message: "This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause"
-
-- name: RETHROW_NOT_BY_PARAM
-  id: 234
-  message: "This statement can cause an exception, re-throwing functions can throw exception only by their parameters."
-
 - name: THIS_OR_SUPER_IN_CTOR
   id: 235
   message: "Using {} is not allowed in constructor"
@@ -1090,10 +1078,6 @@ semantic:
 - name: NO_SUCH_PARAMLESS_CTOR_2
   id: 270
   message: "No Matching Parameterless Constructor, parameter count {}"
-
-- name: OVERRIDE_OR_SHADOWER_CHANGES_ERROR_HANDLING_CLAUSE
-  id: 271
-  message: "A method that overrides or hides another method cannot change throw or rethrow clauses of the overridden or hidden method."
 
 - name: INVISIBLE_ITERATOR
   id: 272

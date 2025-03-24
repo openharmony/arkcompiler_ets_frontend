@@ -336,10 +336,6 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
 
     ES2PANDA_ASSERT(signature->Function() != nullptr);
 
-    if (signature->Function()->IsThrowing() || signature->Function()->IsRethrowing()) {
-        checker->CheckThrowingStatements(this);
-    }
-
     if (isSetter) {
         //  Restore the right assignment node's parent to keep AST invariant valid.
         Parent()->AsAssignmentExpression()->Right()->SetParent(Parent());

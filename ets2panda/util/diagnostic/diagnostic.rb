@@ -28,8 +28,6 @@ module Diagnostic
   def wrap_data(data)
     data.each_pair do |diagnostic_type, diagnostics|
       diagnostics.each.with_index(1) do |diagnostic, index|
-        raise "Wrong id for diagnostic #{diagnostic.name},
-            should be #{index}, got #{diagnostic.id}" unless index == diagnostic.id
         diagnostic.type = diagnostic_type
         @diagnostics.append(diagnostic)
       end
