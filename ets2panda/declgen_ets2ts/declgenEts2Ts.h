@@ -91,12 +91,12 @@ private:
     void GenImportDeclaration(const ir::ETSImportDeclaration *importDeclaration);
     void GenReExportDeclaration(const ir::ETSReExportDeclaration *reExportDeclaration);
     void GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAlias);
-    void GenEnumDeclaration(const ir::TSEnumDeclaration *enumDecl);
-    void GenEnumMember(const ir::TSEnumDeclaration *enumDecl);
+    void GenEnumDeclaration(const ir::ClassProperty *enumMember);
     void GenInterfaceDeclaration(const ir::TSInterfaceDeclaration *interfaceDecl);
     void GenClassDeclaration(const ir::ClassDeclaration *classDecl);
     void GenMethodDeclaration(const ir::MethodDefinition *methodDef);
     void GenPropDeclaration(const ir::ClassProperty *classProp);
+    void GenPropAccessor(const ir::ClassProperty *classProp, const std::string &accessorKind);
     void GenGlobalVarDeclaration(const ir::ClassProperty *globalVar);
     void GenLiteral(const ir::Literal *literal);
 
@@ -113,6 +113,7 @@ private:
     void GenSeparated(const T &container, const CB &cb, const char *separator = ", ", bool isReExport = false);
 
     void PrepareClassDeclaration(const ir::ClassDefinition *classDef);
+    bool ShouldSkipMethodDeclaration(const ir::MethodDefinition *methodDef);
     bool ShouldSkipClassDeclaration(const std::string_view &className) const;
     void HandleClassDeclarationTypeInfo(const ir::ClassDefinition *classDef, const std::string_view &className);
     void ProcessClassBody(const ir::ClassDefinition *classDef);
@@ -121,6 +122,7 @@ private:
     void ProcessFuncParameters(const checker::Signature *sig);
     std::string ReplaceETSGLOBAL(const std::string &typeName);
     std::string GetIndent() const;
+    void GenPartName(std::string &partName);
     void ProcessIndent();
 
     void GenGlobalDescriptor();
@@ -186,6 +188,7 @@ private:
         bool inInterface {false};
         bool inGlobalClass {false};
         bool inNamespace {false};
+        bool inEnum {false};
         std::string currentClassDescriptor {};
         std::stack<bool> inUnionBodyStack {};
     } state_ {};
