@@ -62,8 +62,12 @@ export class QuasiEditor {
     fs.truncateSync(this.srcFileName);
 
     const srcLines = this.textBuffer.split(EOL);
-    for (const str of srcLines) {
-      fs.appendFileSync(this.srcFileName, str + EOL);
+    for (let i = 0; i < (srcLines.length - 1); i++ ) {
+      fs.appendFileSync(this.srcFileName, srcLines[i] + EOL);
+    }
+    // check if last line is empty out of loop to optimize
+    if (srcLines[srcLines.length - 1] !== '' ) {
+      fs.appendFileSync(this.srcFileName, srcLines[srcLines.length - 1] + EOL);
     }
   }
 
