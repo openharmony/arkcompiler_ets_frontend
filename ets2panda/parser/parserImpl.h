@@ -203,7 +203,7 @@ protected:
     // Error handling
     ir::Statement *AllocEmptyStatement();
     ir::Statement *AllocBrokenStatement(const lexer::SourcePosition &pos);
-    ir::Statement *AllocBrokenStatement(const lexer::SourceRange &pos);
+    ir::Statement *AllocBrokenStatement(const lexer::SourceRange &range);
     bool IsBrokenStatement(ir::Statement *st);
 
     template <typename T, typename... Args>

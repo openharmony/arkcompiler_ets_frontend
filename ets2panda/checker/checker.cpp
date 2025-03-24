@@ -39,7 +39,7 @@ void Checker::Initialize(varbinder::VarBinder *varbinder)
 void Checker::LogError(const diagnostic::DiagnosticKind &diagnostic,
                        const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &pos)
 {
-    diagnosticEngine_.LogDiagnostic(diagnostic, std::move(diagnosticParams), pos);
+    diagnosticEngine_.LogDiagnostic(diagnostic, diagnosticParams, pos);
 }
 
 void Checker::LogTypeError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)

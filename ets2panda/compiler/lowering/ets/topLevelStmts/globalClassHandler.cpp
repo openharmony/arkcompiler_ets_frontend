@@ -453,7 +453,7 @@ ArenaVector<ArenaVector<ir::Statement *>> GlobalClassHandler::CollectProgramGlob
     In the example code, execute order will be: b = 2, a = 1, b = 0;
     */
     globalDecl.FilterDeclarations(stmts);
-    return std::move(statements.initializers_);
+    return std::move(statements.initializers);
 }
 
 ir::ClassDeclaration *GlobalClassHandler::CreateGlobalClass(const parser::Program *const globalProgram)

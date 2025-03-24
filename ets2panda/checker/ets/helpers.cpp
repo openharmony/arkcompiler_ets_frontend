@@ -831,6 +831,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
 static checker::Type *ResolveGetter(checker::ETSChecker *checker, ir::MemberExpression *const expr,
                                     ETSFunctionType *funcType)
 {
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto signature = checker->FindRelativeExtensionGetter(expr, funcType);
     if (signature != nullptr) {
         return signature->ReturnType();
@@ -866,6 +867,7 @@ Signature *ETSChecker::FindRelativeExtensionGetter(ir::MemberExpression *const e
 
     ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
     arguments.insert(arguments.begin(), expr->Object());
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     Signature *signature = ValidateSignatures(funcType->GetExtensionAccessorSigs(), nullptr, arguments, expr->Start(),
                                               "call", TypeRelationFlag::NO_THROW);
     if (signature != nullptr) {
@@ -889,10 +891,12 @@ Signature *ETSChecker::FindRelativeExtensionSetter(ir::MemberExpression *expr, E
     arguments.insert(arguments.begin(), expr->Object());
     if (expr->Parent()->IsAssignmentExpression()) {
         arguments.emplace_back(expr->Parent()->AsAssignmentExpression()->Right());
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         signature = ValidateSignatures(funcType->GetExtensionAccessorSigs(), nullptr, arguments, expr->Start(), "call",
                                        TypeRelationFlag::NO_THROW);
     } else {
         // When handle ++a.m, a.m++, is mean to check whether a.m(xx, 1) existed.
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         Type *getterReturnType = ResolveGetter(this, expr, funcType);
         expr->SetTsType(getterReturnType);
         arguments.emplace_back(expr);
@@ -924,6 +928,7 @@ checker::Type *ETSChecker::GetExtensionAccessorReturnType(ir::MemberExpression *
             LogError(diagnostic::EXTENSION_GETTER_INVALID_CTX, {}, assignExpr->Start());
             return GlobalTypeError();
         }
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto signature = FindRelativeExtensionSetter(expr, eAccType);
         if (signature != nullptr && !expr->Parent()->IsUpdateExpression()) {
             // for a.m += otherExpr, we need to validateSignature again.
@@ -933,6 +938,7 @@ checker::Type *ETSChecker::GetExtensionAccessorReturnType(ir::MemberExpression *
             arguments.emplace_back(expr->Object());
             arguments.emplace_back(expr->Parent()->AsAssignmentExpression()->Right());
             signature =
+                // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
                 ValidateSignatures(candidateSig, nullptr, arguments, expr->Start(), "call", TypeRelationFlag::NO_THROW);
         }
 
@@ -942,6 +948,7 @@ checker::Type *ETSChecker::GetExtensionAccessorReturnType(ir::MemberExpression *
         }
     }
     expr->SetExtensionAccessorType(eAccType);
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     return ResolveGetter(this, expr, eAccType);
 }
 
@@ -2752,6 +2759,7 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
     paramExpression->SetVariable(paramVar);
     params.push_back(paramExpression);
 
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *assignmentExpression = AllocNode<ir::AssignmentExpression>(
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         memberExpression, paramExpression->Clone(Allocator(), nullptr), lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
@@ -2803,8 +2811,10 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
         (ir::ModifierFlags::PUBLIC |
          static_cast<ir::ModifierFlags>(property->Modifiers() & ir::ModifierFlags::DECLARE) |
          (isSetter ? ir::ModifierFlags::SETTER : ir::ModifierFlags::GETTER));
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *func = checker->AllocNode<ir::ScriptFunction>(
         checker->Allocator(),
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         ir::ScriptFunction::ScriptFunctionData {GenGetterSetterBodyHelper(checker, stmts, property, functionScope),
                                                 ir::FunctionSignature(nullptr, std::move(params), returnTypeAnn),
                                                 funcFlags, modifierFlag});
@@ -2817,8 +2827,8 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
     auto *funcExpr = checker->AllocNode<ir::FunctionExpression>(func);
     funcExpr->SetRange(func->Range());
     func->AddFlag(ir::ScriptFunctionFlags::METHOD);
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
 
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *method = checker->AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, methodIdent, funcExpr,
                                                             modifierFlag, checker->Allocator(), false);
     auto *decl = checker->Allocator()->New<varbinder::FunctionDecl>(checker->Allocator(),

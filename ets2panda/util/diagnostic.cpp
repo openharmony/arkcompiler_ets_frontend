@@ -188,20 +188,20 @@ DiagnosticBase::DiagnosticBase(const lexer::SourceLocation &loc)
     }
 }
 
-ThrowableDiagnostic::ThrowableDiagnostic(DiagnosticType type, DiagnosticMessageParams params,
+ThrowableDiagnostic::ThrowableDiagnostic(DiagnosticType type, const DiagnosticMessageParams &params,
                                          const lexer::SourceLocation &loc)
     : DiagnosticBase(loc), type_(type), message_(Format(params))
 {
 }
 
-ThrowableDiagnostic::ThrowableDiagnostic(DiagnosticType type, DiagnosticMessageParams params,
+ThrowableDiagnostic::ThrowableDiagnostic(DiagnosticType type, const DiagnosticMessageParams &params,
                                          const lexer::SourcePosition &poc)
     : DiagnosticBase(poc), type_(type), message_(Format(params))
 {
 }
 
-ThrowableDiagnostic::ThrowableDiagnostic(DiagnosticType type, DiagnosticMessageParams params, std::string_view file,
-                                         size_t line, size_t offset)
+ThrowableDiagnostic::ThrowableDiagnostic(DiagnosticType type, const DiagnosticMessageParams &params,
+                                         std::string_view file, size_t line, size_t offset)
     : DiagnosticBase(file, line, offset), type_(type), message_(Format(params))
 {
 }

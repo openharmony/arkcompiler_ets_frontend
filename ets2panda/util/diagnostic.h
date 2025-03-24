@@ -61,7 +61,7 @@ public:
     {
     }
 
-    explicit DiagnosticBase(const lexer::SourcePosition &poc);
+    explicit DiagnosticBase(const lexer::SourcePosition &pos);
     explicit DiagnosticBase(const lexer::SourceLocation &loc);
 
     DEFAULT_COPY_SEMANTIC(DiagnosticBase);
@@ -135,9 +135,9 @@ public:
         : DiagnosticBase(loc), type_(type), message_(message)
     {
     }
-    ThrowableDiagnostic(DiagnosticType type, DiagnosticMessageParams params, const lexer::SourcePosition &poc);
-    ThrowableDiagnostic(DiagnosticType type, DiagnosticMessageParams params, const lexer::SourceLocation &loc);
-    ThrowableDiagnostic(DiagnosticType type, DiagnosticMessageParams params, std::string_view file = "",
+    ThrowableDiagnostic(DiagnosticType type, const DiagnosticMessageParams &params, const lexer::SourcePosition &poc);
+    ThrowableDiagnostic(DiagnosticType type, const DiagnosticMessageParams &params, const lexer::SourceLocation &loc);
+    ThrowableDiagnostic(DiagnosticType type, const DiagnosticMessageParams &params, std::string_view file = "",
                         size_t line = 0, size_t offset = 0);
     ThrowableDiagnostic(DiagnosticType type, const diagnostic::DiagnosticKind &diagnosticKind,
                         const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &poc);

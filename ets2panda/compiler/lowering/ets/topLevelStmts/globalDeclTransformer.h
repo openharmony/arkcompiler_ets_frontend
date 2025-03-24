@@ -45,17 +45,17 @@ class GlobalDeclTransformer : public ir::visitor::CustomAstVisitor {
 
 public:
     struct ResultT {
-        explicit ResultT(ArenaAllocator *alloc) : classProperties(alloc->Adapter()), initializers_(alloc->Adapter())
+        explicit ResultT(ArenaAllocator *alloc) : classProperties(alloc->Adapter()), initializers(alloc->Adapter())
         {
             // Note: first for immediate initializer, second for initializer block.
-            initializers_.emplace_back(alloc->Adapter());
-            initializers_.emplace_back(alloc->Adapter());
+            initializers.emplace_back(alloc->Adapter());
+            initializers.emplace_back(alloc->Adapter());
         }
 
         // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
         ArenaVector<ir::Statement *> classProperties;
         // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
-        ArenaVector<ArenaVector<ir::Statement *>> initializers_;
+        ArenaVector<ArenaVector<ir::Statement *>> initializers;
     };
 
     explicit GlobalDeclTransformer(ArenaAllocator *allocator, ir::Statement const *currentModule,
@@ -91,7 +91,7 @@ public:
 
     [[nodiscard]] bool IsMultiInitializer() const
     {
-        return initializerBlockCount > 1;
+        return initializerBlockCount_ > 1;
     }
 
 private:
@@ -99,7 +99,7 @@ private:
     ResultT result_;
     ir::Statement const *currentModule_;
     parser::ETSParser *const parser_;
-    size_t initializerBlockCount = 0;
+    size_t initializerBlockCount_ = 0;
 };
 
 }  // namespace ark::es2panda::compiler

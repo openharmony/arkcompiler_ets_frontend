@@ -295,7 +295,8 @@ void InterfacePropertyDeclarationsPhase::UpdateClassProperties(checker::ETSCheck
     }
 
     for (auto *elem : klass->Body()) {
-        if (elem->IsClassProperty() && implInterfaceProperties.count(elem->AsClassProperty()->Key()->ToString())) {
+        if (elem->IsClassProperty() &&
+            (implInterfaceProperties.count(elem->AsClassProperty()->Key()->ToString()) != 0U)) {
             TransformOptionalFieldTypeAnnotation(checker, elem->AsClassProperty());
         }
     }

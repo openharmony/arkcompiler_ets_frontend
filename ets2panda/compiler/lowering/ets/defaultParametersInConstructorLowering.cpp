@@ -14,6 +14,7 @@
  */
 
 #include "defaultParametersInConstructorLowering.h"
+#include "ir/expression.h"
 #include "ir/expressions/literals/undefinedLiteral.h"
 #include "ir/ets/etsUnionType.h"
 
@@ -131,7 +132,7 @@ static ir::BlockStatement *CreateFunctionBody(ir::MethodDefinition *method, publ
 
     ir::Expression *accessor = util::NodeAllocator::ForceSetParent<ir::ThisExpression>(allocator);
     auto *paramInst = CreateTypeParameterInstantiation(method, ctx);
-    ir::CallExpression *callExpression = util::NodeAllocator::ForceSetParent<ir::CallExpression>(
+    auto *callExpression = util::NodeAllocator::ForceSetParent<ir::CallExpression>(
         allocator, accessor != nullptr ? accessor : callee, std::move(funcCallArgs), paramInst, false, false);
     callExpression->SetRange(method->Range());  // NOTE: Used to locate the original node when an error occurs
     funcStatements.push_back(util::NodeAllocator::ForceSetParent<ir::ExpressionStatement>(allocator, callExpression));
@@ -208,16 +209,15 @@ static void ExpandOptionalParameterAnnotationsToUnions(public_lib::Context *ctx,
 static void ClearOptionalParameters(public_lib::Context *ctx, ir::ScriptFunction *function)
 {
     auto allocator = ctx->allocator;
-    auto &params = function->Params();
 
-    for (size_t idx = 0; idx < params.size(); ++idx) {
-        auto oldParam = params[idx]->AsETSParameterExpression();
+    for (auto *&param : function->Params()) {
+        auto oldParam = param->AsETSParameterExpression();
         if (oldParam->IsOptional()) {
-            params[idx] = util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(allocator, oldParam->Ident(),
-                                                                                          false, allocator);
-            params[idx]->SetParent(function);
+            param = util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(allocator, oldParam->Ident(), false,
+                                                                                    allocator);
+            param->SetParent(function);
         }
-        ES2PANDA_ASSERT(!params[idx]->AsETSParameterExpression()->IsOptional());
+        ES2PANDA_ASSERT(!param->AsETSParameterExpression()->IsOptional());
     }
 }
 

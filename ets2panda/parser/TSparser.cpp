@@ -1448,6 +1448,7 @@ bool TSParser::ParsePotentialGenericFunctionCall(ir::Expression *primaryExpr, ir
         lexer::SourcePosition endLoc = propertyNode->End();
 
         *returnExpression = AllocNode<ir::TaggedTemplateExpression>(*returnExpression, propertyNode, typeParams);
+        // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
         (*returnExpression)->SetRange({startLoc, endLoc});
         return false;
     }

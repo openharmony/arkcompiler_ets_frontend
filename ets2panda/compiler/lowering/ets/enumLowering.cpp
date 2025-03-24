@@ -366,7 +366,7 @@ void EnumLoweringPhase::ProcessEnumClassDeclaration(ir::TSEnumDeclaration *const
     }
 }
 
-template <ir::PrimitiveType Type>
+template <ir::PrimitiveType TYPE>
 ir::ClassDeclaration *EnumLoweringPhase::CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl,
                                                                                const DeclarationFlags flags)
 {
@@ -375,7 +375,7 @@ ir::ClassDeclaration *EnumLoweringPhase::CreateEnumIntClassFromEnumDeclaration(i
 
     CreateEnumItemFields(enumDecl, enumClass);
     auto *const namesArrayIdent = CreateEnumNamesArray(enumDecl, enumClass);
-    auto *const valuesArrayIdent = CreateEnumValuesArray<Type>(enumDecl, enumClass);
+    auto *const valuesArrayIdent = CreateEnumValuesArray<TYPE>(enumDecl, enumClass);
     auto *const stringValuesArrayIdent = CreateEnumStringValuesArray(enumDecl, enumClass);
     auto *const itemsArrayIdent = CreateEnumItemsArray(enumDecl, enumClass);
 
@@ -383,9 +383,9 @@ ir::ClassDeclaration *EnumLoweringPhase::CreateEnumIntClassFromEnumDeclaration(i
 
     CreateEnumGetValueOfMethod(enumDecl, enumClass, namesArrayIdent, itemsArrayIdent);
 
-    CreateEnumFromValueMethod(enumDecl, enumClass, valuesArrayIdent, itemsArrayIdent, Type);
+    CreateEnumFromValueMethod(enumDecl, enumClass, valuesArrayIdent, itemsArrayIdent, TYPE);
 
-    CreateEnumValueOfMethod(enumDecl, enumClass, valuesArrayIdent, Type);
+    CreateEnumValueOfMethod(enumDecl, enumClass, valuesArrayIdent, TYPE);
 
     CreateEnumToStringMethod(enumDecl, enumClass, stringValuesArrayIdent);
 
@@ -495,11 +495,11 @@ bool EnumLoweringPhase::PerformForModule(public_lib::Context *ctx, parser::Progr
     return isPerformedSuccess;
 }
 
-template <ir::PrimitiveType Type>
+template <ir::PrimitiveType TYPE>
 ir::Identifier *EnumLoweringPhase::CreateEnumValuesArray(const ir::TSEnumDeclaration *const enumDecl,
                                                          ir::ClassDefinition *const enumClass)
 {
-    auto *const type = checker_->AllocNode<ir::ETSPrimitiveType>(Type, Allocator());
+    auto *const type = checker_->AllocNode<ir::ETSPrimitiveType>(TYPE, Allocator());
     auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(type, Allocator());
     // clang-format off
     return MakeArray(enumDecl, enumClass, VALUES_ARRAY_NAME, arrayTypeAnnotation,

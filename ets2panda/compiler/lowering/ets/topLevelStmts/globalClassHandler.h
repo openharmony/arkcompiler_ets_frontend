@@ -73,7 +73,7 @@ private:
 
     ArenaVector<ArenaVector<ir::Statement *>> CollectProgramGlobalStatements(ArenaVector<ir::Statement *> &stmts,
                                                                              ir::ClassDefinition *classDef,
-                                                                             ir::Statement const *emd);
+                                                                             ir::Statement const *stmt);
 
     ir::Identifier *RefIdent(const util::StringView &name);
     util::UString ReplaceSpecialCharacters(util::UString *word) const;

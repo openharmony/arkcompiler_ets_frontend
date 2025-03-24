@@ -481,7 +481,7 @@ std::string Emitter::DumpAsmFunction(std::string name, const pandasm::Function &
 {
     std::stringstream ss;
 
-    ss << ".function any " << CanonicalizeName(name) << '(';
+    ss << ".function any " << CanonicalizeName(std::move(name)) << '(';
 
     for (uint32_t i = 0; i < func.GetParamsNum(); i++) {
         ss << "any a" << std::to_string(i);

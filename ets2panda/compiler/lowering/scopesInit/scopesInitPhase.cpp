@@ -473,7 +473,8 @@ std::tuple<varbinder::Decl *, varbinder::Variable *> ScopesInitPhase::AddOrGetVa
     auto name = id->Name();
     auto scope = VarBinder()->GetScope();
     if (auto var = id->Variable(); var != nullptr) {
-        if (!name.Is(ERROR_LITERAL) && !scope->FindLocal(name, varbinder::ResolveBindingOptions::ALL_VARIABLES)) {
+        if (!name.Is(ERROR_LITERAL) &&
+            (scope->FindLocal(name, varbinder::ResolveBindingOptions::ALL_VARIABLES) == nullptr)) {
             var = scope->AddDecl(Allocator(), var->Declaration(), VarBinder()->Extension());
         }
         return {var->Declaration(), var};

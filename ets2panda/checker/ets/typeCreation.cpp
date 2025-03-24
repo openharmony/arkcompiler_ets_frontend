@@ -16,7 +16,6 @@
 #include "checker/ETSchecker.h"
 
 #include "checker/types/ets/etsEnumType.h"
-#include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
 #include "checker/types/globalTypesHolder.h"
 #include "ir/statements/annotationDeclaration.h"
@@ -168,12 +167,12 @@ static SignatureFlags ConvertToSignatureFlags(ir::ModifierFlags inModifiers, ir:
     SignatureFlags outFlags = SignatureFlags::NO_OPTS;
 
     const auto convertModifier = [&outFlags, inModifiers](ir::ModifierFlags astFlag, SignatureFlags sigFlag) {
-        if (inModifiers & astFlag) {
+        if ((inModifiers & astFlag) != 0U) {
             outFlags |= sigFlag;
         }
     };
     const auto convertFlag = [&outFlags, inFunctionFlags](ir::ScriptFunctionFlags funcFlag, SignatureFlags sigFlag) {
-        if (inFunctionFlags & funcFlag) {
+        if ((inFunctionFlags & funcFlag) != 0U) {
             outFlags |= sigFlag;
         }
     };
@@ -357,10 +356,9 @@ ETSObjectType *ETSChecker::CreateETSObjectType(ir::AstNode *declNode, ETSObjectF
     if (declNode->IsClassDefinition() && (declNode->AsClassDefinition()->IsEnumTransformed())) {
         if (declNode->AsClassDefinition()->IsIntEnumTransformed()) {
             return Allocator()->New<ETSIntEnumType>(Allocator(), name, internalName, declNode, Relation());
-        } else {
-            ES2PANDA_ASSERT(declNode->AsClassDefinition()->IsStringEnumTransformed());
-            return Allocator()->New<ETSStringEnumType>(Allocator(), name, internalName, declNode, Relation());
         }
+        ES2PANDA_ASSERT(declNode->AsClassDefinition()->IsStringEnumTransformed());
+        return Allocator()->New<ETSStringEnumType>(Allocator(), name, internalName, declNode, Relation());
     }
 
     if (auto [lang, hasDecl] = CheckForDynamicLang(declNode, internalName); lang.IsDynamic()) {

@@ -80,7 +80,7 @@ std::string_view Token::ToString() const noexcept
     }
 
     auto const str = Ident().Utf8();
-    if (!str.empty() && str.data()[0U] == '\n') {
+    if (!str.empty() && (str[0U] == '\n')) {
         return "eos";
     }
 

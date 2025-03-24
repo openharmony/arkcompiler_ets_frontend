@@ -267,6 +267,7 @@ void GenericBridgesPhase::ProcessInterfaces(ir::ClassDefinition *const classDefi
         if (auto const &typeParameters = interfaceType->GetConstOriginalBaseType()->AsETSObjectType()->TypeArguments();
             !typeParameters.empty()) {
             if (Substitutions substitutions = GetSubstitutions(interfaceType, typeParameters);
+                // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
                 !substitutions.derivedSubstitutions->empty()) {
                 ES2PANDA_ASSERT(interfaceType->GetDeclNode()->IsTSInterfaceDeclaration());
                 auto const &interfaceBody = interfaceType->GetDeclNode()->AsTSInterfaceDeclaration()->Body()->Body();
@@ -298,6 +299,7 @@ ir::ClassDefinition *GenericBridgesPhase::ProcessClassDefinition(ir::ClassDefini
     //  Check if the class derived from base generic class has either explicit class type substitutions
     //  or type parameters with narrowing constraints.
     if (Substitutions substitutions = GetSubstitutions(superType, typeParameters);
+        // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
         !substitutions.derivedSubstitutions->empty()) {
         // If it has, then probably the generic bridges should be created.
         auto const &superClassBody =

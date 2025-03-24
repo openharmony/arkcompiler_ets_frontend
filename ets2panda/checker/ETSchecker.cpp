@@ -564,7 +564,7 @@ Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, std::string_view messa
     return InvalidateType(node);
 }
 
-Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, util::DiagnosticMessageParams list,
+Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, const util::DiagnosticMessageParams &list,
                             const lexer::SourcePosition &at)
 {
     LogTypeError(list, at);
@@ -578,7 +578,7 @@ Type *ETSChecker::TypeError(varbinder::Variable *var, std::string_view message, 
     return var->TsType();
 }
 
-Type *ETSChecker::TypeError(varbinder::Variable *var, util::DiagnosticMessageParams list,
+Type *ETSChecker::TypeError(varbinder::Variable *var, const util::DiagnosticMessageParams &list,
                             const lexer::SourcePosition &at)
 {
     LogTypeError(list, at);
