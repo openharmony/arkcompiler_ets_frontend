@@ -2305,6 +2305,15 @@ export class TypeScriptLinter {
       return false;
     }
 
+    /*
+     * issue 24075: TS supports calling the constructor of built-in types
+     * as function (without 'new' keyword): `const a = Number('10')`
+     * Such cases need to be filtered out.
+     */
+    if (ts.isCallExpression(ident.parent) && ident.parent.expression === ident) {
+      return false;
+    }
+
     const classVarDeclType = StdClassVarDecls.get(sym.name);
     if (!classVarDeclType) {
       return false;

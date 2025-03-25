@@ -191,6 +191,26 @@
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
             "severity": "ERROR"
+        },
+        {
+            "line": 180,
+            "column": 7,
+            "endLine": 180,
+            "endColumn": 21,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 185,
+            "column": 13,
+            "endLine": 185,
+            "endColumn": 30,
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)",
+            "severity": "ERROR"
         }
     ]
 }

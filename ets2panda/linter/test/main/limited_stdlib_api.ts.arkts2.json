@@ -85,16 +85,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 34,
-            "column": 19,
-            "endLine": 34,
-            "endColumn": 27,
-            "problem": "ClassAsObjectError",
-            "suggest": "",
-            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
-            "severity": "ERROR"
-        },
-        {
             "line": 56,
             "column": 8,
             "endLine": 56,

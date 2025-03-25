@@ -73,11 +73,6 @@ function readJsonFile(filePath) {
 }
 
 function updateTestFile(testDir, testFile) {
-    // Temporary solution: rename '.ets' extension to '.ts'
-    if (testFile.endsWith(ETS_EXT) || testFile.endsWith(ETSX_EXT)) {
-        testFile = testFile.replace(ETS_EXT, TS_EXT);
-    }
-
     let testModes = [Mode.DEFAULT];
 
     const testArgsFile = path.join(testDir, testFile + TEST_ARGS_EXT);
