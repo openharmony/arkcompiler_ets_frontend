@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import * as fs from 'fs';
+import * as path from 'path'
 import { KNativePointer as KPtr, KInt, KUInt } from "./InteropTypes"
 import { loadNativeModuleLibrary, registerNativeModuleLibraryName } from "./loadLibraries"
 import { throwError } from "./utils"
@@ -59,9 +61,14 @@ export class InteropNativeModule {
 export function initInterop(): InteropNativeModule {
   let libPath = process.env.BINDINGS_PATH
   if (libPath == undefined) {
-    throwError("Cannot find env variable $BINDINGS_PATH")
+    libPath = path.resolve(__dirname, "../ts_bindings.node")
+  } else {
+    libPath = path.join(libPath, "ts_bindings.node")
   }
-  registerNativeModuleLibraryName("InteropNativeModule", libPath + "/ts_bindings.node")
+  if (!fs.existsSync(libPath)) {
+    throwError(`Cannot find lib path ${libPath}`)
+  }
+  registerNativeModuleLibraryName("InteropNativeModule", libPath)
   const instance = new InteropNativeModule()
   loadNativeModuleLibrary("InteropNativeModule", instance)
   return instance

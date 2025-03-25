@@ -12,6 +12,8 @@
  * limitations under the License.
  */
 
+import * as fs from 'fs';
+import * as path from 'path'
 import { KNativePointer as KPtr, KInt, KBoolean, KNativePointer, KDouble, KUInt } from "./InteropTypes"
 import { Es2pandaNativeModule as GeneratedEs2pandaNativeModule } from "./generated/Es2pandaNativeModule"
 import { loadNativeModuleLibrary, registerNativeModuleLibraryName } from "./loadLibraries"
@@ -637,9 +639,14 @@ export class Es2pandaNativeModule {
 export function initEs2panda(): Es2pandaNativeModule {
   let libPath = process.env.BINDINGS_PATH
   if (libPath == undefined) {
-    throwError("Cannot find env variable $BINDINGS_PATH")
+    libPath = path.resolve(__dirname, "../ts_bindings.node")
+  } else {
+    libPath = path.join(libPath, "ts_bindings.node")
   }
-  registerNativeModuleLibraryName("NativeModule", libPath + "/ts_bindings.node")
+  if (!fs.existsSync(libPath)) {
+    throwError(`Cannot find lib path ${libPath}`)
+  }
+  registerNativeModuleLibraryName("NativeModule", libPath)
   const instance = new Es2pandaNativeModule()
   loadNativeModuleLibrary("NativeModule", instance)
   return instance
@@ -648,9 +655,14 @@ export function initEs2panda(): Es2pandaNativeModule {
 export function initGeneratedEs2panda(): GeneratedEs2pandaNativeModule {
   let libPath = process.env.BINDINGS_PATH
   if (libPath == undefined) {
-    throwError("Cannot find env variable $BINDINGS_PATH")
+    libPath = path.resolve(__dirname, "../ts_bindings.node")
+  } else {
+    libPath = path.join(libPath, "ts_bindings.node")
   }
-  registerNativeModuleLibraryName("NativeModule", libPath + "/ts_bindings.node")
+  if (!fs.existsSync(libPath)) {
+    throwError(`Cannot find lib path ${libPath}`)
+  }
+  registerNativeModuleLibraryName("NativeModule", libPath)
   const instance = new GeneratedEs2pandaNativeModule()
   loadNativeModuleLibrary("NativeModule", instance)
   return instance
