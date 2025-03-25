@@ -262,4 +262,5 @@ cookBookTag[254] = '"@Extend" decorator is not supported (arkui-no-extend-decora
 cookBookTag[255] = 'Extends or implemetns expression are not supported(arkts-no-extends-expression)';
 cookBookTag[257] =
   '"@AnimatableExtend" decorator should be transformed to use receiver (arkui-animatableextend-use-receiver)';
+cookBookTag[301] = 'Importing from "oh module" requires specifying full path (arkts-ohmurl-full-path)';
 cookBookTag[304] = 'Duplicate function name in namespace are not allowed (arkts-no-duplicate-function-name)';

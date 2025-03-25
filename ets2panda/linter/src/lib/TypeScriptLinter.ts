@@ -76,6 +76,7 @@ import { BUILTIN_GENERIC_CONSTRUCTORS } from './utils/consts/BuiltinGenericConst
 import { DEFAULT_DECORATOR_WHITE_LIST } from './utils/consts/DefaultDecoratorWhitelist';
 import { INVALID_IDENTIFIER_KEYWORDS } from './utils/consts/InValidIndentifierKeywords';
 import { WORKER_MODULES, WORKER_TEXT } from './utils/consts/WorkerAPI';
+import { ETS_PART, OH_MODULE_INDICATOR, PATH_SEPARATOR, VALID_OHM_URL_PART } from './utils/consts/OhmUrl';
 
 const EXTEND_DECORATOR_NAME = 'Extend';
 const ANIMATABLE_EXTEND_DECORATOR_NAME = 'AnimatableExtend';
@@ -735,6 +736,7 @@ export class TypeScriptLinter {
     // early exit via exception if cancellation was requested
     this.options.cancellationToken?.throwIfCancellationRequested();
     const importDeclNode = node as ts.ImportDeclaration;
+    this.handleImportModule(importDeclNode);
     if (this.options.arkts2) {
       const importClause = importDeclNode.importClause;
       if (!importClause || !importClause.name && !importClause.namedBindings) {
@@ -761,6 +763,39 @@ export class TypeScriptLinter {
     // handle no side effect import in sendable module
     this.handleSharedModuleNoSideEffectImport(importDeclNode);
     this.handleInvalidIdentifier(importDeclNode);
+  }
+
+  private handleImportModule(importDeclNode: ts.ImportDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const modulePath = importDeclNode.moduleSpecifier.getText().slice(1, -1);
+    if (modulePath.startsWith('./') || modulePath.startsWith('../')) {
+
+      /*
+       * Reason for this method to check the oh module imports,
+       * We do not use relative paths when importing from OhModules,
+       * So we do not check the relative paths
+       */
+      return;
+    }
+
+    if (modulePath.includes(VALID_OHM_URL_PART) || !modulePath.includes(OH_MODULE_INDICATOR)) {
+      // Valid or paths that we do not check because they are not ohModules
+      return;
+    }
+
+    const pathParts = modulePath.split(PATH_SEPARATOR);
+    const etsIdx = pathParts.indexOf(ETS_PART);
+
+    if (etsIdx === 0) {
+      this.incrementCounters(importDeclNode, FaultID.OhmUrlFullPath);
+      return;
+    }
+
+    const autofix = Autofixer.fixImportPath(pathParts, etsIdx, importDeclNode);
+    this.incrementCounters(importDeclNode, FaultID.OhmUrlFullPath, autofix);
   }
 
   private handleSharedModuleNoSideEffectImport(node: ts.ImportDeclaration): void {

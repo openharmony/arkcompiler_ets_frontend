@@ -166,6 +166,7 @@ export enum FaultID {
   NumericSemantics,
   AnimatableExtendDecoratorTransform,
   NoDuplicateFunctionName,
+  OhmUrlFullPath,
   // this should always be last enum
   LAST_ID
 }

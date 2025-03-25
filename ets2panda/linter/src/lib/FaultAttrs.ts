@@ -176,4 +176,5 @@ faultsAttrs[FaultID.DollarBindingNotSupported] = new FaultAttributes(253);
 faultsAttrs[FaultID.ExtendDecoratorNotSupported] = new FaultAttributes(254);
 faultsAttrs[FaultID.ExtendsExpression] = new FaultAttributes(255);
 faultsAttrs[FaultID.AnimatableExtendDecoratorTransform] = new FaultAttributes(257);
+faultsAttrs[FaultID.OhmUrlFullPath] = new FaultAttributes(301);
 faultsAttrs[FaultID.NoDuplicateFunctionName] = new FaultAttributes(304);

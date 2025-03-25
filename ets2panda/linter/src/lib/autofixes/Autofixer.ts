@@ -22,6 +22,7 @@ import { NameGenerator } from '../utils/functions/NameGenerator';
 import { isAssignmentOperator } from '../utils/functions/isAssignmentOperator';
 import { SymbolCache } from './SymbolCache';
 import { SENDABLE_DECORATOR } from '../utils/consts/SendableAPI';
+import { PATH_SEPARATOR, SRC_AND_MAIN } from '../utils/consts/OhmUrl';
 
 const UNDEFINED_NAME = 'undefined';
 
@@ -927,6 +928,18 @@ export class Autofixer {
 
     this.renameSymbolAsIdentifierCache.set(symbol, result);
     return result;
+  }
+
+  static fixImportPath(parts: string[], index: number, importDeclNode: ts.ImportDeclaration): Autofix[] | undefined {
+    const moduleSpecifier = importDeclNode.moduleSpecifier;
+
+    const beforeEts = parts.slice(0, index);
+    const afterEts = parts.slice(index, parts.length);
+    const newPathParts = [...beforeEts, SRC_AND_MAIN, ...afterEts];
+
+    const newPath = newPathParts.join(PATH_SEPARATOR);
+
+    return [{ start: moduleSpecifier.getStart(), end: moduleSpecifier.getEnd(), replacementText: newPath }];
   }
 
   private static renamePropertyName(node: ts.PropertyName, newName: string): Autofix[] | undefined {

@@ -13,48 +13,8 @@
  * limitations under the License.
  */
 
-export const arkts2Rules: number[] = [
-  1,
-  25,
-  30,
-  34,
-  37,
-  29,
-  137,
-  139,
-  140,
-  144,
-  149,
-  183,
-  184,
-  189,
-  190,
-  192,
-  193,
-  198,
-  202,
-  203,
-  206,
-  207,
-  208,
-  209,
-  210,
-  211,
-  212,
-  222,
-  232,
-  233,
-  234,
-  235,
-  236,
-  237,
-  238,
-  239,
-  251,
-  252,
-  253,
-  254,
-  255,
-  300,
-  301
-];
+export const VALID_OHM_URL_PART = 'src/main/ets/components';
+export const SRC_AND_MAIN = 'src/main';
+export const OH_MODULE_INDICATOR = 'ets/components';
+export const PATH_SEPARATOR = '/';
+export const ETS_PART = 'ets';
