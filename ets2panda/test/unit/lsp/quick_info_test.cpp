@@ -24,15 +24,12 @@ class LspQuickInfoTests : public LSPAPITests {};
 
 TEST_F(LspQuickInfoTests, GetQuickInfoAtPosition1)
 {
-    std::vector<std::string> files = {"quick_info3.ets"};
-    std::vector<std::string> texts = {R"(enum MyStrings { A = 'hello' };)"};
-    auto filePaths = CreateTempFile(files, texts);
-    size_t const expectedFileCount = 1;
-    ASSERT_EQ(filePaths.size(), expectedFileCount);
-
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx =
+        initializer.CreateContext("quick_info3.ets", ES2PANDA_STATE_CHECKED, R"(enum MyStrings { A = 'hello' };)");
     size_t const offset = 17;
     LSPAPI const *lspApi = GetImpl();
-    auto quickInfo = lspApi->getQuickInfoAtPosition(filePaths[0].c_str(), offset);
+    auto quickInfo = lspApi->getQuickInfoAtPosition("quick_info3.ets", ctx, offset);
     ASSERT_NE(quickInfo, QuickInfo());
     std::vector<DocTagInfo> tags {};
     std::vector<SymbolDisplayPart> document {};
@@ -41,7 +38,7 @@ TEST_F(LspQuickInfoTests, GetQuickInfoAtPosition1)
     size_t const length = 1;
     TextSpan span(start, length);
     const std::string kindModifiers = "static public readonly";
-    const std::string expectedFileName = "/tmp/quick_info3.ets";
+    const std::string expectedFileName = "quick_info3.ets";
 
     std::vector<SymbolDisplayPart> expected;
     expected.emplace_back("MyStrings", "enumName");
@@ -55,6 +52,7 @@ TEST_F(LspQuickInfoTests, GetQuickInfoAtPosition1)
     expected.emplace_back("\"", "punctuation");
 
     auto expectedQuickInfo = QuickInfo(kind, kindModifiers, span, expected, document, tags, expectedFileName);
+    initializer.DestroyContext(ctx);
     ASSERT_EQ(quickInfo, expectedQuickInfo);
 }
 

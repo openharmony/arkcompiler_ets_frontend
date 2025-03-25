@@ -13,6 +13,9 @@
  * limitations under the License.
  */
 
+import * as fs from 'fs';
+import * as path from 'path';
+
 export function throwError(error: string): never {
   throw new Error(error)
 }
@@ -20,4 +23,23 @@ export function throwError(error: string): never {
 export function withWarning<T>(value: T, message: string): T {
   console.warn(message)
   return value
+}
+
+export function changeFileExtension(file: string, targetExt: string, originExt = ''): string {
+  let currentExt = originExt.length === 0 ? path.extname(file) : originExt;
+  let fileWithoutExt = file.substring(0, file.lastIndexOf(currentExt));
+  return fileWithoutExt + targetExt;
+}
+
+export function ensurePathExists(filePath: string): void {
+  try {
+    const dirPath: string = path.dirname(filePath);
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(`Error: ${error.message}`);
+    }
+  }
 }

@@ -17,6 +17,7 @@
 #define ES2PANDA_TEST_LSP_API_TEST_H
 
 #include "lsp/include/api.h"
+#include "lsp/include/internal_api.h"
 #include "public/public.h"
 #include <gtest/gtest.h>
 

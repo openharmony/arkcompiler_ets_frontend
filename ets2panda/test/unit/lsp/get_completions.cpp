@@ -21,6 +21,7 @@ class LSPCompletionsTests : public LSPAPITests {};
 
 using ark::es2panda::lsp::CompletionEntry;
 using ark::es2panda::lsp::CompletionEntryKind;
+using ark::es2panda::lsp::Initializer;
 using ark::es2panda::lsp::sort_text::GLOBALS_OR_KEYWORDS;
 
 void AssertCompletionsContainAndNotContainEntries(const std::vector<CompletionEntry> &entries,
@@ -67,10 +68,13 @@ let a: num
 
     LSPAPI const *lspApi = GetImpl();
     size_t const offset = 11;  // after 'n' in 'let a = n'
-    auto res = lspApi->getCompletionsAtPosition(filePaths[0].c_str(), offset);
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    auto res = lspApi->getCompletionsAtPosition(ctx, offset);
     auto expectedEntries = std::vector<CompletionEntry> {
         CompletionEntry("number", ark::es2panda::lsp::CompletionEntryKind::KEYWORD, std::string(GLOBALS_OR_KEYWORDS))};
     AssertCompletionsContainAndNotContainEntries(res.GetEntries(), expectedEntries, {});
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPCompletionsTests, getCompletionsAtPosition5)
@@ -85,9 +89,12 @@ class
 
     LSPAPI const *lspApi = GetImpl();
     size_t const offset = 5;  // after 'n' in 'let a = n'
-    auto res = lspApi->getCompletionsAtPosition(filePaths[0].c_str(), offset);
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    auto res = lspApi->getCompletionsAtPosition(ctx, offset);
     auto expectedEntries = std::vector<CompletionEntry> {};
     AssertCompletionsContainAndNotContainEntries(res.GetEntries(), expectedEntries, {});
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPCompletionsTests, getCompletionsAtPosition0)
@@ -112,12 +119,15 @@ let a = n
 
     LSPAPI const *lspApi = GetImpl();
     size_t const offset = 97;  // after 'n' in 'let a = n'
-    auto res = lspApi->getCompletionsAtPosition(filePaths[0].c_str(), offset);
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    auto res = lspApi->getCompletionsAtPosition(ctx, offset);
     auto expectedEntries = std::vector<CompletionEntry> {
         CompletionEntry("num1", ark::es2panda::lsp::CompletionEntryKind::FUNCTION, std::string(GLOBALS_OR_KEYWORDS)),
         CompletionEntry("num2", ark::es2panda::lsp::CompletionEntryKind::FUNCTION, std::string(GLOBALS_OR_KEYWORDS)),
     };
     AssertCompletionsContainAndNotContainEntries(res.GetEntries(), expectedEntries, {});
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPCompletionsTests, getCompletionsAtPosition1)
@@ -137,14 +147,16 @@ let a = n
     auto filePaths = CreateTempFile(files, texts);
     int const expectedFileCount = 1;
     ASSERT_EQ(filePaths.size(), expectedFileCount);
-
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
     LSPAPI const *lspApi = GetImpl();
     size_t const offset = 80;  // after 'n' in 'let a = n'
-    auto res = lspApi->getCompletionsAtPosition(filePaths[0].c_str(), offset);
+    auto res = lspApi->getCompletionsAtPosition(ctx, offset);
     auto expectedEntries = std::vector<CompletionEntry> {
         CompletionEntry("num1", ark::es2panda::lsp::CompletionEntryKind::FUNCTION, std::string(GLOBALS_OR_KEYWORDS)),
         CompletionEntry("num2", ark::es2panda::lsp::CompletionEntryKind::FUNCTION, std::string(GLOBALS_OR_KEYWORDS)),
     };
+    initializer.DestroyContext(ctx);
     AssertCompletionsContainAndNotContainEntries(res.GetEntries(), expectedEntries, {});
 }
 
@@ -168,15 +180,17 @@ function foo() {
     auto filePaths = CreateTempFile(files, texts);
     int const expectedFileCount = 1;
     ASSERT_EQ(filePaths.size(), expectedFileCount);
-
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
     LSPAPI const *lspApi = GetImpl();
     size_t const offset = 127;  // after 'a' in 'let ccc = bbb + a'
-    auto res = lspApi->getCompletionsAtPosition(filePaths[0].c_str(), offset);
+    auto res = lspApi->getCompletionsAtPosition(ctx, offset);
     auto expectedEntries = std::vector<CompletionEntry> {
         CompletionEntry("aaa", ark::es2panda::lsp::CompletionEntryKind::VARIABLE, std::string(GLOBALS_OR_KEYWORDS)),
         CompletionEntry("abb", ark::es2panda::lsp::CompletionEntryKind::CONSTANT, std::string(GLOBALS_OR_KEYWORDS)),
         CompletionEntry("axx", ark::es2panda::lsp::CompletionEntryKind::FUNCTION, std::string(GLOBALS_OR_KEYWORDS)),
     };
+    initializer.DestroyContext(ctx);
     AssertCompletionsContainAndNotContainEntries(res.GetEntries(), expectedEntries, {});
 }
 
@@ -205,10 +219,11 @@ function fxx() {
     auto filePaths = CreateTempFile(files, texts);
     int const expectedFileCount = 1;
     ASSERT_EQ(filePaths.size(), expectedFileCount);
-
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
     LSPAPI const *lspApi = GetImpl();
     size_t const offset = 181;  // after 'b' in 'let axx = b'
-    auto res = lspApi->getCompletionsAtPosition(filePaths[0].c_str(), offset);
+    auto res = lspApi->getCompletionsAtPosition(ctx, offset);
     auto expectedEntries = std::vector<CompletionEntry> {
         CompletionEntry("baa", ark::es2panda::lsp::CompletionEntryKind::VARIABLE, std::string(GLOBALS_OR_KEYWORDS)),
         CompletionEntry("bbb", ark::es2panda::lsp::CompletionEntryKind::VARIABLE, std::string(GLOBALS_OR_KEYWORDS)),
@@ -218,6 +233,7 @@ function fxx() {
     auto unexpectedEntries = std::vector<CompletionEntry> {
         CompletionEntry("bar", ark::es2panda::lsp::CompletionEntryKind::VARIABLE, std::string(GLOBALS_OR_KEYWORDS)),
     };
+    initializer.DestroyContext(ctx);
     AssertCompletionsContainAndNotContainEntries(res.GetEntries(), expectedEntries, unexpectedEntries);
 }
 
@@ -243,10 +259,11 @@ let axx = b
     auto filePaths = CreateTempFile(files, texts);
     int const expectedFileCount = 1;
     ASSERT_EQ(filePaths.size(), expectedFileCount);
-
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
     LSPAPI const *lspApi = GetImpl();
     size_t const offset = 159;  // after 'b' in 'let axx = b'
-    auto res = lspApi->getCompletionsAtPosition(filePaths[0].c_str(), offset);
+    auto res = lspApi->getCompletionsAtPosition(ctx, offset);
     auto expectedEntries = std::vector<CompletionEntry> {
         CompletionEntry("baa", ark::es2panda::lsp::CompletionEntryKind::VARIABLE, std::string(GLOBALS_OR_KEYWORDS)),
         CompletionEntry("bbb", ark::es2panda::lsp::CompletionEntryKind::VARIABLE, std::string(GLOBALS_OR_KEYWORDS)),
@@ -256,6 +273,7 @@ let axx = b
         CompletionEntry("bar", ark::es2panda::lsp::CompletionEntryKind::PROPERTY, std::string(GLOBALS_OR_KEYWORDS)),
         CompletionEntry("bcc", ark::es2panda::lsp::CompletionEntryKind::VARIABLE, std::string(GLOBALS_OR_KEYWORDS)),
     };
+    initializer.DestroyContext(ctx);
     AssertCompletionsContainAndNotContainEntries(res.GetEntries(), expectedEntries, unexpectedEntries);
 }
 
@@ -272,16 +290,18 @@ let prop = obj1.yp)delimiter"};
     auto filePaths = CreateTempFile(files, texts);
     int const expectedFileCount = 1;
     ASSERT_EQ(filePaths.size(), expectedFileCount);
-
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
     LSPAPI const *lspApi = GetImpl();
     const size_t offset = 119;
-    auto res = lspApi->getCompletionsAtPosition(filePaths[0].c_str(), offset);
+    auto res = lspApi->getCompletionsAtPosition(ctx, offset);
     auto entries = res.GetEntries();
     ASSERT_TRUE(entries.size() == 1);
 
     std::string propertyName1 = "myProp";
     CompletionEntry entry1 = CompletionEntry(propertyName1, CompletionEntryKind::PROPERTY,
                                              std::string(ark::es2panda::lsp::sort_text::SUGGESTED_CLASS_MEMBERS));
+    initializer.DestroyContext(ctx);
     ASSERT_EQ(entry1, entries[0]);
 }
 
@@ -298,16 +318,18 @@ let numOfSpace: space.classi)delimiter"};
     auto filePaths = CreateTempFile(files, texts);
     int const expectedFileCount = 1;
     ASSERT_EQ(filePaths.size(), expectedFileCount);
-
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
     LSPAPI const *lspApi = GetImpl();
     const size_t offset = 109;
-    auto res = lspApi->getCompletionsAtPosition(filePaths[0].c_str(), offset);
+    auto res = lspApi->getCompletionsAtPosition(ctx, offset);
     auto entries = res.GetEntries();
     std::string propertyName1 = "classInSpace";
     ASSERT_TRUE(entries.size() == 1);
     CompletionEntry entry1 =
         CompletionEntry(propertyName1, CompletionEntryKind::CLASS,
                         std::string(ark::es2panda::lsp::sort_text::MEMBER_DECLARED_BY_SPREAD_ASSIGNMENT));
+    initializer.DestroyContext(ctx);
     ASSERT_EQ(entry1, entries[0]);
 }
 
@@ -323,10 +345,11 @@ let myColor: Color = Color.R)delimiter"};
     auto filePaths = CreateTempFile(files, texts);
     int const expectedFileCount = 1;
     ASSERT_EQ(filePaths.size(), expectedFileCount);
-
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
     LSPAPI const *lspApi = GetImpl();
     const size_t offset = 74;
-    auto res = lspApi->getCompletionsAtPosition(filePaths[0].c_str(), offset);
+    auto res = lspApi->getCompletionsAtPosition(ctx, offset);
     auto entries = res.GetEntries();
     ASSERT_TRUE(entries.size() == 1);
 
@@ -334,5 +357,6 @@ let myColor: Color = Color.R)delimiter"};
     CompletionEntry entry1 =
         CompletionEntry(propertyName1, CompletionEntryKind::ENUM_MEMBER,
                         std::string(ark::es2panda::lsp::sort_text::MEMBER_DECLARED_BY_SPREAD_ASSIGNMENT));
+    initializer.DestroyContext(ctx);
     ASSERT_EQ(entry1, entries[0]);
 }

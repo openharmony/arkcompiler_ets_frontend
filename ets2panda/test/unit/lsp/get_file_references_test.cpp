@@ -37,11 +37,12 @@ public:
         bool isPackageModule =
             reinterpret_cast<ark::es2panda::public_lib::Context *>(context)->parserProgram->IsPackage();
         initializer.DestroyContext(context);
-
         References result {};
         for (auto const &file : filePaths) {
             auto referenceContext = initializer.CreateContext(file.c_str(), ES2PANDA_STATE_CHECKED);
-            ark::es2panda::lsp::GetFileReferencesImpl(referenceContext, fileName, isPackageModule, &result);
+            auto refInfo = ark::es2panda::lsp::GetFileReferencesImpl(referenceContext, fileName, isPackageModule);
+            result.referenceInfos.insert(result.referenceInfos.end(), refInfo.referenceInfos.begin(),
+                                         refInfo.referenceInfos.end());
             initializer.DestroyContext(referenceContext);
         }
         return result;

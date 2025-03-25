@@ -37,13 +37,15 @@ public:
         Initializer initializer = Initializer();
         auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
         auto astNode = ark::es2panda::lsp::GetTouchingToken(context, position, false);
-        auto declInfo = ark::es2panda::lsp::GetDeclInfo(astNode);
+        auto declInfo = ark::es2panda::lsp::GetDeclInfoImpl(astNode);
         initializer.DestroyContext(context);
 
         References result {};
         for (auto const &file : filePaths) {
             auto fileContext = initializer.CreateContext(file.c_str(), ES2PANDA_STATE_CHECKED);
-            ark::es2panda::lsp::GetReferencesAtPositionImpl(fileContext, declInfo, &result);
+            auto refInfo = ark::es2panda::lsp::GetReferencesAtPositionImpl(fileContext, declInfo);
+            result.referenceInfos.insert(result.referenceInfos.end(), refInfo.referenceInfos.begin(),
+                                         refInfo.referenceInfos.end());
             initializer.DestroyContext(fileContext);
         }
         auto comp = [](const ReferenceInfo &lhs, const ReferenceInfo &rhs) {

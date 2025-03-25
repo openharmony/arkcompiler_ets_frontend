@@ -52,6 +52,9 @@ def copy_output(options):
     copy_files(os.path.join(options.source_path, 'dist'),
                os.path.join(options.output_path, 'dist'))
 
+    copy_files(os.path.join(options.source_path, 'node_modules', 'json5'),
+               os.path.join(options.output_path, 'node_modules', 'json5'))
+
     copy_files(os.path.join(options.source_path, 'package.json'),
                os.path.join(options.output_path, 'package.json'), True)
 

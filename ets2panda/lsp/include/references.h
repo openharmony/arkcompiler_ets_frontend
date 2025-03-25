@@ -26,14 +26,14 @@ namespace ark::es2panda::lsp {
 using DeclInfoType = std::tuple<std::string, std::string>;
 
 bool IsValidReference(ir::AstNode *astNode);
-DeclInfoType GetDeclInfo(ir::AstNode *astNode);
+DeclInfoType GetDeclInfoImpl(ir::AstNode *astNode);
 template <typename T, typename Compare>
 void RemoveDuplicates(std::vector<T> &vec, Compare comp)
 {
     std::set<T, Compare> uniqueSet(vec.begin(), vec.end(), comp);
     vec.assign(uniqueSet.begin(), uniqueSet.end());
 }
-void GetReferencesAtPositionImpl(es2panda_Context *context, const DeclInfoType &declInfo, References *result);
+References GetReferencesAtPositionImpl(es2panda_Context *context, const DeclInfoType &declInfo);
 
 }  // namespace ark::es2panda::lsp
 

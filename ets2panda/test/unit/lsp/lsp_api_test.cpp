@@ -266,7 +266,7 @@ B(1, 2);)"};
     ASSERT_EQ(ContextState(ctx1), ES2PANDA_STATE_CHECKED);
 
     auto result = References();
-    ark::es2panda::lsp::GetFileReferencesImpl(ctx1, searchFileName, isPackageModule, &result);
+    result = ark::es2panda::lsp::GetFileReferencesImpl(ctx1, searchFileName, isPackageModule);
     auto expectedFileName1 = filePaths[1];
     size_t const expectedStartPos1 = 16;
     size_t const expectedLength1 = 25;
@@ -315,7 +315,7 @@ B(1, 2);)"};
     ASSERT_EQ(ContextState(ctx1), ES2PANDA_STATE_CHECKED);
 
     auto result = References();
-    ark::es2panda::lsp::GetFileReferencesImpl(ctx1, searchFileName, isPackageModule, &result);
+    result = ark::es2panda::lsp::GetFileReferencesImpl(ctx1, searchFileName, isPackageModule);
     auto expectedFileName1 = filePaths[1];
     size_t const expectedStartPos1 = 16;
     size_t const expectedLength1 = 25;
@@ -349,7 +349,7 @@ console.log(PI);)"};
     auto baseUrl = reinterpret_cast<Context *>(ctx)->config->options->ArkTSConfig()->BaseUrl();
     auto searchFileName = baseUrl + "/plugins/ets/stdlib/std/math/math.ets";
     auto result = References();
-    ark::es2panda::lsp::GetFileReferencesImpl(ctx, searchFileName.c_str(), true, &result);
+    result = ark::es2panda::lsp::GetFileReferencesImpl(ctx, searchFileName.c_str(), true);
     auto expectedFileName = filePaths[0];
     size_t const expectedStartPos = 19;
     size_t const expectedLength = 10;
@@ -563,12 +563,12 @@ TEST_F(LSPAPITests, GetTypeOfSymbolAtLocation2)
 
 TEST_F(LSPAPITests, GetCurrentTokenValue)
 {
-    std::vector<std::string> files = {"current_token.ets"};
-    std::vector<std::string> texts = {"ab"};
-    auto filePaths = CreateTempFile(files, texts);
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext("current_token.ets", ES2PANDA_STATE_CHECKED, "ab");
     LSPAPI const *lspApi = GetImpl();
     size_t offset = 2;
-    std::string result = lspApi->getCurrentTokenValue(filePaths[0].c_str(), offset);
+    std::string result = lspApi->getCurrentTokenValue(ctx, offset);
+    initializer.DestroyContext(ctx);
     ASSERT_EQ(result, "ab");
 }
 

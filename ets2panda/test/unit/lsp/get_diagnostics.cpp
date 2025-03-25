@@ -18,49 +18,43 @@
 #include "lsp_api_test.h"
 #include "public/es2panda_lib.h"
 
+using ark::es2panda::lsp::Initializer;
+
 class LspDiagnosticsTests : public LSPAPITests {};
 
 TEST_F(LspDiagnosticsTests, GetSemanticDiagnostics1)
 {
-    std::vector<std::string> files = {"GetSemanticDiagnosticsNoError1.ets"};
-    std::vector<std::string> texts = {R"delimiter(
-function add(a: number, b: number) {
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext("GetSemanticDiagnosticsNoError1.ets", ES2PANDA_STATE_CHECKED,
+                                                      R"(function add(a: number, b: number) {
     return a + b;
 }
 let n = 333;
-let res = add(n, n);
-)delimiter"};
-    auto filePaths = CreateTempFile(files, texts);
-    int const expectedFileCount = 1;
-    ASSERT_EQ(filePaths.size(), expectedFileCount);
-
+let res = add(n, n);)");
     LSPAPI const *lspApi = GetImpl();
-    DiagnosticReferences result = lspApi->getSemanticDiagnostics(filePaths[0].c_str());
+    DiagnosticReferences result = lspApi->getSemanticDiagnostics(ctx);
+    initializer.DestroyContext(ctx);
     ASSERT_EQ(result.diagnostic.size(), 0);
 }
 
 TEST_F(LspDiagnosticsTests, GetSemanticDiagnostics2)
 {
-    std::vector<std::string> files = {"GetSemanticDiagnosticsNoError2.ets"};
-    std::vector<std::string> texts = {R"delimiter(
-const a: number = "hello";
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext("GetSemanticDiagnosticsNoError1.ets", ES2PANDA_STATE_CHECKED,
+                                                      R"(const a: number = "hello";
 function add(a: number, b: number): number {
     return a + b;
 }
-add("1", 2);
-)delimiter"};
-    auto filePaths = CreateTempFile(files, texts);
-    int const expectedFileCount = 1;
-    ASSERT_EQ(filePaths.size(), expectedFileCount);
-
+add("1", 2);)");
     LSPAPI const *lspApi = GetImpl();
-    DiagnosticReferences result = lspApi->getSemanticDiagnostics(filePaths[0].c_str());
+    DiagnosticReferences result = lspApi->getSemanticDiagnostics(ctx);
+    initializer.DestroyContext(ctx);
     auto const expectedErrorCount = 3;
     ASSERT_EQ(result.diagnostic.size(), expectedErrorCount);
     auto const thirdIndex = 2;
-    auto const expectedFirstStartLine = 2;
+    auto const expectedFirstStartLine = 1;
     auto const expectedFirstStartCharacter = 19;
-    auto const expectedFirstEndLine = 2;
+    auto const expectedFirstEndLine = 1;
     auto const expectedFirstEndCharacter = 26;
     ASSERT_EQ(result.diagnostic[thirdIndex].range_.start.line_, expectedFirstStartLine);
     ASSERT_EQ(result.diagnostic[thirdIndex].range_.start.character_, expectedFirstStartCharacter);
@@ -70,9 +64,9 @@ add("1", 2);
     ASSERT_EQ(std::get<int>(result.diagnostic[thirdIndex].code_), 1);
     ASSERT_EQ(result.diagnostic[thirdIndex].message_, R"(Type '"hello"' cannot be assigned to type 'double')");
     ASSERT_EQ(result.diagnostic[thirdIndex].codeDescription_.href_, "test code description");
-    auto const expectedSecondStartLine = 6;
+    auto const expectedSecondStartLine = 5;
     auto const expectedSecondStartCharacter = 5;
-    auto const expectedSecondEndLine = 6;
+    auto const expectedSecondEndLine = 5;
     auto const expectedSecondEndCharacter = 8;
     ASSERT_EQ(result.diagnostic[0].range_.start.line_, expectedSecondStartLine);
     ASSERT_EQ(result.diagnostic[0].range_.start.character_, expectedSecondStartCharacter);
@@ -86,44 +80,36 @@ add("1", 2);
 
 TEST_F(LspDiagnosticsTests, GetSyntacticDiagnostics1)
 {
-    std::vector<std::string> files = {"GetSemanticDiagnosticsNoError1.ets"};
-    std::vector<std::string> texts = {R"delimiter(
-function add(a: number, b: number) {
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext("GetSemanticDiagnosticsNoError1.ets", ES2PANDA_STATE_CHECKED,
+                                                      R"(function add(a: number, b: number) {
     return a + b;
 }
 let n = 333;
-let res = add(n, n);
-)delimiter"};
-    auto filePaths = CreateTempFile(files, texts);
-    int const expectedFileCount = 1;
-    ASSERT_EQ(filePaths.size(), expectedFileCount);
-
+let res = add(n, n);)");
     LSPAPI const *lspApi = GetImpl();
-    auto result = lspApi->getSyntacticDiagnostics(filePaths[0].c_str());
+    auto result = lspApi->getSyntacticDiagnostics(ctx);
+    initializer.DestroyContext(ctx);
     ASSERT_EQ(result.diagnostic.size(), 0);
 }
 
 TEST_F(LspDiagnosticsTests, GetSyntacticDiagnostics2)
 {
-    std::vector<std::string> files = {"GetSemanticDiagnosticsNoError2.ets"};
-    std::vector<std::string> texts = {R"delimiter(
-functon add(a: number, b: number) {
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext("GetSemanticDiagnosticsNoError1.ets", ES2PANDA_STATE_CHECKED,
+                                                      R"(functon add(a: number, b: number) {
     return a + b;
 }
 let n = 333;
-let res = add(n, n);
-)delimiter"};
-    auto filePaths = CreateTempFile(files, texts);
-    int const expectedFileCount = 1;
-    ASSERT_EQ(filePaths.size(), expectedFileCount);
-
+let res = add(n, n);)");
     LSPAPI const *lspApi = GetImpl();
-    auto result = lspApi->getSyntacticDiagnostics(filePaths[0].c_str());
+    auto result = lspApi->getSyntacticDiagnostics(ctx);
+    initializer.DestroyContext(ctx);
     auto const expectedErrorCount = 13;
     ASSERT_EQ(result.diagnostic.size(), expectedErrorCount);
-    auto const expectedFirstStartLine = 2;
+    auto const expectedFirstStartLine = 1;
     auto const expectedFirstStartCharacter = 9;
-    auto const expectedFirstEndLine = 2;
+    auto const expectedFirstEndLine = 1;
     auto const expectedFirstEndCharacter = 12;
     ASSERT_EQ(result.diagnostic[0].range_.start.line_, expectedFirstStartLine);
     ASSERT_EQ(result.diagnostic[0].range_.start.character_, expectedFirstStartCharacter);
@@ -131,9 +117,9 @@ let res = add(n, n);
     ASSERT_EQ(result.diagnostic[0].range_.end.character_, expectedFirstEndCharacter);
     ASSERT_EQ(result.diagnostic[0].severity_, DiagnosticSeverity::Error);
     ASSERT_EQ(std::get<int>(result.diagnostic[0].code_), 1);
-    auto const expectedSecondStartLine = 2;
+    auto const expectedSecondStartLine = 1;
     auto const expectedSecondStartCharacter = 14;
-    auto const expectedSecondEndLine = 2;
+    auto const expectedSecondEndLine = 1;
     auto const expectedSecondEndCharacter = 15;
     ASSERT_EQ(result.diagnostic[1].range_.start.line_, expectedSecondStartLine);
     ASSERT_EQ(result.diagnostic[1].range_.start.character_, expectedSecondStartCharacter);
@@ -142,9 +128,9 @@ let res = add(n, n);
     ASSERT_EQ(result.diagnostic[1].severity_, DiagnosticSeverity::Error);
     ASSERT_EQ(std::get<int>(result.diagnostic[1].code_), 1);
     auto const thirdIndex = 2;
-    auto const expectedThirdStartLine = 2;
+    auto const expectedThirdStartLine = 1;
     auto const expectedThirdStartCharacter = 14;
-    auto const expectedThirdEndLine = 2;
+    auto const expectedThirdEndLine = 1;
     auto const expectedThirdEndCharacter = 15;
     ASSERT_EQ(result.diagnostic[thirdIndex].range_.start.line_, expectedThirdStartLine);
     ASSERT_EQ(result.diagnostic[thirdIndex].range_.start.character_, expectedThirdStartCharacter);
@@ -157,24 +143,20 @@ let res = add(n, n);
 
 TEST_F(LspDiagnosticsTests, GetSyntacticDiagnostics3)
 {
-    std::vector<std::string> files = {"GetSemanticDiagnosticsNoError3.ets"};
-    std::vector<std::string> texts = {R"delimiter(
-functon add(a: number, b: number) {
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext("GetSemanticDiagnosticsNoError1.ets", ES2PANDA_STATE_CHECKED,
+                                                      R"(functon add(a: number, b: number) {
     return a + b;
 }
 let n = 333;
-let res = add(n, n);
-)delimiter"};
-    auto filePaths = CreateTempFile(files, texts);
-    int const expectedFileCount = 1;
-    ASSERT_EQ(filePaths.size(), expectedFileCount);
-
+let res = add(n, n);)");
     LSPAPI const *lspApi = GetImpl();
-    auto result = lspApi->getSyntacticDiagnostics(filePaths[0].c_str());
+    auto result = lspApi->getSyntacticDiagnostics(ctx);
+    initializer.DestroyContext(ctx);
     auto const forthIndex = 5;
-    auto const expectedForthStartLine = 2;
+    auto const expectedForthStartLine = 1;
     auto const expectedForthStartCharacter = 22;
-    auto const expectedForthEndLine = 2;
+    auto const expectedForthEndLine = 1;
     auto const expectedForthEndCharacter = 23;
     ASSERT_EQ(result.diagnostic[forthIndex].range_.start.line_, expectedForthStartLine);
     ASSERT_EQ(result.diagnostic[forthIndex].range_.start.character_, expectedForthStartCharacter);
@@ -185,9 +167,9 @@ let res = add(n, n);
     ASSERT_EQ(result.diagnostic[forthIndex].message_, R"(Unexpected token ','.)");
     ASSERT_EQ(result.diagnostic[forthIndex].codeDescription_.href_, "test code description");
     auto const fifthIndex = 8;
-    auto const expectedFifththStartLine = 2;
+    auto const expectedFifththStartLine = 1;
     auto const expectedFifthStartCharacter = 27;
-    auto const expectedFifthEndLine = 2;
+    auto const expectedFifthEndLine = 1;
     auto const expectedFifthEndCharacter = 33;
     ASSERT_EQ(result.diagnostic[fifthIndex].range_.start.line_, expectedFifththStartLine);
     ASSERT_EQ(result.diagnostic[fifthIndex].range_.start.character_, expectedFifthStartCharacter);
@@ -201,24 +183,20 @@ let res = add(n, n);
 
 TEST_F(LspDiagnosticsTests, GetSyntacticDiagnosticsForFile4)
 {
-    std::vector<std::string> files = {"GetSemanticDiagnosticsNoError4.ets"};
-    std::vector<std::string> texts = {R"delimiter(
-functon add(a: number, b: number) {
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext("GetSemanticDiagnosticsNoError1.ets", ES2PANDA_STATE_CHECKED,
+                                                      R"(functon add(a: number, b: number) {
     return a + b;
 }
 let n = 333;
-let res = add(n, n);
-)delimiter"};
-    auto filePaths = CreateTempFile(files, texts);
-    int const expectedFileCount = 1;
-    ASSERT_EQ(filePaths.size(), expectedFileCount);
-
+let res = add(n, n);)");
     LSPAPI const *lspApi = GetImpl();
-    auto result = lspApi->getSyntacticDiagnostics(filePaths[0].c_str());
+    auto result = lspApi->getSyntacticDiagnostics(ctx);
+    initializer.DestroyContext(ctx);
     auto const sixthIndex = 9;
-    auto const expectedSixthStartLine = 2;
+    auto const expectedSixthStartLine = 1;
     auto const expectedSixthStartCharacter = 33;
-    auto const expectedSixthEndLine = 2;
+    auto const expectedSixthEndLine = 1;
     auto const expectedSixthEndCharacter = 34;
     ASSERT_EQ(result.diagnostic[sixthIndex].range_.start.line_, expectedSixthStartLine);
     ASSERT_EQ(result.diagnostic[sixthIndex].range_.start.character_, expectedSixthStartCharacter);
@@ -229,9 +207,9 @@ let res = add(n, n);
     ASSERT_EQ(result.diagnostic[sixthIndex].message_, R"(Unexpected token ')'.)");
     ASSERT_EQ(result.diagnostic[sixthIndex].codeDescription_.href_, "test code description");
     auto const sevenIndex = 12;
-    auto const expectedSeventhStartLine = 3;
+    auto const expectedSeventhStartLine = 2;
     auto const expectedSeventhStartCharacter = 5;
-    auto const expectedSeventhEndLine = 3;
+    auto const expectedSeventhEndLine = 2;
     auto const expectedSeventhEndCharacter = 18;
     ASSERT_EQ(result.diagnostic[sevenIndex].range_.start.line_, expectedSeventhStartLine);
     ASSERT_EQ(result.diagnostic[sevenIndex].range_.start.character_, expectedSeventhStartCharacter);
