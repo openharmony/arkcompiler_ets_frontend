@@ -88,6 +88,7 @@ ast_nodes_supported = [
     "ETSTypeReference",
     "ETSTypeReferencePart",
     "ETSUnionType",
+    "ETSKeyofType",
     "ETSLaunchExpression",
     "ETSNewArrayInstanceExpression",
     "ETSNewMultiDimArrayInstanceExpression",

@@ -114,6 +114,7 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/checker/types/ets/etsBigIntType.h
     ${ES2PANDA_ROOT}/ir/expressions/arrayExpression.h
     ${ES2PANDA_ROOT}/ir/ets/etsUnionType.h
+    ${ES2PANDA_ROOT}/ir/ets/etsKeyofType.h
     ${ES2PANDA_ROOT}/ir/ts/tsTypeParameter.h
     ${ES2PANDA_ROOT}/ir/ts/tsConstructorType.h
     ${ES2PANDA_ROOT}/ir/ts/tsTypeParameterDeclaration.h
@@ -350,6 +351,7 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsObjectKeyword.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/unionType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ets/etsUnionType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsKeyofType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/base/tsPropertySignature.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/objectDescriptor.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsConditionalType.yaml

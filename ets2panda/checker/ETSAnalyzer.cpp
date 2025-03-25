@@ -612,6 +612,12 @@ checker::Type *ETSAnalyzer::Check(ir::ETSStringLiteralType *node) const
     return node->GetType(checker);
 }
 
+checker::Type *ETSAnalyzer::Check(ir::ETSKeyofType *node) const
+{
+    ETSChecker *checker = GetETSChecker();
+    return node->GetType(checker);
+}
+
 // compile methods for EXPRESSIONS in alphabetical order
 
 checker::Type *ETSAnalyzer::GetPreferredType(ir::ArrayExpression *expr) const
