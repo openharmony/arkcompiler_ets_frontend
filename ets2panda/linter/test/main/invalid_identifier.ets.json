@@ -15,39 +15,9 @@
     ],
     "result": [
         {
-            "line": 16,
-            "column": 10,
-            "endLine": 16,
-            "endColumn": 16,
-            "problem": "DeclWithDuplicateName",
-            "suggest": "",
-            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 8,
-            "endLine": 18,
-            "endColumn": 16,
-            "problem": "DeclWithDuplicateName",
-            "suggest": "",
-            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 22,
+            "line": 52,
             "column": 7,
-            "endLine": 22,
-            "endColumn": 15,
-            "problem": "DeclWithDuplicateName",
-            "suggest": "",
-            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 60,
-            "column": 7,
-            "endLine": 60,
+            "endLine": 52,
             "endColumn": 12,
             "problem": "ThrowStatement",
             "suggest": "",
@@ -55,19 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 116,
-            "column": 7,
-            "endLine": 116,
-            "endColumn": 13,
-            "problem": "DeclWithDuplicateName",
-            "suggest": "",
-            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 128,
+            "line": 110,
             "column": 24,
-            "endLine": 128,
+            "endLine": 110,
             "endColumn": 25,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
@@ -75,9 +35,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 134,
+            "line": 116,
             "column": 24,
-            "endLine": 134,
+            "endLine": 116,
             "endColumn": 25,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",

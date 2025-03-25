@@ -17,11 +17,7 @@ import { number } from './invalid_identifier_number.js'
 
 import abstract from './invalid_identifier_number.js'
 
-const asVar:string = '';
-
-const abstract: string = "abstract";
-
-const else: string = "else";
+const asVar: string = '';
 
 const internal: string = "internal";
 
@@ -37,15 +33,11 @@ const switch: string = "switch";
 
 const async: string = "async";
 
-const export: string = "export";
-
 const let: string = "let";
 
 const super: string = "super";
 
 const await: string = "await";
-
-const extends: string = "extends";
 
 const native: string = "native";
 
@@ -58,8 +50,6 @@ const false: boolean = false;
 const new: string = "new";
 
 const throw: string = "throw";
-
-const case: string = "case";
 
 const final: string = "final";
 
@@ -74,8 +64,6 @@ const for: string = "for";
 const override: string = "override";
 
 const try: string = "try";
-
-const const: string = "const";
 
 const function: string = "function";
 
@@ -97,10 +85,6 @@ const implements: string = "implements";
 
 const protected: string = "protected";
 
-const default: string = "default"; 
-
-const import: string = "import";
-
 const public: string = "public"; 
 
 const do: string = "do"
@@ -112,8 +96,6 @@ const return: string = "return";
 const boolean: boolean = true;
 
 const double: number = 3.14;
-
-const number: number = 42;
 
 const Boolean: Boolean = true;
 
@@ -146,8 +128,6 @@ const Int: number = 42;
 const Short: number = 32767;
 
 const char: string = "a";
-
-const string: string = "hello";
 
 const Char: string = "a";
 
@@ -191,4 +171,7 @@ interface Test3 {
     string: string;
 }
 
+let Awaited: number = 42;
+
+type string = number;
 
