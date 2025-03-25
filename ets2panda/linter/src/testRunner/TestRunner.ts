@@ -255,17 +255,7 @@ function runTestFiles(
 ): void {
   for (const testFile of testFiles) {
     try {
-      let renamed = false;
-      let tsName = testFile;
-      if (testFile.includes(TEST_EXTENSION_ETS)) {
-        renamed = true;
-        tsName = testFile.replace(TEST_EXTENSION_ETS, ts.Extension.Ts);
-        fs.renameSync(path.join(testDir, testFile), path.join(testDir, tsName));
-      }
-      runTestFile({ testDir, testFile: tsName, testRunnerOpts }, testStats);
-      if (renamed) {
-        fs.renameSync(path.join(testDir, tsName), path.join(testDir, testFile));
-      }
+      runTestFile({ testDir, testFile, testRunnerOpts }, testStats);
     } catch (error) {
       Logger.info(`Test ${testFile} failed:\n${TAB}` + (error as Error).message);
       testStats.failed++;

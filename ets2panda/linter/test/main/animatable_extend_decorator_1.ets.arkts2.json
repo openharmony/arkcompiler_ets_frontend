@@ -23,26 +23,6 @@
             "suggest": "",
             "rule": "\"@AnimatableExtend\" decorator should be transformed to use receiver (arkui-animatableextend-use-receiver)",
             "severity": "ERROR"
-        },
-        {
-            "line": 33,
-            "column": 11,
-            "endLine": 33,
-            "endColumn": 15,
-            "problem": "FunctionContainsThis",
-            "suggest": "",
-            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 33,
-            "column": 28,
-            "endLine": 33,
-            "endColumn": 32,
-            "problem": "FunctionContainsThis",
-            "suggest": "",
-            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
-            "severity": "ERROR"
         }
     ]
 }
