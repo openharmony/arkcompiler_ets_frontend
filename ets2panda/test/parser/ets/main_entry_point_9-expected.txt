@@ -21,28 +21,13 @@
         }
       },
       "typeAnnotation": {
-        "type": "TSArrayType",
-        "elementType": {
-          "type": "ETSTypeReference",
-          "part": {
-            "type": "ETSTypeReferencePart",
-            "name": {
-              "type": "Identifier",
-              "name": "String",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 16,
-                  "column": 12,
-                  "program": "main_entry_point_9.ets"
-                },
-                "end": {
-                  "line": 16,
-                  "column": 18,
-                  "program": "main_entry_point_9.ets"
-                }
-              }
-            },
+        "type": "ETSTypeReference",
+        "part": {
+          "type": "ETSTypeReferencePart",
+          "name": {
+            "type": "Identifier",
+            "name": "FixedArray",
+            "decorators": [],
             "loc": {
               "start": {
                 "line": 16,
@@ -51,7 +36,71 @@
               },
               "end": {
                 "line": 16,
-                "column": 19,
+                "column": 22,
+                "program": "main_entry_point_9.ets"
+              }
+            }
+          },
+          "typeParams": {
+            "type": "TSTypeParameterInstantiation",
+            "params": [
+              {
+                "type": "ETSTypeReference",
+                "part": {
+                  "type": "ETSTypeReferencePart",
+                  "name": {
+                    "type": "Identifier",
+                    "name": "String",
+                    "decorators": [],
+                    "loc": {
+                      "start": {
+                        "line": 16,
+                        "column": 23,
+                        "program": "main_entry_point_9.ets"
+                      },
+                      "end": {
+                        "line": 16,
+                        "column": 29,
+                        "program": "main_entry_point_9.ets"
+                      }
+                    }
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 16,
+                      "column": 23,
+                      "program": "main_entry_point_9.ets"
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 30,
+                      "program": "main_entry_point_9.ets"
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 16,
+                    "column": 23,
+                    "program": "main_entry_point_9.ets"
+                  },
+                  "end": {
+                    "line": 16,
+                    "column": 30,
+                    "program": "main_entry_point_9.ets"
+                  }
+                }
+              }
+            ],
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 22,
+                "program": "main_entry_point_9.ets"
+              },
+              "end": {
+                "line": 16,
+                "column": 30,
                 "program": "main_entry_point_9.ets"
               }
             }
@@ -64,21 +113,20 @@
             },
             "end": {
               "line": 16,
-              "column": 19,
+              "column": 31,
               "program": "main_entry_point_9.ets"
             }
           }
         },
-        "annotations": [],
         "loc": {
           "start": {
             "line": 16,
-            "column": 18,
+            "column": 12,
             "program": "main_entry_point_9.ets"
           },
           "end": {
             "line": 16,
-            "column": 20,
+            "column": 31,
             "program": "main_entry_point_9.ets"
           }
         }
@@ -91,7 +139,7 @@
         },
         "end": {
           "line": 16,
-          "column": 21,
+          "column": 31,
           "program": "main_entry_point_9.ets"
         }
       }

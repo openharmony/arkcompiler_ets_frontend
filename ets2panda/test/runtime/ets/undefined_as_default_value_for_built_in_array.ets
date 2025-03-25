@@ -27,7 +27,7 @@ function main(): int {
       assertTrue(y[i] instanceof undefined, "y[i] value has to be undefined.")
     }
 
-    let m = new int[33]
+    let m : FixedArray<int> = new int[33]
     for (let i = 0; i < 33; i++) {
       assertEQ(m[i], 0, "m[i] value has to be 0.")
     }

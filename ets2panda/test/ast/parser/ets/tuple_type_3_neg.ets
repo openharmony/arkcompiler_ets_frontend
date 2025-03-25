@@ -22,6 +22,4 @@ let a: [number, number number] = [1, 2, 3];
 /* @@? 17:30 Error SyntaxError: Unexpected token ']'. */
 /* @@? 17:30 Error SyntaxError: Unexpected token ']'. */
 /* @@? 17:30 Error SyntaxError: Unexpected token ']'. */
-/* @@? 17:30 Error SyntaxError: Unexpected token ']'. */
-/* @@? 17:30 Error SyntaxError: Unexpected token ']'. */
 /* @@? 17:32 Error SyntaxError: Unexpected token '='. */

@@ -22,4 +22,6 @@
 
     console.log(x[/* @@ label */0])
  }
-/* @@@ label Error TypeError: Cannot find index access method with the required signature.  */
+/* @@? 23:17 Error TypeError: No matching indexing signature for $_get(int) */
+/* @@? 23:33 Error TypeError: Type 'int' is not compatible with type 'String' at index 1 */
+/* @@? 23:33 Error TypeError: Cannot find index access method with the required signature. */

@@ -30,6 +30,8 @@ defines:
     ref: SET_INDEX_METHOD
   - name: $_iterator
     ref: ITERATOR_METHOD
+  - name: Iterator 
+    ref: ITERATOR_CLASS
   - name: 'ambient_indexer'
     ref: AMBIENT_INDEXER
   - name: 'ETSGLOBAL.main:'
@@ -341,6 +343,9 @@ builtins:
   - name: BigInt
     package: PKG_ESCOMPAT
     ref: BUILTIN_BIGINT
+  - name: Array
+    package: PKG_ESCOMPAT
+    ref: BUILTIN_ARRAY
   - name: AssertionError
     package: PKG_STD_CORE
     ref: BUILTIN_ASSERTION_ERROR
@@ -701,6 +706,18 @@ signatures:
     params: [PRIMITIVE_INT]
     return_type: PRIMITIVE_CHAR
     ref: BUILTIN_STRING_CHAR_AT
+
+  - callee: BUILTIN_ARRAY
+    method_name: <get>length
+    params: []
+    return_type: PRIMITIVE_DOUBLE
+    ref: BUILTIN_ARRAY_LENGTH
+
+  - callee: BUILTIN_ARRAY
+    method_name: $GET_INDEX_METHOD
+    params: [PRIMITIVE_INT]
+    return_type: BUILTIN_OBJECT
+    ref: BUILTIN_ARRAY_GET_ELEMENT
 
   - callee: BUILTIN_ASSERTION_ERROR
     method_name: $CTOR

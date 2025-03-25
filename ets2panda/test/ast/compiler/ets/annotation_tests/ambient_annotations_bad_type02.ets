@@ -20,11 +20,11 @@ import {ClassAuthor, Color} from "./annotation_src"
     /* @@ label */authorAge: /* @@ label1 */int = /* @@ label2 */32
     /* @@ label3 */testBool: /* @@ label4 */string = "false"
     /* @@ label5 */favorColor: Color
-    /* @@ label6 */color: FixedArray<Color>
-    reviewers: FixedArray<string> = ["Bob", "Jim", "Tom"]
+    /* @@ label6 */color: Color[]
+    reviewers: string[] = ["Bob", "Jim", "Tom"]
     reviewersAge: int/* @@ label7 */[] = [18, 21, 32]
-    testBools: FixedArray<boolean> = [false, true, false]
-    mutiArray: FixedArray<FixedArray<number>> = [
+    testBools: boolean[] = [false, true, false]
+    mutiArray: number[][] = [
         [1, 2, 3],
         [4, +5, 6],
         [7, 8, -9]

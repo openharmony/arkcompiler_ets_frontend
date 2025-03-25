@@ -14,10 +14,10 @@
  */
 
 class C {
-    public met(...p: number[]): string {
+    public met(...p: FixedArray<number>): string {
          return "nR"
     }
-    public met(...p: Number[]): string {
+    public met(...p: FixedArray<Number>): string {
         return "NR"
     }
 }

@@ -21,4 +21,5 @@ function f1(this : B): FixedArray<this> {
 }
 
 /* @@? 19:35 Error SyntaxError: A 'this' type is available only as return type in a non-static method of a class or struct and extension functions. */
-/* @@? 20:12 Error TypeError: Type 'B' is not compatible with the enclosing method's return type 'ETSGLOBAL[]' */
+/* @@? 19:35 Error TypeError: A 'this' cannot be used as type of array. */
+/* @@? 20:12 Error TypeError: Type 'B' is not compatible with the enclosing method's return type 'FixedArray<ETSGLOBAL>' */

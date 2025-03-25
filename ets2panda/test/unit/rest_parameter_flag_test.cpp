@@ -70,7 +70,7 @@ TEST_F(RestParameterTest, function_without_rest_parameters_0)
 TEST_F(RestParameterTest, function_without_rest_parameters_1)
 {
     SetCurrentProgram(R"(
-        function fn(args: int[]): void {
+        function fn(args: FixedArray<int>): void {
         }
     )");
     CheckNoRestParameterFlag("dummy.ETSGLOBAL.fn:i32[];void;", true);
@@ -79,7 +79,7 @@ TEST_F(RestParameterTest, function_without_rest_parameters_1)
 TEST_F(RestParameterTest, function_without_rest_parameters_2)
 {
     SetCurrentProgram(R"(
-        function fn(arg0: int, args: String[]): void {
+        function fn(arg0: int, args: FixedArray<String>): void {
         }
     )");
     CheckNoRestParameterFlag("dummy.ETSGLOBAL.fn:i32;std.core.String[];void;", true);
@@ -88,7 +88,7 @@ TEST_F(RestParameterTest, function_without_rest_parameters_2)
 TEST_F(RestParameterTest, function_with_rest_parameter_0)
 {
     SetCurrentProgram(R"(
-        function fn(...args: String[]): void {
+        function fn(...args: FixedArray<String>): void {
         }
     )");
     CheckRestParameterFlag("dummy.ETSGLOBAL.fn:std.core.String[];void;", true);
@@ -97,7 +97,7 @@ TEST_F(RestParameterTest, function_with_rest_parameter_0)
 TEST_F(RestParameterTest, function_with_rest_parameter_1)
 {
     SetCurrentProgram(R"(
-        function fn(o: Object, ...args: int[]): void {
+        function fn(o: Object, ...args: FixedArray<int>): void {
         }
     )");
     CheckRestParameterFlag("dummy.ETSGLOBAL.fn:std.core.Object;i32[];void;", true);
@@ -128,7 +128,7 @@ TEST_F(RestParameterTest, class_method_with_rest_parameters_0)
 {
     SetCurrentProgram(R"(
         class A {
-            fn(...args: int[]) {};
+            fn(...args: FixedArray<int>) {};
         }
     )");
     CheckRestParameterFlag("dummy.A.fn:i32[];void;", false);
@@ -159,7 +159,7 @@ TEST_F(RestParameterTest, static_class_method_with_rest_parameters_0)
 {
     SetCurrentProgram(R"(
         class A {
-            static fn(...args: int[]) {};
+            static fn(...args: FixedArray<int>) {};
         }
     )");
     CheckRestParameterFlag("dummy.A.fn:i32[];void;", true);
@@ -169,7 +169,7 @@ TEST_F(RestParameterTest, static_class_method_with_rest_parameters_1)
 {
     SetCurrentProgram(R"(
         class A {
-            static fn(a: String[], ...args: int[]) {};
+            static fn(a: FixedArray<String>, ...args: FixedArray<int>) {};
         }
     )");
     CheckRestParameterFlag("dummy.A.fn:std.core.String[];i32[];void;", true);
@@ -190,7 +190,7 @@ TEST_F(RestParameterTest, class_constructor_without_rest_parameters_1)
 {
     SetCurrentProgram(R"(
         class A {
-            constructor(args: String[]) {};
+            constructor(args: FixedArray<String>) {};
         }
     )");
     CheckNoRestParameterFlag("dummy.A.<ctor>:std.core.String[];void;", false);
@@ -200,7 +200,7 @@ TEST_F(RestParameterTest, class_constructor_with_rest_parameters_0)
 {
     SetCurrentProgram(R"(
         class A {
-            constructor(...args: int[]) {};
+            constructor(...args: FixedArray<int>) {};
         }
     )");
     CheckRestParameterFlag("dummy.A.<ctor>:i32[];void;", false);
@@ -210,7 +210,7 @@ TEST_F(RestParameterTest, class_constructor_with_rest_parameters_1)
 {
     SetCurrentProgram(R"(
         class A {
-            constructor(v0: long, ...args: String[]) {};
+            constructor(v0: long, ...args: FixedArray<String>) {};
         }
     )");
     CheckRestParameterFlag("dummy.A.<ctor>:i64;std.core.String[];void;", false);
@@ -231,7 +231,7 @@ TEST_F(RestParameterTest, interface_without_rest_parameters_1)
 {
     SetCurrentProgram(R"(
         interface A {
-            fn(args: String[]) {};
+            fn(args: FixedArray<String>) {};
         }
     )");
     CheckNoRestParameterFlag("dummy.A.fn:std.core.String[];void;", false);
@@ -241,7 +241,7 @@ TEST_F(RestParameterTest, interface_with_rest_parameters_0)
 {
     SetCurrentProgram(R"(
         interface A {
-            fn(...args: Object[]) {};
+            fn(...args: FixedArray<Object>) {};
         }
     )");
     CheckRestParameterFlag("dummy.A.fn:std.core.Object[];void;", false);
@@ -251,7 +251,7 @@ TEST_F(RestParameterTest, interface_with_rest_parameters_1)
 {
     SetCurrentProgram(R"(
         interface A {
-            fn(o: Object, ...args: String[]) {};
+            fn(o: Object, ...args: FixedArray<String>) {};
         }
     )");
     CheckRestParameterFlag("dummy.A.fn:std.core.Object;std.core.String[];void;", false);
@@ -271,7 +271,7 @@ TEST_F(RestParameterTest, lambda_without_rest_parameters_0)
 TEST_F(RestParameterTest, lambda_without_rest_parameters_1)
 {
     SetCurrentProgram(R"(
-        let fn: (args: long[])=>int = (args: long[]): int => {
+        let fn: (args: FixedArray<long>)=>int = (args: FixedArray<long>): int => {
             return 1;
         }
     )");
@@ -293,7 +293,7 @@ TEST_F(RestParameterTest, abstract_function_without_rest_parameter_1)
 {
     SetCurrentProgram(R"(
         abstract class A {
-            abstract fn(args: String[]): void
+            abstract fn(args: FixedArray<String>): void
         }
     )");
     CheckNoRestParameterFlag("dummy.A.fn:std.core.String[];void;", false);
@@ -303,7 +303,7 @@ TEST_F(RestParameterTest, abstract_function_with_rest_parameter_0)
 {
     SetCurrentProgram(R"(
         abstract class A {
-            abstract fn(...args: String[]): void
+            abstract fn(...args: FixedArray<String>): void
         }
     )");
     CheckRestParameterFlag("dummy.A.fn:std.core.String[];void;", false);
@@ -313,7 +313,7 @@ TEST_F(RestParameterTest, abstract_function_with_rest_parameter_1)
 {
     SetCurrentProgram(R"(
         abstract class A {
-            abstract fn(v: int, ...args: String[]): void
+            abstract fn(v: int, ...args: FixedArray<String>): void
         }
     )");
     CheckRestParameterFlag("dummy.A.fn:i32;std.core.String[];void;", false);
@@ -323,13 +323,13 @@ TEST_F(RestParameterTest, abstract_function_with_rest_parameter_1)
 TEST_F(RestParameterTest, external_function_with_rest_parameter_0)
 {
     SetCurrentProgram("");
-    CheckRestParameterFlag("std.core.LambdaValue.invoke:std.core.Object[];std.core.Object;", false);
+    CheckRestParameterFlag("std.core.LambdaValue.invoke:escompat.Array;std.core.Object;", false);
 }
 
 TEST_F(RestParameterTest, external_function_with_rest_parameter_1)
 {
     SetCurrentProgram("");
-    CheckRestParameterFlag("escompat.Math.max:f64[];f64;", true);
+    CheckRestParameterFlag("escompat.Math.max:escompat.Array;f64;", true);
 }
 
 }  // namespace ark::es2panda::compiler::test

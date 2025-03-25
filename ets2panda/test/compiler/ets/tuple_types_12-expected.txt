@@ -1142,55 +1142,103 @@
                                   }
                                 },
                                 {
-                                  "type": "TSArrayType",
-                                  "elementType": {
-                                    "type": "ETSTypeReference",
-                                    "part": {
-                                      "type": "ETSTypeReferencePart",
-                                      "name": {
-                                        "type": "Identifier",
-                                        "name": "custom_tuple_type",
-                                        "decorators": [],
-                                        "loc": {
-                                          "start": {
-                                            "line": 22,
-                                            "column": 61,
-                                            "program": "tuple_types_12.ets"
-                                          },
-                                          "end": {
-                                            "line": 22,
-                                            "column": 78,
-                                            "program": "tuple_types_12.ets"
-                                          }
-                                        }
-                                      },
+                                  "type": "ETSTypeReference",
+                                  "part": {
+                                    "type": "ETSTypeReferencePart",
+                                    "name": {
+                                      "type": "Identifier",
+                                      "name": "Array",
+                                      "decorators": [],
                                       "loc": {
                                         "start": {
-                                          "line": 22,
-                                          "column": 61,
+                                          "line": 1,
+                                          "column": 1,
                                           "program": "tuple_types_12.ets"
                                         },
                                         "end": {
-                                          "line": 22,
-                                          "column": 79,
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "tuple_types_12.ets"
+                                        }
+                                      }
+                                    },
+                                    "typeParams": {
+                                      "type": "TSTypeParameterInstantiation",
+                                      "params": [
+                                        {
+                                          "type": "ETSTypeReference",
+                                          "part": {
+                                            "type": "ETSTypeReferencePart",
+                                            "name": {
+                                              "type": "Identifier",
+                                              "name": "custom_tuple_type",
+                                              "decorators": [],
+                                              "loc": {
+                                                "start": {
+                                                  "line": 1,
+                                                  "column": 3,
+                                                  "program": "tuple_types_12.ets"
+                                                },
+                                                "end": {
+                                                  "line": 1,
+                                                  "column": 3,
+                                                  "program": "tuple_types_12.ets"
+                                                }
+                                              }
+                                            },
+                                            "loc": {
+                                              "start": {
+                                                "line": 1,
+                                                "column": 3,
+                                                "program": "tuple_types_12.ets"
+                                              },
+                                              "end": {
+                                                "line": 1,
+                                                "column": 3,
+                                                "program": "tuple_types_12.ets"
+                                              }
+                                            }
+                                          },
+                                          "loc": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "tuple_types_12.ets"
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "tuple_types_12.ets"
+                                            }
+                                          }
+                                        }
+                                      ],
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "tuple_types_12.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
                                           "program": "tuple_types_12.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
-                                        "line": 22,
-                                        "column": 61,
+                                        "line": 1,
+                                        "column": 1,
                                         "program": "tuple_types_12.ets"
                                       },
                                       "end": {
-                                        "line": 22,
-                                        "column": 79,
+                                        "line": 1,
+                                        "column": 3,
                                         "program": "tuple_types_12.ets"
                                       }
                                     }
                                   },
-                                  "annotations": [],
                                   "loc": {
                                     "start": {
                                       "line": 22,

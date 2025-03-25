@@ -22,6 +22,11 @@
 
 namespace ark::es2panda::checker {
 
+bool Type::IsETSResizableArrayType() const
+{
+    return IsETSObjectType() && AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_ARRAY);
+}
+
 bool Type::IsETSStringType() const
 {
     return IsETSObjectType() && AsETSObjectType()->HasObjectFlag(ETSObjectFlags::STRING);

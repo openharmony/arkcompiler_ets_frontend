@@ -206,134 +206,182 @@
                             "type": "Identifier",
                             "name": "values",
                             "typeAnnotation": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSUnionType",
-                                "types": [
-                                  {
-                                    "type": "ETSTypeReference",
-                                    "part": {
-                                      "type": "ETSTypeReferencePart",
-                                      "name": {
-                                        "type": "Identifier",
-                                        "name": "string",
-                                        "decorators": [],
-                                        "loc": {
-                                          "start": {
-                                            "line": 17,
-                                            "column": 18,
-                                            "program": "nullable_union_array.ets"
-                                          },
-                                          "end": {
-                                            "line": 17,
-                                            "column": 24,
-                                            "program": "nullable_union_array.ets"
-                                          }
-                                        }
-                                      },
-                                      "loc": {
-                                        "start": {
-                                          "line": 17,
-                                          "column": 18,
-                                          "program": "nullable_union_array.ets"
-                                        },
-                                        "end": {
-                                          "line": 17,
-                                          "column": 25,
-                                          "program": "nullable_union_array.ets"
-                                        }
-                                      }
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Array",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 1,
+                                      "program": "nullable_union_array.ets"
                                     },
-                                    "loc": {
-                                      "start": {
-                                        "line": 17,
-                                        "column": 18,
-                                        "program": "nullable_union_array.ets"
-                                      },
-                                      "end": {
-                                        "line": 17,
-                                        "column": 25,
-                                        "program": "nullable_union_array.ets"
-                                      }
-                                    }
-                                  },
-                                  {
-                                    "type": "ETSTypeReference",
-                                    "part": {
-                                      "type": "ETSTypeReferencePart",
-                                      "name": {
-                                        "type": "Identifier",
-                                        "name": "Int",
-                                        "decorators": [],
-                                        "loc": {
-                                          "start": {
-                                            "line": 17,
-                                            "column": 25,
-                                            "program": "nullable_union_array.ets"
-                                          },
-                                          "end": {
-                                            "line": 17,
-                                            "column": 28,
-                                            "program": "nullable_union_array.ets"
-                                          }
-                                        }
-                                      },
-                                      "loc": {
-                                        "start": {
-                                          "line": 17,
-                                          "column": 25,
-                                          "program": "nullable_union_array.ets"
-                                        },
-                                        "end": {
-                                          "line": 17,
-                                          "column": 29,
-                                          "program": "nullable_union_array.ets"
-                                        }
-                                      }
-                                    },
-                                    "loc": {
-                                      "start": {
-                                        "line": 17,
-                                        "column": 25,
-                                        "program": "nullable_union_array.ets"
-                                      },
-                                      "end": {
-                                        "line": 17,
-                                        "column": 29,
-                                        "program": "nullable_union_array.ets"
-                                      }
-                                    }
-                                  },
-                                  {
-                                    "type": "ETSNullType",
-                                    "loc": {
-                                      "start": {
-                                        "line": 17,
-                                        "column": 29,
-                                        "program": "nullable_union_array.ets"
-                                      },
-                                      "end": {
-                                        "line": 17,
-                                        "column": 33,
-                                        "program": "nullable_union_array.ets"
-                                      }
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "nullable_union_array.ets"
                                     }
                                   }
-                                ],
+                                },
+                                "typeParams": {
+                                  "type": "TSTypeParameterInstantiation",
+                                  "params": [
+                                    {
+                                      "type": "ETSUnionType",
+                                      "types": [
+                                        {
+                                          "type": "ETSTypeReference",
+                                          "part": {
+                                            "type": "ETSTypeReferencePart",
+                                            "name": {
+                                              "type": "Identifier",
+                                              "name": "string",
+                                              "decorators": [],
+                                              "loc": {
+                                                "start": {
+                                                  "line": 1,
+                                                  "column": 3,
+                                                  "program": "nullable_union_array.ets"
+                                                },
+                                                "end": {
+                                                  "line": 1,
+                                                  "column": 3,
+                                                  "program": "nullable_union_array.ets"
+                                                }
+                                              }
+                                            },
+                                            "loc": {
+                                              "start": {
+                                                "line": 1,
+                                                "column": 3,
+                                                "program": "nullable_union_array.ets"
+                                              },
+                                              "end": {
+                                                "line": 1,
+                                                "column": 3,
+                                                "program": "nullable_union_array.ets"
+                                              }
+                                            }
+                                          },
+                                          "loc": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "nullable_union_array.ets"
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "nullable_union_array.ets"
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "type": "ETSTypeReference",
+                                          "part": {
+                                            "type": "ETSTypeReferencePart",
+                                            "name": {
+                                              "type": "Identifier",
+                                              "name": "Int",
+                                              "decorators": [],
+                                              "loc": {
+                                                "start": {
+                                                  "line": 1,
+                                                  "column": 3,
+                                                  "program": "nullable_union_array.ets"
+                                                },
+                                                "end": {
+                                                  "line": 1,
+                                                  "column": 3,
+                                                  "program": "nullable_union_array.ets"
+                                                }
+                                              }
+                                            },
+                                            "loc": {
+                                              "start": {
+                                                "line": 1,
+                                                "column": 3,
+                                                "program": "nullable_union_array.ets"
+                                              },
+                                              "end": {
+                                                "line": 1,
+                                                "column": 3,
+                                                "program": "nullable_union_array.ets"
+                                              }
+                                            }
+                                          },
+                                          "loc": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "nullable_union_array.ets"
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "nullable_union_array.ets"
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "type": "ETSNullType",
+                                          "loc": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "nullable_union_array.ets"
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "nullable_union_array.ets"
+                                            }
+                                          }
+                                        }
+                                      ],
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "nullable_union_array.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "nullable_union_array.ets"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "nullable_union_array.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "nullable_union_array.ets"
+                                    }
+                                  }
+                                },
                                 "loc": {
                                   "start": {
-                                    "line": 17,
-                                    "column": 17,
+                                    "line": 1,
+                                    "column": 1,
                                     "program": "nullable_union_array.ets"
                                   },
                                   "end": {
-                                    "line": 17,
-                                    "column": 33,
+                                    "line": 1,
+                                    "column": 3,
                                     "program": "nullable_union_array.ets"
                                   }
                                 }
                               },
-                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 17,

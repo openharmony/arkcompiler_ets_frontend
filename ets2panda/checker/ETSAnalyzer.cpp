@@ -15,6 +15,7 @@
 
 #include "ETSAnalyzer.h"
 
+#include "checker/ETSchecker.h"
 #include "generated/diagnostic.h"
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsTupleType.h"
@@ -22,6 +23,8 @@
 #include "types/signature.h"
 #include "compiler/lowering/ets/setJumpTarget.h"
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
+#include "util/es2pandaMacros.h"
+
 namespace ark::es2panda::checker {
 
 ETSChecker *ETSAnalyzer::GetETSChecker() const
@@ -297,8 +300,7 @@ checker::Type *ETSAnalyzer::Check(ir::SpreadElement *expr) const
         return checker->InvalidateType(expr);
     }
 
-    checker::Type *const elementType =
-        exprType->IsETSArrayType() ? exprType->AsETSArrayType()->ElementType() : exprType;
+    checker::Type *const elementType = exprType->IsETSTupleType() ? exprType : checker->GetElementTypeOfArray(exprType);
     return expr->SetTsType(elementType);
 }
 
@@ -397,6 +399,12 @@ static bool CheckArrayElementType(ETSChecker *checker, T *newArrayInstanceExpr)
     return true;
 }
 
+static bool NeedCreateETSResizableArrayType(ETSChecker *checker, Type *type)
+{
+    return type == nullptr ||
+           checker->Relation()->IsSupertypeOf(type, checker->GetGlobalTypesHolder()->GlobalArrayBuiltinType());
+}
+
 checker::Type *ETSAnalyzer::Check(ir::ETSNewArrayInstanceExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -405,8 +413,19 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewArrayInstanceExpression *expr) const
     checker->ValidateArrayIndex(expr->Dimension(), true);
 
     CheckArrayElementType(checker, expr);
-    expr->SetTsType(checker->CreateETSArrayType(elementType));
-    checker->CreateBuiltinArraySignature(expr->TsType()->AsETSArrayType(), 1);
+    GetUnionPreferredType(expr, expr->GetPreferredType());
+
+    auto *preferredType = expr->GetPreferredType();
+
+    if (NeedCreateETSResizableArrayType(checker, expr->GetPreferredType()) ||
+        preferredType->IsETSResizableArrayType()) {
+        expr->SetTsType(checker->CreateETSResizableArrayType(elementType));
+    } else {
+        expr->SetTsType(checker->CreateETSArrayType(elementType));
+    }
+    if (expr->TsType()->IsETSArrayType()) {
+        checker->CreateBuiltinArraySignature(expr->TsType()->AsETSArrayType(), 1);
+    }
 
     return expr->TsType();
 }
@@ -494,13 +513,25 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewMultiDimArrayInstanceExpression *exp
     CheckArrayElementType(checker, expr);
     auto *elementType = expr->TypeReference()->GetType(checker);
 
+    auto *fixedArrayType = elementType;
     for (auto *dim : expr->Dimensions()) {
         checker->ValidateArrayIndex(dim, true);
-        elementType = checker->CreateETSArrayType(elementType);
+        fixedArrayType = checker->CreateETSArrayType(fixedArrayType);
+    }
+    GetUnionPreferredType(expr, expr->GetPreferredType());
+
+    auto *preferredType = expr->GetPreferredType();
+    if (NeedCreateETSResizableArrayType(checker, expr->GetPreferredType()) ||
+        preferredType->IsETSResizableArrayType()) {
+        expr->SetTsType(checker->CreateETSMultiDimResizableArrayType(elementType, expr->Dimensions().size()));
+    } else {
+        expr->SetTsType(fixedArrayType);
     }
 
-    expr->SetTsType(elementType);
-    expr->SetSignature(checker->CreateBuiltinArraySignature(elementType->AsETSArrayType(), expr->Dimensions().size()));
+    if (expr->TsType()->IsETSArrayType()) {
+        expr->SetSignature(
+            checker->CreateBuiltinArraySignature(expr->TsType()->AsETSArrayType(), expr->Dimensions().size()));
+    }
 
     return expr->TsType();
 }
@@ -656,7 +687,7 @@ static ArenaVector<std::pair<Type *, ir::Expression *>> GetElementTypes(ETSCheck
         if (element->IsArrayExpression() || element->IsObjectExpression()) {
             auto *const targetPreferredType = exprPreferredType->IsETSTupleType()
                                                   ? exprPreferredType->AsETSTupleType()->GetTypeAtIndex(idx)
-                                                  : exprPreferredType->AsETSArrayType()->ElementType();
+                                                  : checker->GetElementTypeOfArray(exprPreferredType);
             ETSChecker::SetPreferredTypeIfPossible(element, targetPreferredType);
         }
 
@@ -664,6 +695,15 @@ static ArenaVector<std::pair<Type *, ir::Expression *>> GetElementTypes(ETSCheck
     }
 
     return elementTypes;
+}
+
+static Type *GetArrayElementType(ETSChecker *checker, Type *preferredType)
+{
+    if (preferredType->IsETSArrayType()) {
+        return checker->GetNonConstantType(checker->GetElementTypeOfArray(preferredType));
+    }
+    ES2PANDA_ASSERT(preferredType->IsETSResizableArrayType());
+    return preferredType->AsETSResizableArrayType()->ElementType();
 }
 
 static bool CheckElement(ETSChecker *checker, Type *const preferredType,
@@ -703,7 +743,7 @@ static bool CheckElement(ETSChecker *checker, Type *const preferredType,
 
         targetType = compareType;
     } else {
-        targetType = preferredType->AsETSArrayType()->ElementType();
+        targetType = GetArrayElementType(checker, preferredType);
     }
 
     auto ctx = AssignmentContext(checker->Relation(), currentElement, elementType, targetType, currentElement->Start(),
@@ -717,7 +757,7 @@ static bool CheckElement(ETSChecker *checker, Type *const preferredType,
     return true;
 }
 
-static ETSArrayType *InferPreferredTypeFromElements(ETSChecker *checker, ir::ArrayExpression *arrayExpr)
+static Type *InferPreferredTypeFromElements(ETSChecker *checker, ir::ArrayExpression *arrayExpr)
 {
     ArenaVector<Type *> arrayExpressionElementTypes(checker->Allocator()->Adapter());
     for (auto *const element : arrayExpr->Elements()) {
@@ -742,13 +782,13 @@ static ETSArrayType *InferPreferredTypeFromElements(ETSChecker *checker, ir::Arr
     // primitive, then after making the union type, explicitly unbox it.
     if (std::all_of(arrayExpressionElementTypes.begin(), arrayExpressionElementTypes.end(),
                     [](Type *const typeOfElement) { return typeOfElement->IsETSPrimitiveType(); })) {
-        return checker->CreateETSArrayType(checker->GetNonConstantType(
+        return checker->CreateETSResizableArrayType(checker->GetNonConstantType(
             checker->MaybeUnboxType(checker->CreateETSUnionType(std::move(arrayExpressionElementTypes)))));
     }
 
     // NOTE (smartin): optimize element access on constant array expressions (note is here, because the constant value
     // will be present on the type)
-    return checker->CreateETSArrayType(
+    return checker->CreateETSResizableArrayType(
         checker->GetNonConstantType(checker->CreateETSUnionType(std::move(arrayExpressionElementTypes))));
 }
 
@@ -766,12 +806,14 @@ static bool CheckArrayExpressionElements(ETSChecker *checker, ir::ArrayExpressio
     return allElementsAssignable;
 }
 
-void ETSAnalyzer::GetUnionPreferredType(ir::ArrayExpression *expr) const
+void ETSAnalyzer::GetUnionPreferredType(ir::Expression *expr, Type *originalType) const
 {
-    ES2PANDA_ASSERT(expr->preferredType_->IsETSUnionType());
+    if (originalType == nullptr || !originalType->IsETSUnionType()) {
+        return;
+    }
     checker::Type *preferredType = nullptr;
-    for (auto &type : expr->preferredType_->AsETSUnionType()->ConstituentTypes()) {
-        if (type->IsETSArrayType() || type->IsETSTupleType()) {
+    for (auto &type : originalType->AsETSUnionType()->ConstituentTypes()) {
+        if (type->IsETSArrayType() || type->IsETSTupleType() || type->IsETSResizableArrayType()) {
             if (preferredType != nullptr) {
                 preferredType = nullptr;
                 break;
@@ -779,8 +821,15 @@ void ETSAnalyzer::GetUnionPreferredType(ir::ArrayExpression *expr) const
             preferredType = type;
         }
     }
-
-    expr->preferredType_ = preferredType;
+    if (expr->IsArrayExpression()) {
+        expr->AsArrayExpression()->SetPreferredType(preferredType);
+    } else if (expr->IsETSNewArrayInstanceExpression()) {
+        expr->AsETSNewArrayInstanceExpression()->SetPreferredType(preferredType);
+    } else if (expr->IsETSNewMultiDimArrayInstanceExpression()) {
+        expr->AsETSNewMultiDimArrayInstanceExpression()->SetPreferredType(preferredType);
+    } else {
+        ES2PANDA_UNREACHABLE();
+    }
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
@@ -796,7 +845,7 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
         }
 
         if (expr->GetPreferredType()->IsETSUnionType()) {
-            GetUnionPreferredType(expr);
+            GetUnionPreferredType(expr, expr->GetPreferredType());
         }
     }
 
@@ -820,13 +869,11 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
     }
 
     expr->SetTsType(expr->GetPreferredType());
-
-    if (!expr->TsType()->IsETSTupleType()) {
+    if (!expr->GetPreferredType()->IsETSResizableArrayType() && !expr->TsType()->IsETSTupleType()) {
         ES2PANDA_ASSERT(expr->TsType()->IsETSArrayType());
         const auto *const arrayType = expr->TsType()->AsETSArrayType();
         checker->CreateBuiltinArraySignature(arrayType, arrayType->Rank());
     }
-
     return expr->TsType();
 }
 
@@ -1008,10 +1055,18 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
 
 static checker::Type *HandleSubstitution(ETSChecker *checker, ir::AssignmentExpression *expr, Type *const leftType)
 {
-    bool possibleInferredTypeOfArray =
-        leftType->IsETSArrayType() || leftType->IsETSTupleType() || leftType->IsETSUnionType();
+    bool possibleInferredTypeOfArray = leftType->IsETSArrayType() || leftType->IsETSResizableArrayType() ||
+                                       leftType->IsETSTupleType() || leftType->IsETSUnionType();
     if (expr->Right()->IsArrayExpression() && possibleInferredTypeOfArray) {
         checker->ModifyPreferredType(expr->Right()->AsArrayExpression(), leftType);
+    }
+
+    if (expr->Right()->IsETSNewArrayInstanceExpression()) {
+        expr->Right()->AsETSNewArrayInstanceExpression()->SetPreferredType(leftType);
+    }
+
+    if (expr->Right()->IsETSNewMultiDimArrayInstanceExpression()) {
+        expr->Right()->AsETSNewMultiDimArrayInstanceExpression()->SetPreferredType(leftType);
     }
 
     if (expr->Right()->IsObjectExpression()) {
@@ -1291,7 +1346,7 @@ checker::Type *ETSAnalyzer::GetCallExpressionReturnType(ir::CallExpression *expr
 {
     ETSChecker *checker = GetETSChecker();
     checker::Type *returnType = nullptr;
-    if (calleeType->IsETSDynamicType() && !calleeType->AsETSDynamicType()->HasDecl()) {
+    if (UNLIKELY(calleeType->IsETSDynamicType() && !calleeType->AsETSDynamicType()->HasDecl())) {
         // Trailing lambda for js function call is not supported, check the correctness of `foo() {}`
         checker->EnsureValidCurlyBrace(expr);
         auto lang = calleeType->AsETSDynamicType()->Language();
@@ -1899,7 +1954,7 @@ static checker::Type *GetTypeOfStringType(checker::Type *argType, ETSChecker *ch
     if (argType->IsETSUndefinedType()) {
         return checker->CreateETSStringLiteralType("undefined");
     }
-    if (argType->IsETSArrayType() || argType->IsETSNullType()) {
+    if (argType->IsETSArrayType() || argType->IsETSNullType() || argType->IsETSResizableArrayType()) {
         return checker->CreateETSStringLiteralType("object");
     }
     if (argType->IsETSStringType()) {
@@ -2359,8 +2414,9 @@ static bool ValidateAndProcessIteratorType(ETSChecker *checker, Type *elemType, 
     auto *const relation = checker->Relation();
     relation->SetFlags(checker::TypeRelationFlag::ASSIGNMENT_CONTEXT);
     relation->SetNode(ident);
-
-    if (!relation->IsAssignableTo(elemType, iterType)) {
+    if (auto ctx = checker::AssignmentContext(checker->Relation(), ident, elemType, iterType, ident->Start(),
+                                              std::nullopt, TypeRelationFlag::NO_THROW);
+        !ctx.IsAssignable()) {
         checker->LogError(diagnostic::ITERATOR_ELEMENT_TYPE_MISMATCH, {elemType, iterType}, st->Start());
         return false;
     }
@@ -2396,8 +2452,8 @@ checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *const st) const
 
     if (exprType->IsETSStringType()) {
         elemType = checker->GetGlobalTypesHolder()->GlobalCharType();
-    } else if (exprType->IsETSArrayType()) {
-        elemType = exprType->AsETSArrayType()->ElementType();
+    } else if (exprType->IsETSArrayType() || exprType->IsETSResizableArrayType()) {
+        elemType = checker->GetElementTypeOfArray(exprType);
     } else if (exprType->IsETSObjectType() || exprType->IsETSUnionType() || exprType->IsETSTypeParameter()) {
         elemType = st->CheckIteratorMethod(checker);
     }
@@ -2573,6 +2629,14 @@ bool ETSAnalyzer::CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::S
 
         if (st->argument_->IsArrayExpression()) {
             st->argument_->AsArrayExpression()->SetPreferredType(funcReturnType);
+        }
+
+        if (st->argument_->IsETSNewArrayInstanceExpression()) {
+            st->argument_->AsETSNewArrayInstanceExpression()->SetPreferredType(funcReturnType);
+        }
+
+        if (st->argument_->IsETSNewMultiDimArrayInstanceExpression()) {
+            st->argument_->AsETSNewMultiDimArrayInstanceExpression()->SetPreferredType(funcReturnType);
         }
 
         checker::Type *argumentType = st->argument_->Check(checker);

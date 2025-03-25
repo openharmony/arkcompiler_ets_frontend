@@ -112,8 +112,7 @@ ir::TypeNode *ETSParser::ParseTypeFormatPlaceholder(std::optional<ParserImpl::No
 
         nodeFormat = GetFormatPlaceholderType();
         if (std::get<0>(*nodeFormat) || std::get<1>(*nodeFormat) != TYPE_FORMAT_NODE) {
-            LogError(diagnostic::INVALID_NODE_TYPE, {}, Lexer()->GetToken().Start());
-            ES2PANDA_UNREACHABLE();
+            return nullptr;
         }
     }
 
@@ -200,8 +199,7 @@ ir::AstNode *ETSParser::ParseTypeParametersFormatPlaceholder()
     auto *const insertingNode = insertingNodes_[placeholderNumber];
     if (insertingNode != nullptr && !insertingNode->IsTSTypeParameterDeclaration() &&
         !insertingNode->IsTSTypeParameterInstantiation()) {
-        LogError(diagnostic::INVALID_INSERT_NODE, {}, Lexer()->GetToken().Start());
-        ES2PANDA_UNREACHABLE();
+        return nullptr;
     }
 
     Lexer()->NextToken();
@@ -331,6 +329,25 @@ ir::Statement *ETSParser::CreateFormattedStatement(std::string_view const source
     auto const statement = CreateStatement(sourceCode);
     insertingNodes_.swap(insertingNodes);
     return statement;
+}
+
+ir::TypeNode *ETSParser::CreateFormattedTypeAnnotation(std::string_view const sourceCode)
+{
+    util::UString source {sourceCode, Allocator()};
+    auto const isp = InnerSourceParser(this);
+    auto const lexer = InitLexer({GetContext().FormattingFileName(), source.View().Utf8()});
+    lexer->NextToken();
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::NO_OPTS;
+    return ParseTypeAnnotation(&options);
+}
+
+ir::TypeNode *ETSParser::CreateFormattedTypeAnnotation(std::string_view const sourceCode,
+                                                       std::vector<ir::AstNode *> &args)
+{
+    insertingNodes_.swap(args);
+    auto typeAnnotation = CreateFormattedTypeAnnotation(sourceCode);
+    insertingNodes_.swap(args);
+    return typeAnnotation;
 }
 
 ArenaVector<ir::Statement *> ETSParser::CreateStatements(std::string_view const sourceCode)

@@ -14,7 +14,7 @@
  */
 
 @interface MyValue {
-    size: FixedArray<string>
+    size: string[]
 }
 @MyValue(["1","2","3"])
 class A{

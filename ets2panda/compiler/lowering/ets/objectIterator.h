@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,7 +34,7 @@ private:
                                                        varbinder::ETSBinder *varbinder,
                                                        ir::ForOfStatement *forOfStatement) const;
 
-    void TransferForOfLoopBody(ir::Statement *forBody, ir::BlockStatement *whileBody, bool needCleaning) const noexcept;
+    void TransferForOfLoopBody(ir::Statement *forBody, ir::BlockStatement *whileBody) const noexcept;
 };
 
 }  // namespace ark::es2panda::compiler

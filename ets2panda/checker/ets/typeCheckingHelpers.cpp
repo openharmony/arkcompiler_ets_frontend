@@ -351,11 +351,6 @@ bool Type::IsETSPrimitiveType() const
     return HasTypeFlag(ETS_PRIMITIVE);
 }
 
-bool Type::IsETSResizableArrayType() const
-{
-    return IsETSObjectType() && AsETSObjectType()->Name() == compiler::Signatures::ARRAY;
-}
-
 bool Type::IsETSPrimitiveOrEnumType() const
 {
     return IsETSPrimitiveType() || IsETSEnumType();
@@ -924,6 +919,12 @@ bool ETSChecker::CheckAndLogInvalidThisUsage(const ir::TypeNode *type, const dia
     return false;
 }
 
+bool ETSChecker::IsFixedArray(ir::ETSTypeReferencePart *part)
+{
+    return part->Name()->IsIdentifier() &&
+           part->Name()->AsIdentifier()->Name().Mutf8() == compiler::Signatures::FIXED_ARRAY_TYPE_NAME;
+}
+
 void ETSChecker::ValidateThisUsage(const ir::TypeNode *returnTypeAnnotation)
 {
     if (returnTypeAnnotation->IsETSUnionType()) {
@@ -946,8 +947,9 @@ void ETSChecker::ValidateThisUsage(const ir::TypeNode *returnTypeAnnotation)
         }
         return;
     }
-    if (returnTypeAnnotation->IsTSArrayType()) {
-        auto elementType = returnTypeAnnotation->AsTSArrayType()->ElementType();
+    if (returnTypeAnnotation->IsETSTypeReference() &&
+        IsFixedArray(returnTypeAnnotation->AsETSTypeReference()->Part())) {
+        auto elementType = returnTypeAnnotation->AsETSTypeReference()->Part()->TypeParams()->Params()[0];
         if (CheckAndLogInvalidThisUsage(elementType, diagnostic::NOT_ALLOWED_THIS_IN_ARRAY_TYPE)) {
             return;
         }
@@ -1355,7 +1357,7 @@ bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction
 {
     ES2PANDA_ASSERT(param->IsETSParameterExpression());
     ir::AstNode *typeAnn = param->AsETSParameterExpression()->Ident()->TypeAnnotation();
-    if (typeAnn->IsETSTypeReference()) {
+    if (typeAnn->IsETSTypeReference() && !typeAnn->AsETSTypeReference()->TsType()->IsETSArrayType()) {
         typeAnn = DerefETSTypeReference(typeAnn);
     }
 

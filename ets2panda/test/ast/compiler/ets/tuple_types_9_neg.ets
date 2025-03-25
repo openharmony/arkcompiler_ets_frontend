@@ -28,4 +28,4 @@ function main(): void {
 /* @@? 18:37 Error SyntaxError: Unexpected token ']'. */
 /* @@? 18:37 Error SyntaxError: Unexpected token ']'. */
 /* @@? 18:39 Error SyntaxError: Unexpected token '='. */
-/* @@@ label Error TypeError: Type '[double, String, *ERROR_TYPE*]' cannot be assigned to type '[double, String, Int]'  */
+/* @@? 19:50 Error TypeError: Type '[double, String, *ERROR_TYPE*]' cannot be assigned to type '[double, String, Int]' */

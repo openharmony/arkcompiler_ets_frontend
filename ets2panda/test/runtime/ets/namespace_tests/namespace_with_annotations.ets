@@ -24,11 +24,11 @@ enum Color{RED, BLUE, GREEN}
     authorAge: number = -35
     testBool: boolean = false
     favorColor: Color = Color.BLUE
-    color: Color[] = [Color.RED, Color.BLUE]
-    reviewers: string[] = ["Bob", "Jim", "Tom"]
-    reviewersAge: number[] = [18, 21, 32]
-    testBools: boolean[] = [false, true, false]
-    mutiArray: number[][] = [
+    color: FixedArray<Color> = [Color.RED, Color.BLUE]
+    reviewers: FixedArray<string> = ["Bob", "Jim", "Tom"]
+    reviewersAge: FixedArray<number> = [18, 21, 32]
+    testBools: FixedArray<boolean> = [false, true, false]
+    mutiArray: FixedArray<FixedArray<number>> = [
         [1, 2, 3],
         [4, +5, 6],
         [7, 8, -9]

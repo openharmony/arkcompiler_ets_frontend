@@ -310,14 +310,18 @@ bool ETSChecker::CheckDefaultTypeParameter(const ir::TSTypeParameter *param, Typ
             if (defaultTypePart->Name()->IsTSQualifiedName()) {
                 defaultTypePart->Name()->Check(this);
             }
+            if (IsFixedArray(defaultTypePart)) {
+                defaultTypePart->Check(this);
+            }
             auto *const variable = defaultTypePart->GetIdent()->Variable();
-            ES2PANDA_ASSERT(variable != nullptr);
-            if (variable->TsType() == nullptr && (variable->Flags() & varbinder::VariableFlags::TYPE_PARAMETER) != 0U &&
+            auto defaultType = variable == nullptr ? defaultTypePart->TsType() : variable->TsType();
+            if (defaultType == nullptr && variable != nullptr &&
+                (variable->Flags() & varbinder::VariableFlags::TYPE_PARAMETER) != 0U &&
                 typeParameterDecls.count(variable) == 0U) {
                 LogError(diagnostic::TYPE_PARAM_USE_BEFORE_DEFINE,
                          {defaultTypePart->Name()->AsIdentifier()->Name().Utf8()}, node->Start());
                 ok = false;
-            } else if (variable->TsType() != nullptr && variable->TsType()->IsTypeError()) {
+            } else if (defaultType != nullptr && defaultType->IsTypeError()) {
                 ok = false;
             }
         }
@@ -784,7 +788,7 @@ ArenaVector<ETSFunctionType *> &ETSChecker::GetAbstractsForClass(ETSObjectType *
     return cachedComputedAbstracts_.insert({classType, {merged, abstractInheritanceTarget}}).first->second.first;
 }
 
-static bool DoObjectImplementInterface(const ETSObjectType *interfaceType, const ETSObjectType *target)
+[[maybe_unused]] static bool DoObjectImplementInterface(const ETSObjectType *interfaceType, const ETSObjectType *target)
 {
     return std::any_of(interfaceType->Interfaces().begin(), interfaceType->Interfaces().end(),
                        [&target](auto *it) { return it == target || DoObjectImplementInterface(it, target); });
@@ -1642,7 +1646,8 @@ ETSObjectType *ETSChecker::CheckThisOrSuperAccess(ir::Expression *node, ETSObjec
         return classType;
     }
 
-    if (node->Parent()->IsCallExpression() && (node->Parent()->AsCallExpression()->Callee() == node)) {
+    if (node->Parent()->IsCallExpression() && (node->Parent()->AsCallExpression()->Callee() == node) &&
+        !node->Parent()->HasAstNodeFlags(ir::AstNodeFlags::RESIZABLE_REST)) {
         if (Context().ContainingSignature() == nullptr) {
             LogError(diagnostic::CTOR_CLASS_NOT_FIRST, {msg}, node->Start());
             return classType;

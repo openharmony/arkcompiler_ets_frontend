@@ -99,55 +99,103 @@
             "optional": false,
             "computed": false,
             "typeAnnotation": {
-              "type": "TSArrayType",
-              "elementType": {
-                "type": "ETSTypeReference",
-                "part": {
-                  "type": "ETSTypeReferencePart",
-                  "name": {
-                    "type": "Identifier",
-                    "name": "T",
-                    "decorators": [],
-                    "loc": {
-                      "start": {
-                        "line": 17,
-                        "column": 15,
-                        "program": "tupleAsTypeParam2.ets"
-                      },
-                      "end": {
-                        "line": 17,
-                        "column": 16,
-                        "program": "tupleAsTypeParam2.ets"
-                      }
-                    }
-                  },
+              "type": "ETSTypeReference",
+              "part": {
+                "type": "ETSTypeReferencePart",
+                "name": {
+                  "type": "Identifier",
+                  "name": "Array",
+                  "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 17,
-                      "column": 15,
+                      "line": 1,
+                      "column": 1,
                       "program": "tupleAsTypeParam2.ets"
                     },
                     "end": {
-                      "line": 17,
-                      "column": 17,
+                      "line": 1,
+                      "column": 3,
+                      "program": "tupleAsTypeParam2.ets"
+                    }
+                  }
+                },
+                "typeParams": {
+                  "type": "TSTypeParameterInstantiation",
+                  "params": [
+                    {
+                      "type": "ETSTypeReference",
+                      "part": {
+                        "type": "ETSTypeReferencePart",
+                        "name": {
+                          "type": "Identifier",
+                          "name": "T",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "tupleAsTypeParam2.ets"
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3,
+                              "program": "tupleAsTypeParam2.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "tupleAsTypeParam2.ets"
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 3,
+                            "program": "tupleAsTypeParam2.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "tupleAsTypeParam2.ets"
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3,
+                          "program": "tupleAsTypeParam2.ets"
+                        }
+                      }
+                    }
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 3,
+                      "program": "tupleAsTypeParam2.ets"
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 3,
                       "program": "tupleAsTypeParam2.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 17,
-                    "column": 15,
+                    "line": 1,
+                    "column": 1,
                     "program": "tupleAsTypeParam2.ets"
                   },
                   "end": {
-                    "line": 17,
-                    "column": 17,
+                    "line": 1,
+                    "column": 3,
                     "program": "tupleAsTypeParam2.ets"
                   }
                 }
               },
-              "annotations": [],
               "loc": {
                 "start": {
                   "line": 17,
@@ -231,55 +279,103 @@
                       "type": "Identifier",
                       "name": "x",
                       "typeAnnotation": {
-                        "type": "TSArrayType",
-                        "elementType": {
-                          "type": "ETSTypeReference",
-                          "part": {
-                            "type": "ETSTypeReferencePart",
-                            "name": {
-                              "type": "Identifier",
-                              "name": "T",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 18,
-                                  "column": 27,
-                                  "program": "tupleAsTypeParam2.ets"
-                                },
-                                "end": {
-                                  "line": 18,
-                                  "column": 28,
-                                  "program": "tupleAsTypeParam2.ets"
-                                }
-                              }
-                            },
+                        "type": "ETSTypeReference",
+                        "part": {
+                          "type": "ETSTypeReferencePart",
+                          "name": {
+                            "type": "Identifier",
+                            "name": "Array",
+                            "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 18,
-                                "column": 27,
+                                "line": 1,
+                                "column": 1,
                                 "program": "tupleAsTypeParam2.ets"
                               },
                               "end": {
-                                "line": 18,
-                                "column": 29,
+                                "line": 1,
+                                "column": 3,
+                                "program": "tupleAsTypeParam2.ets"
+                              }
+                            }
+                          },
+                          "typeParams": {
+                            "type": "TSTypeParameterInstantiation",
+                            "params": [
+                              {
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "T",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "tupleAsTypeParam2.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "tupleAsTypeParam2.ets"
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "tupleAsTypeParam2.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "tupleAsTypeParam2.ets"
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "tupleAsTypeParam2.ets"
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3,
+                                    "program": "tupleAsTypeParam2.ets"
+                                  }
+                                }
+                              }
+                            ],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3,
+                                "program": "tupleAsTypeParam2.ets"
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3,
                                 "program": "tupleAsTypeParam2.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
-                              "line": 18,
-                              "column": 27,
+                              "line": 1,
+                              "column": 1,
                               "program": "tupleAsTypeParam2.ets"
                             },
                             "end": {
-                              "line": 18,
-                              "column": 29,
+                              "line": 1,
+                              "column": 3,
                               "program": "tupleAsTypeParam2.ets"
                             }
                           }
                         },
-                        "annotations": [],
                         "loc": {
                           "start": {
                             "line": 18,

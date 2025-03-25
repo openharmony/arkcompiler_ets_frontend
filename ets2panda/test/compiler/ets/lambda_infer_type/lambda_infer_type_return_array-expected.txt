@@ -191,55 +191,103 @@
                             "type": "Identifier",
                             "name": "y",
                             "typeAnnotation": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSTypeReference",
-                                "part": {
-                                  "type": "ETSTypeReferencePart",
-                                  "name": {
-                                    "type": "Identifier",
-                                    "name": "number",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 17,
-                                        "column": 11,
-                                        "program": "lambda_infer_type_return_array.ets"
-                                      },
-                                      "end": {
-                                        "line": 17,
-                                        "column": 17,
-                                        "program": "lambda_infer_type_return_array.ets"
-                                      }
-                                    }
-                                  },
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Array",
+                                  "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 17,
-                                      "column": 11,
+                                      "line": 1,
+                                      "column": 1,
                                       "program": "lambda_infer_type_return_array.ets"
                                     },
                                     "end": {
-                                      "line": 17,
-                                      "column": 18,
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "lambda_infer_type_return_array.ets"
+                                    }
+                                  }
+                                },
+                                "typeParams": {
+                                  "type": "TSTypeParameterInstantiation",
+                                  "params": [
+                                    {
+                                      "type": "ETSTypeReference",
+                                      "part": {
+                                        "type": "ETSTypeReferencePart",
+                                        "name": {
+                                          "type": "Identifier",
+                                          "name": "number",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "lambda_infer_type_return_array.ets"
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "lambda_infer_type_return_array.ets"
+                                            }
+                                          }
+                                        },
+                                        "loc": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "lambda_infer_type_return_array.ets"
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "lambda_infer_type_return_array.ets"
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "lambda_infer_type_return_array.ets"
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 3,
+                                          "program": "lambda_infer_type_return_array.ets"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3,
+                                      "program": "lambda_infer_type_return_array.ets"
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3,
                                       "program": "lambda_infer_type_return_array.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 17,
-                                    "column": 11,
+                                    "line": 1,
+                                    "column": 1,
                                     "program": "lambda_infer_type_return_array.ets"
                                   },
                                   "end": {
-                                    "line": 17,
-                                    "column": 18,
+                                    "line": 1,
+                                    "column": 3,
                                     "program": "lambda_infer_type_return_array.ets"
                                   }
                                 }
                               },
-                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 17,
@@ -506,55 +554,103 @@
                               "type": "ETSFunctionType",
                               "params": [],
                               "returnType": {
-                                "type": "TSArrayType",
-                                "elementType": {
-                                  "type": "ETSTypeReference",
-                                  "part": {
-                                    "type": "ETSTypeReferencePart",
-                                    "name": {
-                                      "type": "Identifier",
-                                      "name": "number",
-                                      "decorators": [],
-                                      "loc": {
-                                        "start": {
-                                          "line": 19,
-                                          "column": 24,
-                                          "program": "lambda_infer_type_return_array.ets"
-                                        },
-                                        "end": {
-                                          "line": 19,
-                                          "column": 30,
-                                          "program": "lambda_infer_type_return_array.ets"
-                                        }
-                                      }
-                                    },
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "Array",
+                                    "decorators": [],
                                     "loc": {
                                       "start": {
-                                        "line": 19,
-                                        "column": 24,
+                                        "line": 1,
+                                        "column": 1,
                                         "program": "lambda_infer_type_return_array.ets"
                                       },
                                       "end": {
-                                        "line": 19,
-                                        "column": 31,
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "lambda_infer_type_return_array.ets"
+                                      }
+                                    }
+                                  },
+                                  "typeParams": {
+                                    "type": "TSTypeParameterInstantiation",
+                                    "params": [
+                                      {
+                                        "type": "ETSTypeReference",
+                                        "part": {
+                                          "type": "ETSTypeReferencePart",
+                                          "name": {
+                                            "type": "Identifier",
+                                            "name": "number",
+                                            "decorators": [],
+                                            "loc": {
+                                              "start": {
+                                                "line": 1,
+                                                "column": 3,
+                                                "program": "lambda_infer_type_return_array.ets"
+                                              },
+                                              "end": {
+                                                "line": 1,
+                                                "column": 3,
+                                                "program": "lambda_infer_type_return_array.ets"
+                                              }
+                                            }
+                                          },
+                                          "loc": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "lambda_infer_type_return_array.ets"
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 3,
+                                              "program": "lambda_infer_type_return_array.ets"
+                                            }
+                                          }
+                                        },
+                                        "loc": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "lambda_infer_type_return_array.ets"
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 3,
+                                            "program": "lambda_infer_type_return_array.ets"
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3,
+                                        "program": "lambda_infer_type_return_array.ets"
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3,
                                         "program": "lambda_infer_type_return_array.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
-                                      "line": 19,
-                                      "column": 24,
+                                      "line": 1,
+                                      "column": 1,
                                       "program": "lambda_infer_type_return_array.ets"
                                     },
                                     "end": {
-                                      "line": 19,
-                                      "column": 31,
+                                      "line": 1,
+                                      "column": 3,
                                       "program": "lambda_infer_type_return_array.ets"
                                     }
                                   }
                                 },
-                                "annotations": [],
                                 "loc": {
                                   "start": {
                                     "line": 19,

@@ -549,7 +549,7 @@ semantic:
 
 - name: MAIN_PARAM_NOT_ARR_OF_STRING
   id: 135
-  message: "Only 'string[]' type argument is allowed."
+  message: "Only 'FixedArray<string>' type argument is allowed."
 
 - name: OVERRIDE_DOESNT_OVERRIDE
   id: 136

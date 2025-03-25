@@ -61,6 +61,24 @@ void SetSourceRangesRecursively(ir::AstNode *node, const lexer::SourceRange &ran
     node->IterateRecursively([](ir::AstNode *n) { n->SetRange(n->Parent()->Range()); });
 }
 
+ir::AstNode *RefineSourceRanges(ir::AstNode *node)
+{
+    auto const isDummyLoc = [](lexer::SourceRange const &range, ir::AstNode *ast) {
+        return (range.start.index == 0 && range.start.line == 0) || (range.end.index < range.start.index) ||
+               (range.start.index < ast->Parent()->Start().index) || (range.end.index > ast->Parent()->End().index);
+    };
+
+    auto const refine = [isDummyLoc](ir::AstNode *ast) {
+        if (isDummyLoc(ast->Range(), ast) && ast->Parent() != nullptr) {
+            ast->SetRange(ast->Parent()->Range());
+        }
+    };
+
+    refine(node);
+    node->IterateRecursively(refine);
+    return node;
+}
+
 // Function to clear expression node types and identifier node variables (for correct re-binding and re-checking)
 void ClearTypesVariablesAndScopes(ir::AstNode *node) noexcept
 {
@@ -192,6 +210,7 @@ varbinder::Scope *Rebind(PhaseManager *phaseManager, varbinder::ETSBinder *varBi
 void Recheck(PhaseManager *phaseManager, varbinder::ETSBinder *varBinder, checker::ETSChecker *checker,
              ir::AstNode *node)
 {
+    RefineSourceRanges(node);
     if (node->IsProgram()) {
         auto program = node->AsETSModule()->Program();
         if (program->IsPackage()) {
@@ -247,6 +266,7 @@ ir::AstNode *DeclarationFromIdentifier(const ir::Identifier *node)
 // Note: run varbinder and checker on the new node generated in lowering phases (without ClearTypesVariablesAndScopes)
 void CheckLoweredNode(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node)
 {
+    RefineSourceRanges(node);
     InitScopesPhaseETS::RunExternalNode(node, varBinder);
     auto *scope = NearestScope(node);
     varBinder->ResolveReferencesForScopeWithContext(node, scope);

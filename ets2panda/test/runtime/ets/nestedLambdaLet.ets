@@ -101,7 +101,7 @@ function number4Levels(): void {
 
 function arrays(): void {
     force(() => {
-        let a0 = [1, 0, 0, 0];
+        let a0 : FixedArray<double> = [1, 0, 0, 0];
         force(() => {
             let a1 = a0;
             a1[1]=a0[0];

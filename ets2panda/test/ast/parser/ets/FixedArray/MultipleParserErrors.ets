@@ -195,18 +195,16 @@ function main(): void {
 /* @@? 51:43 Error SyntaxError: Label must be followed by a loop statement. */
 /* @@? 51:43 Error TypeError: Unresolved reference FixedArray */
 /* @@? 51:58 Error SyntaxError: Unexpected token, expected '('. */
-/* @@? 51:59 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 51:59 Error SyntaxError: Unexpected token ':'. */
+/* @@? 51:59 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 51:59 Error SyntaxError: Unexpected token ':'. */
 /* @@? 51:59 Error SyntaxError: Unexpected token ':'. */
 /* @@? 51:59 Error SyntaxError: Unexpected token ':'. */
 /* @@? 51:65 Error SyntaxError: Unexpected token '{'. */
 /* @@? 52:5 Error SyntaxError: return keyword should be used in function body. */
-/* @@? 52:12 Error TypeError: Unresolved reference q */
 /* @@? 52:12 Error TypeError: All return statements in the function should be empty or have a value. */
+/* @@? 52:12 Error TypeError: Unresolved reference q */
 /* @@? 52:23 Error TypeError: Unresolved reference p */
-/* @@? 55:26 Error SyntaxError: Rest parameter should be either array or tuple type. */
-/* @@? 59:23 Error SyntaxError: Rest parameter should be either array or tuple type. */
 /* @@? 63:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 67:7 Error TypeError: Variable 'A' has already been declared. */
 /* @@? 68:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
@@ -219,8 +217,6 @@ function main(): void {
 /* @@? 84:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
 /* @@? 92:7 Error TypeError: Variable 'A' has already been declared. */
 /* @@? 93:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
-/* @@? 103:25 Error SyntaxError: Rest parameter should be either array or tuple type. */
-/* @@? 104:32 Error SyntaxError: Rest parameter should be either array or tuple type. */
 /* @@? 115:26 Error SyntaxError: Unexpected token 'case'. */
 /* @@? 115:26 Error SyntaxError: Unexpected token 'case'. */
 /* @@? 115:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
@@ -255,16 +251,16 @@ function main(): void {
 /* @@? 120:12 Error TypeError: All return statements in the function should be empty or have a value. */
 /* @@? 123:5 Error SyntaxError: Identifier expected, got ','. */
 /* @@? 123:6 Error SyntaxError: Variable must be initialized or it's type must be declared. */
-/* @@? 123:6 Error SyntaxError: Variable must be initialized or it's type must be declared. */
 /* @@? 123:6 Error SyntaxError: Unexpected token 'abc'. */
+/* @@? 123:6 Error SyntaxError: Variable must be initialized or it's type must be declared. */
 /* @@? 123:6 Error TypeError: Unresolved reference abc */
 /* @@? 127:1 Error SyntaxError: The modifier async cannot be used in an ambient context. */
 /* @@? 132:14 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@? 137:16 Error SyntaxError: Catch clause variable cannot have an initializer. */
 /* @@? 137:16 Error SyntaxError: Expected ')', got '='. */
+/* @@? 137:16 Error SyntaxError: Catch clause variable cannot have an initializer. */
+/* @@? 137:16 Error SyntaxError: Expected '{', got '='. */
 /* @@? 137:16 Error SyntaxError: Expected '{', got '='. */
 /* @@? 137:16 Error SyntaxError: Unexpected token '='. */
-/* @@? 137:16 Error SyntaxError: Expected '{', got '='. */
 /* @@? 137:19 Error SyntaxError: Unexpected token ')'. */
 /* @@? 137:19 Error SyntaxError: Unexpected token ')'. */
 /* @@? 137:19 Error SyntaxError: Unexpected token ')'. */
@@ -284,4 +280,4 @@ function main(): void {
 /* @@? 165:5 Error TypeError: This expression is not callable. */
 /* @@? 166:5 Error TypeError: Expected 1 arguments, got 0. */
 /* @@? 166:5 Error TypeError: No matching call signature */
-/* @@? 288:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 284:1 Error SyntaxError: Expected '}', got 'eos'. */

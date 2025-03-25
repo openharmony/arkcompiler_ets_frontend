@@ -187,8 +187,8 @@ bool ETSChecker::ValidateAnnotationPropertyType(checker::Type *type)
         return false;
     }
 
-    if (type->IsETSArrayType()) {
-        return ValidateAnnotationPropertyType(type->AsETSArrayType()->ElementType());
+    if (type->IsETSArrayType() || type->IsETSResizableArrayType()) {
+        return ValidateAnnotationPropertyType(MaybeUnboxType(GetElementTypeOfArray(type)));
     }
 
     return type->HasTypeFlag(TypeFlag::ETS_NUMERIC | TypeFlag::ETS_ENUM | TypeFlag::ETS_BOOLEAN) ||

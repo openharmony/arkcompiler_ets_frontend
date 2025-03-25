@@ -14,9 +14,9 @@
  */
 
 function main(): void {
-  let arr1: Int[] = [1,2,3,4,5];
-  let arr2: int[] = [1,2,3,4,5];
-  let object_array: Object[] = arr1 as Object[];
+  let arr1: FixedArray<Int> = [1,2,3,4,5];
+  let arr2: FixedArray<int> = [1,2,3,4,5];
+  let object_array: FixedArray<Object> = arr1 as FixedArray<Object>;
   let object: Object = arr1 as Object;
 
 // TypeError: Cannot access property of non-object or non-enum type

@@ -17,14 +17,14 @@ interface I {
   fn(): Object;
   fn2(): Object;
   fn3(): Object;
-  fn4(): Object[];
+  fn4(): FixedArray<Object>;
 }
 
 class A implements I {
   override fn(): String { return ""; }
-  override fn2(): Object[] { return [new Object()]; }
-  override fn3(): int[] { return [0]; }
-  override fn4(): String[] { return [""]; }
+  override fn2(): FixedArray<Object> { return [new Object()]; }
+  override fn3(): FixedArray<int> { return [0]; }
+  override fn4(): FixedArray<String> { return [""]; }
 }
 
 function main(): void {}

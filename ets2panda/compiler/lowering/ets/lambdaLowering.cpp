@@ -494,6 +494,7 @@ static void CreateLambdaClassConstructor(public_lib::Context *ctx, ir::ClassDefi
 }
 
 // NOTE(vpukhov): requires the optimization based on the array type
+// CC-OFFNXT(G.FUN.01, huge_method) solid logic
 static ArenaVector<ark::es2panda::ir::Statement *> CreateRestArgumentsArrayReallocation(
     public_lib::Context *ctx, LambdaClassInvokeInfo const *lciInfo)
 {
@@ -507,27 +508,48 @@ static ArenaVector<ark::es2panda::ir::Statement *> CreateRestArgumentsArrayReall
 
     auto *restParameterType = lciInfo->lambdaSignature->RestVar()->TsType();
     auto *restParameterSubstituteType = restParameterType->Substitute(checker->Relation(), lciInfo->substitution);
-    auto *elementType = restParameterSubstituteType->AsETSArrayType()->ElementType();
+    bool isFixedArray = restParameterSubstituteType->IsETSArrayType();
+    auto *elementType = checker->GetElementTypeOfArray(restParameterSubstituteType);
+    std::stringstream statements;
     auto restParameterIndex = GenName(allocator).View();
     auto spreadArrIterator = GenName(allocator).View();
-
-    std::stringstream statements;
-    statements << "let @@I1: int = 0;";
-    if (elementType->IsETSReferenceType()) {
-        // NOTE(vpukhov): this is a clear null-safety violation that should be rewitten with a runtime intrinsic
-        statements << "let @@I2: @@T3[] = (new (@@T4 | undefined)[@@I5.length]) as @@T6[];";
+    ir::Statement *args = nullptr;
+    if (isFixedArray) {
+        auto tmpArray = GenName(allocator).View();
+        statements << "let @@I1: int = 0;";
+        if (elementType->IsETSReferenceType()) {
+            // NOTE(vpukhov): this is a clear null-safety violation that should be rewitten with a runtime intrinsic
+            statements << "let @@I2: FixedArray<@@T3 | undefined> = new (@@T4 | undefined)[@@I5.length];";
+        } else {
+            statements << "let @@I2: FixedArray<@@T3> = new (@@T4)[@@I5.length];";
+        }
+        statements << "let @@I6 = @@I7 as FixedArray<@@T8>;"
+                   << "for (let @@I9: @@T10 of @@I11){"
+                   << "    @@I12[@@I13] = @@I14 as @@T15 as @@T16;"
+                   << "    @@I17 = @@I18 + 1;"
+                   << "}";
+        args = parser->CreateFormattedStatement(
+            statements.str(), restParameterIndex, tmpArray, elementType, elementType, lciInfo->restParameterIdentifier,
+            lciInfo->restArgumentIdentifier, tmpArray, elementType, spreadArrIterator,
+            checker->GlobalETSNullishObjectType(), lciInfo->restParameterIdentifier, lciInfo->restArgumentIdentifier,
+            restParameterIndex, spreadArrIterator, checker->MaybeBoxType(elementType), elementType, restParameterIndex,
+            restParameterIndex);
     } else {
-        statements << "let @@I2: @@T3[] = (new (@@T4)[@@I5.length]) as @@T6[];";
+        auto *typeNode = allocator->New<ir::OpaqueTypeNode>(
+            checker->GetElementTypeOfArray(lciInfo->lambdaSignature->RestVar()->TsType()), allocator);
+        statements << "let @@I1: int = 0;"
+                   << "let @@I2 = new Array<@@T3>(@@I4.length);"
+                   << "for (let @@I5:@@T6 of @@I7){"
+                   << "    @@I8.$_set(@@I9, @@I10 as @@T11);"
+                   << "    @@I12 = @@I13 + 1;"
+                   << "}";
+        args = parser->CreateFormattedStatement(
+            statements.str(), restParameterIndex, lciInfo->restArgumentIdentifier, typeNode,
+            lciInfo->restParameterIdentifier, spreadArrIterator, checker->GlobalETSNullishObjectType(),
+            lciInfo->restParameterIdentifier, lciInfo->restArgumentIdentifier, restParameterIndex, spreadArrIterator,
+            checker->MaybeBoxType(elementType), restParameterIndex, restParameterIndex);
     }
-    statements << "for (let @@I7: @@T8 of @@I9){"
-               << "    @@I10[@@I11] = @@I12 as @@T13 as @@T14;"
-               << "    @@I15 = @@I16 + 1;"
-               << "}";
-    auto *args = parser->CreateFormattedStatement(
-        statements.str(), restParameterIndex, lciInfo->restArgumentIdentifier, elementType, elementType,
-        lciInfo->restParameterIdentifier, elementType, spreadArrIterator, checker->GlobalETSNullishObjectType(),
-        lciInfo->restParameterIdentifier, lciInfo->restArgumentIdentifier, restParameterIndex, spreadArrIterator,
-        checker->MaybeBoxType(elementType), elementType, restParameterIndex, restParameterIndex);
+
     return ArenaVector<ir::Statement *>(std::move(args->AsBlockStatement()->Statements()));
 }
 
@@ -542,7 +564,7 @@ static void CreateInvokeMethodRestParameter(public_lib::Context *ctx, LambdaClas
     lciInfo->restParameterIdentifier = restIdent->Name();
     lciInfo->restArgumentIdentifier = GenName(allocator).View();
     auto *spread = allocator->New<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT, allocator, restIdent);
-    auto *arr = checker->CreateETSArrayType(anyType, false);
+    auto *arr = checker->CreateETSArrayType(anyType);
     auto *typeAnnotation = allocator->New<ir::OpaqueTypeNode>(arr, allocator);
 
     spread->SetTsTypeAnnotation(typeAnnotation);
@@ -586,9 +608,14 @@ static ArenaVector<ir::Expression *> CreateCallArgumentsForLambdaClassInvoke(pub
 
     if (lciInfo->lambdaSignature->HasRestParameter()) {
         auto *restIdent = allocator->New<ir::Identifier>(lciInfo->restArgumentIdentifier, allocator);
-        auto *spread = allocator->New<ir::SpreadElement>(ir::AstNodeType::SPREAD_ELEMENT, allocator, restIdent);
-        restIdent->SetParent(spread);
-        callArguments.push_back(spread);
+        if (lciInfo->lambdaSignature->RestVar()->TsType()->IsETSArrayType()) {
+            auto *spread = allocator->New<ir::SpreadElement>(ir::AstNodeType::SPREAD_ELEMENT, allocator, restIdent);
+            restIdent->SetParent(spread);
+            callArguments.push_back(spread);
+        } else {
+            restIdent->AddAstNodeFlags(ir::AstNodeFlags::RESIZABLE_REST);
+            callArguments.push_back(restIdent);
+        }
     }
     return callArguments;
 }

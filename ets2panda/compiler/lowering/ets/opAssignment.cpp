@@ -230,6 +230,7 @@ static ir::Expression *ConstructOpAssignmentResult(public_lib::Context *ctx, ir:
 
     auto *const left = assignment->Left();
     auto *const right = assignment->Right();
+    right->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
 
     auto *exprType = CreateProxyTypeNode(checker, left);
     ir::Expression *retVal = nullptr;
@@ -340,6 +341,7 @@ static ir::Expression *ConstructUpdateResult(public_lib::Context *ctx, ir::Updat
     ArgumentInfo argInfo {};
     argInfo.objType = checker->GlobalVoidType();
     argInfo.propType = checker->GlobalVoidType();
+    argInfo.id3 = Gensym(allocator);
 
     // Parse ArkTS code string and create the corresponding AST node(s)
     // We have to use extra caution with types and `as` conversions because of smart types, which we cannot reproduce in
@@ -351,17 +353,17 @@ static ir::Expression *ConstructUpdateResult(public_lib::Context *ctx, ir::Updat
 
     // NOLINTBEGIN(readability-magic-numbers)
     if (upd->IsPrefix()) {
-        argInfo.newAssignmentStatements += GenFormatForExpression(argument, 7U, 8U) + " = (" +
-                                           GenFormatForExpression(argument, 9U, 10U) + opSign + " 1" + suffix +
-                                           ") as @@T11;";
+        argInfo.newAssignmentStatements +=
+            "const @@I7 = (" + GenFormatForExpression(argument, 8U, 9U) + opSign + " 1" + suffix + ") as @@T10;";
+        argInfo.newAssignmentStatements += GenFormatForExpression(argument, 11U, 12U) + " = @@I13; @@I14";
         return parser->CreateFormattedExpression(
             argInfo.newAssignmentStatements, argInfo.id1, argInfo.object, argInfo.objType, argInfo.id2,
-            argInfo.property, argInfo.propType, GetClone(allocator, argInfo.id1), GetClone(allocator, argInfo.id2),
-            GetClone(allocator, argInfo.id1), GetClone(allocator, argInfo.id2), argument->TsType());
+            argInfo.property, argInfo.propType, argInfo.id3, GetClone(allocator, argInfo.id1),
+            GetClone(allocator, argInfo.id2), argument->TsType(), GetClone(allocator, argInfo.id1),
+            GetClone(allocator, argInfo.id2), GetClone(allocator, argInfo.id3), GetClone(allocator, argInfo.id3));
     }
 
     // upd is postfix
-    argInfo.id3 = Gensym(allocator);
     argInfo.newAssignmentStatements += "const @@I7 = " + GenFormatForExpression(argument, 8, 9) + " as @@T10;" +
                                        GenFormatForExpression(argument, 11U, 12U) + " = (@@I13 " + opSign + " 1" +
                                        suffix + ") as @@T14; @@I15;";

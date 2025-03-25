@@ -21,6 +21,7 @@
 
 #include "checker/checker.h"
 
+#include "checker/types/ets/etsResizableArrayType.h"
 #include "checker/types/ets/types.h"
 #include "checker/resolveResult.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
@@ -131,6 +132,7 @@ public:
     ETSObjectType *GlobalETSObjectType() const;
     ETSUnionType *GlobalETSNullishType() const;
     ETSUnionType *GlobalETSNullishObjectType() const;
+    ETSObjectType *GlobalBuiltinETSResizableArrayType() const;
     ETSObjectType *GlobalBuiltinETSStringType() const;
     ETSObjectType *GlobalBuiltinETSBigIntType() const;
     ETSObjectType *GlobalBuiltinTypeType() const;
@@ -286,6 +288,8 @@ public:
     CharType *CreateCharType(char16_t value);
     ETSBigIntType *CreateETSBigIntLiteralType(util::StringView value);
     ETSStringType *CreateETSStringLiteralType(util::StringView value);
+    ETSResizableArrayType *CreateETSMultiDimResizableArrayType(Type *element, size_t dimSize);
+    ETSResizableArrayType *CreateETSResizableArrayType(Type *element);
     ETSArrayType *CreateETSArrayType(Type *elementType, bool isCachePolluting = false);
     Type *CreateETSUnionType(Span<Type *const> constituentTypes);
     template <size_t N>
@@ -421,6 +425,9 @@ public:
                                                    Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForArray(const ArenaVector<Type *> &typeParams, ETSArrayType *paramType,
                                                    Type *argumentType, Substitution *substitution);
+    [[nodiscard]] bool EnhanceSubstitutionForResizableArray(const ArenaVector<Type *> &typeParams,
+                                                            ETSResizableArrayType *paramType, Type *argumentType,
+                                                            Substitution *substitution);
     std::pair<ArenaVector<Type *>, bool> CreateUnconstrainedTypeParameters(
         ir::TSTypeParameterDeclaration const *typeParams);
     void AssignTypeParameterConstraints(ir::TSTypeParameterDeclaration const *typeParams);
@@ -548,6 +555,8 @@ public:
                                                    const ir::TSTypeParameterInstantiation *typeParams, size_t idx);
     Type *GetTypeFromTypeParameterReference(varbinder::LocalVariable *var, const lexer::SourcePosition &pos);
     Type *GetNonConstantType(Type *type);
+    checker::Type *GetElementTypeOfArray(checker::Type *type);
+    const checker::Type *GetElementTypeOfArray(const checker::Type *type) const;
     bool IsNullLikeOrVoidExpression(const ir::Expression *expr) const;
     bool IsConstantExpression(ir::Expression *expr, Type *type);
     void ValidateUnaryOperatorOperand(varbinder::Variable *variable);
@@ -558,6 +567,7 @@ public:
                                            ir::TSTypeParameterDeclaration *typeParams,
                                            ir::TypeNode *returnTypeAnnotation);
     bool CheckAndLogInvalidThisUsage(const ir::TypeNode *type, const diagnostic::DiagnosticKind &diagnostic);
+    bool IsFixedArray(ir::ETSTypeReferencePart *part);
     void ValidateThisUsage(const ir::TypeNode *returnTypeAnnotation);
     void CheckAnnotations(const ArenaVector<ir::AnnotationUsage *> &annotations);
     void CheckAmbientAnnotation(ir::AnnotationDeclaration *annoImpl, ir::AnnotationDeclaration *annoDecl);

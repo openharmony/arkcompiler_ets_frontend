@@ -15,13 +15,14 @@
 
 function baz(): number {
     return 5.1
-}
-function main(): void {
+  }
+  function main(): void {
     let catched = false;
     try {
-        let a = new int[baz()]
+        let a:FixedArray<int> = new int[baz()]
     } catch (e: TypeError) {
         catched = true
     }
     assertTrue(catched)
-}
+  }
+  

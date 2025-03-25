@@ -713,8 +713,9 @@ void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, ch
 bool IsArrayExpressionValidInitializerForType(ETSChecker *checker, const Type *const arrayExprPreferredType)
 {
     const auto validForTarget = arrayExprPreferredType == nullptr  // preferred type will be inferred from elements
-                                || arrayExprPreferredType->IsETSArrayType()                    // valid for array type
-                                || arrayExprPreferredType->IsETSTupleType()                    // valid for tuple type
+                                || arrayExprPreferredType->IsETSArrayType()           // valid for fixed array type
+                                || arrayExprPreferredType->IsETSResizableArrayType()  // valid for resizable array type
+                                || arrayExprPreferredType->IsETSTupleType()           // valid for tuple type
                                 || checker->Relation()->IsSupertypeOf(arrayExprPreferredType,  // valid for 'Object'
                                                                       checker->GlobalETSObjectType());
 

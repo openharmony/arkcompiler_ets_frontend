@@ -864,10 +864,9 @@ std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ETSParser::Pars
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SHIFT) {
             Lexer()->BackwardToken(lexer::TokenType::PUNCTUATOR_LESS_THAN, 1);
         }
-        *options |= TypeAnnotationParsingOptions::ALLOW_WILDCARD | TypeAnnotationParsingOptions::ANNOTATION_NOT_ALLOW;
+        *options |= TypeAnnotationParsingOptions::ALLOW_WILDCARD;
         typeParamInst = ParseTypeParameterInstantiation(options);
-        *options &=
-            ~(TypeAnnotationParsingOptions::ALLOW_WILDCARD | TypeAnnotationParsingOptions::ANNOTATION_NOT_ALLOW);
+        *options &= ~(TypeAnnotationParsingOptions::ALLOW_WILDCARD);
     }
 
     return {typeName, typeParamInst};
@@ -1427,9 +1426,6 @@ ir::Expression *ETSParser::ParseFunctionParameter()
             // the compiler can't process "declare class A { static foo(x: {key: string}[]):void; }" correctly
             // and resolve "{key: string}" as function body, so skip invalid types
             SkipInvalidType();
-        } else if (paramIdent->IsRestElement() && !typeAnnotation->IsTSArrayType() &&
-                   !IsFixedArrayTypeNode(typeAnnotation) && !typeAnnotation->IsETSTuple()) {
-            LogError(diagnostic::ONLY_ARRAY_OR_TUPLE_FOR_REST);
         }
         typeAnnotation->SetParent(paramIdent);
         paramIdent->SetTsTypeAnnotation(typeAnnotation);

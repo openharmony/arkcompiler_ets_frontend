@@ -31,7 +31,7 @@ function foo2(@Anno() x : int, @Anno2({name: "name2"}) y : int) {
 }
 function foo3(@Anno({}) x : int, @Anno2({name: "name3"}) y : int) {
 }
-function foo4(@Anno({}) x: int, @Anno2({name: "name3"}) ...y : FixedArray<int>) {
+function foo4(@Anno({}) x: int, @Anno2({name: "name3"}) ...y : int[]) {
 }
 function foo5(@Anno({}) x: int, @Anno2({name: "name3"}) y ?: int) {
 }

@@ -1226,6 +1226,10 @@ void ETSGen::ApplyCastToBoxingFlags(const ir::AstNode *node, const ir::BoxingUnb
             CastToInt(node);
             break;
         }
+        case ir::BoxingUnboxingFlags::BOX_TO_BYTE: {
+            CastToByte(node);
+            break;
+        }
         default: {
             break;
         }
@@ -3073,6 +3077,21 @@ void ETSGen::NewArray(const ir::AstNode *const node, const VReg arr, const VReg 
 
     Ra().Emit<Newarr>(node, arr, dim, util::StringView(*res.first));
     SetVRegType(arr, arrType);
+}
+
+void ETSGen::LoadResizableArrayLength(const ir::AstNode *node)
+{
+    Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_ARRAY_LENGTH, dummyReg_, 0);
+    Sa().Emit<F64toi32>(node);
+    SetAccumulatorType(Checker()->GlobalIntType());
+}
+
+void ETSGen::LoadResizableArrayElement(const ir::AstNode *node, const VReg arrObj, const VReg arrIndex)
+{
+    auto *vRegType = GetVRegType(arrObj);
+    auto *elementType = vRegType->AsETSResizableArrayType()->ElementType();
+    Ra().Emit<CallVirtShort>(node, Signatures::BUILTIN_ARRAY_GET_ELEMENT, arrObj, arrIndex);
+    SetAccumulatorType(elementType);
 }
 
 void ETSGen::LoadArrayLength(const ir::AstNode *node, VReg arrayReg)

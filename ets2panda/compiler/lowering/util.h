@@ -24,7 +24,7 @@ class PhaseManager;
 
 inline constexpr std::string_view const GENSYM_CORE = "gensym%%_";
 inline constexpr std::string_view const DUMMY_ID = "_";
-
+ir::AstNode *RefineSourceRanges(ir::AstNode *node);
 bool HasGlobalClassParent(const ir::AstNode *node);
 varbinder::Scope *NearestScope(const ir::AstNode *ast);
 checker::ETSObjectType const *ContainingClass(const ir::AstNode *ast);

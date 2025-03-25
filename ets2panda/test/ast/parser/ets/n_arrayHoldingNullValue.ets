@@ -18,5 +18,5 @@ function main(): void {
     let d: char[] = /* @@ label1 */null;
 }
 
-/* @@@ label Error TypeError: Type 'null' cannot be assigned to type 'float[]'  */
-/* @@@ label1 Error TypeError: Type 'null' cannot be assigned to type 'char[]'  */
+/* @@? 17:38 Error TypeError: Type 'null' cannot be assigned to type 'Array<Float>' */
+/* @@? 18:36 Error TypeError: Type 'null' cannot be assigned to type 'Array<Char>' */

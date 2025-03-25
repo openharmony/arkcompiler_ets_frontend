@@ -19,17 +19,17 @@ interface I {
   fn2(): Object;
   fn3(): Object;
   fn4(): Object;
-  fn5(): Object[];
+  fn5(): FixedArray<Object>;
 }
 
 class A implements I {
   public x: int = 42;
   override self(): A { return this; }
   override fn(): String { return ""; }
-  override fn2(): Object[] { return [new Object()]; }
-  override fn3(): int[] { return [0]; }
-  override fn4(): int[][] { return [[0]]; }
-  override fn5(): String[] { return [""]; }
+  override fn2(): FixedArray<Object> { return [new Object()]; }
+  override fn3(): FixedArray<int> { return [0]; }
+  override fn4(): FixedArray<int>[] { return [[0]]; }
+  override fn5(): FixedArray<String> { return [""]; }
 }
 
 
@@ -45,9 +45,9 @@ function main(): void {
   // let i: I = a;
   // assertTrue(i.self() instanceof A)
   // assertEQ((i.fn() as String), "")
-  // assertEQ((i.fn2() as Object[])[0], new Object()
-  // assertEQ((i.fn3() as int[])[0], 0)
-  // assertEQ((i.fn4() as String[])[0], "")
+  // assertEQ((i.fn2() as FixedArray<Object>)[0], new Object()
+  // assertEQ((i.fn3() as FixedArray<int>)[0], 0)
+  // assertEQ((i.fn4() as FixedArray<String>)[0], "")
 }
 
 

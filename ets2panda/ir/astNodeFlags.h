@@ -33,6 +33,7 @@ enum class AstNodeFlags {
     GENERATE_VALUE_OF = 1U << 4U,
     RECHECK = 1U << 5U,
     NOCLEANUP = 1U << 6U,
+    RESIZABLE_REST = 1U << 7U,
     /* do not introduce new flags. all the existing to be removed */
 };
 
@@ -67,6 +68,7 @@ enum class ModifierFlags : uint32_t {
     ANNOTATION_DECLARATION = 1U << 27U,
     ANNOTATION_USAGE = 1U << 28U,
     READONLY_PARAMETER = 1U << 29U,
+    ARRAY_SETTER = 1U << 30U,
     ACCESS = PUBLIC | PROTECTED | PRIVATE | INTERNAL,
     ALL = STATIC | ASYNC | ACCESS | DECLARE | READONLY | ABSTRACT,
     ALLOWED_IN_CTOR_PARAMETER = ACCESS | READONLY,
