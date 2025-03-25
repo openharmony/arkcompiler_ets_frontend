@@ -18,14 +18,9 @@
 }
 
 abstract class A {
-    @MyAnno()
+    @MyAnno({testProperty1: "123", testProperty2: 123})
     foo1(){} // OK
 
-    @MyAnno()
-    abstract foo2() //CTE
-} 
-
-/* @@? 25:14 Error SyntaxError: Annotations are not allowed on an abstract class or methods. */
-/* @@? 25:14 Error SyntaxError: Annotations are not allowed on an abstract class or methods. */
-/* @@? 21:6 Error TypeError: The required field 'testProperty2' must be specified. Fields without default values cannot be omitted. */
-/* @@? 21:6 Error TypeError: The required field 'testProperty1' must be specified. Fields without default values cannot be omitted. */
+    @MyAnno({testProperty1: "123", testProperty2: 123})
+    abstract foo2() // OK
+}

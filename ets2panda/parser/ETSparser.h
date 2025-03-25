@@ -460,8 +460,7 @@ private:
         std::tuple<bool, bool, bool> elementFlag, std::tuple<lexer::SourcePosition, lexer::LexerPosition> posInfo);
     ir::AstNode *ParseClassElement(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
                                    ir::ModifierFlags flags) override;
-    std::tuple<bool, bool, bool> HandleClassElementModifiers(ArenaVector<ir::AnnotationUsage *> &annotations,
-                                                             ir::ModifierFlags &memberModifiers);
+    std::tuple<bool, bool, bool> HandleClassElementModifiers(ir::ModifierFlags &memberModifiers);
     void UpdateMemberModifiers(ir::ModifierFlags &memberModifiers, bool &seenStatic);
     ir::ModifierFlags ParseMemberAccessModifiers();
     template <bool IS_USAGE>

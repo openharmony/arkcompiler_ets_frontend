@@ -583,18 +583,13 @@ void ETSParser::UpdateMemberModifiers(ir::ModifierFlags &memberModifiers, bool &
     }
 }
 
-std::tuple<bool, bool, bool> ETSParser::HandleClassElementModifiers(ArenaVector<ir::AnnotationUsage *> &annotations,
-                                                                    ir::ModifierFlags &memberModifiers)
+std::tuple<bool, bool, bool> ETSParser::HandleClassElementModifiers(ir::ModifierFlags &memberModifiers)
 {
     auto [modifierFlags, isStepToken, isDefault] = ParseClassMemberAccessModifiers();
     memberModifiers |= modifierFlags;
 
     bool seenStatic = false;
     UpdateMemberModifiers(memberModifiers, seenStatic);
-
-    if (!annotations.empty() && (memberModifiers & ir::ModifierFlags::ABSTRACT) != 0) {
-        LogError(diagnostic::ANNOTATION_ABSTRACT, {}, Lexer()->GetToken().Start());
-    }
 
     return {seenStatic, isStepToken, isDefault};
 }
@@ -670,7 +665,7 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
         return ParseClassStaticBlock();
     }
 
-    auto [seenStatic, isStepToken, isDefault] = HandleClassElementModifiers(annotations, memberModifiers);
+    auto [seenStatic, isStepToken, isDefault] = HandleClassElementModifiers(memberModifiers);
     auto delcStartLoc = Lexer()->GetToken().Start();
     ir::AstNode *result = ParseClassElementHelper(properties, std::make_tuple(modifiers, memberModifiers, flags),
                                                   std::make_tuple(seenStatic, isStepToken, isDefault),
