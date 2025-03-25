@@ -166,3 +166,6 @@ faultDesc[FaultID.NumericSemantics] = 'Numeric semantics';
 faultDesc[FaultID.AnimatableExtendDecoratorTransform] = '"@AnimatableExtend" decorator';
 faultDesc[FaultID.NoDuplicateFunctionName] = 'No duplicate function name';
 faultDesc[FaultID.OhmUrlFullPath] = 'Require full path file name';
+faultDesc[FaultID.UIInterfaceImport] = 'UI interface';
+faultDesc[FaultID.StylesDecoratorNotSupported] = '"@Styles" decorator';
+faultDesc[FaultID.DataObservation] = 'Data observation';

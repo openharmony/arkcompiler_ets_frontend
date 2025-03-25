@@ -44,5 +44,8 @@ export const cookBookRefToFixTitle: Map<number, string> = new Map([
   [252, 'Transform "$$" to "$$()"'],
   [253, '"$value" transform to "this.value"'],
   [254, '"@Extend" transform to function with receiver'],
-  [257, '"@AnimatableExtend" transform to function with receiver']
+  [256, '"@Styles" transform to function with receiver'],
+  [257, '"@AnimatableExtend" transform to function with receiver'],
+  [258, 'Add "@Observed" decorator'],
+  [259, 'Add UI Interface Import']
 ]);

@@ -973,6 +973,16 @@
             "suggest": "",
             "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "ERROR"
+        },
+        {
+            "line": 103,
+            "column": 22,
+            "endLine": 103,
+            "endColumn": 30,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "severity": "ERROR"
         }
     ]
 }

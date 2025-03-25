@@ -531,6 +531,33 @@
             "suggest": "",
             "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
             "severity": "ERROR"
+        },
+        {
+            "line": 65,
+            "column": 11,
+            "endLine": 65,
+            "endColumn": 17,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 87,
+            "column": 11,
+            "endLine": 87,
+            "endColumn": 15,
+            "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 738,
+                    "end": 738,
+                    "replacementText": "\n\nimport { Number, Math } from '@ohos.arkui.components';\n"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "severity": "ERROR"
         }
     ]
 }

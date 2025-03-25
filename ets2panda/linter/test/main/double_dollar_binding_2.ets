@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@ohos.arkui.components';
+
 @Component
 struct Myomponent {
   @State value: number = 0;

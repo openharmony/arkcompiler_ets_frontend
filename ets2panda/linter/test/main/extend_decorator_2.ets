@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import { Component, Column, Text, ColumnAttribute, Color } from '@ohos.arkui.components';
+
 @Component
 struct MyCard {
   build() {

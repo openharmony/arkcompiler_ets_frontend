@@ -260,7 +260,10 @@ cookBookTag[252] = '"$$" for bidirectional data binding is not supported (arkui-
 cookBookTag[253] = '"${variable}" for decorator binding is not supported (arkui-link-decorator-passing)';
 cookBookTag[254] = '"@Extend" decorator is not supported (arkui-no-extend-decorator)';
 cookBookTag[255] = 'Extends or implemetns expression are not supported(arkts-no-extends-expression)';
+cookBookTag[256] = '"@Styles" decorator is not supported (arkui-no-styles-decorator)';
 cookBookTag[257] =
   '"@AnimatableExtend" decorator should be transformed to use receiver (arkui-animatableextend-use-receiver)';
+cookBookTag[258] = 'Data observation needs to add "@Observed" (arkui-data-observation)';
+cookBookTag[259] = 'ArkUI interface should be imported before using (akrui-modular-interface)';
 cookBookTag[301] = 'Importing from "oh module" requires specifying full path (arkts-ohmurl-full-path)';
 cookBookTag[304] = 'Duplicate function name in namespace are not allowed (arkts-no-duplicate-function-name)';

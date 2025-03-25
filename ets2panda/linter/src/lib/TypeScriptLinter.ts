@@ -77,10 +77,8 @@ import { DEFAULT_DECORATOR_WHITE_LIST } from './utils/consts/DefaultDecoratorWhi
 import { INVALID_IDENTIFIER_KEYWORDS } from './utils/consts/InValidIndentifierKeywords';
 import { WORKER_MODULES, WORKER_TEXT } from './utils/consts/WorkerAPI';
 import { ETS_PART, OH_MODULE_INDICATOR, PATH_SEPARATOR, VALID_OHM_URL_PART } from './utils/consts/OhmUrl';
-
-const EXTEND_DECORATOR_NAME = 'Extend';
-const ANIMATABLE_EXTEND_DECORATOR_NAME = 'AnimatableExtend';
-const DOUBLE_DOLLAR_THIS_IDENTIFIER = '$$this';
+import { DOUBLE_DOLLAR_IDENTIFIER, THIS_IDENTIFIER, STATE_STYLES } from './utils/consts/AutofixConstants';
+import { DecoratorName } from './utils/consts/DecoratorName';
 
 export class TypeScriptLinter {
   totalVisitedNodes: number = 0;
@@ -818,6 +816,7 @@ export class TypeScriptLinter {
 
   private handlePropertyAccessExpression(node: ts.Node): void {
     this.handleDoubleDollar(node);
+    this.handleInterfaceImport(node);
 
     this.checkUnionTypes(node as ts.PropertyAccessExpression);
     if (ts.isCallExpression(node.parent) && node === node.parent.expression) {
@@ -894,6 +893,7 @@ export class TypeScriptLinter {
   }
 
   private handlePropertyDeclaration(node: ts.PropertyDeclaration): void {
+    this.handleDataObservation(node);
     const propName = node.name;
     if (!!propName && (ts.isNumericLiteral(propName) || this.options.arkts2 && ts.isStringLiteral(propName))) {
       const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(propName);
@@ -2640,7 +2640,9 @@ export class TypeScriptLinter {
   }
 
   private handleCallExpression(node: ts.Node): void {
+    this.handleInterfaceImport(node);
     const tsCallExpr = node as ts.CallExpression;
+    this.handleStateStyles(tsCallExpr);
 
     const calleeSym = this.tsUtils.trueSymbolAtLocation(tsCallExpr.expression);
     const callSignature = this.tsTypeChecker.getResolvedSignature(tsCallExpr);
@@ -2994,6 +2996,7 @@ export class TypeScriptLinter {
 
   private handleNewExpression(node: ts.Node): void {
     const tsNewExpr = node as ts.NewExpression;
+    this.handleInterfaceImport(tsNewExpr);
 
     if (this.options.advancedClassChecks || this.options.arkts2) {
       const calleeExpr = tsNewExpr.expression;
@@ -3070,6 +3073,8 @@ export class TypeScriptLinter {
   }
 
   private handleTypeReference(node: ts.Node): void {
+    this.handleInterfaceImport(node);
+
     const typeRef = node as ts.TypeReferenceNode;
 
     const isESObject = TsUtils.isEsObjectType(typeRef);
@@ -3615,8 +3620,10 @@ export class TypeScriptLinter {
 
     this.sourceFile = sourceFile;
     this.fileExportSendableDeclCaches = undefined;
+    this.extractImportedNames(this.sourceFile);
     this.visitSourceFile(this.sourceFile);
     this.handleCommentDirectives(this.sourceFile);
+    this.processInterfacesToImport();
   }
 
   private handleExportKeyword(node: ts.Node): void {
@@ -3719,10 +3726,12 @@ export class TypeScriptLinter {
 
   private handleDecorator(node: ts.Node): void {
     this.handleExtendDecorator(node);
+    this.handleInterfaceImport(node);
 
     const decorator: ts.Decorator = node as ts.Decorator;
     this.handleSendableDecorator(decorator);
     this.handleConcurrentDecorator(decorator);
+    this.handleStylesDecorator(decorator);
     if (TsUtils.getDecoratorName(decorator) === SENDABLE_DECORATOR) {
       const parent: ts.Node = decorator.parent;
       if (!parent || !SENDABLE_DECORATOR_NODES.includes(parent.kind)) {
@@ -4112,7 +4121,7 @@ export class TypeScriptLinter {
       return;
     }
 
-    const autofix = this.autofixer?.fixBidirectionalDataBinding(node);
+    const autofix = this.autofixer?.fixBidirectionalDataBinding(node, this.interfacesNeedToImport);
     this.incrementCounters(node, FaultID.DoubleExclaBindingNotSupported, autofix);
   }
 
@@ -4124,9 +4133,9 @@ export class TypeScriptLinter {
     if (
       ts.isPropertyAccessExpression(node) &&
       ts.isIdentifier(node.expression) &&
-      node.expression.escapedText === DOUBLE_DOLLAR_THIS_IDENTIFIER
+      node.expression.escapedText === DOUBLE_DOLLAR_IDENTIFIER + THIS_IDENTIFIER
     ) {
-      const autofix = this.autofixer?.fixDoubleDollar(node);
+      const autofix = this.autofixer?.fixDoubleDollar(node, this.interfacesNeedToImport);
       this.incrementCounters(node, FaultID.DoubleDollarBindingNotSupported, autofix);
     }
   }
@@ -4156,11 +4165,11 @@ export class TypeScriptLinter {
     }
 
     if (ts.isCallExpression(node.expression) && ts.isIdentifier(node.expression.expression)) {
-      if (node.expression.expression.text === EXTEND_DECORATOR_NAME) {
-        const autofix = this.autofixer?.fixExtendDecorator(node, false);
+      if (node.expression.expression.text === DecoratorName.Extend) {
+        const autofix = this.autofixer?.fixExtendDecorator(node, false, this.interfacesNeedToImport);
         this.incrementCounters(node.parent, FaultID.ExtendDecoratorNotSupported, autofix);
-      } else if (node.expression.expression.text === ANIMATABLE_EXTEND_DECORATOR_NAME) {
-        const autofix = this.autofixer?.fixExtendDecorator(node, true);
+      } else if (node.expression.expression.text === DecoratorName.AnimatableExtend) {
+        const autofix = this.autofixer?.fixExtendDecorator(node, true, this.interfacesNeedToImport);
         this.incrementCounters(node.parent, FaultID.AnimatableExtendDecoratorTransform, autofix);
       }
     }
@@ -4294,5 +4303,299 @@ export class TypeScriptLinter {
         this.incrementCounters(node, FaultID.LimitedStdLibApi);
       }
     }
+  }
+
+  interfaceIdentifiers: ts.Identifier[] = [];
+  interfacesNeedToImport: Set<string> = new Set<string>();
+  importedInterfaces: Set<string> = new Set<string>();
+
+  private handleInterfaceImport(node: ts.Node): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (!TypeScriptLinter.shouldProcessNode(node)) {
+      return;
+    }
+
+    const identifier = TypeScriptLinter.getIdentifierFromNode(node);
+    if (!identifier || this.shouldSkipIdentifier(identifier)) {
+      return;
+    }
+
+    const interfaceName = identifier.getText();
+    if (!this.interfacesNeedToImport.has(interfaceName) && !this.importedInterfaces.has(interfaceName)) {
+      this.interfaceIdentifiers.push(identifier);
+      this.interfacesNeedToImport.add(interfaceName);
+    }
+  }
+
+  private static shouldProcessNode(node: ts.Node): boolean {
+    return (
+      ts.isCallExpression(node) ||
+      ts.isPropertyAccessExpression(node) ||
+      ts.isDecorator(node) ||
+      ts.isTypeReferenceNode(node) ||
+      ts.isNewExpression(node)
+    );
+  }
+
+  private static getIdentifierFromNode(node: ts.Node): ts.Identifier | undefined {
+    if (ts.isTypeReferenceNode(node)) {
+      return ts.isIdentifier(node.typeName) ? node.typeName : undefined;
+    }
+
+    if (ts.isDecorator(node)) {
+      const expression = node.expression;
+      if (ts.isCallExpression(expression)) {
+        return ts.isIdentifier(expression.expression) ? expression.expression : undefined;
+      }
+    }
+
+    const identifier = (node as ts.CallExpression | ts.PropertyAccessExpression | ts.NewExpression).expression;
+    return ts.isIdentifier(identifier) ? identifier : undefined;
+  }
+
+  private shouldSkipIdentifier(identifier: ts.Identifier): boolean {
+    const name = identifier.getText();
+    const skippedIdentifiers = new Set<string>([DecoratorName.Extend, DecoratorName.Styles]);
+    if (skippedIdentifiers.has(name)) {
+      return true;
+    }
+
+    const firstChar = name.charAt(0);
+    if (!firstChar.match(/[A-Z]/)) {
+      return true;
+    }
+
+    const symbol = this.tsTypeChecker.getSymbolAtLocation(identifier);
+    if (symbol) {
+      if (this.importedInterfaces.has(name)) {
+        return true;
+      }
+      const decl = this.tsUtils.getDeclarationNode(identifier);
+      if (decl?.getSourceFile() === identifier.getSourceFile()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private processInterfacesToImport(): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    this.interfaceIdentifiers.forEach((identifier, index) => {
+      if (index === this.interfaceIdentifiers.length - 1) {
+        const autofix = this.autofixer?.fixSingleImport(
+          this.interfacesNeedToImport,
+          this.importedInterfaces,
+          identifier.getSourceFile()
+        );
+        this.incrementCounters(identifier, FaultID.UIInterfaceImport, autofix);
+      } else {
+        this.incrementCounters(identifier, FaultID.UIInterfaceImport);
+      }
+    });
+
+    this.interfaceIdentifiers = [];
+    this.interfacesNeedToImport.clear();
+    this.importedInterfaces.clear();
+  }
+
+  private extractImportedNames(sourceFile: ts.SourceFile): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    for (const statement of sourceFile.statements) {
+      if (!ts.isImportDeclaration(statement)) {
+        continue;
+      }
+
+      const importClause = statement.importClause;
+      if (!importClause) {
+        continue;
+      }
+
+      const namedBindings = importClause.namedBindings;
+      if (!namedBindings || !ts.isNamedImports(namedBindings)) {
+        continue;
+      }
+
+      for (const specifier of namedBindings.elements) {
+        const importedName = specifier.name.getText(sourceFile);
+        this.importedInterfaces.add(importedName);
+      }
+    }
+  }
+
+  private handleStylesDecorator(node: ts.Decorator): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (!ts.isFunctionDeclaration(node.parent) && !ts.isMethodDeclaration(node.parent)) {
+      return;
+    }
+
+    if (!ts.isIdentifier(node.expression) || node.expression.text !== DecoratorName.Styles) {
+      return;
+    }
+
+    const decl = node.parent;
+    const declName = decl.name?.getText();
+    if (ts.isFunctionDeclaration(decl)) {
+      const functionCalls = TypeScriptLinter.findDeclarationCalls(this.sourceFile as ts.SourceFile, declName as string);
+      const autofix = this.autofixer?.fixStylesDecoratorGlobal(decl, functionCalls, this.interfacesNeedToImport);
+      this.incrementCounters(decl, FaultID.StylesDecoratorNotSupported, autofix);
+    }
+
+    if (ts.isMethodDeclaration(decl)) {
+      const methodCalls = TypeScriptLinter.findDeclarationCalls(this.sourceFile as ts.SourceFile, declName as string);
+      const autofix = this.autofixer?.fixStylesDecoratorStruct(decl, methodCalls, this.interfacesNeedToImport);
+      this.incrementCounters(decl, FaultID.StylesDecoratorNotSupported, autofix);
+    }
+  }
+
+  private handleStateStyles(node: ts.CallExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (node.expression.getText() !== STATE_STYLES) {
+      return;
+    }
+
+    const args = node.arguments;
+    if (args.length === 0) {
+      return;
+    }
+
+    const object = args[0];
+    if (!ts.isObjectLiteralExpression(object)) {
+      return;
+    }
+
+    const properties = object.properties;
+    if (properties.length === 0) {
+      return;
+    }
+    const property = properties[0] as ts.PropertyAssignment;
+    if (!ts.isObjectLiteralExpression(property.initializer)) {
+      return;
+    }
+
+    const autofix = this.autofixer?.fixStateStyles(object, this.interfacesNeedToImport);
+    this.incrementCounters(node, FaultID.StylesDecoratorNotSupported, autofix);
+  }
+
+  private static findDeclarationCalls(sourceFile: ts.SourceFile, declName: string): ts.CallExpression[] {
+    const functionCalls: ts.CallExpression[] = [];
+
+    function traverse(node: ts.Node): void {
+      if (ts.isCallExpression(node)) {
+        const callName = node.expression.getText();
+        if (callName === declName) {
+          functionCalls.push(node);
+        }
+      }
+      ts.forEachChild(node, traverse);
+    }
+
+    traverse(sourceFile);
+    return functionCalls;
+  }
+
+  needObservation: Set<string> = new Set<string>();
+
+  private handleDataObservation(node: ts.PropertyDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const decorators = ts.getDecorators(node);
+    if (!decorators || decorators.length === 0) {
+      return;
+    }
+
+    const decorator = decorators[0];
+    let decoratorName = '';
+    if (ts.isIdentifier(decorator.expression)) {
+      decoratorName = decorator.expression.getText();
+    } else if (ts.isCallExpression(decorator.expression)) {
+      decoratorName = decorator.expression.expression.getText();
+    }
+    const targetDecorators = Object.values(DecoratorName) as string[];
+    if (!targetDecorators.includes(decoratorName)) {
+      return;
+    }
+
+    const type = node.type;
+    if (!type) {
+      return;
+    }
+
+    const targets: ts.Node[] = [];
+    if (ts.isUnionTypeNode(type)) {
+      const types = type.types;
+      types.forEach((typeNode) => {
+        this.processTypeNode(typeNode, targets);
+      });
+    } else {
+      this.processTypeNode(type, targets);
+    }
+
+    targets.forEach((target) => {
+      const targetName = target.getText();
+      const classDecl = this.findClassDeclaration(targetName);
+      if (TypeScriptLinter.hasObservedDecorator(classDecl)) {
+        return;
+      }
+      const autofix = this.autofixer?.fixDataObservation(classDecl);
+      this.incrementCounters(target, FaultID.DataObservation, autofix);
+    });
+  }
+
+  private processTypeNode(typeNode: ts.TypeNode, targets: ts.Node[]): void {
+    if (ts.isTypeReferenceNode(typeNode)) {
+      const target = typeNode.typeName;
+      const targetName = target.getText();
+      if (!this.needObservation.has(targetName)) {
+        targets.push(target);
+        this.needObservation.add(targetName);
+      }
+    }
+  }
+
+  private static hasObservedDecorator(classDecl: ts.ClassDeclaration | undefined): boolean {
+    if (!classDecl || !ts.isClassDeclaration(classDecl)) {
+      return false;
+    }
+
+    return (
+      ts.getDecorators(classDecl)?.some((decorator) => {
+        return decorator.getText() === '@' + DecoratorName.Observed;
+      }) ?? false
+    );
+  }
+
+  private findClassDeclaration(targetName: string): ts.ClassDeclaration | undefined {
+    const sourceFile = this.sourceFile as ts.SourceFile;
+    const statements = sourceFile.statements;
+    if (!statements) {
+      return undefined;
+    }
+
+    const classDecl = statements.find((statement) => {
+      return ts.isClassDeclaration(statement) && statement.name?.getText() === targetName;
+    });
+
+    if (!classDecl || !ts.isClassDeclaration(classDecl)) {
+      return undefined;
+    }
+
+    return classDecl;
   }
 }

@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import { Component, State, Column, Link, Row, Text } from '@ohos.arkui.components';
+
 @Component
 struct MyComponent {
   @State count: number = 0

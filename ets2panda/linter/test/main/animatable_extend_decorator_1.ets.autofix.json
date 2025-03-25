@@ -24,11 +24,98 @@
                 {
                     "start": 605,
                     "end": 688,
-                    "replacementText": "@AnimatableExtend\nfunction animatableWidth(this: TextAttribute, width: number): this {\n    this.width(width);\n    return this;\n}"
+                    "replacementText": "@AnimatableExtend\n@Memo\nfunction animatableWidth(this: TextAttribute, width: number): this {\n    this.width(width);\n    return this;\n}"
                 }
             ],
             "suggest": "",
             "rule": "\"@AnimatableExtend\" decorator should be transformed to use receiver (arkui-animatableextend-use-receiver)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 16,
+            "column": 2,
+            "endLine": 16,
+            "endColumn": 18,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 2,
+            "endLine": 21,
+            "endColumn": 7,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 2,
+            "endLine": 22,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 4,
+            "endLine": 24,
+            "endColumn": 9,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 5,
+            "endLine": 27,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 7,
+            "endLine": 28,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 45,
+            "endLine": 30,
+            "endColumn": 50,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 7,
+            "endLine": 31,
+            "endColumn": 13,
+            "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { TextAttribute, Memo, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@ohos.arkui.components';"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
             "severity": "ERROR"
         }
     ]

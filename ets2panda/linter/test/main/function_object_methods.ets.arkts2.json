@@ -463,6 +463,26 @@
             "suggest": "",
             "rule": "'Function.apply', 'Function.call' are not supported (arkts-no-func-apply-call)",
             "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 16,
+            "endLine": 19,
+            "endColumn": 24,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 26,
+            "endLine": 47,
+            "endColumn": 33,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "severity": "ERROR"
         }
     ]
 }

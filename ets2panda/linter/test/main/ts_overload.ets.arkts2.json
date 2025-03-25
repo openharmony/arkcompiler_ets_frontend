@@ -29,6 +29,16 @@
             "suggest": "",
             "rule": "Class TS overloading is not supported(arkts-no-ts-overload)",
             "severity": "ERROR"
+        },
+        {
+            "line": 16,
+            "column": 39,
+            "endLine": 16,
+            "endColumn": 43,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "severity": "ERROR"
         }
     ]
 }

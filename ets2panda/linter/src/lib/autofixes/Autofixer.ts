@@ -23,6 +23,15 @@ import { isAssignmentOperator } from '../utils/functions/isAssignmentOperator';
 import { SymbolCache } from './SymbolCache';
 import { SENDABLE_DECORATOR } from '../utils/consts/SendableAPI';
 import { PATH_SEPARATOR, SRC_AND_MAIN } from '../utils/consts/OhmUrl';
+import {
+  DOUBLE_DOLLAR_IDENTIFIER,
+  THIS_IDENTIFIER,
+  ATTRIBUTE_SUFFIX,
+  INSTANCE_IDENTIFIER,
+  COMMON_METHOD_IDENTIFIER,
+  APPLY_STYLES_IDENTIFIER
+} from '../utils/consts/AutofixConstants';
+import { DecoratorName } from '../utils/consts/DecoratorName';
 
 const UNDEFINED_NAME = 'undefined';
 
@@ -38,10 +47,6 @@ const GENERATED_DESTRUCT_OBJECT_TRESHOLD = 1000;
 const GENERATED_DESTRUCT_ARRAY_NAME = 'GeneratedDestructArray_';
 const GENERATED_DESTRUCT_ARRAY_TRESHOLD = 1000;
 const SPECIAL_LIB_NAME = 'specialAutofixLib';
-
-const ATTRIBUTE_SUFFIX = 'Attribute';
-const DOUBLE_DOLLAR_IDENTIFIER = '$$';
-const THIS_IDENTIFIER = 'this';
 
 export interface Autofix {
   replacementText: string;
@@ -2208,24 +2213,29 @@ export class Autofixer {
     return autofix;
   }
 
-  fixBidirectionalDataBinding(twoWayExpr: ts.NonNullExpression): Autofix[] | undefined {
+  fixBidirectionalDataBinding(
+    twoWayExpr: ts.NonNullExpression,
+    interfacesNeedToImport: Set<string>
+  ): Autofix[] | undefined {
     if (!ts.isNonNullExpression(twoWayExpr.expression)) {
       return undefined;
     }
     const originalExpr = twoWayExpr.expression.expression;
     const doubleDollarIdentifier = ts.factory.createIdentifier(DOUBLE_DOLLAR_IDENTIFIER);
+    interfacesNeedToImport.add(DOUBLE_DOLLAR_IDENTIFIER);
     const callExpr = ts.factory.createCallExpression(doubleDollarIdentifier, undefined, [originalExpr]);
     const text = this.printer.printNode(ts.EmitHint.Unspecified, callExpr, twoWayExpr.getSourceFile());
     return [{ start: twoWayExpr.getStart(), end: twoWayExpr.getEnd(), replacementText: text }];
   }
 
-  fixDoubleDollar(dollarExpr: ts.PropertyAccessExpression): Autofix[] {
+  fixDoubleDollar(dollarExpr: ts.PropertyAccessExpression, interfacesNeedToImport: Set<string>): Autofix[] {
     const dollarValue = dollarExpr.name.escapedText as string;
     const dollarValueExpr = ts.factory.createPropertyAccessExpression(
       ts.factory.createThis(),
       ts.factory.createIdentifier(dollarValue)
     );
     const doubleDollarIdentifier = ts.factory.createIdentifier(DOUBLE_DOLLAR_IDENTIFIER);
+    interfacesNeedToImport.add(DOUBLE_DOLLAR_IDENTIFIER);
     const callExpr = ts.factory.createCallExpression(doubleDollarIdentifier, undefined, [dollarValueExpr]);
     const text = this.printer.printNode(ts.EmitHint.Unspecified, callExpr, dollarExpr.getSourceFile());
     return [{ start: dollarExpr.getStart(), end: dollarExpr.getEnd(), replacementText: text }];
@@ -2242,16 +2252,18 @@ export class Autofixer {
     return [{ start: identifier.getStart(), end: identifier.getEnd(), replacementText: text }];
   }
 
-  fixExtendDecorator(extendDecorator: ts.Decorator, preserveDecorator: boolean): Autofix[] | undefined {
+  fixExtendDecorator(
+    extendDecorator: ts.Decorator,
+    preserveDecorator: boolean,
+    interfacesNeedToImport: Set<string>
+  ): Autofix[] | undefined {
     if (!ts.isCallExpression(extendDecorator.expression)) {
       return undefined;
     }
-
     const funcDecl = extendDecorator.parent;
-    if (!ts.isFunctionDeclaration(funcDecl) || !funcDecl.body) {
+    if (!ts.isFunctionDeclaration(funcDecl)) {
       return undefined;
     }
-
     const block = funcDecl.body;
     const parameters: ts.MemberName[] = [];
     const values: ts.Expression[][] = [];
@@ -2259,13 +2271,13 @@ export class Autofixer {
     this.getParamsAndValues(statements, parameters, values);
     const returnStatement = ts.factory.createReturnStatement(ts.factory.createThis());
     const newBlock = Autofixer.createBlock(parameters, values, ts.factory.createThis(), returnStatement);
-
     const componentName = extendDecorator.expression.arguments[0]?.getText();
     if (!componentName) {
       return undefined;
     }
-    const decoratorName = extendDecorator.expression.expression.getText();
     const typeName = componentName + ATTRIBUTE_SUFFIX;
+    interfacesNeedToImport.add(typeName);
+    interfacesNeedToImport.add(DecoratorName.Memo);
     const parameDecl = ts.factory.createParameterDeclaration(
       undefined,
       undefined,
@@ -2275,19 +2287,26 @@ export class Autofixer {
       undefined
     );
     const returnType = ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(THIS_IDENTIFIER), undefined);
-    const newFuncDecl = Autofixer.createFunctionDeclaration(parameDecl, funcDecl, undefined, returnType, newBlock);
-
-    let text = this.printer.printNode(ts.EmitHint.Unspecified, newFuncDecl, funcDecl.getSourceFile());
+    const newFuncDecl = Autofixer.createFunctionDeclaration(funcDecl, undefined, parameDecl, returnType, newBlock);
+    const newDecorators: ts.Decorator[] = [];
     if (preserveDecorator) {
-      text = '@' + decoratorName + '\n' + text;
+      newDecorators.push(ts.factory.createDecorator(ts.factory.createIdentifier(DecoratorName.AnimatableExtend)));
     }
+    newDecorators.push(ts.factory.createDecorator(ts.factory.createIdentifier(DecoratorName.Memo)));
+    const text1 = this.printer.printList(
+      ts.ListFormat.Decorators,
+      ts.factory.createNodeArray(newDecorators),
+      funcDecl.getSourceFile()
+    );
+    const text2 = this.printer.printNode(ts.EmitHint.Unspecified, newFuncDecl, funcDecl.getSourceFile());
+    const text = text1 + text2;
     return [{ start: funcDecl.getStart(), end: funcDecl.getEnd(), replacementText: text }];
   }
 
   private static createFunctionDeclaration(
-    paramDecl: ts.ParameterDeclaration,
     funcDecl: ts.FunctionDeclaration,
     typeParameters: ts.TypeParameterDeclaration[] | undefined,
+    paramDecl: ts.ParameterDeclaration,
     returnType: ts.TypeNode,
     block: ts.Block
   ): ts.FunctionDeclaration {
@@ -2599,5 +2618,252 @@ export class Autofixer {
     autofix.forEach((fix) => {
       fix.replacementText = newName;
     });
+  }
+
+  fixSingleImport(
+    interfacesNeedToImport: Set<string>,
+    importedInterfaces: Set<string>,
+    sourceFile: ts.SourceFile
+  ): Autofix[] {
+    const importSpecifiers: ts.ImportSpecifier[] = [];
+    interfacesNeedToImport.forEach((interfaceName) => {
+      if (importedInterfaces.has(interfaceName)) {
+        return;
+      }
+      const identifier = ts.factory.createIdentifier(interfaceName);
+      importSpecifiers.push(ts.factory.createImportSpecifier(false, undefined, identifier));
+    });
+    const moduleName = '@ohos.arkui.components';
+    const importDeclaration = ts.factory.createImportDeclaration(
+      undefined,
+      ts.factory.createImportClause(false, undefined, ts.factory.createNamedImports(importSpecifiers)),
+      ts.factory.createStringLiteral(moduleName, true),
+      undefined
+    );
+
+    const leadingComments = ts.getLeadingCommentRanges(sourceFile.getFullText(), 0);
+    let annotationEndLine = 0;
+    let annotationEndPos = 0;
+    if (leadingComments && leadingComments.length > 0) {
+      annotationEndPos = leadingComments[leadingComments.length - 1].end;
+      annotationEndLine = sourceFile.getLineAndCharacterOfPosition(annotationEndPos).line;
+    }
+
+    let text = this.printer.printNode(ts.EmitHint.Unspecified, importDeclaration, sourceFile);
+    if (annotationEndPos !== 0) {
+      text = '\n\n' + text;
+    }
+
+    const codeStartLine = sourceFile.getLineAndCharacterOfPosition(sourceFile.getStart()).line;
+    for (let i = 2; i > codeStartLine - annotationEndLine; i--) {
+      text = text + '\n';
+    }
+    return [{ start: annotationEndPos, end: annotationEndPos, replacementText: text }];
+  }
+
+  fixStylesDecoratorGlobal(
+    funcDecl: ts.FunctionDeclaration,
+    calls: ts.CallExpression[],
+    needImport: Set<string>
+  ): Autofix[] | undefined {
+    const block = funcDecl.body;
+    const parameters: ts.MemberName[] = [];
+    const values: ts.Expression[][] = [];
+    const statements = block?.statements;
+    this.getParamsAndValues(statements, parameters, values);
+    const newBlock = Autofixer.createBlock(parameters, values, ts.factory.createIdentifier(INSTANCE_IDENTIFIER));
+    const parameDecl = ts.factory.createParameterDeclaration(
+      undefined,
+      undefined,
+      ts.factory.createIdentifier(INSTANCE_IDENTIFIER),
+      undefined,
+      ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(COMMON_METHOD_IDENTIFIER), undefined),
+      undefined
+    );
+    const returnType = ts.factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword);
+    const newFuncDecl = Autofixer.createFunctionDeclaration(funcDecl, undefined, parameDecl, returnType, newBlock);
+    const MemoDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(DecoratorName.Memo));
+    needImport.add(COMMON_METHOD_IDENTIFIER);
+    needImport.add(DecoratorName.Memo);
+    const text1 = this.printer.printNode(ts.EmitHint.Unspecified, MemoDecorator, funcDecl.getSourceFile());
+    const text2 = this.printer.printNode(ts.EmitHint.Unspecified, newFuncDecl, funcDecl.getSourceFile());
+    const text = text1 + '\n' + text2;
+    const autofix = [{ start: funcDecl.getStart(), end: funcDecl.getEnd(), replacementText: text }];
+    calls.forEach((call) => {
+      const callExpr = ts.factory.createCallExpression(
+        ts.factory.createIdentifier(APPLY_STYLES_IDENTIFIER),
+        undefined,
+        [funcDecl.name as ts.Identifier]
+      );
+      const text = this.printer.printNode(ts.EmitHint.Unspecified, callExpr, call.getSourceFile());
+      autofix.push({ start: call.getStart(), end: call.getEnd(), replacementText: text });
+    });
+    return autofix;
+  }
+
+  fixStylesDecoratorStruct(
+    methodDecl: ts.MethodDeclaration,
+    calls: ts.CallExpression[],
+    needImport: Set<string>
+  ): Autofix[] | undefined {
+    const block = methodDecl.body;
+    const parameters: ts.MemberName[] = [];
+    const values: ts.Expression[][] = [];
+    const statements = block?.statements;
+    this.getParamsAndValues(statements, parameters, values);
+    const newBlock = Autofixer.createBlock(parameters, values, ts.factory.createIdentifier(INSTANCE_IDENTIFIER));
+    const parameDecl = ts.factory.createParameterDeclaration(
+      undefined,
+      undefined,
+      ts.factory.createIdentifier(INSTANCE_IDENTIFIER),
+      undefined,
+      ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(COMMON_METHOD_IDENTIFIER), undefined),
+      undefined
+    );
+    const arrowFunc = ts.factory.createArrowFunction(
+      undefined,
+      undefined,
+      [parameDecl],
+      ts.factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword),
+      ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+      newBlock
+    );
+    const MemoDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(DecoratorName.Memo));
+    needImport.add(COMMON_METHOD_IDENTIFIER);
+    needImport.add(DecoratorName.Memo);
+    const text1 = this.printer.printNode(ts.EmitHint.Unspecified, methodDecl.name, methodDecl.getSourceFile());
+    const text2 = this.printer.printNode(
+      ts.EmitHint.Unspecified,
+      ts.factory.createToken(ts.SyntaxKind.EqualsToken),
+      methodDecl.getSourceFile()
+    );
+    const text3 = this.printer.printNode(ts.EmitHint.Unspecified, MemoDecorator, methodDecl.getSourceFile());
+    const text4 = this.printer.printNode(ts.EmitHint.Unspecified, arrowFunc, methodDecl.getSourceFile());
+    const text = text1 + ' ' + text2 + ' ' + text3 + ' ' + text4;
+    const autofix = [{ start: methodDecl.getStart(), end: methodDecl.getEnd(), replacementText: text }];
+    this.addAutofixFromCalls(calls, autofix, methodDecl.name as ts.Identifier);
+    return autofix;
+  }
+
+  private addAutofixFromCalls(calls: ts.CallExpression[], autofix: Autofix[], methodDeclName: ts.Identifier): void {
+    calls.forEach((call) => {
+      const callExpr = ts.factory.createCallExpression(
+        ts.factory.createIdentifier(APPLY_STYLES_IDENTIFIER),
+        undefined,
+        [ts.factory.createPropertyAccessExpression(ts.factory.createThis(), methodDeclName)]
+      );
+      const text = this.printer.printNode(ts.EmitHint.Unspecified, callExpr, call.getSourceFile());
+      autofix.push({ start: call.getStart(), end: call.getEnd(), replacementText: text });
+    });
+  }
+
+  fixStateStyles(object: ts.ObjectLiteralExpression, needImport: Set<string>): Autofix[] | undefined {
+    const properties = object.properties;
+    const stateStyles: ts.Identifier[] = [];
+    const stateParams: ts.MemberName[][] = [];
+    const stateValues: ts.Expression[][][] = [];
+    for (let i = 0; i < properties.length; i++) {
+      const property = properties[i];
+      const stateStyle = property.name;
+      if (stateStyle && ts.isIdentifier(stateStyle)) {
+        stateStyles.push(stateStyle);
+      }
+      if (!ts.isPropertyAssignment(property)) {
+        return [];
+      }
+      const object = property.initializer;
+      if (!ts.isObjectLiteralExpression(object)) {
+        return [];
+      }
+      const propAssignments = object.properties;
+      const parameters: ts.MemberName[] = [];
+      const values: ts.Expression[][] = [];
+      for (let j = 0; j < propAssignments.length; j++) {
+        const propAssignment = propAssignments[j];
+        const tempParas: ts.MemberName[] = [];
+        const tempVals: ts.Expression[][] = [];
+        this.traverseNodes(propAssignment, tempParas, tempVals);
+        if (
+          ts.isPropertyAssignment(propAssignment) &&
+          ts.isCallExpression(propAssignment.initializer) &&
+          ts.isPropertyAccessExpression(propAssignment.initializer.expression) &&
+          ts.isCallExpression(propAssignment.initializer.expression.expression)
+        ) {
+          tempParas.reverse();
+          tempVals.reverse();
+        }
+        for (let k = 0; k < tempParas.length; k++) {
+          parameters.push(tempParas[k]);
+          values.push(tempVals[k]);
+        }
+      }
+      stateParams.push(parameters);
+      stateValues.push(values);
+    }
+    needImport.add(COMMON_METHOD_IDENTIFIER);
+    needImport.add(DecoratorName.Memo);
+    const text = this.createPropertyText(stateParams, stateValues, stateStyles);
+    return [{ start: object.getStart(), end: object.getEnd(), replacementText: text }];
+  }
+
+  private createPropertyText(
+    stateParams: ts.MemberName[][],
+    sateValues: ts.Expression[][][],
+    stateStyles: ts.Identifier[]
+  ): string {
+    const blocks: ts.Block[] = [];
+    for (let i = 0; i < stateParams.length; i++) {
+      const parameters = stateParams[i];
+      const values = sateValues[i];
+      const block = Autofixer.createBlock(parameters, values, ts.factory.createIdentifier(INSTANCE_IDENTIFIER));
+      blocks.push(block);
+    }
+    const parameterDecl = ts.factory.createParameterDeclaration(
+      undefined,
+      undefined,
+      ts.factory.createIdentifier(INSTANCE_IDENTIFIER),
+      undefined,
+      ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(COMMON_METHOD_IDENTIFIER), undefined),
+      undefined
+    );
+    const voidToken = ts.factory.createToken(ts.SyntaxKind.VoidKeyword);
+    const arrowToken = ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken);
+    const MemoDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(DecoratorName.Memo));
+    const propertyTexts: string[] = [];
+    for (let i = 0; i < blocks.length; i++) {
+      const arrowFunc = ts.factory.createArrowFunction(
+        undefined,
+        undefined,
+        [parameterDecl],
+        voidToken,
+        arrowToken,
+        blocks[i]
+      );
+      const sourceFile = stateStyles[i].getSourceFile();
+      const text1 = this.printer.printNode(ts.EmitHint.Unspecified, stateStyles[i], sourceFile);
+      const text2 = this.printer.printNode(ts.EmitHint.Unspecified, MemoDecorator, sourceFile);
+      const text3 = this.printer.printNode(ts.EmitHint.Unspecified, arrowFunc, sourceFile);
+      const propertyText = text1 + ': ' + text2 + ' ' + text3;
+      propertyTexts.push(propertyText);
+    }
+    let innerText = propertyTexts.join(',\n');
+    innerText = innerText.
+      split('\n').
+      map((line) => {
+        return '    ' + line;
+      }).
+      join('\n');
+    return '{\n' + innerText + '\n}';
+  }
+
+  fixDataObservation(classDecl: ts.ClassDeclaration | undefined): Autofix[] | undefined {
+    if (!classDecl) {
+      return undefined;
+    }
+
+    const observedDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(DecoratorName.Observed));
+    const sourceFile = classDecl.getSourceFile();
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, observedDecorator, sourceFile) + '\n';
+    return [{ start: classDecl.getStart(), end: classDecl.getStart(), replacementText: text }];
   }
 }

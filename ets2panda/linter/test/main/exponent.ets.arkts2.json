@@ -73,6 +73,16 @@
             "suggest": "",
             "rule": "function \"Math.pow()\" behavior for ArkTS differs from Typescript version (arkts-math-pow-standard-diff)",
             "severity": "ERROR"
+        },
+        {
+            "line": 16,
+            "column": 10,
+            "endLine": 16,
+            "endColumn": 14,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "severity": "ERROR"
         }
     ]
 }

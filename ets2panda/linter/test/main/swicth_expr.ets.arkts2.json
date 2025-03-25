@@ -123,6 +123,16 @@
             "suggest": "",
             "rule": "The switch expression type must be of type number,string or enum (arkts-switch-expr)",
             "severity": "ERROR"
+        },
+        {
+            "line": 90,
+            "column": 17,
+            "endLine": 90,
+            "endColumn": 23,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "severity": "ERROR"
         }
     ]
 }
