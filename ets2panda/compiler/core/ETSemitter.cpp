@@ -435,6 +435,9 @@ void ETSEmitter::GenInterfaceRecord(const ir::TSInterfaceDeclaration *interfaceD
             GenClassField(prop->AsClassProperty(), interfaceRecord, external);
         } else if (prop->IsMethodDefinition()) {
             GenInterfaceMethodDefinition(prop->AsMethodDefinition(), external);
+            for (auto *overload : prop->AsMethodDefinition()->Overloads()) {
+                GenInterfaceMethodDefinition(overload, external);
+            }
         }
     }
 

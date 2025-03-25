@@ -186,6 +186,24 @@ void InterfacePropertyDeclarationsPhase::HandleInternalGetterOrSetterMethod(ir::
     }
 }
 
+//  Extracted form 'UpdateInterfaceProperties(...)' to reduce its size.
+static void AddOverload(ir::TSInterfaceBody *const interface, ir::MethodDefinition *method,
+                        ir::MethodDefinition *overload, varbinder::Variable *variable)
+{
+    method->AddOverload(overload);
+    overload->SetParent(method);
+
+    auto flag = ir::ScriptFunctionFlags::OVERLOAD;
+    if (interface->Parent()->IsTSInterfaceDeclaration()) {
+        if (interface->Parent()->AsTSInterfaceDeclaration()->IsDeclare()) {
+            flag = ir::ScriptFunctionFlags::EXTERNAL_OVERLOAD;
+        }
+    }
+
+    overload->Function()->AddFlag(flag);
+    overload->Function()->Id()->SetVariable(variable);
+}
+
 ir::Expression *InterfacePropertyDeclarationsPhase::UpdateInterfaceProperties(checker::ETSChecker *const checker,
                                                                               varbinder::ETSBinder *varbinder,
                                                                               ir::TSInterfaceBody *const interface)
@@ -209,33 +227,35 @@ ir::Expression *InterfacePropertyDeclarationsPhase::UpdateInterfaceProperties(ch
             continue;
         }
         auto getter = GenerateGetterOrSetter(checker, varbinder, prop->AsClassProperty(), false);
-        newPropertyList.emplace_back(getter);
 
         auto methodScope = scope->AsClassScope()->InstanceMethodScope();
         auto name = getter->Key()->AsIdentifier()->Name();
 
         auto *decl = checker->Allocator()->New<varbinder::FunctionDecl>(checker->Allocator(), name, getter);
+        auto *variable = methodScope->AddDecl(checker->Allocator(), decl, ScriptExtension::ETS);
 
-        if (methodScope->AddDecl(checker->Allocator(), decl, ScriptExtension::ETS) == nullptr) {
+        if (variable == nullptr) {
             auto prevDecl = methodScope->FindDecl(name);
             ES2PANDA_ASSERT(prevDecl->IsFunctionDecl());
-            prevDecl->Node()->AsMethodDefinition()->AddOverload(getter);
+
+            auto *const method = prevDecl->Node()->AsMethodDefinition();
+            auto *const var = methodScope->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS);
+
+            AddOverload(interface, method, getter, var);
 
             if (!prop->AsClassProperty()->IsReadonly()) {
                 auto setter = GenerateGetterOrSetter(checker, varbinder, prop->AsClassProperty(), true);
-                newPropertyList.emplace_back(setter);
-                prevDecl->Node()->AsMethodDefinition()->AddOverload(setter);
+                AddOverload(interface, method, setter, var);
             }
-
-            getter->Function()->Id()->SetVariable(
-                methodScope->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS));
             continue;
         }
 
+        getter->Function()->Id()->SetVariable(variable);
+        newPropertyList.emplace_back(getter);
+
         if (!prop->AsClassProperty()->IsReadonly()) {
             auto setter = GenerateGetterOrSetter(checker, varbinder, prop->AsClassProperty(), true);
-            newPropertyList.emplace_back(setter);
-            getter->AddOverload(setter);
+            AddOverload(interface, getter, setter, variable);
         }
         scope->AsClassScope()->InstanceFieldScope()->EraseBinding(name);
     }

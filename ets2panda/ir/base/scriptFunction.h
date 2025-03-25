@@ -290,6 +290,11 @@ public:
         funcFlags_ |= flags;
     }
 
+    void ClearFlag(ir::ScriptFunctionFlags flags) noexcept
+    {
+        funcFlags_ ^= flags;
+    }
+
     void AddModifier(ir::ModifierFlags flags) noexcept
     {
         flags_ |= flags;
