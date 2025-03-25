@@ -143,7 +143,12 @@ void Identifier::Dump(ir::SrcDumper *dumper) const
         dumper->Add("private ");
     }
 
-    dumper->Add(std::string(name_));
+    auto name = std::string(name_);
+    std::string propertyStr = compiler::Signatures::PROPERTY.data();
+    if (UNLIKELY(name.find(propertyStr) != std::string::npos)) {
+        name.replace(name.find(propertyStr), propertyStr.length(), "_$property$_");
+    }
+    dumper->Add(name);
     if (IsOptional()) {
         dumper->Add("?");
     }
