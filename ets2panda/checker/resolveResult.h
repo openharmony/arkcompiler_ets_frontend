@@ -23,6 +23,7 @@ enum class OverrideErrorCode {
     INCOMPATIBLE_RETURN,
     INCOMPATIBLE_TYPEPARAM,
     OVERRIDDEN_WEAKER,
+    OVERRIDDEN_INTERNAL,
 };
 
 enum class ResolvedKind {

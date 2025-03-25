@@ -1398,6 +1398,9 @@ OverrideErrorCode ETSChecker::CheckOverride(Signature *signature, Signature *oth
     if (signature->ProtectionFlag() > other->ProtectionFlag()) {
         return OverrideErrorCode::OVERRIDDEN_WEAKER;
     }
+    if (signature->HasProtectionFlagInternal() != other->HasProtectionFlagInternal()) {
+        return OverrideErrorCode::OVERRIDDEN_INTERNAL;
+    }
 
     return OverrideErrorCode::NO_ERROR;
 }
@@ -1437,6 +1440,12 @@ void ETSChecker::ReportOverrideError(Signature *signature, Signature *overridden
         }
         case OverrideErrorCode::OVERRIDDEN_WEAKER: {
             reason = "overridden method has weaker access privilege.";
+            break;
+        }
+        case OverrideErrorCode::OVERRIDDEN_INTERNAL: {
+            reason =
+                "internal members can only be overridden by internal members, "
+                "and non-internal members cannot be overridden by internal members.";
             break;
         }
         case OverrideErrorCode::INCOMPATIBLE_TYPEPARAM: {

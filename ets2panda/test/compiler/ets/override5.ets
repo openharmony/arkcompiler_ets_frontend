@@ -18,5 +18,5 @@ class A {
 }
 
 class B extends A {
-  internal override fn(): int { return 2; }
+  override fn(): int { return 2; }
 }
