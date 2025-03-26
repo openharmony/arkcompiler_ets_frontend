@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-export { Lsp } from "./public";
-export { Config, Context } from "./types";
-export { unpackString } from "./private"
+export { Lsp } from "./lsp_helper";
+export { DriverHelper } from "./driver_helper";
+export { Es2pandaContextState } from "./generated/Es2pandaEnums"

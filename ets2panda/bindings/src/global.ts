@@ -29,9 +29,15 @@ export class global {
     }
     global._config = config
   }
+
   public static get config(): KNativePointer {
     return global._config ?? throwError('Global.config not initialized')
   }
+
+  public static destroyCfg() {
+    global._config = undefined
+  }
+
   public static configIsInitialized(): boolean {
     return global._config !== undefined
   }
