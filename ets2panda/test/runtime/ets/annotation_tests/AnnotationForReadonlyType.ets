@@ -28,7 +28,6 @@
 }
 
 // annotations for readonly Type
-let readonlyArray: readonly @Message @Anno1 Int[][]
-let readonlyTuple: readonly @Message @Anno1 @Anno2 [Int, String, Float, Object[]]
+let readonlyTuple: readonly @Message @Anno1 @Anno2 [Int, String, Float, FixedArray<Object>]
 
 function main(){}

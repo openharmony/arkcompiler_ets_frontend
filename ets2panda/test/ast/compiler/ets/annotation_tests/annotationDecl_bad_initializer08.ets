@@ -19,15 +19,15 @@ enum Size{S, M, L, XL, XXL}
 @interface MyAnno {
     testProperty1: string = 1
     testProperty2: boolean = "false"
-    testProperty3: int[] = [1.1, 3.14]
+    testProperty3: FixedArray<int> = [1.1, 3.14]
     testProperty4: Color = Size.L
-    testProperty5: Size[] = [Color.GREEN, Color.BLUE]
+    testProperty5: FixedArray<Size> = [Color.GREEN, Color.BLUE]
 }
 
 /* @@? 20:29 Error TypeError: Type 'int' cannot be assigned to type 'String' */
 /* @@? 21:30 Error TypeError: Type '"false"' cannot be assigned to type 'boolean' */
-/* @@? 22:29 Error TypeError: Array element type 'double' is not assignable to explicit type 'int' */
-/* @@? 22:34 Error TypeError: Array element type 'double' is not assignable to explicit type 'int' */
+/* @@? 22:39 Error TypeError: Array element type 'double' is not assignable to explicit type 'int' */
+/* @@? 22:44 Error TypeError: Array element type 'double' is not assignable to explicit type 'int' */
 /* @@? 23:28 Error TypeError: Type 'Size' cannot be assigned to type 'Color' */
-/* @@? 24:30 Error TypeError: Array element type 'Color' is not assignable to explicit type 'Size' */
-/* @@? 24:43 Error TypeError: Array element type 'Color' is not assignable to explicit type 'Size' */
+/* @@? 24:40 Error TypeError: Array element type 'Color' is not assignable to explicit type 'Size' */
+/* @@? 24:53 Error TypeError: Array element type 'Color' is not assignable to explicit type 'Size' */

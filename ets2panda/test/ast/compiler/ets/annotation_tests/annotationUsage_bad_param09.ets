@@ -16,9 +16,9 @@
 @interface MyAnno {
     testProperty1: string
     testProperty2: boolean
-    testProperty3: int[]
+    testProperty3: FixedArray<int>
     testProperty4: Color
-    testProperty5: Size[]
+    testProperty5: FixedArray<Size>
 }
 
 enum Color{GREEN, RED, BLUE}

@@ -116,14 +116,14 @@ TEST_F(MutipleAnnotationsforClass, mutiple_annotations_for_class)
 
         @interface Anno2 {
             favorColor: Color = Color.BLUE
-            color: Color[] = [Color.RED, Color.BLUE]
-            reviewers: string[] = ["Bob", "Jim", "Tom"]
+            color: FixedArray<Color> = [Color.RED, Color.BLUE]
+            reviewers: FixedArray<string> = ["Bob", "Jim", "Tom"]
         }
 
         @interface Anno3 {
-            reviewersAge: number[]
-            testBools: boolean[]
-            mutiArray: number[][]
+            reviewersAge: FixedArray<number>
+            testBools: FixedArray<boolean>
+            mutiArray: FixedArray<FixedArray<number>>
         }
 
         @Anno1({

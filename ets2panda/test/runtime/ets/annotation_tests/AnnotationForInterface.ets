@@ -33,7 +33,7 @@ interface itf0 {
     x4 : boolean
 
     @Anno({name : "2", id : 1})
-    x5 : int[]
+    x5 : FixedArray<int>
 }
 
 @Anno()

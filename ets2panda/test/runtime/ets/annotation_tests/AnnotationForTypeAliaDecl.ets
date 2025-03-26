@@ -29,7 +29,7 @@
 type t1 = int
 
 @Anno()
-type t2 = int[]
+type t2 = FixedArray<int>
 
 @Anno({name : "2"})
 type t3 = string
@@ -44,7 +44,7 @@ type t5 = double
 // Annotation use:
 function main(): void {
     @Anno
-    type t6 = int[]
+    type t6 = FixedArray<int>
 
     @Anno()
     type t7 = int
@@ -57,5 +57,5 @@ function main(): void {
 
     @Anno({name : "2", id : 1})
     @Anno2({name : "ab"})
-    type t10 = string[]
+    type t10 = FixedArray<string>
 }
