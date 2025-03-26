@@ -92,3 +92,6 @@ function_type_inference1.ets
 GenericBridges_01.ets
 GenericBridges_02.ets
 override_for_partial_01.ets
+
+#HEAD FILE NO NEED TO RUN
+import_self_head_tests/B/test.d.ets
