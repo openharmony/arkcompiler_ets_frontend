@@ -582,6 +582,16 @@ void ETSBinder::InsertForeignBinding(ir::AstNode *const specifier, const ir::ETS
     TopScope()->InsertForeignBinding(name, var);
 }
 
+void ETSBinder::InsertOrAssignForeignBinding(ir::AstNode *const specifier, const ir::ETSImportDeclaration *const import,
+                                             const util::StringView &name, Variable *var)
+{
+    if (import->Language().IsDynamic()) {
+        dynamicImportVars_.insert_or_assign(var, DynamicImportData {import, specifier, var});
+    }
+
+    TopScope()->InsertOrAssignForeignBinding(name, var);
+}
+
 std::string RedeclarationErrorMessageAssembler(const Variable *const var, const Variable *const variable,
                                                util::StringView localName)
 {
@@ -881,11 +891,6 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(Span<parser::Program *const> re
         return false;
     }
 
-    // NOTE(rsipka): Needs to remove erase for annotations, because it shouldn't depend on this (#23490 internal issue)
-    if (var->Declaration()->IsAnnotationDecl()) {
-        TopScope()->EraseBinding(imported);
-    }
-
     auto *node = FindNodeInAliasMap(import->ResolvedSource(), imported);
 
     ValidateImportVariable(node != nullptr ? node : var->Declaration()->Node(), import, imported, importPath);
@@ -912,7 +917,7 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(Span<parser::Program *const> re
         return false;
     }
 
-    InsertForeignBinding(importSpecifier, import, localName, var);
+    InsertOrAssignForeignBinding(importSpecifier, import, localName, var);
     return true;
 }
 

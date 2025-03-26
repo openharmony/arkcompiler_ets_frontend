@@ -85,6 +85,16 @@ Scope::InsertResult Scope::InsertBinding(const util::StringView &name, Variable 
     return insertResult;
 }
 
+Scope::InsertResult Scope::InsertOrAssignBinding(const util::StringView &name, Variable *const var)
+{
+    ES2PANDA_ASSERT(var != nullptr);
+    auto insertResult = bindings_.insert_or_assign(name, var);
+    if (insertResult.second) {
+        decls_.emplace_back(var->Declaration());
+    }
+    return insertResult;
+}
+
 Scope::InsertResult Scope::TryInsertBinding(const util::StringView &name, Variable *const var)
 {
     ES2PANDA_ASSERT(var != nullptr);
@@ -579,7 +589,7 @@ Variable *GlobalScope::AddBinding(ArenaAllocator *allocator, Variable *currentVa
 
 Scope::InsertResult GlobalScope::InsertBinding(const util::StringView &name, Variable *const var)
 {
-    return GlobalScope::InsertImpl(name, var, false, false);
+    return GlobalScope::InsertImpl(name, var, InsertBindingFlags::NONE);
 }
 
 Scope::InsertResult GlobalScope::TryInsertBinding(const util::StringView &name, Variable *const var)
@@ -611,12 +621,21 @@ Scope::VariableMap::size_type GlobalScope::EraseBinding(const util::StringView &
 
 Scope::InsertResult GlobalScope::InsertForeignBinding(const util::StringView &name, Variable *const var)
 {
-    return GlobalScope::InsertImpl(name, var, true, false);
+    return GlobalScope::InsertImpl(name, var, InsertBindingFlags::FOREIGN);
 }
 
-Scope::InsertResult GlobalScope::InsertImpl(const util::StringView &name, Variable *const var, const bool isForeign,
-                                            const bool isDynamic)
+Scope::InsertResult GlobalScope::InsertOrAssignForeignBinding(const util::StringView &name, Variable *const var)
 {
+    return GlobalScope::InsertImpl(name, var, InsertBindingFlags::FOREIGN | InsertBindingFlags::ASSIGN);
+}
+
+Scope::InsertResult GlobalScope::InsertImpl(const util::StringView &name, Variable *const var,
+                                            const InsertBindingFlags flags)
+{
+    bool isAssign = (flags & InsertBindingFlags::ASSIGN) != 0;
+    bool isDynamic = (flags & InsertBindingFlags::DYNAMIC) != 0;
+    bool isForeign = (flags & InsertBindingFlags::FOREIGN) != 0;
+
     if (!isDynamic && isForeign && !var->Declaration()->Name().Is(compiler::Signatures::ETS_GLOBAL)) {
         ES2PANDA_ASSERT(var->Declaration()->Name().Utf8().find(compiler::Signatures::ETS_GLOBAL) == std::string::npos);
         const auto *const node = var->Declaration()->Node();
@@ -626,12 +645,17 @@ Scope::InsertResult GlobalScope::InsertImpl(const util::StringView &name, Variab
         }
     }
 
+    if (isAssign) {
+        const auto insRes = Scope::InsertOrAssignBinding(name, var);
+        foreignBindings_.insert_or_assign(name, isForeign);
+        return insRes;
+    }
+
     const auto insRes = Scope::InsertBinding(name, var);
     if (insRes.second) {
         [[maybe_unused]] const bool insertSuccess = std::get<1>(foreignBindings_.emplace(name, isForeign));
         ES2PANDA_ASSERT(insertSuccess);
     }
-
     return insRes;
 }
 
@@ -646,7 +670,7 @@ bool GlobalScope::IsForeignBinding(const util::StringView &name) const
 
 Scope::InsertResult GlobalScope::InsertDynamicBinding(const util::StringView &name, Variable *const var)
 {
-    return InsertImpl(name, var, true, true);
+    return InsertImpl(name, var, InsertBindingFlags::FOREIGN | InsertBindingFlags::DYNAMIC);
 }
 
 // ModuleScope
