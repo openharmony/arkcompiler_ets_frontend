@@ -201,6 +201,7 @@ export enum FaultID {
   NoJsImportAwait,
   InstantiatedJsOjbect,
   InteropCallObjectMethods,
+  InteropJsInstanceof,
   // this should always be last enum
   LAST_ID
 }

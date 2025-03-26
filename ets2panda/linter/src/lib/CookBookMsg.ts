@@ -305,3 +305,4 @@ cookBookTag[339] = 'Interop objects can\'t be indexed directly (arkts-no-js-inde
 cookBookTag[340] = '"Await" operator can\'t be used with interop objects (arkts-no-js-await)';
 cookBookTag[341] = 'ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)';
 cookBookTag[342] = 'Calling methods of JS Object directly in interop is not allowed (arkts-interop-method-call)';
+cookBookTag[343] = 'Usage of "instanceof" operator is not allowed with interop objects (arkts-no-js-instanceof)'; 

@@ -1608,6 +1608,7 @@ export class TypeScriptLinter {
         break;
       case ts.SyntaxKind.InstanceOfKeyword:
         this.processBinaryInstanceOf(node, tsLhsExpr, leftOperandType);
+        this.handleInstanceOfExpression(tsBinaryExpr);
         break;
       case ts.SyntaxKind.InKeyword:
         this.incrementCounters(tsBinaryExpr.operatorToken, FaultID.InOperator);
@@ -6335,4 +6336,20 @@ export class TypeScriptLinter {
       checkAndReportJsImportAwait(expr.expression);
     }
   }
+  
+  handleInstanceOfExpression(node: ts.BinaryExpression): void {
+    if (!this.options.arkts2 || !this.useStatic) {
+      return
+    };
+    const left = node.left;
+    const right = node.right;
+    const getNode = (expr: ts.Expression): ts.Node => {
+      return ts.isPropertyAccessExpression(expr) || ts.isCallExpression(expr) ? expr.expression : expr
+    };
+    const leftExpr = getNode(left);
+    const rightExpr = getNode(right);
+    if(this.tsUtils.isJsImport(leftExpr) || this.tsUtils.isJsImport(rightExpr)) {
+      this.incrementCounters(node, FaultID.InteropJsInstanceof); 
+    }     
+  } 
 }
