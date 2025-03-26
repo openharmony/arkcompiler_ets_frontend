@@ -15,6 +15,23 @@
     ],
     "result": [
         {
+            "line": 16,
+            "column": 7,
+            "endLine": 16,
+            "endColumn": 18,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 616,
+                    "end": 627,
+                    "replacementText": "pi: number = 3.1416"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 19,
             "column": 7,
             "endLine": 19,

@@ -1522,11 +1522,40 @@ export class TypeScriptLinter {
 
     const type = this.tsTypeChecker.getTypeOfSymbolAtLocation(sym, name);
     const typeText = this.tsTypeChecker.typeToString(type);
+    const typeFlags = type.flags;
 
-    if (typeText === 'number' || typeText === 'number[]') {
+    const isEnum = this.isEnumType(type);
+    if (isEnum) {
+      return;
+    }
+    const isNumberLike =
+      typeText === 'number' || typeText === 'number[]' || (typeFlags & ts.TypeFlags.NumberLiteral) !== 0;
+    if (isNumberLike) {
       const autofix = this.autofixer?.fixVariableDeclaration(node);
       this.incrementCounters(node, FaultID.NumericSemantics, autofix);
     }
+  }
+
+  private isEnumType(type: ts.Type): boolean {
+    if (type.flags & ts.TypeFlags.Enum) {
+      return true;
+    }
+
+    if (type.symbol?.flags & ts.SymbolFlags.Enum) {
+      return true;
+    }
+
+    if (type.flags & ts.TypeFlags.EnumLiteral) {
+      return true;
+    }
+
+    if (type.isUnion()) {
+      return type.types.some((t) => {
+        return this.isEnumType(t);
+      });
+    }
+
+    return false;
   }
 
   private checkAssignmentNumericSemanticsFuntion(node: ts.FunctionDeclaration): void {
