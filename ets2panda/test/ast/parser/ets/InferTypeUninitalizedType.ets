@@ -27,7 +27,5 @@ function foo<T, K>(b: A<K>) {
 
 function main() {
     let a = new A<number>(10);
-    /* @@ label */foo(a);
+    foo(a);
 }
-
-/* @@@ label Error TypeError: No matching call signature for foo(A<Double>)  */
