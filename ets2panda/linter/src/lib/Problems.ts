@@ -197,6 +197,7 @@ export enum FaultID {
   BinaryOperations,
   InterOpImportJsDataCompare,
   InteropEqualityJudgment,
+  InterOpImportJsIndex,
   // this should always be last enum
   LAST_ID
 }

@@ -3346,6 +3346,41 @@ export class Autofixer {
     return [{ start: express.getStart(), end: express.getEnd(), replacementText: replacementText }];
   }
 
+  fixInteropArrayElementAccessExpression(express: ts.ElementAccessExpression): Autofix[] | undefined {
+    const statements = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(express.expression, ts.factory.createIdentifier('getPropertyByIndex')),
+      undefined,
+      [express.argumentExpression]
+    );
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, statements, express.getSourceFile());
+    return [{ start: express.getStart(), end: express.getEnd(), replacementText: text }];
+  }
+
+  fixInteropArrayBinaryExpression(express: ts.BinaryExpression): Autofix[] | undefined {
+    const left = express.left as ts.ElementAccessExpression;
+    const right = express.right;
+    const statements = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(left.expression.getText()),
+        ts.factory.createIdentifier('setPropertyByIndex')
+      ),
+      undefined,
+      [
+        left.argumentExpression,
+        ts.factory.createCallExpression(
+          ts.factory.createPropertyAccessExpression(
+            ts.factory.createIdentifier(ES_OBJECT),
+            ts.factory.createIdentifier('wrap')
+          ),
+          undefined,
+          [ts.factory.createIdentifier(right.getText())]
+        )
+      ]
+    );
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, statements, express.getSourceFile());
+    return [{ start: express.getStart(), end: express.getEnd(), replacementText: replacementText }];
+  }
+
   fixInterOpImportJsOnTypeOf(typeofExpress: ts.TypeOfExpression): Autofix[] | undefined {
     const node = typeofExpress.expression;
     const start = typeofExpress.getStart();

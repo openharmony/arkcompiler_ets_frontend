@@ -301,3 +301,4 @@ cookBookTag[337] =
   'Importing data directly from the "JS" module for comparison is not supported (arkts-js-data-compare)';
 cookBookTag[338] =
   '"JS" objects can\'t be used directly as operands of the equality operators (arkts-js-equality-judgment)';
+cookBookTag[339] = 'Interop objects can\'t be indexed directly (arkts-no-js-index)';

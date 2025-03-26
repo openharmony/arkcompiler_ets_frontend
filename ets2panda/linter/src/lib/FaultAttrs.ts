@@ -208,3 +208,4 @@ faultsAttrs[FaultID.InteropNoHaveNum] = new FaultAttributes(335);
 faultsAttrs[FaultID.BinaryOperations] = new FaultAttributes(336);
 faultsAttrs[FaultID.InterOpImportJsDataCompare] = new FaultAttributes(337);
 faultsAttrs[FaultID.InteropEqualityJudgment] = new FaultAttributes(338);
+faultsAttrs[FaultID.InterOpImportJsIndex] = new FaultAttributes(339);
