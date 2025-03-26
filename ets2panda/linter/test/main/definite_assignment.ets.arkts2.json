@@ -33,6 +33,16 @@
             "suggest": "",
             "rule": "Definite assignment assertions are not supported (arkts-no-definite-assignment)",
             "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 15,
+            "endLine": 48,
+            "endColumn": 21,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "severity": "ERROR"
         }
     ]
 }

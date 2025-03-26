@@ -15,26 +15,6 @@
     ],
     "result": [
         {
-            "line": 29,
-            "column": 3,
-            "endLine": 29,
-            "endColumn": 7,
-            "problem": "FunctionContainsThis",
-            "suggest": "",
-            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 30,
-            "column": 3,
-            "endLine": 30,
-            "endColumn": 7,
-            "problem": "FunctionContainsThis",
-            "suggest": "",
-            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
-            "severity": "ERROR"
-        },
-        {
             "line": 31,
             "column": 3,
             "endLine": 31,
@@ -95,9 +75,29 @@
             "severity": "ERROR"
         },
         {
-            "line": 40,
+            "line": 37,
+            "column": 3,
+            "endLine": 37,
+            "endColumn": 7,
+            "problem": "FunctionContainsThis",
+            "suggest": "",
+            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 3,
+            "endLine": 38,
+            "endColumn": 7,
+            "problem": "FunctionContainsThis",
+            "suggest": "",
+            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 42,
             "column": 10,
-            "endLine": 40,
+            "endLine": 42,
             "endColumn": 14,
             "problem": "FunctionContainsThis",
             "suggest": "",
@@ -105,9 +105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 28,
+            "line": 30,
             "column": 44,
-            "endLine": 28,
+            "endLine": 30,
             "endColumn": 48,
             "problem": "ThisType",
             "suggest": "",
@@ -115,9 +115,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 43,
+            "line": 45,
             "column": 61,
-            "endLine": 43,
+            "endLine": 45,
             "endColumn": 65,
             "problem": "ThisType",
             "suggest": "",

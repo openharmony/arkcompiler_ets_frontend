@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 19,
+            "line": 21,
             "column": 3,
-            "endLine": 19,
+            "endLine": 21,
             "endColumn": 7,
             "problem": "FunctionContainsThis",
             "suggest": "",
@@ -25,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
+            "line": 22,
             "column": 10,
-            "endLine": 20,
+            "endLine": 22,
             "endColumn": 14,
             "problem": "FunctionContainsThis",
             "suggest": "",
@@ -35,9 +35,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 17,
+            "line": 19,
             "column": 26,
-            "endLine": 17,
+            "endLine": 19,
             "endColumn": 45,
             "problem": "InvalidIdentifier",
             "suggest": "",

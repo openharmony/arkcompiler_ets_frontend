@@ -167,6 +167,9 @@ export enum FaultID {
   AnimatableExtendDecoratorTransform,
   NoDuplicateFunctionName,
   OhmUrlFullPath,
+  UIInterfaceImport,
+  StylesDecoratorNotSupported,
+  DataObservation,
   // this should always be last enum
   LAST_ID
 }

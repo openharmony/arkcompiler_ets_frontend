@@ -25,7 +25,7 @@ struct MyCard {
 
 const mycolor: string = "#ffffff"
 
-@Extend(Column)
+@Extend(Row)
 function cardStyle()
 {
   .backgroundColor("#ffff00")

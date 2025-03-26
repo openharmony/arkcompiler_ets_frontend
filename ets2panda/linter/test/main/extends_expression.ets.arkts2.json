@@ -73,6 +73,16 @@
             "suggest": "",
             "rule": "Use \"class\" instead of a type with constructor signature (arkts-no-ctor-signatures-type)",
             "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 36,
+            "endLine": 55,
+            "endColumn": 45,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "severity": "ERROR"
         }
     ]
 }
