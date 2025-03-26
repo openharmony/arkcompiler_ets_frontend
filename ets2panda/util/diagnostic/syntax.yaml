@@ -1155,7 +1155,7 @@ syntax:
 - name: INVALID_SHORTHAND_PROPERTY_INITIALIZER
   id: 286
   message: "Invalid shorthand property initializer."
-  
+
 - name: RETURN_WITH_VALUE
   id: 287
   message: "Unexpected return value."

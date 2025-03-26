@@ -1741,6 +1741,18 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
         return Relation()->IsIdenticalTo(r2, r1);
     }
 
+    auto const hasThisReturnType = [](Signature *s) {
+        auto *retAnn = s->Function()->ReturnTypeAnnotation();
+        return retAnn != nullptr && retAnn->IsTSThisType();
+    };
+    // - If S2 is a 'this' type(polymorphic) and S1 must be also 'this'
+    // If the overridden method (s2) has a 'this' return type, then the overriding method (s1) must also have it.
+    bool s1HasThisType = hasThisReturnType(s1);
+    bool s2HasThisType = hasThisReturnType(s2);
+    if (s1HasThisType != s2HasThisType) {
+        return false;
+    }
+
     // - If R1 is a reference type then R1, adapted to the type parameters of d2 (link to generic methods), is a
     //   subtype of R2.
     ES2PANDA_ASSERT(IsReferenceType(r1));
