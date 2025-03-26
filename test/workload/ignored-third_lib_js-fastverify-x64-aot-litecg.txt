@@ -1,5 +1,2 @@
 #19251
 pdfview_test
-
-#19247
-jsDiff_test
