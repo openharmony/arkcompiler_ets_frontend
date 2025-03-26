@@ -37,7 +37,7 @@ function main(): void {
 }
 
 /* @@? 25:43 Error SyntaxError: Unexpected token, expected '('. */
-/* @@? 25:43 Error TypeError: Type '(_: Promise<void>) => Promise<undefined>' cannot be assigned to type '() => Promise<void>' */
+/* @@? 25:43 Error TypeError: Type '(_: Promise<void>) => Promise<void>' cannot be assigned to type '() => Promise<void>' */
 /* @@? 25:44 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 25:60 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 31:11 Error TypeError: Expected 1 arguments, got 0. */
