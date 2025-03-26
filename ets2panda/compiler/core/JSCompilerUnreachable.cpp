@@ -193,6 +193,11 @@ void JSCompiler::Compile([[maybe_unused]] const ir::ETSUnionType *node) const
     ES2PANDA_UNREACHABLE();
 }
 
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSKeyofType *expr) const
+{
+    ES2PANDA_UNREACHABLE();
+}
+
 void JSCompiler::Compile([[maybe_unused]] const ir::ETSWildcardType *expr) const
 {
     ES2PANDA_UNREACHABLE();

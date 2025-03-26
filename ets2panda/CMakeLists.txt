@@ -389,6 +389,7 @@ set(ES2PANDA_LIB_SRC
   ir/as/prefixAssertionExpression.cpp
   ir/ets/etsClassLiteral.cpp
   ir/ets/etsFunctionType.cpp
+  ir/ets/etsKeyofType.cpp
   ir/ets/etsLaunchExpression.cpp
   ir/ets/etsNewArrayInstanceExpression.cpp
   ir/ets/etsNewClassInstanceExpression.cpp

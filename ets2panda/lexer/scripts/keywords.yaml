@@ -298,7 +298,7 @@ keywords:
 
   - name: 'keyof'
     token: KEYW_KEYOF
-    keyword_like: [ts]
+    keyword_like: [ts, ets]
 
   - name: 'let'
     token: KEYW_LET
