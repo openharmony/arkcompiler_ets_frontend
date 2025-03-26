@@ -1528,10 +1528,9 @@ bool ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, ir::MemberE
     if (!exprType->HasTypeFlag(TypeFlag::CONSTANT)) {
         if (exprType->IsETSObjectType() && (unboxedExpressionType != nullptr)) {
             return ValidateTupleIndexFromEtsObject(tuple, expr);
-        } else {
-            LogError(diagnostic::TUPLE_INDEX_NONCONST, {}, expr->Property()->Start());
-            return false;
         }
+        LogError(diagnostic::TUPLE_INDEX_NONCONST, {}, expr->Property()->Start());
+        return false;
     }
 
     if (!exprType->HasTypeFlag(TypeFlag::ETS_ARRAY_INDEX | TypeFlag::LONG)) {
@@ -1936,6 +1935,7 @@ ETSFunctionType *ETSChecker::ResolveAccessorTypeByFlag(ir::MemberExpression *con
         }
 
         if (funcType != nullptr && funcType->IsExtensionAccessorType() &&
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             FindRelativeExtensionGetter(memberExpr, funcType) != nullptr) {
             finalRes = funcType;
         }
@@ -1957,6 +1957,7 @@ ETSFunctionType *ETSChecker::ResolveAccessorTypeByFlag(ir::MemberExpression *con
         }
 
         if (funcType != nullptr && funcType->IsExtensionAccessorType() &&
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             FindRelativeExtensionSetter(memberExpr, funcType) != nullptr) {
             finalRes = funcType;
         }
@@ -1978,6 +1979,7 @@ std::vector<ResolveResult *> ETSChecker::ValidateAccessor(ir::MemberExpression *
     auto *funcType = eAcc != nullptr ? eAcc->TsType()->AsETSFunctionType() : nullptr;
     auto *propType = oAcc != nullptr ? oAcc->TsType()->AsETSFunctionType() : nullptr;
     searchFlag = memberExpr->Parent()->IsUpdateExpression() ? searchFlag | PropertySearchFlags::IS_SETTER : searchFlag;
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     ETSFunctionType *finalRes = ResolveAccessorTypeByFlag(memberExpr, propType, funcType, searchFlag);
     std::vector<ResolveResult *> resolveRes = {};
     if (finalRes == nullptr) {
@@ -2101,6 +2103,7 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
     // Note: validate originalAccessor and extensionAccessor.
     if ((IsVariableGetterSetter(prop) || IsVariableExtensionAccessor(globalFunctionVar)) &&
         ((searchFlag & PropertySearchFlags::IS_GETTER) != 0 || (searchFlag & PropertySearchFlags::IS_SETTER) != 0)) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         return ValidateAccessor(const_cast<ir::MemberExpression *>(memberExpr), prop, globalFunctionVar, searchFlag);
     }
 

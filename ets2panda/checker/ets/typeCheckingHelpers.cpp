@@ -1425,8 +1425,9 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
             LogError(diagnostic::LAMBDA_TYPE_MISMATCH, {argumentType, parameterType, index + 1},
                      arrowFuncExpr->Start());
             rc = false;
-        } else if (lambda->Signature() && !lambda->HasReturnStatement()) {
+        } else if ((lambda->Signature() != nullptr) && !lambda->HasReturnStatement()) {
             //  Need to check void return type here if there are no return statement(s) in the body.
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             if (!AssignmentContext(Relation(), AllocNode<ir::Identifier>(Allocator()), GlobalVoidType(),
                                    lambda->Signature()->ReturnType(), lambda->Start(), {},
                                    checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)

@@ -165,8 +165,8 @@ private:
     ArenaVector<Signature *> extensionAccessorSigs_;
     util::StringView const name_;
     util::StringView const assemblerName_;
-    ETSFunctionType *invokeToArrowSignature_;
-    ETSObjectType *arrowToFuncInterface_;
+    ETSFunctionType *invokeToArrowSignature_ {};
+    ETSObjectType *arrowToFuncInterface_ {};
     Signature *helperSignature_ {};
 };
 }  // namespace ark::es2panda::checker

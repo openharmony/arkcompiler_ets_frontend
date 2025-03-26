@@ -119,10 +119,10 @@ public:
     }
 
 private:
-    std::vector<util::Plugin> const plugins_;
-    compiler::CompilerImpl *compiler_;
-    util::ThrowableDiagnostic error_;
-    ScriptExtension ext_;
+    std::vector<util::Plugin> const plugins_ {};
+    compiler::CompilerImpl *compiler_ {};
+    util::ThrowableDiagnostic error_ {};
+    ScriptExtension ext_ {};
 };
 
 // g_diagnosticEngine used only for flush diagnostic before unexpected process termination:

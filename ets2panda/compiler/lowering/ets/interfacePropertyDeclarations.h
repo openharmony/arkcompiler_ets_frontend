@@ -28,8 +28,8 @@ public:
     OptionalInterfacePropertyCollector() = default;
     ~OptionalInterfacePropertyCollector() = default;
 
-    OptionalInterfacePropertyCollector(const OptionalInterfacePropertyCollector &) = delete;
-    OptionalInterfacePropertyCollector &operator=(const OptionalInterfacePropertyCollector &) = delete;
+    NO_MOVE_SEMANTIC(OptionalInterfacePropertyCollector);
+    NO_COPY_SEMANTIC(OptionalInterfacePropertyCollector);
 
     std::string &GetInterfaceId()
     {
@@ -38,7 +38,7 @@ public:
 
     void SetInterfaceId(std::string id)
     {
-        interfaceId_ = id;
+        interfaceId_ = std::move(id);
     }
 
     InterfacePropertyType &GetInterfaceProperty(const std::string &id)
@@ -47,21 +47,21 @@ public:
         return interfaceProperties_[id];
     }
 
-    void InsertInterfaceProperty(std::string property)
+    void InsertInterfaceProperty(const std::string &property)
     {
-        ES2PANDA_ASSERT(interfaceId_ != "" && interfaceProperties_.count(interfaceId_));
+        ES2PANDA_ASSERT(!interfaceId_.empty() && (interfaceProperties_.count(interfaceId_) != 0U));
         interfaceProperties_[interfaceId_].insert(property);
     }
 
     void InitInterfacePropertyMap()
     {
-        ES2PANDA_ASSERT(interfaceId_ != "");
+        ES2PANDA_ASSERT(!interfaceId_.empty());
         interfaceProperties_.insert({interfaceId_, {}});
     }
 
     bool IsInterfaceHasProperty(const std::string &interId)
     {
-        return interfaceProperties_.count(interId);
+        return interfaceProperties_.count(interId) != 0U;
     }
 
     InterfacePropertyType &GetInterfaceParent(const std::string &id)
@@ -70,25 +70,25 @@ public:
         return interfaceParents_[id];
     }
 
-    void InsertInterfaceParent(std::string parent)
+    void InsertInterfaceParent(const std::string &parent)
     {
-        ES2PANDA_ASSERT(interfaceId_ != "" && interfaceParents_.count(interfaceId_));
+        ES2PANDA_ASSERT(!interfaceId_.empty() && (interfaceParents_.count(interfaceId_) != 0U));
         interfaceParents_[interfaceId_].insert(parent);
     }
 
     void InitInterfaceParentMap()
     {
-        ES2PANDA_ASSERT(interfaceId_ != "");
+        ES2PANDA_ASSERT(!interfaceId_.empty());
         interfaceParents_.insert({interfaceId_, {}});
     }
 
     bool IsParentExists(const std::string &interId)
     {
-        return interfaceParents_.count(interId);
+        return interfaceParents_.count(interId) != 0U;
     }
 
 private:
-    std::string interfaceId_ = "";
+    std::string interfaceId_ {};
     InterfacePropertyMapType interfaceProperties_ {};
     InterfacePropertyMapType interfaceParents_ {};
 };

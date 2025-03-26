@@ -21,8 +21,8 @@
 namespace ark::es2panda::util {
 
 constexpr size_t ALLOWED_EXTENSIONS_SIZE = 8;
-static std::array<std::string, ALLOWED_EXTENSIONS_SIZE> supportedExtensions = {".d.ets", ".ets", ".d.sts", ".sts",
-                                                                               ".d.ts",  ".ts",  ".js",    ".abc"};
+constexpr std::array<std::string_view, ALLOWED_EXTENSIONS_SIZE> SUPPORTED_EXTENSIONS = {
+    ".d.ets", ".ets", ".d.sts", ".sts", ".d.ts", ".ts", ".js", ".abc"};
 Path::Path() = default;
 
 Path::Path(const util::StringView &absolutePath, ArenaAllocator *allocator)
@@ -30,7 +30,7 @@ Path::Path(const util::StringView &absolutePath, ArenaAllocator *allocator)
     Initializer(absolutePath.Mutf8(), allocator);
 }
 
-static bool EndsWith(const std::string &str, const std::string &suffix)
+static bool EndsWith(std::string_view str, std::string_view suffix)
 {
     if (str.length() < suffix.length()) {
         return false;
@@ -67,8 +67,8 @@ void Path::InitializeFileName()
         return;
     }
 
-    for (auto &extension : supportedExtensions) {
-        if (EndsWith(fileNameWithExtension_.Mutf8(), extension)) {
+    for (auto extension : SUPPORTED_EXTENSIONS) {
+        if (EndsWith(fileNameWithExtension_.Utf8(), extension)) {
             fileName_ = fileNameWithExtension_.Substr(0, fileNameWithExtension_.Length() - extension.length());
             return;
         }
@@ -94,7 +94,7 @@ void Path::InitializeFileExtension()
         return;
     }
 
-    for (auto &extension : supportedExtensions) {
+    for (auto &extension : SUPPORTED_EXTENSIONS) {
         if (EndsWith(path_.Mutf8(), extension)) {
             fileExtension_ = util::UString(extension, allocator_).View();
             return;

@@ -1335,13 +1335,13 @@ void ParserImpl::LogSyntaxError(const util::DiagnosticMessageParams &list, const
 void ParserImpl::LogError(const diagnostic::DiagnosticKind &diagnostic,
                           const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &pos)
 {
-    diagnosticEngine_.LogDiagnostic(diagnostic, std::move(diagnosticParams), pos);
+    diagnosticEngine_.LogDiagnostic(diagnostic, diagnosticParams, pos);
 }
 
 void ParserImpl::LogError(const diagnostic::DiagnosticKind &diagnostic,
                           const util::DiagnosticMessageParams &diagnosticParams)
 {
-    LogError(diagnostic, std::move(diagnosticParams), lexer_->GetToken().Start());
+    LogError(diagnostic, diagnosticParams, lexer_->GetToken().Start());
 }
 
 void ParserImpl::LogGenericError(std::string_view errorMessage)

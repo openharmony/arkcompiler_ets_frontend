@@ -637,11 +637,13 @@ void ETSChecker::CreatePartialTypeInterfaceMethods(ir::TSInterfaceDeclaration *c
         ES2PANDA_ASSERT((method->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD) == 0U);
 
         if (method->Function()->IsGetter() || method->Function()->IsSetter()) {
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             addNullishAccessor(CreateNullishAccessor(method, partialInterface));
         }
 
         for (auto *overload : method->Overloads()) {
             if (overload->Function()->IsGetter() || overload->Function()->IsSetter()) {
+                // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
                 addNullishAccessor(CreateNullishAccessor(overload, partialInterface));
             }
         }

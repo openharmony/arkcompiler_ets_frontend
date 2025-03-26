@@ -135,7 +135,7 @@ SourceLocation SourcePosition::ToLocation() const
 
 const parser::Program *SourcePosition::Program() const
 {
-    if (program_) {
+    if (program_ != nullptr) {
         ES2PANDA_ASSERT(!program_->IsDied());
     }
     return program_;
@@ -143,7 +143,7 @@ const parser::Program *SourcePosition::Program() const
 
 const parser::Program *SourceLocation::Program() const
 {
-    if (program_) {
+    if (program_ != nullptr) {
         ES2PANDA_ASSERT(!program_->IsDied());
     }
     return program_;

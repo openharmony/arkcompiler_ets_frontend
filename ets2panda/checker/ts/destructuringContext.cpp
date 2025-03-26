@@ -531,6 +531,7 @@ void ArrayDestructuringContext::Start()
 
 void ObjectDestructuringContext::ValidateInferredType()
 {
+    // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
     if (!inferredType_->IsObjectType()) {
         return;
     }

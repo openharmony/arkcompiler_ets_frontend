@@ -70,7 +70,7 @@ static BigIntLowering g_bigintLowering;
 static StringConstructorLowering g_stringConstructorLowering;
 static ConstantExpressionLowering g_constantExpressionLowering;
 static ConstStringToCharLowering g_constStringToCharLowering;
-static InterfacePropertyDeclarationsPhase g_interfacePropDeclPhase;
+static InterfacePropertyDeclarationsPhase g_interfacePropDeclPhase;  // NOLINT(fuchsia-statically-constructed-objects)
 static EnumLoweringPhase g_enumLoweringPhase;
 static EnumPostCheckLoweringPhase g_enumPostCheckLoweringPhase;
 static SpreadConstructionPhase g_spreadConstructionPhase;
@@ -216,7 +216,7 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
 #endif
 
     if (!Perform(ctx, program)) {
-        return false;
+        return false;  // NOLINT(readability-simplify-boolean-expr)
     }
 
 #ifndef NDEBUG

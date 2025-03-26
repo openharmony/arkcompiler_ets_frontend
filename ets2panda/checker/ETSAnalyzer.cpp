@@ -1090,7 +1090,7 @@ std::tuple<Type *, ir::Expression *> ETSAnalyzer::CheckAssignmentExprOperatorTyp
             }
 
             if (expr->Right()->IsArrowFunctionExpression() && leftType->IsETSArrowType() &&
-                leftType->AsETSFunctionType()->CallSignaturesOfMethodOrArrow().size() > 0) {
+                !leftType->AsETSFunctionType()->CallSignaturesOfMethodOrArrow().empty()) {
                 checker->TryInferTypeForLambdaTypeAlias(expr, leftType->AsETSFunctionType());
             }
 
@@ -1727,7 +1727,7 @@ static bool ValidatePreferredType(ir::ObjectExpression *expr, ETSChecker *checke
 static void SetTypeforRecordProperties(const ir::ObjectExpression *expr, checker::ETSObjectType *objType,
                                        ETSChecker *checker)
 {
-    const auto recordProperties = expr->Properties();
+    const auto &recordProperties = expr->Properties();
     auto typeArguments = objType->TypeArguments();
     auto *const valueType = typeArguments[1];  //  Record<K, V>  type arguments
 

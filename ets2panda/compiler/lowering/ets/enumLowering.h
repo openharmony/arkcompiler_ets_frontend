@@ -92,7 +92,7 @@ private:
 
     void ProcessEnumClassDeclaration(ir::TSEnumDeclaration *const enumDecl, const DeclarationFlags &flags,
                                      ir::ClassDeclaration *enumClassDecl);
-    template <ir::PrimitiveType Type>
+    template <ir::PrimitiveType TYPE>
     ir::ClassDeclaration *CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl,
                                                                 const DeclarationFlags flags);
     ir::ClassDeclaration *CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl,
@@ -104,7 +104,7 @@ private:
                                             ElementMaker &&elementMaker);
     void CreateEnumItemFields(const ir::TSEnumDeclaration *const enumDecl, ir::ClassDefinition *enumClass);
     ir::Identifier *CreateEnumNamesArray(const ir::TSEnumDeclaration *const enumDecl, ir::ClassDefinition *enumClass);
-    template <ir::PrimitiveType Type>
+    template <ir::PrimitiveType TYPE>
     ir::Identifier *CreateEnumValuesArray(const ir::TSEnumDeclaration *const enumDecl, ir::ClassDefinition *enumClass);
     ir::Identifier *CreateEnumStringValuesArray(const ir::TSEnumDeclaration *const enumDecl,
                                                 ir::ClassDefinition *enumClass);

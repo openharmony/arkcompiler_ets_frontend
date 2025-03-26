@@ -16,7 +16,6 @@
 #include "ETSparser.h"
 #include "ETSNolintParser.h"
 #include <utility>
-#include "generated/diagnostic.h"
 #include "util/es2pandaMacros.h"
 #include "parser/parserFlags.h"
 #include "parser/parserStatusContext.h"
@@ -398,6 +397,7 @@ ir::ModifierFlags ETSParser::ParseClassMethodModifiers(bool seenStatic)
 
 ir::TypeNode *ETSParser::ConvertToOptionalUnionType(ir::TypeNode *typeAnno)
 {
+    // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
     if (!typeAnno->IsETSUnionType()) {
         ArenaVector<ir::TypeNode *> types(Allocator()->Adapter());
         types.push_back(typeAnno);

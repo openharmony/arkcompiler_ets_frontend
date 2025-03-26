@@ -100,7 +100,7 @@ bool Program::NodeContainsETSNolint(const ir::AstNode *node, ETSWarnings warning
     return nodeEtsnolints->second.find(warning) != nodeEtsnolints->second.end();
 }
 
-Program::~Program()
+Program::~Program()  // NOLINT(modernize-use-equals-default)
 {
 #ifndef NDEBUG
     poisonValue_ = 0;

@@ -665,8 +665,7 @@ endif()
 panda_add_sanitizers(TARGET es2panda-lib SANITIZERS
   ${PANDA_SANITIZERS_LIST})
 
-# artifacts size with sanitizers and enabled precompiled headers is too big
-if(NOT PANDA_USE_PREBUILT_TARGETS AND NOT PANDA_SANITIZERS_LIST)
+if(ES2PANDA_ENABLE_PCH AND NOT PANDA_USE_PREBUILT_TARGETS)
   target_precompile_headers(es2panda-lib
       PRIVATE
           util/ustring.h
