@@ -3130,8 +3130,47 @@ export class TypeScriptLinter {
       this.handleIndexNegative(node);
     }
     this.checkArrayIndexType(tsElemAccessBaseExprType, tsElemAccessArgType, tsElementAccessExpr);
-
     this.fixJsImportElementAccessExpression(tsElementAccessExpr);
+    this.checkInterOpImportJsIndex(tsElementAccessExpr);
+  }
+
+  private checkInterOpImportJsIndex(expr: ts.ElementAccessExpression): void {
+    if (!this.useStatic || !this.options.arkts2) {
+      return;
+    }
+
+    const exprSym = this.tsUtils.trueSymbolAtLocation(expr.expression);
+    if (!exprSym) {
+      return;
+    }
+
+    const exprDecl = TsUtils.getDeclaration(exprSym);
+    if (!exprDecl || !ts.isVariableDeclaration(exprDecl)) {
+      return;
+    }
+
+    const initializer = exprDecl.initializer;
+    if (!initializer || !ts.isPropertyAccessExpression(initializer)) {
+      return;
+    }
+
+    const initSym = this.tsUtils.trueSymbolAtLocation(initializer.expression);
+    if (!initSym) {
+      return;
+    }
+
+    const initDecl = TsUtils.getDeclaration(initSym);
+    if (!initDecl || !initDecl.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
+      return;
+    }
+
+    if (ts.isBinaryExpression(expr.parent) && expr.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken) {
+      const autofix = this.autofixer?.fixInteropArrayBinaryExpression(expr.parent);
+      this.incrementCounters(expr.parent, FaultID.InterOpImportJsIndex, autofix);
+    } else {
+      const autofix = this.autofixer?.fixInteropArrayElementAccessExpression(expr);
+      this.incrementCounters(expr, FaultID.InterOpImportJsIndex, autofix);
+    }
   }
 
   private checkArrayIndexType(exprType: ts.Type, argType: ts.Type, expr: ts.ElementAccessExpression): void {
