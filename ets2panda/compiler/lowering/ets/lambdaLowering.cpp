@@ -1095,7 +1095,7 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
     */
     for (auto *arg : call->Arguments()) {
         auto boxingFlags = arg->GetBoxingUnboxingFlags();
-        Recheck(varBinder, checker, arg);
+        Recheck(ctx->phaseManager, varBinder, checker, arg);
         arg->SetBoxingUnboxingFlags(boxingFlags);
     }
 

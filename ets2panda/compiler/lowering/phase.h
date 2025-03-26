@@ -21,6 +21,9 @@
 
 namespace ark::es2panda::compiler {
 
+constexpr int32_t INVALID_PHASE_ID = -2;
+constexpr int32_t PARSER_PHASE_ID = -1;
+
 class Phase {
 public:
     /* If Apply returns false, processing is stopped. */
@@ -39,6 +42,10 @@ public:
     {
         return true;
     }
+
+private:
+    friend class PhaseManager;
+    int32_t id_ {INVALID_PHASE_ID};
 };
 
 /* Phase that modifies declarations. Need to process external dependencies */
@@ -83,9 +90,74 @@ class PhaseForBodies : public Phase {
     }
 };
 
-std::vector<Phase *> GetPhaseList(ScriptExtension ext);
-std::vector<Phase *> GetRebindPhase();
-std::vector<Phase *> GetRecheckPhase();
+class PhaseManager {
+public:
+    PhaseManager(ScriptExtension ext, ArenaAllocator *allocator) : allocator_ {allocator}, ext_ {ext}
+    {
+        InitializePhases();
+        Restart();
+    }
+
+    int32_t PreviousPhaseId() const
+    {
+        ES2PANDA_ASSERT(prev_ != INVALID_PHASE_ID);
+        return prev_;
+    }
+
+    int32_t CurrentPhaseId() const
+    {
+        return curr_;
+    }
+
+    void SetCurrentPhaseId(int32_t phaseId)
+    {
+        prev_ = curr_;
+        curr_ = phaseId;
+    }
+
+    ArenaAllocator *Allocator() const
+    {
+        return allocator_;
+    }
+
+    bool IsInitialized() const
+    {
+        return allocator_ != nullptr && ext_ != ScriptExtension::INVALID;
+    }
+
+    void Restart()
+    {
+        prev_ = INVALID_PHASE_ID;
+        curr_ = PARSER_PHASE_ID;
+        next_ = PARSER_PHASE_ID + 1;
+        ES2PANDA_ASSERT(next_ == 0);
+    }
+
+    Phase *NextPhase()
+    {
+        if (next_ < static_cast<int32_t>(phases_.size())) {
+            return phases_[next_++];
+        }
+        return nullptr;
+    }
+
+    std::vector<Phase *> AllPhases();
+    std::vector<Phase *> RebindPhases();
+    std::vector<Phase *> RecheckPhases();
+
+private:
+    void InitializePhases();
+    int32_t prev_ {INVALID_PHASE_ID};
+    int32_t curr_ {INVALID_PHASE_ID};
+    int32_t next_ {INVALID_PHASE_ID};
+
+    ArenaAllocator *allocator_ {nullptr};
+    ScriptExtension ext_ {ScriptExtension::INVALID};
+    std::vector<Phase *> phases_;
+};
+
+PhaseManager *GetPhaseManager();
+
 }  // namespace ark::es2panda::compiler
 
 #endif

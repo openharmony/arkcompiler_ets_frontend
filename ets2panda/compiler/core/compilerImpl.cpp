@@ -121,15 +121,14 @@ static bool CheckOptionsAfterPhase(const util::Options &options, const parser::P
     return options.GetExitAfterPhase() == name;
 }
 
-static bool RunVerifierAndPhases(public_lib::Context &context, const std::vector<Phase *> &phases,
-                                 parser::Program &program)
+static bool RunVerifierAndPhases(public_lib::Context &context, parser::Program &program)
 {
     const auto &options = *context.config->options;
     const auto verifierEachPhase = options.IsAstVerifierEachPhase();
 
     ast_verifier::ASTVerifier verifier(context, program);
 
-    for (auto *phase : phases) {
+    while (auto phase = context.phaseManager->NextPhase()) {
         const auto name = std::string {phase->Name()};
         if (options.GetSkipPhases().count(name) > 0) {
             continue;
@@ -163,11 +162,11 @@ static bool RunVerifierAndPhases(public_lib::Context &context, const std::vector
     return true;
 }
 
-static bool RunPhases(public_lib::Context &context, const std::vector<Phase *> &phases, parser::Program &program)
+static bool RunPhases(public_lib::Context &context, parser::Program &program)
 {
     const auto &options = *context.config->options;
 
-    for (auto *phase : phases) {
+    while (auto phase = context.phaseManager->NextPhase()) {
         const auto name = std::string {phase->Name()};
         if (options.GetSkipPhases().count(name) > 0) {
             continue;
@@ -200,13 +199,10 @@ static void CreateDebuggerEvaluationPlugin(checker::ETSChecker &checker, ArenaAl
     }
 }
 
-using EmitCb = std::function<pandasm::Program *(public_lib::Context *)>;
-using PhaseListGetter = std::function<std::vector<compiler::Phase *>(ScriptExtension)>;
-
 template <typename Parser, typename VarBinder, typename Checker, typename Analyzer, typename AstCompiler,
           typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter>
-static pandasm::Program *Compile(const CompilationUnit &unit, const PhaseListGetter &getPhases,
-                                 CompilerImpl *compilerImpl)
+// CC-OFFNXT(huge_method, G.FUN.01-CPP) solid logic
+static pandasm::Program *Compile(const CompilationUnit &unit, CompilerImpl *compilerImpl)
 {
     ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
     auto program = parser::Program::NewProgram<VarBinder>(&allocator);
@@ -214,6 +210,7 @@ static pandasm::Program *Compile(const CompilationUnit &unit, const PhaseListGet
         Parser(&program, unit.options, unit.diagnosticEngine, static_cast<parser::ParserStatus>(unit.rawParserStatus));
     auto checker = Checker(unit.diagnosticEngine);
     auto analyzer = Analyzer(&checker);
+    auto phaseManager = compiler::PhaseManager(unit.ext, &allocator);
     checker.SetAnalyzer(&analyzer);
 
     auto *varbinder = program.VarBinder();
@@ -238,6 +235,7 @@ static pandasm::Program *Compile(const CompilationUnit &unit, const PhaseListGet
     context.parserProgram = &program;
     context.codeGenCb = MakeCompileJob<CodeGen, RegSpiller, FunctionEmitter, Emitter, AstCompiler>();
     context.diagnosticEngine = &unit.diagnosticEngine;
+    context.phaseManager = &phaseManager;
 
     auto emitter = Emitter(&context);
     context.emitter = &emitter;
@@ -251,14 +249,14 @@ static pandasm::Program *Compile(const CompilationUnit &unit, const PhaseListGet
     //  some internal errors (say, in Post-Conditional check) or terminate options (say in 'CheckOptionsAfterPhase')
     //  that were not reported to the log.
     if (unit.ext == ScriptExtension::ETS) {
-        if (!RunVerifierAndPhases(context, getPhases(unit.ext), program)) {
+        if (!RunVerifierAndPhases(context, program)) {
             return nullptr;
         }
     } else if (context.diagnosticEngine->IsAnyError()) {
         if (unit.options.IsDumpAst()) {
             std::cout << program.Dump() << std::endl;
         }
-    } else if (!RunPhases(context, getPhases(unit.ext), program)) {
+    } else if (!RunPhases(context, program)) {
         return nullptr;
     }
 
@@ -276,26 +274,22 @@ pandasm::Program *CompilerImpl::Compile(const CompilationUnit &unit)
         case ScriptExtension::TS: {
             return compiler::Compile<parser::TSParser, varbinder::TSBinder, checker::TSChecker, checker::TSAnalyzer,
                                      compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
-                                     compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetPhaseList,
-                                                                                       this);
+                                     compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, this);
         }
         case ScriptExtension::AS: {
             return compiler::Compile<parser::ASParser, varbinder::ASBinder, checker::ASChecker, checker::TSAnalyzer,
                                      compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
-                                     compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetPhaseList,
-                                                                                       this);
+                                     compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, this);
         }
         case ScriptExtension::ETS: {
             return compiler::Compile<parser::ETSParser, varbinder::ETSBinder, checker::ETSChecker, checker::ETSAnalyzer,
                                      compiler::ETSCompiler, compiler::ETSGen, compiler::StaticRegSpiller,
-                                     compiler::ETSFunctionEmitter, compiler::ETSEmitter>(unit, compiler::GetPhaseList,
-                                                                                         this);
+                                     compiler::ETSFunctionEmitter, compiler::ETSEmitter>(unit, this);
         }
         case ScriptExtension::JS: {
             return compiler::Compile<parser::JSParser, varbinder::JSBinder, checker::JSChecker, checker::TSAnalyzer,
                                      compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
-                                     compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetPhaseList,
-                                                                                       this);
+                                     compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, this);
         }
         default: {
             ES2PANDA_UNREACHABLE();
@@ -312,7 +306,8 @@ void CompilerImpl::DumpAsm(const ark::pandasm::Program *prog)
 std::string CompilerImpl::GetPhasesList(const ScriptExtension ext)
 {
     std::stringstream ss;
-    for (auto phase : compiler::GetPhaseList(ext)) {
+    auto phaseManager = compiler::PhaseManager(ext, nullptr);
+    while (auto phase = phaseManager.NextPhase()) {
         ss << " " << phase->Name() << std::endl;
     }
     return ss.str();

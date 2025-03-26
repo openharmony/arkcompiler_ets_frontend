@@ -120,25 +120,7 @@ static InitScopesPhaseTs g_initScopesPhaseTs;
 static InitScopesPhaseJs g_initScopesPhaseJs;
 // NOLINTEND(fuchsia-statically-constructed-objects)
 
-std::vector<Phase *> GetRebindPhase()
-{
-    return {
-        &g_initScopesPhaseEts,
-        &g_resolveIdentifiers,
-    };
-}
-
-std::vector<Phase *> GetRecheckPhase()
-{
-    return {
-        &g_initScopesPhaseEts,
-        &g_resolveIdentifiers,
-        &g_capturedVariables,
-        &g_checkerPhase,
-    };
-}
-
-// CC-OFFNXT(huge_method[C++]) solid logic
+// CC-OFFNXT(huge_method, G.FUN.01-CPP) long initialization list
 std::vector<Phase *> GetETSPhaseList()
 {
     // clang-format off
@@ -218,24 +200,19 @@ std::vector<Phase *> GetJSPhaseList()
     };
 }
 
-std::vector<Phase *> GetPhaseList(ScriptExtension ext)
+thread_local PhaseManager *g_phaseManager {nullptr};
+
+PhaseManager *GetPhaseManager()
 {
-    switch (ext) {
-        case ScriptExtension::ETS:
-            return GetETSPhaseList();
-        case ScriptExtension::AS:
-            return GetASPhaseList();
-        case ScriptExtension::TS:
-            return GetTSPhaseList();
-        case ScriptExtension::JS:
-            return GetJSPhaseList();
-        default:
-            ES2PANDA_UNREACHABLE();
-    }
+    ES2PANDA_ASSERT(g_phaseManager != nullptr && g_phaseManager->IsInitialized());
+    return g_phaseManager;
 }
 
 bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
 {
+    g_phaseManager = ctx->phaseManager;
+    GetPhaseManager()->SetCurrentPhaseId(id_);
+
 #ifndef NDEBUG
     if (!Precondition(ctx, program)) {
         ctx->checker->LogError(diagnostic::PRECOND_FAILED, {Name()}, lexer::SourcePosition {});
@@ -359,6 +336,57 @@ bool PhaseForBodies::Postcondition(public_lib::Context *ctx, const parser::Progr
     }
 
     return PostconditionForModule(ctx, program);
+}
+
+void PhaseManager::InitializePhases()
+{
+    switch (ext_) {
+        case ScriptExtension::ETS:
+            phases_ = GetETSPhaseList();
+            break;
+        case ScriptExtension::AS:
+            phases_ = GetASPhaseList();
+            break;
+        case ScriptExtension::TS:
+            phases_ = GetTSPhaseList();
+            break;
+        case ScriptExtension::JS:
+            phases_ = GetJSPhaseList();
+            break;
+        default:
+            ES2PANDA_UNREACHABLE();
+    }
+
+    int id = 0;
+    for (auto phase : phases_) {
+        phase->id_ = id++;
+    }
+}
+
+std::vector<Phase *> PhaseManager::AllPhases()
+{
+    ES2PANDA_ASSERT(IsInitialized());
+    return phases_;
+}
+
+std::vector<Phase *> PhaseManager::RebindPhases()
+{
+    ES2PANDA_ASSERT(IsInitialized());
+    return {
+        &g_initScopesPhaseEts,
+        &g_resolveIdentifiers,
+    };
+}
+
+std::vector<Phase *> PhaseManager::RecheckPhases()
+{
+    ES2PANDA_ASSERT(IsInitialized());
+    return {
+        &g_initScopesPhaseEts,
+        &g_resolveIdentifiers,
+        &g_capturedVariables,
+        &g_checkerPhase,
+    };
 }
 
 }  // namespace ark::es2panda::compiler

@@ -290,7 +290,7 @@ bool SpreadConstructionPhase::PerformForModule(public_lib::Context *ctx, parser:
                     SetSourceRangesRecursively(st, node->Range());
                 }
 
-                Recheck(varbinder, checker, blockExpression);
+                Recheck(ctx->phaseManager, varbinder, checker, blockExpression);
 
                 return blockExpression;
             }

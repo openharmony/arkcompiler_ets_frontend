@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,7 +26,8 @@ std::string_view BoxedTypeLowering::Name() const
     return "BoxedTypeLowering";
 }
 
-void BoxNumberLiteralArguments(ir::CallExpression *callExpr, checker::ETSChecker *checker, parser::ETSParser *parser)
+void BoxNumberLiteralArguments(ir::CallExpression *callExpr, PhaseManager *phaseManager, checker::ETSChecker *checker,
+                               parser::ETSParser *parser)
 {
     const static std::unordered_map<ir::BoxingUnboxingFlags, util::StringView> BOXTO({
         {ir::BoxingUnboxingFlags::BOX_TO_BOOLEAN, compiler::Signatures::BUILTIN_BOOLEAN_CLASS},
@@ -54,7 +55,7 @@ void BoxNumberLiteralArguments(ir::CallExpression *callExpr, checker::ETSChecker
             arg->RemoveBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOXING_FLAG);
             callExpr->Arguments()[i] = res;
 
-            Recheck(checker->VarBinder()->AsETSBinder(), checker, res);
+            Recheck(phaseManager, checker->VarBinder()->AsETSBinder(), checker, res);
         }
     }
 }
@@ -70,9 +71,10 @@ bool BoxedTypeLowering::Perform(public_lib::Context *const ctx, parser::Program 
 
     auto checker = ctx->checker->AsETSChecker();
     auto parser = ctx->parser->AsETSParser();
+    auto phaseManager = ctx->phaseManager;
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style
-        [checker, parser](ir::AstNode *ast) -> ir::AstNode * {
+        [phaseManager, checker, parser](ir::AstNode *ast) -> ir::AstNode * {
             if (!ast->IsCallExpression()) {
                 return ast;
             }
@@ -84,7 +86,7 @@ bool BoxedTypeLowering::Perform(public_lib::Context *const ctx, parser::Program 
                 return ast;
             }
 
-            BoxNumberLiteralArguments(callExpr, checker, parser);
+            BoxNumberLiteralArguments(callExpr, phaseManager, checker, parser);
 
             return ast;
         },
