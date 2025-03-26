@@ -122,6 +122,7 @@ private:
     void ProcessFuncParameters(const checker::Signature *sig);
     std::string ReplaceETSGLOBAL(const std::string &typeName);
     std::string GetIndent() const;
+    std::string RemoveModuleExtensionName(const std::string &filepath);
     void GenPartName(std::string &partName);
     void ProcessIndent();
 
@@ -144,7 +145,9 @@ private:
     void HandleFunctionType(const checker::Type *checkerType);
     bool HandleETSSpecificTypes(const checker::Type *checkerType);
     bool HandleObjectType(const checker::Type *checkerType);
+    bool HandleSpecificObjectTypes(const checker::ETSObjectType *objectType);
     void HandleArrayType(const checker::Type *checkerType);
+    void HandleTypeArgument(checker::Type *arg, const std::string &typeStr);
 
     void ProcessInterfaceBody(const ir::TSInterfaceBody *body);
     void ProcessMethodDefinition(const ir::MethodDefinition *methodDef,
@@ -189,8 +192,11 @@ private:
         bool inGlobalClass {false};
         bool inNamespace {false};
         bool inEnum {false};
+        bool isClassInNamespace {false};
         std::string currentClassDescriptor {};
         std::stack<bool> inUnionBodyStack {};
+        std::string currentTypeAliasName;
+        const ir::TSTypeParameterDeclaration *currentTypeParams {nullptr};
     } state_ {};
 
     struct ClassNode {
@@ -202,6 +208,7 @@ private:
     const std::unordered_set<std::string_view> numberTypes_ = {"Long",  "Float", "Double", "Byte",
                                                                "Short", "Int",   "Number"};
     const std::unordered_set<std::string_view> stringTypes_ = {"Char", "String"};
+    const std::set<std::string> extensions_ = {".sts", ".ets", ".ts", ".js"};
 
     std::stringstream outputDts_;
     std::stringstream outputTs_;

@@ -1,14 +1,26 @@
-#FailKind.SEGFAULT_FAIL - 7 tests:
+#FailKind.SEGFAULT_FAIL - 21 tests:
+ArrowFunctionWithNestedNameSpace.ets
 StringFasta.ets
 conditionalExpressionGenericLUB.ets
+default/common/BigFolderPreLoader.ets
+default/model/AnimationParameterModel.ets
+default/view/OpenFolderAddBubble.ets
+default/view/OpenFolderAppBubble.ets
+default/view/OpenFolderComponent.ets
+default/view/OpenFolderGridSwiper.ets
+default/view/OpenFolderSwiperPage.ets
+default/viewmodel/AnimationBatchUtil.ets
+default/viewmodel/BigFolderViewModel.ets
+default/viewmodel/OpenCloseAnimationViewModel.ets
+default/viewmodel/OpenFolderAnimatorManager.ets
+default/viewmodel/OpenFolderLayout.ets
+default/viewmodel/OpenFolderViewModel.ets
 funcRefWithRestArguments.ets
 lambda_with_receiver/lambda_with_receiver_generics_return_this.ets
 struct-identifier.ets
 struct-init2.ets
 type_param_in_union.ets
-#FailKind.ABORT_FAIL - 1 tests:
-ArrowFunctionWithNestedNameSpace.ets
-#FailKind.TSC_FAIL - 47 tests:
+#FailKind.TSC_FAIL - 44 tests:
 23258.ets
 AccessNBody.ets
 AliasClass.ets
@@ -18,19 +30,17 @@ GenericBridges_01.ets
 GenericBridges_02.ets
 Morph3d.ets
 RecordKeyTypeCheck.ets
-RecursiveTypeAlias5.ets
 RecursiveTypeAlias8.ets
-RecursiveTypeAlias9.ets
 classGetterSetter.ets
 class_implements_interface.ets
-defaultTypeParam_with_qualifiedname.ets
-enum_namespace.ets
+default/common/OpenFolderDragHandler.ets
 function_type_with_receiver/extensionFunctionTypeGeneric.ets
 function_type_with_receiver/validReturnThisOfExtensionFunction.ets
 generic_constraint_implicit.ets
 generics_1.ets
 getteSetterImplementation.ets
 getterSetterImplementationWithConstructor.ets
+implementClassPropertyFunctionOptionCall.ets
 implementsClassPropertyFunctionType.ets
 implementsClassPropertyFunctionType2.ets
 implementsClassPropertyUnionType1.ets
@@ -38,6 +48,8 @@ implementsClassPropertyUnionType2.ets
 inherited_getter_setter_implementation_1.ets
 inherited_getter_setter_implementation_2.ets
 interface_prop.ets
+interface_with_optional_property_cycle_import/class_file.ets
+interface_with_optional_property_cycle_import/interface_file.ets
 lambda_with_receiver/lambda_with_receiver_generics1.ets
 lambda_with_receiver/lambda_with_receiver_generics_return_this_rotate.ets
 lambda_with_receiver/lambda_with_receiver_return_this3.ets
@@ -45,23 +57,11 @@ lambda_with_receiver/lambda_with_receiver_trailing_in_function_return_this_rotat
 local-class-capture-boxing.ets
 local-class-capture-not-boxing.ets
 namespace_tests/namespace_execution_statements_test02.ets
-namespace_tests/namespace_initializer.ets
-namespace_tests/namespace_merge_test.ets
-namespace_tests/namespace_merged.ets
-namespace_tests/namespace_nested.ets
-namespace_tests/namespace_qualified.ets
-namespace_tests/namespace_with_annotations.ets
-nestedNameSpaceWithStaticField.ets
 objectLiteralInterface2.ets
 override_for_partial_01.ets
 override_for_partial_02.ets
-qualifiedNameInForOfStmt1.ets
-qualifiedNameInForOfStmt2.ets
-static-invoke.ets
-top_level_03.ets
-union_string_literals.ets
-user_defined_1.ets
 readonly_simple_form_pos.ets
 simple_form_pos.ets
-interface_with_optional_property_cycle_import/class_file.ets
-interface_with_optional_property_cycle_import/interface_file.ets
+static-invoke.ets
+union_string_literals.ets
+user_defined_1.ets
