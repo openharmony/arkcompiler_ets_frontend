@@ -804,7 +804,9 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(ir::Expres
 
     if ((leftType->IsETSUnionType() || rightType->IsETSUnionType()) &&
         operationType != lexer::TokenType::PUNCTUATOR_EQUAL &&
-        operationType != lexer::TokenType::PUNCTUATOR_NOT_EQUAL) {
+        operationType != lexer::TokenType::PUNCTUATOR_NOT_EQUAL &&
+        operationType != lexer::TokenType::PUNCTUATOR_STRICT_EQUAL &&
+        operationType != lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL) {
         LogError(diagnostic::BINOP_UNION, {}, pos);
         return {GlobalETSBooleanType(), leftType};
     }
