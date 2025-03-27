@@ -2145,6 +2145,9 @@ export class TypeScriptLinter {
       this.incrementCounters(tsMethodDecl.questionToken, FaultID.OptionalMethod);
     }
     this.handleInvalidIdentifier(tsMethodDecl);
+    if (!this.tsUtils.isAbstractMethodInAbstractClass(node)) {
+      this.handleTSOverload(tsMethodDecl);
+    }
   }
 
   private checkClassImplementsMethod(classDecl: ts.ClassDeclaration, methodName: string): boolean {
@@ -3434,6 +3437,7 @@ export class TypeScriptLinter {
 
   private handleConstructorDeclaration(node: ts.Node): void {
     const ctorDecl = node as ts.ConstructorDeclaration;
+    this.handleTSOverload(ctorDecl);
     const paramProperties = ctorDecl.parameters.filter((x) => {
       return this.tsUtils.hasAccessModifier(x);
     });
@@ -3844,7 +3848,7 @@ export class TypeScriptLinter {
     this.incrementCounters(node, FaultID.DebuggerStatement, autofix);
   }
 
-  private handleTSOverload(decl: ts.FunctionDeclaration): void {
+  private handleTSOverload(decl: ts.FunctionDeclaration | ts.MethodDeclaration | ts.ConstructorDeclaration): void {
     if (!this.options.arkts2) {
       return;
     }
@@ -3855,6 +3859,12 @@ export class TypeScriptLinter {
         if (declarations && declarations.length > 1) {
           this.incrementCounters(decl, FaultID.TsOverload);
         }
+      }
+    } else if (ts.isConstructorDeclaration(decl)) {
+      const parent = decl.parent;
+      const constructors = parent.members.filter(ts.isConstructorDeclaration);
+      if (constructors.length > 1) {
+        this.incrementCounters(decl, FaultID.TsOverload);
       }
     }
   }
