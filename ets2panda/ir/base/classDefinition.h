@@ -429,6 +429,7 @@ public:
 
     const FunctionExpression *Ctor() const;
     bool HasPrivateMethod() const;
+    bool HasNativeMethod() const;
     bool HasComputedInstanceField() const;
     bool HasMatchingPrivateKey(const util::StringView &name) const;
 

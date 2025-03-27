@@ -40,6 +40,13 @@ bool ClassDefinition::HasPrivateMethod() const
     });
 }
 
+bool ClassDefinition::HasNativeMethod() const
+{
+    return std::any_of(body_.cbegin(), body_.cend(), [](auto *element) {
+        return element->IsMethodDefinition() && element->AsMethodDefinition()->IsNative();
+    });
+}
+
 bool ClassDefinition::HasComputedInstanceField() const
 {
     return std::any_of(body_.cbegin(), body_.cend(), [](auto *element) {
