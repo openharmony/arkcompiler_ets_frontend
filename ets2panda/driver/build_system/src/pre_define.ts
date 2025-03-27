@@ -19,6 +19,7 @@ export const LINKER_INPUT_FILE: string = 'fileInfo.txt';
 
 export const DECL_ETS_SUFFIX: string = '.d.ets';
 export const ETS_SUFFIX: string = '.ets';
+export const TS_SUFFIX: string = '.ts';
 export const ABC_SUFFIX: string = '.abc';
 
 export const BUILD_TYPE_BUILD: string = 'build';
