@@ -78,7 +78,10 @@ import {
   STATE_STYLES,
   CustomDecoratorName,
   observedDecoratorName,
-  skipImportDecoratorName
+  skipImportDecoratorName,
+  ENTRY_DECORATOR_NAME,
+  PROVIDE_DECORATOR_NAME,
+  PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME
 } from './utils/consts/ArkuiConstants';
 import { arkuiImportList } from './utils/consts/ArkuiImportList';
 import { REFLECT_PROPERTIES, USE_STATIC } from './utils/consts/InteropAPI';
@@ -4055,6 +4058,8 @@ export class TypeScriptLinter {
 
   private handleDecorator(node: ts.Node): void {
     this.handleExtendDecorator(node);
+    this.handleEntryDecorator(node);
+    this.handleProvideDecorator(node);
 
     const decorator: ts.Decorator = node as ts.Decorator;
     this.handleSendableDecorator(decorator);
@@ -4069,6 +4074,41 @@ export class TypeScriptLinter {
       }
     }
     this.handleNotSupportCustomDecorators(decorator);
+  }
+
+  private handleProvideDecorator(node: ts.Node): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (!ts.isDecorator(node)) {
+      return;
+    }
+
+    if (ts.isCallExpression(node.expression) && ts.isIdentifier(node.expression.expression)) {
+      if (node.expression.expression.text !== PROVIDE_DECORATOR_NAME || node.expression.arguments.length !== 1) {
+        return;
+      }
+      const arg = node.expression.arguments[0];
+      if (!ts.isStringLiteral(arg) && !ts.isObjectLiteralExpression(arg)) {
+        return;
+      }
+      if (ts.isObjectLiteralExpression(arg)) {
+        const properties = arg.properties;
+        if (properties.length !== 1) {
+          return;
+        }
+        const property = properties[0] as ts.PropertyAssignment;
+        if (!ts.isIdentifier(property.name) || !ts.isStringLiteral(property.initializer)) {
+          return;
+        }
+        if (property.name.escapedText !== PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME) {
+          return;
+        }
+      }
+      const autofix = this.autofixer?.fixProvideDecorator(node);
+      this.incrementCounters(node.parent, FaultID.ProvideAnnotation, autofix);
+    }
   }
 
   private isSendableDecoratorValid(decl: ts.FunctionDeclaration | ts.TypeAliasDeclaration): boolean {
@@ -4641,6 +4681,38 @@ export class TypeScriptLinter {
         const autofix = this.autofixer?.fixExtendDecorator(node, true, this.interfacesNeedToImport);
         this.incrementCounters(node.parent, FaultID.AnimatableExtendDecoratorTransform, autofix);
       }
+    }
+  }
+
+  private handleEntryDecorator(node: ts.Node): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (!ts.isDecorator(node)) {
+      return;
+    }
+
+    if (ts.isCallExpression(node.expression) && ts.isIdentifier(node.expression.expression)) {
+      if (node.expression.expression.escapedText !== ENTRY_DECORATOR_NAME || node.expression.arguments.length !== 1) {
+        return;
+      }
+      const arg = node.expression.arguments[0];
+      if (ts.isObjectLiteralExpression(arg)) {
+        const properties = arg.properties;
+        if (properties.length !== 1) {
+          return;
+        }
+        if (!ts.isPropertyAssignment(properties[0])) {
+          return;
+        }
+        const property = properties[0];
+        if (ts.isStringLiteral(property.initializer)) {
+          return;
+        }
+      }
+      const autofix = this.autofixer?.fixEntryDecorator(node);
+      this.incrementCounters(node, FaultID.EntryAnnotation, autofix);
     }
   }
 

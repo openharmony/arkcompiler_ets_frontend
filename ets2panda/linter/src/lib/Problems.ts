@@ -176,6 +176,8 @@ export enum FaultID {
   InteropDirectAccessToTSTypes,
   InteropTSFunctionInvoke,
   LimitedVoidTypeFromSdk,
+  EntryAnnotation,
+  ProvideAnnotation,
   // this should always be last enum
   LAST_ID
 }

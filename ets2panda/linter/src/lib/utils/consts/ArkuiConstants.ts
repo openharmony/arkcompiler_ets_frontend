@@ -46,3 +46,12 @@ export const observedDecoratorName: Set<string> = new Set([
 ]);
 
 export const skipImportDecoratorName: Set<string> = new Set(['Extend', 'Styles', 'Sendable', 'Concurrent']);
+
+export const ENTRY_DECORATOR_NAME = 'Entry';
+export const ENTRY_STORAGE_PROPERITY = 'storage';
+export const LOCAL_STORAGE_TYPE_NAME = 'LocalStorage';
+export const GET_LOCAL_STORAGE_FUNC_NAME = '__get_local_storage__';
+
+export const PROVIDE_DECORATOR_NAME = 'Provide';
+export const PROVIDE_ALIAS_PROPERTY_NAME = 'alias';
+export const PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME = 'allowOverride';
