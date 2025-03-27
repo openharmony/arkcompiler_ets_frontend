@@ -225,8 +225,8 @@ ir::Expression *RecordLowering::CreateBlockExpression(ir::ObjectExpression *expr
     }
 
     const std::string createSrc =
-        "let @@I1 = new " + containerType + "<" + TypeToString(keyType) + "," + TypeToString(valueType) + ">()";
-    statements.push_back(CreateStatement(createSrc, ident, nullptr, nullptr, ctx));
+        "let @@I1 = new " + containerType + "<" + TypeToString(keyType) + "," + "@@T2" + ">()";
+    statements.push_back(ctx->parser->AsETSParser()->CreateFormattedStatements(createSrc, ident, valueType).front());
 
     // Build statements from properties
 
