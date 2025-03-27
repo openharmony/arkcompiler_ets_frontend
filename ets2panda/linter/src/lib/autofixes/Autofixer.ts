@@ -2481,9 +2481,16 @@ export class Autofixer {
 
     const type = this.typeChecker.getTypeOfSymbolAtLocation(sym, name);
     const typeText = this.typeChecker.typeToString(type);
+    const typeFlags = type.flags;
+    const isNumberLike =
+      typeText === 'number' || typeText === 'number[]' || (typeFlags & ts.TypeFlags.NumberLiteral) !== 0;
+
+    if (!isNumberLike) {
+      return undefined;
+    }
 
     let typeNode: ts.TypeNode;
-    if (typeText === 'number') {
+    if (typeText === 'number' || (typeFlags & ts.TypeFlags.NumberLiteral) !== 0) {
       typeNode = ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
     } else if (typeText === 'number[]') {
       typeNode = ts.factory.createArrayTypeNode(ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword));
@@ -2492,7 +2499,6 @@ export class Autofixer {
     }
 
     const newVarDecl = ts.factory.createVariableDeclaration(name, undefined, typeNode, initializer);
-
     const parent = node.parent;
     if (!ts.isVariableDeclarationList(parent)) {
       return undefined;

@@ -105,3 +105,11 @@ identity(42);
 let an_array = [1,2,3]
 
 let g = an_array[]
+
+const a = 1
+
+enum Test {
+  A = 1,  // 显式赋值为 1
+  B = 2   // 显式赋值为 2
+}
+const test = Test.A;
