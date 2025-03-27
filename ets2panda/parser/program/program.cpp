@@ -15,6 +15,7 @@
 
 #include "program.h"
 
+#include "compiler/core/CFG.h"
 #include "generated/signatures.h"
 #include "varbinder/varbinder.h"
 #include "varbinder/ETSBinder.h"
@@ -23,6 +24,17 @@
 #include "ir/statements/blockStatement.h"
 
 namespace ark::es2panda::parser {
+
+Program::Program(ArenaAllocator *allocator, varbinder::VarBinder *varbinder)
+    : allocator_(allocator),
+      varbinder_(varbinder),
+      externalSources_(allocator_->Adapter()),
+      directExternalSources_(allocator_->Adapter()),
+      extension_(varbinder->Extension()),
+      etsnolintCollection_(allocator_->Adapter()),
+      cfg_(allocator_->New<compiler::CFG>(allocator_))
+{
+}
 
 std::string Program::Dump() const
 {
@@ -105,6 +117,16 @@ Program::~Program()  // NOLINT(modernize-use-equals-default)
 #ifndef NDEBUG
     poisonValue_ = 0;
 #endif
+}
+
+compiler::CFG *Program::GetCFG()
+{
+    return cfg_;
+}
+
+const compiler::CFG *Program::GetCFG() const
+{
+    return cfg_;
 }
 
 }  // namespace ark::es2panda::parser

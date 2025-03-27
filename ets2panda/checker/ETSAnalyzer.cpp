@@ -20,6 +20,7 @@
 #include "checker/types/ets/etsTupleType.h"
 #include "evaluate/scopedDebugInfoPlugin.h"
 #include "types/signature.h"
+#include "compiler/lowering/ets/setJumpTarget.h"
 
 namespace ark::es2panda::checker {
 
@@ -2301,11 +2302,15 @@ checker::Type *ETSAnalyzer::Check(ir::BlockStatement *st) const
 checker::Type *ETSAnalyzer::Check(ir::BreakStatement *st) const
 {
     ETSChecker *checker = GetETSChecker();
-    auto node = checker->FindJumpTarget(st);
-    if (!node.has_value()) {
+
+    if (!st->HasTarget()) {
+        compiler::SetJumpTargetPhase setJumpTarget;
+        setJumpTarget.FindJumpTarget(checker->VarBinder()->GetContext(), st);
+    }
+
+    if (st->Target() == nullptr) {
         return checker->GlobalTypeError();
     }
-    st->SetTarget(*node);
 
     checker->Context().OnBreakStatement(st);
     return ReturnTypeForStatement(st);
@@ -2389,11 +2394,15 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
 checker::Type *ETSAnalyzer::Check(ir::ContinueStatement *st) const
 {
     ETSChecker *checker = GetETSChecker();
-    auto node = checker->FindJumpTarget(st);
-    if (!node.has_value()) {
+
+    if (!st->HasTarget()) {
+        compiler::SetJumpTargetPhase setJumpTarget;
+        setJumpTarget.FindJumpTarget(checker->VarBinder()->GetContext(), st);
+    }
+
+    if (st->Target() == nullptr) {
         return checker->GlobalTypeError();
     }
-    st->SetTarget(*node);
 
     checker->AddStatus(CheckerStatus::MEET_CONTINUE);
     return ReturnTypeForStatement(st);

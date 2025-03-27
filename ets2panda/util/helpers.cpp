@@ -731,4 +731,32 @@ checker::Type *Helpers::CheckReturnTypeOfCheck([[maybe_unused]] const ir::AstNod
     return type;
 }
 
+util::UString Helpers::EscapeHTMLString(ArenaAllocator *allocator, const std::string &str)
+{
+    util::UString replaced(allocator);
+    for (const auto c : str) {
+        switch (c) {
+            case '<':
+                replaced.Append("&lt;");
+                break;
+            case '>':
+                replaced.Append("&gt;");
+                break;
+            case '&':
+                replaced.Append("&amp;");
+                break;
+            case '"':
+                replaced.Append("&quot;");
+                break;
+            case '\'':
+                replaced.Append("&apos;");
+                break;
+            default:
+                replaced.Append(c);
+                break;
+        }
+    }
+    return replaced;
+}
+
 }  // namespace ark::es2panda::util

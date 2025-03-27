@@ -59,6 +59,11 @@ public:
         return reinterpret_cast<ir_alias::AstNode *>(impl_->ProgramAst(ctx_, impl_->ContextProgram(ctx_)));
     }
 
+    auto *GetCfg()
+    {
+        return reinterpret_cast<ark::es2panda::parser::Program *>(impl_->ContextProgram(ctx_))->GetCFG();
+    }
+
     auto *GetImpl()
     {
         return impl_;

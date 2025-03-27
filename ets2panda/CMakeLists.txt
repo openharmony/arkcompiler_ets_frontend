@@ -208,6 +208,7 @@ set(ES2PANDA_LIB_SRC
   compiler/base/literals.cpp
   compiler/base/lreference.cpp
   compiler/base/optionalChain.cpp
+  compiler/core/CFG.cpp
   compiler/core/codeGen.cpp
   compiler/core/compileJob.cpp
   compiler/core/compileQueue.cpp
@@ -256,6 +257,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/boxedTypeLowering.cpp
   compiler/lowering/ets/boxingForLocals.cpp
   compiler/lowering/ets/capturedVariables.cpp
+  compiler/lowering/ets/cfgBuilderPhase.cpp
   compiler/lowering/ets/constantExpressionLowering.cpp
   compiler/lowering/ets/declareOverloadLowering.cpp
   compiler/lowering/ets/defaultParametersInConstructorLowering.cpp
@@ -286,6 +288,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/stringConstructorLowering.cpp
   compiler/lowering/ets/enumLowering.cpp
   compiler/lowering/ets/enumPostCheckLowering.cpp
+  compiler/lowering/ets/setJumpTarget.cpp
   ir/astDump.cpp
   ir/srcDump.cpp
   ir/astNode.cpp

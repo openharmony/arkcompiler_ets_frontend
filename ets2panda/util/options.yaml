@@ -54,6 +54,11 @@ options:
   default: false
   description: Dump the parsed AST
 
+- name: dump-cfg
+  type: bool
+  default: false
+  description: Dump the constructed CFG into a .dot file
+
 - name: dump-dynamic-ast
   type: bool
   default: false
