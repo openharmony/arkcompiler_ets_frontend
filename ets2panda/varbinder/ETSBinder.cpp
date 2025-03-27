@@ -654,11 +654,20 @@ void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
             auto variable = Program()->GlobalClassScope()->FindLocal(bindingName, ResolveBindingOptions::ALL);
             if (variable == nullptr || var == variable) {
                 InsertForeignBinding(specifier, import, bindingName, var);
-            } else if (variable->Declaration()->IsFunctionDecl() && var->Declaration()->IsFunctionDecl()) {
-                AddOverloadFlag(Allocator(), isStdLib, var, variable);
-            } else {
-                ThrowError(import->Source()->Start(), RedeclarationErrorMessageAssembler(var, variable, bindingName));
+                continue;
             }
+
+            if (variable->Declaration()->IsFunctionDecl() && var->Declaration()->IsFunctionDecl()) {
+                AddOverloadFlag(Allocator(), isStdLib, var, variable);
+                continue;
+            }
+
+            // It will be a redeclaration error, but the imported element has not been placed among the bindings yet
+            if (TopScope()->FindLocal(bindingName, ResolveBindingOptions::ALL) == nullptr) {
+                InsertForeignBinding(specifier, import, bindingName, var);
+            }
+
+            ThrowError(import->Source()->Start(), RedeclarationErrorMessageAssembler(var, variable, bindingName));
         }
     }
 
