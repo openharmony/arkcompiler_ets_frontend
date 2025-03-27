@@ -39,6 +39,7 @@ public:
      * @param programs - vector of files in module
      */
     void SetupGlobalClass(const ArenaVector<parser::Program *> &programs, const ModuleDependencies *moduleDependencies);
+    void static MergeNamespace(ArenaVector<ir::ETSModule *> &namespaces, parser::Program *program);
 
 private:
     /**
@@ -57,7 +58,6 @@ private:
                             bool isDeclare);
     ArenaVector<ir::ClassDeclaration *> TransformNamespaces(ArenaVector<ir::ETSModule *> &namespaces,
                                                             parser::Program *program);
-    void MergeNamespace(ArenaVector<ir::ETSModule *> &namespaces, parser::ETSParser *parser);
 
     ir::ClassDeclaration *CreateGlobalClass(const parser::Program *globalProgram);
     ir::ClassStaticBlock *CreateStaticBlock(ir::ClassDefinition *classDef);

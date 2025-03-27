@@ -34,7 +34,10 @@ void ImportExportDecls::ProcessProgramStatements(parser::Program *program,
 {
     for (auto stmt : statements) {
         if (stmt->IsETSModule()) {
+            SavedImportExportDeclsContext savedContext(this, program);
             ProcessProgramStatements(program, stmt->AsETSModule()->Statements(), moduleDependencies);
+            VerifyCollectedExportName(program);
+            savedContext.RecoverExportAliasMultimap();
         }
         stmt->Accept(this);
         if (stmt->IsExportNamedDeclaration()) {
@@ -55,32 +58,10 @@ GlobalClassHandler::ModuleDependencies ImportExportDecls::HandleGlobalStmts(Aren
         std::sort(programs.begin(), programs.end(), ProgramFileNameLessThan);
     }
     for (const auto &program : programs) {
-        fieldMap_.clear();
-        exportNameMap_.clear();
-        exportedTypes_.clear();
-        exportDefaultName_ = nullptr;
+        PreMergeNamespaces(program);
+        SavedImportExportDeclsContext savedContext(this, program);
         ProcessProgramStatements(program, program->Ast()->Statements(), moduleDependencies);
-        for (auto const &[exportName, startLoc] : exportNameMap_) {
-            const bool isType = exportedTypes_.find(exportName) != exportedTypes_.end();
-            util::StringView middleName = varbinder_->FindNameInAliasMap(program->SourceFilePath(), exportName);
-            ES2PANDA_ASSERT(!middleName.Empty());
-            auto originNameIt = importedSpecifiersForExportCheck_.find(middleName);
-            auto originalName =
-                originNameIt != importedSpecifiersForExportCheck_.end() ? originNameIt->second : middleName;
-            auto result = fieldMap_.find(originalName);
-            if (result == fieldMap_.end() && !isType && originNameIt == importedSpecifiersForExportCheck_.end()) {
-                parser_->DiagnosticEngine().LogSyntaxError("Cannot find name '" + originalName.Mutf8() + "' to export",
-                                                           startLoc);
-            }
-            if (result != fieldMap_.end() && result->second->IsAnnotationDeclaration() && exportName != originalName) {
-                parser_->DiagnosticEngine().LogSyntaxError("Can not rename annotation '" + originalName.Mutf8() +
-                                                               "' in export or import statements.",
-                                                           startLoc);
-            }
-            if (!isType) {
-                HandleSelectiveExportWithAlias(originalName, exportName, startLoc);
-            }
-        }
+        VerifyCollectedExportName(program);
     }
     return moduleDependencies;
 }
@@ -358,4 +339,62 @@ void ImportExportDecls::VerifySingleExportDefault(const ArenaVector<parser::Prog
     }
 }
 
+void ImportExportDecls::VerifyCollectedExportName(const parser::Program *program)
+{
+    for (auto const &[exportName, startLoc] : exportNameMap_) {
+        const bool isType = exportedTypes_.find(exportName) != exportedTypes_.end();
+        util::StringView middleName = varbinder_->FindNameInAliasMap(program->SourceFilePath(), exportName);
+        ES2PANDA_ASSERT(!middleName.Empty());
+        auto originNameIt = importedSpecifiersForExportCheck_.find(middleName);
+        auto originalName = originNameIt != importedSpecifiersForExportCheck_.end() ? originNameIt->second : middleName;
+        auto result = fieldMap_.find(originalName);
+        if (result == fieldMap_.end() && !isType && originNameIt == importedSpecifiersForExportCheck_.end()) {
+            parser_->DiagnosticEngine().LogSyntaxError("Cannot find name '" + originalName.Mutf8() + "' to export",
+                                                       startLoc);
+        }
+        if (result != fieldMap_.end() && result->second->IsAnnotationDeclaration() && exportName != originalName) {
+            parser_->DiagnosticEngine().LogSyntaxError(
+                "Can not rename annotation '" + originalName.Mutf8() + "' in export or import statements.", startLoc);
+        }
+        if (!isType) {
+            HandleSelectiveExportWithAlias(originalName, exportName, startLoc);
+        }
+    }
+}
+
+void ImportExportDecls::PreMergeNamespaces(parser::Program *program)
+{
+    bool isChanged = false;
+    auto mergeNameSpace = [&program, &isChanged](ir::AstNode *ast) {
+        if (!ast->IsETSModule()) {
+            return;
+        }
+
+        ArenaVector<ir::ETSModule *> namespaces(program->Allocator()->Adapter());
+        auto &body = ast->AsETSModule()->Statements();
+        auto originalSize = body.size();
+        auto end = std::remove_if(body.begin(), body.end(), [&namespaces](ir::AstNode *node) {
+            if (node->IsETSModule() && node->AsETSModule()->IsNamespace()) {
+                namespaces.emplace_back(node->AsETSModule());
+                return true;
+            }
+            return false;
+        });
+        body.erase(end, body.end());
+
+        GlobalClassHandler::MergeNamespace(namespaces, program);
+
+        for (auto ns : namespaces) {
+            body.emplace_back(ns);
+        }
+
+        isChanged |= (originalSize != body.size());
+    };
+
+    do {
+        isChanged = false;
+        mergeNameSpace(program->Ast());
+        program->Ast()->IterateRecursivelyPreorder(mergeNameSpace);
+    } while (isChanged);
+}
 }  // namespace ark::es2panda::compiler

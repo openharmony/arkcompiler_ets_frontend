@@ -247,6 +247,11 @@ public:
         return selectiveExportAliasMultimap_;
     }
 
+    [[nodiscard]] ModulesToExportedNamesWithAliases &GetSelectiveExportAliasMultimap() noexcept
+    {
+        return selectiveExportAliasMultimap_;
+    }
+
     util::StringView FindNameInAliasMap(const util::StringView &pathAsKey, const util::StringView &aliasName);
     const ir::AstNode *FindNodeInAliasMap(const util::StringView &pathAsKey, const util::StringView &aliasName);
 
