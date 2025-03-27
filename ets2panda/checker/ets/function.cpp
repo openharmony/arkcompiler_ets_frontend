@@ -1340,8 +1340,6 @@ bool ETSChecker::IsMethodOverridesOther(Signature *base, Signature *derived)
         SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK |
                                                                     TypeRelationFlag::OVERRIDING_CONTEXT);
         if (Relation()->SignatureIsSupertypeOf(base, derived)) {
-            CheckThrowMarkers(base, derived);
-
             if (derived->HasSignatureFlag(SignatureFlags::STATIC)) {
                 return false;
             }
@@ -1352,24 +1350,6 @@ bool ETSChecker::IsMethodOverridesOther(Signature *base, Signature *derived)
     }
 
     return false;
-}
-
-bool ETSChecker::CheckThrowMarkers(Signature *source, Signature *target)
-{
-    ir::ScriptFunctionFlags throwMarkers = ir::ScriptFunctionFlags::THROWS | ir::ScriptFunctionFlags::RETHROWS;
-    if ((source->Function()->Flags() & throwMarkers) == (target->Function()->Flags() & throwMarkers)) {
-        return true;
-    }
-
-    if ((source->Function()->IsRethrowing() && target->Function()->IsThrowing()) ||
-        (!source->Function()->IsThrowing() &&
-         (target->Function()->IsRethrowing() || target->Function()->IsThrowing()))) {
-        LogError(diagnostic::OVERRIDE_OR_SHADOWER_CHANGES_ERROR_HANDLING_CLAUSE, {},
-                 target->Function()->Body() == nullptr ? target->Function()->Start()
-                                                       : target->Function()->Body()->Start());
-        return false;
-    }
-    return true;
 }
 
 OverrideErrorCode ETSChecker::CheckOverride(Signature *signature, Signature *other)
@@ -1505,10 +1485,6 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
         }
 
         if (itSubst->HasSignatureFlag(SignatureFlags::ABSTRACT) || site->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
-            if (site->HasObjectFlag(ETSObjectFlags::INTERFACE) && !CheckThrowMarkers(itSubst, signature)) {
-                return false;
-            }
-
             if ((itSubst->Function()->IsSetter() && !signature->Function()->IsSetter()) ||
                 (itSubst->Function()->IsGetter() && !signature->Function()->IsGetter())) {
                 continue;

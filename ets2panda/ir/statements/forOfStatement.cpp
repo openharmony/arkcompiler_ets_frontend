@@ -175,10 +175,6 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
 
     ES2PANDA_ASSERT(signature->Function() != nullptr);
 
-    if (signature->Function()->IsThrowing() || signature->Function()->IsRethrowing()) {
-        checker->CheckThrowingStatements(this);
-    }
-
     if (!CheckReturnTypeOfIteratorMethod(checker, sourceType, signature, position)) {
         return nullptr;
     }

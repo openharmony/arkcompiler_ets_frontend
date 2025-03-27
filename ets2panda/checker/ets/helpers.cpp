@@ -2215,78 +2215,6 @@ bool ETSChecker::IsSameDeclarationType(varbinder::LocalVariable *target, varbind
     return target->Declaration()->Type() == compare->Declaration()->Type();
 }
 
-bool ETSChecker::CheckRethrowingParams([[maybe_unused]] const ir::AstNode *ancestorFunction,
-                                       [[maybe_unused]] const ir::AstNode *node)
-{
-    // #22954: the previous implementation compared different identifiers by string
-    return true;
-}
-
-void ETSChecker::CheckThrowingStatements(ir::AstNode *node)
-{
-    ir::AstNode *ancestorFunction = FindAncestorGivenByType(node, ir::AstNodeType::SCRIPT_FUNCTION);
-
-    if (ancestorFunction == nullptr) {
-        LogError(diagnostic::MISSING_EXCEPTION_HANDLING, {}, node->Start());
-        return;
-    }
-
-    if (ancestorFunction->AsScriptFunction()->IsThrowing() ||
-        (ancestorFunction->AsScriptFunction()->IsRethrowing() &&
-         (!node->IsThrowStatement() && CheckRethrowingParams(ancestorFunction, node)))) {
-        return;
-    }
-
-    if (!CheckThrowingPlacement(node, ancestorFunction)) {
-        if (ancestorFunction->AsScriptFunction()->IsRethrowing() && !node->IsThrowStatement()) {
-            LogError(diagnostic::RETHROW_NOT_BY_PARAM, {}, node->Start());
-            return;
-        }
-
-        if (auto interfaces =
-                ancestorFunction->AsScriptFunction()->Signature()->Owner()->AsETSObjectType()->Interfaces();
-            !(!interfaces.empty() &&
-              interfaces[0]->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::FUNCTIONAL_INTERFACE))) {
-            LogError(diagnostic::MISSING_EXCEPTION_HANDLING, {}, node->Start());
-            return;
-        }
-    }
-}
-
-bool ETSChecker::CheckThrowingPlacement(ir::AstNode *node, const ir::AstNode *ancestorFunction)
-{
-    ir::AstNode *startPoint = node;
-    ir::AstNode *enclosingCatchClause = nullptr;
-    ir::BlockStatement *enclosingFinallyBlock = nullptr;
-    ir::AstNode *p = startPoint->Parent();
-
-    bool isHandled = false;
-    const auto predicateFunc = [&enclosingCatchClause](ir::CatchClause *clause) {
-        return clause == enclosingCatchClause;
-    };
-
-    do {
-        if (p->IsTryStatement() && p->AsTryStatement()->HasDefaultCatchClause()) {
-            enclosingCatchClause = FindAncestorGivenByType(startPoint, ir::AstNodeType::CATCH_CLAUSE, p);
-            enclosingFinallyBlock = FindFinalizerOfTryStatement(startPoint, p);
-            const auto catches = p->AsTryStatement()->CatchClauses();
-            if (std::any_of(catches.begin(), catches.end(), predicateFunc)) {
-                startPoint = enclosingCatchClause;
-            } else if (enclosingFinallyBlock != nullptr &&
-                       enclosingFinallyBlock == p->AsTryStatement()->FinallyBlock()) {
-                startPoint = enclosingFinallyBlock;
-            } else {
-                isHandled = true;
-                break;
-            }
-        }
-
-        p = p->Parent();
-    } while (p != ancestorFunction);
-
-    return isHandled;
-}
-
 ir::BlockStatement *ETSChecker::FindFinalizerOfTryStatement(ir::AstNode *startFrom, const ir::AstNode *p)
 {
     auto *iter = startFrom->Parent();
@@ -2304,36 +2232,6 @@ ir::BlockStatement *ETSChecker::FindFinalizerOfTryStatement(ir::AstNode *startFr
     } while (iter != p);
 
     return nullptr;
-}
-
-void ETSChecker::CheckRethrowingFunction(ir::ScriptFunction *func)
-{
-    if (func->Signature()->Owner()->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL_INTERFACE)) {
-        return;
-    }
-
-    bool foundThrowingParam = false;
-
-    // It doesn't support lambdas yet.
-    for (auto item : func->Params()) {
-        auto const *typeAnnotation = item->AsETSParameterExpression()->TypeAnnotation();
-
-        if (typeAnnotation->IsETSTypeReference()) {
-            auto *typeDecl = typeAnnotation->AsETSTypeReference()->Part()->GetIdent()->Variable()->Declaration();
-            if (typeDecl->IsTypeAliasDecl()) {
-                typeAnnotation = typeDecl->Node()->AsTSTypeAliasDeclaration()->TypeAnnotation();
-            }
-        }
-
-        if (typeAnnotation->IsETSFunctionType() && typeAnnotation->AsETSFunctionType()->IsThrowing()) {
-            foundThrowingParam = true;
-            break;
-        }
-    }
-
-    if (!foundThrowingParam) {
-        LogError(diagnostic::RETHROW_WITHOUT_THROWING_FUNC_PARAM, {}, func->Start());
-    }
 }
 
 ETSObjectType *ETSChecker::GetRelevantArgumentedTypeFromChild(ETSObjectType *const child, ETSObjectType *const target)

@@ -13,9 +13,6 @@ ast/parser/ets/global_scope_boolean.ets
 ast/parser/ets/global_scope_string.ets
 ast/parser/ets/lexer001.ets
 ast/parser/ets/lexer002.ets
-ast/parser/ets/method_override_throw_2.ets
-ast/parser/ets/method_override_throw_4.ets
-ast/parser/ets/method_override_throw_6.ets
 ast/parser/ets/TypeInferFunc.ets
 
 # Issue: #20639

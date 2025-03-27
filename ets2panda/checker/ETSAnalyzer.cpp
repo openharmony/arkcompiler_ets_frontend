@@ -169,8 +169,6 @@ static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinitio
 //  Extacted from 'ETSAnalyzer::Check(ir::MethodDefinition *node)' to reduce its size
 static checker::Type *CheckMethodDefinitionHelper(ETSChecker *checker, ir::MethodDefinition *node) noexcept
 {
-    auto *scriptFunc = node->Function();
-
     // NOTE(gogabr): temporary, until we have proper bridges, see #16485
     // Don't check overriding for synthetic functional classes.
     if ((node->Parent()->Modifiers() & ir::ModifierFlags::FUNCTIONAL) == 0) {
@@ -179,10 +177,6 @@ static checker::Type *CheckMethodDefinitionHelper(ETSChecker *checker, ir::Metho
 
     for (auto *overload : node->Overloads()) {
         overload->Check(checker);
-    }
-
-    if (scriptFunc->IsRethrowing()) {
-        checker->CheckRethrowingFunction(scriptFunc);
     }
 
     return node->TsType();
@@ -502,10 +496,6 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
         checker->CheckObjectLiteralArguments(signature, expr->GetArguments());
 
         checker->ValidateSignatureAccessibility(calleeObj, nullptr, signature, expr->Start());
-
-        if (signature->HasSignatureFlag(SignatureFlags::THROWING)) {
-            checker->CheckThrowingStatements(expr);
-        }
 
         if (calleeType->IsETSDynamicType()) {
             ES2PANDA_ASSERT(signature->Function()->IsDynamic());
@@ -1291,10 +1281,6 @@ Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, Type *calleeType) con
     if (calleeType->IsETSMethodType()) {
         ETSObjectType *calleeObj = GetCallExpressionCalleeObject(checker, expr, calleeType);
         checker->ValidateSignatureAccessibility(calleeObj, expr, signature, expr->Start());
-    }
-
-    if (signature->HasSignatureFlag(SignatureFlags::THROWS | SignatureFlags::RETHROWS)) {
-        checker->CheckThrowingStatements(expr);
     }
 
     if (calleeType->IsETSMethodType() && signature->Function()->IsDynamic()) {
@@ -2781,9 +2767,6 @@ checker::Type *ETSAnalyzer::Check(ir::ThrowStatement *st) const
 
     if (checker::Type *argType = st->argument_->Check(checker); !argType->IsTypeError()) {
         checker->CheckExceptionOrErrorType(argType, st->Start());
-        if (checker->Relation()->IsAssignableTo(argType, checker->GlobalBuiltinExceptionType())) {
-            checker->CheckThrowingStatements(st);
-        }
     }
 
     checker->AddStatus(CheckerStatus::MEET_THROW);
