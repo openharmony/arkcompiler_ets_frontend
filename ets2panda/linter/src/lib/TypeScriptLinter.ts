@@ -2054,6 +2054,7 @@ export class TypeScriptLinter {
   private handleTypeAliasDeclaration(node: ts.Node): void {
     const tsTypeAlias = node as ts.TypeAliasDeclaration;
     this.countDeclarationsWithDuplicateName(tsTypeAlias.name, tsTypeAlias);
+    this.handleInvalidIdentifier(tsTypeAlias);
     if (TsUtils.hasSendableDecorator(tsTypeAlias)) {
       if (!this.isSendableDecoratorValid(tsTypeAlias)) {
         return;
@@ -4218,7 +4219,7 @@ export class TypeScriptLinter {
   }
 
   private handleInvalidIdentifier(
-    decl:
+    decl: ts.TypeAliasDeclaration
       | ts.VariableDeclaration
       | ts.FunctionDeclaration
       | ts.MethodSignature
