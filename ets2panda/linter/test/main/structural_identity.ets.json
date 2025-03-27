@@ -613,6 +613,36 @@
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)",
             "severity": "ERROR"
+        },
+        {
+            "line": 621,
+            "column": 73,
+            "endLine": 621,
+            "endColumn": 91,
+            "problem": "LimitedReturnTypeInference",
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 621,
+            "column": 74,
+            "endLine": 621,
+            "endColumn": 75,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 626,
+            "column": 5,
+            "endLine": 626,
+            "endColumn": 22,
+            "problem": "StructuralIdentity",
+            "suggest": "",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)",
+            "severity": "ERROR"
         }
     ]
 }
