@@ -695,16 +695,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 126,
-            "column": 7,
-            "endLine": 126,
-            "endColumn": 9,
-            "problem": "DeclWithDuplicateName",
-            "suggest": "",
-            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
-            "severity": "ERROR"
-        },
-        {
             "line": 127,
             "column": 12,
             "endLine": 127,
@@ -759,116 +749,6 @@
             "column": 8,
             "endLine": 134,
             "endColumn": 14,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 137,
-            "column": 5,
-            "endLine": 137,
-            "endColumn": 28,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 138,
-            "column": 5,
-            "endLine": 138,
-            "endColumn": 33,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 138,
-            "column": 20,
-            "endLine": 138,
-            "endColumn": 33,
-            "problem": "FunctionExpression",
-            "suggest": "",
-            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 139,
-            "column": 5,
-            "endLine": 139,
-            "endColumn": 45,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 140,
-            "column": 10,
-            "endLine": 140,
-            "endColumn": 23,
-            "problem": "FunctionExpression",
-            "suggest": "",
-            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 141,
-            "column": 5,
-            "endLine": 141,
-            "endColumn": 35,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 158,
-            "column": 11,
-            "endLine": 158,
-            "endColumn": 13,
-            "problem": "DeclWithDuplicateName",
-            "suggest": "",
-            "rule": "Use unique names for types and namespaces. (arkts-unique-names)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 159,
-            "column": 3,
-            "endLine": 159,
-            "endColumn": 15,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 163,
-            "column": 3,
-            "endLine": 163,
-            "endColumn": 29,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 167,
-            "column": 3,
-            "endLine": 167,
-            "endColumn": 26,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 175,
-            "column": 3,
-            "endLine": 175,
-            "endColumn": 26,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",

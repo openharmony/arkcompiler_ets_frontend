@@ -12,11 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-let f1: Function = () => {}; // ERROR
-let g1: Function = function() {}; // ERROR
-let h1: Function = new Function('return 42'); // ERROR
+let f1: Function = () => {}; //  NOT OK
+let g1: Function = function() {}; //  NOT OK
+let h1: Function = new Function('return 42'); //  NOT OK
 let g2 = function() {}; // OK
-let h2 = new Function('return 42'); // ERROR
+let h2 = new Function('return 42'); //  NOT OK
 let j1 = () => {}; // OK
 let f2 = (x: number) => x + 1; // OK
 
@@ -29,3 +29,26 @@ let f3: F<void> = () => {}; // OK
 let g3: F<number> = () => 42; // OK
 let h3: F1<string, number> = (s: string) => s.length; // OK
 let i: F2<number, string, boolean> = (n: number, s: string) => s.length > n; // OK
+
+export let add: (a: number, b: number) => number; // OK
+export let add1: (a: string) => object; // OK
+
+interface C2 {
+  f2: Function  // NOK
+}
+
+class A3 {
+  func3: Function = () => {} // NOK
+}
+
+class A4 extends A3 {
+  f4: Function = () => {}  // NOK
+}
+
+interface C5 {
+  a5;
+}
+
+class D5 implements C5 {
+  a5: Function = () => {}  // NOK
+}

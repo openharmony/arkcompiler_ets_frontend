@@ -199,9 +199,9 @@
             "column": 7,
             "endLine": 50,
             "endColumn": 2,
-            "problem": "LimitedStdLibApi",
+            "problem": "ExplicitFunctionType",
             "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
             "severity": "ERROR"
         },
         {

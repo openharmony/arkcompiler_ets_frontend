@@ -1767,7 +1767,7 @@ export class TypeScriptLinter {
       initializer && ts.isNewExpression(initializer) && initializer.expression.getText() === LIKE_FUNCTION;
 
     if (type && isFunctionLiteral || initializer && isNewFunctionConstructor) {
-      this.incrementCounters(node, FaultID.LimitedStdLibApi);
+      this.incrementCounters(node, FaultID.ExplicitFunctionType);
     }
   }
 
