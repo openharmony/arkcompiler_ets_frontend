@@ -79,6 +79,7 @@ import { WORKER_MODULES, WORKER_TEXT } from './utils/consts/WorkerAPI';
 import { ETS_PART, OH_MODULE_INDICATOR, PATH_SEPARATOR, VALID_OHM_URL_PART } from './utils/consts/OhmUrl';
 import { DOUBLE_DOLLAR_IDENTIFIER, THIS_IDENTIFIER, STATE_STYLES } from './utils/consts/AutofixConstants';
 import { DecoratorName } from './utils/consts/DecoratorName';
+import { REFLECT_PROPERTIES, USE_STATIC } from './utils/consts/InteropAPI';
 
 export class TypeScriptLinter {
   totalVisitedNodes: number = 0;
@@ -2671,6 +2672,8 @@ export class TypeScriptLinter {
     ) {
       this.handleLimitedVoidWithCall(tsCallExpr);
     }
+
+    this.handleInteropForCallExpression(tsCallExpr);
   }
 
   private handleEtsComponentExpression(node: ts.Node): void {
@@ -4597,5 +4600,108 @@ export class TypeScriptLinter {
     }
 
     return classDecl;
+  }
+
+  private handleInteropForCallExpression(tsCallExpr: ts.CallExpression): void {
+    const callSignature = this.tsTypeChecker.getResolvedSignature(tsCallExpr);
+    if (!callSignature?.declaration) {
+      return;
+    }
+
+    if (TypeScriptLinter.isDeclaredInArkTs2(callSignature)) {
+      return;
+    }
+
+    if (!this.hasObjectParameter(callSignature, tsCallExpr)) {
+      return;
+    }
+
+    const functionSymbol = this.getFunctionSymbol(callSignature.declaration);
+    const functionDeclaration = functionSymbol?.valueDeclaration;
+    if (!functionDeclaration) {
+      return;
+    }
+
+    if (
+      TypeScriptLinter.isFunctionLike(functionDeclaration) &&
+      TypeScriptLinter.containsReflectAPI(functionDeclaration)
+    ) {
+      this.incrementCounters(tsCallExpr.parent, FaultID.InteropCallReflect);
+    }
+  }
+
+  private static isDeclaredInArkTs2(callSignature: ts.Signature): boolean | undefined {
+    const declarationSourceFile = callSignature?.declaration?.getSourceFile();
+    if (!declarationSourceFile) {
+      return undefined;
+    }
+    if (!declarationSourceFile.statements) {
+      return undefined;
+    }
+    // check for 'use static' at the start of the file this function declared at
+    if (declarationSourceFile.statements[0].getText() !== USE_STATIC) {
+      return true;
+    }
+    return false;
+  }
+
+  private hasObjectParameter(callSignature: ts.Signature, tsCallExpr: ts.CallExpression): boolean {
+    for (const [index, param] of callSignature.parameters.entries()) {
+      const paramType = this.tsTypeChecker.getTypeOfSymbolAtLocation(param, tsCallExpr);
+
+      if (!this.tsUtils.isObject(paramType)) {
+        continue;
+      }
+
+      const argument = tsCallExpr.arguments[index];
+      if (!argument) {
+        continue;
+      }
+
+      if (this.tsTypeChecker.getTypeAtLocation(argument).isClass()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private static containsReflectAPI(
+    node: ts.FunctionDeclaration | ts.MethodDeclaration | ts.FunctionExpression
+  ): boolean {
+    if (!node.body) {
+      return false;
+    }
+
+    const checkForReflect = (currentNode: ts.Node): boolean => {
+      if (ts.isCallExpression(currentNode)) {
+        const expr = currentNode.expression;
+        if (ts.isPropertyAccessExpression(expr)) {
+          const obj = expr.expression;
+          const method = expr.name;
+          return ts.isIdentifier(obj) && obj.text === 'Reflect' && REFLECT_PROPERTIES.includes(method.text);
+        }
+      }
+      let found = false;
+      ts.forEachChild(currentNode, (child) => {
+        found = found || checkForReflect(child);
+      });
+      return found;
+    };
+
+    return checkForReflect(node.body);
+  }
+
+  private getFunctionSymbol(declaration: ts.Declaration): ts.Symbol | undefined {
+    if (TypeScriptLinter.isFunctionLike(declaration)) {
+      return declaration.name ? this.tsTypeChecker.getSymbolAtLocation(declaration.name) : undefined;
+    }
+    return undefined;
+  }
+
+  private static isFunctionLike(
+    node: ts.Node
+  ): node is ts.FunctionDeclaration | ts.MethodDeclaration | ts.FunctionExpression {
+    return ts.isFunctionDeclaration(node) || ts.isMethodDeclaration(node) || ts.isFunctionExpression(node);
   }
 }

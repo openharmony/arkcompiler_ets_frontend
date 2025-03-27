@@ -170,6 +170,7 @@ export enum FaultID {
   UIInterfaceImport,
   StylesDecoratorNotSupported,
   DataObservation,
+  InteropCallReflect,
   // this should always be last enum
   LAST_ID
 }
