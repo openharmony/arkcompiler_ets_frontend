@@ -785,6 +785,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 183,
+            "column": 15,
+            "endLine": 183,
+            "endColumn": 28,
+            "problem": "RegularExpressionLiteral",
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
             "line": 185,
             "column": 13,
             "endLine": 185,

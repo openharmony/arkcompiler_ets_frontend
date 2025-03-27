@@ -2106,17 +2106,43 @@ export class Autofixer {
     return ts.isObjectLiteralExpression(expr) || ts.isFunctionExpression(expr) || ts.isClassExpression(expr);
   }
 
-  fixRegularExpressionLiteral(regexpLiteral: ts.RegularExpressionLiteral): Autofix[] {
-    const srcFile = regexpLiteral.getSourceFile();
-    const literalText = regexpLiteral.getText();
-    const { pattern, flag } = Autofixer.extractRegexParts(literalText);
+  fixRegularExpressionLiteral(node: ts.RegularExpressionLiteral | ts.CallExpression): Autofix[] | undefined {
+    const srcFile = node.getSourceFile();
+    let pattern: string;
+    let flag: string | undefined;
+    if (ts.isRegularExpressionLiteral(node)) {
+      const literalText = node.getText();
+      const parts = Autofixer.extractRegexParts(literalText);
+      pattern = parts.pattern;
+      flag = parts.flag;
+    } else if (ts.isCallExpression(node)) {
+      const args = node.arguments;
+      if (args.length === 0 || args.length > 2) {
+        return undefined;
+      }
+      const patternArg = args[0];
+      if (!ts.isStringLiteral(patternArg)) {
+        return undefined;
+      }
+      pattern = patternArg.text;
+      if (args.length > 1) {
+        const flagArg = args[1];
+        if (ts.isStringLiteral(flagArg)) {
+          flag = flagArg.text;
+        } else {
+          return undefined;
+        }
+      }
+    } else {
+      return undefined;
+    }
     const args = [ts.factory.createStringLiteral(pattern)];
     if (flag) {
       args.push(ts.factory.createStringLiteral(flag));
     }
     const newExpression = ts.factory.createNewExpression(ts.factory.createIdentifier('RegExp'), undefined, args);
     const text = this.printer.printNode(ts.EmitHint.Unspecified, newExpression, srcFile);
-    return [{ start: regexpLiteral.getStart(), end: regexpLiteral.getEnd(), replacementText: text }];
+    return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];
   }
 
   private static extractRegexParts(literalText: string): {
@@ -2385,90 +2411,6 @@ export class Autofixer {
         values.push(tempVals[j]);
       }
     }
-  }
-
-  private resolveActualTypeNode(typeNode: ts.TypeNode): ts.TypeNode {
-    let current = typeNode;
-    while (ts.isTypeReferenceNode(current)) {
-      const symbol = this.typeChecker.getSymbolAtLocation(current.typeName);
-      if (!symbol) {
-        break;
-      }
-      const declaration = symbol.declarations?.[0];
-      if (!declaration || !ts.isTypeAliasDeclaration(declaration)) {
-        break;
-      }
-      current = declaration.type;
-    }
-    return current;
-  }
-
-  private static createOuterParams(actualTypeNode: ts.TypeNode): ts.ParameterDeclaration[] | undefined {
-    return ts.isFunctionTypeNode(actualTypeNode) ? [...actualTypeNode.parameters] : undefined;
-  }
-
-  private static createOuterArrowFunction(
-    outerParams: ts.ParameterDeclaration[],
-    functionBody: ts.CallExpression | ts.ArrowFunction
-  ): ts.ArrowFunction {
-    const blockFunctionBody = ts.factory.createBlock([ts.factory.createExpressionStatement(functionBody)], true);
-    return ts.factory.createArrowFunction(
-      undefined,
-      undefined,
-      outerParams,
-      ts.factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword),
-      ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-      blockFunctionBody
-    );
-  }
-
-  private static isGenericTypeNode(typeNode: ts.TypeNode): boolean | undefined {
-    return ts.isTypeReferenceNode(typeNode) && typeNode.typeArguments && typeNode.typeArguments.length > 0;
-  }
-
-  private isGenericFunction(expr: ts.Expression): boolean | undefined {
-    const symbol = this.typeChecker.getSymbolAtLocation(expr);
-    if (!symbol) {
-      return false;
-    }
-    const declarations = symbol.getDeclarations();
-    if (!declarations || declarations.length === 0) {
-      return false;
-    }
-    const declaration = declarations[0];
-    return ts.isFunctionDeclaration(declaration) && declaration.typeParameters && declaration.typeParameters.length > 0;
-  }
-
-  fixIncompatibleFunction(expr: ts.Expression, typeNode: ts.TypeNode): Autofix[] | undefined {
-    const resolvedTypeNode = this.resolveActualTypeNode(typeNode);
-    const outerParams = Autofixer.createOuterParams(resolvedTypeNode);
-    if (outerParams === undefined) {
-      return undefined;
-    }
-    const areAllParametersIdentifiers = (params: ts.ParameterDeclaration[]): boolean => {
-      return params.every((p) => {
-        return ts.isIdentifier(p.name);
-      });
-    };
-    if (
-      !areAllParametersIdentifiers(outerParams) ||
-      this.isGenericFunction(expr) ||
-      Autofixer.isGenericTypeNode(resolvedTypeNode)
-    ) {
-      return undefined;
-    }
-    const createInnerParamRefs = (params: ts.ParameterDeclaration[]): ts.Identifier[] => {
-      return params.map((p) => {
-        return ts.factory.createIdentifier((p.name as ts.Identifier).text);
-      });
-    };
-    const createCompanyFunction = (functionExpr: ts.Expression): Autofix[] => {
-      const functionCall = ts.factory.createCallExpression(functionExpr, undefined, createInnerParamRefs(outerParams));
-      const outerArrowFunction = Autofixer.createOuterArrowFunction(outerParams, functionCall);
-      const text = this.printer.printNode(ts.EmitHint.Unspecified, outerArrowFunction, expr.getSourceFile());
-      return [{ start: expr.getStart(), end: expr.getEnd(), replacementText: text }];
-    };
-    return createCompanyFunction(expr);
   }
 
   fixVariableDeclaration(node: ts.VariableDeclaration): Autofix[] | undefined {
