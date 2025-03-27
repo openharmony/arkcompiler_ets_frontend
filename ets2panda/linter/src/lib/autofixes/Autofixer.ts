@@ -33,7 +33,14 @@ import {
   CustomDecoratorName,
   ARKUI_PACKAGE_NAME,
   VALUE_IDENTIFIER,
-  INDENT_STEP
+  INDENT_STEP,
+  ENTRY_DECORATOR_NAME,
+  ENTRY_STORAGE_PROPERITY,
+  LOCAL_STORAGE_TYPE_NAME,
+  GET_LOCAL_STORAGE_FUNC_NAME,
+  PROVIDE_DECORATOR_NAME,
+  PROVIDE_ALIAS_PROPERTY_NAME,
+  PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME
 } from '../utils/consts/ArkuiConstants';
 
 const UNDEFINED_NAME = 'undefined';
@@ -2357,6 +2364,143 @@ export class Autofixer {
       text = '@' + CustomDecoratorName.AnimatableExtend + '\n' + text;
     }
     return [{ start: funcDecl.getStart(), end: funcDecl.getEnd(), replacementText: text }];
+  }
+
+  fixEntryDecorator(entryDecorator: ts.Decorator): Autofix[] | undefined {
+    if (!ts.isCallExpression(entryDecorator.expression)) {
+      return undefined;
+    }
+
+    const args = entryDecorator.expression.arguments;
+    if (args.length !== 1) {
+      return undefined;
+    }
+
+    const parentNode = entryDecorator.parent;
+    const arg = args[0];
+    let getLocalStorageStatement: ts.VariableStatement | undefined;
+
+    if (ts.isIdentifier(arg) || ts.isNewExpression(arg) || ts.isCallExpression(arg)) {
+      getLocalStorageStatement = Autofixer.createGetLocalStorageLambdaStatement(arg);
+    } else if (ts.isObjectLiteralExpression(arg)) {
+      getLocalStorageStatement = Autofixer.processEntryAnnotationObjectLiteralExpression(arg);
+    }
+
+    if (getLocalStorageStatement !== undefined) {
+      let text = this.printer.printNode(ts.EmitHint.Unspecified, getLocalStorageStatement, parentNode.getSourceFile());
+      const fixedEntryDecorator = Autofixer.createFixedEntryDecorator();
+      const fixedEntryDecoratorText = this.printer.printNode(
+        ts.EmitHint.Unspecified,
+        fixedEntryDecorator,
+        parentNode.getSourceFile()
+      );
+      text = text + '\n' + fixedEntryDecoratorText;
+      return [{ start: entryDecorator.getStart(), end: entryDecorator.getEnd(), replacementText: text }];
+    }
+    return undefined;
+  }
+
+  private static createFixedEntryDecorator(): ts.Decorator {
+    const storageProperty = ts.factory.createPropertyAssignment(
+      ts.factory.createIdentifier(ENTRY_STORAGE_PROPERITY),
+      ts.factory.createStringLiteral(GET_LOCAL_STORAGE_FUNC_NAME)
+    );
+    const objectLiteralExpr = ts.factory.createObjectLiteralExpression([storageProperty], false);
+    const callExpr = ts.factory.createCallExpression(ts.factory.createIdentifier(ENTRY_DECORATOR_NAME), undefined, [
+      objectLiteralExpr
+    ]);
+    return ts.factory.createDecorator(callExpr);
+  }
+
+  private static processEntryAnnotationObjectLiteralExpression(
+    expression: ts.ObjectLiteralExpression
+  ): ts.VariableStatement | undefined {
+    const objectProperties = expression.properties;
+    if (objectProperties.length !== 1) {
+      return undefined;
+    }
+    const objectProperty = objectProperties[0];
+    if (!ts.isPropertyAssignment(objectProperty)) {
+      return undefined;
+    }
+    if (ts.isIdentifier(objectProperty.name)) {
+      if (objectProperty.name.escapedText !== ENTRY_STORAGE_PROPERITY) {
+        return undefined;
+      }
+      const properityInitializer = objectProperty.initializer;
+      if (
+        ts.isIdentifier(properityInitializer) ||
+        ts.isNewExpression(properityInitializer) ||
+        ts.isCallExpression(properityInitializer) ||
+        ts.isPropertyAccessExpression(properityInitializer)
+      ) {
+        return Autofixer.createGetLocalStorageLambdaStatement(properityInitializer);
+      }
+    }
+    return undefined;
+  }
+
+  private static createGetLocalStorageLambdaStatement(expression: ts.Expression): ts.VariableStatement {
+    const variable = ts.factory.createVariableDeclaration(
+      ts.factory.createIdentifier(GET_LOCAL_STORAGE_FUNC_NAME),
+      undefined,
+      undefined,
+      ts.factory.createArrowFunction(
+        undefined,
+        undefined,
+        [],
+        ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(LOCAL_STORAGE_TYPE_NAME), undefined),
+        ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+        expression
+      )
+    );
+    const declarationList = ts.factory.createVariableDeclarationList([variable], ts.NodeFlags.Const);
+    return ts.factory.createVariableStatement(undefined, declarationList);
+  }
+
+  fixProvideDecorator(provideDecorator: ts.Decorator): Autofix[] | undefined {
+    const callExpr = provideDecorator.expression as ts.CallExpression;
+    const args = callExpr.arguments;
+    const parentNode = provideDecorator.parent;
+    const arg = args[0];
+    let provideAnnotationFixed: ts.Decorator | undefined;
+    if (ts.isStringLiteral(arg)) {
+      provideAnnotationFixed = Autofixer.createProvideDecorator(arg);
+    }
+    if (ts.isObjectLiteralExpression(arg)) {
+      const properties = arg.properties;
+      const property = properties[0] as ts.PropertyAssignment;
+      const propertyInitializer = property.initializer as ts.StringLiteral;
+      provideAnnotationFixed = Autofixer.createProvideDecorator(propertyInitializer, true);
+    }
+    if (provideAnnotationFixed !== undefined) {
+      const text = this.printer.printNode(ts.EmitHint.Unspecified, provideAnnotationFixed, parentNode.getSourceFile());
+      return [{ start: provideDecorator.getStart(), end: provideDecorator.getEnd(), replacementText: text }];
+    }
+    return undefined;
+  }
+
+  private static createProvideDecorator(
+    alias: ts.StringLiteral,
+    allowOverride: boolean | undefined = undefined
+  ): ts.Decorator {
+    const properties: ts.PropertyAssignment[] = [];
+    properties.push(
+      ts.factory.createPropertyAssignment(ts.factory.createIdentifier(PROVIDE_ALIAS_PROPERTY_NAME), alias)
+    );
+    if (allowOverride !== undefined && allowOverride) {
+      properties.push(
+        ts.factory.createPropertyAssignment(
+          ts.factory.createIdentifier(PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME),
+          ts.factory.createTrue()
+        )
+      );
+    }
+    const objectLiteralExpr = ts.factory.createObjectLiteralExpression(properties, false);
+    const callExpr = ts.factory.createCallExpression(ts.factory.createIdentifier(PROVIDE_DECORATOR_NAME), undefined, [
+      objectLiteralExpr
+    ]);
+    return ts.factory.createDecorator(callExpr);
   }
 
   private static createFunctionDeclaration(

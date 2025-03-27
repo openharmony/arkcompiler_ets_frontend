@@ -264,6 +264,8 @@ cookBookTag[257] =
   '"@AnimatableExtend" decorator should be transformed to use receiver (arkui-animatableextend-use-receiver)';
 cookBookTag[258] = 'Data observation needs to add "@Observed" (arkui-data-observation)';
 cookBookTag[259] = 'ArkUI interface should be imported before using (arkui-modular-interface)';
+cookBookTag[260] = 'The "@Entry" annotation does not support dynamic parameters (arkui-entry-annotation-parameters)';
+cookBookTag[263] = 'The "@Provide" annotation does not support dynamic parameters (arkui-provide-annotation-parameters)';
 cookBookTag[300] = 'The function type should be explicit (arkts-no-ts-like-function)';
 cookBookTag[301] = 'Importing from "oh module" requires specifying full path (arkts-ohmurl-full-path)';
 cookBookTag[302] =
