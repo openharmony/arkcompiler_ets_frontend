@@ -169,3 +169,4 @@ faultDesc[FaultID.OhmUrlFullPath] = 'Require full path file name';
 faultDesc[FaultID.UIInterfaceImport] = 'UI interface';
 faultDesc[FaultID.StylesDecoratorNotSupported] = '"@Styles" decorator';
 faultDesc[FaultID.DataObservation] = 'Data observation';
+faultDesc[FaultID.InteropCallReflect] = 'Interop call with Reflect API';
