@@ -21,8 +21,7 @@ class B extends A {}
 
 function main() {
   let bb = new B()
-  /* @@ label1 */bb./* @@ label2 */foo()
+  bb./* @@ label */foo()
 }
 
-/* @@@ label2 Error TypeError: 'foo' is a static property of 'B' */
-/* @@@ label1 Error TypeError: No matching call signature */
+/* @@@ label Error TypeError: 'foo' is a static property of 'B' */

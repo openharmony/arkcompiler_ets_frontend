@@ -17,9 +17,8 @@ class A {
     static foo(): void {}
 
     public callFoo(): void {
-        /* @@ label1 */this./* @@ label2 */foo();
+        this./* @@ label */foo();
     }
 }
 
-/* @@@ label2 Error TypeError: 'foo' is a static property of 'A'  */
-/* @@@ label1 Error TypeError: No matching call signature */
+/* @@@ label Error TypeError: 'foo' is a static property of 'A'  */

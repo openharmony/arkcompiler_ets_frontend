@@ -19,8 +19,7 @@ class A {
 
 function main() {
   let arr: FixedArray<A> = [new A()];
-  /* @@ label1 */arr[0]./* @@ label2 */foo();
+  arr[0]./* @@ label */foo();
 }
 
-/* @@@ label2 Error TypeError: 'foo' is a static property of 'A' */
-/* @@@ label1 Error TypeError: No matching call signature */
+/* @@@ label Error TypeError: 'foo' is a static property of 'A' */

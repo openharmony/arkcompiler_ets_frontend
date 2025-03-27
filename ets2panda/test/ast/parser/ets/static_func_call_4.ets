@@ -17,7 +17,6 @@ class A {
   static bar() {}
 }
 
-/* @@ label1 */new A()./* @@ label2 */bar()
+new A()./* @@ label */bar()
 
-/* @@@ label2 Error TypeError: 'bar' is a static property of 'A' */
-/* @@@ label1 Error TypeError: No matching call signature */
+/* @@@ label Error TypeError: 'bar' is a static property of 'A' */

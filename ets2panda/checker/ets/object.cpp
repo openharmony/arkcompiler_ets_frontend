@@ -2088,10 +2088,6 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
     }
     const auto *const targetRef = GetTargetRef(memberExpr);
     auto searchFlag = GetSearchFlags(memberExpr, targetRef);
-    if (target->HasTypeFlag(TypeFlag::GENERIC) && (searchFlag & PropertySearchFlags::SEARCH_STATIC) != 0) {
-        searchFlag |= PropertySearchFlags::SEARCH_ALL;
-    }
-
     auto searchName = target->GetReExportAliasValue(memberExpr->Property()->AsIdentifier()->Name());
     auto *prop = target->GetProperty(searchName, searchFlag);
     varbinder::Variable *const globalFunctionVar = ResolveInstanceExtension(memberExpr);

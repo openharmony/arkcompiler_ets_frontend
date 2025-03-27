@@ -15,8 +15,7 @@
 
 class A {
     static bar() {}
-    foo() { /* @@ label1 */this./* @@ label2 */bar(); }
+    foo() { this./* @@ label */bar(); }
 }
 
-/* @@@ label2 Error TypeError: 'bar' is a static property of 'A'  */
-/* @@@ label1 Error TypeError: No matching call signature */
+/* @@@ label Error TypeError: 'bar' is a static property of 'A'  */

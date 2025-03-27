@@ -1183,23 +1183,6 @@ checker::Type *ETSAnalyzer::Check(ir::BlockExpression *st) const
     return st->TsType();
 }
 
-static bool ShouldRemoveStaticSignature(ir::CallExpression *expr)
-{
-    // Remove static signatures if the callee is a member expression and the left side of it is an initialized object
-    if (expr->Callee()->IsMemberExpression() &&
-        !expr->Callee()->AsMemberExpression()->Object()->TsType()->IsETSEnumType()) {
-        auto object = expr->Callee()->AsMemberExpression()->Object();
-        if (object->IsMemberExpression()) {
-            object = object->AsMemberExpression()->Property();
-        }
-        if (!object->IsIdentifier() || object->AsIdentifier()->Variable() == nullptr ||
-            object->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::INITIALIZED)) {
-            return true;
-        }
-    }
-    return false;
-}
-
 checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallExpression *expr,
                                                   checker::Type *calleeType) const
 {
@@ -1232,14 +1215,6 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
     }
     auto &signatures = expr->IsETSConstructorCall() ? calleeType->AsETSObjectType()->ConstructSignatures()
                                                     : calleeType->AsETSFunctionType()->CallSignaturesOfMethodOrArrow();
-    // Remove static signatures if the callee is a member expression and the object is initialized
-    if (ShouldRemoveStaticSignature(expr)) {
-        signatures.erase(std::remove_if(signatures.begin(), signatures.end(),
-                                        [](checker::Signature *signature) {
-                                            return signature->HasSignatureFlag(SignatureFlags::STATIC);
-                                        }),
-                         signatures.end());
-    }
 
     return checker->ResolveCallExpressionAndTrailingLambda(signatures, expr, expr->Start());
 }

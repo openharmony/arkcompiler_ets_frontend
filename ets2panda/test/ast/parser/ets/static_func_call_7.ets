@@ -19,9 +19,8 @@ class A {
 
 class B extends A {
   public bar(): void {
-    /* @@ label1 */super./* @@ label2 */foo();
+    super./* @@ label */foo();
   }
 }
 
-/* @@@ label2 Error TypeError: 'foo' is a static property of 'A' */
-/* @@@ label1 Error TypeError: No matching call signature */
+/* @@@ label Error TypeError: 'foo' is a static property of 'A' */

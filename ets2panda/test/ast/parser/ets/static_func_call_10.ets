@@ -44,8 +44,7 @@ function main() {
     let c : C = new C(b)
     let d : D = new D(c)
 
-    /* @@ label1 */d.c.b.a./* @@ label2 */foo()
+    d.c.b.a./* @@ label */foo()
 }
 
-/* @@@ label1 Error TypeError: No matching call signature */
-/* @@@ label2 Error TypeError: 'foo' is a static property of 'A' */
+/* @@@ label Error TypeError: 'foo' is a static property of 'A' */

@@ -27,5 +27,6 @@ Error().fromEntries() {}
 
 /* @@? 23:1 Error TypeError: Expected 1 arguments, got 0. */
 /* @@? 23:1 Error TypeError: No matching call signature */
+/* @@? 26:1 Error TypeError: Expected 1 arguments, got 0. */
 /* @@? 26:1 Error TypeError: No matching call signature */
 /* @@? 26:9 Error TypeError: 'fromEntries' is a static property of 'Error' */
