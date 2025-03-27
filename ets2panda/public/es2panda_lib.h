@@ -193,6 +193,14 @@ struct CAPI_EXPORT es2panda_Impl {
     Es2pandaEnum (*Es2pandaEnumFromString)(es2panda_Context *ctx, const char *str);
     char *(*Es2pandaEnumToString)(es2panda_Context *ctx, Es2pandaEnum id);
     es2panda_AstNode *(*DeclarationFromIdentifier)(es2panda_Context *ctx, es2panda_AstNode *node);
+    es2panda_AstNode *(*FirstDeclarationByNameFromNode)(es2panda_Context *ctx, const es2panda_AstNode *node,
+                                                        const char *name);
+    es2panda_AstNode *(*FirstDeclarationByNameFromProgram)(es2panda_Context *ctx, const es2panda_Program *program,
+                                                           const char *name);
+    es2panda_AstNode **(*AllDeclarationsByNameFromNode)(es2panda_Context *ctx, const es2panda_AstNode *node,
+                                                        const char *name, size_t *declsLen);
+    es2panda_AstNode **(*AllDeclarationsByNameFromProgram)(es2panda_Context *ctx, const es2panda_Program *program,
+                                                           const char *name, size_t *declsLen);
 
     int (*GenerateTsDeclarationsFromContext)(es2panda_Context *context, const char *outputDeclEts,
                                              const char *outputEts, bool exportAll);
