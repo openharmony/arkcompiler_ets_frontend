@@ -37,6 +37,7 @@ set(PLUGIN_TESTS
     "e2p_test_plugin_ets_node_types compile.ets ${RUNTIME_MODE} c ${LIBRARY_PLUGIN}"
     "e2p_test_plugin_ets_varibles_and_types compile.ets ${RUNTIME_MODE} c ${LIBRARY_PLUGIN}"
     "e2p_test_plugin_change_func runtime_change_func_call.ets ${RUNTIME_MODE} cpp ${LIBRARY_PLUGIN}"
+    "e2p_test_plugin_recheck compile.ets ${COMPILE_MODE} c ${LIBRARY_PLUGIN}"
     "e2p_test_plugin compile.ets ${EXPECTED_MODE} c ${LIBRARY_PLUGIN}"
     "e2p_test_plugin_is compile.ets ${EXPECTED_MODE} c ${LIBRARY_PLUGIN}"
     "e2p_test_plugin_after_bind compile.ets ${EXPECTED_MODE} cpp ${LIBRARY_PLUGIN}"
