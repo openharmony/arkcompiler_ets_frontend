@@ -36,7 +36,7 @@
 /ets2panda/checker/ETSAnalyzer.cpp @akmaevaleksey ^vpukhov ^igelhaus ^Prof1983
 /ets2panda/declgen_ets2ts/ @dreamdoomwalker ^trubachevilya ^ivagin ^hufeng20 ^igelhaus ^Prof1983
 /ets2panda/driver/ ^trubachevilya @dreamdoomwalker @chenqy930 @hufeng20 ^igelhaus ^Prof1983
-/ets2panda/linter/              @ragnvald @rosinskiyigor @eokolnov1
+/ets2panda/linter/              @ragnvald @rosinskiyigor @eokolnov1 @liwentao_uiw
 /ets2panda/parser/ETSparser*.* @zelentsovdmitry ^igelhaus ^Prof1983 @chernykhsergey
 /ets2panda/parser/expressionParser.cpp @zelentsovdmitry ^igelhaus ^Prof1983 @chernykhsergey
 /ets2panda/parser/parser*.* @zelentsovdmitry ^igelhaus ^Prof1983 @chernykhsergey
