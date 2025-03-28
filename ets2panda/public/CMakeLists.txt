@@ -101,6 +101,7 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/ir/typed.h
     ${ES2PANDA_ROOT}/ir/statements/ifStatement.h
     ${ES2PANDA_ROOT}/ir/ets/etsTuple.h
+    ${ES2PANDA_ROOT}/ir/ets/etsStringLiteralType.h
     ${ES2PANDA_ROOT}/ir/module/exportSpecifier.h
     ${ES2PANDA_ROOT}/ir/ts/tsNamedTupleMember.h
     ${ES2PANDA_ROOT}/ir/statements/returnStatement.h
@@ -375,6 +376,7 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsUndefinedKeyword.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/signature.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ets/etsTuple.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsStringLiteralType.yaml
     ${LIBGEN_DIR}/gen/headers/util/language.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/tryStatement.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsBigIntType.yaml
