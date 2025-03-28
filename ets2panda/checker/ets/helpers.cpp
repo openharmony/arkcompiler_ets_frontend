@@ -2522,6 +2522,15 @@ ir::Expression *ETSChecker::GenerateImplicitInstantiateArg(const std::string &cl
     return argExpr;
 }
 
+static void ReInitScopesForTypeAnnotation(ETSChecker *checker, ir::TypeNode *typeAnno, varbinder::Scope *paramScope)
+{
+    if (typeAnno != nullptr) {
+        compiler::ClearTypesVariablesAndScopes(typeAnno);
+        auto classCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), paramScope);
+        compiler::InitScopesPhaseETS::RunExternalNode(typeAnno, checker->VarBinder());
+    }
+}
+
 ir::ClassProperty *ETSChecker::ClassPropToImplementationProp(ir::ClassProperty *classProp, varbinder::ClassScope *scope)
 {
     classProp->Key()->AsIdentifier()->SetName(
@@ -2541,6 +2550,7 @@ ir::ClassProperty *ETSChecker::ClassPropToImplementationProp(ir::ClassProperty *
     fieldVar->SetTsType(classProp->TsType());
 
     auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>::Enter(VarBinder(), scope);
+    ReInitScopesForTypeAnnotation(this, classProp->TypeAnnotation(), scope);
     compiler::InitScopesPhaseETS::RunExternalNode(classProp->Value(), VarBinder());
 
     return classProp;
@@ -2586,6 +2596,7 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto *const typeAnnotation = field->TypeAnnotation()->Clone(Allocator(), paramIdent);
         paramIdent->SetTsTypeAnnotation(typeAnnotation);
+        ReInitScopesForTypeAnnotation(this, typeAnnotation, paramScope);
     } else {
         paramIdent->SetTsType(field->TsType());
     }
@@ -2599,6 +2610,7 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
         VarBinder()->ThrowRedeclaration(node->Start(), paramVar->Name());
     }
 
+    paramIdent->SetVariable(paramVar);
     paramExpression->SetVariable(paramVar);
     params.push_back(paramExpression);
 
@@ -2648,10 +2660,11 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto funcFlags = isSetter ? ir::ScriptFunctionFlags::SETTER
                               : ir::ScriptFunctionFlags::GETTER | ir::ScriptFunctionFlags::HAS_RETURN;
-    auto *const returnTypeAnn = isSetter || field->TypeAnnotation() == nullptr
-                                    ? nullptr
-                                    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-                                    : field->TypeAnnotation()->Clone(checker->Allocator(), nullptr);
+    auto *returnTypeAnn = isSetter || field->TypeAnnotation() == nullptr
+                              ? nullptr
+                              // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+                              : field->TypeAnnotation()->Clone(checker->Allocator(), nullptr);
+    ReInitScopesForTypeAnnotation(checker, returnTypeAnn, paramScope);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     ir::ModifierFlags modifierFlag =
         (ir::ModifierFlags::PUBLIC |
@@ -2772,6 +2785,7 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
     interfaceProp->SetRange(originalProp->Range());
 
     auto classCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(VarBinder(), scope);
+    ReInitScopesForTypeAnnotation(this, interfaceProp->TypeAnnotation(), scope);
     compiler::InitScopesPhaseETS::RunExternalNode(interfaceProp->Value(), VarBinder());
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
