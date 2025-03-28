@@ -2691,6 +2691,11 @@ export class TypeScriptLinter {
     if (this.options.arkts2 && calleeSym.getEscapedName() === 'pow' && isStdLibrarySymbol(calleeSym)) {
       this.incrementCounters(tsCallExpr, FaultID.MathPow);
     }
+
+    if (this.options.arkts2 && calleeSym.getEscapedName() === 'RegExp' && isStdLibrarySymbol(calleeSym)) {
+      const autofix = this.autofixer?.fixRegularExpressionLiteral(tsCallExpr);
+      this.incrementCounters(tsCallExpr, FaultID.RegularExpressionLiteral, autofix);
+    }
   }
 
   private handleCallExpression(node: ts.Node): void {
@@ -4265,8 +4270,7 @@ export class TypeScriptLinter {
 
   private checkFunctionTypeCompatible(lhsTypeNode: ts.TypeNode | undefined, rhsExpr: ts.Expression): void {
     if (this.options.arkts2 && lhsTypeNode && this.tsUtils.isIncompatibleFunctionals(lhsTypeNode, rhsExpr)) {
-      const autofix = this.autofixer?.fixIncompatibleFunction(rhsExpr, lhsTypeNode);
-      this.incrementCounters(rhsExpr, FaultID.IncompationbleFunctionType, autofix);
+      this.incrementCounters(rhsExpr, FaultID.IncompationbleFunctionType);
     }
   }
 

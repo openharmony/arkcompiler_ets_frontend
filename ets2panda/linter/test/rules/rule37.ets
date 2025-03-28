@@ -46,7 +46,7 @@
      static staticMethodTwo() {
          let regex: RegExp = new RegExp("/bc*d/");
      }
- 
+
      methodOne() {
          let regex = /bc*d/
      }
@@ -61,3 +61,7 @@
  }
 
  const regexLambda = () => /^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*(\.[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)*$/;
+
+ let regex12: RegExp = RegExp("ab*c")
+
+ let regex13: RegExp = RegExp("ab*c","i")
