@@ -58,49 +58,40 @@ export abstract class Node extends ArktsObject {
   }
 }
 
-// export class UnsupportedNode extends Node {
-//   constructor(peer: KPtr) {
-//     super(peer)
-//     console.log(`WARNING: UNSUPPORTED NODE (arkts): ${Es2pandaAstNodeType[this.type]}`)
-//   }
-// }
-
 export class Config extends ArktsObject {
-  constructor(peer: KPtr) {
+  readonly path: string
+  constructor(peer: KPtr, fpath: string) {
     super(peer)
     // TODO: wait for getter from api
-    this.path = ``
+    this.path = fpath
+  }
+
+  public toString(): string {
+    return `Config (peer = ${this.peer}, path = ${this.path})`
   }
 
   static create(
-    input: string[]
+    input: string[], fpath: string
   ): Config {
-    return new Config(
-      global.es2panda._CreateConfig(input.length, passStringArray(input))
-    )
-  }
-
-  static createDefault(): Config {
-    if (global.configIsInitialized()) {
-      console.warn(`Config already initialized`)
+    if (!global.configIsInitialized()) {
+      let cfg = global.es2panda._CreateConfig(input.length, passStringArray(input))
+      global.config = cfg
       return new Config(
-        global.config
+        cfg, fpath
       )
+    } else {
+      return new Config(global.config, fpath)
     }
-    return new Config(
-      global.es2panda._CreateConfig(
-        4,
-        passStringArray(["", "--arktsconfig", "./arktsconfig.json", global.filePath])
-      )
-    )
   }
-
-  readonly path: string
 }
 
 export class Context extends ArktsObject {
   constructor(peer: KPtr) {
     super(peer)
+  }
+
+  public toString(): string {
+    return `Context (peer = ${this.peer})`
   }
 
   static createFromString(
