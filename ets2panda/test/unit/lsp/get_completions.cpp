@@ -15,6 +15,7 @@
 
 #include "lsp_api_test.h"
 #include "lsp/include/completions.h"
+#include "lsp/include/internal_api.h"
 
 class LSPCompletionsTests : public LSPAPITests {};
 
@@ -26,6 +27,9 @@ void AssertCompletionsContainAndNotContainEntries(const std::vector<CompletionEn
                                                   const std::vector<CompletionEntry> &expectedEntries,
                                                   const std::vector<CompletionEntry> &unexpectedEntries)
 {
+    auto emptyCheck = expectedEntries.empty() && !entries.empty();
+    ASSERT_FALSE(emptyCheck) << "Expected empty but the result is not. Actual account: " << entries.size();
+
     for (const auto &expectedEntry : expectedEntries) {
         bool found = false;
         for (const auto &entry : entries) {
@@ -49,6 +53,71 @@ void AssertCompletionsContainAndNotContainEntries(const std::vector<CompletionEn
         }
         ASSERT_FALSE(found) << "Unexpected completion '" << unexpectedEntry.GetName() << "' found";
     }
+}
+
+TEST_F(LSPCompletionsTests, getCompletionsAtPosition6)
+{
+    std::vector<std::string> files = {"getCompletionsAtPosition1.ets"};
+    std::vector<std::string> texts = {R"delimiter(
+let a: num
+)delimiter"};
+    auto filePaths = CreateTempFile(files, texts);
+    int const expectedFileCount = 1;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+
+    LSPAPI const *lspApi = GetImpl();
+    size_t const offset = 11;  // after 'n' in 'let a = n'
+    auto res = lspApi->getCompletionsAtPosition(filePaths[0].c_str(), offset);
+    auto expectedEntries = std::vector<CompletionEntry> {
+        CompletionEntry("number", ark::es2panda::lsp::CompletionEntryKind::KEYWORD, std::string(GLOBALS_OR_KEYWORDS))};
+    AssertCompletionsContainAndNotContainEntries(res.GetEntries(), expectedEntries, {});
+}
+
+TEST_F(LSPCompletionsTests, getCompletionsAtPosition5)
+{
+    std::vector<std::string> files = {"getCompletionsAtPosition1.ets"};
+    std::vector<std::string> texts = {R"delimiter(
+class
+)delimiter"};
+    auto filePaths = CreateTempFile(files, texts);
+    int const expectedFileCount = 1;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+
+    LSPAPI const *lspApi = GetImpl();
+    size_t const offset = 5;  // after 'n' in 'let a = n'
+    auto res = lspApi->getCompletionsAtPosition(filePaths[0].c_str(), offset);
+    auto expectedEntries = std::vector<CompletionEntry> {};
+    AssertCompletionsContainAndNotContainEntries(res.GetEntries(), expectedEntries, {});
+}
+
+TEST_F(LSPCompletionsTests, getCompletionsAtPosition0)
+{
+    std::vector<std::string> files = {"getCompletionsAtPosition1.ets"};
+    std::vector<std::string> texts = {R"delimiter(
+function num1() {
+    return 1;
+}
+
+function num2() {
+    return 2;
+}
+
+console.log(1);
+
+let a = n
+)delimiter"};
+    auto filePaths = CreateTempFile(files, texts);
+    int const expectedFileCount = 1;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+
+    LSPAPI const *lspApi = GetImpl();
+    size_t const offset = 97;  // after 'n' in 'let a = n'
+    auto res = lspApi->getCompletionsAtPosition(filePaths[0].c_str(), offset);
+    auto expectedEntries = std::vector<CompletionEntry> {
+        CompletionEntry("num1", ark::es2panda::lsp::CompletionEntryKind::FUNCTION, std::string(GLOBALS_OR_KEYWORDS)),
+        CompletionEntry("num2", ark::es2panda::lsp::CompletionEntryKind::FUNCTION, std::string(GLOBALS_OR_KEYWORDS)),
+    };
+    AssertCompletionsContainAndNotContainEntries(res.GetEntries(), expectedEntries, {});
 }
 
 TEST_F(LSPCompletionsTests, getCompletionsAtPosition1)
