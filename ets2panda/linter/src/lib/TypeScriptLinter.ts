@@ -3894,6 +3894,7 @@ export class TypeScriptLinter {
       return;
     }
     this.incrementCounters(node, FaultID.ImportType);
+    this.incrementCounters(node, FaultID.DynamicImport);
   }
 
   private handleVoidExpression(node: ts.Node): void {

@@ -95,6 +95,66 @@
             "severity": "ERROR"
         },
         {
+            "line": 34,
+            "column": 29,
+            "endLine": 34,
+            "endColumn": 76,
+            "problem": "ImportType",
+            "suggest": "",
+            "rule": "syntax for import type is disabled (arkts-import-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 29,
+            "endLine": 34,
+            "endColumn": 76,
+            "problem": "DynamicImport",
+            "suggest": "",
+            "rule": "Dynamic import is not supported(arkts-no-dynamic-import)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 16,
+            "endLine": 36,
+            "endColumn": 39,
+            "problem": "ImportType",
+            "suggest": "",
+            "rule": "syntax for import type is disabled (arkts-import-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 16,
+            "endLine": 36,
+            "endColumn": 39,
+            "problem": "DynamicImport",
+            "suggest": "",
+            "rule": "Dynamic import is not supported(arkts-no-dynamic-import)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 16,
+            "endLine": 38,
+            "endColumn": 37,
+            "problem": "ImportType",
+            "suggest": "",
+            "rule": "syntax for import type is disabled (arkts-import-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 16,
+            "endLine": 38,
+            "endColumn": 37,
+            "problem": "DynamicImport",
+            "suggest": "",
+            "rule": "Dynamic import is not supported(arkts-no-dynamic-import)",
+            "severity": "ERROR"
+        },
+        {
             "line": 16,
             "column": 48,
             "endLine": 16,

@@ -29,4 +29,10 @@ function main(): void {
 
 import('./file').then((m) => {
   console.log(m.Data.name)
-}) 
+})
+
+declare type EllipseShape = import('../api/@ohos.arkui.shape').EllipseShape;
+
+type myClass = import('har1').HarClass;
+
+type myClass = typeof import('har1');
