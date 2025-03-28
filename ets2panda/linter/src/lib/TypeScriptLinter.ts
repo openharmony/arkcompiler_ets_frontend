@@ -853,6 +853,25 @@ export class TypeScriptLinter {
     if (TsUtils.isSendableFunction(baseExprType) || this.tsUtils.hasSendableTypeAlias(baseExprType)) {
       this.incrementCounters(propertyAccessNode, FaultID.SendableFunctionProperty);
     }
+    this.checkFunctionProperty(propertyAccessNode, baseExprSym, baseExprType);
+  }
+
+  checkFunctionProperty(
+    node: ts.PropertyAccessExpression,
+    baseExprSym: ts.Symbol | undefined,
+    baseExprType: ts.Type
+  ): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (
+      baseExprSym && TsUtils.isFunctionSymbol(baseExprSym) ||
+      this.tsUtils.isStdFunctionType(baseExprType) ||
+      TsUtils.isFunctionalType(baseExprType) && TsUtils.isAnonymousType(baseExprType)
+    ) {
+      this.incrementCounters(node.expression, FaultID.PropertyDeclOnFunction);
+    }
   }
 
   checkUnionTypes(propertyAccessNode: ts.PropertyAccessExpression): void {
@@ -1473,7 +1492,8 @@ export class TypeScriptLinter {
         this.incrementCounters(tsLhsExpr, FaultID.MethodReassignment);
       }
       if (
-        (this.options.arkts2 || TsUtils.isMethodAssignment(tsLhsSymbol)) &&
+        !this.options.arkts2 &&
+        TsUtils.isMethodAssignment(tsLhsSymbol) &&
         tsLhsBaseSymbol &&
         (tsLhsBaseSymbol.flags & ts.SymbolFlags.Function) !== 0
       ) {

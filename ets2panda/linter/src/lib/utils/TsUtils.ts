@@ -1997,12 +1997,12 @@ export class TsUtils {
     return undefined;
   }
 
-  private static isFunctionalType(type: ts.Type): boolean {
+  static isFunctionalType(type: ts.Type): boolean {
     const callSigns = type.getCallSignatures();
     return callSigns && callSigns.length > 0;
   }
 
-  private isStdFunctionType(type: ts.Type): boolean {
+  isStdFunctionType(type: ts.Type): boolean {
     const sym = type.getSymbol();
     return !!sym && sym.getName() === 'Function' && this.isGlobalSymbol(sym);
   }
