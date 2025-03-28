@@ -16,6 +16,7 @@
 #include "helpers.h"
 #include <iomanip>
 
+#include "parser/program/program.h"
 #include "varbinder/privateBinding.h"
 #include "lexer/token/letters.h"
 
@@ -490,7 +491,7 @@ void Helpers::CheckDefaultImport(const ArenaVector<ir::ETSImportDeclaration *> &
     for (auto statement : statements) {
         for (auto specifier : statement->Specifiers()) {
             if (specifier->Type() == ir::AstNodeType::IMPORT_DEFAULT_SPECIFIER) {
-                auto fileName = statement->ResolvedSource()->Str();
+                auto fileName = statement->ResolvedSource();
                 std::cerr << "Warning: default element has already imported [" << fileName << ":"
                           << specifier->Start().line << ":" << specifier->Start().index << "]" << std::endl;
                 return;

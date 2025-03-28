@@ -113,7 +113,7 @@ public:
         return sv_.empty();
     }
 
-    const std::string_view &Utf8() const noexcept
+    std::string_view Utf8() const noexcept
     {
         return sv_;
     }
@@ -319,7 +319,7 @@ public:
         return *this;
     }
 
-    util::UString &Append(const StringView &other) noexcept
+    util::UString &Append(StringView other) noexcept
     {
         if (str_ == nullptr) {
             Alloc();
@@ -327,6 +327,11 @@ public:
 
         *str_ += other.Utf8();
         return *this;
+    }
+
+    util::UString &Append(std::string_view other) noexcept
+    {
+        return Append(StringView(other));
     }
 
     util::UString &Append(const char *other) noexcept

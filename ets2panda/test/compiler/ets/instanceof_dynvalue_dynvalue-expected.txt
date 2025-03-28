@@ -5,7 +5,7 @@
       "type": "ImportDeclaration",
       "source": {
         "type": "StringLiteral",
-        "value": "dynamic_js_import_tests",
+        "value": "dynamic_import_tests",
         "loc": {
           "start": {
             "line": 20,
@@ -14,7 +14,7 @@
           },
           "end": {
             "line": 20,
-            "column": 47,
+            "column": 44,
             "program": "instanceof_dynvalue_dynvalue.ets"
           }
         }
@@ -127,7 +127,7 @@
         },
         "end": {
           "line": 20,
-          "column": 47,
+          "column": 44,
           "program": "instanceof_dynvalue_dynvalue.ets"
         }
       }
@@ -718,7 +718,7 @@
             "type": "ClassProperty",
             "key": {
               "type": "Identifier",
-              "name": "dynamic_js_import_tests0",
+              "name": "dynamic_import_tests0",
               "decorators": [],
               "loc": {
                 "start": {
@@ -825,7 +825,7 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "name": "dynamic_js_import_tests0",
+                            "name": "dynamic_import_tests0",
                             "decorators": [],
                             "loc": {
                               "start": {
@@ -911,7 +911,7 @@
                           "arguments": [
                             {
                               "type": "StringLiteral",
-                              "value": "dynamic_js_import_tests",
+                              "value": "dynamic_import_tests",
                               "loc": {
                                 "start": {
                                   "line": 1,

@@ -242,6 +242,11 @@ public:
     {
         namespaceNestedRank_--;
     }
+
+    ir::ETSImportDeclaration *BuildImportDeclaration(ir::ImportKinds importKinds,
+                                                     ArenaVector<ir::AstNode *> &&specifiers,
+                                                     ir::StringLiteral *pathToResolve);
+
     void AddExternalSource(const std::vector<Program *> &programs);
     std::vector<Program *> ParseSources(bool firstSource = false);
 
@@ -288,14 +293,14 @@ private:
 #ifdef USE_FTW
     static int NFTWCallBack(const char *fpath, const struct stat * /*unused*/, int tflag, struct FTW * /*unused*/);
 #endif
-    ir::ImportSource *ParseSourceFromClause(bool requireFrom);
+    ir::ETSImportDeclaration *ParseImportPathBuildImport(ArenaVector<ir::AstNode *> &&specifiers, bool requireFrom,
+                                                         lexer::SourcePosition startLoc, ir::ImportKinds importKind);
     void ParseNamedExportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool defaultExport);
     void ParseUserSources(std::vector<std::string> userParths);
     ArenaVector<ir::Statement *> ParseTopLevelDeclaration();
-    void ParseSourceList(const util::ImportPathManager::ParseInfo &parseListIdx, util::UString *extSrc,
-                         const ArenaVector<util::StringView> &directImportsFromMainSource,
-                         std::vector<Program *> &programs);
-    std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool requireFrom);
+    void ParseParseListElement(const util::ImportPathManager::ParseInfo &parseListElem, util::UString *extSrc,
+                               const ArenaVector<util::StringView> &directImportsFromMainSource,
+                               std::vector<Program *> *programs);
     bool IsDefaultImport();
     void ParseNamedSpecifiesDefaultImport(ArenaVector<ir::ImportDefaultSpecifier *> *resultDefault,
                                           const std::string &fileName);

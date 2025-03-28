@@ -92,21 +92,30 @@ public:
 
     class DynamicImportData {
     public:
-        explicit DynamicImportData(Language lang, bool hasDecl) : lang_(lang), hasDecl_(hasDecl) {}
+        explicit DynamicImportData(Language lang, std::string declPath, std::string ohmUrl)
+            : lang_(lang), declPath_(std::move(declPath)), ohmUrl_(std::move(ohmUrl))
+        {
+        }
 
         Language GetLanguage() const
         {
             return lang_;
         }
 
-        bool HasDecl() const
+        std::string_view DeclPath() const
         {
-            return hasDecl_;
+            return declPath_;
+        }
+
+        std::string_view OhmUrl() const
+        {
+            return ohmUrl_;
         }
 
     private:
         Language lang_;
-        bool hasDecl_;
+        std::string declPath_ {};
+        std::string ohmUrl_ {};
     };
 
     explicit ArkTsConfig(std::string_view configPath, util::DiagnosticEngine &de)
@@ -115,7 +124,7 @@ public:
     }
     bool Parse(std::unordered_set<std::string> &parsedConfigPath);
 
-    std::optional<std::string> ResolvePath(const std::string &path) const;
+    std::optional<std::string> ResolvePath(std::string_view path) const;
 
     void ResolveAllDependenciesInArkTsConfig();
 

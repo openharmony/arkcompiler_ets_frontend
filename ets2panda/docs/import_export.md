@@ -148,8 +148,8 @@ The *ParseImportDefaultSpecifier* will create an *ImportDefaultSpecifier* AST no
 ```import type {A} from "..."```
 
 The difference between import and import type is that the first form imports all top-level declarations which were exported, and the second imports only exported types. There are two possible import kind that can be set to the *ETSImportDeclaration* AST node:
-* ir::ImportKinds::TYPE
-* ir::ImportKinds::VALUE;
+* ir::ImportKinds::ALL;
+* ir::ImportKinds::TYPES
 
 The *ParseImportDeclarations* method itself will set the importKind member if it will met a type keyword token during the parsing process of import directive.
 

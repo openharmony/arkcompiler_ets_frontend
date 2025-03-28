@@ -20,10 +20,13 @@
 #include "mem/pool_manager.h"
 #include "util/ustring.h"
 #include "ir/module/importSpecifier.h"
-#include "parser/program/program.h"
 
 #include <cmath>
 #include <string>
+
+namespace ark::es2panda::parser {
+class Program;
+}  // namespace ark::es2panda::parser
 
 namespace ark::es2panda::varbinder {
 class Variable;

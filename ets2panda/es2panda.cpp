@@ -51,8 +51,13 @@ SourceFile::SourceFile(std::string_view fn, std::string_view s, bool m)
 {
 }
 
-SourceFile::SourceFile(std::string_view fn, std::string_view s, std::string_view rp, bool m)
-    : filePath(fn), fileFolder(DirName(fn)), source(s), resolvedPath(DirName(rp)), isModule(m)
+SourceFile::SourceFile(std::string_view fn, std::string_view s, std::string_view rp, bool m, bool d)
+    : filePath(fn),
+      fileFolder(DirName(fn)),
+      source(s),
+      resolvedPath(DirName(rp)),
+      isModule(m),
+      isDeclForDynamicStaticInterop(d)
 {
 }
 

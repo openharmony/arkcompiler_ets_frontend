@@ -43,7 +43,7 @@ public:
 
     InterfacePropertyType &GetInterfaceProperty(const std::string &id)
     {
-        ES2PANDA_ASSERT(interfaceProperties_.count(id));
+        ES2PANDA_ASSERT(interfaceProperties_.count(id) != 0);
         return interfaceProperties_[id];
     }
 
@@ -66,7 +66,7 @@ public:
 
     InterfacePropertyType &GetInterfaceParent(const std::string &id)
     {
-        ES2PANDA_ASSERT(interfaceParents_.count(id));
+        ES2PANDA_ASSERT(interfaceParents_.count(id) != 0);
         return interfaceParents_[id];
     }
 
@@ -131,7 +131,7 @@ private:
     void UpdateClassProperties(checker::ETSChecker *const checker, ir::ClassDefinition *const klass);
 
 private:
-    OptionalInterfacePropertyCollector propCollector_;
+    OptionalInterfacePropertyCollector propCollector_ {};
 };
 
 }  // namespace ark::es2panda::compiler

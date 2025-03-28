@@ -127,20 +127,20 @@ public:
         : DiagnosticBase(file, line, offset), type_(type), message_(message)
     {
     }
-    ThrowableDiagnostic(DiagnosticType type, std::string_view message, const lexer::SourcePosition &poc)
-        : DiagnosticBase(poc), type_(type), message_(message)
+    ThrowableDiagnostic(DiagnosticType type, std::string_view message, const lexer::SourcePosition &pos)
+        : DiagnosticBase(pos), type_(type), message_(message)
     {
     }
     ThrowableDiagnostic(DiagnosticType type, std::string_view message, const lexer::SourceLocation &loc)
         : DiagnosticBase(loc), type_(type), message_(message)
     {
     }
-    ThrowableDiagnostic(DiagnosticType type, const DiagnosticMessageParams &params, const lexer::SourcePosition &poc);
+    ThrowableDiagnostic(DiagnosticType type, const DiagnosticMessageParams &params, const lexer::SourcePosition &pos);
     ThrowableDiagnostic(DiagnosticType type, const DiagnosticMessageParams &params, const lexer::SourceLocation &loc);
     ThrowableDiagnostic(DiagnosticType type, const DiagnosticMessageParams &params, std::string_view file = "",
                         size_t line = 0, size_t offset = 0);
     ThrowableDiagnostic(DiagnosticType type, const diagnostic::DiagnosticKind &diagnosticKind,
-                        const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &poc);
+                        const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &pos);
 
     DEFAULT_COPY_SEMANTIC(ThrowableDiagnostic);
     DEFAULT_MOVE_SEMANTIC(ThrowableDiagnostic);
@@ -166,7 +166,7 @@ public:
     explicit Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
                         const util::DiagnosticMessageParams &diagnosticParams);
     explicit Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
-                        const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &poc);
+                        const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &pos);
 
     NO_COPY_SEMANTIC(Diagnostic);
     DEFAULT_MOVE_SEMANTIC(Diagnostic);

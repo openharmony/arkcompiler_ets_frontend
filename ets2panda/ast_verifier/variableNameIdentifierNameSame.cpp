@@ -42,7 +42,7 @@ namespace ark::es2panda::compiler::ast_verifier {
 
     // For dynamic imports imported identifier name does not match variable name
     // Example:
-    // import { A as AA } from "dynamic_js_import_tests"
+    // import { A as AA } from "dynamic_import_tests"
     // Variable name will be AA
     // But imported identifier name is A
     auto parent = ast->Parent();

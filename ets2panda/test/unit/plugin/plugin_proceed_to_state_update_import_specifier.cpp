@@ -80,7 +80,7 @@ void UpdateImportSpecifier(es2panda_Context *context)
     impl->AstNodeSetParent(context, newImported, newSpecifier);
     auto source = impl->ImportDeclarationSource(context, importNode);
     auto newImportNode = impl->UpdateImportDeclaration(context, importNode, source, &newSpecifier, 1,
-                                                       Es2pandaImportKinds::IMPORT_KINDS_VALUE);
+                                                       Es2pandaImportKinds::IMPORT_KINDS_ALL);
 
     statements[0] = newImportNode;
     impl->BlockStatementSetStatements(context, program, statements, sizeOfStatements);

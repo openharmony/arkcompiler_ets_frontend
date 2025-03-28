@@ -695,7 +695,7 @@ checker::Type *TSAnalyzer::Check(ir::NewExpression *expr) const
     checker->ThrowTypeError("This expression is not callable.", expr->Start());
     return nullptr;
 }
-static const util::StringView &GetPropertyName(const ir::Expression *key)
+static util::StringView GetPropertyName(const ir::Expression *key)
 {
     if (key->IsIdentifier()) {
         return key->AsIdentifier()->Name();
@@ -783,7 +783,7 @@ void TSAnalyzer::CheckNonComputed(checker::ObjectDescriptor *desc, ir::Expressio
     auto *prop = it->AsProperty();
     checker::Type *propType = GetTypeForProperty(prop, checker);
     varbinder::VariableFlags flags = GetFlagsForProperty(prop);
-    const util::StringView &propName = GetPropertyName(prop->Key());
+    util::StringView propName = GetPropertyName(prop->Key());
 
     auto *memberVar = varbinder::Scope::CreateVar(checker->Allocator(), propName, flags, it);
 

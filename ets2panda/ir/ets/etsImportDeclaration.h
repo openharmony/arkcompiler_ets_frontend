@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,8 +16,9 @@
 #ifndef ES2PANDA_IR_ETS_IMPORT_DECLARATION_H
 #define ES2PANDA_IR_ETS_IMPORT_DECLARATION_H
 
-#include "ir/ets/etsImportSource.h"
 #include "ir/module/importDeclaration.h"
+#include "ir/expressions/literals/stringLiteral.h"
+#include "util/importPathManager.h"
 #include "util/language.h"
 #include "util/ustring.h"
 
@@ -26,26 +27,53 @@ class StringLiteral;
 
 class ETSImportDeclaration : public ImportDeclaration {
 public:
-    explicit ETSImportDeclaration(ImportSource *source, const ArenaVector<AstNode *> &specifiers,
-                                  const ImportKinds importKind = ImportKinds::VALUE)
-        : ImportDeclaration(source->Source(), specifiers, importKind), source_(source)
+    ETSImportDeclaration(ir::StringLiteral *importPath, util::ImportPathManager::ImportMetadata importMetadata,
+                         ArenaVector<AstNode *> &&specifiers, const ImportKinds importKinds = ImportKinds::ALL)
+        : ImportDeclaration(importPath, std::move(specifiers), importKinds), importMetadata_(importMetadata)
     {
         SetType(AstNodeType::ETS_IMPORT_DECLARATION);
     }
 
-    es2panda::Language Language() const
+    ETSImportDeclaration(ir::StringLiteral *importPath, ArenaVector<AstNode *> &&specifiers,
+                         const ImportKinds importKinds = ImportKinds::ALL)
+        : ETSImportDeclaration(importPath, util::ImportPathManager::ImportMetadata {}, std::move(specifiers),
+                               importKinds)
     {
-        return source_->Language();
     }
 
-    bool HasDecl() const
+    void SetImportMetadata(util::ImportFlags importFlags, Language::Id lang, std::string_view resolvedSource,
+                           std::string_view declPath, std::string_view ohmUrl)
     {
-        return source_->HasDecl();
+        importMetadata_.importFlags = importFlags;
+        importMetadata_.lang = lang;
+        importMetadata_.resolvedSource = resolvedSource;
+        importMetadata_.declPath = declPath;
+        importMetadata_.ohmUrl = ohmUrl;
+    }
+
+    es2panda::Language Language() const
+    {
+        return es2panda::Language {importMetadata_.lang};
+    }
+
+    std::string_view DeclPath() const
+    {
+        return importMetadata_.declPath;
+    }
+
+    std::string_view OhmUrl() const
+    {
+        return importMetadata_.ohmUrl;
+    }
+
+    bool IsValid() const
+    {
+        return (Source()->Str() != ERROR_LITERAL) && importMetadata_.IsValid();
     }
 
     bool IsPureDynamic() const
     {
-        return !HasDecl() && Language().IsDynamic();
+        return IsValid() && DeclPath().empty() && Language().IsDynamic();
     }
 
     util::StringView &AssemblerName()
@@ -58,19 +86,14 @@ public:
         return assemblerName_;
     }
 
-    StringLiteral *Source() const
+    std::string_view ResolvedSource() const
     {
-        return source_->Source();
+        return importMetadata_.resolvedSource;
     }
 
-    StringLiteral *ResolvedSource()
+    const auto &ImportMetadata() const
     {
-        return source_->ResolvedSource();
-    }
-
-    const StringLiteral *ResolvedSource() const
-    {
-        return source_->ResolvedSource();
+        return importMetadata_;
     }
 
     void Accept(ASTVisitorT *v) override
@@ -79,7 +102,7 @@ public:
     }
 
 private:
-    ImportSource *source_;
+    util::ImportPathManager::ImportMetadata importMetadata_;
     util::StringView assemblerName_ {};
 };
 }  // namespace ark::es2panda::ir

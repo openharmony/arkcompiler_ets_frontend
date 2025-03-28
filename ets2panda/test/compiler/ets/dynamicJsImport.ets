@@ -17,8 +17,8 @@
 flags: [dynamic-ast]
 ---*/
 
-import { A as AA } from "dynamic_js_import_tests"
-import { B } from "dynamic_js_import_tests"
+import { A as AA } from "dynamic_import_tests"
+import { B } from "dynamic_import_tests"
 
 function main(): void {
     let o: B = new B(AA.x, 1, 2.0)

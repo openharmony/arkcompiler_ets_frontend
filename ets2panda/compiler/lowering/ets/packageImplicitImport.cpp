@@ -77,7 +77,7 @@ static void ValidateImportDeclarationsSourcePath(const public_lib::Context *cons
     for (const auto *const stmt : importDeclarations) {
         const bool doesImportFromPackage =
             std::any_of(packagePrograms.cbegin(), packagePrograms.cend(), [&stmt](const parser::Program *const prog) {
-                return prog->SourceFilePath() == stmt->AsETSImportDeclaration()->ResolvedSource()->Str();
+                return prog->SourceFilePath() == stmt->AsETSImportDeclaration()->ResolvedSource();
             });
         if (doesImportFromPackage) {
             ctx->parser->LogError(diagnostic::PACKAGE_MODULE_IMPORT_OWN_PACKAGE, {}, stmt->Start());

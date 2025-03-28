@@ -70,7 +70,7 @@ const varbinder::GlobalScope *Program::GlobalScope() const
     return static_cast<const varbinder::GlobalScope *>(ast_->Scope());
 }
 
-void Program::SetPackageInfo(const util::StringView &name, ModuleKind kind)
+void Program::SetPackageInfo(const util::StringView &name, util::ModuleKind kind)
 {
     moduleInfo_.moduleName = name;
     moduleInfo_.modulePrefix =
@@ -92,7 +92,7 @@ void Program::MaybeTransformToDeclarationModule()
             return;
         }
     }
-    moduleInfo_.kind = ModuleKind::DECLARATION;
+    moduleInfo_.kind = util::ModuleKind::DECLARATION;
 }
 
 void Program::AddNodeToETSNolintCollection(const ir::AstNode *node, const std::set<ETSWarnings> &warningsCollection)

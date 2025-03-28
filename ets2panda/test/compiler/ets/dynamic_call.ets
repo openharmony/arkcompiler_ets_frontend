@@ -17,7 +17,7 @@
 flags: [dynamic-ast]
 ---*/
 
-import { A } from "dynamic_js_import_tests"
+import { A } from "dynamic_import_tests"
 
 function foo(): int {
     let a = new A();

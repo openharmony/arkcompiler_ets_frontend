@@ -204,6 +204,10 @@ void ClassDefinition::DumpBody(ir::SrcDumper *dumper) const
 
 void ClassDefinition::Dump(ir::SrcDumper *dumper) const
 {
+    // NOTE: plugin API fails
+    if ((ident_->Name().StartsWith("$dynmodule")) || (ident_->Name().StartsWith("$jscall"))) {
+        return;
+    }
     for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }

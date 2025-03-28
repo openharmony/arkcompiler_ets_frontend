@@ -71,7 +71,7 @@ void GlobalTypesHolder::AddFunctionTypes(ArenaAllocator *allocator)
 {
     auto addTypes = [this, allocator](const std::string &name, GlobalTypeId from, GlobalTypeId to) {
         for (size_t id = static_cast<size_t>(from), nargs = 0; id <= static_cast<size_t>(to); id++, nargs++) {
-            builtinNameMappings_.emplace(util::UString(name + std::to_string(nargs), allocator).View(),
+            builtinNameMappings_.emplace(util::UString(name, allocator).Append(std::to_string(nargs)).View(),
                                          static_cast<GlobalTypeId>(id));
         }
     };

@@ -88,11 +88,9 @@ public:
         ArenaVector<ir::AstNode *> specifiers {Allocator()->Adapter()};
         auto specifier = Allocator()->New<ir::ImportSpecifier>(aIdent, aIdent);
         specifiers.emplace_back(specifier);
-        auto importSrc = Allocator()->New<ir::ImportSource>(Allocator()->New<ir::StringLiteral>("/tmp"),
-                                                            Allocator()->New<ir::StringLiteral>(),
-                                                            Language::FromString("js").value(), false);
-        auto importDecl =
-            util::NodeAllocator::Alloc<ir::ETSImportDeclaration>(Allocator(), importSrc, std::move(specifiers));
+        util::ImportPathManager::ImportMetadata importMetadata {util::ImportFlags::NONE, Language::Id::JS, "", "", ""};
+        auto importDecl = util::NodeAllocator::Alloc<ir::ETSImportDeclaration>(
+            Allocator(), Allocator()->New<ir::StringLiteral>("/tmp"), importMetadata, std::move(specifiers));
         compiler::InitScopesPhaseETS::RunExternalNode(importDecl, varbinder);
         varbinder->BuildImportDeclaration(importDecl);
         auto var = varbinder->TopScope()->Find(specifierName);

@@ -67,7 +67,7 @@ TEST_F(ASTVerifierTest, Imports)
 {
     char const *text = R"(
         import { PI } from "std/math";
-        import { A } from "dynamic_js_import_tests"
+        import { A } from "dynamic_import_tests"
         import default_imported from "import_tests/modules/default_export";
         import * as Time from "std/time";
     )";

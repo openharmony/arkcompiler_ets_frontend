@@ -393,7 +393,7 @@ std::optional<ArkTsConfig> Options::ParseArktsConfig()
     std::unordered_set<std::string> parsedConfigPath;
     if (!config.Parse(parsedConfigPath)) {
         diagnosticEngine_.LogFatalError(
-            util::DiagnosticMessageParams {"Invalid ArkTsConfig path: ", util::StringView(GetArktsconfig())});
+            util::DiagnosticMessageParams {"Invalid ArkTsConfig: ", util::StringView(GetArktsconfig())});
         return std::nullopt;
     }
     config.ResolveAllDependenciesInArkTsConfig();

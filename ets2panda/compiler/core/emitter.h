@@ -109,7 +109,6 @@ public:
 
     void AddLiteralBuffer(const LiteralBuffer &literals, uint32_t index);
     void AddProgramElement(ProgramElement *programElement);
-    static std::string DumpAsmFunction(std::string name, const pandasm::Function &func);
     static void DumpAsm(const pandasm::Program *prog);
     pandasm::Program *Finalize(bool dumpDebugInfo, std::string_view globalClass = "");
 

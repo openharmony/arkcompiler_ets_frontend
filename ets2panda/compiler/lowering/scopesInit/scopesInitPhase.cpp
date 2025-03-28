@@ -1012,6 +1012,9 @@ void InitScopesPhaseETS::MaybeAddOverload(ir::MethodDefinition *method, ir::Iden
 
 void InitScopesPhaseETS::VisitETSReExportDeclaration(ir::ETSReExportDeclaration *reExport)
 {
+    if (!reExport->GetETSImportDeclarations()->IsValid()) {
+        return;
+    }
     if (reExport->GetETSImportDeclarations()->Language().IsDynamic()) {
         VarBinder()->AsETSBinder()->AddDynamicImport(reExport->GetETSImportDeclarations());
     }
@@ -1029,6 +1032,9 @@ void InitScopesPhaseETS::VisitETSParameterExpression(ir::ETSParameterExpression 
 
 void InitScopesPhaseETS::VisitETSImportDeclaration(ir::ETSImportDeclaration *importDecl)
 {
+    if (!importDecl->IsValid()) {
+        return;
+    }
     ImportDeclarationContext importCtx(VarBinder());
     if (importDecl->Language().IsDynamic()) {
         VarBinder()->AsETSBinder()->AddDynamicImport(importDecl);

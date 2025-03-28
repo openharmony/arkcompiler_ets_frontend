@@ -147,37 +147,32 @@ public:
     [[nodiscard]] bool ReexportPathMatchesImportPath(const ir::ETSReExportDeclaration *const reexport,
                                                      const ir::ETSImportDeclaration *const import) const;
     Variable *ValidateImportSpecifier(const ir::ImportSpecifier *const specifier,
-                                      const ir::ETSImportDeclaration *const import,
-                                      std::vector<ir::ETSImportDeclaration *> viewedReExport);
+                                      const ir::ETSImportDeclaration *const import);
     void BuildETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *classInstance);
     [[nodiscard]] bool DetectNameConflict(const util::StringView localName, Variable *const var,
                                           Variable *const otherVar, const ir::StringLiteral *const importPath,
                                           bool overloadAllowed);
-    void AddSpecifiersToTopBindings(ir::AstNode *specifier, const ir::ETSImportDeclaration *import);
-    [[nodiscard]] ArenaVector<parser::Program *> GetExternalProgram(const util::StringView &sourceName,
+    [[nodiscard]] ArenaVector<parser::Program *> GetExternalProgram(util::StringView sourceName,
                                                                     const ir::StringLiteral *importPath);
-    bool AddImportNamespaceSpecifiersToTopBindings(ir::AstNode *specifier,
-                                                   const varbinder::Scope::VariableMap &globalBindings,
-                                                   const parser::Program *importProgram,
-                                                   const varbinder::GlobalScope *importGlobalScope,
-                                                   const ir::ETSImportDeclaration *import);
+
     ir::ETSImportDeclaration *FindImportDeclInReExports(const ir::ETSImportDeclaration *const import,
-                                                        std::vector<ir::ETSImportDeclaration *> &viewedReExport,
                                                         const util::StringView &imported,
                                                         const ir::StringLiteral *const importPath);
-    bool AddImportSpecifiersToTopBindings(ir::AstNode *specifier, const varbinder::Scope::VariableMap &globalBindings,
-                                          const ir::ETSImportDeclaration *import,
-                                          const ArenaVector<parser::Program *> &recordRes,
-                                          std::vector<ir::ETSImportDeclaration *> viewedReExport);
+    void AddImportNamespaceSpecifiersToTopBindings(Span<parser::Program *const> records,
+                                                   ir::ImportNamespaceSpecifier *namespaceSpecifier,
+                                                   const ir::ETSImportDeclaration *import);
+    bool AddImportSpecifiersToTopBindings(Span<parser::Program *const> records, ir::ImportSpecifier *importSpecifier,
+                                          const ir::ETSImportDeclaration *import);
+    void AddImportDefaultSpecifiersToTopBindings(Span<parser::Program *const> records,
+                                                 ir::ImportDefaultSpecifier *importDefaultSpecifier,
+                                                 const ir::ETSImportDeclaration *import);
     void ValidateImportVariable(const ir::AstNode *node, const ir::ETSImportDeclaration *const import,
                                 const util::StringView &imported, const ir::StringLiteral *const importPath);
     Variable *FindImportSpecifiersVariable(const util::StringView &imported,
                                            const varbinder::Scope::VariableMap &globalBindings,
-                                           const ArenaVector<parser::Program *> &recordRes);
-    Variable *FindStaticBinding(const ArenaVector<parser::Program *> &recordRes, const ir::StringLiteral *importPath);
-    void AddSpecifiersToTopBindings(
-        ir::AstNode *specifier, const ir::ETSImportDeclaration *import, ir::StringLiteral *path,
-        std::vector<ir::ETSImportDeclaration *> viewedReExport = std::vector<ir::ETSImportDeclaration *>());
+                                           Span<parser::Program *const> record);
+    Variable *FindStaticBinding(Span<parser::Program *const> records, const ir::StringLiteral *importPath);
+    void AddSpecifiersToTopBindings(ir::AstNode *specifier, const ir::ETSImportDeclaration *import);
     void AddDynamicSpecifiersToTopBindings(ir::AstNode *specifier, const ir::ETSImportDeclaration *import);
 
     void ResolveInterfaceDeclaration(ir::TSInterfaceDeclaration *decl);

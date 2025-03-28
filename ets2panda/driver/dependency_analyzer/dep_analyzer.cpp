@@ -46,7 +46,7 @@ void DepAnalyzer::AddImports(ark::es2panda::parser::ETSParser *parser)
     auto &parseList = manager->ParseList();
 
     for (auto &pl : parseList) {
-        sourcePaths_.emplace_back(std::string(pl.sourcePath));
+        sourcePaths_.emplace_back(std::string(pl.importData.resolvedSource));
     }
 }
 

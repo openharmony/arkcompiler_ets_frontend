@@ -195,7 +195,6 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/checker/types/ets/intType.h
     ${ES2PANDA_ROOT}/ir/statements/forUpdateStatement.h
     ${ES2PANDA_ROOT}/checker/types/ets/floatType.h
-    ${ES2PANDA_ROOT}/ir/ets/etsImportSource.h
     ${ES2PANDA_ROOT}/ir/ets/etsTypeReferencePart.h
     ${ES2PANDA_ROOT}/ir/ts/tsUnknownKeyword.h
     ${ES2PANDA_ROOT}/ir/ets/etsStructDeclaration.h
@@ -331,7 +330,6 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/tupleType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsTypeReference.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/functionType.yaml
-    ${LIBGEN_DIR}/gen/headers/ir/ets/etsImportSource.yaml
     ${LIBGEN_DIR}/gen/headers/ir/as/namedType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/expressions/literals/numberLiteral.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsFunctionType.yaml

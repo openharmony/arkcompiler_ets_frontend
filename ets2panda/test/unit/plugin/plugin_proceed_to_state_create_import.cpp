@@ -26,28 +26,22 @@
 
 static es2panda_Impl *g_impl = nullptr;
 
-static void CreateImportDecl(es2panda_Context *context, int argc, char **argv)
+static void CreateImportDecl(es2panda_Context *context)
 {
     char pathToResolve[] = "./export2";
     auto *importPath = g_impl->CreateStringLiteral1(context, pathToResolve);
-    auto resolvedImportPathString = g_impl->ImportPathManagerResolvePathConst(
-        context, g_impl->ETSParserGetImportPathManager(context), argv[argc - 1], pathToResolve,
-        g_impl->CreateSourcePosition(context, 0, 0));
-    auto *resolvedImportPath = g_impl->CreateStringLiteral1(context, resolvedImportPathString);
-    auto *importSource = g_impl->CreateImportSource(context, importPath, resolvedImportPath, true);
 
+    std::vector<es2panda_AstNode *> specifiersArray;
     auto *importId = g_impl->CreateIdentifier1(context, const_cast<char *>("B"));
     auto *importAlias = g_impl->CreateIdentifier1(context, const_cast<char *>("B"));
     auto *importSpecifier = g_impl->CreateImportSpecifier(context, importId, importAlias);
-
     g_impl->AstNodeSetParent(context, importId, importSpecifier);
     g_impl->AstNodeSetParent(context, importAlias, importSpecifier);
-
-    std::vector<es2panda_AstNode *> specifiersArray;
     specifiersArray.push_back(importSpecifier);
-    auto *importDecl = g_impl->CreateETSImportDeclaration(context, importSource, specifiersArray.data(), 1,
-                                                          Es2pandaImportKinds::IMPORT_KINDS_VALUE);
-    g_impl->InsertETSImportDeclarationAfterParse(context, importDecl);
+
+    auto *importDecl = g_impl->ETSParserBuildImportDeclaration(context, Es2pandaImportKinds::IMPORT_KINDS_ALL,
+                                                               specifiersArray.data(), 1, importPath);
+    g_impl->InsertETSImportDeclarationAndParse(context, importDecl);
     auto *importDeclString = g_impl->AstNodeDumpEtsSrcConst(context, importDecl);
     std::cout << importDeclString << std::endl;
 }
@@ -78,7 +72,7 @@ int main(int argc, char **argv)
     size_t externalSourceCnt {0};
     g_impl->ProgramExternalSources(context, g_impl->ContextProgram(context), &externalSourceCnt);
     std::cout << "ExternalProgram Count:" << externalSourceCnt << std::endl;
-    CreateImportDecl(context, argc, argv);
+    CreateImportDecl(context);
     size_t externalSourceCntAfterInsert {0};
     g_impl->ProgramExternalSources(context, g_impl->ContextProgram(context), &externalSourceCntAfterInsert);
     std::cout << "ExternalProgram Count:" << externalSourceCntAfterInsert << std::endl;

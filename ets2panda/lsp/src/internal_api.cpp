@@ -142,7 +142,7 @@ void GetFileReferencesImpl(es2panda_Context *referenceFileContext, char const *s
             continue;
         }
         auto import = statement->AsETSImportDeclaration();
-        auto importFileName = import->ResolvedSource()->ToString();
+        std::string importFileName {import->ResolvedSource()};
         if (!import->Source()->IsStringLiteral()) {
             continue;
         }

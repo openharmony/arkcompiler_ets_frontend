@@ -21,6 +21,7 @@
 #include "os/filesystem.h"
 #include "util/ustring.h"
 #include "util/path.h"
+#include "util/importPathManager.h"
 #include "varbinder/varbinder.h"
 #include <lexer/token/sourceLocation.h>
 
@@ -40,7 +41,6 @@ class CFG;
 
 namespace ark::es2panda::parser {
 enum class ScriptKind { SCRIPT, MODULE, STDLIB };
-enum class ModuleKind { MODULE, DECLARATION, PACKAGE };
 
 class Program {
 public:
@@ -208,9 +208,15 @@ public:
         sourceFile_ = util::Path(sourceFile.filePath, Allocator());
         sourceFileFolder_ = util::UString(sourceFile.fileFolder, Allocator()).View();
         resolvedFilePath_ = util::UString(sourceFile.resolvedPath, Allocator()).View();
+        moduleInfo_.isDeclForDynamicStaticInterop = sourceFile.isDeclForDynamicStaticInterop;
     }
 
-    void SetPackageInfo(const util::StringView &name, ModuleKind kind);
+    void SetPackageInfo(const util::StringView &name, util::ModuleKind kind);
+
+    const auto &ModuleInfo() const
+    {
+        return moduleInfo_;
+    }
 
     util::StringView ModuleName() const
     {
@@ -224,17 +230,17 @@ public:
 
     bool IsSeparateModule() const
     {
-        return moduleInfo_.kind == ModuleKind::MODULE;
+        return moduleInfo_.kind == util::ModuleKind::MODULE;
     }
 
     bool IsDeclarationModule() const
     {
-        return moduleInfo_.kind == ModuleKind::DECLARATION;
+        return moduleInfo_.kind == util::ModuleKind::DECLARATION;
     }
 
     bool IsPackage() const
     {
-        return moduleInfo_.kind == ModuleKind::PACKAGE;
+        return moduleInfo_.kind == util::ModuleKind::PACKAGE;
     }
 
     void MarkASTAsChecked()
@@ -284,16 +290,6 @@ public:
     const compiler::CFG *GetCFG() const;
 
 private:
-    struct ModuleInfo {          // NOLINT(cppcoreguidelines-pro-type-member-init)
-        ModuleInfo() = default;  // NOLINT(cppcoreguidelines-pro-type-member-init)
-
-        // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-        util::StringView moduleName;
-        util::StringView modulePrefix;
-        ModuleKind kind;  // NOLINT(cppcoreguidelines-pro-type-member-init)
-        // NOLINTEND(misc-non-private-member-variables-in-classes)
-    };
-
     void MaybeTransformToDeclarationModule();
 
     ArenaAllocator *allocator_ {};
@@ -309,7 +305,7 @@ private:
     ScriptKind kind_ {};
     ScriptExtension extension_ {};
     ETSNolintsCollectionMap etsnolintCollection_;
-    ModuleInfo moduleInfo_;
+    util::ModuleInfo moduleInfo_;
     bool isASTchecked_ {};
     lexer::SourcePosition packageStartPosition_ {};
     compiler::CFG *cfg_;

@@ -31,9 +31,15 @@ public:
     explicit StringLiteral() : StringLiteral("") {}
     explicit StringLiteral(util::StringView str) : Literal(AstNodeType::STRING_LITERAL), str_(str) {}
 
-    [[nodiscard]] const util::StringView &Str() const noexcept
+    [[nodiscard]] util::StringView Str() const
     {
         return str_;
+    }
+
+    // NOLINTNEXTLINE(*-explicit-constructor)
+    operator std::string_view() const
+    {
+        return str_.Utf8();
     }
 
     std::string ToString() const override

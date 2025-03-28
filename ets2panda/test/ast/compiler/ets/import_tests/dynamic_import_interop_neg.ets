@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-import /* @@ label */foo from 'dynamic_js_import_tests'
+import /* @@ label */foo from 'dynamic_import_tests'
 
 /* @@@ label Error TypeError: Default import is currently not implemented in dynamic import  */

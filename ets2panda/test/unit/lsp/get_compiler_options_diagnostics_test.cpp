@@ -160,7 +160,6 @@ export const utils = {
     ASSERT_GT(diagnostics.diagnostic.size(), defaultDiagnosticsSize);
 
     bool foundEmptyPath = false;
-    bool foundNotAvailable = false;
     bool foundPathError = false;
 
     for (const auto &diag : diagnostics.diagnostic) {
@@ -168,16 +167,12 @@ export const utils = {
         if (diag.message_.find("Import path cannot be empty") != std::string::npos) {
             foundEmptyPath = true;
         }
-        if (diag.message_.find("Not an available source path:") != std::string::npos) {
-            foundNotAvailable = true;
-        }
         if (diag.message_.find("Not supported path:") != std::string::npos) {
             foundPathError = true;
         }
     }
 
     ASSERT_TRUE(foundEmptyPath);
-    ASSERT_TRUE(foundNotAvailable);
     ASSERT_TRUE(foundPathError);
 }
 
@@ -285,7 +280,7 @@ function A(a:number, b:number) {
             "std": ["./path1"]
         },
         "dynamicPaths": {
-            "dynamic_js_import_tests": {
+            "dynamic_import_tests": {
                 "language": "invalid_lang",
                 "hasDecl": true
             }
@@ -323,7 +318,7 @@ function A(a:number, b:number) {
             "std": ["./path1"]
         },
         "dynamicPaths": {
-            "dynamic_js_import_tests": {
+            "dynamic_import_tests": {
                 "language": "ts",
                 "hasDecl": true
             }

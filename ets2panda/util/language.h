@@ -36,7 +36,8 @@ public:
         COUNT,
     };
 
-    constexpr explicit Language(Id id) : id_(id) {}
+    // NOLINTNEXTLINE(*-explicit-constructor)
+    constexpr Language(Id id) : id_(id) {}
 
     constexpr std::string_view ToString() const
     {

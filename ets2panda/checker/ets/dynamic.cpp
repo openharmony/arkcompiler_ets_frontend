@@ -421,13 +421,16 @@ void ETSChecker::ClassInitializerFromImport(ir::ETSImportDeclaration *import, Ar
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         AllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
 
-    // Note(rsipka): this check could be avoided with appropriate language extensions
-    util::StringView sourceStr = import->ResolvedSource()->Str();
-    if (ark::os::file::File::IsRegularFile(sourceStr.Mutf8())) {
-        sourceStr = util::UString(ark::os::RemoveExtension(sourceStr.Mutf8()), Allocator()).View();
+    // NOTE: #23698. Make 'ohmUrl' mandatory in 'dynamicPaths'.
+    util::StringView ohmUrl = util::UString(import->OhmUrl(), Allocator()).View();
+    if (ohmUrl.Empty()) {
+        ohmUrl = import->ResolvedSource();
+        if (ark::os::file::File::IsRegularFile(ohmUrl.Mutf8())) {
+            ohmUrl = util::UString(ark::os::RemoveExtension(ohmUrl.Mutf8()), Allocator()).View();
+        }
     }
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    ArenaVector<ir::Expression *> callParams({AllocNode<ir::StringLiteral>(sourceStr)}, Allocator()->Adapter());
+    ArenaVector<ir::Expression *> callParams({AllocNode<ir::StringLiteral>(ohmUrl)}, Allocator()->Adapter());
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *loadCall = AllocNode<ir::CallExpression>(callee, std::move(callParams), nullptr, false);
@@ -622,7 +625,7 @@ void ETSChecker::BuildClassBodyFromDynamicImports(const ArenaVector<ir::ETSImpor
 
 void ETSChecker::BuildDynamicImportClass()
 {
-    auto dynamicImports = VarBinder()->AsETSBinder()->DynamicImports();
+    const auto &dynamicImports = VarBinder()->AsETSBinder()->DynamicImports();
     if (dynamicImports.empty()) {
         return;
     }

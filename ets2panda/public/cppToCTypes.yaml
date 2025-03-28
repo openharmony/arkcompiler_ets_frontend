@@ -2659,39 +2659,6 @@ change_types:
   - es2panda_arg:
       name: '|arg_name|'
       type:
-        name: 'ImportSource'
-        namespace: "ir"
-      min_ptr_depth: 1
-    new_args:
-    - type:
-        name: "es2panda_ImportSource"
-        ptr_depth: '|es2panda_arg.type.ptr_depth_int|'
-      name: '|arg_name|'
-      namespace: "ir::"
-    cast:
-        expression: >-
-          auto |es2panda_arg.type.ptr_depth||arg_name|E2p =
-          reinterpret_cast<ir::ImportSource |es2panda_arg.type.ptr_depth|>(|arg_name|);
-        reverse_cast:
-          start : >-
-            reinterpret_cast<?const? es2panda_ImportSource |es2panda_arg.type.ptr_depth|>
-        call_cast:
-          call_var:
-            name: classInstance
-            type:
-              name: es2panda_ImportSource
-              ptr_depth: 1
-          start: >-
-            (reinterpret_cast<?const? ir::ImportSource *>(classInstance))->
-        constructor_cast:
-          start: >-
-            ctxAllocator->New<ir::ImportSource>(
-          end: )
-        var_name: '|arg_name|E2p'
-
-  - es2panda_arg:
-      name: '|arg_name|'
-      type:
         name: 'ValidationInfo'
         namespace: "ir"
       min_ptr_depth: 1

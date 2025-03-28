@@ -90,7 +90,6 @@
 #include "ir/ets/etsTypeReferencePart.h"
 #include "ir/ets/etsNullishTypes.h"
 #include "ir/ets/etsUnionType.h"
-#include "ir/ets/etsImportSource.h"
 #include "ir/ets/etsImportDeclaration.h"
 #include "ir/ets/etsStructDeclaration.h"
 #include "ir/ets/etsParameterExpression.h"

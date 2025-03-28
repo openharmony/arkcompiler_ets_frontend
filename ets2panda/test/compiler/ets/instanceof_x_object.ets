@@ -17,7 +17,7 @@
 flags: [dynamic-ast]
 ---*/
 
-import { AValue } from "dynamic_js_import_tests"
+import { AValue } from "dynamic_import_tests"
 import { ADeclared } from "dynamic_import_tests/modules/instanceof"
 
 class A {}
