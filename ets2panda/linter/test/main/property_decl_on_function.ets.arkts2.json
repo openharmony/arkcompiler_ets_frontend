@@ -323,16 +323,6 @@
             "suggest": "",
             "rule": "Declaring properties on functions is not supported (arkts-no-func-props)",
             "severity": "ERROR"
-        },
-        {
-            "line": 48,
-            "column": 16,
-            "endLine": 48,
-            "endColumn": 24,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
         }
     ]
 }

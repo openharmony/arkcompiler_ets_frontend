@@ -234,23 +234,6 @@
             "suggest": "",
             "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
             "severity": "ERROR"
-        },
-        {
-            "line": 16,
-            "column": 13,
-            "endLine": 16,
-            "endColumn": 19,
-            "problem": "UIInterfaceImport",
-            "autofix": [
-                {
-                    "start": 608,
-                    "end": 608,
-                    "replacementText": "\n\nimport { RegExp } from '@ohos.arkui.components';"
-                }
-            ],
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
         }
     ]
 }

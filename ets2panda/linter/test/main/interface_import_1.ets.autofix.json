@@ -22,8 +22,8 @@
             "problem": "DataObservation",
             "autofix": [
                 {
-                    "start": 1512,
-                    "end": 1512,
+                    "start": 1501,
+                    "end": 1501,
                     "replacementText": "@Observed\n"
                 }
             ],
@@ -39,8 +39,8 @@
             "problem": "ExtendDecoratorNotSupported",
             "autofix": [
                 {
-                    "start": 1148,
-                    "end": 1219,
+                    "start": 1137,
+                    "end": 1208,
                     "replacementText": "@Memo\nfunction cardStyle(this: TextAttribute): this {\n    this.backgroundColor1(Color.Green);\n    return this;\n}"
                 }
             ],
@@ -56,8 +56,8 @@
             "problem": "AnimatableExtendDecoratorTransform",
             "autofix": [
                 {
-                    "start": 1221,
-                    "end": 1306,
+                    "start": 1210,
+                    "end": 1295,
                     "replacementText": "@AnimatableExtend\n@Memo\nfunction animatableWidth(this: ColumnAttribute, width: number): this {\n    this.width(width);\n    return this;\n}"
                 }
             ],
@@ -73,8 +73,8 @@
             "problem": "DoubleDollarBindingNotSupported",
             "autofix": [
                 {
-                    "start": 1421,
-                    "end": 1433,
+                    "start": 1410,
+                    "end": 1422,
                     "replacementText": "$$(this.value)"
                 }
             ],
@@ -89,7 +89,7 @@
             "endColumn": 7,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -99,7 +99,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -109,7 +109,7 @@
             "endColumn": 9,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -119,7 +119,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -129,7 +129,7 @@
             "endColumn": 13,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -139,7 +139,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -149,7 +149,7 @@
             "endColumn": 18,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -162,11 +162,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, TextAttribute, Memo, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@ohos.arkui.components';"
+                    "replacementText": "\n\nimport { Entry, Component, State, Column, Button, Text, TextAttribute, Memo, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kits.ArkUI';"
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]

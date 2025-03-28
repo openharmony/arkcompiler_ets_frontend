@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { Component, State, Column, Link, Row, Text } from '@ohos.arkui.components';
+import { Component, State, Column, Link, Row, Text } from '@kits.ArkUI';
 
 @Component
 struct MyComponent {

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { Component, Column, Text, ColumnAttribute, Color } from '@ohos.arkui.components';
+import { Component, Column, Text, Memo, ColumnAttribute, Color } from '@kits.ArkUI';
 
 @Component
 struct MyCard {
@@ -27,6 +27,7 @@ struct MyCard {
 
 const mycolor: string = "#ffffff"
 
+@Memo
 function cardStyle(this: ColumnAttribute): this {
   this.backgroundColor("#ffff00");
   this.backgroundColor("#00ffff");
@@ -42,6 +43,7 @@ function cardStyle(this: ColumnAttribute): this {
   return this;
 }
 
+@Memo
 function superCard(this: ColumnAttribute, padding: number): this {
   .cardStyle()
   .padding(10)
