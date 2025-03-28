@@ -97,6 +97,7 @@ private:
     void GenMethodDeclaration(const ir::MethodDefinition *methodDef);
     void GenPropDeclaration(const ir::ClassProperty *classProp);
     void GenPropAccessor(const ir::ClassProperty *classProp, const std::string &accessorKind);
+    void GenGenericParameter(const ir::ClassProperty *globalVar);
     void GenGlobalVarDeclaration(const ir::ClassProperty *globalVar);
     void GenLiteral(const ir::Literal *literal);
 

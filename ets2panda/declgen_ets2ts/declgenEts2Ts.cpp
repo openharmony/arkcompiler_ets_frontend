@@ -943,27 +943,22 @@ void TSDeclGen::ProcessMethodDefinition(const ir::MethodDefinition *methodDef,
                                         std::unordered_set<std::string> &processedMethods)
 {
     const auto methodName = GetKeyIdent(methodDef->Key())->Name().Mutf8();
-    if (methodDef->Kind() == ir::MethodDefinitionKind::SET || methodDef->Kind() == ir::MethodDefinitionKind::GET) {
-        if (processedMethods.find(methodName) != processedMethods.end()) {
-            return;
-        }
-        GenMethodDeclaration(methodDef);
-    }
     if (processedMethods.find(methodName) != processedMethods.end()) {
         return;
     }
+    if (methodDef->IsGetter() || methodDef->IsSetter()) {
+        GenMethodDeclaration(methodDef);
+    }
     processedMethods.insert(methodName);
     if (!methodDef->Overloads().empty()) {
-        for (const auto *overload : methodDef->Overloads()) {
-            if (overload->Kind() == ir::MethodDefinitionKind::GET ||
-                overload->Kind() == ir::MethodDefinitionKind::SET) {
-                GenMethodDeclaration(overload);
+        for (const auto *overloadMethd : methodDef->Overloads()) {
+            if (overloadMethd->IsGetter() || overloadMethd->IsSetter()) {
+                GenMethodDeclaration(overloadMethd);
             }
         }
         return;
     }
-    if (methodDef->Kind() == ir::MethodDefinitionKind::CONSTRUCTOR ||
-        methodDef->Kind() == ir::MethodDefinitionKind::METHOD) {
+    if (!methodDef->IsGetter() && !methodDef->IsSetter()) {
         GenMethodDeclaration(methodDef);
     }
 }
@@ -1021,9 +1016,9 @@ void TSDeclGen::GenPartName(std::string &partName)
     } else if (numberTypes_.count(partName)) {
         partName = "number";
     } else if (partName == "ESObject") {
-        partName = "any";
+        partName = "ESObject";
     } else if (partName == "BigInt") {
-        partName = "number";
+        partName = "bigint";
     }
 }
 
@@ -1146,6 +1141,9 @@ void TSDeclGen::GenClassDeclaration(const ir::ClassDeclaration *classDecl)
     }
     if (classNode_.hasNestedClass || state_.inNamespace || state_.inEnum) {
         classNode_.indentLevel > 1 ? classNode_.indentLevel-- : classNode_.indentLevel = 1;
+        if (!ShouldEmitDeclarationSymbol(classDef->Ident())) {
+            return;
+        }
         ES2PANDA_ASSERT(classNode_.indentLevel != static_cast<decltype(classNode_.indentLevel)>(-1));
         CloseClassBlock(false);
     }
@@ -1214,10 +1212,10 @@ void TSDeclGen::GenMethodDeclaration(const ir::MethodDefinition *methodDef)
     if (methodDef->IsAbstract() && !state_.inInterface) {
         OutDts("abstract ");
     }
-    if (methodDef->Kind() == ir::MethodDefinitionKind::GET) {
+    if (methodDef->IsGetter()) {
         OutDts("get ");
     }
-    if (methodDef->Kind() == ir::MethodDefinitionKind::SET) {
+    if (methodDef->IsSetter()) {
         OutDts("set ");
         OutDts(methodName, "(value: ");
         GenType(methodDef->TsType()->AsETSFunctionType()->CallSignatures()[0]->Params()[0]->TsType());
@@ -1328,6 +1326,19 @@ void TSDeclGen::GenPropAccessor(const ir::ClassProperty *classProp, const std::s
     OutEndlDts();
 }
 
+void TSDeclGen::GenGenericParameter(const ir::ClassProperty *globalVar)
+{
+    if (globalVar->TsType() != nullptr && globalVar->TsType()->IsETSObjectType()) {
+        std::string typeStr = globalVar->TsType()->AsETSObjectType()->Name().Mutf8();
+        const auto &typeArgs = globalVar->TsType()->AsETSObjectType()->TypeArguments();
+        if (!typeArgs.empty()) {
+            OutDts("<");
+            GenSeparated(typeArgs, [this, typeStr](checker::Type *arg) { HandleTypeArgument(arg, typeStr); });
+            OutDts(">");
+        }
+    }
+}
+
 void TSDeclGen::GenGlobalVarDeclaration(const ir::ClassProperty *globalVar)
 {
     if (!globalVar->IsExported() && !globalVar->IsDefaultExported() && !declgenOptions_.exportAll) {
@@ -1349,6 +1360,7 @@ void TSDeclGen::GenGlobalVarDeclaration(const ir::ClassProperty *globalVar)
             auto partName = part->Name()->AsIdentifier()->Name().Mutf8();
             GenPartName(partName);
             OutDts(partName);
+            GenGenericParameter(globalVar);
         }
     } else {
         GenType(globalVar->TsType());
