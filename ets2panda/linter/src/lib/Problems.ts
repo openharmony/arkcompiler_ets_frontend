@@ -171,6 +171,7 @@ export enum FaultID {
   StylesDecoratorNotSupported,
   DataObservation,
   InteropCallReflect,
+  InteropCallObjectParam,
   // this should always be last enum
   LAST_ID
 }

@@ -2689,6 +2689,7 @@ export class TypeScriptLinter {
       this.handleGenericCallWithNoTypeArgs(tsCallExpr, callSignature);
       this.handleStructIdentAndUndefinedInArgs(tsCallExpr, callSignature);
     }
+    this.handleInteropForCallExpression(tsCallExpr);
     this.handleLibraryTypeCall(tsCallExpr);
 
     if (
@@ -2707,6 +2708,75 @@ export class TypeScriptLinter {
     }
 
     this.handleInteropForCallExpression(tsCallExpr);
+  }
+
+  private handleInteropForCallExpression(tsCallExpr: ts.CallExpression): void {
+    const callSignature = this.tsTypeChecker.getResolvedSignature(tsCallExpr);
+    if (!callSignature) {
+      return;
+    }
+
+    if (TypeScriptLinter.isDeclaredInArkTs2(callSignature)) {
+      return;
+    }
+
+    this.checkInteropFunctionParameters(callSignature, tsCallExpr);
+    this.checkForReflectAPIUse(callSignature, tsCallExpr);
+  }
+
+  private static isDeclaredInArkTs2(callSignature: ts.Signature): boolean | undefined {
+    const declarationSourceFile = callSignature?.declaration?.getSourceFile();
+    if (!declarationSourceFile) {
+      return undefined;
+    }
+    if (!declarationSourceFile.statements) {
+      return undefined;
+    }
+    // check for 'use static' at the start of the file this function declared at
+    if (declarationSourceFile.statements[0].getText() !== USE_STATIC) {
+      return true;
+    }
+    return false;
+  }
+
+  private checkInteropFunctionParameters(callSignature: ts.Signature, tsCallExpr: ts.CallExpression): void {
+    // checking if the we are invoking the function with the type Object from ArkTS 1.2 with the type Class from ArkTS 1.0
+    for (const [index, param] of callSignature.parameters.entries()) {
+      const paramType = this.tsTypeChecker.getTypeOfSymbolAtLocation(param, tsCallExpr);
+      if (!this.tsUtils.isObject(paramType)) {
+        return;
+      }
+
+      const argument = tsCallExpr.arguments[index];
+      if (!argument) {
+        return;
+      }
+
+      if (this.tsTypeChecker.getTypeAtLocation(argument).isClass()) {
+        // return error
+        this.incrementCounters(tsCallExpr, FaultID.InteropCallObjectParam);
+        return;
+      }
+    }
+  }
+
+  private checkForReflectAPIUse(callSignature: ts.Signature, tsCallExpr: ts.CallExpression): void {
+    if (!callSignature.declaration) {
+      return;
+    }
+
+    const functionSymbol = this.getFunctionSymbol(callSignature.declaration);
+    const functionDeclaration = functionSymbol?.valueDeclaration;
+    if (!functionDeclaration) {
+      return;
+    }
+
+    if (
+      TypeScriptLinter.isFunctionLike(functionDeclaration) &&
+      TypeScriptLinter.containsReflectAPI(functionDeclaration)
+    ) {
+      this.incrementCounters(tsCallExpr.parent, FaultID.InteropCallReflect);
+    }
   }
 
   private handleEtsComponentExpression(node: ts.Node): void {
@@ -4251,7 +4321,8 @@ export class TypeScriptLinter {
   }
 
   private handleInvalidIdentifier(
-    decl: ts.TypeAliasDeclaration
+    decl:
+      | ts.TypeAliasDeclaration
       | ts.VariableDeclaration
       | ts.FunctionDeclaration
       | ts.MethodSignature
@@ -4640,70 +4711,6 @@ export class TypeScriptLinter {
     }
 
     return classDecl;
-  }
-
-  private handleInteropForCallExpression(tsCallExpr: ts.CallExpression): void {
-    const callSignature = this.tsTypeChecker.getResolvedSignature(tsCallExpr);
-    if (!callSignature?.declaration) {
-      return;
-    }
-
-    if (TypeScriptLinter.isDeclaredInArkTs2(callSignature)) {
-      return;
-    }
-
-    if (!this.hasObjectParameter(callSignature, tsCallExpr)) {
-      return;
-    }
-
-    const functionSymbol = this.getFunctionSymbol(callSignature.declaration);
-    const functionDeclaration = functionSymbol?.valueDeclaration;
-    if (!functionDeclaration) {
-      return;
-    }
-
-    if (
-      TypeScriptLinter.isFunctionLike(functionDeclaration) &&
-      TypeScriptLinter.containsReflectAPI(functionDeclaration)
-    ) {
-      this.incrementCounters(tsCallExpr.parent, FaultID.InteropCallReflect);
-    }
-  }
-
-  private static isDeclaredInArkTs2(callSignature: ts.Signature): boolean | undefined {
-    const declarationSourceFile = callSignature?.declaration?.getSourceFile();
-    if (!declarationSourceFile) {
-      return undefined;
-    }
-    if (!declarationSourceFile.statements) {
-      return undefined;
-    }
-    // check for 'use static' at the start of the file this function declared at
-    if (declarationSourceFile.statements[0].getText() !== USE_STATIC) {
-      return true;
-    }
-    return false;
-  }
-
-  private hasObjectParameter(callSignature: ts.Signature, tsCallExpr: ts.CallExpression): boolean {
-    for (const [index, param] of callSignature.parameters.entries()) {
-      const paramType = this.tsTypeChecker.getTypeOfSymbolAtLocation(param, tsCallExpr);
-
-      if (!this.tsUtils.isObject(paramType)) {
-        continue;
-      }
-
-      const argument = tsCallExpr.arguments[index];
-      if (!argument) {
-        continue;
-      }
-
-      if (this.tsTypeChecker.getTypeAtLocation(argument).isClass()) {
-        return true;
-      }
-    }
-
-    return false;
   }
 
   private static containsReflectAPI(

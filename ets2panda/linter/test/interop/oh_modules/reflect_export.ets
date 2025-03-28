@@ -24,6 +24,3 @@ export function bar(obj: Object) {
     return Reflect.has(obj, 'prop');
 }
 
-export function safe(prx: Object) {
-    console.log("Safe function, no Reflect API used.");
-}

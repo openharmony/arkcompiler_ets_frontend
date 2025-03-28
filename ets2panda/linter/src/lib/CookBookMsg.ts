@@ -266,6 +266,8 @@ cookBookTag[257] =
 cookBookTag[258] = 'Data observation needs to add "@Observed" (arkui-data-observation)';
 cookBookTag[259] = 'ArkUI interface should be imported before using (akrui-modular-interface)';
 cookBookTag[301] = 'Importing from "oh module" requires specifying full path (arkts-ohmurl-full-path)';
+cookBookTag[302] =
+  'Class type is not compatible with "Object" parameter in interop call (arkts-interop-call-object-param)';
 cookBookTag[303] =
   'Reflect API usage is not allowed in interop calls when an "Object" parameter receives a class instance (arkts-interop-call-reflect)';
 cookBookTag[304] = 'Duplicate function name in namespace are not allowed (arkts-no-duplicate-function-name)';
