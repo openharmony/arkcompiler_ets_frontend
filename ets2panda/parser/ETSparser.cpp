@@ -532,22 +532,9 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
     };
 
     if (InAmbientContext()) {
-        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS &&
-            (GetContext().Status() & ParserStatus::IN_CLASS_BODY) != 0U) {
-            // Special case for processing of special '(param: type): returnType` identifier using in ambient context
-            auto ident = CreateInvokeIdentifier();
-            memberModifiers |= ir::ModifierFlags::STATIC;
-            return parseClassMethod(ident);
-        }
-        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
-            const auto startPosAmbient = Lexer()->GetToken().Start();
-            auto const savePos = Lexer()->Save();
-            Lexer()->NextToken();
-            if (Lexer()->GetToken().Ident().Is("Symbol")) {
-                Lexer()->Rewind(savePos);
-            } else {
-                return ParseAmbientSignature(startPosAmbient);
-            }
+        auto *property = HandleAmbientDeclaration(memberModifiers, parseClassMethod);
+        if (property != nullptr) {
+            return property;
         }
     }
 

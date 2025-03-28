@@ -988,7 +988,8 @@ void InitScopesPhaseETS::MaybeAddOverload(ir::MethodDefinition *method, ir::Iden
             methodName->SetVariable(var);
         }
         for (auto *overload : method->Overloads()) {
-            ES2PANDA_ASSERT((overload->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD));
+            ES2PANDA_ASSERT((overload->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD) ||
+                            (overload->Function()->Flags() & ir::ScriptFunctionFlags::EXTERNAL_OVERLOAD));
             overload->Id()->SetVariable(var);
             overload->SetParent(var->Declaration()->Node());
         }

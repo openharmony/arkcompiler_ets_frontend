@@ -162,6 +162,8 @@ defines:
     ref: STD_ANNOTATIONS_RETENTION
   - name: Retention
     ref: BUILTIN_RETENTION
+  - name: 'Symbol'
+    ref: SYMBOL
 
 packages:
   - name: 'std.core'

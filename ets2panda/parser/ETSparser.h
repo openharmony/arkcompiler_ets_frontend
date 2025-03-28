@@ -288,6 +288,8 @@ private:
     void AddPackageSourcesToParseList();
     ArenaVector<ir::Statement *> ParseTopLevelStatements();
 
+    ir::AstNode *HandleAmbientDeclaration(ir::ModifierFlags &memberModifiers,
+                                          const std::function<ir::AstNode *(ir::Identifier *)> &parseClassMethod);
     static bool IsClassMethodModifier(lexer::TokenType type) noexcept;
 
 #ifdef USE_FTW
@@ -325,7 +327,7 @@ private:
     ir::Statement *ParseTypeDeclarationAbstractFinal(bool allowStatic, ir::ClassDefinitionModifiers modifiers);
     ir::ModifierFlags ParseClassModifiers();
     ir::ModifierFlags ParseInterfaceMethodModifiers();
-    ir::ClassProperty *ParseInterfaceField();
+    ir::AstNode *ParseInterfaceField();
     ir::MethodDefinition *ParseInterfaceMethod(ir::ModifierFlags flags, ir::MethodDefinitionKind methodKind);
     void ReportAccessModifierError(const lexer::Token &token);
     std::tuple<ir::ModifierFlags, bool> ParseClassMemberAccessModifiers();

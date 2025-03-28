@@ -42,6 +42,9 @@ bool AmbientLowering::PerformForModule(public_lib::Context *ctx, parser::Program
             if (ast->IsClassDefinition()) {
                 return CreateIndexerMethodIfNeeded(ast->AsClassDefinition(), ctx);
             }
+            if (ast->IsTSInterfaceBody()) {
+                return CreateIndexerMethodIfNeeded(ast->AsTSInterfaceBody(), ctx);
+            }
             return ast;
         },
         Name());
@@ -83,10 +86,15 @@ ir::MethodDefinition *CreateMethodFunctionDefinition(ir::DummyNode *node, public
     return methodDefinition->AsMethodDefinition();
 }
 
-ir::ClassDefinition *AmbientLowering::CreateIndexerMethodIfNeeded(ir::ClassDefinition *classDef,
-                                                                  public_lib::Context *ctx)
+ir::AstNode *AmbientLowering::CreateIndexerMethodIfNeeded(ir::AstNode *ast, public_lib::Context *ctx)
 {
-    auto &classBody = classDef->Body();
+    if (!ast->IsClassDefinition() && !ast->IsTSInterfaceBody()) {
+        return ast;
+    }
+
+    ArenaVector<ir::AstNode *> &classBody =
+        ast->IsClassDefinition() ? ast->AsClassDefinition()->Body() : ast->AsTSInterfaceBody()->Body();
+
     auto it = classBody.begin();
     // Only one DummyNode is allowed in classBody for now
     ES2PANDA_ASSERT(
@@ -100,14 +108,14 @@ ir::ClassDefinition *AmbientLowering::CreateIndexerMethodIfNeeded(ir::ClassDefin
 
             classBody.erase(it);
             if (setDefinition != nullptr && getDefinition != nullptr) {
-                classBody.emplace_back(setDefinition);
                 classBody.emplace_back(getDefinition);
+                classBody.emplace_back(setDefinition);
             }
             break;
         }
         ++it;
     }
 
-    return classDef;
+    return ast;
 }
 }  // namespace ark::es2panda::compiler
