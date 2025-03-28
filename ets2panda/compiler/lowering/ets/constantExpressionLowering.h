@@ -97,6 +97,12 @@ private:
 
     ir::AstNode *UnfoldConstIdentifier(ir::AstNode *node, ir::AstNode *originNode);
 
+    ir::AstNode *UnFoldEnumMemberExpression(ir::AstNode *constantNode);
+
+    ir::AstNode *FindNameInEnumMember(ArenaVector<ir::AstNode *> *members, util::StringView targetName);
+
+    ir::AstNode *FindAndReplaceEnumMember(ir::MemberExpression *expr, ir::AstNode *node);
+
     ir::AstNode *UnfoldConstIdentifiers(ir::AstNode *constantNode);
 
     public_lib::Context *context_ {nullptr};

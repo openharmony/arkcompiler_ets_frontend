@@ -341,11 +341,13 @@ void EnumLoweringPhase::ProcessEnumClassDeclaration(ir::TSEnumDeclaration *const
     if (flags.isLocal) {
         auto *scope = NearestScope(enumDecl->Parent());
         auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, scope);
+        scope->EraseBinding(ident->Name());
         InitScopesPhaseETS::RunExternalNode(enumClassDecl, varbinder_);
         var = varbinder_->GetScope()->FindLocal(ident->Name(), varbinder::ResolveBindingOptions::ALL);
     } else if (flags.isTopLevel) {
         auto *scope = program_->GlobalClassScope();
         auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, scope);
+        scope->StaticDeclScope()->EraseBinding(ident->Name());
         InitScopesPhaseETS::RunExternalNode(enumClassDecl, varbinder_);
         var = varbinder_->GetScope()->FindLocal(ident->Name(), varbinder::ResolveBindingOptions::ALL);
         if (var != nullptr) {
@@ -354,6 +356,7 @@ void EnumLoweringPhase::ProcessEnumClassDeclaration(ir::TSEnumDeclaration *const
     } else if (flags.isNamespace) {
         auto *scope = enumDecl->Parent()->Scope();
         auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, scope);
+        scope->AsClassScope()->StaticDeclScope()->EraseBinding(ident->Name());
         InitScopesPhaseETS::RunExternalNode(enumClassDecl, varbinder_);
         var = varbinder_->GetScope()->FindLocal(ident->Name(), varbinder::ResolveBindingOptions::DECLARATION);
     } else {
