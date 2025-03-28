@@ -26,9 +26,8 @@
 
 static es2panda_Impl *impl = nullptr;
 
-static bool CheckExternalSources(es2panda_Context *context)
+static bool CheckExternalSources(es2panda_Context *context, es2panda_Program *pgm)
 {
-    auto pgm = impl->ContextProgram(context);
     size_t n = 0;
     auto externalSources = impl->ProgramExternalSources(context, pgm, &n);
     if (externalSources == nullptr) {
@@ -76,9 +75,12 @@ int main(int argc, char **argv)
     impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
     CheckForErrors("CHECKED", context);
 
-    if (!CheckExternalSources(context)) {
+    auto pgm = impl->ContextProgram(context);
+    if (!CheckExternalSources(context, pgm)) {
         return TEST_ERROR_CODE;
     }
+
+    impl->AstNodeRecheck(context, impl->ProgramAst(context, pgm));
 
     impl->ProceedToState(context, ES2PANDA_STATE_LOWERED);
     CheckForErrors("LOWERED", context);

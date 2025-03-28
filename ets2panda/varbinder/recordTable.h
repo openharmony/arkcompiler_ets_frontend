@@ -189,6 +189,17 @@ public:
 
     util::StringView RecordName() const;
 
+    void CleanUp()
+    {
+        classDefinitions_.clear();
+        interfaceDeclarations_.clear();
+        annotationDeclarations_.clear();
+        signatures_.clear();
+        record_ = nullptr;
+        boundCtx_ = nullptr;
+        flags_ = RecordTableFlags::NONE;
+    }
+
 private:
     friend class BoundContext;
     using RecordHolder =

@@ -18,6 +18,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "classDefinition.h"
+#include "ir/ts/tsInterfaceBody.h"
 
 namespace ark::es2panda::ir {
 
@@ -259,6 +261,8 @@ MethodDefinition *MethodDefinition::Clone(ArenaAllocator *const allocator, AstNo
         clone->AddDecorator(decorator->Clone(allocator, clone));
     }
 
+    clone->baseOverloadMethod_ = baseOverloadMethod_;
+
     for (auto *const overloads : overloads_) {
         clone->AddOverload(overloads->Clone(allocator, clone));
     }
@@ -276,6 +280,48 @@ void MethodDefinition::InitializeOverloadInfo()
                      this->IsDeclare(),
                      (this->Function()->Signature()->RestVar() != nullptr),
                      this->Function()->Signature()->ReturnType()->IsETSVoidType()};
+}
+
+void MethodDefinition::ResetOverloads()
+{
+    auto baseOverloadMethod = baseOverloadMethod_;
+    baseOverloadMethod_ = nullptr;
+    for (auto *overload : overloads_) {
+        overload->CleanUp();
+    }
+    ClearOverloads();
+
+    if ((Function() == nullptr) || !Function()->IsOverload()) {
+        return;
+    }
+
+    Function()->ClearFlag(ir::ScriptFunctionFlags::OVERLOAD);
+    /*
+     * if this method and it's baseOverloadMethod are in two different files,
+     * no need to move it to the body of baseOverloadMethod's contianing class in cleanup.
+     */
+    if (GetTopStatement() != baseOverloadMethod->GetTopStatement()) {
+        return;
+    }
+
+    auto parent = baseOverloadMethod->Parent();
+    ES2PANDA_ASSERT(parent->IsClassDefinition() || parent->IsTSInterfaceBody());
+    auto &body =
+        parent->IsClassDefinition() ? parent->AsClassDefinition()->Body() : parent->AsTSInterfaceBody()->Body();
+
+    for (auto *elem : body) {
+        if (elem == this) {
+            return;
+        }
+    }
+
+    body.emplace_back(this);
+}
+
+void MethodDefinition::CleanUp()
+{
+    AstNode::CleanUp();
+    ResetOverloads();
 }
 
 }  // namespace ark::es2panda::ir

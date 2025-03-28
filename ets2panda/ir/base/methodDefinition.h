@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_METHOD_DEFINITION_H
 #define ES2PANDA_PARSER_INCLUDE_AST_METHOD_DEFINITION_H
 
+#include "scriptFunction.h"
 #include "ir/base/classElement.h"
 
 namespace ark::es2panda::checker {
@@ -147,6 +148,7 @@ public:
     {
         ES2PANDA_ASSERT(overload != nullptr);
         overloads_.emplace_back(overload);
+        overload->Function()->AddFlag((ir::ScriptFunctionFlags::OVERLOAD));
         overload->SetBaseOverloadMethod(this);
     }
 
@@ -189,8 +191,11 @@ public:
         v->Accept(this);
     }
 
+    void CleanUp() override;
+
 private:
     void DumpPrefix(ir::SrcDumper *dumper) const;
+    void ResetOverloads();
 
     MethodDefinitionKind kind_;
     // Overloads are stored like in an 1:N fashion.

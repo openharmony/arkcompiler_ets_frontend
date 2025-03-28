@@ -169,6 +169,12 @@ public:
         v->Accept(this);
     }
 
+    void CleanUp() override
+    {
+        AstNode::CleanUp();
+        operationType_ = nullptr;
+    }
+
 private:
     Expression *left_ = nullptr;
     Expression *right_ = nullptr;

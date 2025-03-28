@@ -99,15 +99,14 @@ bool Verify(es2panda_Context *context)
     return !impl->ASTVerifierHasErrorsConst(context, verifier);
 }
 
-static bool CheckVerifierOnChangedAst(es2panda_Context *context)
+static bool CheckVerifierOnChangedAst(es2panda_Context *context, es2panda_AstNode *ast)
 {
-    auto Ast = impl->ProgramAst(context, impl->ContextProgram(context));
-    std::cout << impl->AstNodeDumpJSONConst(context, Ast) << std::endl;
+    std::cout << impl->AstNodeDumpJSONConst(context, ast) << std::endl;
     size_t n = 0;
     ctx = context;
-    impl->AstNodeIterateConst(context, Ast, FindLet);
-    impl->AstNodeIterateConst(context, Ast, FindAssert);
-    impl->AstNodeIterateConst(context, Ast, FindMainDef);
+    impl->AstNodeIterateConst(context, ast, FindLet);
+    impl->AstNodeIterateConst(context, ast, FindAssert);
+    impl->AstNodeIterateConst(context, ast, FindMainDef);
     if (mainScriptFunc == nullptr || letStatement == nullptr || assertStatement == nullptr) {
         return false;
     }
@@ -137,7 +136,7 @@ static bool CheckVerifierOnChangedAst(es2panda_Context *context)
         return false;
     }
 
-    impl->AstNodeForEach(Ast, SetRightParent, context);
+    impl->AstNodeForEach(ast, SetRightParent, context);
     impl->AstNodeRecheck(context, declaration);
     impl->AstNodeRecheck(context, newAssertStatement);
 
@@ -172,9 +171,12 @@ int main(int argc, char **argv)
     impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
     CheckForErrors("CHECKED", context);
 
-    if (!CheckVerifierOnChangedAst(context)) {
+    auto ast = impl->ProgramAst(context, impl->ContextProgram(context));
+    if (!CheckVerifierOnChangedAst(context, ast)) {
         return TEST_ERROR_CODE;
     }
+
+    impl->AstNodeRecheck(context, ast);
 
     impl->ProceedToState(context, ES2PANDA_STATE_LOWERED);
     CheckForErrors("LOWERED", context);

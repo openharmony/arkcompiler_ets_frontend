@@ -86,6 +86,8 @@ int main(int argc, char **argv)
         return TEST_ERROR_CODE;
     }
 
+    impl->AstNodeRecheck(context, Ast);
+
     impl->ProceedToState(context, ES2PANDA_STATE_LOWERED);
     CheckForErrors("LOWERED", context);
 

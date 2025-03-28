@@ -564,6 +564,8 @@ public:
     void SetOriginalNode(AstNode *originalNode) noexcept;
     AstNode *OriginalNode() const noexcept;
 
+    virtual void CleanUp();
+
 protected:
     AstNode(AstNode const &other);
 

@@ -91,6 +91,8 @@ int main(int argc, char **argv)
 
     std::cout << impl->AstNodeDumpJSONConst(context, programNode) << std::endl;
 
+    impl->AstNodeRecheck(context, programNode);
+
     impl->ProceedToState(context, ES2PANDA_STATE_LOWERED);
     CheckForErrors("LOWERED", context);
 

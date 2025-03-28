@@ -16,6 +16,7 @@
 #include "astNode.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
+#include "ir/typed.h"
 
 namespace ark::es2panda::ir {
 
@@ -245,5 +246,16 @@ void AstNode::SetTransformedNode(std::string_view const transformationName, AstN
     ES2PANDA_ASSERT(!transformedNode_.has_value());
     transformedNode->SetOriginalNode(this);
     transformedNode_ = std::make_optional(std::make_pair(transformationName, transformedNode));
+}
+
+void AstNode::CleanUp()
+{
+    SetVariable(nullptr);
+    if (IsScopeBearer()) {
+        ClearScope();
+    }
+    if (IsTyped()) {
+        this->AsTyped()->SetTsType(nullptr);
+    }
 }
 }  // namespace ark::es2panda::ir

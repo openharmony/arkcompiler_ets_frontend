@@ -106,6 +106,12 @@ public:
         v->Accept(this);
     }
 
+    void CleanUp() override
+    {
+        AstNode::CleanUp();
+        signature_ = nullptr;
+    }
+
 private:
     ir::Expression *typeReference_;
     ArenaVector<ir::Expression *> arguments_;

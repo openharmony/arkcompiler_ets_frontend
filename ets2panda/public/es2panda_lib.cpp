@@ -690,6 +690,12 @@ extern "C" es2panda_Scope *AstNodeRebind(es2panda_Context *ctx, es2panda_AstNode
     auto E2pNode = reinterpret_cast<ir::AstNode *>(node);
     auto context = reinterpret_cast<Context *>(ctx);
     auto varbinder = context->parserProgram->VarBinder()->AsETSBinder();
+    if (E2pNode->IsScriptFunction() ||
+        E2pNode->FindChild([](ir::AstNode *n) { return n->IsScriptFunction(); }) != nullptr) {
+        while (!E2pNode->IsProgram()) {
+            E2pNode = E2pNode->Parent();
+        }
+    }
     return reinterpret_cast<es2panda_Scope *>(compiler::Rebind(varbinder, E2pNode));
 }
 
@@ -699,7 +705,15 @@ extern "C" void AstNodeRecheck(es2panda_Context *ctx, es2panda_AstNode *node)
     auto context = reinterpret_cast<Context *>(ctx);
     auto varbinder = context->parserProgram->VarBinder()->AsETSBinder();
     auto checker = context->checker->AsETSChecker();
-    return compiler::Recheck(varbinder, checker, E2pNode);
+    if (E2pNode->IsScriptFunction() ||
+        E2pNode->FindChild([](ir::AstNode *n) { return n->IsScriptFunction(); }) != nullptr) {
+        while (!E2pNode->IsProgram()) {
+            E2pNode = E2pNode->Parent();
+        }
+    }
+    compiler::Recheck(varbinder, checker, E2pNode);
+    context->state = !context->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_CHECKED : ES2PANDA_STATE_ERROR;
+    return;
 }
 
 #include "generated/es2panda_lib/es2panda_lib_impl.inc"

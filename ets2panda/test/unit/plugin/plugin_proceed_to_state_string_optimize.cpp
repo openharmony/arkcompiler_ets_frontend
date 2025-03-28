@@ -128,28 +128,12 @@ static void ReplaceDuplicatedLiterals(es2panda_Context *context, es2panda_AstNod
         transformationName);
 }
 
-static bool TestStringOptimize(es2panda_Context *context)
+static bool TestStringOptimize(es2panda_Context *context, es2panda_AstNode *ast)
 {
-    if (context == nullptr || impl == nullptr) {
-        return false;
-    }
-
     stringLiteralCount.clear();
     stringLiteralNodes.clear();
     undefinedLiteralNodes.clear();
     voidLiteralNodes.clear();
-
-    auto *program = impl->ContextProgram(context);
-    if (program == nullptr) {
-        std::cerr << "Failed to get program" << std::endl;
-        return false;
-    }
-
-    auto *ast = impl->ProgramAst(context, program);
-    if (ast == nullptr) {
-        std::cerr << "Failed to get AST" << std::endl;
-        return false;
-    }
 
     CollectLiterals(context, ast);
     ReplaceDuplicatedLiterals(context, ast);
@@ -183,13 +167,21 @@ int main(int argc, char **argv)
     impl->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
     CheckForErrors("PARSE", ctx);
 
-    if (!TestStringOptimize(ctx)) {
+    auto *program = impl->ContextProgram(context);
+    auto *ast = impl->ProgramAst(context, program);
+
+    if (!TestStringOptimize(ctx, ast)) {
         // Report error
         std::cout << "String optimization failed." << std::endl;
         impl->DestroyContext(ctx);
         impl->DestroyConfig(config);
         return 1;
     }
+
+    impl->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+    CheckForErrors("BIN", ctx);
+
+    impl->AstNodeRecheck(context, ast);
 
     impl->ProceedToState(ctx, ES2PANDA_STATE_BIN_GENERATED);
     CheckForErrors("BIN", ctx);

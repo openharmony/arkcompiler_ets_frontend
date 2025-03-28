@@ -77,17 +77,8 @@ static es2panda_AstNode *CreateInterfaceNode(es2panda_Context *context, const ch
     return interfaceDecl;
 }
 
-static bool CreateInterfaceAndModifyAST(es2panda_Context *context)
+static bool CreateInterfaceAndModifyAST(es2panda_Context *context, es2panda_AstNode *ast)
 {
-    if (context == nullptr || impl == nullptr)
-        return false;
-    auto program = impl->ContextProgram(context);
-    if (program == nullptr)
-        return false;
-    auto ast = impl->ProgramAst(context, program);
-    if (ast == nullptr)
-        return false;
-
     std::cout << "========================= Source Code =========================" << std::endl;
     std::cout << impl->AstNodeDumpEtsSrcConst(context, ast) << std::endl << std::endl;
 
@@ -123,7 +114,9 @@ int main(int argc, char **argv)
     impl->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
     CheckForErrors("PARSE", ctx);
 
-    if (!CreateInterfaceAndModifyAST(ctx)) {
+    auto program = impl->ContextProgram(context);
+    auto ast = impl->ProgramAst(context, program);
+    if (!CreateInterfaceAndModifyAST(ctx, ast)) {
         std::cout << "Interface creation failure." << std::endl;
         impl->DestroyContext(ctx);
         impl->DestroyConfig(config);
@@ -135,6 +128,8 @@ int main(int argc, char **argv)
 
     impl->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     CheckForErrors("CHECKED", ctx);
+
+    impl->AstNodeRecheck(context, ast);
 
     impl->ProceedToState(ctx, ES2PANDA_STATE_LOWERED);
     CheckForErrors("LOWERED", ctx);

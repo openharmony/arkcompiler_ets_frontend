@@ -126,8 +126,7 @@ void CreateAsExpression()
     auto *asExpr = impl->CreateTSAsExpression(context, numberLiteral, typeAnnotation, true);
     impl->VariableDeclaratorSetInit(context, variableDeclarator, asExpr);
     impl->AstNodeSetParent(context, asExpr, variableDeclarator);
-    impl->AstNodeSetParent(context, variableDeclarator, funcBody);
-    impl->AstNodeRecheck(context, asExpr);
+    impl->AstNodeSetParent(context, variableDeclarator, letStatement);
 }
 
 int main(int argc, char **argv)
@@ -156,6 +155,8 @@ int main(int argc, char **argv)
     if (strstr(src, expected) == nullptr) {
         return 1;
     }
+
+    impl->AstNodeRecheck(context, program);
 
     impl->ProceedToState(context, ES2PANDA_STATE_BIN_GENERATED);
     CheckForErrors("BIN", context);

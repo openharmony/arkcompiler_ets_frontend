@@ -294,6 +294,8 @@ int main(int argc, char **argv)
     impl->ProceedToState(newCtx, ES2PANDA_STATE_CHECKED);
     CheckForErrors("CHECKED", newCtx);
 
+    impl->AstNodeRecheck(newCtx, impl->ProgramAst(newCtx, impl->ContextProgram(newCtx)));
+
     impl->ProceedToState(newCtx, ES2PANDA_STATE_LOWERED);
     CheckForErrors("LOWERED", newCtx);
 

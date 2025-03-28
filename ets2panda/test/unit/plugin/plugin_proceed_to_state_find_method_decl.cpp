@@ -123,12 +123,11 @@ static bool CheckMethodDecl(es2panda_Context *context, es2panda_AstNode *ident)
     return true;
 }
 
-static bool FindMethodDecl(es2panda_Context *context)
+static bool FindMethodDecl(es2panda_Context *context, es2panda_AstNode *ast)
 {
-    auto Ast = impl->ProgramAst(context, impl->ContextProgram(context));
     ctx = context;
-    impl->AstNodeIterateConst(context, Ast, FindMemberExpr);
-    impl->AstNodeIterateConst(context, Ast, FindCallExpr);
+    impl->AstNodeIterateConst(context, ast, FindMemberExpr);
+    impl->AstNodeIterateConst(context, ast, FindCallExpr);
     for (auto memberExpr : *memberExprs) {
         if (memberExpr == nullptr) {
             std::cerr << "CANT FIND MEMBER EXPRESSION" << std::endl;
@@ -180,9 +179,11 @@ int main(int argc, char **argv)
     impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
     CheckForErrors("CHECKED", context);
 
+    auto ast = impl->ProgramAst(context, impl->ContextProgram(context));
+
     memberExprs = new std::vector<es2panda_AstNode *>();
     callExprs = new std::vector<es2panda_AstNode *>();
-    auto testResult = FindMethodDecl(context);
+    auto testResult = FindMethodDecl(context, ast);
     delete memberExprs;
     delete callExprs;
     memberExprs = nullptr;
@@ -190,6 +191,8 @@ int main(int argc, char **argv)
     if (!testResult) {
         return TEST_ERROR_CODE;
     }
+
+    impl->AstNodeRecheck(context, ast);
 
     impl->ProceedToState(context, ES2PANDA_STATE_LOWERED);
     CheckForErrors("LOWERED", context);

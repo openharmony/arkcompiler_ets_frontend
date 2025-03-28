@@ -178,6 +178,8 @@ int main(int argc, char **argv)
         return code;
     }
 
+    impl->AstNodeRecheck(context, programNode);
+
     impl->ProceedToState(context, ES2PANDA_STATE_LOWERED);
     CheckForErrors("LOWERED", context);
 

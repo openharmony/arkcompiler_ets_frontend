@@ -842,6 +842,31 @@ public:
         return overloadSigContainer_;
     }
 
+    void CleanUp() override
+    {
+        Checker::CleanUp();
+        arrayTypes_.clear();
+        pendingConstraintCheckRecords_.clear();
+        constraintCheckScopesCount_ = 0;
+        globalArraySignatures_.clear();
+        cachedComputedAbstracts_.clear();
+        for (auto &dynamicCallIntrinsicsMap : dynamicIntrinsics_) {
+            dynamicCallIntrinsicsMap.clear();
+        }
+
+        for (auto &dynamicClassIntrinsicsMap : dynamicClasses_) {
+            dynamicClassIntrinsicsMap.clear();
+        }
+        dynamicLambdaSignatureCache_.clear();
+        functionalInterfaceCache_.clear();
+        apparentTypes_.clear();
+        for (auto &dynamicCallNamesMap : dynamicCallNames_) {
+            dynamicCallNamesMap.clear();
+        }
+        elementStack_.clear();
+        overloadSigContainer_.clear();
+    }
+
 private:
     std::pair<const ir::Identifier *, ir::TypeNode *> GetTargetIdentifierAndType(ir::Identifier *ident);
     void NotResolvedError(ir::Identifier *const ident, const varbinder::Variable *classVar,

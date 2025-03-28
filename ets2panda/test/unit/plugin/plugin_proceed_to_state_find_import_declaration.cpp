@@ -125,6 +125,8 @@ int main(int argc, char **argv)
     auto ast = impl->ProgramAst(context, impl->ContextProgram(context));
     FindImportDeclarations(context, ast);
 
+    impl->AstNodeRecheck(context, ast);
+
     impl->ProceedToState(context, ES2PANDA_STATE_LOWERED);
     CheckForErrors("LOWERED", context);
 

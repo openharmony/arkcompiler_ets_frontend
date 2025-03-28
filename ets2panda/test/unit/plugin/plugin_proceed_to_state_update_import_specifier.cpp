@@ -113,6 +113,8 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    // Note: This testcase uses wrong C-api interface, thus recheck doesn't work. Need to be fixed
+
     impl->ProceedToState(context, ES2PANDA_STATE_BIN_GENERATED);
     CheckForErrors("BIN", context);
     if (impl->ContextState(context) == ES2PANDA_STATE_ERROR) {

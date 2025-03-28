@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     auto context = impl->CreateContextFromString(config, source, args[2]);
     auto result_code = 0;
 
-    impl->ProceedToState(context, ES2PANDA_STATE_PARSED);
+    impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
     if (impl->ContextState(context) != ES2PANDA_STATE_ERROR) {
         result_code = TEST_ERROR_CODE;
     }
