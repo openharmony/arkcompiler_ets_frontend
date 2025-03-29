@@ -183,8 +183,6 @@ export abstract class BaseMode {
       PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
       this.logger.printInfo('plugin parsed finished');
 
-      ast = arkts.EtsScript.fromContext();
-      arkts.Context.destroyAndRecreate(ast);
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED);
       this.logger.printInfo('es2panda proceedToState checked');
       ast = arkts.EtsScript.fromContext();
@@ -192,8 +190,6 @@ export abstract class BaseMode {
       PluginDriver.getInstance().runPluginHook(PluginHook.CHECKED);
       this.logger.printInfo('plugin checked finished');
 
-      ast = arkts.EtsScript.fromContext();
-      arkts.Context.destroyAndRecreate(ast);
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_BIN_GENERATED);
       this.logger.printInfo('es2panda bin generated');
     } catch (error) {
