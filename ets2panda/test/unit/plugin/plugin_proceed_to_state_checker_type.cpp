@@ -99,6 +99,12 @@ int main(int argc, char **argv)
         return code;
     }
 
+    impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
+    CheckForErrors("CHECKED", context);
+
+    auto Ast = impl->ProgramAst(context, impl->ContextProgram(context));
+    impl->AstNodeRecheck(context, Ast);
+
     impl->DestroyConfig(config);
     return 0;
 }

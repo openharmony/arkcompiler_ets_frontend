@@ -215,6 +215,8 @@ public:
 
     [[nodiscard]] bool IsAnyError();
 
+    virtual void CleanUp();
+
 protected:
     parser::Program *Program() const;
     void SetProgram(parser::Program *program);

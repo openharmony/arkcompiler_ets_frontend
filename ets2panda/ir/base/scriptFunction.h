@@ -292,7 +292,7 @@ public:
 
     void ClearFlag(ir::ScriptFunctionFlags flags) noexcept
     {
-        funcFlags_ ^= flags;
+        funcFlags_ &= (~flags);
     }
 
     void AddModifier(ir::ModifierFlags flags) noexcept
@@ -357,6 +357,13 @@ public:
     void Accept(ASTVisitorT *v) override
     {
         v->Accept(this);
+    }
+
+    void CleanUp() override
+    {
+        AstNode::CleanUp();
+        signature_ = nullptr;
+        preferredReturnType_ = nullptr;
     }
 
 private:

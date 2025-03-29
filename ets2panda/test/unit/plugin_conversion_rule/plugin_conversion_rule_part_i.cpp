@@ -46,8 +46,9 @@ TEST_F(PluginConversionRuleUnitTest, ArenaVectorInputParameter)
         auto *allocatorE2p = reinterpret_cast<Context *>(context)->allocator;
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
-        return reinterpret_cast<es2panda_AstNode *>(ctxAllocator->New<ir::ETSUnionType>(
-            std::move(typesArenaVector), allocatorE2p));
+        auto *astNode = (ctxAllocator->New<ir::ETSUnionType>(std::move(typesArenaVector), allocatorE2p));
+        astNode->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
+        return reinterpret_cast<es2panda_AstNode *>(astNode);
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -153,8 +154,10 @@ size_t userPathsLen, [[maybe_unused]] char *programPath)
         auto *allocatorE2p = reinterpret_cast<Context *>(context)->allocator;
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
-        return reinterpret_cast<es2panda_AstNode *>(ctxAllocator->New<ir::ETSReExportDeclaration>
-    (etsImportDeclarationsE2p, userPathsVector, programPathE2p, allocatorE2p));
+        auto *astNode = (ctxAllocator->New<ir::ETSReExportDeclaration>(etsImportDeclarationsE2p, userPathsVector,
+            programPathE2p, allocatorE2p));
+        astNode->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
+        return reinterpret_cast<es2panda_AstNode *>(astNode);
     }
     )"};
 

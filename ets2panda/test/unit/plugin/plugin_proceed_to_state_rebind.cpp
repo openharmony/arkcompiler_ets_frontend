@@ -105,14 +105,13 @@ static void SetRightParent(es2panda_AstNode *node, void *arg)
     impl->AstNodeIterateConst(context, node, changeParent);
 }
 
-static bool ChangeAst(es2panda_Context *context)
+static bool ChangeAst(es2panda_Context *context, es2panda_AstNode *ast)
 {
-    auto Ast = impl->ProgramAst(context, impl->ContextProgram(context));
-    std::cout << impl->AstNodeDumpJSONConst(context, Ast) << std::endl;
+    std::cout << impl->AstNodeDumpJSONConst(context, ast) << std::endl;
     size_t n = 0;
     ctx = context;
-    impl->AstNodeIterateConst(context, Ast, FindLet);
-    impl->AstNodeIterateConst(context, Ast, FindMainDef);
+    impl->AstNodeIterateConst(context, ast, FindLet);
+    impl->AstNodeIterateConst(context, ast, FindMainDef);
     if (mainScriptFunc == nullptr || letStatement == nullptr) {
         return false;
     }
@@ -133,12 +132,12 @@ static bool ChangeAst(es2panda_Context *context)
 
     es2panda_AstNode *newMainStatements[1] = {declaration};
     impl->BlockStatementSetStatements(context, mainFuncBody, newMainStatements, 1U);
-    impl->AstNodeForEach(Ast, SetRightParent, context);
-    std::cout << impl->AstNodeDumpJSONConst(context, Ast) << std::endl;
+    impl->AstNodeForEach(ast, SetRightParent, context);
+    std::cout << impl->AstNodeDumpJSONConst(context, ast) << std::endl;
 
     impl->AstNodeRebind(context, declaration);
 
-    std::cout << impl->AstNodeDumpEtsSrcConst(context, Ast) << std::endl;
+    std::cout << impl->AstNodeDumpEtsSrcConst(context, ast) << std::endl;
     return true;
 }
 
@@ -167,12 +166,15 @@ int main(int argc, char **argv)
     impl->ProceedToState(context, ES2PANDA_STATE_BOUND);
     CheckForErrors("BOUND", context);
 
-    if (!ChangeAst(context)) {
+    auto ast = impl->ProgramAst(context, impl->ContextProgram(context));
+    if (!ChangeAst(context, ast)) {
         return TEST_ERROR_CODE;
     }
 
     impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
     CheckForErrors("CHECKED", context);
+
+    impl->AstNodeRecheck(context, ast);
 
     impl->ProceedToState(context, ES2PANDA_STATE_LOWERED);
     CheckForErrors("LOWERED", context);

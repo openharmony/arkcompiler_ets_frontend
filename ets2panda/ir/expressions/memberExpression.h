@@ -221,6 +221,14 @@ public:
         v->Accept(this);
     }
 
+    void CleanUp() override
+    {
+        AstNode::CleanUp();
+        uncheckedType_ = nullptr;
+        objType_ = nullptr;
+        extensionAccessorType_ = nullptr;
+    }
+
 protected:
     MemberExpression(MemberExpression const &other) : MaybeOptionalExpression(other)
     {

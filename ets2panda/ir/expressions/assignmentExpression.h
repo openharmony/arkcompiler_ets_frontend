@@ -161,6 +161,13 @@ public:
         v->Accept(this);
     }
 
+    void CleanUp() override
+    {
+        AstNode::CleanUp();
+        target_ = nullptr;
+        operationType_ = nullptr;
+    }
+
 protected:
     AssignmentExpression(AssignmentExpression const &other) : Expression(static_cast<Expression const &>(other))
     {

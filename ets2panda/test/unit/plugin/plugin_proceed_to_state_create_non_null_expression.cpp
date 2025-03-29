@@ -164,6 +164,8 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    impl->AstNodeRecheck(context, program);
+
     impl->ProceedToState(context, ES2PANDA_STATE_BIN_GENERATED);
     CheckForErrors("BIN", context);
     if (impl->ContextState(context) == ES2PANDA_STATE_ERROR) {

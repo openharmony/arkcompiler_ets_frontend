@@ -61,6 +61,12 @@ public:
         return returnType_;
     }
 
+    void CleanUp() override
+    {
+        AstNode::CleanUp();
+        returnType_ = nullptr;
+    }
+
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void SetReturnType(checker::ETSChecker *checker, checker::Type *type) override;
     void SetArgument(Expression *arg);

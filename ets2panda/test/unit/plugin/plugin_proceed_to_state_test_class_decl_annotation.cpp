@@ -48,9 +48,8 @@ void FindClassDef(es2panda_AstNode *ast)
     classDef = ast;
 }
 
-bool TestClassAnnotation(es2panda_Context *context)
+bool TestClassAnnotation(es2panda_Context *context, es2panda_AstNode *ast)
 {
-    auto *ast = impl->ProgramAst(context, impl->ContextProgram(context));
     impl->AstNodeIterateConst(context, ast, FindClassDef);
     if (classDef == nullptr) {
         std::cerr << "CLASS DEF NOT FOUND" << std::endl;
@@ -89,9 +88,17 @@ int main(int argc, char **argv)
 
     impl->ProceedToState(context, ES2PANDA_STATE_PARSED);
 
-    if (!TestClassAnnotation(context)) {
+    auto *ast = impl->ProgramAst(context, impl->ContextProgram(context));
+    if (!TestClassAnnotation(context, ast)) {
         return TEST_ERROR_CODE;
     }
+
+    impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
+    if (impl->ContextState(context) == ES2PANDA_STATE_ERROR) {
+        return PROCEED_ERROR_CODE;
+    }
+
+    impl->AstNodeRecheck(context, ast);
 
     impl->ProceedToState(context, ES2PANDA_STATE_BIN_GENERATED);
     if (impl->ContextState(context) == ES2PANDA_STATE_ERROR) {

@@ -203,10 +203,19 @@ extern "C" <%= classData.constructor_type().lib_type_to_str()
 % end
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *ctxAllocator = ctx->allocator;
+% if classData.constructor_type().lib_type_to_str() == "es2panda_AstNode *"
+    auto *astNode = (<%= classData.constructor_cast["start"]
+    %><%= constructor["args"]&.map { |arg| arg.lib_cast["var_name"] }&.join(", ") %>)<%=
+        classData.constructor_cast["end"] %>;
+    astNode->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
+    return reinterpret_cast<<%= classData.constructor_type().lib_type_to_str()
+               %>>(astNode);
+% elsif
     return reinterpret_cast<<%= classData.constructor_type().lib_type_to_str()
     %>>(<%= classData.constructor_cast["start"]
     %><%= constructor["args"]&.map { |arg| arg.lib_cast["var_name"] }&.join(", ") %>)<%=
         classData.constructor_cast["end"] %>;
+% end
 }
 
 % if classData.updater_allowed()
@@ -230,6 +239,27 @@ extern "C" <%= classData.constructor_type().lib_type_to_str()
     newE2pNode->SetOriginalNode(e2pOriginal);
     newE2pNode->SetParent(e2pOriginal->Parent());
     newE2pNode->SetRange(e2pOriginal->Range());
+% if classData.constructor_type().lib_type_to_str() == "es2panda_AstNode *"
+    newE2pNode->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
+% end
+% if className + constructor["overload"] == "MethodDefinition"
+    for (auto overload : e2pOriginal->AsMethodDefinition()->Overloads()) {
+        overload->SetBaseOverloadMethod(newE2pNode);
+    }
+    newE2pNode->AsMethodDefinition()->SetBaseOverloadMethod(e2pOriginal->AsMethodDefinition()->BaseOverloadMethod());
+    if (e2pOriginal->AsMethodDefinition()->BaseOverloadMethod() != nullptr) {
+        auto originalOverloads = e2pOriginal->AsMethodDefinition()->BaseOverloadMethod()->Overloads();
+        for (auto &overload : originalOverloads) {
+            if (overload == e2pOriginal) {
+                overload = newE2pNode;
+            }
+        }
+        e2pOriginal->AsMethodDefinition()->BaseOverloadMethod()->SetOverloads(std::move(originalOverloads));
+    }
+    auto oriOverloads = e2pOriginal->AsMethodDefinition()->Overloads();
+    newE2pNode->AsMethodDefinition()->SetOverloads(std::move(oriOverloads));
+    
+% end
     return reinterpret_cast<<%= classData.constructor_type().lib_type_to_str()
     %>>(newE2pNode);
 }

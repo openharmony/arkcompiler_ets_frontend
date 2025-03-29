@@ -134,6 +134,12 @@ public:
         return true;
     }
 
+    void CleanUp() override
+    {
+        AstNode::CleanUp();
+        preferredType_ = nullptr;
+    }
+
     [[nodiscard]] ArrayExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     [[nodiscard]] bool ConvertibleToArrayPattern();

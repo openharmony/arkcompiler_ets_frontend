@@ -58,9 +58,14 @@ int main(int argc, char **argv)
         return TEST_ERROR_CODE;
     }
 
+    impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
     if (impl->ContextState(context) == ES2PANDA_STATE_ERROR) {
         return PROCEED_ERROR_CODE;
     }
+
+    auto ast = impl->ProgramAst(context, impl->ContextProgram(context));
+    impl->AstNodeRecheck(context, ast);
+
     impl->DestroyContext(context);
     impl->DestroyConfig(config);
 

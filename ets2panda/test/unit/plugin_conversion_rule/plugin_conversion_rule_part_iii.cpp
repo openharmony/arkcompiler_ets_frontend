@@ -42,9 +42,10 @@ TEST_F(PluginConversionRuleUnitTest, ParserProgramPtrInputParameter)
         auto *programE2p =  reinterpret_cast<parser::Program *>(program);
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
-        return reinterpret_cast<es2panda_AstNode *>
-        (ctxAllocator->New<ir::ETSModule>(allocatorE2p,
-        std::move(statementListArenaVector), identE2p, flagE2p, programE2p));
+        auto *astNode = (ctxAllocator->New<ir::ETSModule>(allocatorE2p, std::move(statementListArenaVector),
+            identE2p, flagE2p, programE2p));
+        astNode->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
+        return reinterpret_cast<es2panda_AstNode *>(astNode);
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -62,9 +63,11 @@ TEST_F(PluginConversionRuleUnitTest, FunctionSignatureInputParameter)
         auto *allocatorE2p = reinterpret_cast<Context *>(context)->allocator;
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
-        return reinterpret_cast<es2panda_AstNode *>(
-            ctxAllocator->New<ir::ETSFunctionType>(std::forward<ir::FunctionSignature>(
-            *reinterpret_cast<ir::FunctionSignature *>(signature)), funcFlagsE2p, allocatorE2p));
+        auto *astNode = (ctxAllocator->New<ir::ETSFunctionType>(
+            std::forward<ir::FunctionSignature>(*reinterpret_cast<ir::FunctionSignature *>(signature)),
+            funcFlagsE2p, allocatorE2p));
+        astNode->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
+        return reinterpret_cast<es2panda_AstNode *>(astNode);
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -454,9 +457,10 @@ TEST_F(PluginConversionRuleUnitTest, LabelPairInputParameter)
      	}
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
-        return reinterpret_cast<es2panda_AstNode *>(ctxAllocator->New<ir::TryStatement>(blockE2p,
-               std::move(catchClausesArenaVector), finalizerE2p, finalizerInsertionsLabelPairArenaVector,
-               finalizerInsertionsStatementArenaVector));
+        auto *astNode = (ctxAllocator->New<ir::TryStatement>(blockE2p, std::move(catchClausesArenaVector),
+            finalizerE2p, finalizerInsertionsLabelPairArenaVector, finalizerInsertionsStatementArenaVector));
+        astNode->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
+        return reinterpret_cast<es2panda_AstNode *>(astNode);
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -534,8 +538,9 @@ TEST_F(PluginConversionRuleUnitTest, DISABLED_ImportSourcePtrInputParameter)
         auto importKindE2p = E2pToIrImportKinds(importKind);
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
-        return reinterpret_cast<es2panda_AstNode *>(ctxAllocator->New<ir::ETSImportDeclaration>(sourceE2p,
-               specifiersArenaVector, importKindE2p));
+        auto *astNode = (ctxAllocator->New<ir::ETSImportDeclaration>(sourceE2p, specifiersArenaVector, importKindE2p));
+        astNode->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
+        return reinterpret_cast<es2panda_AstNode *>(astNode);
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);

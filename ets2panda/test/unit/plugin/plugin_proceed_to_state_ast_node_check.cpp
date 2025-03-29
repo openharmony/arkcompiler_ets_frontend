@@ -42,12 +42,11 @@ static void FindBinaryExpression(es2panda_AstNode *ast)
     binExpr = ast;
 }
 
-static bool TestAstNodeCheck(es2panda_Context *context)
+static bool TestAstNodeCheck(es2panda_Context *context, es2panda_AstNode *root)
 {
-    auto Ast = impl->ProgramAst(context, impl->ContextProgram(context));
-    std::cout << impl->AstNodeDumpJSONConst(context, Ast) << std::endl;
+    std::cout << impl->AstNodeDumpJSONConst(context, root) << std::endl;
     ctx = context;
-    impl->AstNodeIterateConst(context, Ast, FindBinaryExpression);
+    impl->AstNodeIterateConst(context, root, FindBinaryExpression);
     if (binExpr == nullptr) {
         return false;
     }
@@ -84,9 +83,12 @@ int main(int argc, char **argv)
     impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
     CheckForErrors("CHECKED", context);
 
-    if (!TestAstNodeCheck(context)) {
+    auto root = impl->ProgramAst(context, impl->ContextProgram(context));
+    if (!TestAstNodeCheck(context, root)) {
         return TEST_ERROR_CODE;
     }
+
+    impl->AstNodeRecheck(context, root);
 
     impl->ProceedToState(context, ES2PANDA_STATE_LOWERED);
     CheckForErrors("LOWERED", context);

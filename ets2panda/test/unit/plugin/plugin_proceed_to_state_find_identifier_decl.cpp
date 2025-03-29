@@ -87,11 +87,10 @@ static void FindMainDef(es2panda_AstNode *ast)
     mainScriptFunc = scriptFunc;
 }
 
-static bool FindIdentifierDecl(es2panda_Context *context)
+static bool FindIdentifierDecl(es2panda_Context *context, es2panda_AstNode *ast)
 {
-    auto Ast = impl->ProgramAst(context, impl->ContextProgram(context));
     ctx = context;
-    impl->AstNodeIterateConst(context, Ast, FindMainDef);
+    impl->AstNodeIterateConst(context, ast, FindMainDef);
     if (mainScriptFunc == nullptr) {
         std::cerr << "CANT FIND MAIN FUNCTION" << std::endl;
         return false;
@@ -138,13 +137,17 @@ int main(int argc, char **argv)
     impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
     CheckForErrors("CHECKED", context);
 
+    auto ast = impl->ProgramAst(context, impl->ContextProgram(context));
+
     idents = new std::vector<es2panda_AstNode *>();
-    auto testResult = FindIdentifierDecl(context);
+    auto testResult = FindIdentifierDecl(context, ast);
     delete idents;
     idents = nullptr;
     if (!testResult) {
         return TEST_ERROR_CODE;
     }
+
+    impl->AstNodeRecheck(context, ast);
 
     impl->ProceedToState(context, ES2PANDA_STATE_LOWERED);
     CheckForErrors("LOWERED", context);

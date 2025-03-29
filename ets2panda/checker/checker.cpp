@@ -201,4 +201,18 @@ ScopeContext::ScopeContext(Checker *checker, varbinder::Scope *newScope)
     }
 }
 
+void Checker::CleanUp()
+{
+    context_ = CheckerContext(this, CheckerStatus::NO_OPTS);
+    globalTypes_ = allocator_.New<GlobalTypesHolder>(&allocator_);
+    relation_ = allocator_.New<TypeRelation>(this);
+    identicalResults_.cached.clear();
+    assignableResults_.cached.clear();
+    comparableResults_.cached.clear();
+    uncheckedCastableResults_.cached.clear();
+    supertypeResults_.cached.clear();
+    typeStack_.clear();
+    namedTypeStack_.clear();
+}
+
 }  // namespace ark::es2panda::checker

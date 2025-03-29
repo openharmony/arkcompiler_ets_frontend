@@ -258,9 +258,9 @@ int main(int argc, char **argv)
     impl->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
     CheckForErrors("PARSE", ctx);
 
-    auto *programNode = impl->ProgramAst(ctx, impl->ContextProgram(context));
+    auto *root = impl->ProgramAst(ctx, impl->ContextProgram(context));
 
-    TraverseAST(ctx, programNode);
+    TraverseAST(ctx, root);
 
     PrintStatistics();
 
@@ -269,6 +269,8 @@ int main(int argc, char **argv)
 
     impl->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     CheckForErrors("CHECKED", ctx);
+
+    impl->AstNodeRecheck(ctx, root);
 
     impl->ProceedToState(context, ES2PANDA_STATE_LOWERED);
     CheckForErrors("LOWERED", ctx);

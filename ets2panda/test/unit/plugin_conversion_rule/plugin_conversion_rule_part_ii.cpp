@@ -220,7 +220,9 @@ TEST_F(PluginConversionRuleUnitTest, CheckerTupleSizeTypeInputParameter)
         auto *allocatorE2p = reinterpret_cast<Context *>(context)->allocator;
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
-        return reinterpret_cast<es2panda_AstNode *>(ctxAllocator->New<ir::ETSTuple>(allocatorE2p, size));
+        auto *astNode = (ctxAllocator->New<ir::ETSTuple>(allocatorE2p, size));
+        astNode->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
+        return reinterpret_cast<es2panda_AstNode *>(astNode);
     }
     )"};
 
@@ -483,7 +485,9 @@ TEST_F(PluginConversionRuleUnitTest, ContextPtrMethodCall)
         auto *allocatorE2p = reinterpret_cast<Context *>(context)->allocator;
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
-        return reinterpret_cast<es2panda_AstNode *>(ctxAllocator->New<ir::Identifier>(allocatorE2p));
+        auto *astNode = (ctxAllocator->New<ir::Identifier>(allocatorE2p));
+        astNode->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
+        return reinterpret_cast<es2panda_AstNode *>(astNode);
     }
     )"};
 

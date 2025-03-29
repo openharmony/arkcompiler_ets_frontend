@@ -463,6 +463,12 @@ public:
         }
     }
 
+    void CleanUp() override
+    {
+        AstNode::CleanUp();
+        modifiers_ &= ~(ClassDefinitionModifiers::CLASSDEFINITION_CHECKED);
+    }
+
 private:
     void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VReg classReg,
                                         const std::vector<compiler::VReg> &staticComputedFieldKeys) const;

@@ -32,6 +32,7 @@ enum class AstNodeFlags {
     HAS_EXPORT_ALIAS = 1U << 3U,
     GENERATE_VALUE_OF = 1U << 4U,
     RECHECK = 1U << 5U,
+    NOCLEANUP = 1U << 6U,
     /* do not introduce new flags. all the existing to be removed */
 };
 

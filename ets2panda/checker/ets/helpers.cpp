@@ -2609,9 +2609,12 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
     params.push_back(paramExpression);
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *assignmentExpression = AllocNode<ir::AssignmentExpression>(
+    auto ident = AllocNode<ir::Identifier>(paramExpression->Ident()->Name(), Allocator());
+    ident->SetVariable(paramExpression->Variable());
+    auto *assignmentExpression =
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        memberExpression, paramExpression->Clone(Allocator(), nullptr), lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+        AllocNode<ir::AssignmentExpression>(memberExpression, ident, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    ident->SetParent(assignmentExpression);
     assignmentExpression->SetTsType(paramVar->TsType());
 
     assignmentExpression->SetRange({field->Start(), field->End()});

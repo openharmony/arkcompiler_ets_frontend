@@ -250,6 +250,19 @@ public:
     util::StringView FindNameInAliasMap(const util::StringView &pathAsKey, const util::StringView &aliasName);
     const ir::AstNode *FindNodeInAliasMap(const util::StringView &pathAsKey, const util::StringView &aliasName);
 
+    void CleanUp() override
+    {
+        VarBinder::CleanUp();
+        externalRecordTable_.clear();
+        InitImplicitThisParam();
+        dynamicImports_.clear();
+        reexportedNames_.clear();
+        reExportImports_.clear();
+        dynamicImportVars_.clear();
+        defaultExport_ = nullptr;
+        globalRecordTable_.CleanUp();
+    }
+
 private:
     void BuildClassDefinitionImpl(ir::ClassDefinition *classDef);
     void InitImplicitThisParam();

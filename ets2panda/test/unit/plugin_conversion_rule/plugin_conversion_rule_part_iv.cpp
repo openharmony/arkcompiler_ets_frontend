@@ -395,8 +395,10 @@ TEST_F(PluginConversionRuleUnitTest, TSModuleDeclarationConstructorFlagsInputPar
 
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
-        return reinterpret_cast<es2panda_AstNode *>(ctxAllocator->New<ir::TSModuleDeclaration>(allocatorE2p, nameE2p,
-               bodyE2p, ir::TSModuleDeclaration::ConstructorFlags {declare, global}));
+        auto *astNode = (ctxAllocator->New<ir::TSModuleDeclaration>(allocatorE2p, nameE2p,
+            bodyE2p, ir::TSModuleDeclaration::ConstructorFlags {declare, global}));
+        astNode->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
+        return reinterpret_cast<es2panda_AstNode *>(astNode);
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -423,8 +425,10 @@ TEST_F(PluginConversionRuleUnitTest, TSEnumDeclarationConstructorFlagsInputParam
 
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
-        return reinterpret_cast<es2panda_AstNode *>(ctxAllocator->New<ir::TSEnumDeclaration>(allocatorE2p, keyE2p,
-               std::move(membersArenaVector), ir::TSEnumDeclaration::ConstructorFlags {isConst, isStatic, isDeclare}));
+        auto *astNode = (ctxAllocator->New<ir::TSEnumDeclaration>(allocatorE2p, keyE2p,
+            std::move(membersArenaVector), ir::TSEnumDeclaration::ConstructorFlags {isConst, isStatic, isDeclare}));
+        astNode->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
+        return reinterpret_cast<es2panda_AstNode *>(astNode);
     })"};
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
     EXPECT_TRUE(HasMatched(targetAPIWithNoSpace));
@@ -454,9 +458,11 @@ TEST_F(PluginConversionRuleUnitTest, TSInterfaceDeclarationConstructorDataInputP
 
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
-        return reinterpret_cast<es2panda_AstNode *>(ctxAllocator->New<ir::TSInterfaceDeclaration>
-               (allocatorE2p, std::move(extendsArenaVector), ir::TSInterfaceDeclaration::ConstructorData
-               {es2pandaId, es2pandaTypeParams, es2pandaBody, isStatic, isExternal, es2pandaLang}));
+        auto *astNode = (ctxAllocator->New<ir::TSInterfaceDeclaration>(allocatorE2p, std::move(extendsArenaVector),
+            ir::TSInterfaceDeclaration::ConstructorData
+            {es2pandaId, es2pandaTypeParams, es2pandaBody, isStatic, isExternal, es2pandaLang}));
+        astNode->AddAstNodeFlags(ir::AstNodeFlags::NOCLEANUP);
+        return reinterpret_cast<es2panda_AstNode *>(astNode);
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);

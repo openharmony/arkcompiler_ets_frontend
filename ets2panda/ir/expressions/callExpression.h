@@ -169,6 +169,13 @@ public:
         v->Accept(this);
     }
 
+    void CleanUp() override
+    {
+        AstNode::CleanUp();
+        signature_ = nullptr;
+        uncheckedType_ = nullptr;
+    }
+
 protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     Expression *callee_;

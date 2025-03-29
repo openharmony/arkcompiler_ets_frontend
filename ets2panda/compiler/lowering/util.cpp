@@ -17,6 +17,8 @@
 
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "ir/expressions/identifier.h"
+#include "checker/checker.h"
+#include "checker/ETSAnalyzer.h"
 
 namespace ark::es2panda::compiler {
 
@@ -107,9 +109,72 @@ ArenaSet<varbinder::Variable *> FindCaptured(ArenaAllocator *allocator, ir::AstN
     return result;
 }
 
+static void ResetGlobalClass(parser::Program *prog)
+{
+    for (auto *statement : prog->Ast()->Statements()) {
+        if (statement->IsClassDeclaration() && statement->AsClassDeclaration()->Definition()->IsGlobal()) {
+            prog->SetGlobalClass(statement->AsClassDeclaration()->Definition());
+            break;
+        }
+    }
+}
+
+static bool IsGeneratedForUtilityType(ir::AstNode const *ast)
+{
+    if (ast->IsClassDeclaration()) {
+        auto &name = ast->AsClassDeclaration()->Definition()->Ident()->Name();
+        return name.EndsWith(checker::PARTIAL_CLASS_SUFFIX);
+    }
+    if (ast->IsTSInterfaceDeclaration()) {
+        auto &name = ast->AsTSInterfaceDeclaration()->Id()->Name();
+        return name.EndsWith(checker::PARTIAL_CLASS_SUFFIX);
+    }
+    return false;
+}
+
+static void ClearHelper(parser::Program *prog)
+{
+    ResetGlobalClass(prog);
+    // #24256 Should be removed when code refactoring on checker is done and no ast node allocated in checker.
+    auto &stmts = prog->Ast()->Statements();
+    // clang-format off
+    stmts.erase(std::remove_if(stmts.begin(), stmts.end(),
+        [](ir::AstNode *ast) -> bool {
+            return !ast->HasAstNodeFlags(ir::AstNodeFlags::NOCLEANUP) ||
+                IsGeneratedForUtilityType(ast);
+        }),
+        stmts.end());
+    // clang-format on
+
+    prog->Ast()->IterateRecursively([](ir::AstNode *ast) -> void { ast->CleanUp(); });
+    prog->Ast()->ClearScope();
+}
+
 // Rerun varbinder on the node. (First clear typesVariables and scopes)
 varbinder::Scope *Rebind(varbinder::ETSBinder *varBinder, ir::AstNode *node)
 {
+    if (node->IsProgram()) {
+        auto program = node->AsETSModule()->Program();
+        if (program->IsPackage()) {
+            return nullptr;
+        }
+
+        for (auto [_, program_list] : program->ExternalSources()) {
+            for (auto prog : program_list) {
+                ClearHelper(prog);
+            }
+        }
+
+        ClearHelper(program);
+
+        varBinder->CleanUp();
+        for (auto *phase : GetRebindPhase()) {
+            phase->Apply(varBinder->GetContext(), program);
+        }
+
+        return varBinder->TopScope();
+    }
+
     auto *scope = NearestScope(node->Parent());
     auto bscope = varbinder::LexicalScope<varbinder::Scope>::Enter(varBinder, scope);
 
@@ -123,6 +188,29 @@ varbinder::Scope *Rebind(varbinder::ETSBinder *varBinder, ir::AstNode *node)
 // Rerun varbinder and checker on the node.
 void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node)
 {
+    if (node->IsProgram()) {
+        auto program = node->AsETSModule()->Program();
+        if (program->IsPackage()) {
+            return;
+        }
+
+        for (auto [_, program_list] : program->ExternalSources()) {
+            for (auto prog : program_list) {
+                ClearHelper(prog);
+            }
+        }
+
+        ClearHelper(program);
+
+        varBinder->CleanUp();
+        varBinder->GetContext()->checker->CleanUp();
+
+        for (auto *phase : GetRecheckPhase()) {
+            phase->Apply(varBinder->GetContext(), program);
+        }
+        return;
+    }
+
     auto *scope = Rebind(varBinder, node);
 
     // NOTE(gogabr: should determine checker status more finely.

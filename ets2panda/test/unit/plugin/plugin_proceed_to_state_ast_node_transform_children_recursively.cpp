@@ -59,13 +59,20 @@ int main(int argc, char **argv)
         return PROCEED_ERROR_CODE;
     }
 
-    auto ast = g_impl->ProgramAst(g_ctx, g_impl->ContextProgram(g_ctx));
+    auto root = g_impl->ProgramAst(g_ctx, g_impl->ContextProgram(g_ctx));
 
-    g_impl->AstNodeTransformChildrenRecursively(g_ctx, ast, Transform, const_cast<char *>("transform"));
+    g_impl->AstNodeTransformChildrenRecursively(g_ctx, root, Transform, const_cast<char *>("transform"));
 
     if (!g_isFound) {
         return TEST_ERROR_CODE;
     }
+
+    g_impl->ProceedToState(g_ctx, ES2PANDA_STATE_CHECKED);
+    if (g_impl->ContextState(g_ctx) == ES2PANDA_STATE_ERROR) {
+        return PROCEED_ERROR_CODE;
+    }
+
+    g_impl->AstNodeRecheck(g_ctx, root);
 
     g_impl->ProceedToState(g_ctx, ES2PANDA_STATE_BIN_GENERATED);
     if (g_impl->ContextState(g_ctx) == ES2PANDA_STATE_ERROR) {

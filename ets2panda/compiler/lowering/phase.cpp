@@ -118,6 +118,24 @@ static InitScopesPhaseTs g_initScopesPhaseTs;
 static InitScopesPhaseJs g_initScopesPhaseJs;
 // NOLINTEND(fuchsia-statically-constructed-objects)
 
+std::vector<Phase *> GetRebindPhase()
+{
+    return {
+        &g_initScopesPhaseEts,
+        &g_resolveIdentifiers,
+    };
+}
+
+std::vector<Phase *> GetRecheckPhase()
+{
+    return {
+        &g_initScopesPhaseEts,
+        &g_resolveIdentifiers,
+        &g_capturedVariables,
+        &g_checkerPhase,
+    };
+}
+
 std::vector<Phase *> GetETSPhaseList()
 {
     // clang-format off

@@ -271,6 +271,14 @@ protected:
     [[nodiscard]] virtual bool BuildInternalName(ir::ScriptFunction *scriptFunc);
     virtual void AddCompilableFunction(ir::ScriptFunction *func);
 
+    virtual void CleanUp()
+    {
+        topScope_ = nullptr;
+        scope_ = nullptr;
+        varScope_ = nullptr;
+        functionScopes_.clear();
+    }
+
 private:
     parser::Program *program_ {};
     ArenaAllocator *allocator_ {};
