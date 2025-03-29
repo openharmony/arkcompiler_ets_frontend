@@ -751,13 +751,15 @@ extern "C" __attribute__((unused)) int GenerateTsDeclarationsFromContext(es2pand
                                                                                                                   : 1;
 }
 
-extern "C" void InsertETSImportDeclarationAndParse(es2panda_Context *context, es2panda_AstNode *importDeclaration)
+extern "C" void InsertETSImportDeclarationAndParse(es2panda_Context *context, es2panda_Program *program,
+                                                   es2panda_AstNode *importDeclaration)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
+    auto *parserProgram = reinterpret_cast<parser::Program *>(program);
     auto *importDeclE2p = reinterpret_cast<ir::ETSImportDeclaration *>(importDeclaration);
 
-    ctx->parserProgram->Ast()->Statements().insert(ctx->parserProgram->Ast()->Statements().begin(), importDeclE2p);
-    importDeclE2p->SetParent(ctx->parserProgram->Ast());
+    parserProgram->Ast()->Statements().insert(parserProgram->Ast()->Statements().begin(), importDeclE2p);
+    importDeclE2p->SetParent(parserProgram->Ast());
 
     ctx->parser->AsETSParser()->AddExternalSource(ctx->parser->AsETSParser()->ParseSources());
 
