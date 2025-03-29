@@ -25,6 +25,7 @@
 #include "util/options.h"
 #include "util/plugin.h"
 #include "libpandabase/os/stacktrace.h"
+#include "generated/diagnostic.h"
 
 #include <iostream>
 #include <memory>
@@ -68,8 +69,11 @@ static int CompileFromSource(es2panda::Compiler &compiler, es2panda::SourceFile 
         return 1;
     }
 
-    return util::GenerateProgram(program.get(), options,
-                                 [&diagnosticEngine](std::string const &str) { diagnosticEngine.LogFatalError(str); });
+    return util::GenerateProgram(
+        program.get(), options,
+        [&diagnosticEngine](const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &params) {
+            diagnosticEngine.LogDiagnostic(kind, params);
+        });
 }
 
 static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *options,
@@ -77,7 +81,7 @@ static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *option
 {
     auto compilationList = FindProjectSources(options->ArkTSConfig());
     if (compilationList.empty()) {
-        diagnosticEngine.LogFatalError("No files to compile");
+        diagnosticEngine.LogDiagnostic(diagnostic::NO_INPUT, util::DiagnosticMessageParams {});
         return 1;
     }
 
@@ -85,7 +89,7 @@ static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *option
     for (auto &[src, dst] : compilationList) {
         std::ifstream inputStream(src);
         if (inputStream.fail()) {
-            diagnosticEngine.LogFatalError(util::DiagnosticMessageParams {"Failed to open file: ", src});
+            diagnosticEngine.LogDiagnostic(diagnostic::OPEN_FAILED, util::DiagnosticMessageParams {src});
             return 1;
         }
 
@@ -100,7 +104,7 @@ static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *option
 
         auto res = CompileFromSource(compiler, input, *options, diagnosticEngine);
         if (res != 0) {
-            diagnosticEngine.LogFatalError(util::DiagnosticMessageParams {"Failed to compile from ", src, " to ", dst});
+            diagnosticEngine.LogDiagnostic(diagnostic::COMPILE_FAILED, util::DiagnosticMessageParams {src, dst});
             overallRes |= static_cast<unsigned>(res);
         }
     }
@@ -115,8 +119,8 @@ static std::optional<std::vector<util::Plugin>> InitializePlugins(std::vector<st
     for (auto &name : names) {
         auto plugin = util::Plugin(util::StringView {name});
         if (!plugin.IsOk()) {
-            diagnosticEngine.LogFatalError(
-                util::DiagnosticMessageParams {"Failed to load plugin ", util::StringView(name)});
+            diagnosticEngine.LogDiagnostic(diagnostic::PLUGIN_LOAD_FAILED,
+                                           util::DiagnosticMessageParams {util::StringView(name)});
             return std::nullopt;
         }
         plugin.Initialize();

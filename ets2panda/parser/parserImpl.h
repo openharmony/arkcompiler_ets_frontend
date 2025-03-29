@@ -197,7 +197,6 @@ public:
 
 protected:
     void LogParameterModifierError(ir::ModifierFlags status);
-    void LogGenericError(std::string_view errorMessage);
     // Error handling
     ir::Statement *AllocEmptyStatement();
     ir::Statement *AllocBrokenStatement(const lexer::SourcePosition &pos);

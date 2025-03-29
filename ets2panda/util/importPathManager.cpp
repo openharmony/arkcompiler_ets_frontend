@@ -19,6 +19,7 @@
 #include "util/arktsconfig.h"
 #include "util/diagnostic.h"
 #include "util/diagnosticEngine.h"
+#include "generated/diagnostic.h"
 
 #include "parser/context/parserContext.h"
 #include "parser/program/program.h"
@@ -123,7 +124,7 @@ ImportPathManager::ResolvedPathRes ImportPathManager::ResolvePath(std::string_vi
                                                                   ir::StringLiteral *importPath) const
 {
     if (importPath->Str().Empty()) {
-        diagnosticEngine_.LogFatalError("Import path cannot be empty", importPath->Str().Utf8());
+        diagnosticEngine_.LogDiagnostic(diagnostic::EMPTY_IMPORT_PATH, util::DiagnosticMessageParams {});
         return {*importPath};
     }
     const auto &entriesMap = arktsConfig_->Entries();
@@ -174,10 +175,10 @@ ImportPathManager::ResolvedPathRes ImportPathManager::ResolveAbsolutePath(const 
     ES2PANDA_ASSERT(arktsConfig_ != nullptr);
     auto resolvedPath = arktsConfig_->ResolvePath(importPath);
     if (!resolvedPath) {
-        diagnosticEngine_.LogFatalError(util::DiagnosticMessageParams {"Can't find prefix for '",
-                                                                       util::StringView(importPath), "' in ",
-                                                                       util::StringView(arktsConfig_->ConfigPath())},
-                                        *srcPos_);
+        diagnosticEngine_.LogDiagnostic(
+            diagnostic::IMPORT_CANT_FIND_PREFIX,
+            util::DiagnosticMessageParams {util::StringView(importPath), util::StringView(arktsConfig_->ConfigPath())},
+            *srcPos_);
         return {""};
     }
     return AppendExtensionOrIndexFileIfOmitted(UString(resolvedPath.value(), allocator_).View());
@@ -189,7 +190,8 @@ void ImportPathManager::UnixWalkThroughDirectoryAndAddToParseList(const ImportMe
     const auto directoryPath = std::string(importMetadata.resolvedSource);
     DIR *dir = opendir(directoryPath.c_str());
     if (dir == nullptr) {
-        diagnosticEngine_.LogFatalError(util::DiagnosticMessageParams {"Can't open folder: ", directoryPath}, *srcPos_);
+        diagnosticEngine_.LogDiagnostic(diagnostic::OPEN_FOLDER_FAILED, util::DiagnosticMessageParams {directoryPath},
+                                        *srcPos_);
         return;
     }
 
@@ -269,7 +271,7 @@ void ImportPathManager::AddToParseList(const ImportMetadata importMetadata)
     }
 
     if (!isDeclForDynamic && !ark::os::file::File::IsRegularFile(std::string(resolvedPath))) {
-        diagnosticEngine_.LogFatalError(util::DiagnosticMessageParams {"Not an available source path: ", resolvedPath},
+        diagnosticEngine_.LogDiagnostic(diagnostic::UNAVAILABLE_SRC_PATH, util::DiagnosticMessageParams {resolvedPath},
                                         *srcPos_);
         return;
     }
@@ -364,8 +366,8 @@ ImportPathManager::ResolvedPathRes ImportPathManager::AppendExtensionOrIndexFile
         }
     }
 
-    diagnosticEngine_.LogFatalError(
-        util::DiagnosticMessageParams {"Not supported path: ", util::StringView(path.Mutf8())}, *srcPos_);
+    diagnosticEngine_.LogDiagnostic(diagnostic::UNSUPPORTED_PATH,
+                                    util::DiagnosticMessageParams {util::StringView(path.Mutf8())}, *srcPos_);
     return {""};
 }
 
@@ -407,8 +409,8 @@ util::StringView ImportPathManager::FormModuleNameSolelyByAbsolutePath(const uti
 {
     std::string filePath(path.GetAbsolutePath());
     if (filePath.rfind(absoluteEtsPath_, 0) != 0) {
-        diagnosticEngine_.LogFatalError(
-            util::DiagnosticMessageParams {"Source file ", util::StringView(filePath), " outside ets-path"}, *srcPos_);
+        diagnosticEngine_.LogDiagnostic(diagnostic::SOURCE_OUTSIDE_ETS_PATH,
+                                        util::DiagnosticMessageParams {util::StringView(filePath)}, *srcPos_);
         return "";
     }
     auto name = FormRelativeModuleName(filePath.substr(absoluteEtsPath_.size()));
@@ -490,8 +492,8 @@ util::StringView ImportPathManager::FormModuleName(const util::Path &path)
         return util::UString(res.value(), allocator_).View();
     }
 
-    diagnosticEngine_.LogFatalError(
-        util::DiagnosticMessageParams {"Unresolved module name ", util::StringView(filePath)}, *srcPos_);
+    diagnosticEngine_.LogDiagnostic(diagnostic::UNRESOLVED_MODULE,
+                                    util::DiagnosticMessageParams {util::StringView(filePath)}, *srcPos_);
     return "";
 }
 

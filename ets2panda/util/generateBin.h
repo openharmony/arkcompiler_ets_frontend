@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,7 +21,7 @@
 namespace ark::es2panda::util {
 
 class Options;
-using ReporterFun = std::function<void(const std::string &)>;
+using ReporterFun = std::function<void(const diagnostic::DiagnosticKind &kind, const DiagnosticMessageParams &params)>;
 
 int GenerateProgram(ark::pandasm::Program *prog, const util::Options &options, const ReporterFun &reporter);
 
