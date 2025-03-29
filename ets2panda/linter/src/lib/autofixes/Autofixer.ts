@@ -24,6 +24,10 @@ import { SymbolCache } from './SymbolCache';
 import { SENDABLE_DECORATOR } from '../utils/consts/SendableAPI';
 import { PATH_SEPARATOR, SRC_AND_MAIN } from '../utils/consts/OhmUrl';
 import {
+  STRINGLITERAL_NUMBER,
+  STRINGLITERAL_NUMBER_ARRAY
+} from '../utils/consts/StringLiteral';
+import {
   DOUBLE_DOLLAR_IDENTIFIER,
   THIS_IDENTIFIER,
   ATTRIBUTE_SUFFIX,
@@ -2414,7 +2418,7 @@ export class Autofixer {
     }
   }
 
-  fixVariableDeclaration(node: ts.VariableDeclaration): Autofix[] | undefined {
+  fixVariableDeclaration(node: ts.VariableDeclaration, isEnum: boolean): Autofix[] | undefined {
     const initializer = node.initializer;
     const name = node.name;
     const sym = this.typeChecker.getSymbolAtLocation(name);
@@ -2425,17 +2429,15 @@ export class Autofixer {
     const type = this.typeChecker.getTypeOfSymbolAtLocation(sym, name);
     const typeText = this.typeChecker.typeToString(type);
     const typeFlags = type.flags;
-    const isNumberLike =
-      typeText === 'number' || typeText === 'number[]' || (typeFlags & ts.TypeFlags.NumberLiteral) !== 0;
 
-    if (!isNumberLike) {
+    if (!TsUtils.isNumberLike(type, typeText, isEnum)) {
       return undefined;
     }
 
     let typeNode: ts.TypeNode;
-    if (typeText === 'number' || (typeFlags & ts.TypeFlags.NumberLiteral) !== 0) {
+    if (typeText === STRINGLITERAL_NUMBER || (typeFlags & ts.TypeFlags.NumberLiteral) !== 0 || isEnum) {
       typeNode = ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
-    } else if (typeText === 'number[]') {
+    } else if (typeText === STRINGLITERAL_NUMBER_ARRAY) {
       typeNode = ts.factory.createArrayTypeNode(ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword));
     } else {
       return undefined;
@@ -2448,6 +2450,26 @@ export class Autofixer {
     }
     const text = this.printer.printNode(ts.EmitHint.Unspecified, newVarDecl, node.getSourceFile());
     return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];
+  }
+
+  fixPropertyDeclarationNumericSemanticsArray(node: ts.PropertyDeclaration): Autofix[] {
+    const newProperty = ts.factory.createPropertyDeclaration(
+      node.modifiers,
+      node.name,
+      undefined,
+      ts.factory.createArrayTypeNode(ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword)),
+      node.initializer
+    );
+
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, newProperty, node.getSourceFile());
+
+    return [
+      {
+        start: node.getStart(),
+        end: node.getEnd(),
+        replacementText: replacementText
+      }
+    ];
   }
 
   fixParameter(param: ts.ParameterDeclaration): Autofix[] {
@@ -2474,22 +2496,28 @@ export class Autofixer {
     if (initializer === undefined) {
       return undefined;
     }
-
     const propType = this.typeChecker.getTypeAtLocation(node);
-    const propTypeNode = this.typeChecker.typeToTypeNode(propType, undefined, ts.NodeBuilderFlags.None);
-    if (!propTypeNode || !this.utils.isSupportedType(propTypeNode)) {
-      return undefined;
+    let propTypeNode: ts.TypeNode;
+    if (propType.flags & ts.TypeFlags.NumberLike) {
+      propTypeNode = ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
+    } else {
+      const inferredTypeNode = this.typeChecker.typeToTypeNode(propType, undefined, ts.NodeBuilderFlags.None);
+
+      if (!inferredTypeNode || !this.utils.isSupportedType(inferredTypeNode)) {
+        return undefined;
+      }
+      propTypeNode = inferredTypeNode;
     }
 
-    const questionOrExclamationToken: ts.ExclamationToken | ts.QuestionToken | undefined =
-      node.questionToken ?? node.exclamationToken ?? undefined;
-    const newPropDecl: ts.PropertyDeclaration = ts.factory.createPropertyDeclaration(
+    const questionOrExclamationToken = node.questionToken ?? node.exclamationToken ?? undefined;
+    const newPropDecl = ts.factory.createPropertyDeclaration(
       node.modifiers,
       node.name,
       questionOrExclamationToken,
       propTypeNode,
       initializer
     );
+
     const text = this.printer.printNode(ts.EmitHint.Unspecified, newPropDecl, node.getSourceFile());
     return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];
   }
