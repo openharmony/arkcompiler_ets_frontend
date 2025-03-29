@@ -150,7 +150,6 @@ shared_library("ts_bindings") {
 action("build_bindings") {
   deps = [ ":ts_bindings" ]
   sources = [
-    "./src/Es2pandaEnums.ts",
     "./src/Es2pandaNativeModule.ts",
     "./src/InteropNativeModule.ts",
     "./src/InteropTypes.ts",
