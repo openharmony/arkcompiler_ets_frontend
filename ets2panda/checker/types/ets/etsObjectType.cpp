@@ -434,6 +434,11 @@ void ETSObjectType::Identical(TypeRelation *relation, Type *other)
         return;
     }
 
+    if (HasTypeFlag(TypeFlag::READONLY) != other->HasTypeFlag(TypeFlag::READONLY)) {
+        relation->Result(false);
+        return;
+    }
+
     auto const otherTypeArguments = other->AsETSObjectType()->TypeArguments();
 
     auto const argsNumber = typeArguments_.size();

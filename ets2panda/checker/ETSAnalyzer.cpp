@@ -938,7 +938,8 @@ static bool IsInvalidArrayMemberAssignment(const ir::AssignmentExpression *const
     }
 
     const auto *const leftExpr = expr->Left()->AsMemberExpression();
-    if (leftExpr->Object()->TsType()->IsETSArrayType() || leftExpr->Object()->TsType()->IsETSTupleType()) {
+    if (leftExpr->Object()->TsType()->IsETSArrayType() || leftExpr->Object()->TsType()->IsETSTupleType() ||
+        leftExpr->Object()->TsType()->IsETSResizableArrayType()) {
         if (leftExpr->Object()->TsType()->IsETSArrayType() && leftExpr->Property()->IsIdentifier() &&
             leftExpr->Property()->AsIdentifier()->Name().Is("length")) {
             checker->LogError(diagnostic::ARRAY_LENGTH_MODIFICATION, {}, expr->Left()->Start());

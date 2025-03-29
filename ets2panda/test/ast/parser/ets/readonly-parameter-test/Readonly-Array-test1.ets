@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,7 +14,9 @@
  */
 
 
-function foo (x: readonly int/* @@ label */) {
+function foo(x : readonly Array<int>)
+{
+    let x1 : Array<int>
+    x1 = /* @@ label */x
 }
-
-/* @@@ label Error SyntaxError: 'readonly' type modifier is only permitted on resizable array and tuple types. */
+/* @@@ label Error TypeError: Type 'Readonly<Array<Int>>' cannot be assigned to type 'Array<Int>' */
