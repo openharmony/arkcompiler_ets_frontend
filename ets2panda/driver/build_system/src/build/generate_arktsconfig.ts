@@ -107,11 +107,11 @@ export class ArkTSConfigGenerator {
           pathSection[key] = [changeFileExtension(itemPath, '', '.d.ets')];
         }
         if (stat.isDirectory()) {
-          // For non-arkui files under api dir,
+          // For files under api dir excluding arkui/runtime-api dir,
           // fill path section with `"pathFromApi.subdir.fileName" = [${absolute_path_to_file}]`;
-          // For arkui files under api dir,
+          // For @koalaui files under arkui/runtime-api dir,
           // fill path section with `"fileName" = [${absolute_path_to_file}]`.
-          const isCurrentDirExcluded = path.basename(currentDir) === 'api' && item === 'arkui';
+          const isCurrentDirExcluded = path.basename(currentDir) === 'arkui' && item === 'runtime-api';
           const newRelativePath = isCurrentDirExcluded ? '' : (relativePath ? `${relativePath}.${item}` : item);
           traverse(path.resolve(currentDir, item), newRelativePath, isCurrentDirExcluded || isExcludedDir);
         }
