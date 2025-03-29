@@ -43,7 +43,7 @@ public:
         const std::string recordName1 = "A";
         AnnotationEmitTest::CheckRecordWithoutAnnotations(program, recordName1);
         const std::string recordName2 = "NS";
-        AnnotationEmitTest::CheckRecordWithoutAnnotations(program, recordName2);
+        AnnotationEmitTest::CheckRecordWithoutAnnotations(program, recordName2, true);
     }
 
     void CheckFunctionAnnotations(pandasm::Program *program)

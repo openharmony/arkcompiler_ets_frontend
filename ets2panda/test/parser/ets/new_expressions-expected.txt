@@ -179,6 +179,40 @@
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "new_expressions.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "new_expressions.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "new_expressions.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "new_expressions.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",

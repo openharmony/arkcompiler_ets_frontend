@@ -67,7 +67,7 @@ void AnnotationUsage::Dump(ir::SrcDumper *dumper) const
         }
         dumper->Add("}");
     }
-    dumper->Add(")");
+    dumper->Add(") ");
 }
 
 AnnotationUsage *AnnotationUsage::Clone(ArenaAllocator *const allocator, AstNode *const parent)

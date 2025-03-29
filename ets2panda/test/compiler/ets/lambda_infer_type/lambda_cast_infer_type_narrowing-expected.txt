@@ -1068,6 +1068,40 @@
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "lambda_cast_infer_type_narrowing.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "lambda_cast_infer_type_narrowing.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "lambda_cast_infer_type_narrowing.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "lambda_cast_infer_type_narrowing.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",

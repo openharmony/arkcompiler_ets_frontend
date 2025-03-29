@@ -23,6 +23,40 @@
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "native_toplevel.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "native_toplevel.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "native_toplevel.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "native_toplevel.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",

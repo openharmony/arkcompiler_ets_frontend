@@ -811,6 +811,40 @@
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "selective_export.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "selective_export.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "selective_export.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "selective_export.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",

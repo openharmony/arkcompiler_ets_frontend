@@ -71,7 +71,8 @@ public:
     void CheckRecordAnnotations(ark::pandasm::Program *program, const std::string &recordName,
                                 const AnnotationMap &expectedAnnotations);
 
-    void CheckRecordWithoutAnnotations(ark::pandasm::Program *program, const std::string &recordName);
+    void CheckRecordWithoutAnnotations(ark::pandasm::Program *program, const std::string &recordName,
+                                       bool isModule = false);
 
     void CheckFunctionAnnotations(ark::pandasm::Program *program, const std::string &functionName, bool isStatic,
                                   const AnnotationMap &expectedAnnotations);

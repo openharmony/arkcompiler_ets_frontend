@@ -178,6 +178,40 @@
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "array_indexing_without_chaining_non_nullish.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "array_indexing_without_chaining_non_nullish.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "array_indexing_without_chaining_non_nullish.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "array_indexing_without_chaining_non_nullish.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",

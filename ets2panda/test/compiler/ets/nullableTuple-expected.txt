@@ -277,6 +277,40 @@
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "nullableTuple.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "nullableTuple.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "nullableTuple.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "nullableTuple.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",

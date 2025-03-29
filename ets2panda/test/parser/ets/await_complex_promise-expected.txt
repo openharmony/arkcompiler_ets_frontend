@@ -230,6 +230,40 @@
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "await_complex_promise.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "await_complex_promise.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "await_complex_promise.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "await_complex_promise.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",

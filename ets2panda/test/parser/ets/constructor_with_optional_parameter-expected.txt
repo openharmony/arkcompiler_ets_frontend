@@ -576,6 +576,40 @@
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "constructor_with_optional_parameter.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "constructor_with_optional_parameter.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "constructor_with_optional_parameter.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "constructor_with_optional_parameter.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",
