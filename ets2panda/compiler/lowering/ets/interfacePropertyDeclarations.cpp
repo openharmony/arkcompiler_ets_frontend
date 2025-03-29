@@ -187,20 +187,11 @@ void InterfacePropertyDeclarationsPhase::HandleInternalGetterOrSetterMethod(ir::
 }
 
 //  Extracted form 'UpdateInterfaceProperties(...)' to reduce its size.
-static void AddOverload(ir::TSInterfaceBody *const interface, ir::MethodDefinition *method,
-                        ir::MethodDefinition *overload, varbinder::Variable *variable)
+static void AddOverload(ir::MethodDefinition *method, ir::MethodDefinition *overload, varbinder::Variable *variable)
 {
     method->AddOverload(overload);
     overload->SetParent(method);
-
-    auto flag = ir::ScriptFunctionFlags::OVERLOAD;
-    if (interface->Parent()->IsTSInterfaceDeclaration()) {
-        if (interface->Parent()->AsTSInterfaceDeclaration()->IsDeclare()) {
-            flag = ir::ScriptFunctionFlags::EXTERNAL_OVERLOAD;
-        }
-    }
-
-    overload->Function()->AddFlag(flag);
+    overload->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
     overload->Function()->Id()->SetVariable(variable);
 }
 
@@ -241,11 +232,11 @@ ir::Expression *InterfacePropertyDeclarationsPhase::UpdateInterfaceProperties(ch
             auto *const method = prevDecl->Node()->AsMethodDefinition();
             auto *const var = methodScope->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS);
 
-            AddOverload(interface, method, getter, var);
+            AddOverload(method, getter, var);
 
             if (!prop->AsClassProperty()->IsReadonly()) {
                 auto setter = GenerateGetterOrSetter(checker, varbinder, prop->AsClassProperty(), true);
-                AddOverload(interface, method, setter, var);
+                AddOverload(method, setter, var);
             }
             continue;
         }
@@ -255,7 +246,7 @@ ir::Expression *InterfacePropertyDeclarationsPhase::UpdateInterfaceProperties(ch
 
         if (!prop->AsClassProperty()->IsReadonly()) {
             auto setter = GenerateGetterOrSetter(checker, varbinder, prop->AsClassProperty(), true);
-            AddOverload(interface, getter, setter, variable);
+            AddOverload(getter, setter, variable);
         }
         scope->AsClassScope()->InstanceFieldScope()->EraseBinding(name);
     }
