@@ -212,10 +212,6 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
         case lexer::TokenType::KEYW_LET:
             result = ParseStatement(flags);
             break;
-        case lexer::TokenType::KEYW_NAMESPACE: {
-            result = ParseNamespaceStatement(memberModifiers);
-            break;
-        }
         case lexer::TokenType::KEYW_STATIC:
         case lexer::TokenType::KEYW_ABSTRACT:
         case lexer::TokenType::KEYW_FINAL:
@@ -228,6 +224,9 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
             result = ParseTopLevelAnnotation(memberModifiers);
             break;
         case lexer::TokenType::LITERAL_IDENT: {
+            if (((memberModifiers & ir::ModifierFlags::DECLARE) != 0U) || IsNamespaceDecl()) {
+                return ParseNamespaceStatement(memberModifiers);
+            }
             result = ParseIdentKeyword();
             if (result == nullptr && (memberModifiers & (ir::ModifierFlags::EXPORTED)) != 0U) {
                 return ParseExport(startLoc, memberModifiers);

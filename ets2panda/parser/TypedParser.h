@@ -72,6 +72,7 @@ protected:
     static bool CheckClassElementInterfaceBody(ir::AstNode *property, ArenaVector<ir::AstNode *> &properties);
     bool CheckClassElement(ir::AstNode *property, ir::MethodDefinition *&ctor,
                            ArenaVector<ir::AstNode *> &properties) override;
+    bool IsNamespaceDecl();
 
     ir::ModifierFlags ParseModifiers() override;
     ParserStatus ValidateArrowParameter(ir::Expression *expr, bool *seenOptional) override;
