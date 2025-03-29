@@ -4413,7 +4413,8 @@ export class TypeScriptLinter {
       if (parent && parent.kind !== ts.SyntaxKind.ClassDeclaration) {
         return;
       }
-      this.incrementCounters(decorator, FaultID.LimitedStdLibApi);
+      const autofix = this.autofixer?.removeDecorator(decorator);
+      this.incrementCounters(decorator, FaultID.LimitedStdLibApi, autofix);
     }
   }
 
@@ -4426,7 +4427,8 @@ export class TypeScriptLinter {
       if (parent && parent.kind !== ts.SyntaxKind.FunctionDeclaration) {
         return;
       }
-      this.incrementCounters(decorator, FaultID.LimitedStdLibApi);
+      const autofix = this.autofixer?.removeDecorator(decorator);
+      this.incrementCounters(decorator, FaultID.LimitedStdLibApi, autofix);
     }
   }
 
