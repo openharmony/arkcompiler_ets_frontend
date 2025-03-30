@@ -76,6 +76,9 @@ bool IsObjectLiteralElement(ir::AstNode *node)
 
 ir::AstNode *GetContainingObjectLiteralNode(ir::AstNode *node)
 {
+    if (node == nullptr) {
+        return nullptr;
+    }
     auto type = node->Type();
     if (type == ir::AstNodeType::STRING_LITERAL || type == ir::AstNodeType::NUMBER_LITERAL ||
         type == ir::AstNodeType::TEMPLATE_LITERAL || type == ir::AstNodeType::IDENTIFIER) {
@@ -92,6 +95,9 @@ ir::AstNode *GetContainingObjectLiteralNode(ir::AstNode *node)
 
 ir::AstNode *GetContextualTypeNode(ir::AstNode *node)
 {
+    if (node == nullptr) {
+        return nullptr;
+    }
     if (node->Type() == ir::AstNodeType::OBJECT_EXPRESSION) {
         if (node->Parent()->Type() == ir::AstNodeType::CLASS_PROPERTY) {
             auto propertyObj = node->Parent()->AsClassElement();
@@ -567,6 +573,56 @@ std::vector<SymbolDisplayPart> MergeSymbolDisplayPart(const std::vector<SymbolDi
     return result;
 }
 
+std::string GetNameFromClassExpression(ir::AstNode *node)
+{
+    if (node == nullptr || !node->IsClassExpression()) {
+        return "";
+    }
+    if (node->AsClassExpression()->Variable() == nullptr) {
+        return "";
+    }
+    return std::string(node->AsClassExpression()->Variable()->Name());
+}
+
+std::string GetNameFromETSStructDeclaration(ir::AstNode *node)
+{
+    if (node == nullptr || !node->IsETSStructDeclaration()) {
+        return "";
+    }
+    if (node->AsETSStructDeclaration()->Definition() == nullptr) {
+        return "";
+    }
+    if (node->AsETSStructDeclaration()->Definition()->Ident() == nullptr) {
+        return "";
+    }
+    return std::string(node->AsETSStructDeclaration()->Definition()->Ident()->Name());
+}
+
+std::string GetNameFromClassDeclaration(ir::AstNode *node)
+{
+    if (node == nullptr || !node->IsClassDeclaration()) {
+        return "";
+    }
+    if (node->AsClassDeclaration()->Definition() == nullptr) {
+        return "";
+    }
+    if (node->AsClassDeclaration()->Definition()->Ident() == nullptr) {
+        return "";
+    }
+    return std::string(node->AsClassDeclaration()->Definition()->Ident()->Name());
+}
+
+std::string GetNameFromClassDefinition(ir::AstNode *node)
+{
+    if (node == nullptr || !node->IsClassDefinition()) {
+        return "";
+    }
+    if (node->AsClassDefinition()->Ident() == nullptr) {
+        return "";
+    }
+    return std::string(node->AsClassDefinition()->Ident()->Name());
+}
+
 std::vector<SymbolDisplayPart> CreateDisplayForClass(ir::AstNode *node)
 {
     std::vector<SymbolDisplayPart> displayParts;
@@ -578,24 +634,33 @@ std::vector<SymbolDisplayPart> CreateDisplayForClass(ir::AstNode *node)
         displayParts.emplace_back(CreateKeyword("local class"));
         displayParts.emplace_back(CreatePunctuation(")"));
         displayParts.emplace_back(CreateSpace());
-        displayParts.emplace_back(CreateClassName(std::string(node->AsClassExpression()->Variable()->Name())));
+        displayParts.emplace_back(CreateClassName(GetNameFromClassExpression(node)));
     } else if (node->Type() == ir::AstNodeType::STRUCT_DECLARATION) {
         displayParts.emplace_back(CreateKeyword("struct"));
         displayParts.emplace_back(CreateSpace());
-        displayParts.emplace_back(
-            CreateClassName(std::string(node->AsETSStructDeclaration()->Definition()->Ident()->Name())));
+        displayParts.emplace_back(CreateClassName(GetNameFromETSStructDeclaration(node)));
     } else if (node->Type() == ir::AstNodeType::CLASS_DECLARATION) {
         displayParts.emplace_back(CreateKeyword("class"));
         displayParts.emplace_back(CreateSpace());
-        displayParts.emplace_back(
-            CreateClassName(std::string(node->AsClassDeclaration()->Definition()->Ident()->Name())));
+        displayParts.emplace_back(CreateClassName(GetNameFromClassDeclaration(node)));
     } else {
         // class definition
         displayParts.emplace_back(CreateKeyword("class"));
         displayParts.emplace_back(CreateSpace());
-        displayParts.emplace_back(CreateClassName(std::string(node->AsClassDefinition()->Ident()->Name())));
+        displayParts.emplace_back(CreateClassName(GetNameFromClassDefinition(node)));
     }
     return displayParts;
+}
+
+std::string GetNameFromTSInterfaceDeclaration(ir::AstNode *node)
+{
+    if (node == nullptr || !node->IsTSInterfaceDeclaration()) {
+        return "";
+    }
+    if (node->AsTSInterfaceDeclaration()->Id() == nullptr) {
+        return "";
+    }
+    return std::string(node->AsTSInterfaceDeclaration()->Id()->AsIdentifier()->Name());
 }
 
 std::vector<SymbolDisplayPart> CreateDisplayForInterface(ir::AstNode *node)
@@ -606,8 +671,7 @@ std::vector<SymbolDisplayPart> CreateDisplayForInterface(ir::AstNode *node)
     }
     displayParts.emplace_back(CreateKeyword("interface"));
     displayParts.emplace_back(CreateSpace());
-    displayParts.emplace_back(
-        CreateClassName(std::string(node->AsTSInterfaceDeclaration()->Id()->AsIdentifier()->Name())));
+    displayParts.emplace_back(CreateClassName(GetNameFromTSInterfaceDeclaration(node)));
     return displayParts;
 }
 
@@ -965,7 +1029,13 @@ std::vector<SymbolDisplayPart> CreateDisplayForMethodDefinition(ir::AstNode *nod
     auto functionName = node->AsMethodDefinition()->Key()->AsIdentifier()->Name();
     displayParts.emplace_back(CreateFunctionName(std::string(functionName)));
 
+    if (node->AsMethodDefinition()->Value() == nullptr) {
+        return displayParts;
+    }
     auto scriptFunction = node->AsMethodDefinition()->Value()->AsFunctionExpression()->Function();
+    if (scriptFunction == nullptr) {
+        return displayParts;
+    }
     if (scriptFunction->Type() == ir::AstNodeType::SCRIPT_FUNCTION) {
         auto script = scriptFunction->AsScriptFunction();
         auto typeParameter = script->TypeParams();
@@ -1036,6 +1106,9 @@ std::vector<SymbolDisplayPart> CreateDisplayForETSParameterExpression(ir::AstNod
     displayParts.emplace_back(CreateSpace());
 
     auto typeAnnotation = node->AsETSParameterExpression()->TypeAnnotation();
+    if (typeAnnotation == nullptr) {
+        return displayParts;
+    }
     auto type = GetNameForTypeNode(typeAnnotation);
     displayParts.emplace_back(CreateTypeName(type));
 
@@ -1121,8 +1194,11 @@ QuickInfo GetQuickInfo(ir::AstNode *node, ir::AstNode *containerNode, ir::AstNod
 
 QuickInfo GetQuickInfoAtPositionImpl(es2panda_Context *context, size_t position, std::string fileName)
 {
+    if (context == nullptr) {
+        return QuickInfo();
+    }
     auto touchingToken = GetTouchingToken(context, position, false);
-    if (touchingToken->IsProgram()) {
+    if (touchingToken == nullptr || touchingToken->IsProgram()) {
         return QuickInfo();
     }
     auto nodeForQuickInfo = GetTokenForQuickInfo(context, position);
@@ -1131,7 +1207,7 @@ QuickInfo GetQuickInfoAtPositionImpl(es2panda_Context *context, size_t position,
     auto nodeFileName = std::move(fileName);
     if (object != nullptr) {
         auto contextualTypeNode = GetContextualTypeNode(GetContainingObjectLiteralNode(nodeForQuickInfo)->Parent());
-        if (contextualTypeNode->IsETSImportDeclaration()) {
+        if (contextualTypeNode != nullptr && contextualTypeNode->IsETSImportDeclaration()) {
             nodeFileName = GetNodeFileName(contextualTypeNode);
         }
     }
