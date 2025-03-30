@@ -15,20 +15,14 @@
 
 #include "function.h"
 
-#include <binder/binder.h>
-#include <binder/scope.h>
-#include <binder/variable.h>
 #include <compiler/base/lreference.h>
 #include <compiler/core/pandagen.h>
 #include <ir/base/classDefinition.h>
-#include <ir/base/classProperty.h>
 #include <ir/base/classStaticBlock.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/expressions/assignmentExpression.h>
-#include <ir/expressions/identifier.h>
 #include <ir/statements/blockStatement.h>
 #include <ir/ts/tsParameterProperty.h>
-#include <util/helpers.h>
 
 namespace panda::es2panda::compiler {
 

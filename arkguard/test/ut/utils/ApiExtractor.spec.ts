@@ -14,9 +14,13 @@
  */
 
 import { ApiExtractor } from '../../../src/common/ApiExtractor';
-import {assert, expect} from 'chai';
-import { readProjectPropertiesByCollectedPaths } from '../../../src/common/ApiReader';
+import { assert, expect } from 'chai';
+import { initScanProjectConfigByMergeConfig, readProjectPropertiesByCollectedPaths, scanProjectConfig } from '../../../src/common/ApiReader';
 import { NameGeneratorType } from '../../../src/generator/NameFactory';
+import { MergedConfig, ProjectCollections } from '../../../src/ArkObfuscator';
+import { clearProjectWhiteListManager, FileWhiteList, projectWhiteListManager, initProjectWhiteListManager  } from '../../../src/utils/ProjectCollections';
+import { AtKeepCollections } from '../../../src/utils/CommonCollections';
+import { IOptions } from '../../../src/configs/IOptions';
 
 function collectApi(apiPath: string, apiType: ApiExtractor.ApiType): void {
   clearAll();
@@ -122,6 +126,10 @@ describe('test for ApiExtractor', function () {
   describe('test for visitPropertyAndName', function () {
     it('Class Test', function () {
       let filePath: string = 'test/ut/utils/apiTest_visitPropertyAndName/classTest.d.ts';
+      let config: MergedConfig = new MergedConfig();
+      config.options.stripSystemApiArgs = false;
+      initScanProjectConfigByMergeConfig(config);
+
       collectApi(filePath, ApiExtractor.ApiType.API);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestClass1'), true);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestClass2'), false);
@@ -138,6 +146,10 @@ describe('test for ApiExtractor', function () {
 
     it('Interface Test', function () {
       let filePath: string = 'test/ut/utils/apiTest_visitPropertyAndName/interfaceTest.d.ts';
+      let config: MergedConfig = new MergedConfig();
+      config.options.stripSystemApiArgs = false;
+      initScanProjectConfigByMergeConfig(config);
+
       collectApi(filePath, ApiExtractor.ApiType.API);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestInterface1'), true);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestInterface2'), false);
@@ -152,6 +164,10 @@ describe('test for ApiExtractor', function () {
 
     it('TypeLiteral Test', function () {
       let filePath: string = 'test/ut/utils/apiTest_visitPropertyAndName/typeLiteralTest.d.ts';
+      let config: MergedConfig = new MergedConfig();
+      config.options.stripSystemApiArgs = false;
+      initScanProjectConfigByMergeConfig(config);
+
       collectApi(filePath, ApiExtractor.ApiType.API);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestType1'), true);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestType2'), false);
@@ -166,6 +182,10 @@ describe('test for ApiExtractor', function () {
 
     it('Enum Test', function () {
       let filePath: string = 'test/ut/utils/apiTest_visitPropertyAndName/enumTest.d.ts';
+      let config: MergedConfig = new MergedConfig();
+      config.options.stripSystemApiArgs = false;
+      initScanProjectConfigByMergeConfig(config);
+
       collectApi(filePath, ApiExtractor.ApiType.API);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestEnum1'), true);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestEnum2'), false);
@@ -176,6 +196,10 @@ describe('test for ApiExtractor', function () {
 
     it('ObjectLiteral Test', function () {
       let filePath: string = 'test/ut/utils/apiTest_visitPropertyAndName/objectLiteral.d.ts';
+      let config: MergedConfig = new MergedConfig();
+      config.options.stripSystemApiArgs = false;
+      initScanProjectConfigByMergeConfig(config);
+
       collectApi(filePath, ApiExtractor.ApiType.API);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('obj1'), true);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('obj2'), false);
@@ -192,6 +216,10 @@ describe('test for ApiExtractor', function () {
 
     it('Module Test', function () {
       let filePath: string = 'test/ut/utils/apiTest_visitPropertyAndName/moduleTest.d.ts';
+      let config: MergedConfig = new MergedConfig();
+      config.options.stripSystemApiArgs = false;
+      initScanProjectConfigByMergeConfig(config);
+
       collectApi(filePath, ApiExtractor.ApiType.API);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('ns1'), true);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('ns2'), false);
@@ -204,6 +232,50 @@ describe('test for ApiExtractor', function () {
       assert.strictEqual(ApiExtractor.mPropertySet.has('TestInterface2'), false);
       assert.strictEqual(ApiExtractor.mPropertySet.has('prop4'), true);
       assert.strictEqual(ApiExtractor.mPropertySet.has('prop5'), true);
+      clearAll();
+    });
+
+    it('When "-extra-options strip-system-api-args" option is enabled, no function parameters are collected', function () {
+      let filePath: string = 'test/ut/utils/apiTest_visitPropertyAndName/systemApiArgsTest.d.ts';
+      let config: MergedConfig = new MergedConfig();
+      config.options.stripSystemApiArgs = true;
+      initScanProjectConfigByMergeConfig(config);
+
+      collectApi(filePath, ApiExtractor.ApiType.API);
+      assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestClass1'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('prop1'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('param1'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('param2'), false);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('foo1'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('param5'), false);
+      assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestClass2'), false);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('prop2'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('param3'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('param4'), false);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('foo2'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('param6'), false);
+      clearAll();
+    });
+
+    it('When "-extra-options strip-system-api-args" option is not enabled, function parameters are collected', function () {
+      let filePath: string = 'test/ut/utils/apiTest_visitPropertyAndName/systemApiArgsTest.d.ts';
+      let config: MergedConfig = new MergedConfig();
+      config.options.stripSystemApiArgs = false;
+      initScanProjectConfigByMergeConfig(config);
+
+      collectApi(filePath, ApiExtractor.ApiType.API);
+      assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestClass1'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('prop1'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('param1'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('param2'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('foo1'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('param5'), true);
+      assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestClass2'), false);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('prop2'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('param3'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('param4'), false);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('foo2'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('param6'), false);
       clearAll();
     });
   });
@@ -222,7 +294,7 @@ describe('test for ApiExtractor', function () {
             mRenameProperties: true,
             mKeepStringProperty: false,
             mNameGeneratorType: NameGeneratorType.ORDERED,
-            mReservedNames: [], 
+            mReservedNames: [],
             mReservedToplevelNames: []
           },
           mExportObfuscation: false,
@@ -315,7 +387,7 @@ describe('test for ApiExtractor', function () {
             mRenameProperties: false,
             mKeepStringProperty: false,
             mNameGeneratorType: NameGeneratorType.ORDERED,
-            mReservedNames: [], 
+            mReservedNames: [],
             mReservedToplevelNames: []
           },
           mExportObfuscation: true,
@@ -410,7 +482,7 @@ describe('test for ApiExtractor', function () {
             mRenameProperties: true,
             mKeepStringProperty: false,
             mNameGeneratorType: NameGeneratorType.ORDERED,
-            mReservedNames: [], 
+            mReservedNames: [],
             mReservedToplevelNames: []
           },
           mExportObfuscation: true,
@@ -570,7 +642,15 @@ describe('test for ApiExtractor', function () {
     it('should collect constructor properties', function () {
       ApiExtractor.mConstructorPropertySet = new Set();
       let constructorPropertyAst: string = 'test/ut/utils/apiTest_visitConstructorProperty/constructorProperty.ts';
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, false);
       collectApi(constructorPropertyAst, ApiExtractor.ApiType.CONSTRUCTOR_PROPERTY);
+      const fileWhiteList: FileWhiteList | undefined = projectWhiteListManager?.getFileWhiteListMap().get(constructorPropertyAst);
+      projectWhiteListManager?.createOrUpdateWhiteListCaches();
+      expect(fileWhiteList!.fileReservedInfo.propertyParams.has('para1')).to.be.true;
+      expect(fileWhiteList!.fileReservedInfo.propertyParams.has('para2')).to.be.true;
+      expect(fileWhiteList!.fileReservedInfo.propertyParams.has('para3')).to.be.true;
+      expect(fileWhiteList!.fileReservedInfo.propertyParams.has('para4')).to.be.true;
       expect(ApiExtractor.mConstructorPropertySet.has('para1')).to.be.true;
       expect(ApiExtractor.mConstructorPropertySet.has('para2')).to.be.true;
       expect(ApiExtractor.mConstructorPropertySet.has('para3')).to.be.true;
@@ -583,7 +663,20 @@ describe('test for ApiExtractor', function () {
   describe('test for visitEnumMembers', function () {
     it('should collect enum members', function () {
       let enumMembersAst: string = 'test/ut/utils/apiTest_visitEnumMembers/enumMembers.ts';
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, false);
       collectApi(enumMembersAst, ApiExtractor.ApiType.PROJECT);
+      const fileWhiteList: FileWhiteList | undefined = projectWhiteListManager?.getFileWhiteListMap().get(enumMembersAst);
+      projectWhiteListManager?.createOrUpdateWhiteListCaches();
+      expect(fileWhiteList!.fileReservedInfo.enumProperties.has('A1')).to.be.false;
+      expect(fileWhiteList!.fileReservedInfo.enumProperties.has('A2')).to.be.false;
+      expect(fileWhiteList!.fileReservedInfo.enumProperties.has('A3')).to.be.false;
+      expect(fileWhiteList!.fileReservedInfo.enumProperties.has('B1')).to.be.true;
+      expect(fileWhiteList!.fileReservedInfo.enumProperties.has('B2')).to.be.true;
+      expect(fileWhiteList!.fileReservedInfo.enumProperties.has('B3')).to.be.true;
+      expect(fileWhiteList!.fileReservedInfo.enumProperties.has('C1')).to.be.true;
+      expect(fileWhiteList!.fileReservedInfo.enumProperties.has('C2')).to.be.true;
+      expect(fileWhiteList!.fileReservedInfo.enumProperties.has('C3')).to.be.true;
       expect(ApiExtractor.mEnumMemberSet.has('A1')).to.be.false;
       expect(ApiExtractor.mEnumMemberSet.has('A2')).to.be.false;
       expect(ApiExtractor.mEnumMemberSet.has('A3')).to.be.false;
@@ -600,6 +693,512 @@ describe('test for ApiExtractor', function () {
       let enumMembersAst: string = 'test/ut/utils/apiTest_visitEnumMembers/enumMembers.js';
       collectApi(enumMembersAst, ApiExtractor.ApiType.PROJECT);
       expect(ApiExtractor.mEnumMemberSet.size === 0).to.be.true;
+    })
+  })
+
+  describe('test for collectNamesWithAtKeep', function () {
+    beforeEach(() => {
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, true);
+    })
+    afterEach(() => {
+      clearProjectWhiteListManager();
+    })
+
+    it('should not collect atKeepNames if not enabled', function () {
+      let filePath: string = 'test/ut/utils/apiTest_visitAtKeepNames/atKeepClass01.ts';
+      AtKeepCollections.clear();
+      scanProjectConfig.mEnableAtKeep = false;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      expect(AtKeepCollections.keepSymbol.globalNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepSymbol.propertyNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepAsConsumer.globalNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.size).to.be.equal(0);
+    })
+    it('should collect keepSymbol names from class if enabled', function () {
+      let filePath: string = 'test/ut/utils/apiTest_visitAtKeepNames/atKeepClass01.ts';
+      AtKeepCollections.clear();
+      scanProjectConfig.mEnableAtKeep = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      expect(AtKeepCollections.keepSymbol.globalNames.size).to.be.equal(7);
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyClass01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyClass02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyClass03')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyClass04')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyClass05')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyClass06')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyClass07')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyClass08')).to.be.false;
+      expect(AtKeepCollections.keepSymbol.propertyNames.size).to.be.equal(22);
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('staticProperty01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('property02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('property03')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('myMethod01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('myStaticMethod')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('myGetter')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('mySetter')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('MyClass04')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('staticProperty05_01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('property05_02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('myMethod05_01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('myStaticMethod05')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('myGetter05')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('mySetter05')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('MyClass06')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('property06')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('MyClass07')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('property07_01')).to.be.false;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('property07_02')).to.be.false;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('property07_03')).to.be.false;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('property07_04')).to.be.false;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('property07_05')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('property07_06')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('property07_07')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('property07_08')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('aa')).to.be.false;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('11')).to.be.false;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('myMethod')).to.be.false;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.size).to.be.equal(0);
+    })
+    it('should collect keepAsConsumer names from class if enabled', function () {
+      let filePath: string = 'test/ut/utils/apiTest_visitAtKeepNames/atKeepClass02.ts';
+      AtKeepCollections.clear();
+      scanProjectConfig.mEnableAtKeep = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      expect(AtKeepCollections.keepAsConsumer.globalNames.size).to.be.equal(6);
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyClass01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyClass02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyClass03')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyClass04')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyClass05')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyClass06')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.size).to.be.equal(17);
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('staticProperty01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('property02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('property03')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('myMethod01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('myStaticMethod')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('myGetter')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('mySetter')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('MyClass04')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('staticProperty05_01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('property05_02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('myMethod05_01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('myStaticMethod05')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('myGetter05')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('mySetter05')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('MyClass06')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('property06')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepSymbol.propertyNames.size).to.be.equal(0);
+    })
+    it('should collect keepSymbol names from interface if enabled', function () {
+      let filePath: string = 'test/ut/utils/apiTest_visitAtKeepNames/atKeepInterface01.ts';
+      AtKeepCollections.clear();
+      scanProjectConfig.mEnableAtKeep = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      expect(AtKeepCollections.keepSymbol.globalNames.size).to.be.equal(4);
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyInterface01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyInterface02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyInterface03')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyInterface04')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.size).to.be.equal(10);
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('interfaceProperty01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('interfaceMethod01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('interfaceProperty02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('interfaceMethod02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('MyInterface02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('interfaceProperty03')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('interfaceMethod03')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('interfaceProperty04')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('interfaceMethod04')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('MyInterface04')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.size).to.be.equal(0);
+    })
+    it('should collect keepAsConsumer names from interface if enabled', function () {
+      let filePath: string = 'test/ut/utils/apiTest_visitAtKeepNames/atKeepInterface02.ts';
+      AtKeepCollections.clear();
+      scanProjectConfig.mEnableAtKeep = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      expect(AtKeepCollections.keepAsConsumer.globalNames.size).to.be.equal(4);
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyInterface01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyInterface02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyInterface03')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyInterface04')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.size).to.be.equal(10);
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('interfaceProperty01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('interfaceMethod01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('interfaceProperty02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('interfaceMethod02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('MyInterface02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('interfaceProperty03')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('interfaceMethod03')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('interfaceProperty04')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('interfaceMethod04')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('MyInterface04')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepSymbol.propertyNames.size).to.be.equal(0);
+    })
+    it('should collect keepSymbol names from enum if enabled', function () {
+      let filePath: string = 'test/ut/utils/apiTest_visitAtKeepNames/atKeepEnum01.ts';
+      AtKeepCollections.clear();
+      scanProjectConfig.mEnableAtKeep = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      expect(AtKeepCollections.keepSymbol.globalNames.size).to.be.equal(4);
+      expect(AtKeepCollections.keepSymbol.globalNames.has('Color01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('Color02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('Color03')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('Color04')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('Color05')).to.be.false;
+      expect(AtKeepCollections.keepSymbol.propertyNames.size).to.be.equal(6);
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('RED01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('RED02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('Color02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('RED03')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('BLUE04')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('Color04')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('RED05')).to.be.false;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.size).to.be.equal(0);
+    })
+    it('should collect keepAsConsumer names from enum if enabled', function () {
+      let filePath: string = 'test/ut/utils/apiTest_visitAtKeepNames/atKeepEnum02.ts';
+      AtKeepCollections.clear();
+      scanProjectConfig.mEnableAtKeep = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      expect(AtKeepCollections.keepAsConsumer.globalNames.size).to.be.equal(4);
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('Color01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('Color02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('Color03')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('Color04')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.size).to.be.equal(6);
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('RED01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('RED02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('Color02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('RED03')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('BLUE04')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('Color04')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepSymbol.propertyNames.size).to.be.equal(0);
+    })
+    it('should collect atKeep names from function if enabled', function () {
+      let filePath: string = 'test/ut/utils/apiTest_visitAtKeepNames/atKeepFunction.ts';
+      AtKeepCollections.clear();
+      scanProjectConfig.mEnableAtKeep = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      expect(AtKeepCollections.keepSymbol.globalNames.size).to.be.equal(2);
+      expect(AtKeepCollections.keepSymbol.globalNames.has('addNumbers01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('addNumbers02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.size).to.be.equal(1);
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('addNumbers02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.size).to.be.equal(2);
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('addNumbers03')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('addNumbers04')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.size).to.be.equal(1);
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('addNumbers04')).to.be.true;
+    })
+    it('should collect keepSymbol names from namespace if enabled', function () {
+      let filePath: string = 'test/ut/utils/apiTest_visitAtKeepNames/atKeepNamespace01.ts';
+      AtKeepCollections.clear();
+      scanProjectConfig.mEnableAtKeep = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      // globalNames:
+      expect(AtKeepCollections.keepSymbol.globalNames.size).to.be.equal(26);
+      // from MyNamespace01
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyNamespace01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('nsConstValue01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('nsFunction01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('nsClass01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('nsInterface01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('nsEnum01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('InnerNamespace01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('innerConstValue01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('nsType01')).to.be.true;
+      // from MyNamespace02
+      expect(AtKeepCollections.keepSymbol.globalNames.has('nsConstValue02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('nsFunction02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('nsClass02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('nsClass02_01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('nsClass02_02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('nsInterface02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('nsInterface02_01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('nsEnum02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('nsEnum02_01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('InnerNamespace02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('innerConstValue02')).to.be.true;
+      // from MyNamespace04
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyNamespace04')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyNamespace05')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyNamespace06')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyNamespace08Class')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyNamespace09')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyNamespace09Class')).to.be.true;
+      // propertyNames:
+      expect(AtKeepCollections.keepSymbol.propertyNames.size).to.be.equal(37);
+      // from MyNamespace01
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('nsConstValue01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('nsFunction01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('nsClass01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('nsInterface01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('nsEnum01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('InnerNamespace01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('innerConstValue01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('nsType01')).to.be.true;
+      // from MyNamespace02
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('nsConstValue02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('nsFunction02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('nsClass02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('classProp02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('nsClass02_01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('nsClass02_02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('classProp02_02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('nsInterface02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('interfaceProp02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('nsInterface02_01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('interfaceProp02_01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('nsEnum02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('nsEnum02_01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('RED02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('RED02_01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('InnerNamespace02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('innerConstValue02')).to.be.true;
+      // from MyNamespace03
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('classProp03')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('classProp03_02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('interfaceProp03')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('interfaceProp03_01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('RED03')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('RED03_01')).to.be.true;
+      // from MyNamespace04
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('MyNamespace04')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('MyNamespace05')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('MyNamespace06')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('MyNamespace08Class')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('MyNamespace09')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('MyNamespace09Class')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.size).to.be.equal(0);
+    })
+    it('should collect keepAsConsumer names from namespace if enabled', function () {
+      let filePath: string = 'test/ut/utils/apiTest_visitAtKeepNames/atKeepNamespace02.ts';
+      AtKeepCollections.clear();
+      scanProjectConfig.mEnableAtKeep = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      // globalNames:
+      expect(AtKeepCollections.keepAsConsumer.globalNames.size).to.be.equal(26);
+      // from MyNamespace01
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyNamespace01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('nsConstValue01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('nsFunction01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('nsClass01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('nsInterface01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('nsEnum01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('InnerNamespace01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('innerConstValue01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('nsType01')).to.be.true;
+      // from MyNamespace02
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('nsConstValue02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('nsFunction02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('nsClass02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('nsClass02_01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('nsClass02_02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('nsInterface02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('nsInterface02_01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('nsEnum02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('nsEnum02_01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('InnerNamespace02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('innerConstValue02')).to.be.true;
+      // from MyNamespace04
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyNamespace04')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyNamespace05')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyNamespace06')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyNamespace08Class')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyNamespace09')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyNamespace09Class')).to.be.true;
+      // propertyNames:
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.size).to.be.equal(37);
+      // from MyNamespace01
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('nsConstValue01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('nsFunction01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('nsClass01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('nsInterface01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('nsEnum01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('InnerNamespace01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('innerConstValue01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('nsType01')).to.be.true;
+      // from MyNamespace02
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('nsConstValue02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('nsFunction02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('nsClass02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('classProp02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('nsClass02_01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('nsClass02_02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('classProp02_02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('nsInterface02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('interfaceProp02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('nsInterface02_01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('interfaceProp02_01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('nsEnum02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('nsEnum02_01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('RED02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('RED02_01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('InnerNamespace02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('innerConstValue02')).to.be.true;
+      // from MyNamespace03
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('classProp03')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('classProp03_02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('interfaceProp03')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('interfaceProp03_01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('RED03')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('RED03_01')).to.be.true;
+      // from MyNamespace04
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('MyNamespace04')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('MyNamespace05')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('MyNamespace06')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('MyNamespace08Class')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('MyNamespace09')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('MyNamespace09Class')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepSymbol.propertyNames.size).to.be.equal(0);
+    })
+    it('should collect atKeep names from global variable if enabled', function () {
+      let filePath: string = 'test/ut/utils/apiTest_visitAtKeepNames/atKeepGlobalVar.ts';
+      AtKeepCollections.clear();
+      scanProjectConfig.mEnableAtKeep = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      expect(AtKeepCollections.keepSymbol.globalNames.size).to.be.equal(6);
+      expect(AtKeepCollections.keepSymbol.globalNames.has('globalVar01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('globalFunc01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('globalMyClass01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('globalVar02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('globalFunc02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.globalNames.has('globalMyClass02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.size).to.be.equal(3);
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('globalVar02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('globalFunc02')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('globalMyClass02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.size).to.be.equal(6);
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('globalVar03')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('globalFunc03')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('globalMyClass03')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('globalVar04')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('globalFunc04')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('globalMyClass04')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.size).to.be.equal(3);
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('globalVar04')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('globalFunc04')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.has('globalMyClass04')).to.be.true;
+    })
+    it('should collect atKeep names from .ets', function () {
+      let filePath: string = 'test/ut/utils/apiTest_visitAtKeepNames/atKeepTest01.ets';
+      AtKeepCollections.clear();
+      scanProjectConfig.mEnableAtKeep = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      expect(AtKeepCollections.keepSymbol.globalNames.size).to.be.equal(1);
+      expect(AtKeepCollections.keepSymbol.globalNames.has('MyClass01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.size).to.be.equal(2);
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('property01')).to.be.true;
+      expect(AtKeepCollections.keepSymbol.propertyNames.has('MyClass01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.size).to.be.equal(2);
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyVar01')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.globalNames.has('MyVar02')).to.be.true;
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.size).to.be.equal(0);
+    })
+    it('should not collect atKeep names from .js', function () {
+      let filePath: string = 'test/ut/utils/apiTest_visitAtKeepNames/atKeepTest02.js';
+      AtKeepCollections.clear();
+      scanProjectConfig.mEnableAtKeep = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      expect(AtKeepCollections.keepSymbol.globalNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepSymbol.propertyNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepAsConsumer.globalNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.size).to.be.equal(0);
+    })
+    it('should not collect atKeep names from .d.ts', function () {
+      let filePath: string = 'test/ut/utils/apiTest_visitAtKeepNames/atKeepTest03.d.ts';
+      AtKeepCollections.clear();
+      scanProjectConfig.mEnableAtKeep = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      expect(AtKeepCollections.keepSymbol.globalNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepSymbol.propertyNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepAsConsumer.globalNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.size).to.be.equal(0);
+    })
+    it('should not collect atKeep names from .d.ets', function () {
+      let filePath: string = 'test/ut/utils/apiTest_visitAtKeepNames/atKeepTest04.d.ets';
+      AtKeepCollections.clear();
+      scanProjectConfig.mEnableAtKeep = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      expect(AtKeepCollections.keepSymbol.globalNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepSymbol.propertyNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepAsConsumer.globalNames.size).to.be.equal(0);
+      expect(AtKeepCollections.keepAsConsumer.propertyNames.size).to.be.equal(0);
+    })
+  })
+
+  describe('test for collect fileWhiteList', function () {
+    beforeEach(() => {
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, true);
+    })
+
+    afterEach(() => {
+      clearProjectWhiteListManager();
+    })
+
+    it('should collect structProperties, stringProperties, enumProperties if propertyObf is enabled', function () {
+      let filePath: string = 'test/ut/utils/apiTest_collectFileWhiteList/collectFileWhiteList01.ets';
+      scanProjectConfig.mPropertyObfuscation = true;
+      scanProjectConfig.mKeepStringProperty = true;
+      scanProjectConfig.isHarCompiled = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      const fileWhiteList: FileWhiteList = projectWhiteListManager?.getFileWhiteListMap().get(filePath)!;
+      expect(fileWhiteList.fileKeepInfo.enumProperties.has('RED01')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.enumProperties.has('RED02')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.enumProperties.has('BLUE02')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('MyEnum')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('MyClass')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('obj01')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('RED01')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('myProp01')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('objProp')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.stringProperties.has('name')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.stringProperties.has('age')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.structProperties.has('myStructProp')).to.be.true;
+    })
+    it('should not collect stringProperties if mKeepStringProperty is not enabled', function () {
+      let filePath: string = 'test/ut/utils/apiTest_collectFileWhiteList/collectFileWhiteList01.ets';
+      scanProjectConfig.mPropertyObfuscation = true;
+      scanProjectConfig.mKeepStringProperty = false;
+      scanProjectConfig.isHarCompiled = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      const fileWhiteList: FileWhiteList = projectWhiteListManager?.getFileWhiteListMap().get(filePath)!;
+      expect(fileWhiteList.fileKeepInfo.enumProperties.has('RED01')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.enumProperties.has('RED02')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.enumProperties.has('BLUE02')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('MyEnum')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('MyClass')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('obj01')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('RED01')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('myProp01')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('objProp')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.stringProperties.has('name')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.stringProperties.has('age')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.structProperties.has('myStructProp')).to.be.true;
+    })
+    it('should not collect structProperties, stringProperties, enumProperties if propertyObf is not enabled', function () {
+      let filePath: string = 'test/ut/utils/apiTest_collectFileWhiteList/collectFileWhiteList01.ets';
+      scanProjectConfig.mPropertyObfuscation = false;
+      scanProjectConfig.mKeepStringProperty = true;
+      scanProjectConfig.isHarCompiled = true;
+      collectApi(filePath, ApiExtractor.ApiType.PROJECT);
+      const fileWhiteList: FileWhiteList = projectWhiteListManager?.getFileWhiteListMap().get(filePath)!;
+      expect(fileWhiteList.fileKeepInfo.enumProperties.size).to.be.equal(0);
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.size).to.be.equal(0);
+      expect(fileWhiteList.fileKeepInfo.stringProperties.size).to.be.equal(0);
+      expect(fileWhiteList.fileKeepInfo.structProperties.size).to.be.equal(0);
     })
   })
 });

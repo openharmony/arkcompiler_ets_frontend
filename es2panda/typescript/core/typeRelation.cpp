@@ -15,8 +15,6 @@
 
 #include <typescript/checker.h>
 
-#include <algorithm>
-
 namespace panda::es2panda::checker {
 
 bool Checker::IsAllTypesAssignableTo(Type *source, Type *target)

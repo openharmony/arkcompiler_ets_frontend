@@ -13,15 +13,15 @@
  * limitations under the License.
  */
 export declare class i {
-    e1: string | undefined;
-    f1: number;
-    g1: string;
-    constructor(o1?: l1);
+    z1: string | undefined;
+    a2: number;
+    b2: string;
+    constructor(w1?: t1);
 }
-export declare function g(m1: number, n1: number): number;
-declare class l1 {
-    h1: string;
-    i1: number;
-    j1: string;
+export declare function g(u1: number, v1: number): number;
+declare class t1 {
+    c2: string;
+    d2: number;
+    e2: string;
 }
 export {};

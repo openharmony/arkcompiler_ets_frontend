@@ -1,0 +1,93 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+declare namespace g {
+    export class c1 {
+        e3: d1;
+        static f3(c3: number, ...d3: string[]): void;
+        method2(z2: number, a3: (defaultKeptPara3: number) => string, b3?: number): void;
+        method3(x2?: number, ...y2: number[]): void;
+        constructor(u2: number, v2: number, w2: (defaultKeptPara4: number) => string);
+        g3?: (defaultKeptPara1: number) => void;
+        h3: (defaultKeptPara2: number) => number;
+        i3(s2: (defaultKeptPara2: string) => number, t2: {
+            j3: number;
+            l3: string;
+        }): void;
+        m3(q2: (defaultKeptPara2: number) => number, r2: number): number;
+        manualKeepMethod1(o2: (defaultKeptPara2: number) => number, p2: number): number;
+    }
+    class d1 {
+        constructor(l2: number, m2: number, n2: (defaultKeptPara4: number) => string);
+        n3?: (defaultKeptPara1: number) => void;
+        o3(j2: (defaultKeptPara2: number) => number, k2: number): number;
+        manualKeepMethod1(h2: (defaultKeptPara2: number) => number, i2: number): void;
+    }
+    export class manualKeepClassName {
+        constructor(e2: number, f2: number, g2: (defaultKeptPara4: number) => string);
+        q3?: (defaultKeptPara1: number) => void;
+        r3(c2: (defaultKeptPara2: number) => number, d2: number): number;
+        manualKeepMethod1(a2: (defaultKeptPara2: number) => number, b2: number): void;
+    }
+    export interface e1 {
+        s3(defaultKeptPara1: number, ...defaultKeptPara2: string[]): void;
+        constructor(defaultKeptPara1: number): void;
+        t3: (defaultKeptPara1: number, ...defaultKeptPara2: number[]) => void;
+        u3: (defaultKeptPara1: number, defaultKeptPara2: (defaultKeptPara3: string) => number) => string;
+        v3(defaultKeptPara1: (defaultKeptPara2: string) => number, defaultKeptPara3: {
+            j3: number;
+            l3: string;
+        }): void;
+        w3(defaultKeptPara1: (defaultKeptPara2: number) => number, defaultKeptPara3: number): void;
+        manualKeepMethod1(defaultKeptPara1: (defaultKeptPara2: number) => number, defaultKeptPara3: number): void;
+    }
+    export function q(z1: number): void;
+    export function t(x1: number, ...y1: string[]): void;
+    export function u(w1?: (defaultKeptPara2: number) => void): void;
+    function v(u1: number, v1?: (defaultKeptPara3: number) => void): void;
+    export function manualKeepFoo1(s1: number, t1?: (defaultKeptPara3: number) => void): void;
+    export let c: (defaultKeptPara1: number, ...defaultKeptPara2: string[]) => void;
+    export let d: (defaultKeptPara1: number, defaultKeptPara2?: ((defaultKeptPara3: number) => void) | undefined) => void;
+    export function a1(q1: number, r1: {
+        x3: number;
+        y3: string;
+    }): void;
+    export let e: (defaultKeptPara1: number) => void;
+    export const f1: (defaultKeptPara1: number, defaultKeptPara2: number) => void;
+    export let g1: (defaultKeptPara1: (defaultKeptPara2: number) => number) => number;
+    export const h1: (defaultKeptPara1: number, defaultKeptPara2: (defaultKeptPara3: number) => number, ...defaultKeptPara4: string[]) => void;
+    export let a: (defaultKeptPara1: (defaultKeptPara2: number) => number, ...defaultKeptPara3: string[]) => void;
+    export let b: (defaultKeptPara1: (defaultKeptPara2: number) => number, defaultKeptPara3?: ((defaultKeptPara4: number) => void) | undefined) => void;
+    export let f: (defaultKeptPara1: number, ...defaultKeptPara2: string[]) => void;
+    export let i1: (defaultKeptPara1: number, defaultKeptPara2?: ((defaultKeptPara3: number) => void) | undefined) => void;
+    export type j1 = (defaultKeptPara1: number, ...defaultKeptPara2: string[]) => {};
+    export type l1 = (defaultKeptPara1: number, defaultKeptPara2: (defaultKeptPara3: number) => number) => {};
+    export interface m1<T1> {
+        method<T2>(): void;
+    }
+    export class n1<T3> {
+        method2<p1>(): void;
+    }
+    export function b1<o1>(): void;
+    export {};
+}
+declare const h: 1;
+declare class i {
+    static f3(o: number, ...p: string[]): void;
+    "method2"(n: number): void;
+    ["method3"](m: number): void;
+    ["z3"](l: number): void;
+    [h](k: number): number;
+    a4(j: number): void;
+}

@@ -35,9 +35,13 @@ export interface INameObfuscationOption {
 
   readonly mTopLevel?: boolean;
 
+  readonly mKeepParameterNames?: boolean;
+
   mReservedToplevelNames?: string[];
 
   mUniversalReservedToplevelNames?: RegExp[];
+
+  readonly mEnableAtKeep?: boolean;
 }
 
 export interface IFileNameObfuscationOption {
@@ -69,7 +73,7 @@ export enum OhmUrlStatus {
 }
 
 export interface IPrinterOption {
-  
+
   //Print obfuscation time&memory usage of all files and obfuscation processes
   readonly mFilesPrinter?: boolean;
 
@@ -81,6 +85,14 @@ export interface IPrinterOption {
 
   //Output path of printer
   readonly mOutputPath?: string;
+}
+
+export interface IPrinterTimeAndMemOption {
+  // Print obfuscation time&memory performance data of files 
+  readonly mFilesPrinter?: boolean;
+
+  // Print obfuscation time&memory performance data of single file
+  readonly mSingleFilePrinter?: boolean;
 }
 
 /**

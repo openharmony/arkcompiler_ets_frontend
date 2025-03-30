@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { ff } from "./oh_modules/ohos_lib";
+import { ff, TestClassH } from "./oh_modules/ohos_lib";
+import { ff as ff_ets, TestClassH as TestClassH_ets } from "./oh_modules/ohos_lib_ets";
 import { f, f2, bar, applyToUnknown, fooExecute, C1, myFoo, myFoo2 } from "./dynamic_lib";
 
 let a1: C1 = new C1()
@@ -58,3 +58,7 @@ class A2 {
         )
     }
 }
+
+ff_ets(null);
+new TestClassH(null);
+new TestClassH_ets(null);

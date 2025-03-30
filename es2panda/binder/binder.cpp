@@ -15,24 +15,16 @@
 
 #include "binder.h"
 
-#include "binder/scope.h"
-#include "binder/tsBinding.h"
-#include "es2panda.h"
-#include "ir/astNode.h"
 #include "ir/base/annotation.h"
 #include "ir/base/catchClause.h"
 #include "ir/base/classDefinition.h"
-#include "ir/base/classProperty.h"
-#include "ir/base/methodDefinition.h"
 #include "ir/base/property.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/base/spreadElement.h"
 #include "ir/expressions/arrayExpression.h"
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/callExpression.h"
-#include "ir/expressions/identifier.h"
 #include "ir/expressions/objectExpression.h"
-#include "ir/expressions/privateIdentifier.h"
 #include "ir/expressions/literals/numberLiteral.h"
 #include "ir/module/exportNamedDeclaration.h"
 #include "ir/module/exportSpecifier.h"
@@ -42,7 +34,6 @@
 #include "ir/statements/forInStatement.h"
 #include "ir/statements/forOfStatement.h"
 #include "ir/statements/forUpdateStatement.h"
-#include "ir/statements/ifStatement.h"
 #include "ir/statements/switchCaseStatement.h"
 #include "ir/statements/switchStatement.h"
 #include "ir/statements/variableDeclaration.h"
@@ -54,13 +45,11 @@
 #include "ir/ts/tsFunctionType.h"
 #include "ir/ts/tsIndexSignature.h"
 #include "ir/ts/tsMethodSignature.h"
-#include "ir/ts/tsModuleBlock.h"
 #include "ir/ts/tsModuleDeclaration.h"
 #include "ir/ts/tsSignatureDeclaration.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
 #include "util/concurrent.h"
-#include "util/patchFix.h"
 
 namespace panda::es2panda::binder {
 void Binder::InitTopScope()
@@ -475,6 +464,7 @@ void Binder::BuildVarDeclaratorId(const ir::AstNode *parent, ir::AstNode *childN
                 BuildTSSignatureDeclarationBaseParamsWithParent(ident, ident->TypeAnnotation());
             }
 
+            CHECK_NOT_NULL(variable);
             variable->AddFlag(VariableFlags::INITIALIZED);
             break;
         }
@@ -971,9 +961,14 @@ void Binder::AddMandatoryParam(const std::string_view &name)
     ASSERT(scope_->IsFunctionVariableScope());
 
     auto *decl = Allocator()->New<ParameterDecl>(name);
+    CHECK_NOT_NULL(decl);
     auto *param = Allocator()->New<LocalVariable>(decl, VariableFlags::VAR);
+    CHECK_NOT_NULL(param);
 
-    auto &funcParams = scope_->AsFunctionVariableScope()->ParamScope()->Params();
+    auto *paramScope = scope_->AsFunctionVariableScope()->ParamScope();
+    CHECK_NOT_NULL(paramScope);
+
+    auto &funcParams = paramScope->Params();
     funcParams.insert(funcParams.begin(), param);
     scope_->AsFunctionVariableScope()->ParamScope()->Bindings().insert({decl->Name(), param});
     scope_->AsFunctionVariableScope()->Bindings().insert({decl->Name(), param});

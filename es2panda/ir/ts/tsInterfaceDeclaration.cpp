@@ -15,15 +15,11 @@
 
 #include "tsInterfaceDeclaration.h"
 
-#include <binder/declaration.h>
-#include <binder/scope.h>
-#include <binder/variable.h>
 #include <typescript/checker.h>
 #include <ir/astDump.h>
 #include <ir/expressions/identifier.h>
 #include <ir/ts/tsInterfaceBody.h>
 #include <ir/ts/tsInterfaceHeritage.h>
-#include <ir/ts/tsTypeParameter.h>
 #include <ir/ts/tsTypeParameterDeclaration.h>
 
 namespace panda::es2panda::ir {

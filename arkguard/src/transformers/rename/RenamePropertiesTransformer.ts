@@ -49,13 +49,12 @@ import type {
 
 import type {IOptions} from '../../configs/IOptions';
 import type { INameObfuscationOption } from '../../configs/INameObfuscationOption';
-import type {INameGenerator, NameGeneratorOptions} from '../../generator/INameGenerator';
-import {getNameGenerator, NameGeneratorType} from '../../generator/NameFactory';
 import type {TransformPlugin} from '../TransformPlugin';
 import {TransformerOrder} from '../TransformPlugin';
 import {NodeUtils} from '../../utils/NodeUtils';
 import { ArkObfuscator, performancePrinter } from '../../ArkObfuscator';
-import { EventList, endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
+import { endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
+import { EventList } from '../../utils/PrinterTimeAndMemUtils';
 import {
   isInPropertyWhitelist,
   isReservedProperty,
@@ -63,10 +62,12 @@ import {
 } from '../../utils/TransformUtil';
 import {
   classInfoInMemberMethodCache,
+  globalGenerator,
   nameCache
 } from './RenameIdentifierTransformer';
 import { UpdateMemberMethodName } from '../../utils/NameCacheUtil';
 import { PropCollections, UnobfuscationCollections } from '../../utils/CommonCollections';
+import { MemoryDottingDefine } from '../../utils/MemoryDottingDefine';
 
 namespace secharmony {
   /**
@@ -74,8 +75,9 @@ namespace secharmony {
    *
    * @param option obfuscation options
    */
-  const createRenamePropertiesFactory = function (option: IOptions): TransformerFactory<Node> {
+  const createRenamePropertiesFactory = function (option: IOptions): TransformerFactory<Node> | null {
     let profile: INameObfuscationOption | undefined = option?.mNameObfuscation;
+    let shouldPrintKeptNames: boolean = !!(option.mUnobfuscationOption?.mPrintKeptNames);
 
     if (!profile || !profile.mEnable || !profile.mRenameProperties) {
       return null;
@@ -84,8 +86,6 @@ namespace secharmony {
     return renamePropertiesFactory;
 
     function renamePropertiesFactory(context: TransformationContext): Transformer<Node> {
-      let options: NameGeneratorOptions = {};
-      let generator: INameGenerator = getNameGenerator(profile.mNameGeneratorType, options);
 
       return renamePropertiesTransformer;
 
@@ -94,11 +94,23 @@ namespace secharmony {
           return node;
         }
 
+        const recordInfo = ArkObfuscator.recordStage(MemoryDottingDefine.PROPERTY_OBFUSCATION);
         startSingleFileEvent(EventList.PROPERTY_OBFUSCATION, performancePrinter.timeSumPrinter);
+
+        startSingleFileEvent(EventList.RENAME_PROPERTIES);
         let ret: Node = renameProperties(node);
+        endSingleFileEvent(EventList.RENAME_PROPERTIES);
+
+        startSingleFileEvent(EventList.UPDATE_MEMBER_METHOD_NAME);
         UpdateMemberMethodName(nameCache, PropCollections.globalMangledTable, classInfoInMemberMethodCache);
+        endSingleFileEvent(EventList.UPDATE_MEMBER_METHOD_NAME);
+
+        startSingleFileEvent(EventList.SET_PARENT_RECURSIVE);
         let parentNodes = setParentRecursive(ret, true);
+        endSingleFileEvent(EventList.SET_PARENT_RECURSIVE);
+
         endSingleFileEvent(EventList.PROPERTY_OBFUSCATION, performancePrinter.timeSumPrinter);
+        ArkObfuscator.stopRecordStage(recordInfo);
         return parentNodes;
       }
 
@@ -144,15 +156,13 @@ namespace secharmony {
 
         let isChanged: boolean = false;
         const elemTypes = node.types.map((elemType) => {
-          if (!elemType) {
+          if (!elemType || !NodeUtils.isStringLiteralTypeNode(elemType)) {
             return elemType;
           }
-          if (NodeUtils.isStringLiteralTypeNode(elemType)) {
-            const prop = renameProperty((elemType as LiteralTypeNode).literal, false);
-            if (prop !== (elemType as LiteralTypeNode).literal) {
-              isChanged = true;
-              return factory.createLiteralTypeNode(prop as StringLiteral);
-            }
+          const prop = renameProperty((elemType as LiteralTypeNode).literal, false);
+          if (prop !== (elemType as LiteralTypeNode).literal) {
+            isChanged = true;
+            return factory.createLiteralTypeNode(prop as StringLiteral);
           }
           return elemType;
         });
@@ -178,19 +188,19 @@ namespace secharmony {
       }
 
       function renameProperty(node: Node, computeName: boolean): Node {
-        if (!isStringLiteralLike(node) && !isIdentifier(node) && !isPrivateIdentifier(node) && !isNumericLiteral(node)) {
+        if (!NodeUtils.isPropertyNameType(node)) {
           return visitEachChild(node, renameProperties, context);
         }
 
         if (isStringLiteralLike(node) && profile?.mKeepStringProperty) {
-          if (UnobfuscationCollections.printKeptName) {
+          if (shouldPrintKeptNames) {
             needToRecordProperty(node.text, UnobfuscationCollections.unobfuscatedPropMap);
           }
           return node;
         }
 
         let original: string = node.text;
-        if (isInPropertyWhitelist(original, UnobfuscationCollections.unobfuscatedPropMap)) {
+        if (isInPropertyWhitelist(original, UnobfuscationCollections.unobfuscatedPropMap, shouldPrintKeptNames)) {
           return node;
         }
 
@@ -227,20 +237,20 @@ namespace secharmony {
         const historyName: string = PropCollections.historyMangledTable?.get(original);
         let mangledName: string = historyName ? historyName : PropCollections.globalMangledTable.get(original);
         while (!mangledName) {
-          let tmpName = generator.getName();
+          let tmpName = globalGenerator.getName();
           if (isReservedProperty(tmpName) ||
             tmpName === original) {
             continue;
           }
 
-          if (PropCollections.newlyOccupiedMangledProps.has(tmpName) || PropCollections.mangledPropsInNameCache.has(tmpName)) {
+          // For incremental compilation, preventing generated names from conflicting with existing global name.
+          if (PropCollections.globalMangledNamesInCache.has(tmpName)) {
             continue;
           }
 
           mangledName = tmpName;
         }
         PropCollections.globalMangledTable.set(original, mangledName);
-        PropCollections.newlyOccupiedMangledProps.add(mangledName);
         return mangledName;
       }
     }

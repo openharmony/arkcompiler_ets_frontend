@@ -12,16 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export default function filterEvenNumbers(h: number[]): number[] {
-    return h.filter(i => i % 2 === 0);
+export default function filterEvenNumbers(s: number[]): number[] {
+    return s.filter(t => t % 2 === 0);
 }
-export function findMax(g: number[]): number | null {
-    if (g.length === 0)
+export function findMax(r: number[]): number | null {
+    if (r.length === 0)
         return null;
-    return Math.max(...g);
+    return Math.max(...r);
 }
-function findMin(f: number[]): number | null {
-    if (f.length === 0)
+function findMin(q: number[]): number | null {
+    if (q.length === 0)
         return null;
-    return Math.min(...f);
+    return Math.min(...q);
 }

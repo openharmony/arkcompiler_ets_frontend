@@ -38,5 +38,19 @@ struct ProgramCache {
     {
     }
 };
+
+struct AbcProgramsCache {
+    uint32_t hashCode { 0 };
+    /**
+     * The hashcode in ProgramCache corresponds to the hash value of the abc file, so the hashCode in ProgramCache is
+     * the same as the hashcode in AbcProgramsCache
+     */
+    std::map<std::string, ProgramCache *> programsCache {};
+
+    AbcProgramsCache(uint32_t hashCode, std::map<std::string, ProgramCache *> programsCache)
+        : hashCode(hashCode), programsCache(std::move(programsCache))
+    {
+    }
+};
 } //panda::es2panda::util
 #endif

@@ -15,30 +15,26 @@
 
 #include "classDefinition.h"
 
-#include "binder/binder.h"
-#include "binder/scope.h"
 #include "compiler/base/literals.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/pandagen.h"
 #include "typescript/checker.h"
 #include "ir/astDump.h"
-#include "ir/base/classProperty.h"
-#include "ir/base/methodDefinition.h"
 #include "ir/base/scriptFunction.h"
-#include "ir/expression.h"
+#include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/functionExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/literals/nullLiteral.h"
 #include "ir/expressions/literals/numberLiteral.h"
 #include "ir/expressions/literals/stringLiteral.h"
 #include "ir/expressions/literals/taggedLiteral.h"
+#include "ir/expressions/memberExpression.h"
+#include "ir/statements/blockStatement.h"
+#include "ir/statements/expressionStatement.h"
 #include "ir/ts/tsClassImplements.h"
 #include "ir/ts/tsIndexSignature.h"
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
 #include "ir/ts/tsUnionType.h"
-#include "util/helpers.h"
 
 namespace panda::es2panda::ir {
 
@@ -585,13 +581,9 @@ void ClassDefinition::AddFieldTypeForTypeReference(const TSTypeReference *typeRe
 
     // ts enum type
     const ir::AstNode *declNode = GetDeclNodeFromIdentifier(typeName->AsIdentifier());
-    if (declNode != nullptr) {
-        // If the result of "declNode->Original()" is nullptr, it means the declNode is original and not transformed.
-        auto originalNode = (declNode->Original() != nullptr) ? declNode->Original() : declNode;
-        if (originalNode->Type() == ir::AstNodeType::TS_ENUM_DECLARATION) {
-            fieldType |= FieldType::STRING | FieldType::NUMBER;
-            return;
-        }
+    if (declNode != nullptr && declNode->IsTSEnumDeclaration()) {
+        fieldType |= FieldType::STRING | FieldType::NUMBER;
+        return;
     }
 
     // sendable class and sendable fuction
@@ -604,14 +596,7 @@ const ir::AstNode *ClassDefinition::GetDeclNodeFromIdentifier(const ir::Identifi
         return nullptr;
     }
 
-    std::vector<binder::Variable *> variables;
-    variables.reserve(identifier->TSVariables().size() + 1U);
-    variables.emplace_back(identifier->Variable());
     for (const auto &v : identifier->TSVariables()) {
-        variables.emplace_back(v);
-    }
-
-    for (const auto &v : variables) {
         if (v == nullptr || v->Declaration() == nullptr || v->Declaration()->Node() == nullptr) {
             continue;
         }
@@ -619,6 +604,14 @@ const ir::AstNode *ClassDefinition::GetDeclNodeFromIdentifier(const ir::Identifi
         auto res = v->Declaration()->Node();
         return res;
     }
+
+    // In general, the declaration node of a type node could alaways be found in ts ast.
+    // The following branch, finding declaration node in js ast, is added for some unexpected corner cases.
+    if (identifier->Variable() && identifier->Variable()->Declaration() &&
+        identifier->Variable()->Declaration()->Node()) {
+        return identifier->Variable()->Declaration()->Node()->Original();
+    }
+    
     return nullptr;
 }
 
@@ -726,4 +719,85 @@ void ClassDefinition::CompileGetterOrSetter(compiler::PandaGen *pg, compiler::VR
     pg->DefineGetterSetterByValue(this, dest, keyReg, getter, setter, prop->Computed());
 }
 
+void ClassDefinition::CalculateClassExpectedPropertyCount()
+{
+    // Counting more or less than the actual number does not affect execution.
+    std::unordered_set<util::StringView> propertyNames;
+    auto addPropertyName = [this, &propertyNames](const util::StringView &name) {
+        if (propertyNames.find(name) == propertyNames.end()) {
+            propertyNames.insert(name);
+            IncreasePropertyCount();
+        }
+    };
+
+    for (const auto &stmt : Body()) {
+        if (stmt->IsClassProperty() && !stmt->AsClassProperty()->IsStatic()) {
+            ProcessClassProperty(stmt->AsClassProperty(), addPropertyName);
+        }
+    }
+
+    auto *ctorFunc = ctor_->Function();
+    if (ctorFunc && ctorFunc->Body()) {
+        ProcessConstructorBody(ctorFunc->Body()->AsBlockStatement(), addPropertyName);
+    }
+}
+
+void ClassDefinition::ProcessClassProperty(const ClassProperty *prop,
+                                           const std::function<void(const util::StringView&)>& addPropertyName)
+{
+    /**
+     * Private fields must be explicitly declared in the class and cannot be directly initialized in the constructor,
+     * so they only need to be accounted for in the class properties.
+     */
+    if (prop->IsPrivate()) {
+        IncreasePropertyCount();
+    } else {
+        ProcessPropertyKey(prop->Key(), addPropertyName);
+    }
+}
+
+void ClassDefinition::ProcessConstructorBody(const BlockStatement *body,
+                                             const std::function<void(const util::StringView&)>& addPropertyName)
+{
+    for (const auto &stmt : body->Statements()) {
+        if (!stmt->IsExpressionStatement()) {
+            continue;
+        }
+
+        auto *expr = stmt->AsExpressionStatement()->GetExpression();
+        if (!expr->IsAssignmentExpression()) {
+            continue;
+        }
+
+        auto *assignExpr = expr->AsAssignmentExpression();
+        if (!assignExpr->Left()->IsMemberExpression()) {
+            continue;
+        }
+
+        auto *memberExpr = assignExpr->Left()->AsMemberExpression();
+        if (memberExpr->Object()->IsThisExpression()) {
+            ProcessPropertyKey(memberExpr->Property(), addPropertyName);
+        }
+    }
+}
+
+void ClassDefinition::ProcessPropertyKey(const Expression* key,
+                                         const std::function<void(const util::StringView&)>& addPropertyName)
+{
+    if (key->IsIdentifier()) {
+        addPropertyName(key->AsIdentifier()->Name());
+    } else if (key->IsStringLiteral()) {
+        addPropertyName(key->AsStringLiteral()->Str());
+    } else if (key->IsNumberLiteral()) {
+        addPropertyName(key->AsNumberLiteral()->Str());
+    } else {
+        /**
+         * Currently, other situations of property keys are not counted.
+         * 1. Private properties (PrivateIdentifier)
+         * 2. Template literals (TemplateLiteral)
+         * 3. Binary expressions (BinaryExpression)
+         * 4. Other expressions that can be evaluated to a property key
+         */
+    }
+}
 }  // namespace panda::es2panda::ir

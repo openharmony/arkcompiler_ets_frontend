@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 import assert from 'assert';
-import i1 from './export_namespaces_default';
-import { h1 } from './export_namespaces_default';
-let j1 = new i1.Person(2);
-assert(j1.t() === 4);
-assert(h1() === 3);
+import m1 from './export_namespaces_default';
+import { l1 } from './export_namespaces_default';
+let n1 = new m1.Person(2);
+assert(n1.a1() === 4);
+assert(l1() === 3);

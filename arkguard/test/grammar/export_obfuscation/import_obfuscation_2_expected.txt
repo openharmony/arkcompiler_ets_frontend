@@ -12,9 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { t, u } from './export_obfuscation_2';
-type d2 = t;
-let newValue = u + 1;
-export { w1, z1 } from './import_obfuscation_1';
+import { u, v } from './export_obfuscation_2';
+type s2 = u;
+let newValue = v + 1;
+export { l2, m2 } from './import_obfuscation_1';
 function publicFoo1(): void { }
 function publicFoo2(): void { }

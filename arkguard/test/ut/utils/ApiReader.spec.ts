@@ -14,31 +14,42 @@
  */
 
 import { readProjectPropertiesByCollectedPaths, ReseverdSetForArkguard } from '../../../src/common/ApiReader';
-import { assert } from 'chai';
+import { assert, expect } from 'chai';
 import { NameGeneratorType } from '../../../src/generator/NameFactory';
+import {
+  FileWhiteList,
+  ProjectWhiteList,
+  projectWhiteListManager,
+  initProjectWhiteListManager
+} from '../../../src/utils/ProjectCollections';
+import { IOptions } from '../../../src/configs/IOptions';
 
 describe('test for ApiReader', function () {
   describe('test for readProjectPropertiesByCollectedPaths', function () {
-    const fileList: Set<string> = new Set([
-      "test/ut/utils/apiTest_readProjectPropertiesByCollectedPaths/block_enum_test.ts",
-      "test/ut/utils/apiTest_readProjectPropertiesByCollectedPaths/enum_test.ts",
-      "test/ut/utils/apiTest_readProjectPropertiesByCollectedPaths/export_enum_test.ts",
-      "test/ut/utils/apiTest_readProjectPropertiesByCollectedPaths/namespace_enum_test.ts"
-    ]);
+    const path1: string = 'test/ut/utils/apiTest_readProjectPropertiesByCollectedPaths/block_enum_test.ts';
+    const path2: string = 'test/ut/utils/apiTest_readProjectPropertiesByCollectedPaths/enum_test.ts';
+    const path3: string = 'test/ut/utils/apiTest_readProjectPropertiesByCollectedPaths/export_enum_test.ts';
+    const path4: string = 'test/ut/utils/apiTest_readProjectPropertiesByCollectedPaths/namespace_enum_test.ts';
+    const fileList: Set<string> = new Set([path1, path2, path3, path4]);
 
     it('-enable-export-obfuscation + -enable-property-obfuscation', function () {
+      let config: IOptions = {
+        mNameObfuscation : {
+          mEnable: true,
+          mReservedProperties: [],
+          mRenameProperties: true,
+          mKeepStringProperty: false,
+          mNameGeneratorType: NameGeneratorType.ORDERED,
+          mReservedNames: [], 
+          mReservedToplevelNames: []
+        }
+      };
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, false);
       let projectAndLibs: ReseverdSetForArkguard =
         readProjectPropertiesByCollectedPaths(fileList,
         {
-          mNameObfuscation: {
-            mEnable: true,
-            mReservedProperties: [],
-            mRenameProperties: true,
-            mKeepStringProperty: false,
-            mNameGeneratorType: NameGeneratorType.ORDERED,
-            mReservedNames: [], 
-            mReservedToplevelNames: []
-          },
+          mNameObfuscation: config.mNameObfuscation,
           mExportObfuscation: true,
           mKeepFileSourceCode: {
             mKeepSourceOfPaths: new Set(),
@@ -55,21 +66,38 @@ describe('test for ApiReader', function () {
       assert.strictEqual(enumPropertySet.has('NS_PARAM2'), true);
       assert.strictEqual(enumPropertySet.has('EXPORT_PARAM1'), true);
       assert.strictEqual(enumPropertySet.has('EXPORT_PARAM2'), true);
+      const fileWhiteList1: FileWhiteList = projectWhiteListManager!.getFileWhiteListMap().get(path1)!;
+      expect(fileWhiteList1.fileKeepInfo.enumProperties.has('BLOCK_PARAM1')).to.be.true;
+      expect(fileWhiteList1.fileKeepInfo.enumProperties.has('BLOCK_PARAM2')).to.be.true;
+      const fileWhiteList2: FileWhiteList = projectWhiteListManager!.getFileWhiteListMap().get(path2)!;
+      expect(fileWhiteList2.fileKeepInfo.enumProperties.has('ENUM_PARAM1')).to.be.true;
+      expect(fileWhiteList2.fileKeepInfo.enumProperties.has('ENUM_PARAM2')).to.be.true;
+      const fileWhiteList3: FileWhiteList = projectWhiteListManager!.getFileWhiteListMap().get(path3)!;
+      expect(fileWhiteList3.fileKeepInfo.enumProperties.has('EXPORT_PARAM1')).to.be.true;
+      expect(fileWhiteList3.fileKeepInfo.enumProperties.has('EXPORT_PARAM2')).to.be.true;
+      const fileWhiteList4: FileWhiteList = projectWhiteListManager!.getFileWhiteListMap().get(path4)!;
+      expect(fileWhiteList4.fileKeepInfo.enumProperties.has('NS_PARAM1')).to.be.true;
+      expect(fileWhiteList4.fileKeepInfo.enumProperties.has('NS_PARAM2')).to.be.true;
     });
 
     it('-enable-property-obfuscation', function () {
+      let config: IOptions = {
+        mNameObfuscation : {
+          mEnable: true,
+          mReservedProperties: [],
+          mRenameProperties: true,
+          mKeepStringProperty: false,
+          mNameGeneratorType: NameGeneratorType.ORDERED,
+          mReservedNames: [], 
+          mReservedToplevelNames: []
+        }
+      };
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, false);
       let projectAndLibs: ReseverdSetForArkguard =
         readProjectPropertiesByCollectedPaths(fileList,
         {
-          mNameObfuscation: {
-            mEnable: true,
-            mReservedProperties: [],
-            mRenameProperties: true,
-            mKeepStringProperty: false,
-            mNameGeneratorType: NameGeneratorType.ORDERED,
-            mReservedNames: [], 
-            mReservedToplevelNames: []
-          },
+          mNameObfuscation: config.mNameObfuscation,
           mExportObfuscation: false,
           mKeepFileSourceCode: {
             mKeepSourceOfPaths: new Set(),
@@ -89,21 +117,41 @@ describe('test for ApiReader', function () {
       assert.strictEqual(exportNameAndPropSet.has('ExportEnum'), true);
       assert.strictEqual(exportNameAndPropSet.has('EXPORT_PARAM1'), true);
       assert.strictEqual(exportNameAndPropSet.has('EXPORT_PARAM2'), true);
+      const fileWhiteList1: FileWhiteList = projectWhiteListManager!.getFileWhiteListMap().get(path1)!;
+      expect(fileWhiteList1.fileKeepInfo.enumProperties.has('BLOCK_PARAM1')).to.be.true;
+      expect(fileWhiteList1.fileKeepInfo.enumProperties.has('BLOCK_PARAM2')).to.be.true;
+      const fileWhiteList2: FileWhiteList = projectWhiteListManager!.getFileWhiteListMap().get(path2)!;
+      expect(fileWhiteList2.fileKeepInfo.enumProperties.has('ENUM_PARAM1')).to.be.true;
+      expect(fileWhiteList2.fileKeepInfo.enumProperties.has('ENUM_PARAM2')).to.be.true;
+      const fileWhiteList3: FileWhiteList = projectWhiteListManager!.getFileWhiteListMap().get(path3)!;
+      expect(fileWhiteList3.fileKeepInfo.enumProperties.has('EXPORT_PARAM1')).to.be.true;
+      expect(fileWhiteList3.fileKeepInfo.enumProperties.has('EXPORT_PARAM2')).to.be.true;
+      expect(fileWhiteList3.fileKeepInfo.exported.propertyNames.has('ExportEnum')).to.be.true;
+      expect(fileWhiteList3.fileKeepInfo.exported.propertyNames.has('EXPORT_PARAM1')).to.be.true;
+      expect(fileWhiteList3.fileKeepInfo.exported.propertyNames.has('EXPORT_PARAM2')).to.be.true;
+      const fileWhiteList4: FileWhiteList = projectWhiteListManager!.getFileWhiteListMap().get(path4)!;
+      expect(fileWhiteList4.fileKeepInfo.enumProperties.has('NS_PARAM1')).to.be.true;
+      expect(fileWhiteList4.fileKeepInfo.enumProperties.has('NS_PARAM2')).to.be.true;
     });
 
     it('-enable-export-obfuscation', function () {
+      let config: IOptions = {
+        mNameObfuscation : {
+          mEnable: true,
+          mReservedProperties: [],
+          mRenameProperties: false,
+          mKeepStringProperty: false,
+          mNameGeneratorType: NameGeneratorType.ORDERED,
+          mReservedNames: [], 
+          mReservedToplevelNames: []
+        }
+      };
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, false);
       let projectAndLibs: ReseverdSetForArkguard =
         readProjectPropertiesByCollectedPaths(fileList,
         {
-          mNameObfuscation: {
-            mEnable: true,
-            mReservedProperties: [],
-            mRenameProperties: false,
-            mKeepStringProperty: false,
-            mNameGeneratorType: NameGeneratorType.ORDERED,
-            mReservedNames: [], 
-            mReservedToplevelNames: []
-          },
+          mNameObfuscation: config.mNameObfuscation,
           mExportObfuscation: true,
           mKeepFileSourceCode: {
             mKeepSourceOfPaths: new Set(),
@@ -114,27 +162,35 @@ describe('test for ApiReader', function () {
       let exportNameSet = projectAndLibs.exportNameSet;
       assert.strictEqual(exportNameAndPropSet, undefined);
       assert.strictEqual(exportNameSet.has('ExportEnum'), false);
+      const fileWhiteLists: Map<string, FileWhiteList> = projectWhiteListManager!.getFileWhiteListMap();
+      const projectWhiteList: ProjectWhiteList = projectWhiteListManager!.createProjectWhiteList(fileWhiteLists);
+      expect(projectWhiteList.projectKeepInfo.propertyNames.size).to.be.equal(0);
+      expect(projectWhiteList.projectKeepInfo.globalNames.size).to.be.equal(0);
     });
   });
 
   describe('test for -keep and export obfuscation', function () {
-    const fileList: Set<string> = new Set([
-      "test/ut/utils/keep_export/exportFile1.ts"
-    ]);
+    const filePath = 'test/ut/utils/keep_export/exportFile1.ts';
+    const fileList: Set<string> = new Set([filePath]);
 
     it('-enable-export-obfuscation', function () {
+      let config: IOptions = {
+        mNameObfuscation : {
+          mEnable: true,
+          mReservedProperties: [],
+          mRenameProperties: false,
+          mKeepStringProperty: false,
+          mNameGeneratorType: NameGeneratorType.ORDERED,
+          mReservedNames: [], 
+          mReservedToplevelNames: []
+        }
+      };
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, false);
       let projectAndLibs: ReseverdSetForArkguard =
         readProjectPropertiesByCollectedPaths(fileList,
         {
-          mNameObfuscation: {
-            mEnable: true,
-            mReservedProperties: [],
-            mRenameProperties: false,
-            mKeepStringProperty: false,
-            mNameGeneratorType: NameGeneratorType.ORDERED,
-            mReservedNames: [], 
-            mReservedToplevelNames: []
-          },
+          mNameObfuscation: config.mNameObfuscation,
           mExportObfuscation: true,
           mKeepFileSourceCode: {
             mKeepSourceOfPaths: new Set(),
@@ -174,21 +230,56 @@ describe('test for ApiReader', function () {
       assert.strictEqual(exportNameSet.has('outterElement2'), true);
       assert.strictEqual(exportNameSet.has('o2'), true);
       assert.strictEqual(exportNameAndPropSet, undefined);
+      const fileWhiteList: FileWhiteList = projectWhiteListManager!.getFileWhiteListMap().get(filePath)!;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('TestClass')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('prop1')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('prop2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('objProp')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('innerProp2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('var1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('var2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('foo')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('ns')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('var3')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('nsFunction')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('TestInterface')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('feature1')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('feature2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('TestClass2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('prop4')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('propObj')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('innerProp')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('TestClass3')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('exportProp1')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('exportPropObj')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('exportInnerProp')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('v2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('default')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('t3')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('outterElement1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('outterElement2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('o2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.size).to.be.equal(0);
     });
 
     it('-enable-property-obfuscation', function () {
+      let config: IOptions = {
+        mNameObfuscation : {
+          mEnable: true,
+          mReservedProperties: [],
+          mRenameProperties: true,
+          mKeepStringProperty: false,
+          mNameGeneratorType: NameGeneratorType.ORDERED,
+          mReservedNames: [], 
+          mReservedToplevelNames: []
+        }
+      };
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, false);
       let projectAndLibs: ReseverdSetForArkguard =
         readProjectPropertiesByCollectedPaths(fileList,
         {
-          mNameObfuscation: {
-            mEnable: true,
-            mReservedProperties: [],
-            mRenameProperties: true,
-            mKeepStringProperty: false,
-            mNameGeneratorType: NameGeneratorType.ORDERED,
-            mReservedNames: [], 
-            mReservedToplevelNames: []
-          },
+          mNameObfuscation: config.mNameObfuscation,
           mExportObfuscation: false,
           mKeepFileSourceCode: {
             mKeepSourceOfPaths: new Set(),
@@ -228,22 +319,57 @@ describe('test for ApiReader', function () {
       assert.strictEqual(exportNameAndPropSet.has('outterElement2'), false);
       assert.strictEqual(exportNameAndPropSet.has('o2'), true);
       assert.strictEqual(exportNameSet, undefined);
+      const fileWhiteList: FileWhiteList = projectWhiteListManager!.getFileWhiteListMap().get(filePath)!;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('TestClass')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('prop1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('prop2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('objProp')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('innerProp2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('var1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('var2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('foo')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('ns')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('var3')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('nsFunction')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('TestInterface')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('feature1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('feature2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('TestClass2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('prop4')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('propObj')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('innerProp')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('TestClass3')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('exportProp1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('exportPropObj')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('exportInnerProp')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('v2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('default')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('t3')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('outterElement1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('outterElement2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('o2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.size).to.be.equal(0);
     });
 
     it('-enable-toplevel-obfuscation', function () {
+      let config: IOptions = {
+        mNameObfuscation : {
+          mEnable: true,
+          mReservedProperties: [],
+          mRenameProperties: false,
+          mKeepStringProperty: false,
+          mTopLevel: true,
+          mNameGeneratorType: NameGeneratorType.ORDERED,
+          mReservedNames: [], 
+          mReservedToplevelNames: []
+        }
+      };
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, false);
       let projectAndLibs: ReseverdSetForArkguard =
         readProjectPropertiesByCollectedPaths(fileList,
         {
-          mNameObfuscation: {
-            mEnable: true,
-            mReservedProperties: [],
-            mRenameProperties: false,
-            mKeepStringProperty: false,
-            mTopLevel: true,
-            mNameGeneratorType: NameGeneratorType.ORDERED,
-            mReservedNames: [], 
-            mReservedToplevelNames: []
-          },
+          mNameObfuscation: config.mNameObfuscation,
           mExportObfuscation: false,
           mKeepFileSourceCode: {
             mKeepSourceOfPaths: new Set(),
@@ -256,22 +382,30 @@ describe('test for ApiReader', function () {
       let exportNameSet = projectAndLibs.exportNameSet;
       assert.strictEqual(exportNameAndPropSet, undefined);
       assert.strictEqual(exportNameSet, undefined);
+      const fileWhiteList: FileWhiteList = projectWhiteListManager!.getFileWhiteListMap().get(filePath)!;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.size).to.be.equal(0);
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.size).to.be.equal(0);
     });
 
     it('-enable-toplevel-obfuscation -enable-export-obfuscation', function () {
+      let config: IOptions = {
+        mNameObfuscation : {
+          mEnable: true,
+          mReservedProperties: [],
+          mRenameProperties: false,
+          mKeepStringProperty: false,
+          mTopLevel: true,
+          mNameGeneratorType: NameGeneratorType.ORDERED,
+          mReservedNames: [], 
+          mReservedToplevelNames: []
+        }
+      };
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, false);
       let projectAndLibs: ReseverdSetForArkguard =
         readProjectPropertiesByCollectedPaths(fileList,
         {
-          mNameObfuscation: {
-            mEnable: true,
-            mReservedProperties: [],
-            mRenameProperties: false,
-            mKeepStringProperty: false,
-            mTopLevel: true,
-            mNameGeneratorType: NameGeneratorType.ORDERED,
-            mReservedNames: [], 
-            mReservedToplevelNames: []
-          },
+          mNameObfuscation: config.mNameObfuscation,
           mExportObfuscation: true,
           mKeepFileSourceCode: {
             mKeepSourceOfPaths: new Set(),
@@ -311,22 +445,57 @@ describe('test for ApiReader', function () {
       assert.strictEqual(exportNameSet.has('outterElement2'), true);
       assert.strictEqual(exportNameSet.has('o2'), true);
       assert.strictEqual(exportNameAndPropSet, undefined);
+      const fileWhiteList: FileWhiteList = projectWhiteListManager!.getFileWhiteListMap().get(filePath)!;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('TestClass')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('prop1')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('prop2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('objProp')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('innerProp2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('var1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('var2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('foo')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('ns')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('var3')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('nsFunction')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('TestInterface')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('feature1')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('feature2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('TestClass2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('prop4')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('propObj')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('innerProp')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('TestClass3')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('exportProp1')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('exportPropObj')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('exportInnerProp')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('v2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('default')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('t3')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('outterElement1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('outterElement2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('o2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.size).to.be.equal(0);
     });
 
     it('-enable-property-obfuscation -enable-export-obfuscation', function () {
+      let config: IOptions = {
+        mNameObfuscation : {
+          mEnable: true,
+          mReservedProperties: [],
+          mRenameProperties: true,
+          mKeepStringProperty: false,
+          mTopLevel: false,
+          mNameGeneratorType: NameGeneratorType.ORDERED,
+          mReservedNames: [], 
+          mReservedToplevelNames: []
+        }
+      };
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, false);
       let projectAndLibs: ReseverdSetForArkguard =
         readProjectPropertiesByCollectedPaths(fileList,
         {
-          mNameObfuscation: {
-            mEnable: true,
-            mReservedProperties: [],
-            mRenameProperties: true,
-            mKeepStringProperty: false,
-            mTopLevel: false,
-            mNameGeneratorType: NameGeneratorType.ORDERED,
-            mReservedNames: [], 
-            mReservedToplevelNames: []
-          },
+          mNameObfuscation: config.mNameObfuscation,
           mExportObfuscation: true,
           mKeepFileSourceCode: {
             mKeepSourceOfPaths: new Set(),
@@ -393,22 +562,84 @@ describe('test for ApiReader', function () {
       assert.strictEqual(exportNameAndPropSet.has('outterElement1'), true);
       assert.strictEqual(exportNameAndPropSet.has('outterElement2'), false);
       assert.strictEqual(exportNameAndPropSet.has('o2'), true);
+      const fileWhiteList: FileWhiteList = projectWhiteListManager!.getFileWhiteListMap().get(filePath)!;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('TestClass')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('prop1')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('prop2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('objProp')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('innerProp2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('var1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('var2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('foo')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('ns')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('var3')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('nsFunction')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('TestInterface')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('feature1')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('feature2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('TestClass2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('prop4')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('propObj')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('innerProp')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('TestClass3')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('exportProp1')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('exportPropObj')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('exportInnerProp')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('v2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('default')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('t3')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('outterElement1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('outterElement2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('o2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('TestClass')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('prop1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('prop2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('objProp')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('innerProp2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('var1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('var2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('foo')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('ns')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('var3')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('nsFunction')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('TestInterface')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('feature1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('feature2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('TestClass2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('prop4')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('propObj')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('innerProp')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('TestClass3')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('exportProp1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('exportPropObj')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('exportInnerProp')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('v2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('default')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('t3')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('outterElement1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('outterElement2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('o2')).to.be.true;
     });
 
     it('-enable-property-obfuscation -enable-export-obfuscation -enable-toplevel-obfuscation', function () {
+      let config: IOptions = {
+        mNameObfuscation : {
+          mEnable: true,
+          mReservedProperties: [],
+          mRenameProperties: true,
+          mKeepStringProperty: false,
+          mTopLevel: true,
+          mNameGeneratorType: NameGeneratorType.ORDERED,
+          mReservedNames: [], 
+          mReservedToplevelNames: []
+        }
+      };
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, false);
       let projectAndLibs: ReseverdSetForArkguard =
         readProjectPropertiesByCollectedPaths(fileList,
         {
-          mNameObfuscation: {
-            mEnable: true,
-            mReservedProperties: [],
-            mRenameProperties: true,
-            mKeepStringProperty: false,
-            mTopLevel: true,
-            mNameGeneratorType: NameGeneratorType.ORDERED,
-            mReservedNames: [], 
-            mReservedToplevelNames: []
-          },
+          mNameObfuscation: config.mNameObfuscation,
           mExportObfuscation: true,
           mKeepFileSourceCode: {
             mKeepSourceOfPaths: new Set(),
@@ -475,25 +706,86 @@ describe('test for ApiReader', function () {
       assert.strictEqual(exportNameAndPropSet.has('outterElement1'), true);
       assert.strictEqual(exportNameAndPropSet.has('outterElement2'), false);
       assert.strictEqual(exportNameAndPropSet.has('o2'), true);
+      const fileWhiteList: FileWhiteList = projectWhiteListManager!.getFileWhiteListMap().get(filePath)!;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('TestClass')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('prop1')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('prop2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('objProp')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('innerProp2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('var1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('var2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('foo')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('ns')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('var3')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('nsFunction')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('TestInterface')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('feature1')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('feature2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('TestClass2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('prop4')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('propObj')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('innerProp')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('TestClass3')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('exportProp1')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('exportPropObj')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('exportInnerProp')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('v2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('default')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('t3')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('outterElement1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('outterElement2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('o2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('TestClass')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('prop1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('prop2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('objProp')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('innerProp2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('var1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('var2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('foo')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('ns')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('var3')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('nsFunction')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('TestInterface')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('feature1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('feature2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('TestClass2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('prop4')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('propObj')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('innerProp')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('TestClass3')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('exportProp1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('exportPropObj')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('exportInnerProp')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('v2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('default')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('t3')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('outterElement1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('outterElement2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('o2')).to.be.true;
     });
 
     it('oh_modules test', function () {
-      const ohModulesFileList: Set<string> = new Set([
-        "test/ut/utils/oh_modules/exportFile1.ts"
-      ]);
+      const filePath = 'test/ut/utils/oh_modules/exportFile1.ts'
+      const ohModulesFileList: Set<string> = new Set([filePath]);
+      let config: IOptions = {
+        mNameObfuscation : {
+          mEnable: true,
+          mReservedProperties: [],
+          mRenameProperties: true,
+          mKeepStringProperty: false,
+          mTopLevel: true,
+          mNameGeneratorType: NameGeneratorType.ORDERED,
+          mReservedNames: [], 
+          mReservedToplevelNames: []
+        }
+      };
+      let cachePath = 'test/ut/utils/obfuscation';
+      initProjectWhiteListManager(cachePath, false, false);
       let projectAndLibs: ReseverdSetForArkguard =
         readProjectPropertiesByCollectedPaths(ohModulesFileList,
         {
-          mNameObfuscation: {
-            mEnable: true,
-            mReservedProperties: [],
-            mRenameProperties: true,
-            mKeepStringProperty: false,
-            mTopLevel: true,
-            mNameGeneratorType: NameGeneratorType.ORDERED,
-            mReservedNames: [], 
-            mReservedToplevelNames: []
-          },
+          mNameObfuscation: config.mNameObfuscation,
           mExportObfuscation: true,
           mKeepFileSourceCode: {
             mKeepSourceOfPaths: new Set(),
@@ -542,6 +834,47 @@ describe('test for ApiReader', function () {
       assert.strictEqual(exportNameAndPropSet.has('otherElement1'), true);
       assert.strictEqual(exportNameAndPropSet.has('otherElement2'), false);
       assert.strictEqual(exportNameAndPropSet.has('o2'), true);
+      const fileWhiteList: FileWhiteList = projectWhiteListManager!.getFileWhiteListMap().get(filePath)!;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('ModuleNs')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('nsProp1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('nsFunc')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('ModuleClass')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('classProp1')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('objProp')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('innerProp')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('TestClass')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('prop4')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('propObj')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('innerProp1')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('TestClass2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('prop1')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('objProp1')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('innerProp2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('default')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('mc')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('otherElement1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('otherElement2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.globalNames.has('o2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('ModuleNs')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('nsProp1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('nsFunc')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('ModuleClass')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('classProp1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('objProp')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('innerProp')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('TestClass')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('prop4')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('propObj')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('innerProp1')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('TestClass2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('prop1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('objProp1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('innerProp2')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('default')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('mc')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('otherElement1')).to.be.true;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('otherElement2')).to.be.false;
+      expect(fileWhiteList.fileKeepInfo.exported.propertyNames.has('o2')).to.be.true;
     });
   });
 });

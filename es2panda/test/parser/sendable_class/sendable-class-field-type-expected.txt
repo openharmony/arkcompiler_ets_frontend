@@ -1,6 +1,5 @@
-.language ECMAScript
-
 slotNum = 0x4
+.language ECMAScript
 .function any .#%#City(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
@@ -12,24 +11,25 @@ label_0:
 	sta v0
 	lda.str shanghai
 	stobjbyvalue 0x2, a3, v0
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any .#*#Test(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldhole
 	sta v0
 	callruntime.definesendableclass 0x0, .#*@2~@1=#Pet, _3, 0x0, v0
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+expectedProperty = 0x3
+.language ECMAScript
 .function any .#*@2~@1=#Pet(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -39,6 +39,8 @@ label_2:
 }
 
 slotNum = 0x0
+expectedProperty = 0xb
+.language ECMAScript
 .function any .#~@0=#Person(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -48,6 +50,7 @@ label_2:
 }
 
 slotNum = 0x6
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_4: 
 label_0: 
@@ -68,7 +71,6 @@ label_3:
 	ldhole
 	sta v0
 	callruntime.definesendableclass 0x5, .#~@0=#Person, _5, 0x0, v0
-	ldundefined
 	returnundefined
 label_5: 
 }

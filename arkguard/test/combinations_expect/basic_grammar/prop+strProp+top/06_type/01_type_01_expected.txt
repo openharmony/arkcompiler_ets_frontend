@@ -61,7 +61,7 @@ assert(q[0] === 1);
 assert(q[1] === 2);
 interface u {
     name: string;
-    f3: number;
+    l3: number;
 }
 type v = keyof u;
 let b: v = "name";
@@ -81,53 +81,53 @@ assert(c1[0] === "1");
 assert(c1[1] === 2);
 type d1 = {
     description: string;
-    g3(para1: number): boolean;
+    m3(para1: number): boolean;
     (para2: number): number;
 };
 const e1: d1 = (h3: number) => h3;
 e1.description = "test";
-e1.g3 = (g3: number) => {
+e1.m3 = (g3: number) => {
     return g3 > 0 ? true : false;
 };
 assert(e1(100) === 100);
 assert(e1.description === "test");
-assert(e1.g3(-100) === false);
+assert(e1.m3(-100) === false);
 type f1 = (para5: number) => number;
 const g1: f1 = (f3: number) => f3;
 assert(g1(200) === 200);
 // Different grammar scenarios of indexedAccessType
 type h1 = {
-    h3: number;
-    i3: string;
-    j3: boolean;
+    n3: number;
+    o3: string;
+    q3: boolean;
 };
 export type T5 = {
     X1: h1;
 };
-let i1: T5["X1"]["h3"] = 2;
+let i1: T5["X1"]["n3"] = 2;
 assert(i1 === 2);
-let j1: h1["h3"] = 3;
-let l1: h1["i3"] = "test";
-let m1: h1["j3"] = false;
+let j1: h1["n3"] = 3;
+let l1: h1["o3"] = "test";
+let m1: h1["q3"] = false;
 assert(j1 === 3);
 assert(l1 === "test");
 assert(m1 === false);
-let n1: h1["h3" | "i3"] = 4;
-let o1: h1["h3" | "i3"] = "test";
+let n1: h1["n3" | "o3"] = 4;
+let o1: h1["n3" | "o3"] = "test";
 assert(n1 === 4);
 assert(o1 === "test");
-let q1: T5["X1"]["h3" | "i3"] = 5;
-let s1: T5["X1"]["h3" | "i3"] = "test";
+let q1: T5["X1"]["n3" | "o3"] = 5;
+let s1: T5["X1"]["n3" | "o3"] = "test";
 assert(q1 === 5);
 assert(s1 === "test");
 let t1: h1[keyof T5["X1"]] = 6;
 assert(t1 === 6);
 const u1 = [
-    { l3: "Alice", m3: 15 },
-    { l3: "Bob", m3: 23 },
-    { l3: "Eve", m3: 38 },
+    { r3: "Alice", s3: 15 },
+    { r3: "Bob", s3: 23 },
+    { r3: "Eve", s3: 38 },
 ];
-type v1 = (typeof u1)[1]["m3"];
+type v1 = (typeof u1)[1]["s3"];
 let w1: v1 = 7;
 assert(w1 === 7);
 type z1 = [
@@ -160,21 +160,21 @@ let o2: h2["1234"] = "6";
 assert(o2 === "6");
 // Define properties in type individually
 type q2 = {
-    n3: number;
-    o3: number;
-    "q3": number;
-    r3: number;
-    ["s3"]: number;
+    t3: number;
+    u3: number;
+    "v3": number;
+    w3: number;
+    ["x3"]: number;
     ["2314"]: number;
 };
 // Define properties in type and access them using indexedAccessType
 type s2 = {
-    t3: number;
-    u3: number;
-    "v3": number;
-    ["w3"]: number;
-    x3: number;
-    ["y3"]: number;
+    y3: number;
+    z3: number;
+    "a4": number;
+    ["b4"]: number;
+    c4: number;
+    ["d4"]: number;
     // need to add into whitelist when enable prop and prop+strProp
     1243: number;
     [2134]: number;
@@ -182,17 +182,17 @@ type s2 = {
     "3142": number;
     ["2314"]: number;
 };
-let t2: s2["t3"] = 1;
+let t2: s2["y3"] = 1;
 assert(t2 === 1);
-let u2: s2["u3"] = 2;
+let u2: s2["z3"] = 2;
 assert(u2 === 2);
-let v2: s2["v3"] = 3;
+let v2: s2["a4"] = 3;
 assert(v2 === 3);
-let w2: s2["w3"] = 4;
+let w2: s2["b4"] = 4;
 assert(w2 === 4);
-let z2: s2["x3"] = 5;
+let z2: s2["c4"] = 5;
 assert(z2 === 5);
-let a3: s2["y3"] = 6;
+let a3: s2["d4"] = 6;
 assert(a3 === 6);
 // need to add into whitelist when enable prop and prop+strProp
 let b3: s2[1243] = 7;

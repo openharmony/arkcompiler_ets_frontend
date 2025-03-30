@@ -21,6 +21,8 @@
 #include <ir/expressions/memberExpression.h>
 #include <ir/statement.h>
 
+#include <string.h>
+
 namespace panda::es2panda::compiler {
 class PandaGen;
 }  // namespace panda::es2panda::compiler
@@ -48,6 +50,7 @@ public:
         }
 
         name_.insert(0, expr->AsIdentifier()->Name().Utf8());
+        name_.erase(0, std::strlen(annotationPrefix));
         nameView_ = util::StringView(name_);
     }
 
@@ -83,6 +86,7 @@ public:
     void UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) override;
     static constexpr char interfaceString[] = "interface";
     static constexpr char stringClassName[] = "panda.String";
+    static constexpr char annotationPrefix[] = "__$$ETS_ANNOTATION$$__";
 
     // Conventions with TSC part
     static constexpr uint8_t EMPTY_LITERAL_ARRAY_WITH_NUMBER_TYPE = 0;

@@ -1,28 +1,28 @@
 export default class h {
     name: string;
-    l: number;
-    constructor(e1: string, f1: number) {
-        this.name = e1;
-        this.l = f1;
+    t: number;
+    constructor(g1: string, h1: number) {
+        this.name = g1;
+        this.t = h1;
     }
     ;
 }
 ;
-class c1 {
-    public o: number = 0;
-    public p: number = 0;
+class e1 {
+    public i1: number = 0;
+    public j1: number = 0;
 }
 ;
 interface i {
     id: number;
-    m: string;
-    q: h[];
+    u: string;
+    l1: h[];
 }
 ;
-export type d1 = {
-    m: number;
+export type f1 = {
+    u: number;
     name: string;
 };
 export type j = h;
-export type { c1 };
+export type { e1 };
 export { i };

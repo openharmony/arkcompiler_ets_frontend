@@ -15,11 +15,6 @@
 
 #include "debuginfoDumper.h"
 
-#include <macros.h>
-
-#include <sstream>
-#include <string>
-
 namespace panda::es2panda::debuginfo {
 
 DebugInfoDumper::DebugInfoDumper(const pandasm::Program *prog) : prog_(prog) {}
@@ -136,8 +131,7 @@ void DebugInfoDumper::WritePosInfo(const pandasm::debuginfo::Ins &posInfo)
     ss_ << "\"debug_pos_info\": {";
     WriteProperty("boundLeft", posInfo.bound_left);
     WriteProperty("boundRight", posInfo.bound_right);
-    WriteProperty("sourceLineNum", static_cast<int32_t>(posInfo.line_number));
-    WriteProperty("wholeLine", posInfo.whole_line, false);
+    WriteProperty("sourceLineNum", static_cast<int32_t>(posInfo.line_number), false);
     Indent();
     ss_ << "}" << std::endl;
 }

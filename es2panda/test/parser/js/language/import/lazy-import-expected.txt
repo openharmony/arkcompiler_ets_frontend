@@ -1,6 +1,6 @@
+slotNum = 0x6
+expectedProperty = 0x3
 .language ECMAScript
-
-slotNum = 0x4
 .function any .#~A=#A(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -14,12 +14,18 @@ label_0:
 	throw.undefinedifholewithname c
 	lda v0
 	stobjbyname 0x2, v, a2
+	callruntime.ldlazysendablemodulevar 0x3
+	sta v0
+	throw.undefinedifholewithname d
+	lda v0
+	stobjbyname 0x4, w, a2
 	lda a2
 	return
 label_2: 
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -30,7 +36,6 @@ label_0:
 	ldhole
 	sta v0
 	callruntime.definesendableclass 0x0, .#~A=#A, _4, 0x0, v0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -44,7 +49,7 @@ slot _1
 {
   index: 0
     tag: 2
-    val: 3
+    val: 4
 },
 {
   index: 1
@@ -63,13 +68,13 @@ slot _1
 },
 {
   index: 4
-    tag: 2
-    val: 3
+    tag: 5
+    val: ./c
 },
 {
   index: 5
-    tag: 5
-    val: a
+    tag: 2
+    val: 5
 },
 {
   index: 6
@@ -78,13 +83,13 @@ slot _1
 },
 {
   index: 7
-    tag: 9
-    val: 0
+    tag: 5
+    val: a
 },
 {
   index: 8
-    tag: 5
-    val: b
+    tag: 9
+    val: 0
 },
 {
   index: 9
@@ -93,41 +98,76 @@ slot _1
 },
 {
   index: 10
+    tag: 5
+    val: b
+},
+{
+  index: 11
     tag: 9
     val: 1
 },
 {
-  index: 11
+  index: 12
     tag: 5
     val: c
 },
 {
-  index: 12
+  index: 13
     tag: 5
     val: default
 },
 {
-  index: 13
+  index: 14
     tag: 9
     val: 2
 },
 {
-  index: 14
-    tag: 2
-    val: 0
-},
-{
   index: 15
-    tag: 2
-    val: 0
+    tag: 5
+    val: d
 },
 {
   index: 16
+    tag: 5
+    val: default
+},
+{
+  index: 17
+    tag: 9
+    val: 3
+},
+{
+  index: 18
+    tag: 5
+    val: lazy
+},
+{
+  index: 19
+    tag: 5
+    val: default
+},
+{
+  index: 20
+    tag: 9
+    val: 1
+},
+{
+  index: 21
     tag: 2
     val: 0
 },
 {
-  index: 17
+  index: 22
+    tag: 2
+    val: 0
+},
+{
+  index: 23
+    tag: 2
+    val: 0
+},
+{
+  index: 24
     tag: 2
     val: 0
 },
@@ -147,6 +187,11 @@ slot _2
   index: 2
     tag: 0
     val: 0
+},
+{
+  index: 3
+    tag: 0
+    val: 1
 },
 ------------------------------------
 slot _3
@@ -193,12 +238,32 @@ slot _3
 {
   index: 8
     tag: 0
-    val: 2
+    val: 5
 },
 {
   index: 9
+    tag: 5
+    val: w
+},
+{
+  index: 10
+    tag: 0
+    val: 2
+},
+{
+  index: 11
     tag: 2
     val: 2
+},
+{
+  index: 12
+    tag: 0
+    val: 2
+},
+{
+  index: 13
+    tag: 2
+    val: 3
 },
 ------------------------------------
 slot _4

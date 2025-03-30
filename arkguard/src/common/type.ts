@@ -64,3 +64,13 @@ export const fileExtensions: string[] = [Extension.DETS, Extension.ETS, Extensio
 
 // supported file suffixes from ets-loader.
 export const supportedParsingExtension: string[] = [Extension.ETS, Extension.TS, Extension.JS, Extension.CJS, Extension.MJS];
+
+// Formatted Error Info for hvigor
+export interface HvigorErrorInfo {
+  code: string;
+  description: string;
+  cause: string;
+  position: string;
+  solutions: string[];
+  moreInfo?: Object;
+}

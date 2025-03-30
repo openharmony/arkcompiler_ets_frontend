@@ -17,10 +17,10 @@ module.exports = {
     exportApi1: 'commonjs',
     exportApi2: (a) => { return a + 1; }
 };
-module.exports.g = function () { return 'api'; };
-module.exports.h = 2;
+module.exports.api = function () { return 'api'; };
+module.exports.constVal = 2;
 class classExport3 {
-    i = 3;
+    class3_prop1 = 3;
 }
-module.exports.j = classExport3;
-module.exports.k = { l: 3 };
+module.exports.classExport3Alias = classExport3;
+module.exports.exportObj3 = { obj_prop3: 3 };

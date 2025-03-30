@@ -124,6 +124,7 @@ private:
     std::string funcMain0_;
     std::string patchMain0_;  // stores newly added function define ins, runtime will execute
     std::string patchMain1_;  // stores modified function and class define ins, runtime will scan but not execute
+    std::stringstream errMsg_;
 
     util::SymbolTable* symbolTable_ {nullptr};
     ArenaAllocator allocator_;

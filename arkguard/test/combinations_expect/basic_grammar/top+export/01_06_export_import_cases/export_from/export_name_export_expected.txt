@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 export {} from './export_basic1';
-export { c } from './export_basic1';
-export { a, d } from './export_basic1';
-export { g, Person, } from './export_basic2';
-export { default as s } from './export_basic3_default';
-export { findMax as default } from './export_basic3_default';
+export { b } from './export_basic1';
+export { reduce, c } from './export_basic1';
+export { f, Person, } from './export_basic2';
+export { default as r } from './export_basic3_default';
+export { l as default } from './export_basic3_default';

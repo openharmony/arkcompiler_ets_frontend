@@ -15,12 +15,7 @@
 
 #include "interfaceType.h"
 
-#include <binder/variable.h>
-#include <typescript/types/typeParameter.h>
 #include <typescript/checker.h>
-
-#include <algorithm>
-#include <utility>
 
 namespace panda::es2panda::checker {
 

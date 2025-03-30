@@ -18,7 +18,7 @@ export type b1 = boolean;
 type c1 = v;
 export default c1;
 interface d1 {
-    m: number;
+    g1: number;
 }
 export { d1 as as };
 export type e1 = number;

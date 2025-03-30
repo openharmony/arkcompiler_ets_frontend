@@ -15,8 +15,6 @@
 
 #include "tsEnumDeclaration.h"
 
-#include <binder/scope.h>
-#include <util/helpers.h>
 #include <ir/astDump.h>
 #include <ir/expressions/identifier.h>
 #include <ir/expressions/memberExpression.h>

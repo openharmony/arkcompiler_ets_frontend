@@ -28,16 +28,15 @@ import type { SdkOptions } from './SdkOptions';
 import type { LintParameter } from './LintParameter';
 import { LibraryTypeCallDiagnosticChecker } from '../../lib/utils/functions/LibraryTypeCallDiagnosticChecker';
 
-const LINTER_MSG_CODE_START = -1;
-
 function makeDiag(
   category: ts.DiagnosticCategory,
   file: ts.SourceFile,
-  start: number,
   length: number,
-  messageText: string
+  problemInfo: ProblemInfo
 ): ts.Diagnostic {
-  const code = LINTER_MSG_CODE_START;
+  const code = problemInfo.ruleTag;
+  const start = problemInfo.start;
+  const messageText = problemInfo.rule;
   return { category, code, file, start, length, messageText };
 }
 
@@ -45,7 +44,7 @@ export function translateDiag(srcFile: ts.SourceFile, problemInfo: ProblemInfo):
   const severity =
     problemInfo.severity === ProblemSeverity.ERROR ? ts.DiagnosticCategory.Error : ts.DiagnosticCategory.Warning;
   const length = problemInfo.end - problemInfo.start + 1;
-  return makeDiag(severity, srcFile, problemInfo.start, length, problemInfo.rule);
+  return makeDiag(severity, srcFile, length, problemInfo);
 }
 
 export function runArkTSLinter(
@@ -78,7 +77,7 @@ export function runArkTSLinter(
   const etsLoaderPath = program.getCompilerOptions().etsLoaderPath;
   const tsImportSendableEnable = program.getCompilerOptions().tsImportSendableEnable;
   const typeScriptLinter = createTypeScriptLinter(program, tscStrictDiagnostics, sdkOptions);
-  LibraryTypeCallDiagnosticChecker.rebuildTscDiagnostics(tscStrictDiagnostics);
+  LibraryTypeCallDiagnosticChecker.instance.rebuildTscDiagnostics(tscStrictDiagnostics);
   const interopTypescriptLinter = createInteropTypescriptLinter(program, !!sdkOptions?.isUseRtLogic);
   processFiles(srcFiles, {
     incrementalLinterState,

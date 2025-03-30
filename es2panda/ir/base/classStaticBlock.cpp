@@ -17,7 +17,6 @@
 
 #include "compiler/core/envScope.h"
 #include "ir/astDump.h"
-#include "ir/expression.h"
 #include "ir/statements/blockStatement.h"
 
 namespace panda::es2panda::ir {

@@ -23,6 +23,8 @@ For more information, see: [ARK Runtime Subsystem](https://gitee.com/openharmony
 /arkcompiler/ets_frontend/
 ├── test262            # scripts for configuration and running Test262
 ├── testTs             # system test cases
+├── test_ecma_bcopt    # bytecode_optimize test cases
+├── test               # sdk，xts test cases
 ├── es2panda
     ├── aot            # logical entry
     ├── binder         # info binding
@@ -34,13 +36,11 @@ For more information, see: [ARK Runtime Subsystem](https://gitee.com/openharmony
     ├── test           # test directory
     ├── typescript     # typescript support
     └── util           # tool directory
-├── ts2panda
-    ├── scripts        # dependency scripts
-    ├── src            # source code directory
-    ├── templates      # ruby templates
-    ├── tests          # unit test cases
-    ├── tools          # tools provided by ts2abc
-    └── ts2abc         # ts2abc source code
+├── legacy_bin         # API8 Compiler directory
+├── merge_abc
+    ├── protos         # proto template directory
+    ├── scripts        # script directory
+    ├── src            # proto Serialization and deserialization directory
 
 ```
 

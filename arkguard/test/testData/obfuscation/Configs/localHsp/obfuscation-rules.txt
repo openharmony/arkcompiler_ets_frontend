@@ -1,0 +1,8 @@
+-enable-toplevel-obfuscation
+-enable-property-obfuscation
+-enable-export-obfuscation
+-keep-global-name 
+LocalHspGlobal
+-keep-property-name 
+localHspProperty
+

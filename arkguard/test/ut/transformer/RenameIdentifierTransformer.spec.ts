@@ -264,15 +264,13 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
             .escapedText == 'para1')
             .to.be.true;
         PropCollections.reservedProperties.clear();
-        PropCollections.newlyOccupiedMangledProps.clear();
         PropCollections.globalMangledTable.clear();
       })
 
-      it('should not obfuscated as names in ReservedProperty or ReservedLocalVariable or newlyOccupiedMangledProps or mangledPropsInNameCache', function () {
+      it('should not obfuscated as names in ReservedProperty or ReservedLocalVariable or mangledPropsInNameCache', function () {
         PropCollections.reservedProperties.add('b');
         UnobfuscationCollections.reservedExportName.add('c');
-        PropCollections.newlyOccupiedMangledProps.add('d');
-        PropCollections.historyMangledTable.set('testorigin', 'e');
+        PropCollections.historyMangledTable.set('testorigin', 'd');
         transformer = transformerPlugin.createTransformerFactory(option);
         const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true);
         let transformed = ts.transform(sourceFile, [transformer]);
@@ -292,7 +290,7 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
             .members[1] as ts.ConstructorDeclaration)
             .parameters[1]
             .name as ts.Identifier)
-            .escapedText == 'f')
+            .escapedText == 'e')
             .to.be.true;
         expect(
           ((((transformed
@@ -301,7 +299,7 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
             .members[1] as ts.ConstructorDeclaration)
             .parameters[2]
             .name as ts.Identifier)
-            .escapedText == 'g')
+            .escapedText == 'f')
             .to.be.true;
         expect(
           ((((transformed
@@ -310,7 +308,7 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
             .members[1] as ts.ConstructorDeclaration)
             .parameters[3]
             .name as ts.Identifier)
-            .escapedText == 'h')
+            .escapedText == 'g')
             .to.be.true;
         expect(
           ((((transformed
@@ -319,11 +317,10 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
             .members[1] as ts.ConstructorDeclaration)
             .parameters[4]
             .name as ts.Identifier)
-            .escapedText == 'i')
+            .escapedText == 'h')
             .to.be.true;
         PropCollections.reservedProperties.clear();
         UnobfuscationCollections.reservedExportName.clear();
-        PropCollections.newlyOccupiedMangledProps.clear();
         PropCollections.globalMangledTable.clear();
         UnobfuscationCollections.reservedExportNameAndProp.clear();
         PropCollections.historyMangledTable.clear();
@@ -378,7 +375,6 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
             .name as ts.Identifier)
             .escapedText == 'f')
             .to.be.true;
-        PropCollections.newlyOccupiedMangledProps.clear();
         PropCollections.globalMangledTable.clear();
       })
 
@@ -398,12 +394,12 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
           export let b = 1;
           import {c} from 'filePath';
         `;
-        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true);
-        let transformedResult: ts.TransformationResult<ts.Node> = ts.transform(sourceFile, [renameIdentifierFactory], {});
-        let ast: ts.SourceFile = transformedResult.transformed[0] as ts.SourceFile;
         const textWriter = ts.createTextWriter('\n');
         let arkobfuscator = new ArkObfuscatorForTest();
         arkobfuscator.init(options);
+        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true);
+        let transformedResult: ts.TransformationResult<ts.Node> = ts.transform(sourceFile, [renameIdentifierFactory], {});
+        let ast: ts.SourceFile = transformedResult.transformed[0] as ts.SourceFile;
         arkobfuscator.createObfsPrinter(ast.isDeclarationFile).writeFile(ast, textWriter, undefined);
         const actualContent = textWriter.getText();
         const expectContent = `
@@ -449,7 +445,8 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
         let ast: ts.SourceFile = transformed.transformed[0] as ts.SourceFile;
         const printer = ts.createPrinter();
         const transformedAst: string = printer.printFile(ast);
-        expect(transformedAst === "import { A as B } from './file1.ts';\nexport { C as D } from './file1.ts';\n").to.be.true;
+        expect(transformedAst === "import { A as B } from './file1.ts';\nexport { C as D } from './file1.ts';\n").to.be
+          .true;
       });
 
       it('noSymbolIdentifierTest: enable export and toplevel obfuscation', function () {
@@ -478,8 +475,148 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
         let ast: ts.SourceFile = transformed.transformed[0] as ts.SourceFile;
         const printer = ts.createPrinter();
         const transformedAst: string = printer.printFile(ast);
-        expect(transformedAst === "import { c as a } from './file1.ts';\nexport { e as b } from './file1.ts';\n").to.be.true;
+        expect(transformedAst === "import { c as a } from './file1.ts';\nexport { d as b } from './file1.ts';\n").to.be
+          .true;
       });
+
+      it('originalSymbolTest: import test', function () {
+        const fileContent3 = `
+          declare module 'testModule2' {
+            import { noSymbolIdentifier2 as ni2 } from 'module2';
+            export { ni2 };
+          }
+        `;
+        let option: IOptions = {
+          mCompact: false,
+          mRemoveComments: false,
+          mOutputDir: '',
+          mDisableConsole: false,
+          mSimplify: false,
+          mNameObfuscation: {
+            mEnable: true,
+            mNameGeneratorType: 1,
+            mDictionaryList: [],
+            mRenameProperties: false,
+            mKeepStringProperty: false,
+            mTopLevel: true,
+            mReservedProperties: [],
+          },
+          mExportObfuscation: true,
+          mEnableSourceMap: false,
+          mEnableNameCache: false
+        };
+        transformer = transformerPlugin.createTransformerFactory(option);
+        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent3, ts.ScriptTarget.ES2015, true);
+        let transformed = ts.transform(sourceFile, [transformer]);
+        let ast: ts.SourceFile = transformed.transformed[0] as ts.SourceFile;
+        const printer = ts.createPrinter();
+        const transformedAst: string = printer.printFile(ast);
+        expect(
+          transformedAst ===
+            "declare module 'testModule2' {\n    import { c as b } from 'module2';\n    export { b };\n}\n",
+        ).to.be.true;
+      });
+
+      it('originalSymbolTest: export test', function () {
+        const fileContent4 = `
+          type ni2 = string;
+          declare namespace ns {
+            export { ni2 };
+          }
+        `;
+        let option: IOptions = {
+          mCompact: false,
+          mRemoveComments: false,
+          mOutputDir: '',
+          mDisableConsole: false,
+          mSimplify: false,
+          mNameObfuscation: {
+            mEnable: true,
+            mNameGeneratorType: 1,
+            mDictionaryList: [],
+            mRenameProperties: false,
+            mKeepStringProperty: false,
+            mTopLevel: true,
+            mReservedProperties: [],
+          },
+          mExportObfuscation: true,
+          mEnableSourceMap: false,
+          mEnableNameCache: false
+        };
+        transformer = transformerPlugin.createTransformerFactory(option);
+        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent4, ts.ScriptTarget.ES2015, true);
+        let transformed = ts.transform(sourceFile, [transformer]);
+        let ast: ts.SourceFile = transformed.transformed[0] as ts.SourceFile;
+        const printer = ts.createPrinter();
+        const transformedAst: string = printer.printFile(ast);
+        expect(
+          transformedAst ===
+            "type b = string;\ndeclare namespace a {\n    export { b };\n}\n",
+        ).to.be.true;
+      });
+
+      it('originalSymbolTest: propertyName test', function () {
+        const fileContent5 = `
+          import { Symbol as sy } from 'typescript';
+          let localVariable: number = 1;
+          export { SourceFile sf } from 'typescript';
+          export { localVariable as lv };
+        `;
+        let option: IOptions = {
+          mCompact: false,
+          mRemoveComments: false,
+          mOutputDir: '',
+          mDisableConsole: false,
+          mSimplify: false,
+          mNameObfuscation: {
+            mEnable: true,
+            mNameGeneratorType: 1,
+            mDictionaryList: [],
+            mRenameProperties: false,
+            mKeepStringProperty: false,
+            mTopLevel: true,
+            mReservedProperties: [],
+          },
+          mExportObfuscation: true,
+          mEnableSourceMap: false,
+          mEnableNameCache: false,
+        };
+        transformer = transformerPlugin.createTransformerFactory(option);
+        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent5, ts.ScriptTarget.ES2015, true);
+        let transformed = ts.transform(sourceFile, [transformer]);
+        let ast: ts.SourceFile = transformed.transformed[0] as ts.SourceFile;
+        const printer = ts.createPrinter();
+        const transformedAst: string = printer.printFile(ast);
+        expect(
+          transformedAst ===
+            "import { f as a } from 'typescript';\nlet b: number = 1;\nexport { c, d } from 'typescript';\nexport { b as e };\n",
+        ).to.be.true;
+      });
+
+      it('Test the option of mKeepParameterNames for declaration file', () => {
+        let options: IOptions = {
+          'mNameObfuscation': {
+            'mEnable': true,
+            'mRenameProperties': false,
+            'mReservedProperties': [],
+            'mTopLevel': false,
+            'mKeepParameterNames': true
+          }
+        };
+        assert.strictEqual(options !== undefined, true);
+        const renameIdentifierFactory = secharmony.transformerPlugin.createTransformerFactory(options);
+        const fileContent = `export declare function foo(para: number): void;`;
+        const textWriter = ts.createTextWriter('\n');
+        let arkobfuscator = new ArkObfuscatorForTest();
+        arkobfuscator.init(options);
+        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.d.ts', fileContent, ts.ScriptTarget.ES2015, true);
+        let transformedResult: ts.TransformationResult<ts.Node> = ts.transform(sourceFile, [renameIdentifierFactory], {});
+        let ast: ts.SourceFile = transformedResult.transformed[0] as ts.SourceFile;
+        arkobfuscator.createObfsPrinter(ast.isDeclarationFile).writeFile(ast, textWriter, undefined);
+        const actualContent = textWriter.getText();
+        const expectContent = `export declare function foo(para: number): void;`;
+        assert.strictEqual(compareStringsIgnoreNewlines(actualContent, expectContent), true);
+      })
     })
   })
 })

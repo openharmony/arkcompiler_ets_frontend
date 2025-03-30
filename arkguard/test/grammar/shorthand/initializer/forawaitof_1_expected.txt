@@ -18,12 +18,12 @@ namespace g {
     const l = 0;
     const m = 0;
     async function i() {
-        for await ({ i: j = l, j: k = m } of [{ i: j, j: k }]) {
+        for await ({ o: j = l, p: k = m } of [{ o: j, p: k }]) {
             assert.strictEqual(j, l);
             assert.strictEqual(k, m);
         }
     }
 }
 class h {
-    i: string = "123";
+    o: string = "123";
 }

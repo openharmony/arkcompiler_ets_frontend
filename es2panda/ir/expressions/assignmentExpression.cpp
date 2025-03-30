@@ -17,8 +17,6 @@
 
 #include <compiler/base/lreference.h>
 #include <compiler/core/pandagen.h>
-#include <compiler/core/regScope.h>
-#include <typescript/checker.h>
 #include <typescript/core/destructuringContext.h>
 #include <ir/astDump.h>
 #include <ir/base/spreadElement.h>

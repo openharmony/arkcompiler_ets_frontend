@@ -105,3 +105,11 @@ class C {}
 class ConcurrentArray {
   data: Object[];
 }
+
+@Component struct Test {
+  @Require name: string;
+  myName: string = this.name;
+  build() {
+    
+  }
+}

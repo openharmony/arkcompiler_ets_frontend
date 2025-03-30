@@ -30,22 +30,22 @@ public:
 
     bool Parse(int argc, const char **argv);
 
-    const std::string &protoPathInput() const
+    const std::string &ProtoPathInput() const
     {
         return protoPathInput_;
     }
 
-    const std::string &protoBinSuffix() const
+    const std::string &ProtoBinSuffix() const
     {
         return protoBinSuffix_;
     }
 
-    const std::string &outputFileName() const
+    const std::string &OutputFileName() const
     {
         return outputFileName_;
     }
 
-    const std::string &outputFilePath() const
+    const std::string &OutputFilePath() const
     {
         return outputFilePath_;
     }

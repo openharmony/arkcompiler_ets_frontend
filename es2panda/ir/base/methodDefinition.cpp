@@ -18,12 +18,8 @@
 #include <ir/astDump.h>
 #include <ir/base/annotation.h>
 #include <ir/base/decorator.h>
-#include <ir/base/scriptFunction.h>
-#include <ir/expression.h>
 #include <ir/expressions/callExpression.h>
 #include <ir/expressions/functionExpression.h>
-
-#include <utility>
 
 namespace panda::es2panda::ir {
 

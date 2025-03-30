@@ -15,7 +15,6 @@
 
 #include "superExpression.h"
 
-#include <util/helpers.h>
 #include <compiler/core/pandagen.h>
 #include <typescript/checker.h>
 #include <ir/astDump.h>

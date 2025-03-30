@@ -14,14 +14,16 @@
  */
 
 import { describe, it } from 'mocha';
-import { assert } from 'chai';
-import { ArkObfuscator, FileUtils, wildcardTransformer } from '../../../src/ArkObfuscator';
+import { assert, expect } from 'chai';
+import { ArkObfuscator, FileUtils, UnobfuscationCollections, wildcardTransformer } from '../../../src/ArkObfuscator';
 import { ArkObfuscatorForTest } from '../../../src/ArkObfuscatorForTest'
 import path from 'path';
 import { TransformerFactory, Node, SourceFile, createSourceFile, ScriptTarget, Printer, createTextWriter, RawSourceMap } from 'typescript';
 import { IOptions } from '../../../src/configs/IOptions';
 import { getSourceMapGenerator } from '../../../src/utils/SourceMapUtil';
 import fs from 'fs';
+import esInfo from '../../../src/configs/preset/es_reserved_properties.json';
+import optimizeEsInfo from '../../../src/configs/preset/es_reserved_properties_optimized.json'
 
 describe('Tester Cases for <ArkObfuscatorForTest>.', function () {
   describe('Tester Cases for <ArkObfuscatorForTest>.', function () {
@@ -49,7 +51,7 @@ class Demo{
       /**
        * This is a comment
        */
-      
+
       class Demo{
           constructor(public  title: string, public  content: string, public  mark: number) {
               this.title = title
@@ -96,7 +98,7 @@ class Demo{
               this.mark = mark;
           }
       }`;
-      
+
       let actualSourceMap: RawSourceMap = sourceMapGenerator.toJSON();
       actualSourceMap.sourceRoot = "";
       let expectSourceMap = {
@@ -109,7 +111,6 @@ class Demo{
           "names": [],
           "mappings": ";;AAIA,MAAM,IAAI;IACR,YAAY,MAAM,CAAE,KAAK,EAAE,MAAM,EAAE,MAAM,CAAE,OAAO,EAAE,MAAM,EAAE,MAAM,CAAE,IAAI,EAAE,MAAM;QAC5E,IAAI,CAAC,KAAK,GAAG,KAAK,CAAA;QAClB,IAAI,CAAC,OAAO,GAAG,OAAO,CAAA;QACtB,IAAI,CAAC,IAAI,GAAG,IAAI,CAAA;IACpB,CAAC;CACF"
         }
-      console.log(JSON.stringify(actualSourceMap, null, 2))
       assert.strictEqual(compareStringsIgnoreNewlines(actualContent, expectContent), true);
       assert.strictEqual(compareStringsIgnoreNewlines(JSON.stringify(actualSourceMap, null, 2), JSON.stringify(expectSourceMap, null, 2)), true);
     });
@@ -156,9 +157,7 @@ class Demo{
             this.mark = mark;
           }
         }`;
-      console.log(actualContent)
       assert.strictEqual(compareStringsIgnoreNewlines(actualContent, expectContent), true);
-      console.log(actualContent);
     });
   });
 
@@ -181,9 +180,7 @@ class Demo{
       assert.equal(universalReservedProperties[2].toString(), new RegExp(`^${wildcardTransformer("*pro?")}$`).toString());
       assert.equal(universalReservedProperties[1].toString(), new RegExp(`^${wildcardTransformer("function*")}$`).toString());
     });
-  });
 
-  describe('Tester Cases for <ArkObfuscator>.', function () {
     it('Tester: test case for ArkObfuscator.ini', function (){
       let configPath = "test/ut/arkobfuscator/iniTestObfConfig.json"
       let obfuscator: ArkObfuscator = new ArkObfuscator();
@@ -202,6 +199,66 @@ class Demo{
       assert.isTrue(reservedProperty?.includes("function*"));
       assert.equal(universalReservedToplevelNames, undefined);
       assert.equal(universalReservedProperties, undefined);
+    });
+
+    it('Tester: test case for use default preset language whitelist', function (){
+      let obfuscator: ArkObfuscator = new ArkObfuscator();
+      let config: IOptions = {
+        "mNameObfuscation": {
+            "mEnable": true,
+            "mNameGeneratorType": 1,
+            "mDictionaryList": [],
+            "mRenameProperties": true,
+            "mReservedProperties": [],
+            "mKeepStringProperty": false,
+            "mTopLevel": true,
+            "mReservedToplevelNames": []
+        },
+        "mEnableSourceMap": false,
+        "mEnableNameCache": false,
+        "mStripLanguageDefaultWhitelist": false
+      };
+
+      obfuscator.init(config);
+      let languageSet: Set<string> = new Set();
+      let presetLanguageWhitelist = esInfo;
+      for (const key of Object.keys(presetLanguageWhitelist)) {
+        const valueArray = presetLanguageWhitelist[key];
+        valueArray.forEach((element: string) => {
+          languageSet.add(element);
+        });
+      }
+      expect(languageSet).to.deep.equal(UnobfuscationCollections.reservedLangForProperty);
+    });
+
+    it('Tester: test case for use optimized preset language whitelist', function (){
+      let obfuscator: ArkObfuscator = new ArkObfuscator();
+      let config: IOptions = {
+        "mNameObfuscation": {
+            "mEnable": true,
+            "mNameGeneratorType": 1,
+            "mDictionaryList": [],
+            "mRenameProperties": true,
+            "mReservedProperties": [],
+            "mKeepStringProperty": false,
+            "mTopLevel": true,
+            "mReservedToplevelNames": []
+        },
+        "mEnableSourceMap": false,
+        "mEnableNameCache": false,
+        "mStripLanguageDefaultWhitelist": true
+      };
+
+      obfuscator.init(config);
+      let languageSet: Set<string> = new Set();
+      let presetLanguageWhitelist = optimizeEsInfo;
+      for (const key of Object.keys(presetLanguageWhitelist)) {
+        const valueArray = presetLanguageWhitelist[key];
+        valueArray.forEach((element: string) => {
+          languageSet.add(element);
+        });
+      }
+      expect(languageSet).to.deep.equal(UnobfuscationCollections.reservedLangForProperty);
     });
   });
 });

@@ -17,6 +17,6 @@ export declare namespace ns13 {
     struct structName13 {
         prop13: number;
     }
-    interface f2 {
+    interface h2 {
     }
 }

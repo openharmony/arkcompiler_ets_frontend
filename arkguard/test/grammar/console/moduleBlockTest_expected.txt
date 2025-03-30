@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-module o {
-    export function greet(p: string) {
+module p {
+    export function greet(q: string) {
     }
 }

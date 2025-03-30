@@ -14,16 +14,16 @@
  */
 type numAlias = number;
 export let var2 = 2;
-export function plus(d: numAlias, e: number) {
-    return d + e;
+export function plus(k: numAlias, l: number) {
+    return k + l;
 }
 export class Person {
-    j: numAlias;
-    k: string;
-    constructor(c) {
-        this.j = c;
+    m: numAlias;
+    o: string;
+    constructor(j) {
+        this.m = j;
     }
-    l(): numAlias {
-        return 2 * this.j;
+    p(): numAlias {
+        return 2 * this.m;
     }
 }

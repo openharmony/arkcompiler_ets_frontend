@@ -1,6 +1,5 @@
-.language ECMAScript
-
 slotNum = 0x1
+.language ECMAScript
 .function any .#14695981039346656037#(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
@@ -9,12 +8,13 @@ label_0:
 	sta v0
 	callruntime.definesendableclass 0x0, .TestTypeA, _2, 0x0, v0
 	stlexvar 0x0, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x6
+expectedProperty = 0x2
+.language ECMAScript
 .function any .TestTypeA(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -31,6 +31,7 @@ label_2:
 }
 
 slotNum = 0x3
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_4: 
 label_0: 
@@ -47,7 +48,6 @@ label_2:
 label_3: 
 	lda v1
 	callarg1 0x1, v0
-	ldundefined
 	returnundefined
 label_5: 
 }

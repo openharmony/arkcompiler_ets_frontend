@@ -1,6 +1,5 @@
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -10,6 +9,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#^1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -19,42 +19,43 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#foo(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#foo1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#foo2(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#foo3(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x21
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 	nop
 label_38: 
@@ -132,10 +133,6 @@ label_35:
 	lda v3
 	callruntime.istrue 0x19
 	jnez label_11
-label_12: 
-	ldtrue
-	ldundefined
-	ldhole
 label_19: 
 label_31: 
 	lda v1
@@ -181,7 +178,6 @@ label_18:
 	definefunc 0x20, .#*#foo3, 0x0
 	jmp label_16
 label_17: 
-	ldundefined
 	returnundefined
 label_39: 
 }

@@ -1,8 +1,8 @@
-interface m1 {
+interface s1 {
     id: number;
 }
-class n1 {
-    e1 = 1;
+class t1 {
+    u1 = 1;
 }
-export { type m1 };
-export type { n1 };
+export { type s1 };
+export type { t1 };

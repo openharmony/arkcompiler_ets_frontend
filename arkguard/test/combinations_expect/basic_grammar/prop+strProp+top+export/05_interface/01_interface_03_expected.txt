@@ -14,53 +14,53 @@
  */
 import assert from 'assert';
 interface g {
-    u: number;
-    v(): void;
+    a1: number;
+    b1(): void;
 }
 let h: g = {
-    u: 1,
-    v: () => { },
+    a1: 1,
+    b1: () => { },
 };
-assert(h.u === 1);
-assert(h.v() === undefined);
+assert(h.a1 === 1);
+assert(h.b1() === undefined);
 interface i extends g {
-    a1: string;
+    c1: string;
 }
 let j: i = {
-    u: 1,
-    v: () => { },
-    a1: "1",
+    a1: 1,
+    b1: () => { },
+    c1: "1",
 };
-assert(j.u === 1);
-assert(j.v() === undefined);
-assert(j.a1 === "1");
+assert(j.a1 === 1);
+assert(j.b1() === undefined);
+assert(j.c1 === "1");
 class k {
-    public b1(x: any) { return x; }
+    public d1(x: any) { return x; }
     private x = 1;
 }
 let l = new k();
-assert(l.b1(10) === 10);
+assert(l.d1(10) === 10);
 interface m extends k {
-    c1(x: any): any;
+    e1(x: any): any;
 }
 class o {
-    public b1(w: any) { return w; }
+    public d1(w: any) { return w; }
     private x = 1;
 }
 let p = new o();
-assert(p.b1(2) === 2);
+assert(p.d1(2) === 2);
 class q {
-    public d1(v: any) { return v; }
+    public f1(v: any) { return v; }
     private x1 = 1;
 }
 let d = new q();
-assert(d.d1(3) === 3);
+assert(d.f1(3) === 3);
 class e {
-    public e1(u: any) { return u; }
+    public g1(u: any) { return u; }
     private x2 = 1;
 }
 let E = new e();
-assert(E.e1(4) === 4);
+assert(E.g1(4) === 4);
 interface t extends o, q, e {
-    c1(x: any): any;
+    e1(x: any): any;
 }

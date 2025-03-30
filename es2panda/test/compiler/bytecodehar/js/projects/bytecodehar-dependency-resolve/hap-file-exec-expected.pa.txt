@@ -5,6 +5,8 @@ program_file: bytecodehar2-abcinput.abc
 record_name: &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0
 program_file: commonjs-say.js
 record_name: commonjs-say
+program_file: deps-json.json
+record_name: &myapp/deps-json&
 program_file: hap-file-exec.js
 record_name: &myapp/hap-file-exec&
 program_file: sourcehar-file1.js
@@ -14,9 +16,8 @@ record_name: &sourcehar/sourcehar-file2&2.0.0
 program_file: test-require.js
 record_name: &myapp/test-require&
 
-.language ECMAScript
-
 slotNum = 0x3
+.language ECMAScript
 .function any &bytecodehar1/bytecodehar1-file1&2.0.0.#*#test(any a0, any a1, any a2) {
 	tryldglobalbyname 0x0, print
 	sta v0
@@ -26,24 +27,23 @@ slotNum = 0x3
 	callarg1 0x1, v1
 	lda.str @normalized:N&&&sourcehar/sourcehar-file1&2.0.0
 	dynamicimport
-	ldundefined
 	returnundefined
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any &bytecodehar1/bytecodehar1-file1&2.0.0.func_main_0(any a0, any a1, any a2) {
 	definefunc 0x0, &bytecodehar1/bytecodehar1-file1&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 }
 
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file1&2.0.0_1341
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_1378
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file1&2.0.0_1345
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_1382
 {
   index: 0
     tag: 2
@@ -106,9 +106,8 @@ slot &bytecodehar1/bytecodehar1-file1&2.0.0_1345
 },
 ======> strings <======
 "&bytecodehar1/bytecodehar1-file1&2.0.0.#*#test"; "@normalized:N&&&sourcehar/sourcehar-file1&2.0.0"; "bytecodehar1.file1.test"; "print"; 
-.language ECMAScript
-
 slotNum = 0x3
+.language ECMAScript
 .function any &bytecodehar1/bytecodehar1-file2&2.0.0.#*#test(any a0, any a1, any a2) {
 	tryldglobalbyname 0x0, print
 	sta v0
@@ -118,24 +117,23 @@ slotNum = 0x3
 	callarg1 0x1, v1
 	lda.str @normalized:N&&&sourcehar/sourcehar-file2&2.0.0
 	dynamicimport
-	ldundefined
 	returnundefined
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any &bytecodehar1/bytecodehar1-file2&2.0.0.func_main_0(any a0, any a1, any a2) {
 	definefunc 0x0, &bytecodehar1/bytecodehar1-file2&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 }
 
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file2&2.0.0_1395
+slot &bytecodehar1/bytecodehar1-file2&2.0.0_1432
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file2&2.0.0_1399
+slot &bytecodehar1/bytecodehar1-file2&2.0.0_1436
 {
   index: 0
     tag: 2
@@ -198,21 +196,20 @@ slot &bytecodehar1/bytecodehar1-file2&2.0.0_1399
 },
 ======> strings <======
 "&bytecodehar1/bytecodehar1-file2&2.0.0.#*#test"; "@normalized:N&&&sourcehar/sourcehar-file2&2.0.0"; "bytecodehar1.file2.test"; "print"; 
-.language ECMAScript
+
+======> literal array buffer <======
+======> strings <======
 
 
 ======> literal array buffer <======
 ======> strings <======
 
-.language ECMAScript
-
 
 ======> literal array buffer <======
 ======> strings <======
-
-.language ECMAScript
 
 slotNum = 0x3
+.language ECMAScript
 .function any &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.#*#test(any a0, any a1, any a2) {
 	tryldglobalbyname 0x0, print
 	sta v0
@@ -220,24 +217,23 @@ slotNum = 0x3
 	sta v1
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.func_main_0(any a0, any a1, any a2) {
 	definefunc 0x0, &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 }
 
 
 ======> literal array buffer <======
 ------------------------------------
-slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1142
+slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1179
 ------------------------------------
-slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1146
+slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1183
 {
   index: 0
     tag: 2
@@ -280,9 +276,8 @@ slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1146
 },
 ======> strings <======
 "&@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.#*#test"; "bytecodehar2.file1.test"; "print"; 
-.language ECMAScript
-
 slotNum = 0x3
+.language ECMAScript
 .function any &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0.#*#test(any a0, any a1, any a2) {
 	tryldglobalbyname 0x0, print
 	sta v0
@@ -290,24 +285,23 @@ slotNum = 0x3
 	sta v1
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0.func_main_0(any a0, any a1, any a2) {
 	definefunc 0x0, &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 }
 
 
 ======> literal array buffer <======
 ------------------------------------
-slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1182
+slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1219
 ------------------------------------
-slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1186
+slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1223
 {
   index: 0
     tag: 2
@@ -350,46 +344,58 @@ slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1186
 },
 ======> strings <======
 "&@ohos/bytecodehar2/bytecodehar2-file2&2.0.0.#*#test"; "bytecodehar2.file2.test"; "print"; 
-.language ECMAScript
+
+======> literal array buffer <======
+======> strings <======
 
 
 ======> literal array buffer <======
 ======> strings <======
 
-.language ECMAScript
-
 
 ======> literal array buffer <======
 ======> strings <======
 
+slotNum = 0x7
 .language ECMAScript
-
-slotNum = 0x5
 .function any commonjs-say.#*#(any a0, any a1, any a2, any a3, any a4, any a5, any a6, any a7) {
 label_1: 
 label_0: 
+	newlexenv 0x1
 	definefunc 0x0, commonjs-say.#**#hi, 0x0
 	sta v0
+	ldundefined
+	stlexvar 0x0, 0x0
+	lda.str ./deps-json.json
+	sta v1
+	lda a4
+	callarg1 0x1, v1
+	stlexvar 0x0, 0x0
 	lda a5
-	ldobjbyname 0x1, exports
+	ldobjbyname 0x3, exports
 	sta v1
 	lda v0
-	stobjbyname 0x3, hi, v1
-	ldundefined
+	stobjbyname 0x5, hi, v1
 	returnundefined
 label_2: 
 }
 
-slotNum = 0x0
+slotNum = 0x3
+.language ECMAScript
 .function any commonjs-say.#**#hi(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	lda.str hello require
+	sta v0
+	ldlexvar 0x0, 0x0
+	ldobjbyname 0x0, test
+	add2 0x2, v0
 	return
 label_2: 
 }
 
 slotNum = 0x11
+.language ECMAScript
 .function any commonjs-say.func_main_0(any a0, any a1, any a2, any a3, any a4, any a5, any a6, any a7) {
 label_1: 
 label_0: 
@@ -413,7 +419,6 @@ label_0:
 	stownbyindex 0xd, v3, 0x4
 	lda v1
 	callthis3 0xf, v0, v2, a3, v3
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -423,10 +428,13 @@ label_2:
 ------------------------------------
 slot commonjs-say_0
 ======> strings <======
-"Reflect"; "apply"; "commonjs-say.#*#"; "commonjs-say.#**#hi"; "exports"; "hello require"; "hi"; 
-.language ECMAScript
+"./deps-json.json"; "Reflect"; "apply"; "commonjs-say.#*#"; "commonjs-say.#**#hi"; "exports"; "hello require"; "hi"; "test"; 
+
+======> literal array buffer <======
+======> strings <======
 
 slotNum = 0x4
+.language ECMAScript
 .function any &myapp/hap-file-exec&.#*#main(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -440,17 +448,16 @@ label_0:
 	throw.undefinedifholewithname testRequire
 	lda v0
 	callarg0 0x2
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any &myapp/hap-file-exec&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	definefunc 0x0, &myapp/hap-file-exec&.#*#main, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -533,9 +540,8 @@ slot &myapp/hap-file-exec&_1
 },
 ======> strings <======
 "&myapp/hap-file-exec&.#*#main"; "test"; "testRequire"; 
-.language ECMAScript
-
 slotNum = 0x3
+.language ECMAScript
 .function any &sourcehar/sourcehar-file1&2.0.0.#*#test(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -545,18 +551,17 @@ label_0:
 	sta v1
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any &sourcehar/sourcehar-file1&2.0.0.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	definefunc 0x0, &sourcehar/sourcehar-file1&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -629,9 +634,8 @@ slot &sourcehar/sourcehar-file1&2.0.0_1
 },
 ======> strings <======
 "&sourcehar/sourcehar-file1&2.0.0.#*#test"; "print"; "sourcehar.file1.test"; 
-.language ECMAScript
-
 slotNum = 0x3
+.language ECMAScript
 .function any &sourcehar/sourcehar-file2&2.0.0.#*#test(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -641,18 +645,17 @@ label_0:
 	sta v1
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any &sourcehar/sourcehar-file2&2.0.0.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	definefunc 0x0, &sourcehar/sourcehar-file2&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -705,9 +708,8 @@ slot &sourcehar/sourcehar-file2&2.0.0_1
 },
 ======> strings <======
 "&sourcehar/sourcehar-file2&2.0.0.#*#test"; "print"; "sourcehar.file2.test"; 
-.language ECMAScript
-
 slotNum = 0x9
+.language ECMAScript
 .function any &myapp/test-require&.#*#testRequire(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -722,12 +724,12 @@ label_0:
 	sta v2
 	lda v1
 	callthis1 0x7, v0, v2
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x9
+.language ECMAScript
 .function any &myapp/test-require&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -748,7 +750,6 @@ label_0:
 	sta v1
 	lda v0
 	stobjbyname 0x7, testRequire, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -791,9 +792,8 @@ slot &myapp/test-require&_1
 },
 ======> strings <======
 "&myapp/test-require&.#*#testRequire"; "./commonjs-say"; "console"; "exports"; "hi"; "log"; "module"; "require"; "testRequire"; 
-.language ECMAScript
-
 slotNum = 0x3
+.language ECMAScript
 .function any &bytecodehar1/bytecodehar1-file1&2.0.0.#*#test(any a0, any a1, any a2) {
 	tryldglobalbyname 0x0, print
 	sta v0
@@ -803,24 +803,23 @@ slotNum = 0x3
 	callarg1 0x1, v1
 	lda.str @normalized:N&&&sourcehar/sourcehar-file1&2.0.0
 	dynamicimport
-	ldundefined
 	returnundefined
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any &bytecodehar1/bytecodehar1-file1&2.0.0.func_main_0(any a0, any a1, any a2) {
 	definefunc 0x0, &bytecodehar1/bytecodehar1-file1&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 }
 
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file1&2.0.0_1341
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_1378
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file1&2.0.0_1345
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_1382
 {
   index: 0
     tag: 2
@@ -883,9 +882,8 @@ slot &bytecodehar1/bytecodehar1-file1&2.0.0_1345
 },
 ======> strings <======
 "&bytecodehar1/bytecodehar1-file1&2.0.0.#*#test"; "@normalized:N&&&sourcehar/sourcehar-file1&2.0.0"; "bytecodehar1.file1.test"; "print"; 
-.language ECMAScript
-
 slotNum = 0x3
+.language ECMAScript
 .function any &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.#*#test(any a0, any a1, any a2) {
 	tryldglobalbyname 0x0, print
 	sta v0
@@ -893,24 +891,23 @@ slotNum = 0x3
 	sta v1
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.func_main_0(any a0, any a1, any a2) {
 	definefunc 0x0, &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 }
 
 
 ======> literal array buffer <======
 ------------------------------------
-slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1142
+slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1179
 ------------------------------------
-slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1146
+slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1183
 {
   index: 0
     tag: 2
@@ -953,34 +950,46 @@ slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1146
 },
 ======> strings <======
 "&@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.#*#test"; "bytecodehar2.file1.test"; "print"; 
+slotNum = 0x7
 .language ECMAScript
-
-slotNum = 0x5
 .function any commonjs-say.#*#(any a0, any a1, any a2, any a3, any a4, any a5, any a6, any a7) {
 label_1: 
 label_0: 
+	newlexenv 0x1
 	definefunc 0x0, commonjs-say.#**#hi, 0x0
 	sta v0
+	ldundefined
+	stlexvar 0x0, 0x0
+	lda.str ./deps-json.json
+	sta v1
+	lda a4
+	callarg1 0x1, v1
+	stlexvar 0x0, 0x0
 	lda a5
-	ldobjbyname 0x1, exports
+	ldobjbyname 0x3, exports
 	sta v1
 	lda v0
-	stobjbyname 0x3, hi, v1
-	ldundefined
+	stobjbyname 0x5, hi, v1
 	returnundefined
 label_2: 
 }
 
-slotNum = 0x0
+slotNum = 0x3
+.language ECMAScript
 .function any commonjs-say.#**#hi(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	lda.str hello require
+	sta v0
+	ldlexvar 0x0, 0x0
+	ldobjbyname 0x0, test
+	add2 0x2, v0
 	return
 label_2: 
 }
 
 slotNum = 0x11
+.language ECMAScript
 .function any commonjs-say.func_main_0(any a0, any a1, any a2, any a3, any a4, any a5, any a6, any a7) {
 label_1: 
 label_0: 
@@ -1004,7 +1013,6 @@ label_0:
 	stownbyindex 0xd, v3, 0x4
 	lda v1
 	callthis3 0xf, v0, v2, a3, v3
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -1014,10 +1022,13 @@ label_2:
 ------------------------------------
 slot commonjs-say_0
 ======> strings <======
-"Reflect"; "apply"; "commonjs-say.#*#"; "commonjs-say.#**#hi"; "exports"; "hello require"; "hi"; 
-.language ECMAScript
+"./deps-json.json"; "Reflect"; "apply"; "commonjs-say.#*#"; "commonjs-say.#**#hi"; "exports"; "hello require"; "hi"; "test"; 
+
+======> literal array buffer <======
+======> strings <======
 
 slotNum = 0x4
+.language ECMAScript
 .function any &myapp/hap-file-exec&.#*#main(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -1031,17 +1042,16 @@ label_0:
 	throw.undefinedifholewithname testRequire
 	lda v0
 	callarg0 0x2
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any &myapp/hap-file-exec&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	definefunc 0x0, &myapp/hap-file-exec&.#*#main, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -1124,9 +1134,8 @@ slot &myapp/hap-file-exec&_1
 },
 ======> strings <======
 "&myapp/hap-file-exec&.#*#main"; "test"; "testRequire"; 
-.language ECMAScript
-
 slotNum = 0x3
+.language ECMAScript
 .function any &sourcehar/sourcehar-file1&2.0.0.#*#test(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -1136,18 +1145,17 @@ label_0:
 	sta v1
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any &sourcehar/sourcehar-file1&2.0.0.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	definefunc 0x0, &sourcehar/sourcehar-file1&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -1220,9 +1228,8 @@ slot &sourcehar/sourcehar-file1&2.0.0_1
 },
 ======> strings <======
 "&sourcehar/sourcehar-file1&2.0.0.#*#test"; "print"; "sourcehar.file1.test"; 
-.language ECMAScript
-
 slotNum = 0x3
+.language ECMAScript
 .function any &sourcehar/sourcehar-file2&2.0.0.#*#test(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -1232,18 +1239,17 @@ label_0:
 	sta v1
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any &sourcehar/sourcehar-file2&2.0.0.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	definefunc 0x0, &sourcehar/sourcehar-file2&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -1296,9 +1302,8 @@ slot &sourcehar/sourcehar-file2&2.0.0_1
 },
 ======> strings <======
 "&sourcehar/sourcehar-file2&2.0.0.#*#test"; "print"; "sourcehar.file2.test"; 
-.language ECMAScript
-
 slotNum = 0x9
+.language ECMAScript
 .function any &myapp/test-require&.#*#testRequire(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -1313,12 +1318,12 @@ label_0:
 	sta v2
 	lda v1
 	callthis1 0x7, v0, v2
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x9
+.language ECMAScript
 .function any &myapp/test-require&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -1339,7 +1344,6 @@ label_0:
 	sta v1
 	lda v0
 	stobjbyname 0x7, testRequire, v1
-	ldundefined
 	returnundefined
 label_2: 
 }

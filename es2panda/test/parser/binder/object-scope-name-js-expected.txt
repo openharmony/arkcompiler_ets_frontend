@@ -1,60 +1,59 @@
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#^1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#^2(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#foo(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#foo^1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#key(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x15
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -84,7 +83,6 @@ label_0:
 	sta v0
 	definefunc 0x12, .#*#^2, 0x0
 	definepropertybyname 0x13, c\b, v0
-	ldundefined
 	returnundefined
 label_2: 
 }

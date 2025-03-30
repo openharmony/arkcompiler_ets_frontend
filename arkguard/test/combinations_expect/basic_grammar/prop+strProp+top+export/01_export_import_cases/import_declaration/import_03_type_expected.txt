@@ -14,8 +14,8 @@
  */
 import assert from 'assert';
 import type { as as as } from './export_type_03';
-class b2 implements as {
-    m: number = 1;
+class c2 implements as {
+    g1: number = 1;
 }
-let c2: as = new b2();
-assert(c2.m === 1);
+let d2: as = new c2();
+assert(d2.g1 === 1);

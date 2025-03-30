@@ -50,10 +50,10 @@ struct PkgInfo {
 struct CompileContextInfo {
     std::vector<std::string> compileEntries;
     std::set<std::string> externalPkgNames;
-    std::unordered_map<std::string, PkgInfo> pkgContextInfo;
+    std::map<std::string, PkgInfo> pkgContextInfo;
     // The key of updateVersionInfo is the package name for an abc file, and the value contains the name of its
     // dependent pacakge and corresponding package version which need to update version.
-    std::unordered_map<std::string, std::unordered_map<std::string, PkgInfo>> updateVersionInfo;
+    std::unordered_map<std::string, std::map<std::string, PkgInfo>> updateVersionInfo;
     /**
      * When there is an abc file as input and needModifyRecord is true, it is necessary to modify the recordName
      * in abc2program and modify the ohmurl for dynamic and static imports.
@@ -180,6 +180,7 @@ public:
         const std::map<std::string, std::unordered_set<std::string>> &resolveDepsRelation);
     static bool IsDefaultApiVersion(int apiVersion, std::string subApiVersion);
     static bool IsSupportLazyImportVersion(int apiVersion, std::string subApiVersion);
+    static bool IsSupportLazyImportDefaultVersion(int apiVersion);
 
     static const uint32_t MAX_DOUBLE_DIGIT = 310;
     static const uint32_t MAX_DOUBLE_PRECISION_DIGIT = 17;
@@ -215,8 +216,10 @@ public:
         ABC_TO_PROGRAM_MIN_SUPPORTED_BYTECODE_VERSION {12, 0, 2, 0};
     static const int32_t SENDABLE_FUNCTION_MIN_SUPPORTED_API_VERSION = 12;
     static const int32_t LAZY_IMPORT_MIN_SUPPORTED_API_VERSION = 12;
+    static const int32_t LAZY_IMPORT_DEFAULT_MIN_SUPPORTED_API_VERSION = 18;
     static const int32_t SENDABLE_LAZY_LOADING_MIN_SUPPORTED_API_VERSION = 12;
-    static const int8_t SUPER_CALL_OPT_MIN_SUPPORTED_API_VERSION = 16;
+    static const int8_t SUPER_CALL_OPT_MIN_SUPPORTED_API_VERSION = 18;
+    static const int8_t SENDABLE_CLASS_USING_LOCAL_MODULE_VAR_MIN_SUPPORTED_API_VERSION = 18;
     static constexpr std::string_view SUB_API_VERSION_1 = "beta1";
     static constexpr std::string_view SUB_API_VERSION_2 = "beta2";
     static constexpr std::string_view DEFAULT_SUB_API_VERSION = SUB_API_VERSION_1;

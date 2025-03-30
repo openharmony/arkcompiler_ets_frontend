@@ -15,14 +15,10 @@
 
 #include "binaryExpression.h"
 
-#include <binder/variable.h>
 #include <compiler/core/pandagen.h>
-#include <compiler/core/regScope.h>
 #include <typescript/checker.h>
 #include <ir/astDump.h>
-#include <ir/base/classDefinition.h>
 #include <ir/expressions/privateIdentifier.h>
-#include <lexer/token/tokenType.h>
 
 namespace panda::es2panda::ir {
 

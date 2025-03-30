@@ -16,25 +16,29 @@
 #include "emitFiles.h"
 
 #include <assembly-emitter.h>
-#include <mem/arena_allocator.h>
 #include "utils/timers.h"
 
-#include <es2panda.h>
 #include <protobufSnapshotGenerator.h>
-#include <util/helpers.h>
+#include <util/commonUtil.h>
 
 namespace panda::es2panda::aot {
 void EmitFileQueue::ScheduleEmitCacheJobs(EmitMergedAbcJob *emitMergedAbcJob)
 {
-    for (const auto &info: progsInfo_) {
+    std::unordered_map<std::string, util::AbcProgramsCache *> abcProgsCacheMap {};
+    /**
+     * The programKey is usually the fileName of the source file. If the program generated from the abc file,
+     * the programKey format is the abc filePath + verticalLine + recordName.
+     */
+    for (const auto &[programKey, programCache]: progsInfo_) {
         // generate cache protoBins and set dependencies
-        if (!info.second->needUpdateCache) {
+        if (!programCache->needUpdateCache) {
             continue;
         }
-        auto outputCacheIter = options_->CompilerOptions().cacheFiles.find(info.first);
+
+        auto outputCacheIter = options_->CompilerOptions().cacheFiles.find(programKey);
         if (outputCacheIter != options_->CompilerOptions().cacheFiles.end()) {
-            auto emitProtoJob = new EmitCacheJob(outputCacheIter->second, info.second);
-            emitProtoJob->DependsOn(emitMergedAbcJob);
+            auto emitProtoJob = new EmitCacheJob(outputCacheIter->second, programCache);
+            emitMergedAbcJob->DependsOn(emitProtoJob);
             jobs_.push_back(emitProtoJob);
             jobsCount_++;
         }
@@ -52,14 +56,14 @@ void EmitFileQueue::Schedule()
         // generate merged abc
         auto emitMergedAbcJob = new EmitMergedAbcJob(options_->CompilerOutput(),
             options_->CompilerOptions().transformLib, progsInfo_, targetApi, targetSubApi);
+        //  One job should be placed before the jobs on which it depends to prevent blocking
+        jobs_.push_back(emitMergedAbcJob);
+        jobsCount_++;
         // Disable generating cached files when cross-program optimization is required, to prevent cached files from
         // not being invalidated when their dependencies are changed
         if (!options_->CompilerOptions().requireGlobalOptimization) {
             ScheduleEmitCacheJobs(emitMergedAbcJob);
         }
-        //  One job should be placed after those jobs which depend on it to prevent blocking
-        jobs_.push_back(emitMergedAbcJob);
-        jobsCount_++;
     } else {
         for (const auto &info: progsInfo_) {
             try {
@@ -96,6 +100,8 @@ void EmitSingleAbcJob::Run()
 
 void EmitMergedAbcJob::Run()
 {
+    std::unique_lock<std::mutex> lock(m_);
+    cond_.wait(lock, [this] { return dependencies_ == 0; });
     panda::Timer::timerStart(panda::EVENT_EMIT_MERGED_PROGRAM, "");
     std::vector<panda::pandasm::Program*> progs;
     progs.reserve(progsInfo_.size());
@@ -107,9 +113,6 @@ void EmitMergedAbcJob::Run()
         panda::os::file::File::GetExtendedFilePath(outputFileName_), progs, true,
         targetApiVersion_, targetApiSubVersion_);
 
-    for (auto *dependant : dependants_) {
-        dependant->Signal();
-    }
     panda::Timer::timerEnd(panda::EVENT_EMIT_MERGED_PROGRAM, "");
 
     if (!success) {
@@ -126,10 +129,11 @@ void EmitMergedAbcJob::Run()
 
 void EmitCacheJob::Run()
 {
-    std::unique_lock<std::mutex> lock(m_);
-    cond_.wait(lock, [this] { return dependencies_ == 0; });
     panda::Timer::timerStart(panda::EVENT_EMIT_CACHE_FILE, outputProtoName_);
     panda::proto::ProtobufSnapshotGenerator::UpdateCacheFile(progCache_, outputProtoName_);
+    for (auto *dependant : dependants_) {
+        dependant->Signal();
+    }
     panda::Timer::timerEnd(panda::EVENT_EMIT_CACHE_FILE, outputProtoName_);
 }
 

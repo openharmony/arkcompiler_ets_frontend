@@ -222,8 +222,7 @@ cookBookTag[179] =
   'Casting "Non-sendable" function to "Sendable" typeAlias is not allowed (arkts-sendable-function-as-expr)';
 cookBookTag[180] =
   'The "@Sendable" decorator can only be used on "class", "function" and "typeAlias" (arkts-sendable-decorator-limited)';
-cookBookTag[181] =
-  'The exported "Sendable" class or function cannot be captured by "Sendable" class or function in current file (arkts-sendable-closure-export)';
+cookBookTag[181] = '';
 cookBookTag[182] =
   'Sendable functions and sendable typealias are not available when compatibleSdkVersionStage is lowering than beta3 of API12 (arkts-sendable-beta-compatible)';
 cookBookTag[183] = 'Object literal properties can only contain name-value pairs (arkts-obj-literal-props)';

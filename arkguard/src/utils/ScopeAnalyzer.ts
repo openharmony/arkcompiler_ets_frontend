@@ -16,13 +16,19 @@
 import {
   forEachChild,
   getModifiers,
+  getOriginalNode,
   isCatchClause,
   isClassDeclaration,
   isConstructorDeclaration,
+  isExportDeclaration,
+  isExportSpecifier,
   isFunctionDeclaration,
   isFunctionLike,
+  isFunctionTypeNode,
   isIdentifier,
+  isImportSpecifier,
   isMethodDeclaration,
+  isNamedExports,
   SyntaxKind,
   isVariableDeclaration,
   isFunctionExpression,
@@ -30,7 +36,7 @@ import {
   isGetAccessor,
   isSetAccessor,
   isPropertyDeclaration,
-  getOriginalNode
+  isParameter,
 } from 'typescript';
 
 import type {
@@ -64,8 +70,11 @@ import type {
   TypeElement
 } from 'typescript';
 
-import {NodeUtils} from './NodeUtils';
-import {isParameterPropertyModifier, isViewPUBasedClass} from './OhsUtil';
+import { NodeUtils } from './NodeUtils';
+import { isParameterPropertyModifier, isViewPUBasedClass } from './OhsUtil';
+import { TypeUtils } from './TypeUtils';
+import { endSingleFileEvent, startSingleFileEvent } from '../utils/PrinterUtils';
+import { EventList } from '../utils/PrinterTimeAndMemUtils';
 /**
  * kind of a scope
  */
@@ -76,6 +85,16 @@ namespace secharmony {
    * A map used to track whether identifiers without symbols are in the top-level scope.
    */
   export const exportElementsWithoutSymbol: Map<Node, boolean> = new Map();
+  /**
+   * Alias symbol for export elements with corresponding original symbol
+   * key: symbols of export elements
+   * value: original symbols of export elements
+   */
+  export const exportSymbolAliasMap: Map<Symbol, Symbol> = new Map();
+  /**
+   * Records of nodes and corresponding symbols
+   */
+  export const nodeSymbolMap: Map<Node, Symbol> = new Map();
 
   /**
    * type of scope
@@ -345,12 +364,21 @@ namespace secharmony {
     }
 
     function addExportSymbolInScope(node: Node): void {
-      let defSymbols: Symbol = node?.symbol;
+      let defSymbol: Symbol = node?.symbol;
 
-      if (!defSymbols) {
+      if (!defSymbol) {
         return;
       }
-      current.addDefinition(defSymbols);
+
+      let originalSymbol: Symbol = TypeUtils.getOriginalSymbol(defSymbol, checker);
+      if (defSymbol !== originalSymbol) {
+        exportSymbolAliasMap.set(defSymbol, originalSymbol);
+      }
+      tryAddExportNamesIntoParentScope(originalSymbol, current);
+
+      // Mark export symbol as 'obfucate as property'
+      // to ensure the corresponding element can be kept by -keep-global-name
+      current.addDefinition(originalSymbol, true);
     }
 
     /**
@@ -361,7 +389,9 @@ namespace secharmony {
       switch (node.kind) {
         // global
         case SyntaxKind.SourceFile:
+          startSingleFileEvent(EventList.ANALYZE_SOURCE_FILE);
           analyzeSourceFile(node as SourceFile);
+          endSingleFileEvent(EventList.ANALYZE_SOURCE_FILE);
           break;
 
         // namespace or module
@@ -377,14 +407,18 @@ namespace secharmony {
         case SyntaxKind.Constructor:
         case SyntaxKind.FunctionExpression:
         case SyntaxKind.ArrowFunction:
+          startSingleFileEvent(EventList.ANALYZE_FUNCTION_LIKE);
           analyzeFunctionLike(node as FunctionLikeDeclaration);
+          endSingleFileEvent(EventList.ANALYZE_FUNCTION_LIKE);
           break;
 
         // class like
         case SyntaxKind.ClassExpression:
         case SyntaxKind.ClassDeclaration:
         case SyntaxKind.StructDeclaration:
+          startSingleFileEvent(EventList.ANALYZE_CLASS_LIKE);
           analyzeClassLike(node as ClassLikeDeclaration);
+          endSingleFileEvent(EventList.ANALYZE_CLASS_LIKE);
           break;
 
         // for like
@@ -462,21 +496,19 @@ namespace secharmony {
 
     function analyzeImportNames(node: ImportSpecifier): void {
       try {
-        const propetyNameNode: Identifier | undefined = node.propertyName;
-        if (exportObfuscation && propetyNameNode && isIdentifier(propetyNameNode)) {
-          let propertySymbol = checker.getSymbolAtLocation(propetyNameNode);
-          if (!propertySymbol) {
-            exportElementsWithoutSymbol.set(propetyNameNode, current.kind === ScopeKind.GLOBAL);
-          } else {
-            current.addDefinition(propertySymbol);
-          }
-
-          const nameSymbol = checker.getSymbolAtLocation(node.name);
+        const propertyNameNode: Identifier | undefined = node.propertyName;
+        if (exportObfuscation) {
+          // try to collect symbol for `A` in `import { A as B } from './file'; into current scope`
+          tryAddPropertyNameNodeSymbol(propertyNameNode);
+          const nameSymbol: Symbol | undefined = getAndRecordSymbolOfIdentifier(checker, node.name);
           if (nameSymbol) {
-            current.addDefinition(nameSymbol);
+            // nameSymbol is the symbol of A in `import { A } from './file';` and propertyNameNode is undefined
+            // nameSymbol is the symbol of B in `import { A as B } from './file';` and propertyNameNode is A
+            let shouldObfuscateAsImportElement: boolean = propertyNameNode === undefined;
+            current.addDefinition(nameSymbol, shouldObfuscateAsImportElement);
           }
         } else {
-          const nameText = propetyNameNode ? propetyNameNode.text : node.name.text;
+          const nameText = propertyNameNode ? propertyNameNode.text : node.name.text;
           current.importNames.add(nameText);
           root.fileImportNames.add(nameText);
         }
@@ -484,6 +516,42 @@ namespace secharmony {
       } catch (e) {
         console.error(e);
       }
+    }
+
+    function tryAddPropertyNameNodeSymbol(propertyNameNode: Identifier | undefined): void {
+      if (!propertyNameNode) {
+        return;
+      }
+
+      if (propertyNameNode.text === 'default') {
+        return;
+      }
+
+      const propertySymbol: Symbol | undefined = getAndRecordSymbolOfIdentifier(checker, propertyNameNode);
+
+      if (!propertySymbol) {
+        exportElementsWithoutSymbol.set(propertyNameNode, current.kind === ScopeKind.GLOBAL);
+        return;
+      }
+
+      let parentNode = propertyNameNode.parent;
+      let shouldObfuscateAsExportElement: boolean = false;
+      if (isImportSpecifier(parentNode)) {
+        // If it is part of an `import` statement, it always comes from another file:
+        // Example: import { A as B } from 'module';
+        // Here, `A` is an exported element from `module`.
+        shouldObfuscateAsExportElement = true;
+      } else if (isExportSpecifier(parentNode)) {
+        // If it is part of an `export` statement with `from`, it comes from another file:
+        // Example: export { A as B } from 'module';
+        // Here, `A` is an exported element from `module`.
+        //
+        // If it is part of a bare `export` statement without `from`, it is declared locally:
+        // Example: export { A as B };
+        // Here, `A` is not an exported element from another file.
+        shouldObfuscateAsExportElement = parentNode.parent?.parent?.moduleSpecifier !== undefined;
+      }
+      current.addDefinition(propertySymbol, shouldObfuscateAsExportElement);
     }
 
     /** example
@@ -533,15 +601,15 @@ namespace secharmony {
 
     function analyzeExportNames(node: ExportSpecifier): void {
       // get export names.
-      current.exportNames.add(node.name.text);
-      root.fileExportNames.add(node.name.text);
-      addExportSymbolInScope(node);
+      let curExportName: string = node.name.text;
+      current.exportNames.add(curExportName);
+      root.fileExportNames.add(curExportName);
+      if (curExportName !== 'default') {
+        addExportSymbolInScope(node);
+      }
       const propetyNameNode: Identifier | undefined = node.propertyName;
-      if (exportObfuscation && propetyNameNode && isIdentifier(propetyNameNode)) {
-        let propertySymbol = checker.getSymbolAtLocation(propetyNameNode);
-        if (!propertySymbol) {
-          exportElementsWithoutSymbol.set(propetyNameNode, current.kind === ScopeKind.GLOBAL);
-        }
+      if (exportObfuscation) {
+        tryAddPropertyNameNodeSymbol(propetyNameNode);
       }
       forEachChild(node, analyzeScope);
     }
@@ -551,7 +619,7 @@ namespace secharmony {
         return;
       }
 
-      let symbol = checker.getSymbolAtLocation(node.name);
+      let symbol: Symbol | undefined = getAndRecordSymbolOfIdentifier(checker, node.name);
       if (symbol) {
         current.addDefinition(symbol, true);
       }
@@ -725,16 +793,13 @@ namespace secharmony {
         scopes.push(current);
       }
 
-      let symbol: Symbol;
+      let nameNode: Node;
       if ((isFunctionExpression(node) || isArrowFunction(node)) && isVariableDeclaration(node.parent)) {
-        symbol = checker.getSymbolAtLocation(node.name ? node.name : node.parent.name);
+        nameNode = node.name ? node.name : node.parent.name;
       } else {
-        if (isFunctionDeclaration(node)) {
-          symbol = NodeUtils.findSymbolOfIdentifier(checker, node.name);
-        } else {
-          symbol = checker.getSymbolAtLocation(node.name);
-        }
+        nameNode = node.name;
       }
+      let symbol: Symbol | undefined = getAndRecordSymbolOfIdentifier(checker, nameNode);
       if (symbol) {
         Reflect.set(symbol, 'isFunction', true);
       }
@@ -878,10 +943,19 @@ namespace secharmony {
         return;
       }
 
-      let symbol: Symbol = null;
+      /*
+       *  Skip obfuscating the parameters of a FunctionType node.
+       *  For example, type MyFunc = (param: number) => void;
+       *  'param' is the parameter of 'MyFunc', so it will not be obfuscated by default.
+       */
+      if (isParameter(node.parent) && isFunctionTypeNode(node.parent.parent)) {
+        return;
+      }
+
+      let symbol: Symbol | undefined;
 
       try {
-        symbol = NodeUtils.findSymbolOfIdentifier(checker, node);
+        symbol = getAndRecordSymbolOfIdentifier(checker, node);
       } catch (e) {
         console.error(e);
         return;
@@ -913,17 +987,30 @@ namespace secharmony {
 
       if (isSameName) {
         // exclude the possibility of external symbols, as those with duplicate names have been added to currentDefs (this avoids the possibility of omissions)
-        if (!currentDefs.has(symbol)) {
+        if (!currentDefs.has(symbol) && !checkOriginalSymbolExist(symbol, currentDefs)) {
           currentDefs.add(symbol);
         }
 
-        if (symbol.exportSymbol && !currentDefs.has(symbol.exportSymbol)) {
+        if (
+          symbol.exportSymbol &&
+          !currentDefs.has(symbol.exportSymbol) &&
+          !checkOriginalSymbolExist(symbol, currentDefs)
+        ) {
           Reflect.set(symbol, 'obfuscateAsProperty', true);
           currentDefs.add(symbol);
         }
       }
 
       return isSameName;
+    }
+
+    function checkOriginalSymbolExist(symbol: Symbol, currentDefs: Set<Symbol>): boolean {
+      const originalSymbol = exportSymbolAliasMap.get(symbol);
+      if (originalSymbol && currentDefs.has(originalSymbol)) {
+        return true;
+      }
+
+      return false;
     }
 
     function analyzeLabel(node: LabeledStatement): void {
@@ -938,7 +1025,7 @@ namespace secharmony {
         return undefined;
       }
 
-      let sym: Symbol = checker.getSymbolAtLocation(node);
+      let sym: Symbol | undefined = getAndRecordSymbolOfIdentifier(checker, node);
       if (!sym) {
         return undefined;
       }
@@ -965,7 +1052,7 @@ namespace secharmony {
       if (hasExport) {
         current.exportNames.add(node.name.text);
         root.fileExportNames.add(node.name.text);
-        let sym: Symbol | undefined = checker.getSymbolAtLocation(node.name);
+        let sym: Symbol | undefined = getAndRecordSymbolOfIdentifier(checker, node.name);
         if (sym) {
           current.addDefinition(sym, true);
         }
@@ -983,9 +1070,34 @@ namespace secharmony {
         return;
       }
 
-      const sym: Symbol | undefined = checker.getSymbolAtLocation(node);
+      const sym: Symbol | undefined = getAndRecordSymbolOfIdentifier(checker, node);
+
       if (!sym) {
         current.mangledNames.add((node as Identifier).text);
+      }
+    }
+
+    function tryAddExportNamesIntoParentScope(originalSymbol: Symbol, currentScope: Scope): void {
+      if (currentScope.kind === ScopeKind.GLOBAL) {
+        return;
+      }
+      let parentScope: Scope = currentScope.parent;
+      while (parentScope) {
+        tryAddExportNamesIntoCurrentScope(originalSymbol, parentScope);
+        parentScope = parentScope.parent;
+      }
+    }
+
+    function tryAddExportNamesIntoCurrentScope(originalSymbol: Symbol, currentScope: Scope): void {
+      if (currentScope.exportNames.has(originalSymbol.name)) {
+        return;
+      }
+      let currentDefs: Set<Symbol> = currentScope.defs;
+      for (const curDef of currentDefs) {
+        if (curDef === originalSymbol) {
+          currentScope.exportNames.add(originalSymbol.name);
+          return;
+        }
       }
     }
 
@@ -999,6 +1111,18 @@ namespace secharmony {
       };
 
       noSymbolVisit(node);
+    }
+
+    function getAndRecordSymbolOfIdentifier(checker: TypeChecker, node: Node | undefined): Symbol | undefined {
+      const sym: Symbol | undefined =
+        (node && isIdentifier(node)) ?
+          NodeUtils.findSymbolOfIdentifier(checker, node, nodeSymbolMap) :
+          checker.getSymbolAtLocation(node);
+
+      if (sym) {
+        nodeSymbolMap.set(node, sym);
+      }
+      return sym;
     }
   }
   

@@ -15,8 +15,6 @@
 
 #include "es2panda.h"
 
-#include <iostream>
-
 #include "utils/timers.h"
 
 #include <compiler/core/compileQueue.h>
@@ -24,11 +22,8 @@
 #include <compiler/core/compilerImpl.h>
 #include <compiler/core/emitter/emitter.h>
 #include <parser/parserImpl.h>
-#include <parser/program/program.h>
 #include <parser/transformer/transformer.h>
 #include <typescript/checker.h>
-#include <util/commonUtil.h>
-#include <util/helpers.h>
 
 namespace panda::es2panda {
 // Compiler
@@ -112,6 +107,9 @@ void Compiler::CompileAbcFileInParallel(SourceFile *src, const CompilerOptions &
     }
     if (options.compileContextInfo.needModifyRecord) {
         abcToAsmCompiler_->SetBundleName(options.compileContextInfo.bundleName);
+    }
+    if (!options.modifiedPkgName.empty()) {
+        abcToAsmCompiler_->SetModifyPkgName(options.modifiedPkgName);
     }
 
     auto *compileAbcClassQueue = new compiler::CompileAbcClassQueue(options.abcClassThreadCount,
@@ -289,9 +287,10 @@ panda::pandasm::Program *Compiler::CompileFile(const CompilerOptions &options, S
             return nullptr;
         }
 
-        std::cerr << err.TypeString() << ": " << err.Message();
-        std::cerr << " [" << util::Helpers::BaseName(src->fileName) << ":"
-                  << err.Line() << ":" << err.Col() << "]" << std::endl;
+        std::stringstream ss;
+        ss << err.TypeString() << ": " << err.Message() << " [" << util::Helpers::BaseName(src->fileName) << ":" <<
+              err.Line() << ":" << err.Col() << "]";
+        std::cerr << ss.str() << std::endl;
         err.SetReported(true);
 
         throw err;

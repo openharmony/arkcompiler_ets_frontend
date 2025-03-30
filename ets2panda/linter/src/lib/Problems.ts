@@ -127,7 +127,6 @@ export enum FaultID {
   SendableFunctionProperty,
   SendableFunctionAsExpr,
   SendableDecoratorLimited,
-  SendableClosureExport,
   SharedModuleExportsWarning,
   SendableBetaCompatible,
   ObjectLiteralProperty,

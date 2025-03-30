@@ -1,14 +1,14 @@
 export class h {
-    j: string = "";
-    k: number = 1;
-    l() {
+    k: string = "";
+    l: number = 1;
+    m() {
         const j = 2;
-        return this.j + this.k;
+        return this.k + this.l;
     }
 }
 export function g() {
 }
 export interface i {
-    m: string;
-    o: number;
+    o: string;
+    p: number;
 }

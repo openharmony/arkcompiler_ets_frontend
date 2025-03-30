@@ -15,13 +15,9 @@
 
 #include "lexenv.h"
 
-#include <binder/variable.h>
-#include <compiler/core/compilerContext.h>
-#include <compiler/core/envScope.h>
 #include <compiler/core/pandagen.h>
 #include <ir/base/classDefinition.h>
 #include <ir/base/scriptFunction.h>
-#include <ir/expressions/identifier.h>
 
 namespace panda::es2panda::compiler {
 

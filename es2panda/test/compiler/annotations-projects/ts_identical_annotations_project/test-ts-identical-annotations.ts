@@ -17,5 +17,5 @@
     b: boolean = true
 }
 
-@#Anno()
+@__$$ETS_ANNOTATION$$__Anno()
 class A {}

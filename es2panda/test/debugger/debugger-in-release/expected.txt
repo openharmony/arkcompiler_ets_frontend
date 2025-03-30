@@ -11,9 +11,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#A(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -25,12 +24,12 @@ label_0:
 	throw.undefinedifholewithname b
 	ldai 0xc8
 	stlexvar 0x0, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -38,7 +37,6 @@ label_0:
 	definefunc 0x0, .#*#A, 0x0
 	ldai 0x0
 	stlexvar 0x0, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }

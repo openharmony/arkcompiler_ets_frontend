@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 export default class g {
-    h: string = '';
+    i: string = '';
     constructor(h) {
-        this.h = h;
+        this.i = h;
     }
 }

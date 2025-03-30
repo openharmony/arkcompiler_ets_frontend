@@ -18,13 +18,11 @@
 #include <compiler/base/lreference.h>
 #include <compiler/core/pandagen.h>
 #include <ir/astDump.h>
-#include <ir/expression.h>
 #include <ir/typeNode.h>
 #include <ir/statements/variableDeclaration.h>
 #include <ir/expressions/arrayExpression.h>
 #include <ir/expressions/identifier.h>
 #include <ir/expressions/objectExpression.h>
-#include <typescript/checker.h>
 #include <typescript/core/destructuringContext.h>
 
 namespace panda::es2panda::ir {

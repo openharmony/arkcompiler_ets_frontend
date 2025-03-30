@@ -1,6 +1,5 @@
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=#A(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -10,6 +9,7 @@ label_2:
 }
 
 slotNum = 0x80
+.language ECMAScript
 .function any .#~A>#foo(any a0, any a1, any a2) {
 label_127: 
 label_0: 
@@ -269,12 +269,12 @@ label_0:
 	callruntime.isfalse 0x7e
 	ldfalse
 	callruntime.isfalse 0x7f
-	ldundefined
 	returnundefined
 label_128: 
 }
 
 slotNum = 0x4
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -285,7 +285,6 @@ label_0:
 	ldobjbyname 0x1, prototype
 	lda v0
 	sttoglobalrecord 0x3, A
-	ldundefined
 	returnundefined
 label_2: 
 }

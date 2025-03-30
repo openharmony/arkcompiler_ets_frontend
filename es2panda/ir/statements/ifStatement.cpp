@@ -19,7 +19,6 @@
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/statements/blockStatement.h"
-#include "ir/expression.h"
 #include "typescript/checker.h"
 
 namespace panda::es2panda::ir {

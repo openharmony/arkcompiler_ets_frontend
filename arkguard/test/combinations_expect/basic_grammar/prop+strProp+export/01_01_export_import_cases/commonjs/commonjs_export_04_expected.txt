@@ -14,7 +14,7 @@
  */
 // 指定导出
 class classExport1 {
-    v = 1;
+    a1 = 1;
 }
-exports.a1 = classExport1;
-exports.b1 = (b) => { return 3 * b * 2; };
+exports.b1 = classExport1;
+exports.c1 = (v) => { return 3 * v * 2; };

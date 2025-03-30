@@ -1,6 +1,5 @@
-.language ECMAScript
-
 slotNum = 0x5
+.language ECMAScript
 .function any .#*#foo(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
@@ -13,12 +12,12 @@ label_0:
 	throw.undefinedifholewithname x
 	lda v0
 	callarg1 0x3, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x4
+.language ECMAScript
 .function any .#*#foo3(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -30,12 +29,12 @@ label_0:
 	throw.undefinedifholewithname x
 	lda v0
 	callarg1 0x2, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x4
+.language ECMAScript
 .function any .#*#foo4(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -47,12 +46,12 @@ label_0:
 	throw.undefinedifholewithname x
 	lda v0
 	callarg1 0x2, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x4
+.language ECMAScript
 .function any .#*@0*#ttt(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -64,12 +63,12 @@ label_0:
 	throw.undefinedifholewithname x
 	lda v0
 	callarg1 0x2, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x3
+.language ECMAScript
 .function any .#*@0*#ttt2(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -80,12 +79,12 @@ label_0:
 	throw.undefinedifholewithname x
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x3
+.language ECMAScript
 .function any .#*@0*@1*#sss(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -96,12 +95,12 @@ label_0:
 	throw.undefinedifholewithname x
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x3
+.language ECMAScript
 .function any .#*@2*#xxx(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -112,12 +111,12 @@ label_0:
 	throw.undefinedifholewithname x
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x3
+.language ECMAScript
 .function any .#*@4*#xxx(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -128,12 +127,12 @@ label_0:
 	throw.undefinedifholewithname x
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=#A(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -143,16 +142,17 @@ label_2:
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any .#~A>#fooA(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	definefunc 0x0, .#~A>@3*#t, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x3
+.language ECMAScript
 .function any .#~A>@3*#t(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -163,12 +163,12 @@ label_0:
 	throw.undefinedifholewithname x
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x4
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -178,7 +178,6 @@ label_0:
 	ldhole
 	sta v0
 	callruntime.definesendableclass 0x3, .#~A=#A, _3, 0x0, v0
-	ldundefined
 	returnundefined
 label_2: 
 }

@@ -1,6 +1,5 @@
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any &myapp/test-export-default-const&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -8,52 +7,46 @@ label_0:
 	stmodulevar 0x0
 	ldai 0x64
 	stmodulevar 0x1
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any &myapp/test-export-default-let&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldai 0x1
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any &myapp/test-export-default-value&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldai 0x1
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any &myapp/test-export-syntax&.#*#f1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any &myapp/test-export-syntax&.#~C1=#C1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -63,6 +56,7 @@ label_2:
 }
 
 slotNum = 0x9
+.language ECMAScript
 .function any &myapp/test-export-syntax&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -98,15 +92,13 @@ label_0:
 	stmodulevar 0x9
 	ldai 0x8
 	stmodulevar 0xa
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 
-.language ECMAScript
-
 slotNum = 0x2f
+.language ECMAScript
 .function any &myapp/test-import-syntax-exec&.func_main_0(any a0, any a1, any a2) {
 label_29: 
 label_0: 
@@ -234,15 +226,13 @@ label_28:
 	lda v0
 	callarg1 0x2d, v1
 label_27: 
-	ldundefined
 	returnundefined
 label_30: 
 }
 
 
-.language ECMAScript
-
 slotNum = 0x13
+.language ECMAScript
 .function any &myapp/test-local-export&.#*#foo(any a0, any a1, any a2) {
 label_10: 
 label_1: 
@@ -268,12 +258,12 @@ label_3:
 	lda v0
 	callarg1 0x9, v1
 label_8: 
-	ldundefined
 	returnundefined
 label_11: 
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any &myapp/test-local-export&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -286,15 +276,13 @@ label_0:
 	stmodulevar 0x2
 	ldai 0x4
 	stmodulevar 0x3
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 
-.language ECMAScript
-
 slotNum = 0x4
+.language ECMAScript
 .function any test-ts-namespace-exports.#&#ns(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
@@ -302,12 +290,12 @@ label_0:
 	stobjbyname 0x0, a, a3
 	ldai 0x2
 	stobjbyname 0x2, b, a3
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x14
+.language ECMAScript
 .function any test-ts-namespace-exports.#*#foo(any a0, any a1, any a2) {
 label_9: 
 label_0: 
@@ -339,12 +327,12 @@ label_4:
 	lda v0
 	callarg1 0xa, v1
 label_7: 
-	ldundefined
 	returnundefined
 label_10: 
 }
 
 slotNum = 0x5
+.language ECMAScript
 .function any test-ts-namespace-exports.func_main_0(any a0, any a1, any a2) {
 label_4: 
 label_0: 
@@ -369,7 +357,6 @@ label_3:
 	stmodulevar 0x0
 	ldai 0x2
 	stmodulevar 0x1
-	ldundefined
 	returnundefined
 label_5: 
 }

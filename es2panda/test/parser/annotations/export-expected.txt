@@ -435,15 +435,15 @@
                   "type": "CallExpression",
                   "callee": {
                     "type": "Identifier",
-                    "name": "Anno1",
+                    "name": "__$$ETS_ANNOTATION$$__Anno1",
                     "loc": {
                       "start": {
                         "line": 22,
-                        "column": 3
+                        "column": 2
                       },
                       "end": {
                         "line": 22,
-                        "column": 8
+                        "column": 29
                       }
                     }
                   },
@@ -452,11 +452,11 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 3
+                      "column": 2
                     },
                     "end": {
                       "line": 22,
-                      "column": 10
+                      "column": 31
                     }
                   }
                 },
@@ -469,7 +469,7 @@
                   },
                   "end": {
                     "line": 22,
-                    "column": 10
+                    "column": 31
                   }
                 }
               }
@@ -619,15 +619,15 @@
                   "type": "CallExpression",
                   "callee": {
                     "type": "Identifier",
-                    "name": "Anno1",
+                    "name": "__$$ETS_ANNOTATION$$__Anno1",
                     "loc": {
                       "start": {
                         "line": 25,
-                        "column": 3
+                        "column": 2
                       },
                       "end": {
                         "line": 25,
-                        "column": 8
+                        "column": 29
                       }
                     }
                   },
@@ -636,11 +636,11 @@
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 3
+                      "column": 2
                     },
                     "end": {
                       "line": 25,
-                      "column": 10
+                      "column": 31
                     }
                   }
                 },
@@ -653,7 +653,7 @@
                   },
                   "end": {
                     "line": 25,
-                    "column": 10
+                    "column": 31
                   }
                 }
               }

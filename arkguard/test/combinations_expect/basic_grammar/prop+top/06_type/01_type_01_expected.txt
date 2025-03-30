@@ -61,7 +61,7 @@ assert(q[0] === 1);
 assert(q[1] === 2);
 interface u {
     name: string;
-    g3: number;
+    l3: number;
 }
 type v = keyof u;
 let b: v = "name";
@@ -81,17 +81,17 @@ assert(c1[0] === "1");
 assert(c1[1] === 2);
 type d1 = {
     description: string;
-    h3(para1: number): boolean;
+    m3(para1: number): boolean;
     (para2: number): number;
 };
 const e1: d1 = (i3: number) => i3;
 e1.description = "test";
-e1.h3 = (h3: number) => {
+e1.m3 = (h3: number) => {
     return h3 > 0 ? true : false;
 };
 assert(e1(100) === 100);
 assert(e1.description === "test");
-assert(e1.h3(-100) === false);
+assert(e1.m3(-100) === false);
 type f1 = (para5: number) => number;
 const g1: f1 = (g3: number) => g3;
 assert(g1(200) === 200);
@@ -123,9 +123,9 @@ assert(t1 === "test");
 let u1: h1[keyof T5["X1"]] = 6;
 assert(u1 === 6);
 const v1 = [
-    { i3: "Alice", m1: 15 },
-    { i3: "Bob", m1: 23 },
-    { i3: "Eve", m1: 38 },
+    { n3: "Alice", m1: 15 },
+    { n3: "Bob", m1: 23 },
+    { n3: "Eve", m1: 38 },
 ];
 type w1 = (typeof v1)[1]["m1"];
 let z1: w1 = 7;
@@ -160,11 +160,11 @@ let q2: i2["1234"] = "6";
 assert(q2 === "6");
 // Define properties in type individually
 type s2 = {
-    j3: number;
-    l3: number;
+    o3: number;
+    q3: number;
     "3214": number;
-    m3: number;
-    ["n3"]: number;
+    r3: number;
+    ["s3"]: number;
     ["2314"]: number;
 };
 // Define properties in type and access them using indexedAccessType

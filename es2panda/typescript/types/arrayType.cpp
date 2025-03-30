@@ -15,7 +15,6 @@
 
 #include "arrayType.h"
 
-#include <binder/variable.h>
 #include <typescript/types/objectType.h>
 
 namespace panda::es2panda::checker {

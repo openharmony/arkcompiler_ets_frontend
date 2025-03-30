@@ -15,13 +15,10 @@
 
 #include "updateExpression.h"
 
-#include <binder/variable.h>
 #include <compiler/base/lreference.h>
 #include <compiler/core/pandagen.h>
-#include <compiler/core/regScope.h>
 #include <typescript/checker.h>
 #include <ir/astDump.h>
-#include <ir/expressions/unaryExpression.h>
 
 namespace panda::es2panda::ir {
 

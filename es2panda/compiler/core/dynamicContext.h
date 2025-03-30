@@ -114,11 +114,21 @@ public:
 
     bool HasTryCatch() const override;
     void AbortContext([[maybe_unused]] ControlFlowChange cfc,
-                      [[maybe_unused]] const util::StringView &targetLabel) override;
+                      const util::StringView &targetLabel) override;
+    void SetTryEndLabel(const ir::AstNode *node);
+    void SetTryEndFlag(bool flag)
+    {
+        tryEndFlag = flag;
+    }
 
+    bool GetTryEndFlag() const
+    {
+        return tryEndFlag;
+    }
 private:
     VariableEnvScope *envScope_;
     CatchTable *catchTable_ {};
+    bool tryEndFlag {false};
 };
 
 class IteratorContext : public DynamicContext {

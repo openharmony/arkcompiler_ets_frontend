@@ -1,0 +1,30 @@
+{
+  "projectKeepInfo": {
+    "propertyNames": [
+      "test2",
+      "test4",
+      "test01",
+      "test5",
+      "test8",
+      "test02",
+      "test6",
+      "test9"
+    ],
+    "globalNames": [
+      "test1",
+      "test3",
+      "test7",
+      "test33",
+      "test32"
+    ]
+  },
+  "projectReservedInfo": {
+    "enumProperties": [
+      "test10"
+    ],
+    "propertyParams": [
+      "test11",
+      "test31"
+    ]
+  }
+}

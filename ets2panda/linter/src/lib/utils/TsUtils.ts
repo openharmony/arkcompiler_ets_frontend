@@ -17,7 +17,7 @@ import * as path from 'node:path';
 import * as ts from 'typescript';
 import type { IsEtsFileCallback } from '../IsEtsFileCallback';
 import { FaultID } from '../Problems';
-import { ARKTS_IGNORE_DIRS, ARKTS_IGNORE_FILES } from './consts/ArktsIgnorePaths';
+import { ARKTS_IGNORE_DIRS, ARKTS_IGNORE_DIRS_OH_MODULES, ARKTS_IGNORE_FILES } from './consts/ArktsIgnorePaths';
 import { ES_OBJECT } from './consts/ESObject';
 import { EXTENDED_BASE_TYPES } from './consts/ExtendedBaseTypes';
 import { SENDABLE_DECORATOR } from './consts/SendableAPI';
@@ -31,6 +31,7 @@ import {
   LANG_NAMESPACE
 } from './consts/SupportedDetsIndexableTypes';
 import { TYPED_ARRAYS } from './consts/TypedArrays';
+import { TYPED_COLLECTIONS } from './consts/TypedCollections';
 import { forEachNodeInSubtree } from './functions/ForEachNodeInSubtree';
 import { getScriptKind } from './functions/GetScriptKind';
 import { isStdLibrarySymbol, isStdLibraryType } from './functions/IsStdLibrary';
@@ -40,6 +41,7 @@ import { srcFilePathContainsDirectory } from './functions/PathHelper';
 import { isAssignmentOperator } from './functions/isAssignmentOperator';
 import { isIntrinsicObjectType } from './functions/isIntrinsicObjectType';
 import type { LinterOptions } from '../LinterOptions';
+import { ETS } from './consts/TsSuffix';
 
 export const SYMBOL = 'Symbol';
 export const SYMBOL_CONSTRUCTOR = 'SymbolConstructor';
@@ -285,23 +287,31 @@ export class TsUtils {
     );
   }
 
-  isTypedArray(tsType: ts.Type): boolean {
+  isTypedArray(tsType: ts.Type, allowTypeArrays: string[]): boolean {
     const symbol = tsType.symbol;
     if (!symbol) {
       return false;
     }
     const name = this.tsTypeChecker.getFullyQualifiedName(symbol);
-    if (this.isGlobalSymbol(symbol) && TYPED_ARRAYS.includes(name)) {
+    if (this.isGlobalSymbol(symbol) && allowTypeArrays.includes(name)) {
       return true;
     }
     const decl = TsUtils.getDeclaration(symbol);
     return (
-      !!decl && TsUtils.isArkTSCollectionsClassOrInterfaceDeclaration(decl) && TYPED_ARRAYS.includes(symbol.getName())
+      !!decl &&
+      TsUtils.isArkTSCollectionsClassOrInterfaceDeclaration(decl) &&
+      allowTypeArrays.includes(symbol.getName())
     );
   }
 
   isArray(tsType: ts.Type): boolean {
-    return this.isGenericArrayType(tsType) || this.isReadonlyArrayType(tsType) || this.isTypedArray(tsType);
+    return (
+      this.isGenericArrayType(tsType) || this.isReadonlyArrayType(tsType) || this.isTypedArray(tsType, TYPED_ARRAYS)
+    );
+  }
+
+  isCollectionArrayType(tsType: ts.Type): boolean {
+    return this.isTypedArray(tsType, TYPED_COLLECTIONS);
   }
 
   isIndexableArray(tsType: ts.Type): boolean {
@@ -310,7 +320,8 @@ export class TsUtils {
       this.isReadonlyArrayType(tsType) ||
       TsUtils.isConcatArrayType(tsType) ||
       TsUtils.isArrayLikeType(tsType) ||
-      this.isTypedArray(tsType)
+      this.isTypedArray(tsType, TYPED_ARRAYS) ||
+      this.isTypedArray(tsType, TYPED_COLLECTIONS)
     );
   }
 
@@ -1611,6 +1622,15 @@ export class TsUtils {
       return !isStatic && !isStdLib;
     }
     return false;
+  }
+
+  static isOhModulesEtsSymbol(sym: ts.Symbol | undefined): boolean {
+    const sourceFile = sym?.declarations?.[0]?.getSourceFile();
+    return (
+      !!sourceFile &&
+      path.extname(sourceFile.fileName).toLowerCase() === ETS &&
+      srcFilePathContainsDirectory(sourceFile, ARKTS_IGNORE_DIRS_OH_MODULES)
+    );
   }
 
   isDynamicType(type: ts.Type | undefined): boolean | undefined {

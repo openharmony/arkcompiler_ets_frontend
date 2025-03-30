@@ -16,10 +16,10 @@ import b from 'assert';
 type A1 = string;
 type B = number;
 declare namespace NS1 {
-    export { x, y };
+    export { NS2, A1 };
 }
 declare namespace NS2 {
-    export { v, w };
+    export { NS1, B };
 }
 export {};
 declare const c: NS1.A1;

@@ -76,6 +76,7 @@ import type {
 
 import { ApiExtractor } from '../common/ApiExtractor';
 import { UnobfuscationCollections } from './CommonCollections';
+import { addToSet, FileWhiteList, projectWhiteListManager } from './ProjectCollections';
 import { NodeUtils } from './NodeUtils';
 
 export const stringPropsSet: Set<string> = new Set();
@@ -141,7 +142,22 @@ export function isViewPUBasedClass(classNode: ClassDeclaration | undefined): boo
   return containViewPU(heritageClause);
 }
 
+// Collect properties of ViewPU class as reserved names
+export function collectReservedStruct(memberName: PropertyName, reservedStruct: Set<string>): void {
+  const structPropertiesTemp: Set<string> | undefined = projectWhiteListManager?.fileWhiteListInfo?.fileKeepInfo.structProperties;
+  if (isIdentifier(memberName) || isStringLiteral(memberName)) {
+    reservedStruct.add(memberName.text);
+    structPropertiesTemp?.add(memberName.text);
+  }
+
+  if (isComputedPropertyName(memberName) && isStringLiteral(memberName.expression)) {
+    reservedStruct.add(memberName.expression.text);
+    structPropertiesTemp?.add(memberName.expression.text);
+  }
+}
+
 export function collectPropertyNamesAndStrings(memberName: PropertyName, propertySet: Set<string>): void {
+  const stringPropertiesTemp: Set<string> | undefined = projectWhiteListManager?.fileWhiteListInfo?.fileKeepInfo.stringProperties;
   if (isIdentifier(memberName)) {
     propertySet.add(memberName.text);
   }
@@ -149,11 +165,13 @@ export function collectPropertyNamesAndStrings(memberName: PropertyName, propert
   if (isStringLiteral(memberName)) {
     propertySet.add(memberName.text);
     stringPropsSet.add(memberName.text);
+    stringPropertiesTemp?.add(memberName.text);
   }
 
   if (isComputedPropertyName(memberName) && isStringLiteral(memberName.expression)) {
     propertySet.add(memberName.expression.text);
     stringPropsSet.add(memberName.expression.text);
+    stringPropertiesTemp?.add(memberName.expression.text);
   }
 }
 
@@ -164,6 +182,7 @@ export function getElementAccessExpressionProperties(elementAccessExpressionNode
 
   if (isStringLiteral(elementAccessExpressionNode.argumentExpression)) {
     stringPropsSet.add(elementAccessExpressionNode.argumentExpression.text);
+    projectWhiteListManager?.fileWhiteListInfo?.fileKeepInfo.stringProperties.add(elementAccessExpressionNode.argumentExpression.text);
   }
 }
 
@@ -172,6 +191,7 @@ function addStringLiteralToSet(node: Node, stringSet: Set<string>): void {
     const indexType = node as LiteralTypeNode;
     const stringLiteral = indexType.literal as StringLiteral;
     stringSet.add(stringLiteral.text);
+    projectWhiteListManager?.fileWhiteListInfo?.fileKeepInfo.stringProperties.add(stringLiteral.text);
   }
 }
 
@@ -274,7 +294,8 @@ function traverseMembersOfClass(classNode: ClassDeclaration | ClassExpression | 
             let hasParameterPropertyModifier = modifiers.find(modifier => isParameterPropertyModifier(modifier)) !== undefined;
             if (hasParameterPropertyModifier) {
               propertySet.add(parameter.name.text);
-              ApiExtractor.mConstructorPropertySet?.add(parameter.name.text);
+              ApiExtractor.mConstructorPropertySet.add(parameter.name.text);
+              projectWhiteListManager?.fileWhiteListInfo?.fileReservedInfo.propertyParams.add(parameter.name.text);
             }
           }
           processMemberInitializer(parameter.initializer, propertySet);
@@ -376,12 +397,18 @@ export function getObjectProperties(objNode: ObjectLiteralExpression, propertySe
 }
 
 export function getStructProperties(structNode: StructDeclaration, propertySet: Set<string>): void {
+  const fileWhiteLists: FileWhiteList | undefined = projectWhiteListManager?.fileWhiteListInfo;
   structNode?.members?.forEach((member) => {
     const memberName: PropertyName = member?.name;
     if (!memberName) {
       return;
     }
-    collectPropertyNamesAndStrings(memberName, propertySet);
+    if (fileWhiteLists) {
+      collectPropertyNamesAndStrings(memberName, fileWhiteLists.fileKeepInfo.structProperties);
+      addToSet(propertySet, fileWhiteLists.fileKeepInfo.structProperties);
+    } else {
+      collectPropertyNamesAndStrings(memberName, propertySet);
+    }
   });
 }
 
@@ -479,6 +506,7 @@ export function visitEnumInitializer(childNode: Node): void {
   }
 
   UnobfuscationCollections.reservedEnum.add(childNode.text);
+  projectWhiteListManager?.fileWhiteListInfo?.fileKeepInfo.enumProperties.add(childNode.text);
 }
 
 /**
@@ -494,6 +522,6 @@ export function getViewPUClassProperties(classNode: ClassDeclaration | ClassExpr
     if (!memberName) {
       return;
     }
-    collectPropertyNamesAndStrings(memberName, UnobfuscationCollections.reservedStruct);
+    collectReservedStruct(memberName, UnobfuscationCollections.reservedStruct);
   });
 }

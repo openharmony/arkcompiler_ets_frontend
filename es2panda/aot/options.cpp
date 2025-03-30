@@ -15,32 +15,18 @@
 
 #include "options.h"
 
-#include <fstream>
-#include <set>
-#include <sstream>
-#include <utility>
-
-#if defined(PANDA_TARGET_WINDOWS)
-#include <io.h>
-#else
-#include <dirent.h>
-#endif
-
 #include "bytecode_optimizer/bytecodeopt_options.h"
 #include "compiler_options.h"
-#include "os/file.h"
-#include "utils/pandargs.h"
 #include "utils/timers.h"
 
 #include "mergeProgram.h"
-#include "util/helpers.h"
 
 namespace panda::es2panda::aot {
 constexpr char PROCESS_AS_LIST_MARK = '@';
-// item list: [filePath; recordName; moduleKind; sourceFile; pkgName; isSharedModule]
-constexpr size_t ITEM_COUNT_MERGE = 6;
-// item list: [filePath; recordName; moduleKind; sourceFile; outputfile; isSharedModule]
-constexpr size_t ITEM_COUNT_NOT_MERGE = 6;
+// item list: [filePath; recordName; moduleKind; sourceFile; pkgName; isSharedModule; sourceLang]
+constexpr size_t ITEM_COUNT_MERGE = 7;
+// item list: [filePath; recordName; moduleKind; sourceFile; outputfile; isSharedModule; sourceLang]
+constexpr size_t ITEM_COUNT_NOT_MERGE = 7;
 const std::string LIST_ITEM_SEPERATOR = ";";
 const std::set<std::string> VALID_EXTENSIONS = { "js", "ts", "as", "abc" };
 
@@ -122,7 +108,8 @@ void Options::CollectInputSourceFile(const std::vector<std::string> &itemList, c
     constexpr uint32_t SCRIPT_KIND_IDX = 2;
     constexpr uint32_t SOURCE_FIEL_IDX = 3;
     constexpr uint32_t PKG_NAME_IDX = 4;
-    constexpr uint32_t Is_SHARED_MODULE_IDX = 5;
+    constexpr uint32_t IS_SHARED_MODULE_IDX = 5;
+    constexpr uint32_t ORIGIN_SOURCE_LANG_IDX = 6;
     parser::ScriptKind scriptKind;
     if (itemList[SCRIPT_KIND_IDX] == "script") {
         scriptKind = parser::ScriptKind::SCRIPT;
@@ -138,8 +125,12 @@ void Options::CollectInputSourceFile(const std::vector<std::string> &itemList, c
         src.pkgName = itemList[PKG_NAME_IDX];
     }
 
-    if (itemList.size() == ITEM_COUNT_MERGE) {
-        src.isSharedModule = itemList[Is_SHARED_MODULE_IDX] == "true";
+    if (itemList.size() > IS_SHARED_MODULE_IDX) {
+        src.isSharedModule = itemList[IS_SHARED_MODULE_IDX] == "true";
+    }
+
+    if (itemList.size() > ORIGIN_SOURCE_LANG_IDX) {
+        src.sourceLang = itemList[ORIGIN_SOURCE_LANG_IDX];
     }
 
     sourceFiles_.push_back(src);
@@ -243,13 +234,13 @@ void Options::ParseUpdateVersionInfo(nlohmann::json &compileContextInfoJson)
 {
     if (compileContextInfoJson.contains("updateVersionInfo") &&
         compileContextInfoJson["updateVersionInfo"].is_object()) {
-        std::unordered_map<std::string, std::unordered_map<std::string, PkgInfo>> updateVersionInfo {};
+        std::unordered_map<std::string, std::map<std::string, PkgInfo>> updateVersionInfo {};
         for (const auto& [abcName, versionInfo] : compileContextInfoJson["updateVersionInfo"].items()) {
             if (!versionInfo.is_object()) {
                 std::cerr << "The input file '" << compilerOptions_.compileContextInfoPath
                           << "' is incomplete format of json" << std::endl;
             }
-            std::unordered_map<std::string, PkgInfo> pkgContextMap {};
+            std::map<std::string, PkgInfo> pkgContextMap {};
             for (const auto& [pkgName, version] : versionInfo.items()) {
                 PkgInfo pkgInfo;
                 pkgInfo.version = version;
@@ -261,7 +252,7 @@ void Options::ParseUpdateVersionInfo(nlohmann::json &compileContextInfoJson)
         compilerOptions_.compileContextInfo.updateVersionInfo = updateVersionInfo;
     } else if (compileContextInfoJson.contains("pkgContextInfo") &&
                compileContextInfoJson["pkgContextInfo"].is_object()) {
-        std::unordered_map<std::string, PkgInfo> pkgContextMap {};
+        std::map<std::string, PkgInfo> pkgContextMap {};
         for (const auto& [pkgName, pkgContextInfo] : compileContextInfoJson["pkgContextInfo"].items()) {
             PkgInfo pkgInfo;
             if (pkgContextInfo.contains("version") && pkgContextInfo["version"].is_string()) {
@@ -429,8 +420,8 @@ bool Options::Parse(int argc, const char **argv)
         "bc-min-version are enabled, only bc-version will take effects");
     panda::PandArg<bool> bcMinVersion("bc-min-version", false, "Print ark bytecode minimum supported version");
     // todo(huyunhui): change default api verion to 0 after refactoring
-    // Current api version is 14
-    panda::PandArg<int> targetApiVersion("target-api-version", 14,
+    // Current api version is 18
+    panda::PandArg<int> targetApiVersion("target-api-version", 18,
         "Specify the targeting api version for es2abc to generated the corresponding version of bytecode");
     panda::PandArg<bool> targetBcVersion("target-bc-version", false, "Print the corresponding ark bytecode version"\
         "for target api version. If both target-bc-version and bc-version are enabled, only target-bc-version"\
@@ -449,6 +440,12 @@ bool Options::Parse(int argc, const char **argv)
         " from abc file and remove redundant source file, which is effective when the compile-context-info switch"\
         "  is turned on and there is abc input");
     panda::PandArg<bool> opDumpString("dump-string", false, "Dump program strings");
+    panda::PandArg<std::string> srcPkgName("src-package-name", "", "This is for modify pacakge name in input abc"\
+        " file and should aways be used with dstPkgName. srcPkgName is for finding the targeting package name to be"\
+        " modified.");
+    panda::PandArg<std::string> dstPkgName("dst-package-name", "", "This is for modify pacakge name in input abc"\
+        " file, and should always be used with srcPkgName. dstPkgName what targeting package name will be"\
+        " modified to.");
 
     // aop transform
     panda::PandArg<std::string> transformLib("transform-lib", "", "aop transform lib file path");
@@ -518,6 +515,9 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opDumpString);
 
     argparser_->Add(&transformLib);
+
+    argparser_->Add(&srcPkgName);
+    argparser_->Add(&dstPkgName);
 
     argparser_->PushBackTail(&inputFile);
     argparser_->EnableTail();
@@ -722,6 +722,10 @@ bool Options::Parse(int argc, const char **argv)
 
     compilerOptions_.patchFixOptions.dumpSymbolTable = opDumpSymbolTable.GetValue();
     compilerOptions_.patchFixOptions.symbolTable = opInputSymbolTable.GetValue();
+
+    if (!srcPkgName.GetValue().empty() && !dstPkgName.GetValue().empty()) {
+        compilerOptions_.modifiedPkgName = srcPkgName.GetValue() + util::COLON_SEPARATOR + dstPkgName.GetValue();
+    }
 
     bool generatePatch = opGeneratePatch.GetValue();
     bool hotReload = opHotReload.GetValue();

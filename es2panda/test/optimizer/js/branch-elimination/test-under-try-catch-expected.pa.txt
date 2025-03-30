@@ -1,6 +1,5 @@
-.language ECMAScript
-
 slotNum = 0x14
+.language ECMAScript
 .function any .#*#testUnderTryCatch(any a0, any a1, any a2) {
 	nop
 label_15: 
@@ -73,7 +72,6 @@ label_7:
 	lda v0
 	callarg1 0x12, v1
 label_9: 
-	ldundefined
 	returnundefined
 label_16: 
 }
@@ -81,12 +79,12 @@ label_16:
 .catchall label_10, end_label_11, label_17
 
 slotNum = 0x3
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	definefunc 0x0, .#*#testUnderTryCatch, 0x0
 	callarg0 0x1
-	ldundefined
 	returnundefined
 label_2: 
 }

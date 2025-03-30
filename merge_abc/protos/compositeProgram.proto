@@ -22,3 +22,13 @@ message ProgramCache {
     uint32 hashCode = 1;
     Program program = 2;
 }
+
+message AbcProtoProgramsCache {
+    message AbcProtoProgramCache {
+        string name = 1;
+        Program program = 2;
+    }
+
+    uint32 hashCode = 1;
+    repeated AbcProtoProgramCache abcProtoProgramsMap = 2;
+}

@@ -14,27 +14,27 @@
  */
 import assert from "assert";
 abstract class abstractC1 {
-    abstract e1(): number;
-    f1(): string {
+    abstract h1(): number;
+    i1(): string {
         return '22';
     }
 }
 class C8 extends abstractC1 {
-    e1(): number {
+    h1(): number {
         return 11;
     }
 }
 let insC8 = new C8();
-assert(insC8.e1() === 11, 'success');
-assert(insC8.f1() === '22', 'success');
+assert(insC8.h1() === 11, 'success');
+assert(insC8.i1() === '22', 'success');
 class C9 extends abstractC1 {
-    e1(): number {
+    h1(): number {
         return 111;
     }
-    f1(): string {
+    i1(): string {
         return '222';
     }
 }
 let insC9 = new C9();
-assert(insC9.e1() === 111, 'success');
-assert(insC9.f1() === '222', 'success');
+assert(insC9.h1() === 111, 'success');
+assert(insC9.i1() === '222', 'success');

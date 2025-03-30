@@ -63,49 +63,10 @@ export function collectExistNames(sourceFile: SourceFile): Set<string> {
 type IdentifiersAndStructs = {shadowIdentifiers: Identifier[], shadowStructs: StructDeclaration[]};
 
 /**
- * collect exist identifiers in current source file
- * @param sourceFile
- * @param context
- */
-export function collectIdentifiersAndStructs(sourceFile: SourceFile, context: TransformationContext): IdentifiersAndStructs {
-  const identifiers: Identifier[] = [];
-  const structs: StructDeclaration[] = [];
-
-  let visit = (node: Node): Node => {
-    if (isStructDeclaration(node)) {
-      structs.push(node);
-    }
-    // @ts-ignore
-    if (getOriginalNode(node).virtual) {
-      return node;
-    }
-    if (!isIdentifier(node) || !node.parent) {
-      return visitEachChild(node, visit, context);
-    }
-
-    identifiers.push(node);
-    return node;
-  };
-
-  visit(sourceFile);
-  return {shadowIdentifiers: identifiers, shadowStructs: structs};
-}
-
-export function isCommentedNode(node: Node, sourceFile: SourceFile): boolean {
-  const ranges: CommentRange[] = getLeadingCommentRangesOfNode(node, sourceFile);
-  return ranges !== undefined;
-}
-
-export function isSuperCallStatement(node: Node): boolean {
-  return isExpressionStatement(node) &&
-    isCallExpression(node.expression) &&
-    node.expression.expression.kind === SyntaxKind.SuperKeyword;
-}
-
-/**
  * separate wildcards from specific items.
  */
-export function separateUniversalReservedItem(originalArray: string[]): ReservedNameInfo {
+export function separateUniversalReservedItem(originalArray: string[] | undefined,
+  shouldPrintKeptName: boolean): ReservedNameInfo {
   if (!originalArray) {
     throw new Error('Unable to handle the empty array.');
   }
@@ -119,7 +80,7 @@ export function separateUniversalReservedItem(originalArray: string[]): Reserved
       const regexPattern = wildcardTransformer(reservedItem);
       const regexOperator = new RegExp(`^${regexPattern}$`);
       reservedInfo.universalReservedArray.push(regexOperator);
-      recordWildcardMapping(reservedItem, regexOperator);
+      recordWildcardMapping(reservedItem, regexOperator, shouldPrintKeptName);
     } else {
       reservedInfo.specificReservedArray.push(reservedItem);
     }
@@ -127,8 +88,9 @@ export function separateUniversalReservedItem(originalArray: string[]): Reserved
   return reservedInfo;
 }
 
-function recordWildcardMapping(originString: string, regExpression: RegExp): void {
-  if (UnobfuscationCollections.printKeptName) {
+function recordWildcardMapping(originString: string, regExpression: RegExp,
+  shouldPrintKeptName: boolean): void {
+  if (shouldPrintKeptName) {
     UnobfuscationCollections.reservedWildcardMap.set(regExpression, originString);
   }
 }
@@ -148,7 +110,7 @@ export function wildcardTransformer(wildcard: string, isPath?: boolean): string 
   // special characters: '\', '^', '$', '.', '+', '|', '[', ']', '{', '}', '(', ')'
   let escapedItem = wildcard.replace(/[\\+^${}()|\[\]\.]/g, '\\$&');
 
-  // isPath: containing '**', and '*', '?' can not be matched with '/'. 
+  // isPath: containing '**', and '*', '?' can not be matched with '/'.
   if (isPath) {
     // before: ../**/a/b/c*/?.ets
     // after: ../.*/a/b/c[^/]*/[^/].ets
@@ -190,22 +152,22 @@ export function handleReservedConfig(config: IOptions, optionName: string, reser
   }
   if (needSeparate) {
     // separate items which contain wildcards from others
-    const reservedInfo: ReservedNameInfo = separateUniversalReservedItem(reservedConfig[reservedListName]);
+    const reservedInfo: ReservedNameInfo =
+      separateUniversalReservedItem(reservedConfig[reservedListName], !!(config.mUnobfuscationOption?.mPrintKeptNames));
     reservedConfig[reservedListName] = reservedInfo.specificReservedArray;
     reservedConfig[universalLisName] = reservedInfo.universalReservedArray;
   }
 }
 
 export function isReservedLocalVariable(mangledName: string): boolean {
-  return LocalVariableCollections.reservedLangForLocal.has(mangledName) || 
+  return LocalVariableCollections.reservedLangForLocal.has(mangledName) ||
     LocalVariableCollections.reservedConfig?.has(mangledName) ||
-    LocalVariableCollections.reservedStruct?.has(mangledName) ||
-    UnobfuscationCollections.reservedSdkApiForProp?.has(mangledName) ||
+    UnobfuscationCollections.reservedSdkApiForLocal?.has(mangledName) ||
     UnobfuscationCollections.reservedExportName?.has(mangledName);
 }
 
-export function isReservedTopLevel(originalName: string): boolean {
-  if (PropCollections.enablePropertyObfuscation) {
+export function isReservedTopLevel(originalName: string, enablePropertyObf: boolean): boolean {
+  if (enablePropertyObf) {
     return isReservedProperty(originalName);
   }
 
@@ -241,8 +203,9 @@ export enum WhitelistType {
   ENUM = 'enum'
 }
 
-function needToRecordTopLevel(originalName: string, recordMap: Map<string, Set<string>>, nameWithScope: string): boolean {
-  if (PropCollections.enablePropertyObfuscation) {
+function needToRecordTopLevel(originalName: string, recordMap: Map<string, Set<string>>,
+  nameWithScope: string, enablePropertyObf: boolean): boolean {
+  if (enablePropertyObf) {
     return needToRecordProperty(originalName, recordMap, nameWithScope);
   }
 
@@ -292,11 +255,6 @@ function needToReservedLocal(originalName: string, recordMap: Map<string, Set<st
 
   if (LocalVariableCollections.reservedConfig?.has(originalName)) {
     recordReservedName(nameWithScope, WhitelistType.CONF, recordMap);
-    reservedFlag = true;
-  }
-
-  if (LocalVariableCollections.reservedStruct?.has(originalName)) {
-    recordReservedName(nameWithScope, WhitelistType.STRUCT, recordMap);
     reservedFlag = true;
   }
 
@@ -351,34 +309,34 @@ export function needToRecordProperty(originalName: string, recordMap?: Map<strin
   return reservedFlag;
 }
 
-export function isInTopLevelWhitelist(originalName: string, recordMap: Map<string, Set<string>>, nameWithScope: string): boolean {
-  if (UnobfuscationCollections.printKeptName) {
-    return needToRecordTopLevel(originalName, recordMap, nameWithScope);
+export function isInTopLevelWhitelist(originalName: string, recordMap: Map<string, Set<string>>,
+  nameWithScope: string, enablePropertyObf: boolean, shouldPrintKeptNames: boolean): boolean {
+  if (shouldPrintKeptNames) {
+    return needToRecordTopLevel(originalName, recordMap, nameWithScope, enablePropertyObf);
   }
 
-  return isReservedTopLevel(originalName);
+  return isReservedTopLevel(originalName, enablePropertyObf);
 }
 
-export function isInPropertyWhitelist(originalName: string, recordMap: Map<string, Set<string>>): boolean {
-  if (UnobfuscationCollections.printKeptName) {
+export function isInPropertyWhitelist(originalName: string, recordMap: Map<string, Set<string>>,
+  shouldPrintKeptNames: boolean): boolean {
+  if (shouldPrintKeptNames) {
     return needToRecordProperty(originalName, recordMap);
   }
 
   return isReservedProperty(originalName);
 }
 
-export function isInLocalWhitelist(originalName: string, recordMap: Map<string, Set<string>>, nameWithScope: string): boolean {
-  if (UnobfuscationCollections.printKeptName) {
+export function isInLocalWhitelist(originalName: string, recordMap: Map<string, Set<string>>,
+  nameWithScope: string, shouldPrintKeptNames: boolean): boolean {
+  if (shouldPrintKeptNames) {
     return needToReservedLocal(originalName, recordMap, nameWithScope);
   }
 
   return isReservedLocalVariable(originalName);
 }
 
-export function recordReservedName(originalName: string, type: string, recordObj?: Map<string, Set<string>>): void {
-  if (!UnobfuscationCollections.printKeptName || !recordObj) {
-    return;
-  }
+function recordReservedName(originalName: string, type: string, recordObj: Map<string, Set<string>>): void {
   if (!recordObj.has(originalName)) {
     recordObj.set(originalName, new Set());
   }

@@ -19,3 +19,15 @@ export function test() {
     print('bytecodehar1.file2.test');
     import("@normalized:N&&&sourcehar/sourcehar-file2&2.0.0")
 }
+
+class Example {
+    a: number;
+
+    constructor() {
+        this.a = 0;
+    }
+
+    setValue(value: number) {
+        this.a = value;
+    }
+}

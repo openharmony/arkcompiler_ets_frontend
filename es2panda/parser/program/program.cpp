@@ -15,7 +15,6 @@
 
 #include "program.h"
 
-#include <binder/binder.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::parser {
@@ -39,7 +38,7 @@ Program::Program(Program &&other)
       formatedRecordName_(other.formatedRecordName_),
       kind_(other.kind_),
       extension_(other.extension_),
-      lineIndex_(other.lineIndex_),
+      lineIndex_(std::move(other.lineIndex_)),
       moduleRecord_(other.moduleRecord_),
       typeModuleRecord_(other.typeModuleRecord_),
       patchFixHelper_(other.patchFixHelper_),
@@ -50,7 +49,8 @@ Program::Program(Program &&other)
       useDefineSemantic_(other.useDefineSemantic_),
       isShared_(other.isShared_),
       targetApiSubVersion_(other.targetApiSubVersion_),
-      moduleRecordFieldName_(other.moduleRecordFieldName_)
+      moduleRecordFieldName_(other.moduleRecordFieldName_),
+      sourceLang_(other.sourceLang_)
 {
     other.binder_ = nullptr;
     other.ast_ = nullptr;
@@ -80,6 +80,7 @@ Program &Program::operator=(Program &&other)
     isShared_ = other.isShared_;
     targetApiSubVersion_ = other.targetApiSubVersion_;
     moduleRecordFieldName_ = other.moduleRecordFieldName_;
+    sourceLang_ = other.sourceLang_;
 
     other.ast_ = nullptr;
     other.binder_ = nullptr;

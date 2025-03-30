@@ -14,4 +14,4 @@
  */
 import assert from 'assert';
 export * from './export_basic1';
-export * as g1 from './export_basic1';
+export * as j1 from './export_basic1';

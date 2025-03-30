@@ -1,6 +1,6 @@
-.language ECMAScript
-
 slotNum = 0x2
+expectedProperty = 0x1
+.language ECMAScript
 .function any .A(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -12,6 +12,7 @@ label_2:
 }
 
 slotNum = 0xc
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 	nop
 label_7: 
@@ -62,7 +63,6 @@ label_1:
 	sta v0
 	lda v1
 	callarg1 0xa, v0
-	ldundefined
 	returnundefined
 label_8: 
 }
@@ -70,6 +70,7 @@ label_8:
 .catchall label_2, end_label_3, label_9
 
 slotNum = 0x2
+.language ECMAScript
 .function any .instance_initializer(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -80,7 +81,6 @@ label_0:
 	throw.undefinedifholewithname a
 	lda v1
 	callruntime.definefieldbyvalue 0x0, v0, a2
-	ldundefined
 	returnundefined
 label_2: 
 }

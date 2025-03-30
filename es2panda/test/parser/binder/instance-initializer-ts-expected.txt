@@ -1,6 +1,6 @@
-.language ECMAScript
-
 slotNum = 0x5
+expectedProperty = 0x2
+.language ECMAScript
 .function any .#~A=#A(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -23,24 +23,25 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A*#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A>#instance_initializer(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x3
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -48,7 +49,6 @@ label_0:
 	sta v0
 	defineclasswithbuffer 0x0, .#~A=#A, _2, 0x0, v0
 	ldobjbyname 0x1, prototype
-	ldundefined
 	returnundefined
 label_2: 
 }

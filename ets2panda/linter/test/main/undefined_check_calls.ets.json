@@ -53,6 +53,96 @@
             "suggest": "Type 'undefined' is not assignable to type 'Object'.",
             "rule": "Type 'undefined' is not assignable to type 'Object'.",
             "severity": "ERROR"
+        },
+        {
+            "line": 81,
+            "column": 8,
+            "endLine": 81,
+            "endColumn": 17,
+            "problem": "StrictDiagnostic",
+            "suggest": "Argument of type 'undefined' is not assignable to parameter of type 'A'.",
+            "rule": "Argument of type 'undefined' is not assignable to parameter of type 'A'.",
+            "severity": "WARNING"
+        },
+        {
+            "line": 82,
+            "column": 16,
+            "endLine": 82,
+            "endColumn": 25,
+            "problem": "StrictDiagnostic",
+            "suggest": "Argument of type 'undefined' is not assignable to parameter of type 'A'.",
+            "rule": "Argument of type 'undefined' is not assignable to parameter of type 'A'.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 83,
+            "column": 20,
+            "endLine": 83,
+            "endColumn": 29,
+            "problem": "StrictDiagnostic",
+            "suggest": "Argument of type 'undefined' is not assignable to parameter of type 'A'.",
+            "rule": "Argument of type 'undefined' is not assignable to parameter of type 'A'.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 91,
+            "column": 9,
+            "endLine": 91,
+            "endColumn": 15,
+            "problem": "StrictDiagnostic",
+            "suggest": "Type 'TestClassC' is not assignable to type 'TestClassD'.\n  Types of property 'ccc' are incompatible.\n    Type 'null' is not assignable to type 'string'.",
+            "rule": "Type 'TestClassC' is not assignable to type 'TestClassD'.\n  Types of property 'ccc' are incompatible.\n    Type 'null' is not assignable to type 'string'.",
+            "severity": "WARNING"
+        },
+        {
+            "line": 92,
+            "column": 9,
+            "endLine": 92,
+            "endColumn": 15,
+            "problem": "StrictDiagnostic",
+            "suggest": "Type 'TestClassC' is not assignable to type 'TestClassD'.",
+            "rule": "Type 'TestClassC' is not assignable to type 'TestClassD'.",
+            "severity": "WARNING"
+        },
+        {
+            "line": 98,
+            "column": 9,
+            "endLine": 98,
+            "endColumn": 15,
+            "problem": "StrictDiagnostic",
+            "suggest": "Type 'TestClassC' is not assignable to type 'TestClassD'.\n  Types of property 'ccc' are incompatible.\n    Type 'null' is not assignable to type 'string'.",
+            "rule": "Type 'TestClassC' is not assignable to type 'TestClassD'.\n  Types of property 'ccc' are incompatible.\n    Type 'null' is not assignable to type 'string'.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 99,
+            "column": 9,
+            "endLine": 99,
+            "endColumn": 15,
+            "problem": "StrictDiagnostic",
+            "suggest": "Type 'TestClassC' is not assignable to type 'TestClassD'.",
+            "rule": "Type 'TestClassC' is not assignable to type 'TestClassD'.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 105,
+            "column": 9,
+            "endLine": 105,
+            "endColumn": 15,
+            "problem": "StrictDiagnostic",
+            "suggest": "Type 'TestClassC' is not assignable to type 'TestClassD'.",
+            "rule": "Type 'TestClassC' is not assignable to type 'TestClassD'.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 106,
+            "column": 9,
+            "endLine": 106,
+            "endColumn": 15,
+            "problem": "StrictDiagnostic",
+            "suggest": "Type 'TestClassC' is not assignable to type 'TestClassD'.",
+            "rule": "Type 'TestClassC' is not assignable to type 'TestClassD'.",
+            "severity": "ERROR"
         }
     ]
 }

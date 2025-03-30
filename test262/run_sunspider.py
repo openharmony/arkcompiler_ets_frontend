@@ -65,6 +65,10 @@ def parse_args():
                         default=DEFAULT_ARK_FRONTEND_BINARY,
                         required=False,
                         help="ark frontend conversion binary tool")
+    parser.add_argument('--icu-data-path',
+                        default=DEFAULT_ICU_PATH,
+                        required=False,
+                        help="ark frontend conversion binary tool")
     parser.add_argument('--ark-arch',
                         default=DEFAULT_ARK_ARCH,
                         required=False,
@@ -117,7 +121,7 @@ def parse_args():
     return arguments
 
 
-ICU_PATH = f"--icu-data-path={CODE_ROOT}/third_party/icu/ohos_icu4j/data"
+ICU_PATH = DEFAULT_ICU_PATH
 if platform.system() == "Windows":
     ICU_PATH = ICU_PATH.replace("/", "\\")
 ARK_TOOL = DEFAULT_ARK_TOOL
@@ -143,6 +147,7 @@ class ArkProgram():
         self.libs_dir = LIBS_DIR
         self.ark_frontend = ARK_FRONTEND
         self.ark_frontend_binary = ARK_FRONTEND_BINARY
+        self.icu_data_path = ICU_PATH
         self.module_list = []
         self.dynamicImport_list = []
         self.js_file = ""
@@ -187,7 +192,8 @@ class ArkProgram():
 
         if self.args.ark_frontend_binary:
             self.ark_frontend_binary = self.args.ark_frontend_binary
-
+        if self.args.icu_data_path:
+            self.icu_data_path = self.args.icu_data_path
         if self.args.libs_dir:
             self.libs_dir = self.args.libs_dir
 
@@ -549,6 +555,7 @@ class ArkProgram():
     def compile_aot(self):
         os.environ["LD_LIBRARY_PATH"] = self.libs_dir
         file_name_pre = os.path.splitext(self.js_file)[0]
+        icu_path = f"--icu-data-path={self.icu_data_path}"
         cmd_args = []
         if self.run_pgo:
             if self.arch == ARK_ARCH_LIST[1]:
@@ -556,12 +563,11 @@ class ArkProgram():
                 qemu_arg1 = "-L"
                 qemu_arg2 = self.arch_root
                 cmd_args = [qemu_tool, qemu_arg1, qemu_arg2, self.ark_aot_tool,
-                            ICU_PATH, f'--compiler-target-triple=aarch64-unknown-linux-gnu']
+                            icu_path, f'--compiler-target-triple=aarch64-unknown-linux-gnu']
             elif self.arch == ARK_ARCH_LIST[2]:
-                cmd_args = [self.ark_aot_tool, ICU_PATH, f'--compiler-target-triple=arm-unknown-linux-gnu']
+                cmd_args = [self.ark_aot_tool, icu_path, f'--compiler-target-triple=arm-unknown-linux-gnu']
             elif self.arch == ARK_ARCH_LIST[0]:
-                cmd_args = [self.ark_aot_tool, ICU_PATH]
-
+                cmd_args = [self.ark_aot_tool, icu_path]
             cmd_args.append("--compiler-opt-loop-peeling=true")
             cmd_args.append("--compiler-fast-compile=false")
             cmd_args.append("--compiler-opt-track-field=true")
@@ -577,17 +583,17 @@ class ArkProgram():
             cmd_args.append(self.abc_file)
         else:
             if self.arch == ARK_ARCH_LIST[1]:
-                cmd_args = [self.ark_aot_tool, ICU_PATH,
+                cmd_args = [self.ark_aot_tool, icu_path,
                             f'--compiler-target-triple=aarch64-unknown-linux-gnu',
                             f'--aot-file={file_name_pre}',
                             self.abc_file]
             elif self.arch == ARK_ARCH_LIST[2]:
-                cmd_args = [self.ark_aot_tool, ICU_PATH,
+                cmd_args = [self.ark_aot_tool, icu_path,
                             f'--compiler-target-triple=arm-unknown-linux-gnu',
                             f'--aot-file={file_name_pre}',
                             self.abc_file]
             elif self.arch == ARK_ARCH_LIST[0]:
-                cmd_args = [self.ark_aot_tool, ICU_PATH,
+                cmd_args = [self.ark_aot_tool, icu_path,
                             f'--aot-file={file_name_pre}',
                             self.abc_file]
         if self.enable_litecg:
@@ -602,12 +608,13 @@ class ArkProgram():
         os.environ["LD_LIBRARY_PATH"] = self.libs_dir
         file_name_pre = os.path.splitext(self.js_file)[0]
         cmd_args = []
+        icu_path = f"--icu-data-path={self.icu_data_path}"
         if self.arch == ARK_ARCH_LIST[1]:
             qemu_tool = "qemu-aarch64"
             qemu_arg1 = "-L"
             qemu_arg2 = self.arch_root
             cmd_args = [qemu_tool, qemu_arg1, qemu_arg2, self.ark_tool,
-                        ICU_PATH,
+                        icu_path,
                         f'--aot-file={file_name_pre}',
                         f'{file_name_pre}.abc']
         elif self.arch == ARK_ARCH_LIST[2]:
@@ -615,7 +622,7 @@ class ArkProgram():
             qemu_arg1 = "-L"
             qemu_arg2 = self.arch_root
             cmd_args = [qemu_tool, qemu_arg1, qemu_arg2, self.ark_tool,
-                        ICU_PATH,
+                        icu_path,
                         f'--aot-file={file_name_pre}',
                         f'{file_name_pre}.abc']
         elif self.arch == ARK_ARCH_LIST[0]:
@@ -624,10 +631,9 @@ class ArkProgram():
             asm_arg1 = "--enable-force-gc=true"
             if unforce_gc or self.disable_force_gc:
                 asm_arg1 = "--enable-force-gc=false"
-            cmd_args = [self.ark_tool, ICU_PATH, asm_arg1,
+            cmd_args = [self.ark_tool, icu_path, asm_arg1,
                         f'--aot-file={file_name_pre}',
                         f'{file_name_pre}.abc']
-
         record_name = os.path.splitext(os.path.split(self.js_file)[1])[0]
         cmd_args.insert(-1, f'--entry-point={record_name}')
         if self.stub_file != "":
@@ -649,6 +655,7 @@ class ArkProgram():
         return retcode
 
     def execute(self):
+        icu_path = f"--icu-data-path={self.icu_data_path}"
         unforce_gc = False
         if platform.system() == "Windows":
             # add env path for cmd/powershell execute
@@ -667,7 +674,7 @@ class ArkProgram():
             qemu_arg1 = "-L"
             qemu_arg2 = self.arch_root
             cmd_args = [qemu_tool, qemu_arg1, qemu_arg2, self.ark_tool,
-                        ICU_PATH,
+                        icu_path,
                         f'{file_name_pre}.abc']
             if self.run_jit or self.run_baseline_jit:
                 cmd_args.insert(-1, f'--compiler-target-triple=aarch64-unknown-linux-gnu')
@@ -679,7 +686,7 @@ class ArkProgram():
             qemu_arg1 = "-L"
             qemu_arg2 = self.arch_root
             cmd_args = [qemu_tool, qemu_arg1, qemu_arg2, self.ark_tool,
-                        ICU_PATH,
+                        icu_path,
                         f'{file_name_pre}.abc']
         elif self.arch == ARK_ARCH_LIST[0]:
             if file_name_pre in FORCE_GC_SKIP_TESTS:
@@ -687,7 +694,7 @@ class ArkProgram():
             asm_arg1 = "--enable-force-gc=true"
             if unforce_gc or self.disable_force_gc:
                 asm_arg1 = "--enable-force-gc=false"
-            cmd_args = [self.ark_tool, ICU_PATH, asm_arg1,
+            cmd_args = [self.ark_tool, icu_path, asm_arg1,
                         f'{file_name_pre}.abc']
 
         record_name = os.path.splitext(os.path.split(self.js_file)[1])[0]
@@ -710,6 +717,7 @@ class ArkProgram():
         return retcode
 
     def run_generator_ap(self):
+        icu_path = f"--icu-data-path={self.icu_data_path}"
         os.environ["LD_LIBRARY_PATH"] = self.libs_dir
         file_name_pre = os.path.splitext(self.js_file)[0]
         record_name = os.path.splitext(os.path.split(self.js_file)[1])[0]
@@ -718,7 +726,7 @@ class ArkProgram():
             qemu_arg1 = "-L"
             qemu_arg2 = self.arch_root
             cmd_args = [qemu_tool, qemu_arg1, qemu_arg2, self.ark_tool,
-                        ICU_PATH,
+                        icu_path,
                         "--log-level=error",
                         "--enable-pgo-profiler=true",
                         "--compiler-opt-inlining=true",
@@ -726,7 +734,7 @@ class ArkProgram():
                         "--asm-interpreter=true",
                         f'--entry-point={record_name}']
         else:
-            cmd_args = [self.ark_tool, ICU_PATH,
+            cmd_args = [self.ark_tool, icu_path,
                         "--log-level=error",
                         "--enable-pgo-profiler=true",
                         "--compiler-opt-inlining=true",

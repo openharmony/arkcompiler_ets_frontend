@@ -35,7 +35,7 @@ import type {
 
 import path from 'path';
 
-import { LocalVariableCollections, PropCollections } from './utils/CommonCollections';
+import { AtKeepCollections, LocalVariableCollections, PropCollections } from './utils/CommonCollections';
 import type { IOptions } from './configs/IOptions';
 import { FileUtils } from './utils/FileUtils';
 import { TransformerManager } from './transformers/TransformerManager';
@@ -59,17 +59,25 @@ import { needReadApiInfo, readProjectPropertiesByCollectedPaths } from './common
 import type { ReseverdSetForArkguard } from './common/ApiReader';
 import { ApiExtractor } from './common/ApiExtractor';
 import esInfo from './configs/preset/es_reserved_properties.json';
+import optimizeEsInfo from './configs/preset/es_reserved_properties_optimized.json';
 import {
-  EventList,
   TimeSumPrinter,
   TimeTracker,
+  endFilesEvent,
   endSingleFileEvent,
   initPerformancePrinter,
+  startFilesEvent,
   startSingleFileEvent,
 } from './utils/PrinterUtils';
+import { ObConfigResolver } from './initialization/ConfigResolver';
+import {
+  EventList,
+  TimeAndMemTimeTracker,
+  clearTimeAndMemPrinterData,
+  initPerformanceTimeAndMemPrinter,
+} from './utils/PrinterTimeAndMemUtils';
 
 export {
-  EventList,
   TimeSumPrinter,
   blockPrinter,
   endFilesEvent,
@@ -79,19 +87,31 @@ export {
   startFilesEvent,
   startSingleFileEvent,
 } from './utils/PrinterUtils';
+export {
+  EventList,
+  TimeAndMemTimeTracker,
+  enableTimeAndMemoryPrint,
+  blockTimeAndMemPrinter,
+} from './utils/PrinterTimeAndMemUtils';
 import { Extension, type ProjectInfo, type FilePathObj } from './common/type';
+export { type HvigorErrorInfo } from './common/type';
 export { FileUtils } from './utils/FileUtils';
 export { MemoryUtils } from './utils/MemoryUtils';
 import { TypeUtils } from './utils/TypeUtils';
 import { handleReservedConfig } from './utils/TransformUtil';
 import { UnobfuscationCollections } from './utils/CommonCollections';
-import { historyAllUnobfuscatedNamesMap } from './initialization/Initializer';
+import { FilePathManager, FileContentManager, initProjectWhiteListManager } from './utils/ProjectCollections';
+import { clearHistoryUnobfuscatedMap, historyAllUnobfuscatedNamesMap } from './initialization/Initializer';
+import { MemoryDottingDefine } from './utils/MemoryDottingDefine';
+import { nodeSymbolMap } from './utils/ScopeAnalyzer';
+import { clearUnobfuscationNamesObj } from './initialization/CommonObject';
 export { UnobfuscationCollections } from './utils/CommonCollections';
+export * as ProjectCollections from './utils/ProjectCollections';
 export { separateUniversalReservedItem, containWildcards, wildcardTransformer } from './utils/TransformUtil';
 export type { ReservedNameInfo } from './utils/TransformUtil';
 export type { ReseverdSetForArkguard } from './common/ApiReader';
 
-export { initObfuscationConfig } from './initialization/Initializer';
+export { initObfuscationConfig, initPrinterTimeAndMemConfig, printerTimeAndMemConfig, printerTimeAndMemDataConfig } from './initialization/Initializer';
 export { nameCacheMap, unobfuscationNamesObj } from './initialization/CommonObject';
 export {
   collectResevedFileNameInIDEConfig, // For running unit test.
@@ -105,6 +125,7 @@ export {
   MergedConfig,
   ObConfigResolver,
   readNameCache,
+  clearNameCache,
   writeObfuscationNameCache,
   writeUnobfuscationContent
 } from './initialization/ConfigResolver';
@@ -123,10 +144,20 @@ export interface PerformancePrinter {
   singleFilePrinter?: TimeTracker;
   timeSumPrinter?: TimeSumPrinter;
 }
+// TimeAndMem performance printer interface
+export interface PerformanceTimeAndMemPrinter {
+  filesPrinter?: TimeAndMemTimeTracker;
+  singleFilePrinter?: TimeAndMemTimeTracker;
+}
 export let performancePrinter: PerformancePrinter = {
   filesPrinter: new TimeTracker(),
   singleFilePrinter: new TimeTracker(),
   timeSumPrinter: new TimeSumPrinter(),
+};
+// Create instance of the TimeAndMem performance printer
+export let performanceTimeAndMemPrinter: PerformanceTimeAndMemPrinter = {
+  filesPrinter: new TimeAndMemTimeTracker(),
+  singleFilePrinter: new TimeAndMemTimeTracker(),
 };
 
 // When the module is compiled, call this function to clear global collections.
@@ -134,7 +165,13 @@ export function clearGlobalCaches(): void {
   PropCollections.clearPropsCollections();
   UnobfuscationCollections.clear();
   LocalVariableCollections.clear();
+  AtKeepCollections.clear();
   renameFileNameModule.clearCaches();
+  clearUnobfuscationNamesObj();
+  clearHistoryUnobfuscatedMap();
+  clearTimeAndMemPrinterData();
+  ApiExtractor.mConstructorPropertySet.clear();
+  ApiExtractor.mEnumMemberSet.clear();
 }
 
 export type ObfuscationResultType = {
@@ -143,6 +180,11 @@ export type ObfuscationResultType = {
   nameCache?: { [k: string]: string | {} };
   filePath?: string;
   unobfuscationNameMap?: Map<string, Set<string>>;
+};
+
+export interface RecordInfo {
+  recordStage: string;
+  recordIndex: number;
 };
 
 const JSON_TEXT_INDENT_LENGTH: number = 2;
@@ -161,14 +203,32 @@ export class ArkObfuscator {
 
   private mTransformers: TransformerFactory<Node>[];
 
+  private static memoryDottingCallback: (stage: string) => RecordInfo;
+
+  private static memoryDottingStopCallback: (recordInfo: RecordInfo) => void;
+
   static mProjectInfo: ProjectInfo | undefined;
 
   // If isKeptCurrentFile is true, both identifier and property obfuscation are skipped.
   static mIsKeptCurrentFile: boolean = false;
 
+  public isIncremental: boolean = false;
+
+  public shouldReObfuscate: boolean = false;
+
+  public filePathManager: FilePathManager | undefined;
+
+  public fileContentManager: FileContentManager | undefined;
+
+  public obfConfigResolver: ObConfigResolver;
+
   public constructor() {
     this.mCompilerOptions = {};
     this.mTransformers = [];
+  }
+
+  public getWriteOriginalFileForTest(): boolean {
+    return this.mWriteOriginalFile;
   }
 
   public setWriteOriginalFile(flag: boolean): void {
@@ -235,6 +295,25 @@ export class ArkObfuscator {
     ArkObfuscator.mProjectInfo = projectInfo;
   }
 
+  public static recordStage(stage: string): RecordInfo | null {
+    if (ArkObfuscator.memoryDottingCallback) {
+      return ArkObfuscator.memoryDottingCallback(stage);
+    }
+    return null;
+  }
+
+  public static stopRecordStage(recordInfo: RecordInfo | null): void {
+    if (ArkObfuscator.memoryDottingStopCallback) {
+      if (recordInfo !== null) {
+        ArkObfuscator.memoryDottingStopCallback(recordInfo);
+      }
+    }
+  }
+
+  public isCurrentFileInKeepPathsForTest(customProfiles: IOptions, originalFilePath: string): boolean {
+    return this.isCurrentFileInKeepPaths(customProfiles, originalFilePath);
+  }
+
   private isCurrentFileInKeepPaths(customProfiles: IOptions, originalFilePath: string): boolean {
     const keepFileSourceCode = customProfiles.mKeepFileSourceCode;
     if (keepFileSourceCode === undefined || keepFileSourceCode.mKeepSourceOfPaths.size === 0) {
@@ -249,7 +328,7 @@ export class ArkObfuscator {
    * init ArkObfuscator according to user config
    * should be called after constructor
    */
-  public init(config: IOptions | undefined): boolean {
+  public init(config: IOptions | undefined, cachePath?: string): boolean {
     if (!config) {
       console.error('obfuscation config file is not found and no given config.');
       return false;
@@ -281,12 +360,15 @@ export class ArkObfuscator {
     this.mTransformers = new TransformerManager(this.mCustomProfiles).getTransformers();
 
     initPerformancePrinter(this.mCustomProfiles);
+    
+    initPerformanceTimeAndMemPrinter(this.mCustomProfiles);
 
     if (needReadApiInfo(this.mCustomProfiles)) {
       // if -enable-property-obfuscation or -enable-export-obfuscation, collect language reserved keywords.
       let languageSet: Set<string> = new Set();
-      for (const key of Object.keys(esInfo)) {
-        const valueArray = esInfo[key];
+      let presetLanguageWhitelist = this.mCustomProfiles.mStripLanguageDefaultWhitelist ? optimizeEsInfo : esInfo;
+      for (const key of Object.keys(presetLanguageWhitelist)) {
+        const valueArray = presetLanguageWhitelist[key];
         valueArray.forEach((element: string) => {
           languageSet.add(element);
         });
@@ -294,7 +376,39 @@ export class ArkObfuscator {
       UnobfuscationCollections.reservedLangForProperty = languageSet;
     }
 
+    if (cachePath) {
+      this.initIncrementalCache(cachePath, !!this.mCustomProfiles.mNameObfuscation.mEnableAtKeep);
+    }
+
     return true;
+  }
+
+  public static setMemoryDottingCallBack(memoryDottingCallback: (stage: string) => RecordInfo,
+    memoryDottingStopCallback: (recordInfo: RecordInfo) => void): void {
+    if (memoryDottingCallback) {
+      ArkObfuscator.memoryDottingCallback = memoryDottingCallback;
+    }
+    if (memoryDottingStopCallback) {
+      ArkObfuscator.memoryDottingStopCallback = memoryDottingStopCallback;
+    }
+  }
+
+  public static clearMemoryDottingCallBack(): void {
+    ArkObfuscator.memoryDottingCallback = undefined;
+    ArkObfuscator.memoryDottingStopCallback = undefined;
+  }
+
+  /**
+   * Init incremental cache according to cachePath
+   */
+  private initIncrementalCache(cachePath: string, enableAtKeep: boolean): void {
+    this.filePathManager = new FilePathManager(cachePath);
+
+    this.isIncremental = this.filePathManager.isIncremental();
+
+    this.fileContentManager = new FileContentManager(cachePath, this.isIncremental);
+
+    initProjectWhiteListManager(cachePath, this.isIncremental, enableAtKeep);
   }
 
   /**
@@ -377,15 +491,18 @@ export class ArkObfuscator {
     originalFilePath?: string,
     projectInfo?: ProjectInfo,
   ): Promise<ObfuscationResultType> {
+    startFilesEvent(EventList.CONFIG_INITIALIZATION);
     ArkObfuscator.projectInfo = projectInfo;
     let result: ObfuscationResultType = { content: undefined };
     if (this.isObfsIgnoreFile(sourceFilePathObj.buildFilePath)) {
       // need add return value
+      endFilesEvent(EventList.CONFIG_INITIALIZATION);
       return result;
     }
 
     let ast: SourceFile = this.createAst(content, sourceFilePathObj.buildFilePath);
     if (ast.statements.length === 0) {
+      endFilesEvent(EventList.CONFIG_INITIALIZATION);
       return result;
     }
 
@@ -405,18 +522,22 @@ export class ArkObfuscator {
       orignalFilePathForSearching = originalFilePath;
     }
     ArkObfuscator.isKeptCurrentFile = this.isCurrentFileInKeepPaths(this.mCustomProfiles, originalFilePath);
+    endFilesEvent(EventList.CONFIG_INITIALIZATION);
 
     this.handleDeclarationFile(ast);
 
     ast = this.obfuscateAst(ast);
 
+    startSingleFileEvent(EventList.WRITE_OBFUSCATION_RESULT);
     this.writeObfuscationResult(ast, sourceFilePathObj.buildFilePath, result, previousStageSourceMap, originalFilePath);
+    endSingleFileEvent(EventList.WRITE_OBFUSCATION_RESULT);
 
     this.clearCaches();
     return result;
   }
 
   private createAst(content: SourceFile | string, sourceFilePath: string): SourceFile {
+    const recordInfo = ArkObfuscator.recordStage(MemoryDottingDefine.CREATE_AST);
     startSingleFileEvent(EventList.CREATE_AST, performancePrinter.timeSumPrinter);
     let ast: SourceFile;
     if (typeof content === 'string') {
@@ -425,14 +546,17 @@ export class ArkObfuscator {
       ast = content;
     }
     endSingleFileEvent(EventList.CREATE_AST, performancePrinter.timeSumPrinter);
+    ArkObfuscator.stopRecordStage(recordInfo);
 
     return ast;
   }
 
   private obfuscateAst(ast: SourceFile): SourceFile {
+    const recordInfo = ArkObfuscator.recordStage(MemoryDottingDefine.OBFUSCATE_AST);
     startSingleFileEvent(EventList.OBFUSCATE_AST, performancePrinter.timeSumPrinter);
     let transformedResult: TransformationResult<Node> = transform(ast, this.mTransformers, this.mCompilerOptions);
     endSingleFileEvent(EventList.OBFUSCATE_AST, performancePrinter.timeSumPrinter);
+    ArkObfuscator.stopRecordStage(recordInfo);
     ast = transformedResult.transformed[0] as SourceFile;
     return ast;
   }
@@ -472,24 +596,30 @@ export class ArkObfuscator {
       endSingleFileEvent(EventList.GET_SOURCEMAP_GENERATOR, performancePrinter.timeSumPrinter);
     }
 
-    startSingleFileEvent(EventList.CREATE_PRINTER, performancePrinter.timeSumPrinter);
     if (sourceFilePath.endsWith('.js')) {
       TypeUtils.tsToJs(ast);
     }
     this.handleTsHarComments(ast, originalFilePath);
+    const recordInfo = ArkObfuscator.recordStage(MemoryDottingDefine.CREATE_PRINTER);
+    startSingleFileEvent(EventList.CREATE_PRINTER, performancePrinter.timeSumPrinter);
     this.createObfsPrinter(ast.isDeclarationFile).writeFile(ast, this.mTextWriter, sourceMapGenerator);
     endSingleFileEvent(EventList.CREATE_PRINTER, performancePrinter.timeSumPrinter);
+    ArkObfuscator.stopRecordStage(recordInfo);
 
+    startSingleFileEvent(EventList.GET_OBFUSCATED_CODE);
     result.filePath = ast.fileName;
     result.content = this.mTextWriter.getText();
+    endSingleFileEvent(EventList.GET_OBFUSCATED_CODE);
 
     if (this.mCustomProfiles.mUnobfuscationOption?.mPrintKeptNames) {
       this.handleUnobfuscationNames(result);
     }
 
+    startSingleFileEvent(EventList.PROCESS_SOURCEMAP);
     if (this.mCustomProfiles.mEnableSourceMap && sourceMapGenerator) {
       this.handleSourceMapAndNameCache(sourceMapGenerator, sourceFilePath, result, previousStageSourceMap);
     }
+    endSingleFileEvent(EventList.PROCESS_SOURCEMAP);
   }
 
   private handleUnobfuscationNames(result: ObfuscationResultType): void {
@@ -539,8 +669,8 @@ export class ArkObfuscator {
     renameIdentifierModule.clearCaches();
     if (cleanFileMangledNames) {
       PropCollections.globalMangledTable.clear();
-      PropCollections.newlyOccupiedMangledProps.clear();
     }
     UnobfuscationCollections.unobfuscatedNamesMap.clear();
+    nodeSymbolMap.clear();
   }
 }

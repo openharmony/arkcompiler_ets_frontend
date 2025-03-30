@@ -31,10 +31,6 @@ import type {
  * @param sourceFile: file path of source code
  */
 export function getSourceMapGenerator(sourceFile: string): SourceMapGenerator {
-  if (!sourceFile) {
-    return undefined;
-  }
-
   let compilerOptions: CompilerOptions = {};
   let compilerHost: CompilerHost = createCompilerHost(compilerOptions);
 

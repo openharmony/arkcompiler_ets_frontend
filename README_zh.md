@@ -23,6 +23,8 @@ ets_frontend组件是方舟运行时子系统的前端工具，结合ace-ets2bun
 /arkcompiler/ets_frontend/
 ├── test262            # test262测试配置和运行脚本
 ├── testTs             # 系统测试目录
+├── test_ecma_bcopt    # 字节码优化测试目录
+├── test               # sdk，xts测试目录
 ├── es2panda
     ├── aot            # 逻辑入口
     ├── binder         # 信息绑定
@@ -34,14 +36,12 @@ ets_frontend组件是方舟运行时子系统的前端工具，结合ace-ets2bun
     ├── test           # 测试目录
     ├── typescript     # typescript支持
     └── util           # 工具目录
-├── ts2panda
-    ├── doc            # 文档
-    ├── scripts        # 依赖的脚本
-    ├── src            # 源码存放目录
-    ├── templates      # ruby模板文件
-    ├── tests          # UT单元测试目录
-    ├── tools          # ts2abc提供的工具
-    └── ts2abc         # abc文件生成相关
+├── legacy_bin         # API8编译器目录
+├── merge_abc
+    ├── protos         # proto模板目录
+    ├── scripts        # 脚本目录
+    ├── src            # proto文件序列化和反序列化目录
+
 ```
 
 ## 编译构建<a name="section0446154755015"></a>

@@ -13,7 +13,14 @@
  * limitations under the License.
  */
 
-export const NON_INITIALIZABLE_PROPERTY_DECORATORS = ['Link', 'Consume', 'ObjectLink', 'Prop', 'BuilderParam'];
+export const NON_INITIALIZABLE_PROPERTY_DECORATORS = [
+  'Link',
+  'Consume',
+  'ObjectLink',
+  'Prop',
+  'BuilderParam',
+  'Require'
+];
 
 export const NON_INITIALIZABLE_PROPERTY_DECORATORS_TSC = [
   'Link',
@@ -22,7 +29,8 @@ export const NON_INITIALIZABLE_PROPERTY_DECORATORS_TSC = [
   'Prop',
   'BuilderParam',
   'Param',
-  'Event'
+  'Event',
+  'Require'
 ];
 
 export const NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS = ['CustomDialog'];

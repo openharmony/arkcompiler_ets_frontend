@@ -15,36 +15,22 @@
 
 #include "pandagen.h"
 
-#include <binder/binder.h>
-#include <binder/scope.h>
-#include <binder/variable.h>
 #include <compiler/base/catchTable.h>
 #include <compiler/base/lexenv.h>
 #include <compiler/base/literals.h>
 #include <compiler/core/compilerContext.h>
-#include <compiler/core/labelTarget.h>
-#include <compiler/core/regAllocator.h>
-#include <compiler/function/asyncFunctionBuilder.h>
 #include <compiler/function/asyncGeneratorFunctionBuilder.h>
-#include <compiler/function/functionBuilder.h>
 #include <compiler/function/generatorFunctionBuilder.h>
-#include <es2panda.h>
-#include <gen/isa.h>
 #include <ir/base/classDefinition.h>
-#include <ir/base/methodDefinition.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/base/spreadElement.h>
 #include <ir/expressions/callExpression.h>
 #include <ir/expressions/functionExpression.h>
-#include <ir/expressions/identifier.h>
 #include <ir/expressions/literals/numberLiteral.h>
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/newExpression.h>
 #include <ir/module/importSpecifier.h>
-#include <ir/statement.h>
-#include <util/concurrent.h>
-#include <util/helpers.h>
-#include <util/patchFix.h>
+#include <ir/module/importDefaultSpecifier.h>
 
 namespace panda::es2panda::compiler {
 
@@ -117,6 +103,28 @@ void PandaGen::SetInSendable()
     inSendable_ = func->InSendable();
 }
 
+size_t PandaGen::GetExpectedPropertyCount() const
+{
+    if (rootNode_->IsProgram()) {
+        return 0;
+    }
+
+    auto *func = rootNode_->AsScriptFunction();
+    /**
+     * The expected property count only includes class fields and properties declared in the constructor.
+     * Properties defined in regular methods are not counted because they are only dynamically added
+     * to the instance after the method is called, and are not part of the instance during creation.
+     */
+    if (func->IsConstructor()) {
+        return util::Helpers::GetClassDefiniton(func)->ExpectedPropertyCount();
+    }
+    if (func->IsMethod()) {
+        return 0;
+    }
+
+    return func->ExpectedPropertyCount();
+}
+
 Label *PandaGen::AllocLabel()
 {
     std::string id = std::string {Label::PREFIX} + std::to_string(labelId_++);
@@ -179,6 +187,11 @@ const util::StringView &PandaGen::FunctionName() const
 binder::Binder *PandaGen::Binder() const
 {
     return context_->Binder();
+}
+
+pandasm::extensions::Language PandaGen::SourceLang() const
+{
+    return context_->SourceLang();
 }
 
 void PandaGen::FunctionInit(CatchTable *catchTable)
@@ -1775,6 +1788,14 @@ void PandaGen::LoadSendableClass(const ir::AstNode *node, int32_t level)
 void PandaGen::LoadLocalModuleVariable(const ir::AstNode *node, const binder::ModuleVariable *variable)
 {
     auto index = variable->Index();
+    if (inSendable_ &&
+        Binder()->Program()->TargetApiVersion() >=
+        util::Helpers::SENDABLE_CLASS_USING_LOCAL_MODULE_VAR_MIN_SUPPORTED_API_VERSION) {
+        index <= util::Helpers::MAX_INT8 ? ra_.Emit<CallruntimeLdsendablelocalmodulevar>(node, index) :
+                                           ra_.Emit<CallruntimeWideldsendablelocalmodulevar>(node, index);
+        return;
+    }
+
     index <= util::Helpers::MAX_INT8 ? ra_.Emit<Ldlocalmodulevar>(node, index) :
                                        ra_.Emit<WideLdlocalmodulevar>(node, index);
 }
@@ -1786,6 +1807,11 @@ void PandaGen::LoadExternalModuleVariable(const ir::AstNode *node, const binder:
     auto targetApiVersion = Binder()->Program()->TargetApiVersion();
     bool isLazy = variable->Declaration()->Node()->IsImportSpecifier() ?
         variable->Declaration()->Node()->AsImportSpecifier()->IsLazy() : false;
+    if (!isLazy) {
+        isLazy = variable->Declaration()->Node()->IsImportDefaultSpecifier() ?
+            variable->Declaration()->Node()->AsImportDefaultSpecifier()->IsLazy() : false;
+    }
+
     if (isLazy) {
         // Change the behavior of using imported object in sendable class since api12
         if (inSendable_ && targetApiVersion >= util::Helpers::SENDABLE_LAZY_LOADING_MIN_SUPPORTED_API_VERSION) {

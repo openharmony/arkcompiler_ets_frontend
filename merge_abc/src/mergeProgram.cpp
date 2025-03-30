@@ -13,11 +13,6 @@
  * limitations under the License.
  */
 
-#include "assembler/assembly-function.h"
-#include "libpandafile/literal_data_accessor.h"
-#include "os/file.h"
-#include "options.h"
-
 #include "mergeProgram.h"
 
 #if defined(PANDA_TARGET_WINDOWS)
@@ -25,8 +20,6 @@
 #else
 #include <dirent.h>
 #endif
-
-#include <fstream>
 
 namespace panda::proto {
 #if PANDA_TARGET_WINDOWS

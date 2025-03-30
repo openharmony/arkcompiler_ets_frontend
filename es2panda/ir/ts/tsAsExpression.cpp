@@ -15,7 +15,6 @@
 
 #include "tsAsExpression.h"
 
-#include <binder/scope.h>
 #include <typescript/checker.h>
 #include <ir/expressions/identifier.h>
 #include <ir/expressions/literal.h>

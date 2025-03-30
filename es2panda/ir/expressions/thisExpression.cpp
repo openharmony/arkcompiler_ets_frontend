@@ -15,12 +15,10 @@
 
 #include "thisExpression.h"
 
-#include <binder/binder.h>
 #include <compiler/core/pandagen.h>
 #include <ir/astDump.h>
 #include <ir/base/classDefinition.h>
 #include <typescript/checker.h>
-#include <util/helpers.h>
 
 namespace panda::es2panda::ir {
 

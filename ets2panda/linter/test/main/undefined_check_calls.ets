@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { ff, doSomething, TestClassC, TestClassD } from "./oh_modules/ohos_lib";
+import { ff, doSomething, TestClassC, TestClassD, TestClassH, TestClassI } from "./oh_modules/ohos_lib";
+import { ff as ff_ets, doSomething as doSomething_ets, TestClassC as TestClassC_ets, TestClassD as TestClassD_ets, TestClassH as TestClassH_ets, TestClassI as TestClassI_ets } from "./oh_modules/ohos_lib_ets";
 import { f, f2, bar, applyToUnknown, fooExecute, C1, resourceFoo, ResourceStr, myFoo, myFoo2 } from "./dynamic_lib";
 
 let a1: C1 = new C1()
@@ -71,6 +71,37 @@ class TestClassB {
     doSomething({
       topic: (topic: string) => {
         let a = new TestClassC();
+        this.c = a;
+        this.c = a;
+      }
+    }, '');
+  }
+}
+
+ff_ets(undefined);
+new TestClassH(undefined);
+new TestClassH_ets(undefined);
+
+class TestClassE {
+  private c:TestClassD_ets | undefined = new TestClassD_ets();
+  add() {
+    doSomething_ets({
+      topic: (topic: string) => {
+        let a = new TestClassC_ets();
+        this.c = a;
+        this.c = a;
+      }
+    }, '');
+    new TestClassI({
+      topic: (topic: string) => {
+        let a = new TestClassC();
+        this.c = a;
+        this.c = a;
+      }
+    }, '');
+    new TestClassI_ets({
+      topic: (topic: string) => {
+        let a = new TestClassC_ets();
         this.c = a;
         this.c = a;
       }

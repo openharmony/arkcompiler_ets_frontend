@@ -14,7 +14,6 @@
  */
 
 #include <ir/expressions/assignmentExpression.h>
-#include <ir/expressions/memberExpression.h>
 
 #include <typescript/checker.h>
 

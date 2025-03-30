@@ -1,63 +1,62 @@
-.language ECMAScript
-
 slotNum = 0x1
+.language ECMAScript
 .function any .#&#A(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
 	definefunc 0x0, .#&A*#foo, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any .#&#A^1(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
 	definefunc 0x0, .#&A^1*#foo, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any .#&#A^2(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
 	definefunc 0x0, .#&A^2*#foo, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#&A*#foo(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#&A^1*#foo(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#&A^2*#foo(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=#A(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -67,15 +66,16 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A>#foo(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0xf
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_10: 
 label_0: 
@@ -125,7 +125,6 @@ label_8:
 label_9: 
 	lda v1
 	callarg1 0xd, v0
-	ldundefined
 	returnundefined
 label_11: 
 }

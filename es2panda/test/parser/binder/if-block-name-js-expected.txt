@@ -1,6 +1,5 @@
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -10,6 +9,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#^1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -19,33 +19,34 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#foo(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#foo^1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#foo^2(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0xb
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_6: 
 label_0: 
@@ -72,7 +73,6 @@ label_5:
 label_4: 
 	definefunc 0xa, .#*#foo^2, 0x0
 label_3: 
-	ldundefined
 	returnundefined
 label_7: 
 }

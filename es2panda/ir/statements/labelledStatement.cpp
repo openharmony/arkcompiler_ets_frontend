@@ -16,7 +16,6 @@
 #include "labelledStatement.h"
 
 #include <compiler/core/pandagen.h>
-#include <compiler/core/labelTarget.h>
 #include <ir/astDump.h>
 #include <ir/expressions/identifier.h>
 

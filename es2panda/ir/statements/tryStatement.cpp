@@ -16,7 +16,6 @@
 #include "tryStatement.h"
 
 #include <compiler/core/pandagen.h>
-#include <compiler/core/dynamicContext.h>
 #include <compiler/base/catchTable.h>
 #include <ir/astDump.h>
 #include <ir/base/catchClause.h>

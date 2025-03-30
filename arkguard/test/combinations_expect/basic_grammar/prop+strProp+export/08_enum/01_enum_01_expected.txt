@@ -15,20 +15,20 @@
 import assert from 'assert';
 enum A1 {
     prop1 = 1,
-    i = 2
+    j = 2
 }
 assert(A1.prop1 === 1);
-assert(A1.i === 2);
+assert(A1.j === 2);
 enum Direction {
     up = 1,
-    j,
+    k,
     left,
     right
 }
 const direction: Direction = Direction.up;
 assert(direction === 1);
 assert(Direction.up === 1);
-assert(Direction.j === 2);
+assert(Direction.k === 2);
 assert(Direction.left === 3);
 assert(Direction.right === 4);
 assert(Direction[1] === 'up');
@@ -37,19 +37,19 @@ assert(Direction[4] === 'right');
 var A2;
 (function (i) {
     i[i["prop1"] = 1] = "prop1";
-    i[i["i"] = 2] = "prop2";
+    i[i["j"] = 2] = "prop2";
 })(A2 || (A2 = {}));
 assert(A2.prop1 === 1);
-assert(A2.i === 2);
+assert(A2.j === 2);
 assert(A2[1] === 'prop1');
 assert(A2[2] === 'prop2');
 let val = 1;
 enum A3 {
     prop1 = 1,
-    i = prop1 + val + 1
+    j = prop1 + val + 1
 }
 assert(A3.prop1 === 1);
-assert(A3.i === 3);
+assert(A3.j === 3);
 assert(A3[1] === 'prop1');
 enum Foo {
     a = 2,
@@ -89,22 +89,22 @@ module M {
 assert(M.g.h.b === 2);
 assert(M.g.h[2] === 'b');
 export enum MouseButton {
-    k = 1,
-    l = 2,
-    m = 4,
-    o = 5,
-    p = 6,
-    q = 0
+    l = 1,
+    m = 2,
+    o = 4,
+    p = 5,
+    q = 6,
+    t = 0
 }
 export const DOMMouseButton = {
-    "t": MouseButton.q,
-    '0': MouseButton.k,
-    '1': MouseButton.m,
-    '2': MouseButton.l,
-    '3': MouseButton.o,
-    '4': MouseButton.p,
+    "u": MouseButton.t,
+    '0': MouseButton.l,
+    '1': MouseButton.o,
+    '2': MouseButton.m,
+    '3': MouseButton.p,
+    '4': MouseButton.q,
 };
-assert(DOMMouseButton["t"] === 0);
+assert(DOMMouseButton["u"] === 0);
 assert(DOMMouseButton['0'] === 1);
 assert(DOMMouseButton['1'] === 4);
 assert(DOMMouseButton['2'] === 2);

@@ -147,7 +147,8 @@ public:
 
     bool IsConstructor() const
     {
-        return (flags_ & ir::ScriptFunctionFlags::CONSTRUCTOR) != 0;
+        return (flags_ & ir::ScriptFunctionFlags::CONSTRUCTOR) != 0 ||
+               (flags_ & ir::ScriptFunctionFlags::GENERATED_CONSTRUCTOR) != 0;
     }
 
     bool IsStaticInitializer() const
@@ -200,6 +201,16 @@ public:
         inSendable_ = true;
     }
 
+    void IncreasePropertyCount()
+    {
+        expectedPropertyCount_++;
+    }
+
+    size_t ExpectedPropertyCount() const
+    {
+        return expectedPropertyCount_;
+    }
+
     size_t FormalParamsLength() const;
     util::StringView GetName() const;
 
@@ -242,6 +253,10 @@ public:
         return inSendable_;
     }
 
+    void CalculateFunctionExpectedPropertyCount();
+    void ExtractThisPropertyFromStatement(const ir::Statement *stmt,
+                          const std::function<void(const util::StringView&)>& addPropertyName);
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
@@ -264,6 +279,7 @@ private:
     bool exportDefault_;
     std::vector<int> concurrentModuleRequests_;
     bool inSendable_ {false};
+    size_t expectedPropertyCount_ {0};
 };
 
 }  // namespace panda::es2panda::ir

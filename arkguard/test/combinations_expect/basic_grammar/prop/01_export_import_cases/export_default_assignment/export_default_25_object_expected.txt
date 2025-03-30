@@ -12,5 +12,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const obj25 = { h: 1, i: { j: 2 } };
-export default obj25.i;
+const obj25 = { j: 1, k: { l: 2 } };
+export default obj25.k;

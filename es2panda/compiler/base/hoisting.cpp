@@ -15,12 +15,8 @@
 
 #include "hoisting.h"
 
-#include <binder/binder.h>
-#include <binder/scope.h>
 #include <compiler/core/pandagen.h>
 #include <ir/base/scriptFunction.h>
-#include <ir/statements/variableDeclaration.h>
-#include <parser/module/sourceTextModuleRecord.h>
 
 namespace panda::es2panda::compiler {
 

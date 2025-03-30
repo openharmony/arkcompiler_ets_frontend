@@ -16,6 +16,6 @@ import assert = require('assert');
 declare global {
     var myGlobalVar: string;
 }
-globalThis.j = "globalvar";
-assert(globalThis.j === 'globalvar', 'success');
+globalThis.t = "globalvar";
+assert(globalThis.t === 'globalvar', 'success');
 export {};

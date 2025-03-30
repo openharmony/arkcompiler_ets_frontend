@@ -33,22 +33,22 @@ type p = boolean;
 class q {
     @o
     @h(y)
-    u() { }
+    b1() { }
     @o
     @h(y)
-    set v(u: number) { this.a1 = u; }
+    set c1(u: number) { this.d1 = u; }
     @h(y)
     @o
-    get b1(): number { return this.a1; }
+    get e1(): number { return this.d1; }
     @p
     @i(z)
-    a1: number = 1;
+    d1: number = 1;
 }
 assert(j === 2);
 assert(k === 6);
 assert(l === 2);
 let t = new q();
-assert(t.b1 === 1);
-t.v = 2;
-assert(t.a1 === 2);
-assert(t.b1 as number === 2);
+assert(t.e1 === 1);
+t.c1 = 2;
+assert(t.d1 === 2);
+assert(t.e1 as number === 2);

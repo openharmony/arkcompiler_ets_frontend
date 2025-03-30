@@ -15,7 +15,7 @@
 import b from 'assert';
 // Only use for testing importEqualsDeclaration in toplevel
 import c = require('fs');
-export import n = require('fs');
+export import m = require('fs');
 module d {
     export module Y {
         export interface Z {
@@ -30,16 +30,16 @@ let a: d.Y.Z = { a: 1 };
 b(a.a === 1);
 let e: d.Y = { b: "1" };
 b(e.b === "1");
-module f {
+module A {
     export module B {
-        export class r {
+        export class C {
             c: boolean = true;
         }
     }
 }
-var g: f.B.C = new f.B.C();
-b(g.c === true);
-module h {
+var f: A.B.C = new A.B.C();
+b(f.c === true);
+module g {
     export namespace N {
         export module M2 {
             export interface I {
@@ -48,26 +48,26 @@ module h {
         }
     }
 }
-let i: h.N.M2.I = { d: 2 };
-b(i.d === 2);
-type f = number;
-declare const j: number;
-declare namespace k {
-    export { q };
+let h: g.N.M2.I = { d: 2 };
+b(h.d === 2);
+type A = number;
+declare const i: number;
+declare namespace j {
+    export { A };
 }
-let l: k.A = 3;
-b(l === 3);
-namespace m {
-    namespace o {
+let k: j.A = 3;
+b(k === 3);
+namespace l {
+    namespace n {
         export var temp3: string = "test-importEqualsDeclaration";
     }
-    import p = o.temp3;
-    export import temp5 = o.temp3;
-    b(p === "test-importEqualsDeclaration");
+    import o = n.temp3;
+    export import temp5 = n.temp3;
+    b(o === "test-importEqualsDeclaration");
     b(temp5 === "test-importEqualsDeclaration");
 }
-namespace m {
+namespace l {
     b(temp5 === "test-importEqualsDeclaration");
 }
-b(m.temp5 === "test-importEqualsDeclaration");
+b(l.temp5 === "test-importEqualsDeclaration");
 export {};

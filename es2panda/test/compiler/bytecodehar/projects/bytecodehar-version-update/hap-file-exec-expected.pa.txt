@@ -14,9 +14,8 @@ record_name: &lib2/importfile3&
 program_file: importfile4.ts
 record_name: &@ohos/lib2/importfile4&
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any &bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst(any a0, any a1, any a2) {
 	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
 	dynamicimport
@@ -24,19 +23,19 @@ slotNum = 0x0
 	dynamicimport
 	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
 	dynamicimport
-	ldundefined
 	returnundefined
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any &bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl(any a0, any a1, any a2) {
 	lda.str aaa
 	dynamicimport
-	ldundefined
 	returnundefined
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any &bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWithAt(any a0, any a1, any a2) {
 	lda.str @normalized:N&module&&@ohos/lib/importfile2&2.0.0
 	dynamicimport
@@ -48,11 +47,11 @@ slotNum = 0x0
 	dynamicimport
 	lda.str @normalized:N&&&@ohos/lib2/importfile4&
 	dynamicimport
-	ldundefined
 	returnundefined
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any &bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWoAt(any a0, any a1, any a2) {
 	lda.str @normalized:N&module&bundle&lib/importfile1&2.0.0
 	dynamicimport
@@ -64,11 +63,11 @@ slotNum = 0x0
 	dynamicimport
 	lda.str @normalized:N&&&lib2/importfile3&
 	dynamicimport
-	ldundefined
 	returnundefined
 }
 
 slotNum = 0x4
+.language ECMAScript
 .function any &bytecodehar/bytecodehar-dynamic-import&.func_main_0(any a0, any a1, any a2) {
 	definefunc 0x0, &bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst, 0x0
 	definefunc 0x1, &bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl, 0x0
@@ -76,16 +75,15 @@ slotNum = 0x4
 	definefunc 0x3, &bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWoAt, 0x0
 	lda.str test
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 }
 
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar/bytecodehar-dynamic-import&_2006
+slot &bytecodehar/bytecodehar-dynamic-import&_2043
 ------------------------------------
-slot &bytecodehar/bytecodehar-dynamic-import&_2010
+slot &bytecodehar/bytecodehar-dynamic-import&_2047
 {
   index: 0
     tag: 2
@@ -128,9 +126,8 @@ slot &bytecodehar/bytecodehar-dynamic-import&_2010
 },
 ======> strings <======
 "&bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst"; "&bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl"; "&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWithAt"; "&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWoAt"; "@normalized:N&&&@ohos/lib/importfile2&2.0.0"; "@normalized:N&&&@ohos/lib2/importfile4&"; "@normalized:N&&&lib2/importfile3&"; "@normalized:N&&bundle&lib/importfile1&2.0.0"; "@normalized:N&module&&@ohos/lib/importfile2&2.0.0"; "@normalized:N&module&bundle&lib/importfile1&2.0.0"; "aaa"; "test"; 
-.language ECMAScript
-
 slotNum = 0x18
+.language ECMAScript
 .function any &bytecodehar/bytecodehar-static-import&.#*#foo(any a0, any a1, any a2) {
 	tryldglobalbyname 0x0, print
 	sta v0
@@ -188,11 +185,11 @@ slotNum = 0x18
 	stownbyindex 0x14, v1, 0x9
 	lda v0
 	callarg1 0x16, v1
-	ldundefined
 	returnundefined
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any &bytecodehar/bytecodehar-static-import&.func_main_0(any a0, any a1, any a2) {
 	newlexenv 0xa
 	definefunc 0x0, &bytecodehar/bytecodehar-static-import&.#*#foo, 0x0
@@ -216,16 +213,15 @@ slotNum = 0x1
 	stlexvar 0x0, 0x8
 	getmodulenamespace 0x9
 	stlexvar 0x0, 0x9
-	ldundefined
 	returnundefined
 }
 
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar/bytecodehar-static-import&_2046
+slot &bytecodehar/bytecodehar-static-import&_2083
 ------------------------------------
-slot &bytecodehar/bytecodehar-static-import&_2050
+slot &bytecodehar/bytecodehar-static-import&_2087
 {
   index: 0
     tag: 2
@@ -408,21 +404,20 @@ slot &bytecodehar/bytecodehar-static-import&_2050
 },
 ======> strings <======
 "&bytecodehar/bytecodehar-static-import&.#*#foo"; "a"; "b"; "c"; "d"; "e"; "f"; "g"; "h"; "i"; "j"; "print"; 
-.language ECMAScript
+
+======> literal array buffer <======
+======> strings <======
 
 
 ======> literal array buffer <======
 ======> strings <======
 
-.language ECMAScript
-
 
 ======> literal array buffer <======
 ======> strings <======
-
-.language ECMAScript
 
 slotNum = 0xa
+.language ECMAScript
 .function any &myapp/hap-file-exec&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -444,7 +439,6 @@ label_0:
 	sta v1
 	lda v0
 	callarg1 0x8, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -517,15 +511,13 @@ slot &myapp/hap-file-exec&_1
 },
 ======> strings <======
 "print"; "test"; 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any bundle&lib/importfile1&2.0.0.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldtrue
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -578,15 +570,13 @@ slot bundle&lib/importfile1&2.0.0_1
 },
 ======> strings <======
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any &@ohos/lib/importfile2&2.0.0.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldtrue
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -639,15 +629,13 @@ slot &@ohos/lib/importfile2&2.0.0_1
 },
 ======> strings <======
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any &lib2/importfile3&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldtrue
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -700,15 +688,13 @@ slot &lib2/importfile3&_1
 },
 ======> strings <======
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any &@ohos/lib2/importfile4&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldtrue
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -761,9 +747,8 @@ slot &@ohos/lib2/importfile4&_1
 },
 ======> strings <======
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any &bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst(any a0, any a1, any a2) {
 	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
 	dynamicimport
@@ -771,19 +756,19 @@ slotNum = 0x0
 	dynamicimport
 	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
 	dynamicimport
-	ldundefined
 	returnundefined
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any &bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl(any a0, any a1, any a2) {
 	lda.str aaa
 	dynamicimport
-	ldundefined
 	returnundefined
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any &bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWithAt(any a0, any a1, any a2) {
 	lda.str @normalized:N&module&&@ohos/lib/importfile2&2.0.0
 	dynamicimport
@@ -795,11 +780,11 @@ slotNum = 0x0
 	dynamicimport
 	lda.str @normalized:N&&&@ohos/lib2/importfile4&
 	dynamicimport
-	ldundefined
 	returnundefined
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any &bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWoAt(any a0, any a1, any a2) {
 	lda.str @normalized:N&module&bundle&lib/importfile1&2.0.0
 	dynamicimport
@@ -811,11 +796,11 @@ slotNum = 0x0
 	dynamicimport
 	lda.str @normalized:N&&&lib2/importfile3&
 	dynamicimport
-	ldundefined
 	returnundefined
 }
 
 slotNum = 0x4
+.language ECMAScript
 .function any &bytecodehar/bytecodehar-dynamic-import&.func_main_0(any a0, any a1, any a2) {
 	definefunc 0x0, &bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst, 0x0
 	definefunc 0x1, &bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl, 0x0
@@ -823,16 +808,15 @@ slotNum = 0x4
 	definefunc 0x3, &bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWoAt, 0x0
 	lda.str test
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 }
 
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar/bytecodehar-dynamic-import&_2006
+slot &bytecodehar/bytecodehar-dynamic-import&_2043
 ------------------------------------
-slot &bytecodehar/bytecodehar-dynamic-import&_2010
+slot &bytecodehar/bytecodehar-dynamic-import&_2047
 {
   index: 0
     tag: 2
@@ -875,9 +859,8 @@ slot &bytecodehar/bytecodehar-dynamic-import&_2010
 },
 ======> strings <======
 "&bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst"; "&bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl"; "&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWithAt"; "&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWoAt"; "@normalized:N&&&@ohos/lib/importfile2&2.0.0"; "@normalized:N&&&@ohos/lib2/importfile4&"; "@normalized:N&&&lib2/importfile3&"; "@normalized:N&&bundle&lib/importfile1&2.0.0"; "@normalized:N&module&&@ohos/lib/importfile2&2.0.0"; "@normalized:N&module&bundle&lib/importfile1&2.0.0"; "aaa"; "test"; 
-.language ECMAScript
-
 slotNum = 0x18
+.language ECMAScript
 .function any &bytecodehar/bytecodehar-static-import&.#*#foo(any a0, any a1, any a2) {
 	tryldglobalbyname 0x0, print
 	sta v0
@@ -935,11 +918,11 @@ slotNum = 0x18
 	stownbyindex 0x14, v1, 0x9
 	lda v0
 	callarg1 0x16, v1
-	ldundefined
 	returnundefined
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any &bytecodehar/bytecodehar-static-import&.func_main_0(any a0, any a1, any a2) {
 	newlexenv 0xa
 	definefunc 0x0, &bytecodehar/bytecodehar-static-import&.#*#foo, 0x0
@@ -963,16 +946,15 @@ slotNum = 0x1
 	stlexvar 0x0, 0x8
 	getmodulenamespace 0x9
 	stlexvar 0x0, 0x9
-	ldundefined
 	returnundefined
 }
 
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar/bytecodehar-static-import&_2046
+slot &bytecodehar/bytecodehar-static-import&_2083
 ------------------------------------
-slot &bytecodehar/bytecodehar-static-import&_2050
+slot &bytecodehar/bytecodehar-static-import&_2087
 {
   index: 0
     tag: 2
@@ -1155,9 +1137,8 @@ slot &bytecodehar/bytecodehar-static-import&_2050
 },
 ======> strings <======
 "&bytecodehar/bytecodehar-static-import&.#*#foo"; "a"; "b"; "c"; "d"; "e"; "f"; "g"; "h"; "i"; "j"; "print"; 
-.language ECMAScript
-
 slotNum = 0xa
+.language ECMAScript
 .function any &myapp/hap-file-exec&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -1179,7 +1160,6 @@ label_0:
 	sta v1
 	lda v0
 	callarg1 0x8, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -1252,15 +1232,13 @@ slot &myapp/hap-file-exec&_1
 },
 ======> strings <======
 "print"; "test"; 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any bundle&lib/importfile1&2.0.0.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldtrue
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -1313,15 +1291,13 @@ slot bundle&lib/importfile1&2.0.0_1
 },
 ======> strings <======
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any &@ohos/lib/importfile2&2.0.0.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldtrue
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -1374,15 +1350,13 @@ slot &@ohos/lib/importfile2&2.0.0_1
 },
 ======> strings <======
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any &lib2/importfile3&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldtrue
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -1435,15 +1409,13 @@ slot &lib2/importfile3&_1
 },
 ======> strings <======
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any &@ohos/lib2/importfile4&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldtrue
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }

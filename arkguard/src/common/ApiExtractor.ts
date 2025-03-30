@@ -14,36 +14,51 @@
  */
 
 import type {
+  ClassDeclaration,
+  CommentRange,
   ElementAccessExpression,
+  EnumDeclaration,
   ExportDeclaration,
+  FunctionDeclaration,
+  InterfaceDeclaration,
   ModifiersArray,
+  ModuleDeclaration,
   Node,
   ParameterDeclaration,
   PropertyAccessExpression,
   SourceFile,
-  EnumDeclaration
+  TypeAliasDeclaration,
+  VariableDeclaration,
+  VariableStatement
 } from 'typescript';
 
 import {
   createSourceFile,
+  ClassElement,
   forEachChild,
+  getLeadingCommentRangesOfNode,
   isBinaryExpression,
   isClassDeclaration,
   isClassExpression,
-  isStructDeclaration,
   isExpressionStatement,
   isEnumDeclaration,
   isExportAssignment,
   isExportDeclaration,
   isExportSpecifier,
+  isGetAccessor,
   isIdentifier,
   isInterfaceDeclaration,
+  isModuleBlock,
   isObjectLiteralExpression,
+  isParameterPropertyDeclaration,
+  isStructDeclaration,
+  isSourceFile,
   isTypeAliasDeclaration,
   isVariableDeclaration,
   isVariableStatement,
   isElementAccessExpression,
   isPropertyAccessExpression,
+  isSetAccessor,
   isStringLiteral,
   ScriptTarget,
   SyntaxKind,
@@ -58,6 +73,8 @@ import {
   isMethodSignature,
   isPropertyAssignment,
   isEnumMember,
+  isParameter,
+  isTypeParameterDeclaration,
   isIndexedAccessTypeNode,
   Extension
 } from 'typescript';
@@ -82,6 +99,9 @@ import { scanProjectConfig } from './ApiReader';
 import { enumPropsSet } from '../utils/OhsUtil';
 import { FileUtils } from '../utils/FileUtils';
 import { supportedParsingExtension } from './type';
+import { addToSet, FileWhiteList, KeepInfo, projectWhiteListManager } from '../utils/ProjectCollections';
+import { AtKeepCollections } from '../utils/CommonCollections';
+import { hasExportModifier } from '../utils/NodeUtils';
 
 export namespace ApiExtractor {
   interface KeywordInfo {
@@ -97,11 +117,51 @@ export namespace ApiExtractor {
     KEEP_DTS
   }
 
+  export enum AtKeepType {
+    None,
+    KeepSymbol,
+    KeepAsConsumer
+  }
+
+  export enum WhiteListType {
+    PropertyName,
+    GlobalName,
+  }
+
+  type KeepTargetNode =
+  | ClassDeclaration
+  | InterfaceDeclaration
+  | EnumDeclaration
+  | FunctionDeclaration
+  | ModuleDeclaration
+  | VariableDeclaration
+  | TypeAliasDeclaration;
+
+  const KEEP_SYMBOL = '//@KeepSymbol';
+  const KEEP_AS_CONSUMER = '//@KeepAsConsumer';
+
   let mCurrentExportedPropertySet: Set<string> = new Set<string>();
   let mCurrentExportNameSet: Set<string> = new Set<string>();
+
+  let keepSymbolTemp: KeepInfo = {
+    propertyNames: new Set<string>(),
+    globalNames: new Set<string>(),
+  };
+  let keepAsConsumerTemp: KeepInfo = {
+    propertyNames: new Set<string>(),
+    globalNames: new Set<string>(),
+  };
+
+  function clearAtKeepTemp(): void {
+    keepSymbolTemp.propertyNames.clear();
+    keepSymbolTemp.globalNames.clear();
+    keepAsConsumerTemp.propertyNames.clear();
+    keepAsConsumerTemp.globalNames.clear();
+  }
+
   export let mPropertySet: Set<string> = new Set<string>();
   export let mExportNames: Set<string> = new Set<string>();
-  export let mConstructorPropertySet: Set<string> = undefined;
+  export let mConstructorPropertySet: Set<string> = new Set<string>();
   export let mEnumMemberSet: Set<string> = new Set<string>();
   export let mSystemExportSet: Set<string> = new Set<string>();
   /**
@@ -181,7 +241,6 @@ export namespace ApiExtractor {
 
     let {hasExport, hasDeclare} = getKeyword(astNode.modifiers);
     if (!hasExport) {
-      addCommonJsExports(astNode, isSystemApi);
       return;
     }
 
@@ -204,7 +263,7 @@ export namespace ApiExtractor {
     }
   };
 
-  const isCollectedToplevelElements = function (astNode): boolean {
+  const isCollectedExportNames = function (astNode): boolean {
     if (astNode.name && !mCurrentExportNameSet.has(astNode.name.getText())) {
       return false;
     }
@@ -224,25 +283,25 @@ export namespace ApiExtractor {
    * used only in oh sdk api extract or api of xxx.d.ts declaration file
    * @param astNode
    */
-  const visitChildNode = function (astNode): void {
+  const visitChildNode = function (astNode, isSdkApi: boolean = false): void {
     if (!astNode) {
       return;
     }
-
     if (astNode.name !== undefined && !mCurrentExportedPropertySet.has(astNode.name.getText())) {
-      if (isStringLiteral(astNode.name)) {
-        mCurrentExportedPropertySet.add(astNode.name.text);
-      } else {
-        mCurrentExportedPropertySet.add(astNode.name.getText());
+      const notAddParameter: boolean = scanProjectConfig.mStripSystemApiArgs && isSdkApi;
+      if (!notAddParameter || (!isParameter(astNode) && !isTypeParameterDeclaration(astNode))) {
+        const nameToAdd = isStringLiteral(astNode.name) ? astNode.name.text : astNode.name.getText();
+        mCurrentExportedPropertySet.add(nameToAdd);
       }
     }
 
     astNode.forEachChild((childNode) => {
-      visitChildNode(childNode);
+      visitChildNode(childNode, isSdkApi);
     });
   };
 
   // Collect constructor properties from all files.
+  // To avoid generating the same name as the constructor property when obfuscating identifier names.
   const visitNodeForConstructorProperty = function (astNode): void {
     if (!astNode) {
       return;
@@ -259,7 +318,8 @@ export namespace ApiExtractor {
         if (!isIdentifier(param.name) || findRet === undefined) {
           return;
         }
-        mConstructorPropertySet?.add(param.name.getText());
+        mConstructorPropertySet.add(param.name.getText());
+        projectWhiteListManager?.fileWhiteListInfo?.fileReservedInfo.propertyParams.add(param.name.getText());
       };
 
       astNode?.parameters?.forEach((param) => {
@@ -276,17 +336,17 @@ export namespace ApiExtractor {
    * used only in oh sdk api extract
    * @param astNode node of ast
    */
-  const visitPropertyAndName = function (astNode): void {
-    if (!isCollectedToplevelElements(astNode)) {
+  const visitPropertyAndNameForSdk = function (astNode): void {
+    if (!isCollectedExportNames(astNode)) {
       /**
-       * Collects property names of elements within top-level elements that haven't been collected yet.
-       * @param astNode toplevel elements of sourcefile
+       * Collects property names of elements that haven't been collected yet.
+       * @param astNode elements of sourcefile
        */
       collectPropertyNames(astNode);
       return;
     }
 
-    visitChildNode(astNode);
+    visitChildNode(astNode, true);
   };
 
   /**
@@ -612,6 +672,7 @@ export namespace ApiExtractor {
   function addEnumElement(currentPropsSet: Set<string>): void {
     currentPropsSet.forEach((element: string) => {
       enumPropsSet.add(element);
+      projectWhiteListManager?.fileWhiteListInfo?.fileKeepInfo.enumProperties.add(element);
     });
   }
   /**
@@ -625,11 +686,84 @@ export namespace ApiExtractor {
       return;
     }
 
+    projectWhiteListManager?.setCurrentCollector(fileName);
+
     const sourceFile: SourceFile = createSourceFile(fileName, fs.readFileSync(fileName).toString(), ScriptTarget.ES2015, true);
     mCurrentExportedPropertySet.clear();
+
+    collectWhiteListByApiType(sourceFile, apiType, fileName);
+
+    // collect names marked with '// @KeepSymbol' or '// @KeepAsConsumer', only support .ts/.ets
+    if (shouldCollectAtKeep(fileName)) {
+      collectAndAddAtKeepNames(sourceFile);
+    } 
+
+    // collect origin source file white lists
+    if (shouldCollectFileWhiteLists(apiType)) {
+      collectFileWhiteLists();
+    }
+
+    // collect export names.
+    mCurrentExportNameSet.forEach(item => mExportNames.add(item));
+    mCurrentExportNameSet.clear();
+    // collect export names and properties.
+    mCurrentExportedPropertySet.forEach(item => mPropertySet.add(item));
+    mCurrentExportedPropertySet.clear();
+    exportOriginalNameSet.clear();
+  };
+
+  function shouldCollectAtKeep(fileName: string): boolean {
+    return scanProjectConfig.mEnableAtKeep &&
+      !(fileName.endsWith(Extension.Dts) || fileName.endsWith(Extension.Dets)) &&
+      (fileName.endsWith(Extension.Ts) || fileName.endsWith(Extension.Ets));
+  }
+
+  function collectAndAddAtKeepNames(sourceFile: SourceFile): void {
+    clearAtKeepTemp();
+    collectNamesWithAtKeep(sourceFile, sourceFile);
+    addToSet(AtKeepCollections.keepSymbol.globalNames, keepSymbolTemp.globalNames);
+    addToSet(AtKeepCollections.keepSymbol.propertyNames, keepSymbolTemp.propertyNames);
+    addToSet(AtKeepCollections.keepAsConsumer.globalNames, keepAsConsumerTemp.globalNames);
+    addToSet(AtKeepCollections.keepAsConsumer.propertyNames, keepAsConsumerTemp.propertyNames);
+  }
+
+  function shouldCollectFileWhiteLists(apiType: ApiType): boolean {
+    return apiType === ApiType.PROJECT || apiType === ApiType.CONSTRUCTOR_PROPERTY;
+  }
+
+  function collectFileWhiteLists(): void {
+    const fileWhiteLists: FileWhiteList | undefined = projectWhiteListManager?.fileWhiteListInfo;
+    if (!fileWhiteLists) {
+      return;
+    }
+
+    if (scanProjectConfig.mPropertyObfuscation) {
+      addToSet(fileWhiteLists.fileKeepInfo.exported.propertyNames, mCurrentExportedPropertySet);
+      if (!scanProjectConfig.mKeepStringProperty) {
+        fileWhiteLists.fileKeepInfo.stringProperties.clear();
+      }
+    } else {
+      fileWhiteLists.fileKeepInfo.structProperties.clear();
+      fileWhiteLists.fileKeepInfo.stringProperties.clear();
+      fileWhiteLists.fileKeepInfo.enumProperties.clear();
+    }
+    if (scanProjectConfig.mExportObfuscation) {
+      addToSet(fileWhiteLists.fileKeepInfo.exported.globalNames, mCurrentExportNameSet);
+    }
+    if (scanProjectConfig.mEnableAtKeep) {
+      addToSet(fileWhiteLists.fileKeepInfo.keepSymbol.globalNames, keepSymbolTemp.globalNames);
+      addToSet(fileWhiteLists.fileKeepInfo.keepSymbol.propertyNames, keepSymbolTemp.propertyNames);
+      addToSet(fileWhiteLists.fileKeepInfo.keepAsConsumer.globalNames, keepAsConsumerTemp.globalNames);
+      addToSet(fileWhiteLists.fileKeepInfo.keepAsConsumer.propertyNames, keepAsConsumerTemp.propertyNames);
+    }
+  }
+
+  function collectWhiteListByApiType(sourceFile: SourceFile, apiType: ApiType, fileName: string): void {
     // get export name list
     switch (apiType) {
       case ApiType.COMPONENT:
+        forEachChild(sourceFile, node => visitChildNode(node, true));
+        break;
       case ApiType.KEEP_DTS:
         forEachChild(sourceFile, visitChildNode);
         break;
@@ -638,7 +772,7 @@ export namespace ApiExtractor {
         forEachChild(sourceFile, node => visitExport(node, true));
         mCurrentExportNameSet.forEach(item => mSystemExportSet.add(item));
 
-        forEachChild(sourceFile, visitPropertyAndName);
+        forEachChild(sourceFile, visitPropertyAndNameForSdk);
         mCurrentExportNameSet.clear();
         break;
       case ApiType.PROJECT:
@@ -661,15 +795,7 @@ export namespace ApiExtractor {
       default:
         break;
     }
-
-    // collect export names.
-    mCurrentExportNameSet.forEach(item => mExportNames.add(item));
-    mCurrentExportNameSet.clear();
-    // collect export names and properties.
-    mCurrentExportedPropertySet.forEach(item => mPropertySet.add(item));
-    mCurrentExportedPropertySet.clear();
-    exportOriginalNameSet.clear();
-  };
+  }
 
   function handleWhiteListWhenExportObfs(fileName: string, collectedExportNamesAndProperties: Set<string>): Set<string> {
     // If mExportObfuscation is not enabled, collect the export names and their properties into the whitelist.
@@ -947,6 +1073,7 @@ export namespace ApiExtractor {
   function collectEnumMember(node: Node): void {
     if (isEnumMember(node) && isIdentifier(node.name)) {
       mEnumMemberSet.add(node.name.text);
+      projectWhiteListManager?.fileWhiteListInfo?.fileReservedInfo.enumProperties.add(node.name.text);
     }
   }
 
@@ -976,5 +1103,315 @@ export namespace ApiExtractor {
       return;
     }
     forEachChild(sourceFile, visitEnumMembers);
+  }
+
+  function collectNamesWithAtKeep(node: Node, sourceFile: SourceFile): void {
+    switch (node.kind) {
+      case SyntaxKind.ClassDeclaration:
+        collectClassDeclaration(node as ClassDeclaration, sourceFile);
+        break;
+      case SyntaxKind.InterfaceDeclaration:
+        collectInterfaceDeclaration(node as InterfaceDeclaration, sourceFile);
+        break;
+      case SyntaxKind.EnumDeclaration:
+        collectEnumDeclaration(node as EnumDeclaration, sourceFile);
+        break;
+      case SyntaxKind.FunctionDeclaration:
+        collectFunctionDeclaration(node as FunctionDeclaration, sourceFile);
+        break;
+      case SyntaxKind.VariableStatement:
+        collectVariableDeclararion(node as VariableStatement, sourceFile);
+        break;
+      case SyntaxKind.ModuleDeclaration:
+        collectModuleDeclaration(node as ModuleDeclaration, sourceFile);
+        break;
+    }
+    forEachChild(node, child => collectNamesWithAtKeep(child, sourceFile));
+  }
+
+  function collectClassDeclaration(node: ClassDeclaration, sourceFile: SourceFile): void {
+    const atKeepType: AtKeepType = getAtKeepType(node, sourceFile);
+    const isToplevel: boolean = isSourceFile(node.parent);
+    const isExported: boolean = hasExportModifier(node);
+
+    if (atKeepType === AtKeepType.KeepAsConsumer) {
+      collectToplevelOrExportedNames(node, isToplevel, isExported, atKeepType);
+      collectClassDeclarationMembers(node, atKeepType);
+    } else if (atKeepType === AtKeepType.KeepSymbol) {
+      collectToplevelOrExportedNames(node, isToplevel, isExported, atKeepType);
+      collectClassDeclarationMembers(node, atKeepType);
+      scanAndCollectClassDeclarationMembers(node, sourceFile, isToplevel, isExported);
+    } else { // atKeepType === AtKeepType.None
+      scanAndCollectClassDeclarationMembers(node, sourceFile, isToplevel, isExported);
+    }
+  }
+
+  function collectClassDeclarationMembers(node: ClassDeclaration, atKeepType: AtKeepType): void {
+    for (const member of node.members) {
+      collectClassMemberNames(member, atKeepType);
+      collectParameterPropertyNames(member, atKeepType);
+    }
+  }
+
+  function collectClassMemberNames(member: ClassElement, atKeepType: AtKeepType): void {
+    if (isPropertyDeclaration(member) || isMethodDeclaration(member) || isGetAccessor(member) || isSetAccessor(member)) {
+      if (isIdentifier(member.name)) {
+        collectAtKeepNamesByType(member.name.text, atKeepType, WhiteListType.PropertyName);
+      }
+    }
+  }
+
+  function collectParameterPropertyNames(member: ClassElement, atKeepType: AtKeepType): void {
+    if (isConstructorDeclaration(member)) {
+      member.parameters.forEach((param) => {
+        if (isParameterPropertyDeclaration(param, member) && isIdentifier(param.name)) {
+          collectAtKeepNamesByType(param.name.text, atKeepType, WhiteListType.PropertyName);
+        }
+      });
+    }
+  }
+
+  function scanAndCollectClassDeclarationMembers(node: ClassDeclaration, sourceFile: SourceFile, isToplevel: boolean, isExported: boolean): void {
+    let shouldKeepClassName: boolean = false;
+    let atKeepTypeOfClass: AtKeepType = AtKeepType.KeepSymbol;
+    for (const member of node.members) {
+      const atKeepType: AtKeepType = getAtKeepType(member, sourceFile);
+      if (atKeepType === AtKeepType.None) {
+        continue;
+      }
+      if (atKeepType === AtKeepType.KeepAsConsumer) {
+        atKeepTypeOfClass = AtKeepType.KeepAsConsumer;
+      }
+      if (isPropertyDeclaration(member) || isMethodDeclaration(member) || isGetAccessor(member) || isSetAccessor(member)) {
+        if (isIdentifier(member.name)) {
+          shouldKeepClassName = true;
+          collectAtKeepNamesByType(member.name.text, atKeepType, WhiteListType.PropertyName);
+        }
+      }
+      if (isConstructorDeclaration(member)) {
+        shouldKeepClassName = true;
+      }
+    }
+    if (shouldKeepClassName) {
+      collectToplevelOrExportedNames(node, isToplevel, isExported, atKeepTypeOfClass);
+    }
+  }
+
+  function collectInterfaceDeclaration(node: InterfaceDeclaration, sourceFile: SourceFile): void {
+    const atKeepType: AtKeepType = getAtKeepType(node, sourceFile);
+    const isToplevel: boolean = isSourceFile(node.parent);
+    const isExported: boolean = hasExportModifier(node);
+
+    if (atKeepType === AtKeepType.KeepAsConsumer) {
+      collectToplevelOrExportedNames(node, isToplevel, isExported, atKeepType);
+      collectInterfaceDeclarationMembers(node, atKeepType);
+    } else if (atKeepType === AtKeepType.KeepSymbol) {
+      collectToplevelOrExportedNames(node, isToplevel, isExported, atKeepType);
+      collectInterfaceDeclarationMembers(node, atKeepType);
+      scanAndCollectInterfaceDeclarationMembers(node, sourceFile, isToplevel, isExported);
+    } else { // atKeepType === AtKeepType.None
+      scanAndCollectInterfaceDeclarationMembers(node, sourceFile, isToplevel, isExported);
+    }
+  }
+
+  function collectInterfaceDeclarationMembers(node: InterfaceDeclaration, atKeepType: AtKeepType): void {
+    for (const member of node.members) {
+      if (isPropertySignature(member) || isMethodSignature(member)) {
+        if (isIdentifier(member.name)) {
+          collectAtKeepNamesByType(member.name.text, atKeepType, WhiteListType.PropertyName);
+        }
+      }
+    }
+  }
+
+  function scanAndCollectInterfaceDeclarationMembers(node: InterfaceDeclaration, sourceFile: SourceFile, isToplevel: boolean, isExported: boolean): void {
+    let shouldKeepInterfaceName: boolean = false;
+    let atKeepTypeOfInterface: AtKeepType = AtKeepType.KeepSymbol;
+    for (const member of node.members) {
+      const atKeepType: AtKeepType = getAtKeepType(member, sourceFile);
+      if (atKeepType === AtKeepType.None) {
+        continue;
+      }
+      if (atKeepType === AtKeepType.KeepAsConsumer) {
+        atKeepTypeOfInterface = AtKeepType.KeepAsConsumer;
+      }
+      if (isPropertySignature(member) || isMethodSignature(member)) {
+        if (isIdentifier(member.name)) {
+          shouldKeepInterfaceName = true;
+          collectAtKeepNamesByType(member.name.text, atKeepType, WhiteListType.PropertyName);
+        }
+      }
+    }
+    if (shouldKeepInterfaceName) {
+      collectToplevelOrExportedNames(node, isToplevel, isExported, atKeepTypeOfInterface);
+    }
+  }
+
+  function collectEnumDeclaration(node: EnumDeclaration, sourceFile: SourceFile): void {
+    const atKeepType: AtKeepType = getAtKeepType(node, sourceFile);
+    const isToplevel: boolean = isSourceFile(node.parent);
+    const isExported: boolean = hasExportModifier(node);
+
+    if (atKeepType === AtKeepType.KeepAsConsumer) {
+      collectToplevelOrExportedNames(node, isToplevel, isExported, atKeepType);
+      collectEnumDeclarationMembers(node, atKeepType);
+    } else if (atKeepType === AtKeepType.KeepSymbol) {
+      collectToplevelOrExportedNames(node, isToplevel, isExported, atKeepType);
+      collectEnumDeclarationMembers(node, atKeepType);
+      scanAndCollectEnumDeclarationMembers(node, sourceFile, isToplevel, isExported);
+    } else { // atKeepType === AtKeepType.None
+      scanAndCollectEnumDeclarationMembers(node, sourceFile, isToplevel, isExported);
+    }
+  }
+
+  function collectEnumDeclarationMembers(node: EnumDeclaration, atKeepType: AtKeepType): void {
+    for (const member of node.members) {
+      if (isEnumMember(member)) {
+        if (isIdentifier(member.name)) {
+          collectAtKeepNamesByType(member.name.text, atKeepType, WhiteListType.PropertyName);
+        }
+      }
+    }
+  }
+
+  function scanAndCollectEnumDeclarationMembers(node: EnumDeclaration, sourceFile: SourceFile, isToplevel: boolean, isExported: boolean): void {
+    let shouldKeepEnumName: boolean = false;
+    let atKeepTypeOfEnum: AtKeepType = AtKeepType.KeepSymbol;
+    for (const member of node.members) {
+      const atKeepType: AtKeepType = getAtKeepType(member, sourceFile);
+      if (atKeepType === AtKeepType.None) {
+        continue;
+      }
+      if (atKeepType === AtKeepType.KeepAsConsumer) {
+        atKeepTypeOfEnum = AtKeepType.KeepAsConsumer;
+      }
+      if (isEnumMember(member)) {
+        if (isIdentifier(member.name)) {
+          shouldKeepEnumName = true;
+          collectAtKeepNamesByType(member.name.text, atKeepType, WhiteListType.PropertyName);
+        }
+      }
+    }
+    if (shouldKeepEnumName) {
+      collectToplevelOrExportedNames(node, isToplevel, isExported, atKeepTypeOfEnum);
+    }
+  }
+
+  function collectFunctionDeclaration(node: FunctionDeclaration, sourceFile: SourceFile): void {
+    const atKeepType: AtKeepType = getAtKeepType(node, sourceFile);
+    const isToplevel: boolean = isSourceFile(node.parent);
+    const isExported: boolean = hasExportModifier(node);
+    collectToplevelOrExportedNames(node, isToplevel, isExported, atKeepType);
+  }
+
+  function collectVariableDeclararion(node: VariableStatement, sourceFile: SourceFile): void {
+    const atKeepType: AtKeepType = getAtKeepType(node, sourceFile);
+    const isToplevel: boolean = isSourceFile(node.parent);
+    const isExported: boolean = hasExportModifier(node);
+    node.declarationList.forEachChild((child) => {
+      if (isVariableDeclaration(child)) {
+        collectToplevelOrExportedNames(child, isToplevel, isExported, atKeepType);
+      }
+    });
+  }
+
+  function collectModuleDeclaration(node: ModuleDeclaration, sourceFile: SourceFile, atKeepTypeOuter?: AtKeepType): void {
+    let atKeepType: AtKeepType;
+    if (atKeepTypeOuter) {
+      atKeepType = atKeepTypeOuter;
+    } else {
+      atKeepType = getAtKeepType(node, sourceFile);
+    }
+    const isToplevel: boolean = isSourceFile(node.parent);
+    const isExported: boolean = hasExportModifier(node);
+    collectToplevelOrExportedNames(node, isToplevel, isExported, atKeepType);
+
+    if (atKeepType !== AtKeepType.None && isModuleBlock(node.body)) {
+      node.body.statements.forEach((child) => {
+        collectModuleChild(child, atKeepType, sourceFile);
+      });
+    }
+  }
+
+  function collectModuleChild(child: Node, atKeepType: AtKeepType, sourceFile: SourceFile): void {
+    const isExportedChild: boolean = hasExportModifier(child);
+    if (!isExportedChild) {
+      return;
+    }
+
+    switch (child.kind) {
+      case SyntaxKind.ClassDeclaration:
+      case SyntaxKind.InterfaceDeclaration:
+      case SyntaxKind.EnumDeclaration:
+      case SyntaxKind.FunctionDeclaration:
+      case SyntaxKind.TypeAliasDeclaration:
+        collectToplevelOrExportedNames(child as KeepTargetNode, false, true, atKeepType);
+        break;
+      case SyntaxKind.ModuleDeclaration:
+        collectToplevelOrExportedNames(child as ModuleDeclaration, false, true, atKeepType);
+        collectModuleDeclaration(child as ModuleDeclaration, sourceFile, atKeepType);
+        break;
+      case SyntaxKind.VariableStatement:
+        (child as VariableStatement).declarationList.forEachChild((variableDeclaration) => {
+          if (isVariableDeclaration(variableDeclaration)) {
+            collectToplevelOrExportedNames(variableDeclaration, false, true, atKeepType);
+          }
+        });
+        break;
+    }
+  }
+
+  function getAtKeepType(node: Node, sourceFile: SourceFile): AtKeepType {
+    const ranges: CommentRange[] | undefined = getLeadingCommentRangesOfNode(node, sourceFile);
+    let atKeepType: AtKeepType = AtKeepType.None;
+    if (!ranges?.length) {
+      return atKeepType;
+    }
+    for (const range of ranges) {
+      if (range.kind !== SyntaxKind.SingleLineCommentTrivia) {
+        continue;
+      }
+      const comment: string = sourceFile.text.slice(range.pos, range.end).replace(/\s+/g, '');
+      if (comment === KEEP_AS_CONSUMER) {
+        atKeepType = AtKeepType.KeepAsConsumer;
+        return atKeepType;
+      }
+      if (comment === KEEP_SYMBOL) {
+        atKeepType = AtKeepType.KeepSymbol;
+      }
+    }
+    return atKeepType;
+  }
+
+  function collectToplevelOrExportedNames(node: KeepTargetNode, isToplevel: boolean, isExported: boolean, atKeepType: AtKeepType): void {
+    if ((!isToplevel && !isExported) || !isIdentifier(node.name)) {
+      return;
+    }
+
+    collectAtKeepNamesByType(node.name.text, atKeepType, WhiteListType.GlobalName);
+
+    if (isExported) {
+      collectAtKeepNamesByType(node.name.text, atKeepType, WhiteListType.PropertyName);
+    }
+  }
+
+  function collectAtKeepNamesByType(name: string, atKeepType: AtKeepType, whiteListType: WhiteListType): void {
+    if (atKeepType === AtKeepType.None) {
+      return;
+    }
+
+    const targetCollection = atKeepType === AtKeepType.KeepSymbol
+      ? keepSymbolTemp
+      : keepAsConsumerTemp;
+
+    updateKeepCollection(targetCollection, whiteListType, name);
+  }
+
+  function updateKeepCollection(collector: KeepInfo, whiteListType: WhiteListType, name: string): void {
+    if (whiteListType === WhiteListType.PropertyName) {
+      collector.propertyNames.add(name);
+    } else {
+      collector.globalNames.add(name);
+    }
   }
 }

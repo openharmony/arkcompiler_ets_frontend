@@ -15,7 +15,6 @@
 
 #include "typeArgumentsExpression.h"
 
-#include <compiler/core/pandagen.h>
 #include <ir/astDump.h>
 #include <ir/ts/tsTypeParameterInstantiation.h>
 

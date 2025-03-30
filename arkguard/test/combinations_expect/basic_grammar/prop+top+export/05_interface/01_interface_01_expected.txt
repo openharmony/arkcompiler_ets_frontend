@@ -24,11 +24,11 @@ interface g {
     p2: string;
     p3?: any;
     p4?: number;
-    t: (s: number) => string;
-    u(): any;
-    v?(): any;
-    a1(a: string): number;
-    b1?(s: number): string;
+    a1: (s: number) => string;
+    b1(): any;
+    c1?(): any;
+    d1(a: string): number;
+    e1?(s: number): string;
 }
 interface h {
     (a: number, b: number, c?: string): number;
@@ -51,30 +51,30 @@ interface m {
     p2: string;
     p3?: any;
     p4?: number;
-    t: (s: number) => string;
+    a1: (s: number) => string;
 }
 let o: m = {
     p1: 1,
     p2: "1",
-    t: (t: number) => t.toString(),
+    a1: (t: number) => t.toString(),
 };
 assert(o.p1 === 1);
 assert(o.p2 === "1");
 assert(o.p3 === undefined);
 assert(o.p4 === undefined);
-assert(o.t(1) === "1");
+assert(o.a1(1) === "1");
 interface p {
-    u(): any;
-    v?(): any;
-    a1(a: string): number;
-    b1?(s: number): string;
+    b1(): any;
+    c1?(): any;
+    d1(a: string): number;
+    e1?(s: number): string;
 }
 let q: p = {
-    u: () => 1,
-    a1: (s: string) => 1,
-    b1: (r: number) => r.toString(),
+    b1: () => 1,
+    d1: (s: string) => 1,
+    e1: (r: number) => r.toString(),
 };
-assert(q.u() === 1);
-assert(q.v === undefined);
-assert(q.a1("1") === 1);
-assert(q.b1!(2) === "2");
+assert(q.b1() === 1);
+assert(q.c1 === undefined);
+assert(q.d1("1") === 1);
+assert(q.e1!(2) === "2");

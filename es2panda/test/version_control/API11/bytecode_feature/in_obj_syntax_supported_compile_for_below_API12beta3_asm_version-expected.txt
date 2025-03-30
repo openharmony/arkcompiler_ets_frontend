@@ -1,6 +1,6 @@
-.language ECMAScript
-
 slotNum = 0x4
+expectedProperty = 0x1
+.language ECMAScript
 .function any .InObjSyntax(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
@@ -14,6 +14,7 @@ label_2:
 }
 
 slotNum = 0xd
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 	nop
 label_7: 
@@ -56,7 +57,6 @@ label_1:
 	sta v1
 	lda v0
 	callarg1 0xb, v1
-	ldundefined
 	returnundefined
 label_8: 
 }
@@ -64,6 +64,7 @@ label_8:
 .catchall label_2, end_label_3, label_9
 
 slotNum = 0x2
+.language ECMAScript
 .function any .getPrivateProperty(any a0, any a1, any a2, any a3) {
 label_3: 
 label_0: 
@@ -81,12 +82,12 @@ label_4:
 }
 
 slotNum = 0x2
+.language ECMAScript
 .function any .instance_initializer(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	lda.str private
 	callruntime.defineprivateproperty 0x0, 0x0, 0x0, a2
-	ldundefined
 	returnundefined
 label_2: 
 }

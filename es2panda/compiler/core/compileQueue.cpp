@@ -15,21 +15,14 @@
 
 #include "compileQueue.h"
 
-#include <mem/arena_allocator.h>
-#include <mem/pool_manager.h>
 #include "utils/timers.h"
 
-#include <binder/binder.h>
-#include <binder/scope.h>
 #include <compiler/core/compilerContext.h>
 #include <compiler/core/emitter/emitter.h>
 #include <compiler/core/function.h>
 #include <compiler/core/pandagen.h>
-#include <es2panda.h>
 #include <protobufSnapshotGenerator.h>
 #include <util/commonUtil.h>
-#include <util/dumper.h>
-#include <util/helpers.h>
 
 namespace panda::es2panda::compiler {
 
@@ -73,7 +66,7 @@ void CompileModuleRecordJob::Run()
     }
 }
 
-bool CompileFileJob::RetrieveProgramFromCacheFiles(const std::string &buffer)
+bool CompileFileJob::RetrieveProgramFromCacheFiles(const std::string &buffer, bool isAbcFile)
 {
     if (options_->requireGlobalOptimization) {
         return false;
@@ -85,20 +78,52 @@ bool CompileFileJob::RetrieveProgramFromCacheFiles(const std::string &buffer)
     if (cacheFileIter != options_->cacheFiles.end()) {
         // cache is invalid when any one of source file infos being changed
         auto bufToHash = buffer + src_->fileName + src_->recordName + src_->sourcefile + src_->pkgName;
-        src_->hash = GetHash32String(reinterpret_cast<const uint8_t *>(bufToHash.c_str()));
-
         ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
-        auto *cacheProgramInfo = proto::ProtobufSnapshotGenerator::GetCacheContext(cacheFileIter->second,
-                                                                                   &allocator);
-
-        if (cacheProgramInfo != nullptr && cacheProgramInfo->hashCode == src_->hash) {
-            std::unique_lock<std::mutex> lock(globalMutex_);
-            auto *cache = allocator_->New<util::ProgramCache>(src_->hash, std::move(cacheProgramInfo->program));
-            progsInfo_.insert({src_->fileName, cache});
-            return true;
+        if (!isAbcFile) {
+            src_->hash = GetHash32String(reinterpret_cast<const uint8_t *>(bufToHash.c_str()));
+            auto *cacheProgramInfo = proto::ProtobufSnapshotGenerator::GetCacheContext(cacheFileIter->second,
+                                                                                       &allocator);
+            if (cacheProgramInfo != nullptr && cacheProgramInfo->hashCode == src_->hash) {
+                std::unique_lock<std::mutex> lock(globalMutex_);
+                auto *cache = allocator_->New<util::ProgramCache>(src_->hash, std::move(cacheProgramInfo->program));
+                progsInfo_.insert({src_->fileName, cache});
+                return true;
+            }
+        } else {
+            std::map<std::string, PkgInfo> updateVersionInfo =
+                options_->compileContextInfo.updateVersionInfo[src_->pkgName];
+            auto abcBufToHash = bufToHash;
+            for (auto &[pkgName, pkgInfo]: updateVersionInfo) {
+                /**
+                 * When the bytecode har dependency package version changes, it needs to be recompiled, so the hash
+                 * value needs to change
+                 */
+                abcBufToHash = abcBufToHash + pkgName + ":" + pkgInfo.version;
+            }
+            // An ABC file starts with '\0', but the 'GetHash32String' method does not support this format.
+            src_->hash = GetHash32(reinterpret_cast<const uint8_t *>(abcBufToHash.c_str()), abcBufToHash.size());
+            auto *cacheAbcProgramsInfo = proto::ProtobufSnapshotGenerator::GetAbcInputCacheContext(
+                cacheFileIter->second, &allocator);
+            if (cacheAbcProgramsInfo != nullptr && cacheAbcProgramsInfo->hashCode == src_->hash) {
+                InsertAbcCachePrograms(src_->hash, cacheAbcProgramsInfo->programsCache);
+                return true;
+            }
         }
     }
     return false;
+}
+
+void CompileFileJob::InsertAbcCachePrograms(uint32_t hashCode,
+    std::map<std::string, panda::es2panda::util::ProgramCache *> &abcProgramsInfo)
+{
+    std::unique_lock<std::mutex> lock(globalMutex_);
+    Compiler::SetExpectedProgsCount(Compiler::GetExpectedProgsCount() + abcProgramsInfo.size() - 1);
+    for (auto pair : abcProgramsInfo) {
+        ASSERT(progsInfo_.find(pair.first) == progsInfo_.end());
+        pair.second->program.isGeneratedFromMergedAbc = true;
+        auto *cache = allocator_->New<util::ProgramCache>(hashCode, std::move(pair.second->program), false);
+        progsInfo_.insert({pair.first, cache});
+    }
 }
 
 void CompileFileJob::Run()
@@ -106,13 +131,13 @@ void CompileFileJob::Run()
     std::stringstream ss;
     std::string buffer;
     panda::Timer::timerStart(panda::EVENT_READ_INPUT_AND_CACHE, src_->fileName);
-    if (!src_->fileName.empty() && src_->isSourceMode) {
+    if (!src_->fileName.empty()) {
         if (!util::Helpers::ReadFileToBuffer(src_->fileName, ss)) {
             return;
         }
         buffer = ss.str();
         src_->source = buffer;
-        if (RetrieveProgramFromCacheFiles(buffer)) {
+        if (RetrieveProgramFromCacheFiles(buffer, !src_->isSourceMode)) {
             panda::Timer::timerEnd(panda::EVENT_READ_INPUT_AND_CACHE, src_->fileName);
             return;
         }
@@ -138,9 +163,7 @@ void CompileFileJob::CompileProgram()
         panda::Timer::timerEnd(panda::EVENT_COMPILE_ABC_FILE, src_->fileName);
     } else {
         // If input is an abc file, in merge-abc mode, compile each class parallelly.
-        panda::Timer::timerStart(panda::EVENT_COMPILE_ABC_FILE, src_->fileName);
-        compiler.CompileAbcFileInParallel(src_, *options_, progsInfo_, allocator_);
-        panda::Timer::timerEnd(panda::EVENT_COMPILE_ABC_FILE, src_->fileName);
+        CompileAbcFileJobInParallel(compiler);
         return;
     }
 
@@ -149,6 +172,25 @@ void CompileFileJob::CompileProgram()
     }
 
     OptimizeAndCacheProgram(prog);
+}
+
+void CompileFileJob::CompileAbcFileJobInParallel(es2panda::Compiler &compiler)
+{
+    std::map<std::string, panda::es2panda::util::ProgramCache *> abcProgramsInfo {};
+
+    panda::Timer::timerStart(panda::EVENT_COMPILE_ABC_FILE, src_->fileName);
+    compiler.CompileAbcFileInParallel(src_, *options_, abcProgramsInfo, allocator_);
+    panda::Timer::timerEnd(panda::EVENT_COMPILE_ABC_FILE, src_->fileName);
+
+    panda::Timer::timerStart(panda::EVENT_UPDATE_ABC_PROG_CACHE, src_->fileName);
+    auto outputCacheIter = options_->cacheFiles.find(src_->fileName);
+    if (!options_->requireGlobalOptimization && outputCacheIter != options_->cacheFiles.end()) {
+        auto *cache = allocator_->New<panda::es2panda::util::AbcProgramsCache>(src_->hash, abcProgramsInfo);
+        CHECK_NOT_NULL(cache);
+        panda::proto::ProtobufSnapshotGenerator::UpdateAbcCacheFile(cache, outputCacheIter->second);
+    }
+    InsertAbcCachePrograms(src_->hash, abcProgramsInfo);
+    panda::Timer::timerEnd(panda::EVENT_UPDATE_ABC_PROG_CACHE, src_->fileName);
 }
 
 void CompileFileJob::OptimizeAndCacheProgram(panda::pandasm::Program *prog)
@@ -184,7 +226,11 @@ void CompileAbcClassJob::Run()
     auto *program = new panda::pandasm::Program();
     std::string record_name = "";
     compiler_.CompileAbcClass(recordId, *program, record_name);
+    program->isGeneratedFromMergedAbc = true;
 
+    if (!options_.modifiedPkgName.empty()) {
+        UpdatePkgNameOfImportOhmurl(program, options_);
+    }
     // Update ohmurl for abc input when needed
     if (options_.compileContextInfo.needModifyRecord ||
         (options_.updatePkgVersionForAbcInput && pkgVersionUpdateRequiredInAbc_)) {
@@ -211,7 +257,7 @@ void CompileAbcClassJob::Run()
         ASSERT(util::RecordNotGeneratedFromBytecode(program->record_table.begin()->first));
         auto name = compiler_.GetAbcFile().GetFilename();
         name += util::CHAR_VERTICAL_LINE + program->record_table.begin()->first;
-        auto *cache = allocator_->New<util::ProgramCache>(std::move(*program));
+        auto *cache = allocator_->New<util::ProgramCache>(src_->hash, std::move(*program), true);
         progsInfo_.emplace(name, cache);
     }
     panda::Timer::timerEnd(panda::EVENT_UPDATE_ABC_PROG_CACHE, record_name);
@@ -232,10 +278,10 @@ void CompileAbcClassJob::UpdateBundleNameOfOhmurl(std::string &ohmurl)
 }
 
 void CompileAbcClassJob::UpdateDynamicImport(panda::pandasm::Program *prog,
-    const std::unordered_map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo)
+    const std::map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo)
 {
     for (auto &[name, function] : prog->function_table) {
-        util::VisitDyanmicImports<false>(function, [this, &prog, pkgContextInfo](std::string &ohmurl) {
+        util::VisitDyanmicImports<false>(function, [this, pkgContextInfo](std::string &ohmurl) {
             if (this->options_.compileContextInfo.needModifyRecord) {
                 this->UpdateBundleNameOfOhmurl(ohmurl);
             }
@@ -244,14 +290,13 @@ void CompileAbcClassJob::UpdateDynamicImport(panda::pandasm::Program *prog,
                 return;
             }
             this->SetOhmurlBeenChanged(true);
-            prog->strings.insert(newOhmurl);
             ohmurl = newOhmurl;
         });
     }
 }
 
 void CompileAbcClassJob::UpdateStaticImport(panda::pandasm::Program *prog,
-    const std::unordered_map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo)
+    const std::map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo)
 {
     for (auto &[recordName, record] : prog->record_table) {
         util::VisitStaticImports<false>(*prog, record, [this, pkgContextInfo](std::string &ohmurl) {
@@ -273,12 +318,47 @@ void CompileAbcClassJob::UpdateImportOhmurl(panda::pandasm::Program *prog,
                                             const panda::es2panda::CompilerOptions &options)
 {
     bool isAccurateUpdateVersion = !options.compileContextInfo.updateVersionInfo.empty();
-    const std::unordered_map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo = isAccurateUpdateVersion ?
+    const std::map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo = isAccurateUpdateVersion ?
         options.compileContextInfo.updateVersionInfo.at(abcPkgName_) : options.compileContextInfo.pkgContextInfo;
     // Replace for esm module static import
     UpdateStaticImport(prog, pkgContextInfo);
     // Replace for dynamic import
     UpdateDynamicImport(prog, pkgContextInfo);
+}
+/**
+ * Need to modify the package name of the original package to the package name of the target package when
+ * you merging two packages.
+ */
+void CompileAbcClassJob::UpdatePkgNameOfImportOhmurl(panda::pandasm::Program *prog,
+    const panda::es2panda::CompilerOptions &options)
+{
+    for (auto &[recordName, record] : prog->record_table) {
+        util::VisitStaticImports<false>(*prog, record, [this, options](std::string &ohmurl) {
+            const auto &newOhmurl = util::UpdatePackageNameIfNeeded(ohmurl, options.modifiedPkgName);
+            if (newOhmurl == ohmurl) {
+                return;
+            }
+            this->SetOhmurlBeenChanged(true);
+            ohmurl = newOhmurl;
+        });
+    }
+    for (auto &[name, function] : prog->function_table) {
+        util::VisitDyanmicImports<false>(function, [this, options](std::string &ohmurl) {
+            const auto &newOhmurl = util::UpdatePackageNameIfNeeded(ohmurl, options.modifiedPkgName);
+            if (newOhmurl == ohmurl) {
+                return;
+            }
+            this->SetOhmurlBeenChanged(true);
+            ohmurl = newOhmurl;
+        });
+    }
+    if (hasOhmurlBeenChanged_) {
+        prog->strings.clear();
+        for (const auto &[_, function] : prog->function_table) {
+            const auto &funcStringSet = function.CollectStringsFromFunctionInsns();
+            prog->strings.insert(funcStringSet.begin(), funcStringSet.end());
+        }
+    }
 }
 
 void PostAnalysisOptimizeFileJob::Run()
@@ -328,7 +408,7 @@ void CompileFileQueue::Schedule()
 
 bool CompileAbcClassQueue::NeedUpdateVersion()
 {
-    std::unordered_map<std::string, std::unordered_map<std::string, panda::es2panda::PkgInfo>> updateVersionInfo =
+    std::unordered_map<std::string, std::map<std::string, panda::es2panda::PkgInfo>> updateVersionInfo =
         options_.compileContextInfo.updateVersionInfo;
     auto iter = updateVersionInfo.find(src_->pkgName);
     return updateVersionInfo.empty() || (iter != updateVersionInfo.end() && !iter->second.empty());
@@ -339,23 +419,17 @@ void CompileAbcClassQueue::Schedule()
     std::unique_lock<std::mutex> lock(m_);
 
     auto classIds = compiler_.GetAbcFile().GetClasses();
-    size_t expectedProgsCountInAbcFile = 0;
     bool needUpdateVersion = NeedUpdateVersion();
     for (size_t i = 0; i != classIds.size(); ++i) {
         if (!compiler_.CheckClassId(classIds[i], i)) {
             continue;
         }
 
-        auto *abcClassJob = new CompileAbcClassJob(classIds[i], options_, compiler_, progsInfo_, allocator_,
+        auto *abcClassJob = new CompileAbcClassJob(src_, classIds[i], options_, compiler_, progsInfo_, allocator_,
                                                    src_->pkgName, needUpdateVersion);
 
         jobs_.push_back(abcClassJob);
         jobsCount_++;
-        expectedProgsCountInAbcFile++;
-    }
-    {
-        std::unique_lock<std::mutex> lock(globalMutex_);
-        Compiler::SetExpectedProgsCount(Compiler::GetExpectedProgsCount() + expectedProgsCountInAbcFile - 1);
     }
 
     lock.unlock();

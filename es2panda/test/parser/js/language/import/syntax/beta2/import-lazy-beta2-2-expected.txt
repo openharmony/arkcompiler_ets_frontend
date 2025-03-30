@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token. [import-lazy-beta2-2.js:16:13]

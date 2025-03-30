@@ -15,7 +15,7 @@
 export declare namespace k {
     function foo1(): void;
     class className1 {
-        b1: number;
+        d1: number;
     }
     interface h {
     }
@@ -23,8 +23,8 @@ export declare namespace k {
 export declare namespace l {
     export function foo2(): void;
     export class className2 {
-        d1: number;
-        e1: b1 | undefined;
+        e1: number;
+        f1: b1 | undefined;
     }
     interface b1 {
     }
@@ -35,8 +35,8 @@ export declare namespace l {
 export declare namespace m {
     function foo3(): void;
     class className3 {
-        f1: number;
-        e1: h | undefined;
+        g1: number;
+        f1: h | undefined;
     }
     interface h {
     }
@@ -44,13 +44,13 @@ export declare namespace m {
 export declare namespace o {
     function foo4(): void;
     class className4 {
-        ["g1"]: number;
+        ["h1"]: number;
     }
 }
 export declare namespace p {
     function foo5(): void;
     class className5 {
-        ["h1"]: string;
+        ["i1"]: string;
     }
     interface a1 {
     }
@@ -58,7 +58,7 @@ export declare namespace p {
 export declare namespace q {
     function foo12(): void;
     class className12 {
-        ["i1"]: string;
+        ["j1"]: string;
     }
     interface v {
     }
@@ -66,7 +66,7 @@ export declare namespace q {
 export declare namespace t {
     function foo6(): void;
     class className6 {
-        #j1;
+        #l1;
     }
     interface u {
     }

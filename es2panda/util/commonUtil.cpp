@@ -15,17 +15,12 @@
 
 #include "commonUtil.h"
 
-#include <algorithm>
-#include <sstream>
-
 #include "util/helpers.h"
 
 namespace panda::es2panda::util {
 
 std::vector<std::string> Split(const std::string &str, const char delimiter)
 {
-    std::string normalizedImport {};
-    std::string pkgName {};
     std::vector<std::string> items;
 
     size_t start = 0;
@@ -105,7 +100,7 @@ bool IsExternalPkgNames(const std::string &ohmurl, const std::set<std::string> &
 }
 
 std::string UpdatePackageVersionIfNeeded(const std::string &ohmurl,
-                                         const std::unordered_map<std::string, PkgInfo> &pkgContextInfo)
+                                         const std::map<std::string, PkgInfo> &pkgContextInfo)
 {
     // Input ohmurl format:
     // @normalized:{N|Y}&[module name]&[bundle name]&{<package name>|<@package/name>}/{import_path}&[version]
@@ -132,6 +127,26 @@ std::string UpdatePackageVersionIfNeeded(const std::string &ohmurl,
         return ohmurl;
     }
     return ohmurl.substr(0, versionStart + 1) + iter->second.version;
+}
+
+/**
+ * Modify the package name in the bytecode. The modifiedPkgName format is originalPkgName:targetPkgName.
+ */
+std::string UpdatePackageNameIfNeeded(const std::string &ohmurl, const std::string &modifiedPkgName)
+{
+    if (ohmurl.find(util::NORMALIZED_OHMURL_NOT_SO) != 0) {
+        return ohmurl;
+    }
+    std::string packageName = util::GetPkgNameFromNormalizedOhmurl(ohmurl);
+    std::vector<std::string> pkgNames = Split(modifiedPkgName, COLON_SEPARATOR);
+    if (packageName == pkgNames[ORIGINAL_PKG_NAME_POS]) {
+        size_t pos = ohmurl.find(NORMALIZED_OHMURL_SEPARATOR + packageName) + 1;
+        std::string modified = ohmurl;
+        std::string target = pkgNames[TARGET_PKG_NAME_POS];
+        modified.replace(pos, packageName.length(), target);
+        return modified;
+    }
+    return ohmurl;
 }
 
 /**

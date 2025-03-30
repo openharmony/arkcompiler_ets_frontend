@@ -15,7 +15,6 @@
 
 #include "exportNamedDeclaration.h"
 
-#include <compiler/core/pandagen.h>
 #include <ir/astDump.h>
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/module/exportSpecifier.h>

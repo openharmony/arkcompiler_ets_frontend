@@ -13,19 +13,13 @@
  * limitations under the License.
  */
 
-#include <binder/binder.h>
 #include <ir/base/scriptFunction.h>
-#include <ir/expression.h>
 #include <ir/expressions/arrayExpression.h>
 #include <ir/expressions/callExpression.h>
 #include <ir/expressions/functionExpression.h>
-#include <ir/expressions/identifier.h>
 #include <ir/expressions/memberExpression.h>
 #include <ir/statements/expressionStatement.h>
 #include <ir/statements/blockStatement.h>
-
-#include <string_view>
-#include <vector>
 
 #include "parserImpl.h"
 

@@ -1,6 +1,5 @@
-.language ECMAScript
-
 slotNum = 0x4
+.language ECMAScript
 .function any .#~A=#A(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -18,6 +17,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~B=#B(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -29,28 +29,29 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~B>#static_initializer(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	callruntime.ldsendableexternalmodulevar 0x0
 	throw.undefinedifholewithname a
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A>#B(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	callruntime.ldsendableexternalmodulevar 0x0
 	throw.undefinedifholewithname a
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x5
+.language ECMAScript
 .function any .#~A>#static_initializer(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -69,23 +70,23 @@ label_0:
 	sta v0
 	definemethod 0x2, .#~A>@0~B>#static_initializer, 0x0
 	callthis0 0x3, v0
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A>@0*#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldexternalmodulevar 0x0
 	throw.undefinedifholewithname a
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A>@0~B=#B(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -97,6 +98,7 @@ label_2:
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any .#~A>@0~B>#static_initializer(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -109,23 +111,23 @@ label_0:
 	ldexternalmodulevar 0x0
 	throw.undefinedifholewithname a
 	definefunc 0x0, .#~A>@0~B>@0*#, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A>@0~B>@0*#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldexternalmodulevar 0x0
 	throw.undefinedifholewithname a
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x4
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -135,7 +137,6 @@ label_0:
 	sta v0
 	definemethod 0x1, .#~A>#static_initializer, 0x0
 	callthis0 0x2, v0
-	ldundefined
 	returnundefined
 label_2: 
 }

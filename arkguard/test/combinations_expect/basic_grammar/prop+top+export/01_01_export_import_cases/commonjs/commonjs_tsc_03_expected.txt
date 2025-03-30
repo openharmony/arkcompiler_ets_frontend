@@ -12,5 +12,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import m1 = require("fs");
-export type a = typeof m1.readFileSync;
+import q1 = require("fs");
+export type a = typeof q1.readFileSync;

@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 export * as default from './export_basic2';
-export function h1() {
+export function l1() {
     return 3;
 }

@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function q() {
-    const r = { name: 'John', i: 30 };
-    const s = [{ id: 1, name: 'John' }, { id: 2, name: 'Jane' }];
+function t() {
+    const u = { name: 'John', a1: 30 };
+    const v = [{ id: 1, name: 'John' }, { id: 2, name: 'Jane' }];
 }

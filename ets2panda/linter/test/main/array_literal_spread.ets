@@ -13,11 +13,17 @@
  * limitations under the License.
  */
 
+import { collections } from './@arkts.collections';
+
 class DerivedFromArray extends Uint16Array {
 };
 
 let arr1 = [1, 2, 3];
 let arr2 = new Uint16Array([4, 5, 6]);
-let arr3 = new DerivedFromArray([7, 8, 9])
+let arr3 = new DerivedFromArray([7, 8, 9]);
 
-let arr4 = [...arr1, 10, ...arr2, 11, ...arr3]
+let arr4 = [...arr1, 10, ...arr2, 11, ...arr3];
+
+const arr: collections.BitVector = new collections.BitVector(10);
+arr[0] = 1;
+const targetArr: number[] = [...arr];

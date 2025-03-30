@@ -15,8 +15,6 @@
 
 #include "blockStatement.h"
 
-#include <binder/binder.h>
-#include <binder/scope.h>
 #include <compiler/core/regScope.h>
 #include <typescript/checker.h>
 #include <ir/astDump.h>

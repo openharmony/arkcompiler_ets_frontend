@@ -14,13 +14,13 @@
  */
 // 整体导出
 module.exports = {
-    h: 'commonjs',
-    i: (h) => { return h + 1; }
+    i: 'commonjs',
+    j: (h) => { return h + 1; }
 };
-module.exports.j = function () { return 'api'; };
-module.exports.k = 2;
+module.exports.k = function () { return 'api'; };
+module.exports.l = 2;
 class g {
-    l = 3;
+    m = 3;
 }
-module.exports.m = g;
-module.exports.o = { p: 3 };
+module.exports.o = g;
+module.exports.p = { q: 3 };

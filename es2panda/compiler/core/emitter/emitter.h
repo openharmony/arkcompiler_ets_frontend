@@ -105,6 +105,9 @@ private:
     void GenLiteralBuffers();
     void GenBufferLiterals(const LiteralBuffer *buff);
     void GenConcurrentFunctionModuleRequests();
+    void GenConcurrentModuleRequestsAnnotation();
+    void GenExpectedPropertyCountAnnotation();
+    void GenSlotNumberAnnotation();
 
     const PandaGen *pg_;
     panda::pandasm::Function *func_ {};
@@ -153,18 +156,23 @@ private:
     void SetCommonjsField(bool isCommonjs);
     void SetPkgNameField(const std::string &pkgName);
     void GenCommonjsRecord() const;
+    void AddConcurrentModuleRequestsRecord();
     void AddHasTopLevelAwaitRecord(bool hasTLA, const CompilerContext *context);
     void AddSharedModuleRecord(const CompilerContext *context);
+    void AddSlotNumberRecord();
     void AddModuleRequestPhaseRecord(ModuleRecordEmitter *module, CompilerContext *context);
+    void AddExpectedPropertyCountRecord();
 
     void CreateEnumProp(const ir::ClassProperty *prop, const std::string &annoName, panda::pandasm::Field &annoProp);
     void CreateLiteralArrayProp(const ir::ClassProperty *prop, const std::string &annoName,
                                 panda::pandasm::Field &annoProp);
-    panda::pandasm::Field CreateAnnotationProp(const ir::ClassProperty *prop, const std::string &annoName);
+    panda::pandasm::Field CreateAnnotationProp(const ir::ClassProperty *prop,
+                                               const std::string &annoName);
 
     std::mutex m_;
     panda::pandasm::Program *prog_;
     panda::pandasm::Record *rec_;
+    pandasm::extensions::Language source_lang_ = pandasm::extensions::DEFAULT_LANGUAGE;
     // Constant local export module variable slots.
     // Used by the branch elimination optimization to identify initial constants.
     // Should be replaced by analyzing the stconstmodulevar instruction in the

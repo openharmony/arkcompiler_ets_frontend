@@ -127,6 +127,7 @@ public:
     bool IsUpdate() const;
     bool IsUnary() const;
     bool IsPropNameLiteral() const;
+    bool IsBooleanOrNullLiteral() const;
     bool IsKeyword() const;
     bool IsReservedTypeName() const;
     bool IsJsStrictReservedWord() const;

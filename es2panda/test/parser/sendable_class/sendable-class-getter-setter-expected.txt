@@ -1,6 +1,6 @@
-.language ECMAScript
-
 slotNum = 0x0
+expectedProperty = 0x1
+.language ECMAScript
 .function any .#~A=#A(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -10,6 +10,7 @@ label_2:
 }
 
 slotNum = 0x2
+.language ECMAScript
 .function any .#~A>#Prop(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -20,24 +21,24 @@ label_2:
 }
 
 slotNum = 0x2
+.language ECMAScript
 .function any .#~A>#Prop^1(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
 	lda a3
 	stobjbyname 0x0, prop, a2
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldhole
 	sta v0
 	callruntime.definesendableclass 0x0, .#~A=#A, _3, 0x0, v0
-	ldundefined
 	returnundefined
 label_2: 
 }

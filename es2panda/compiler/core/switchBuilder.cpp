@@ -15,12 +15,9 @@
 
 #include "switchBuilder.h"
 
-#include <ir/expression.h>
 #include <ir/statements/switchStatement.h>
 #include <ir/statements/switchCaseStatement.h>
 #include <compiler/core/pandagen.h>
-#include <compiler/core/labelTarget.h>
-#include <typescript/checker.h>
 
 namespace panda::es2panda::compiler {
 // SwitchBuilder

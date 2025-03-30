@@ -15,10 +15,10 @@
 import assert from 'assert';
 class g {
     name: string = "";
-    set i(i: string) {
+    set j(i: string) {
         this.name = i;
     }
 }
 let h = new g();
-h.i = "name";
+h.j = "name";
 assert(h.name === "name");

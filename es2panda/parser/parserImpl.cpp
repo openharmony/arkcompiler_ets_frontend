@@ -14,42 +14,26 @@
  */
 
 #include "parserImpl.h"
-#include <functional>
 
-#include <binder/scope.h>
-#include <binder/tsBinding.h>
-#include <util/helpers.h>
-#include <ir/astDump.h>
-#include <ir/astNode.h>
 #include <ir/base/annotation.h>
 #include <ir/base/classDefinition.h>
-#include <ir/base/classProperty.h>
 #include <ir/base/classStaticBlock.h>
 #include <ir/base/decorator.h>
-#include <ir/base/methodDefinition.h>
-#include <ir/base/property.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/base/spreadElement.h>
-#include <ir/expression.h>
 #include <ir/expressions/arrayExpression.h>
 #include <ir/expressions/assignmentExpression.h>
 #include <ir/expressions/callExpression.h>
 #include <ir/expressions/functionExpression.h>
-#include <ir/expressions/identifier.h>
 #include <ir/expressions/literals/bigIntLiteral.h>
 #include <ir/expressions/literals/booleanLiteral.h>
-#include <ir/expressions/literals/nullLiteral.h>
 #include <ir/expressions/literals/numberLiteral.h>
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/memberExpression.h>
 #include <ir/expressions/objectExpression.h>
-#include <ir/expressions/privateIdentifier.h>
 #include <ir/expressions/superExpression.h>
 #include <ir/expressions/templateLiteral.h>
 #include <ir/expressions/typeArgumentsExpression.h>
-#include <ir/module/exportDefaultDeclaration.h>
-#include <ir/module/exportNamedDeclaration.h>
-#include <ir/module/exportSpecifier.h>
 #include <ir/statements/blockStatement.h>
 #include <ir/statements/classDeclaration.h>
 #include <ir/statements/emptyStatement.h>
@@ -102,16 +86,12 @@
 #include <ir/ts/tsTypeParameterInstantiation.h>
 #include <ir/ts/tsTypePredicate.h>
 #include <ir/ts/tsTypeQuery.h>
-#include <ir/ts/tsTypeReference.h>
 #include <ir/ts/tsUndefinedKeyword.h>
 #include <ir/ts/tsUnionType.h>
 #include <ir/ts/tsUnknownKeyword.h>
 #include <ir/ts/tsVoidKeyword.h>
 #include <ir/ts/tsNonNullExpression.h>
 #include <lexer/lexer.h>
-#include <lexer/token/letters.h>
-#include <lexer/token/sourceLocation.h>
-#include <mem/pool_manager.h>
 
 namespace panda::es2panda::parser {
 
@@ -140,6 +120,7 @@ Program ParserImpl::Parse(const SourceFile &sourceFile, const CompilerOptions &o
     program_.SetEnableAnnotations(options.enableAnnotations);
     program_.SetShared(sourceFile.isSharedModule);
     program_.SetModuleRecordFieldName(options.moduleRecordFieldName);
+    program_.SetSourceLang(sourceFile.sourceLang);
     if (Extension() == ScriptExtension::TS) {
         program_.SetDefineSemantic(options.useDefineSemantic);
     }
@@ -842,13 +823,35 @@ ir::Expression *ParserImpl::ParseTsTypeOperatorOrTypeReference(bool throwError)
     TypeAnnotationParsingOptions options = throwError ?
         TypeAnnotationParsingOptions::THROW_ERROR : TypeAnnotationParsingOptions::NO_OPTS;
 
+    switch (lexer_->GetToken().KeywordType()) {
+        case lexer::TokenType::KEYW_READONLY:
+        case lexer::TokenType::KEYW_KEYOF:
+        case lexer::TokenType::KEYW_UNIQUE: {
+            return ParseTsTypeOperator();
+        }
+        case lexer::TokenType::KEYW_INFER: {
+            return ParseTsInferType();
+        }
+        default: {
+            return ParseTsIdentifierReference(options);
+        }
+    }
+}
+
+ir::Expression *ParserImpl::ParseTsTypeOperator()
+{
+    /*
+     * When processing each type operator (readonly, keyof, unique),
+     * the function expects a type to modify or apply the operator to.
+     */
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+
     if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_READONLY) {
         lexer::SourcePosition typeOperatorStart = lexer_->GetToken().Start();
         lexer_->NextToken();
 
         options |= TypeAnnotationParsingOptions::IN_MODIFIER;
         ir::Expression *type = ParseTsTypeAnnotation(&options);
-        ASSERT(type != nullptr);
 
         if (!type->IsTSArrayType() && !type->IsTSTupleType()) {
             ThrowSyntaxError(
@@ -869,7 +872,6 @@ ir::Expression *ParserImpl::ParseTsTypeOperatorOrTypeReference(bool throwError)
 
         options |= TypeAnnotationParsingOptions::IN_MODIFIER;
         ir::Expression *type = ParseTsTypeAnnotation(&options);
-        ASSERT(type != nullptr);
 
         auto *typeOperator = AllocNode<ir::TSTypeOperator>(type, ir::TSOperatorType::KEYOF);
 
@@ -883,7 +885,6 @@ ir::Expression *ParserImpl::ParseTsTypeOperatorOrTypeReference(bool throwError)
         lexer_->NextToken();
 
         ir::Expression *type = ParseTsTypeAnnotation(&options);
-        ASSERT(type != nullptr);
 
         auto *typeOperator = AllocNode<ir::TSTypeOperator>(type, ir::TSOperatorType::UNIQUE);
 
@@ -892,26 +893,27 @@ ir::Expression *ParserImpl::ParseTsTypeOperatorOrTypeReference(bool throwError)
         return typeOperator;
     }
 
-    if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_INFER) {
-        if (!(context_.Status() & ParserStatus::IN_EXTENDS)) {
+    return nullptr;
+}
+
+ir::Expression *ParserImpl::ParseTsInferType()
+{
+    if (!(context_.Status() & ParserStatus::IN_EXTENDS)) {
             ThrowSyntaxError(
                 "'infer' declarations are only permitted in the "
                 "'extends' clause of a conditional type.");
         }
 
-        lexer::SourcePosition inferStart = lexer_->GetToken().Start();
-        lexer_->NextToken();
+    lexer::SourcePosition inferStart = lexer_->GetToken().Start();
+    lexer_->NextToken();
 
-        ir::TSTypeParameter *typeParam = ParseTsTypeParameter(true);
+    ir::TSTypeParameter *typeParam = ParseTsTypeParameter(true);
 
-        auto *inferType = AllocNode<ir::TSInferType>(typeParam);
+    auto *inferType = AllocNode<ir::TSInferType>(typeParam);
+    
+    inferType->SetRange({inferStart, lexer_->GetToken().End()});
 
-        inferType->SetRange({inferStart, lexer_->GetToken().End()});
-
-        return inferType;
-    }
-
-    return ParseTsIdentifierReference(options);
+    return inferType;
 }
 
 bool ParserImpl::IsTSNamedTupleMember()
@@ -1897,6 +1899,9 @@ ir::Expression *ParserImpl::ParseTsParenthesizedOrFunctionType(ir::Expression *t
     lexer_->NextToken();  // eat '('
 
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::NO_OPTS;
+    if (throwError) {
+        options |= TypeAnnotationParsingOptions::THROW_ERROR;
+    }
     ir::Expression *type = ParseTsTypeAnnotation(&options);
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
@@ -2374,7 +2379,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElmentDescriptor *desc, bool isDe
     }
 
     ir::Expression *propName = nullptr;
-    if (lexer_->GetToken().IsKeyword()) {
+    if (lexer_->GetToken().IsKeyword() || lexer_->GetToken().IsBooleanOrNullLiteral()) {
         lexer_->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
     }
 
@@ -2789,12 +2794,12 @@ ir::Statement *ParserImpl::ParseDecoratorAndAnnotation()
     lexer::SourcePosition start = lexer_->GetToken().Start();
     lexer_->NextToken();  // eat '@'
 
-    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_HASH_MARK) {
+    if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
+        lexer_->GetToken().Ident().Utf8().rfind(ir::Annotation::annotationPrefix, 0) != std::string_view::npos) {
         // Annotation usage case
         if (!program_.IsEnableAnnotations()) {
             ThrowSyntaxError("Annotations are not enabled");
         }
-        lexer_->NextToken();  // eat '#'
         ir::Expression *expr = ParseLeftHandSideExpression();
         ir::Statement *resultAnnotation = static_cast<ir::Statement *>(AllocNode<ir::Annotation>(expr));
         resultAnnotation->SetRange({start, expr->End()});
@@ -3269,6 +3274,8 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
     }
 
     classCtx.GetScope()->BindNode(classDefinition);
+
+    classDefinition->CalculateClassExpectedPropertyCount();
     return classDefinition;
 }
 
@@ -4077,6 +4084,7 @@ ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus,
     functionScope->BindNode(funcNode);
     funcParamScope->BindNode(funcNode);
     funcNode->SetRange({startLoc, endLoc});
+    funcNode->CalculateFunctionExpectedPropertyCount();
 
     return funcNode;
 }
@@ -4112,7 +4120,7 @@ ir::SpreadElement *ParserImpl::ParseSpreadElement(ExpressionParseFlags flags)
 
     ir::Expression *typeAnnotation = nullptr;
 
-    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON && Extension() == ScriptExtension::TS) {
         lexer_->NextToken();  // eat ':'
         TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
         typeAnnotation = ParseTsTypeAnnotation(&options);

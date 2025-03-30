@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
+import { KeepInfo } from './ProjectCollections';
+
 // This records the collections related to property obfuscation.
 export namespace PropCollections {
-  // whether enable property obfuscation
-  export let enablePropertyObfuscation: boolean = false;
   // global mangled properties table used by all files in a project
   export let globalMangledTable: Map<string, string> = new Map();
   // used for property cache
@@ -24,9 +24,10 @@ export namespace PropCollections {
   // the white list of property
   export let reservedProperties: Set<string> = new Set();
   export let universalReservedProperties: RegExp[] = [];
-  // saved generated property name
-  export let newlyOccupiedMangledProps: Set<string> = new Set();
-  export let mangledPropsInNameCache: Set<string> = new Set();
+  // In incremental compilation, save the globally obfuscated names generated during the last compilation.
+  // When generating new variable or property obfuscated names,
+  // it is necessary to prevent duplication with the names in this set.
+  export let globalMangledNamesInCache: Set<string> = new Set();
 
   // When the module is compiled, call this function to clear the collections associated with property obfuscation.
   export function clearPropsCollections(): void {
@@ -34,15 +35,12 @@ export namespace PropCollections {
     historyMangledTable?.clear();
     reservedProperties.clear();
     universalReservedProperties = [];
-    newlyOccupiedMangledProps.clear();
-    mangledPropsInNameCache.clear();
+    globalMangledNamesInCache.clear();
   }
 }
 
 // This records the collections related to whitelists
 export namespace UnobfuscationCollections {
-  // printKeptName: by user configuration, it decides whether to print unobfuscation names and whitelists.
-  export let printKeptName: boolean = false;
   // whitelist
   export let reservedSdkApiForProp: Set<string> = new Set();
   export let reservedSdkApiForGlobal: Set<string> = new Set();
@@ -56,7 +54,7 @@ export namespace UnobfuscationCollections {
   export let reservedExportNameAndProp: Set<string> = new Set();
   export let reservedStrProp: Set<string> = new Set();
   export let reservedEnum: Set<string> = new Set();
-  
+
   // The mapping between the unobfuscated names and their reasons.
   export let unobfuscatedPropMap: Map<string, Set<string>> = new Map();
   export let unobfuscatedNamesMap: Map<string, Set<string>> = new Map();
@@ -65,7 +63,6 @@ export namespace UnobfuscationCollections {
   export let reservedWildcardMap: Map<RegExp, string> = new Map();
 
   export function clear(): void {
-    printKeptName = false;
     reservedSdkApiForProp.clear();
     reservedSdkApiForGlobal.clear();
     reservedSdkApiForLocal.clear();
@@ -77,16 +74,34 @@ export namespace UnobfuscationCollections {
     reservedEnum.clear();
     unobfuscatedPropMap.clear();
     unobfuscatedNamesMap.clear();
+    reservedWildcardMap.clear();
   }
 }
 
 export namespace LocalVariableCollections {
-  export let reservedStruct: Set<string> = new Set(); 
   export let reservedConfig: Set<string> = new Set(); // Obtain the name from the user-configured .d.ts file
   export let reservedLangForLocal: Set<string> = new Set(['this', '__global']); // Will not add new elements anymore
 
   export function clear(): void {
-    reservedStruct.clear();
     reservedConfig.clear();
   }
+}
+
+export namespace AtKeepCollections {
+  export let keepSymbol: KeepInfo = {
+    propertyNames: new Set<string>(),
+    globalNames: new Set<string>()
+  };
+
+  export let keepAsConsumer: KeepInfo = {
+    propertyNames: new Set<string>(),
+    globalNames: new Set<string>()
+  };
+
+  export function clear(): void {
+    keepSymbol.globalNames.clear();
+    keepSymbol.propertyNames.clear();
+    keepAsConsumer.globalNames.clear();
+    keepAsConsumer.propertyNames.clear();
+  };
 }

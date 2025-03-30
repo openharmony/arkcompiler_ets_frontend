@@ -1,6 +1,6 @@
-.language ECMAScript
-
 slotNum = 0xd
+expectedProperty = 0x3
+.language ECMAScript
 .function any .#~C=#C(any a0, any a1, any a2) {
 	nop
 label_7: 
@@ -46,6 +46,7 @@ label_8:
 .catchall label_2, end_label_3, label_9
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~C=C~=#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -55,6 +56,7 @@ label_2:
 }
 
 slotNum = 0x2
+.language ECMAScript
 .function any .#~C=C~>#method(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
@@ -65,6 +67,8 @@ label_2:
 }
 
 slotNum = 0x2
+expectedProperty = 0x1
+.language ECMAScript
 .function any .#~C=C~^1=#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -76,17 +80,18 @@ label_2:
 }
 
 slotNum = 0x2
+.language ECMAScript
 .function any .#~C=C~^1>#instance_initializer(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldai 0x2a
 	callruntime.defineprivateproperty 0x0, 0x0, 0x2, a2
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x2
+.language ECMAScript
 .function any .#~C=C~^1>#method(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
@@ -97,17 +102,18 @@ label_2:
 }
 
 slotNum = 0x2
+.language ECMAScript
 .function any .#~C>#instance_initializer(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	lda.str test
 	callruntime.defineprivateproperty 0x0, 0x0, 0x0, a2
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x4
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 	nop
 label_7: 
@@ -133,7 +139,6 @@ label_6:
 	throw
 label_1: 
 	poplexenv
-	ldundefined
 	returnundefined
 label_8: 
 }

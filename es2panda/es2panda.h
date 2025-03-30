@@ -68,6 +68,7 @@ struct SourceFile {
     uint32_t hash {0};
     bool isSharedModule {false};
     bool isSourceMode {true};
+    std::string sourceLang {};
 };
 
 struct PatchFixOptions {
@@ -123,6 +124,8 @@ struct CompilerOptions {
     std::string targetApiSubVersion;
     std::string moduleRecordFieldName;
     bool enableAnnotations;
+    // Ability to modify package names using bytecode
+    std::string modifiedPkgName {};
 };
 
 enum class ErrorType {

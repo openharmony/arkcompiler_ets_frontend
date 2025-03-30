@@ -32,11 +32,11 @@ let out_var1 = 1;
 // 属性访问
 {
     class d {
-        g: number = 1;
+        k: number = 1;
     }
     let e = new d();
-    e.g = 2;
-    assert(e.g === 2);
+    e.k = 2;
+    assert(e.k === 2);
 }
 // var变量
 var x = 1;
@@ -61,9 +61,9 @@ let rectangle;
     rectangle = {
         width: a,
         length: b,
-        h: a * b,
-        i: (a + b) * 2
+        l: a * b,
+        m: (a + b) * 2
     };
 }
-assert(rectangle.h === 20);
-assert(rectangle.i === 24);
+assert(rectangle.l === 20);
+assert(rectangle.m === 24);

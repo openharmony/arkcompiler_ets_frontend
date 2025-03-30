@@ -15,30 +15,30 @@
 abstract class SettingType {
     private constructor() { }
     static get INT(): SettingType & {
-        set o(f: number);
-        set p(e: number);
+        set t(q: number);
+        set u(p: number);
     } {
         return new Int;
     }
     static get l(): SettingType & {
-        o(): "DOUBLE";
-        p(): 1;
+        t(): "DOUBLE";
+        u(): 1;
     } {
         return new DOUBLE;
     }
 }
 class Int {
-    set o(d: number) {
+    set t(o: number) {
     }
-    set p(c: number) {
+    set u(n: number) {
         return;
     }
 }
 class DOUBLE {
-    o(): "DOUBLE" {
+    t(): "DOUBLE" {
         return "DOUBLE";
     }
-    p(): 1 {
+    u(): 1 {
         return 1;
     }
 }

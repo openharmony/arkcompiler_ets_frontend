@@ -17,7 +17,6 @@ export declare class TestClass1 {
   prop1: TestClass2;
   foo1(param1: AbstractClass): void;
 }
-
 declare abstract class AbstractClass {
   abstract abstractProp: TestClass2;
 }

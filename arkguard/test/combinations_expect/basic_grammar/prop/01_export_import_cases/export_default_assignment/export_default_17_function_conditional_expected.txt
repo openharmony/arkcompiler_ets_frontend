@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function plusOne(b: number) {
-    return b + 1;
+function plusOne(i: number) {
+    return i + 1;
 }
 export default plusOne(-1) > 0 ? 8 : 9;

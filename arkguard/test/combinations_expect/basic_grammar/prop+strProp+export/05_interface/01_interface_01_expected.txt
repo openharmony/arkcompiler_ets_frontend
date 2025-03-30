@@ -24,11 +24,11 @@ interface a0 {
     p2: string;
     p3?: any;
     p4?: number;
-    g: (s: number) => string;
-    h(): any;
-    i?(): any;
-    j(a: string): number;
-    k?(s: number): string;
+    h: (s: number) => string;
+    i(): any;
+    j?(): any;
+    k(a: string): number;
+    l?(s: number): string;
 }
 interface a1 {
     (a: number, b: number, c?: string): number;
@@ -51,30 +51,30 @@ interface a3 {
     p2: string;
     p3?: any;
     p4?: number;
-    g: (s: number) => string;
+    h: (s: number) => string;
 }
 let b4: a3 = {
     p1: 1,
     p2: "1",
-    g: (c: number) => c.toString(),
+    h: (c: number) => c.toString(),
 };
 assert(b4.p1 === 1);
 assert(b4.p2 === "1");
 assert(b4.p3 === undefined);
 assert(b4.p4 === undefined);
-assert(b4.g(1) === "1");
+assert(b4.h(1) === "1");
 interface a4 {
-    h(): any;
-    i?(): any;
-    j(a: string): number;
-    k?(s: number): string;
+    i(): any;
+    j?(): any;
+    k(a: string): number;
+    l?(s: number): string;
 }
 let b5: a4 = {
-    h: () => 1,
-    j: (b: string) => 1,
-    k: (a: number) => a.toString(),
+    i: () => 1,
+    k: (b: string) => 1,
+    l: (a: number) => a.toString(),
 };
-assert(b5.h() === 1);
-assert(b5.i === undefined);
-assert(b5.j("1") === 1);
-assert(b5.k!(2) === "2");
+assert(b5.i() === 1);
+assert(b5.j === undefined);
+assert(b5.k("1") === 1);
+assert(b5.l!(2) === "2");

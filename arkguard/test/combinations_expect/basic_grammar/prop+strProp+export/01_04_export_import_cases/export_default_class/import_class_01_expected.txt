@@ -18,4 +18,4 @@ import class02 from './export_class_02';
 let ins1 = new class01('lion');
 let ins2 = new class02('tiger');
 assert(ins1.g === 'lion');
-assert(ins2.h === 'tiger');
+assert(ins2.i === 'tiger');

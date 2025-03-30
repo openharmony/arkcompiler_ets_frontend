@@ -71,3 +71,24 @@ export class TestClassD {
 
 export declare function foo_lib(p1: number, p2: string): undefined;
 export declare function foo_lib(p1: string, p2: number): undefined;
+
+export class TestClassH {
+  constructor(a: A) {
+  }
+}
+
+export class TestClassI {
+  constructor(a: a, topic: string) {
+  }
+}
+
+export class TestClassJ {
+  constructor(func: () => void) {
+  }
+}
+
+export class TestClassK {
+  constructor(func: () => void, a: number, b: string) {
+  }
+}
+

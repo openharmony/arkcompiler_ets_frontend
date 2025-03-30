@@ -16,13 +16,11 @@
 #include "property.h"
 
 #include <ir/astDump.h>
-#include <ir/expression.h>
 #include <ir/expressions/arrayExpression.h>
 #include <ir/expressions/assignmentExpression.h>
 #include <ir/expressions/objectExpression.h>
 #include <ir/expressions/identifier.h>
 #include <ir/expressions/literals/stringLiteral.h>
-#include <ir/validationInfo.h>
 
 namespace panda::es2panda::ir {
 

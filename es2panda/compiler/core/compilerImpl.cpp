@@ -15,16 +15,9 @@
 
 #include "compilerImpl.h"
 
-#include <binder/binder.h>
 #include <compiler/core/compileQueue.h>
 #include <compiler/core/compilerContext.h>
 #include <compiler/core/emitter/emitter.h>
-#include <es2panda.h>
-#include <parser/program/program.h>
-#include <typescript/checker.h>
-
-#include <iostream>
-#include <thread>
 
 namespace panda::es2panda::compiler {
 

@@ -15,9 +15,6 @@
 
 #include "objectType.h"
 
-#include <typescript/types/indexInfo.h>
-#include <typescript/types/interfaceType.h>
-#include <typescript/types/signature.h>
 #include <typescript/checker.h>
 
 namespace panda::es2panda::checker {

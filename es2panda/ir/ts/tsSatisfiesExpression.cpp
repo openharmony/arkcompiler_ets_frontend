@@ -15,9 +15,6 @@
 
 #include "tsSatisfiesExpression.h"
 
-#include <typescript/checker.h>
-
-
 namespace panda::es2panda::ir {
 
 void TSSatisfiesExpression::Iterate(const NodeTraverser &cb) const

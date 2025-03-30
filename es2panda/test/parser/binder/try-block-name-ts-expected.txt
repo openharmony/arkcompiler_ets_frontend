@@ -1,33 +1,32 @@
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#tryFoo(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#tryFoo^1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#tryFoo^2(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x5
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 	nop
 label_15: 
@@ -69,7 +68,6 @@ label_6:
 	lda v1
 	throw
 label_5: 
-	ldundefined
 	returnundefined
 label_16: 
 }

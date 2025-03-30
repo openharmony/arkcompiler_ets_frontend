@@ -16,14 +16,17 @@
 import lazy {a} from './a'
 import {b} from './b'
 import c from './a'
+import lazy d from './c'
+import lazy from './b'
 
-let d = a;
-let e = b;
+let e = a;
+let f = b;
 class A {
   constructor() {
     'use sendable'
   }
   
   u: string = a
-  v: number = c;
+  v: number = c
+  w: string = d;
 }

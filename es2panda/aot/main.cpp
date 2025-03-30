@@ -13,25 +13,16 @@
  * limitations under the License.
  */
 
-#include <iostream>
-
 #include <abc2program/program_dump.h>
-#include <assembly-program.h>
-#include <assembly-emitter.h>
-#include <mem/arena_allocator.h>
 #include <mem/pool_manager.h>
 #include "utils/timers.h"
 
 #include <emitFiles.h>
-#include <es2panda.h>
-#include <options.h>
 #include <protobufSnapshotGenerator.h>
 #include <resolveDepsRelation.h>
 #include <util/commonUtil.h>
 #include <util/dumper.h>
 #include <util/moduleHelpers.h>
-#include <util/programCache.h>
-#include <util/workerQueue.h>
 
 namespace panda::es2panda::aot {
 using mem::MemConfig;
@@ -181,8 +172,8 @@ static bool GenerateProgram(std::map<std::string, panda::es2panda::util::Program
 
         // Disable generating cached files when cross-program optimization is required, to prevent cached files from
         // not being invalidated when their dependencies are changed
-        if (options->compilerProtoOutput().size() > 0 && !options->CompilerOptions().requireGlobalOptimization) {
-            panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(*prog, options->compilerProtoOutput());
+        if (options->CompilerProtoOutput().size() > 0 && !options->CompilerOptions().requireGlobalOptimization) {
+            panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(*prog, options->CompilerProtoOutput());
             return true;
         }
     }

@@ -13,28 +13,28 @@
  * limitations under the License.
  */
 import assert from "assert";
-abstract class j2 {
-    abstract q2(): number;
-    s2(): string {
+abstract class t2 {
+    abstract a3(): number;
+    b3(): string {
         return '22';
     }
 }
-class l2 extends j2 {
-    q2(): number {
+class u2 extends t2 {
+    a3(): number {
         return 11;
     }
 }
-let m2 = new l2();
-assert(m2.q2() === 11, 'success');
-assert(m2.s2() === '22', 'success');
-class n2 extends j2 {
-    q2(): number {
+let v2 = new u2();
+assert(v2.a3() === 11, 'success');
+assert(v2.b3() === '22', 'success');
+class w2 extends t2 {
+    a3(): number {
         return 111;
     }
-    s2(): string {
+    b3(): string {
         return '222';
     }
 }
-let o2 = new n2();
-assert(o2.q2() === 111, 'success');
-assert(o2.s2() === '222', 'success');
+let z2 = new w2();
+assert(z2.a3() === 111, 'success');
+assert(z2.b3() === '222', 'success');

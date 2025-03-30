@@ -13,16 +13,16 @@
  * limitations under the License.
  */
 import assert from "assert";
-interface e2 {
-    h2: number;
-    i2(para: number): number;
+interface l2 {
+    q2: number;
+    s2(para: number): number;
 }
-let f2 = class C7 implements e2 {
-    h2: number = 7;
-    i2(h2: number): number {
-        return h2 * 2 * this.h2;
+let m2 = class C7 implements l2 {
+    q2: number = 7;
+    s2(o2: number): number {
+        return o2 * 2 * this.q2;
     }
 };
-let g2 = new f2();
-assert(g2.h2 === 7);
-assert(g2.i2(2) === 28);
+let n2 = new m2();
+assert(n2.q2 === 7);
+assert(n2.s2(2) === 28);

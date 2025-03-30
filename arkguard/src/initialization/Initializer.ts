@@ -19,10 +19,19 @@ import path from 'path';
 import { ArkObfuscator, blockPrinter, renameIdentifierModule } from '../ArkObfuscator';
 import { collectResevedFileNameInIDEConfig, MergedConfig, ObConfigResolver, readNameCache } from './ConfigResolver';
 import { type IOptions } from '../configs/IOptions';
+import type { HvigorErrorInfo } from '../common/type';
+import { getObfuscationCacheDir } from '../utils/PrinterTimeAndMemUtils';
 
 // Record all unobfuscated properties and reasons.
-export let historyUnobfuscatedPropMap: Map<string, string[]> | undefined;
-export let historyAllUnobfuscatedNamesMap: Map<string, Object> = new Map();
+export const historyUnobfuscatedPropMap: Map<string, string[]> = new Map<string, string[]>();
+// Record all files and the unobfuscated names and reasons in the files.
+export const historyAllUnobfuscatedNamesMap: Map<string, Object> = new Map<string, Object>();
+
+// Clear the map after one compilation is completed.
+export function clearHistoryUnobfuscatedMap(): void {
+  historyUnobfuscatedPropMap.clear();
+  historyAllUnobfuscatedNamesMap.clear();
+}
 
 export const printerConfig = {
   // Print obfuscation time&memory usage of all files and obfuscation processes
@@ -35,10 +44,32 @@ export const printerConfig = {
   mOutputPath: '',
 };
 
-export function initObfuscationConfig(projectConfig: any, arkProjectConfig: any, logger: any): void {
-  const obConfig: ObConfigResolver = new ObConfigResolver(projectConfig, logger, true);
+export const printerTimeAndMemConfig = {
+  // A sub-switch of mTimeAndMemPrinter used to control the obfuscation performance printing of files
+  mFilesPrinter: false,
+  // A sub-switch of mTimeAndMemPrinter used to control the obfuscation performance printing of singlefile
+  mSingleFilePrinter: false,
+};
+
+export const printerTimeAndMemDataConfig = {
+  // The switch for printing obfuscation performance data and memory data
+  mTimeAndMemPrinter: false,
+  // Print more obfuscation time data to obtain more detailed time performance data
+  mMoreTimePrint: false,
+};
+
+// Initialize the configuration of the TimeAndMem performance printer
+export function initPrinterTimeAndMemConfig() {
+  printerTimeAndMemConfig.mFilesPrinter = true;
+  printerTimeAndMemConfig.mSingleFilePrinter = true;
+  printerTimeAndMemDataConfig.mTimeAndMemPrinter = true;
+}
+
+export function initObfuscationConfig(projectConfig: any, arkProjectConfig: any, printObfLogger: Function): void {
+  const obConfig: ObConfigResolver = new ObConfigResolver(projectConfig, printObfLogger, true);
   const mergedObConfig: MergedConfig = obConfig.resolveObfuscationConfigs();
   const isHarCompiled: boolean = projectConfig.compileHar;
+  getObfuscationCacheDir(projectConfig);
   if (mergedObConfig.options.disableObfuscation) {
     blockPrinter();
     return;
@@ -59,15 +90,16 @@ export function initObfuscationConfig(projectConfig: any, arkProjectConfig: any,
 
   arkProjectConfig.arkObfuscator = initArkGuardConfig(
     projectConfig.obfuscationOptions?.obfuscationCacheDir,
-    logger,
+    printObfLogger,
     mergedObConfig,
     isHarCompiled,
   );
+  arkProjectConfig.arkObfuscator.obfConfigResolver = obConfig;
 }
 
 function initArkGuardConfig(
   obfuscationCacheDir: string | undefined,
-  logger: any,
+  printObfLogger: Function,
   mergedObConfig: MergedConfig,
   isHarCompiled: boolean,
 ): ArkObfuscator {
@@ -85,8 +117,10 @@ function initArkGuardConfig(
       mKeepStringProperty: !mergedObConfig.options.enableStringPropertyObfuscation,
       mTopLevel: mergedObConfig.options.enableToplevelObfuscation,
       mReservedToplevelNames: mergedObConfig.reservedGlobalNames,
+      mKeepParameterNames: mergedObConfig.options.keepParameterNames,
       mUniversalReservedProperties: mergedObConfig.universalReservedPropertyNames,
-      mUniversalReservedToplevelNames: mergedObConfig.universalReservedGlobalNames
+      mUniversalReservedToplevelNames: mergedObConfig.universalReservedGlobalNames,
+      mEnableAtKeep: mergedObConfig.options.enableAtKeep
     },
     mUnobfuscationOption: {
       mPrintKeptNames: mergedObConfig.options.printKeptNames,
@@ -105,34 +139,36 @@ function initArkGuardConfig(
     },
     mExportObfuscation: mergedObConfig.options.enableExportObfuscation,
     mPerformancePrinter: printerConfig,
+    mPerformanceTimeAndMemPrinter: printerTimeAndMemConfig,
     mKeepFileSourceCode: {
       mKeepSourceOfPaths: new Set(),
       mkeepFilesAndDependencies: new Set(),
     },
+    mStripLanguageDefaultWhitelist: mergedObConfig.options.stripLanguageDefault
   };
 
   const arkObfuscator: ArkObfuscator = new ArkObfuscator();
-  arkObfuscator.init(arkguardConfig);
+  arkObfuscator.init(arkguardConfig, obfuscationCacheDir);
   if (mergedObConfig.options.applyNameCache && mergedObConfig.options.applyNameCache.length > 0) {
-    readNameCache(mergedObConfig.options.applyNameCache, logger);
+    readNameCache(mergedObConfig.options.applyNameCache, printObfLogger);
   } else {
     if (obfuscationCacheDir) {
       const defaultNameCachePath: string = path.join(obfuscationCacheDir, 'nameCache.json');
       if (fs.existsSync(defaultNameCachePath)) {
-        readNameCache(defaultNameCachePath, logger);
+        readNameCache(defaultNameCachePath, printObfLogger);
       }
     }
   }
   if (mergedObConfig.options.printKeptNames && obfuscationCacheDir) {
     const defaultUnobfuscationPath: string = path.join(obfuscationCacheDir, 'keptNames.json');
     if (fs.existsSync(defaultUnobfuscationPath)) {
-      readUnobfuscationContent(defaultUnobfuscationPath, logger);
+      readUnobfuscationContentCache(defaultUnobfuscationPath, printObfLogger);
     }
   }
   return arkObfuscator;
 }
 
-function readUnobfuscationContent(defaultUnobfuscationPath: string, logger: any): void {
+function readUnobfuscationContentCache(defaultUnobfuscationPath: string, printObfLogger: Function): void {
   try {
     const unobfuscationContent = fs.readFileSync(defaultUnobfuscationPath, 'utf-8');
     const unobfuscationObj: {
@@ -143,14 +179,23 @@ function readUnobfuscationContent(defaultUnobfuscationPath: string, logger: any)
       };
     } = JSON.parse(unobfuscationContent);
 
-    if (Object.keys(unobfuscationObj.keptNames.property).length !== 0) {
-      historyUnobfuscatedPropMap = new Map<string, string[]>(Object.entries(unobfuscationObj.keptNames.property));
-    }
+    Object.keys(unobfuscationObj.keptNames.property).forEach((key) => {
+      historyUnobfuscatedPropMap.set(key, unobfuscationObj.keptNames.property[key]);
+    });
+
     const { property, ...rest } = unobfuscationObj.keptNames;
     Object.keys(rest).forEach((key) => {
       historyAllUnobfuscatedNamesMap.set(key, rest[key]);
     });
   } catch (err) {
-    logger.error(`Failed to open ${defaultUnobfuscationPath}. Error message: ${err}`);
+    const errorInfo: string = `Failed to open ${defaultUnobfuscationPath}. Error message: ${err}`;
+    const errorCodeInfo: HvigorErrorInfo = {
+      code: '10804003',
+      description: 'ArkTS compiler Error',
+      cause: `Failed to open ${defaultUnobfuscationPath}. Error message: ${err}`,
+      position: defaultUnobfuscationPath,
+      solutions: [`Please check ${defaultUnobfuscationPath} as error message suggested.`],
+    };
+    printObfLogger(errorInfo, errorCodeInfo, 'error');
   }
 }

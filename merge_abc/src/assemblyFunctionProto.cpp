@@ -14,7 +14,6 @@
  */
 
 #include "assemblyFunctionProto.h"
-#include "libpandafile/file_items.h"
 
 namespace panda::proto {
 void CatchBlock::Serialize(const panda::pandasm::Function::CatchBlock &block, protoPanda::CatchBlock &protoBlock)
@@ -41,14 +40,6 @@ void Parameter::Serialize(const panda::pandasm::Function::Parameter &param, prot
 {
     auto *type = protoParam.mutable_type();
     Type::Serialize(param.type, *type);
-    auto *metadata = protoParam.mutable_metadata();
-    ParamMetadata::Serialize(*(param.metadata), *metadata);
-}
-
-void Parameter::Deserialize(const protoPanda::Parameter &protoParam, panda::pandasm::Function::Parameter &param,
-                            panda::ArenaAllocator *allocator)
-{
-    ParamMetadata::Deserialize(protoParam.metadata(), param.metadata, allocator);
 }
 
 void Function::Serialize(const panda::pandasm::Function &function, protoPanda::Function &protoFunction)
@@ -174,8 +165,7 @@ void Function::Deserialize(const protoPanda::Function &protoFunction, panda::pan
     function.params.reserve(protoFunction.params_size());
     for (const auto &protoParam : protoFunction.params()) {
         auto &paramType = Type::Deserialize(protoParam.type(), allocator);
-        panda::pandasm::Function::Parameter param(paramType, panda::panda_file::SourceLang::ECMASCRIPT);
-        Parameter::Deserialize(protoParam, param, allocator);
+        panda::pandasm::Function::Parameter param(paramType, function.language);
         function.params.emplace_back(std::move(param));
     }
 

@@ -15,16 +15,7 @@
 
 #include "concurrent.h"
 
-#include <binder/scope.h>
-#include <compiler/core/compilerContext.h>
-#include <compiler/core/pandagen.h>
-#include <ir/astNode.h>
 #include <ir/base/scriptFunction.h>
-#include <ir/expressions/literals/stringLiteral.h>
-#include <ir/statements/blockStatement.h>
-#include <ir/statements/expressionStatement.h>
-#include <lexer/token/sourceLocation.h>
-#include <parser/module/sourceTextModuleRecord.h>
 
 namespace panda::es2panda::util {
 
@@ -45,7 +36,7 @@ void Concurrent::ThrowInvalidConcurrentFunction(const lexer::LineIndex &lineInde
     auto column = (const_cast<lexer::LineIndex &>(lineIndex)).GetLocation(expr->Range().start).col - 1;
     switch (errFlag) {
         case ConcurrentInvalidFlag::NOT_ORDINARY_FUNCTION: {
-            throw Error {ErrorType::GENERIC, "Concurrent function should only be function declaration", line,
+            throw Error {ErrorType::SYNTAX, "Concurrent function should only be function declaration", line,
                          column};
             break;
         }
@@ -53,7 +44,7 @@ void Concurrent::ThrowInvalidConcurrentFunction(const lexer::LineIndex &lineInde
             std::stringstream ss;
             ss << "Concurrent function should only use import variable or local variable, '" << varName
                << "' is not one of them";
-            throw Error {ErrorType::GENERIC, ss.str(), line, column};
+            throw Error {ErrorType::SYNTAX, ss.str(), line, column};
             break;
         }
         default:

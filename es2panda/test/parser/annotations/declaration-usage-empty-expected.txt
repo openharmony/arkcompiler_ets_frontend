@@ -216,15 +216,15 @@
               "type": "Annotation",
               "expression": {
                 "type": "Identifier",
-                "name": "Anno",
+                "name": "__$$ETS_ANNOTATION$$__Anno",
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 3
+                    "column": 2
                   },
                   "end": {
                     "line": 18,
-                    "column": 7
+                    "column": 28
                   }
                 }
               },
@@ -237,7 +237,7 @@
                 },
                 "end": {
                   "line": 18,
-                  "column": 7
+                  "column": 28
                 }
               }
             }
@@ -328,15 +328,15 @@
                   "type": "CallExpression",
                   "callee": {
                     "type": "Identifier",
-                    "name": "Anno",
+                    "name": "__$$ETS_ANNOTATION$$__Anno",
                     "loc": {
                       "start": {
                         "line": 20,
-                        "column": 7
+                        "column": 6
                       },
                       "end": {
                         "line": 20,
-                        "column": 11
+                        "column": 32
                       }
                     }
                   },
@@ -345,11 +345,11 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 7
+                      "column": 6
                     },
                     "end": {
                       "line": 20,
-                      "column": 13
+                      "column": 34
                     }
                   }
                 },
@@ -362,7 +362,7 @@
                   },
                   "end": {
                     "line": 20,
-                    "column": 13
+                    "column": 34
                   }
                 }
               }
@@ -452,15 +452,15 @@
                   "type": "CallExpression",
                   "callee": {
                     "type": "Identifier",
-                    "name": "Anno",
+                    "name": "__$$ETS_ANNOTATION$$__Anno",
                     "loc": {
                       "start": {
                         "line": 23,
-                        "column": 7
+                        "column": 6
                       },
                       "end": {
                         "line": 23,
-                        "column": 11
+                        "column": 32
                       }
                     }
                   },
@@ -471,11 +471,11 @@
                       "loc": {
                         "start": {
                           "line": 23,
-                          "column": 12
+                          "column": 33
                         },
                         "end": {
                           "line": 23,
-                          "column": 14
+                          "column": 35
                         }
                       }
                     }
@@ -484,11 +484,11 @@
                   "loc": {
                     "start": {
                       "line": 23,
-                      "column": 7
+                      "column": 6
                     },
                     "end": {
                       "line": 23,
-                      "column": 15
+                      "column": 36
                     }
                   }
                 },
@@ -501,7 +501,7 @@
                   },
                   "end": {
                     "line": 23,
-                    "column": 15
+                    "column": 36
                   }
                 }
               }

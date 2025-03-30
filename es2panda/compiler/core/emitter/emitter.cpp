@@ -15,25 +15,17 @@
 
 #include "emitter.h"
 
-#include <binder/binder.h>
-#include <binder/scope.h>
-#include <binder/variable.h>
 #include <compiler/base/literals.h>
 #include <compiler/core/compilerContext.h>
 #include <compiler/core/pandagen.h>
 #include <compiler/debugger/debuginfoDumper.h>
 #include <compiler/base/catchTable.h>
-#include <es2panda.h>
-#include <gen/isa.h>
 #include <ir/base/annotation.h>
 #include <ir/base/classDefinition.h>
-#include <ir/base/methodDefinition.h>
 #include <ir/base/property.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/expressions/arrayExpression.h>
 #include <ir/expressions/callExpression.h>
-#include <ir/expressions/functionExpression.h>
-#include <ir/expressions/literal.h>
 #include <ir/expressions/literals/booleanLiteral.h>
 #include <ir/expressions/literals/numberLiteral.h>
 #include <ir/expressions/literals/stringLiteral.h>
@@ -46,17 +38,8 @@
 #include <ir/ts/tsEnumMember.h>
 #include <ir/ts/tsTypeParameterInstantiation.h>
 #include <ir/ts/tsTypeReference.h>
-#include <macros.h>
-#include <parser/program/program.h>
-#include <util/helpers.h>
-
-#include <string>
-#include <string_view>
-#include <tuple>
-#include <utility>
 
 namespace panda::es2panda::compiler {
-constexpr const auto LANG_EXT = panda::pandasm::extensions::Language::ECMASCRIPT;
 
 FunctionEmitter::FunctionEmitter(ArenaAllocator *allocator, const PandaGen *pg)
     : pg_(pg),
@@ -64,14 +47,14 @@ FunctionEmitter::FunctionEmitter(ArenaAllocator *allocator, const PandaGen *pg)
       literalArrays_(allocator->Adapter()),
       externalAnnotationRecords_(allocator->Adapter())
 {
-    func_ = allocator->New<panda::pandasm::Function>(pg->InternalName().Mutf8(), LANG_EXT);
+    func_ = allocator->New<panda::pandasm::Function>(pg->InternalName().Mutf8(), pg->SourceLang());
     CHECK_NOT_NULL(func_);
 
     size_t paramCount = pg->InternalParamCount();
     func_->params.reserve(paramCount);
 
     for (uint32_t i = 0; i < paramCount; ++i) {
-        func_->params.emplace_back(panda::pandasm::Type("any", 0), LANG_EXT);
+        func_->params.emplace_back(panda::pandasm::Type("any", 0), pg->SourceLang());
     }
 
     func_->regs_num = pg->TotalRegsNum();
@@ -91,6 +74,11 @@ void FunctionEmitter::Generate(util::PatchFix *patchFixHelper)
     GenAnnotations();
     if (patchFixHelper != nullptr) {
         patchFixHelper->ProcessFunction(pg_, func_, literalBuffers_);
+    }
+    GenExpectedPropertyCountAnnotation();
+    GenSlotNumberAnnotation();
+    if (pg_->Context()->IsMergeAbc()) {
+        GenConcurrentModuleRequestsAnnotation();
     }
 }
 
@@ -395,9 +383,9 @@ pandasm::AnnotationElement FunctionEmitter::CreateAnnotationElement(const std::s
     }
 }
 
-static pandasm::Record CreateExternalAnnotationRecord(const std::string &name)
+static pandasm::Record CreateExternalAnnotationRecord(const std::string &name, pandasm::extensions::Language lang)
 {
-    pandasm::Record record(name, pandasm::extensions::Language::ECMASCRIPT);
+    pandasm::Record record(name, lang);
     record.metadata->SetAccessFlags(panda::ACC_ANNOTATION);
     record.metadata->SetAttribute("external");
     return record;
@@ -413,7 +401,8 @@ pandasm::AnnotationData FunctionEmitter::CreateAnnotation(const ir::Annotation *
     pandasm::AnnotationData annotation(annoName);
 
     if (anno->IsImported()) {
-        externalAnnotationRecords_.push_back(CreateExternalAnnotationRecord(annoName));
+        externalAnnotationRecords_.push_back(
+            CreateExternalAnnotationRecord(annoName, pg_->SourceLang()));
     }
 
     if (!anno->Expr()->IsCallExpression()) {
@@ -584,12 +573,78 @@ void FunctionEmitter::GenConcurrentFunctionModuleRequests()
     }
 }
 
-// Emitter
+void FunctionEmitter::GenExpectedPropertyCountAnnotation()
+{
+    auto expectedCount = pg_->GetExpectedPropertyCount();
+    if (expectedCount == 0) {
+        return;
+    }
 
-Emitter::Emitter(CompilerContext *context)
+    static const std::string ANNOTATION = "_ESExpectedPropertyCountAnnotation";
+    static const std::string ELEMENT_NAME = "ExpectedPropertyCount";
+
+    pandasm::AnnotationData anno(ANNOTATION);
+
+    pandasm::AnnotationElement ele(ELEMENT_NAME, std::make_unique<pandasm::ScalarValue>(
+        pandasm::ScalarValue::Create<pandasm::Value::Type::U32>(expectedCount)));
+    anno.AddElement(std::move(ele));
+
+    std::vector<pandasm::AnnotationData> annos;
+    annos.emplace_back(anno);
+    func_->metadata->AddAnnotations(annos);
+    func_->SetExpectedPropertyCount(pg_->GetExpectedPropertyCount());
+}
+
+void FunctionEmitter::GenSlotNumberAnnotation()
+{
+    static const std::string SLOT_NUMBER = "_ESSlotNumberAnnotation";
+    static const std::string ELEMENT_NAME = "SlotNumber";
+
+    for (const auto &an : func_->metadata->GetAnnotations()) {
+        if (an.GetName() == SLOT_NUMBER) {
+            return;
+        }
+    }
+    pandasm::AnnotationData anno(SLOT_NUMBER);
+    pandasm::AnnotationElement ele(ELEMENT_NAME, std::make_unique<pandasm::ScalarValue>(
+        pandasm::ScalarValue::Create<pandasm::Value::Type::U32>(static_cast<uint32_t>(func_->GetSlotsNum()))));
+    anno.AddElement(std::move(ele));
+    std::vector<pandasm::AnnotationData> annos;
+    annos.emplace_back(anno);
+    func_->metadata->AddAnnotations(annos);
+}
+
+void FunctionEmitter::GenConcurrentModuleRequestsAnnotation()
+{
+    static const std::string CONCURRENT_MODULE_REQUESTS = "_ESConcurrentModuleRequestsAnnotation";
+    static const std::string ELEMENT_NAME = "ConcurrentModuleRequest";
+    if (func_->GetFunctionKind() != panda::panda_file::FunctionKind::CONCURRENT_FUNCTION) {
+        return;
+    }
+
+    for (const auto &an : func_->metadata->GetAnnotations()) {
+        if (an.GetName() == CONCURRENT_MODULE_REQUESTS) {
+            return;
+        }
+    }
+
+    pandasm::AnnotationData anno(CONCURRENT_MODULE_REQUESTS);
+    for (auto &it : func_->concurrent_module_requests) {
+        panda::pandasm::AnnotationElement module_request(ELEMENT_NAME, std::make_unique<pandasm::ScalarValue>(
+            pandasm::ScalarValue::Create<pandasm::Value::Type::U32>(static_cast<uint32_t>(it))));
+        anno.AddElement(std::move(module_request));
+    }
+
+    std::vector<pandasm::AnnotationData> annos;
+    annos.emplace_back(anno);
+    func_->metadata->AddAnnotations(annos);
+}
+
+// Emitter
+Emitter::Emitter(CompilerContext *context): source_lang_(context->SourceLang())
 {
     prog_ = new panda::pandasm::Program();
-    prog_->lang = LANG_EXT;
+    prog_->lang = context->SourceLang();
 
     if (context->IsJsonInputFile()) {
         GenJsonContentRecord(context);
@@ -598,7 +653,8 @@ Emitter::Emitter(CompilerContext *context)
 
     if (context->IsMergeAbc()) {
         auto recordName = context->Binder()->Program()->FormatedRecordName().Mutf8();
-        rec_ = new panda::pandasm::Record(recordName.substr(0, recordName.find_last_of('.')), LANG_EXT);
+        rec_ = new panda::pandasm::Record(recordName.substr(0, recordName.find_last_of('.')),
+                                          prog_->lang);
         SetPkgNameField(context->PkgName());
         SetCommonjsField(context->Binder()->Program()->Kind() == parser::ScriptKind::COMMONJS);
     } else {
@@ -612,6 +668,11 @@ Emitter::Emitter(CompilerContext *context)
     }
     AddSharedModuleRecord(context);
     AddScopeNamesRecord(context);
+    AddExpectedPropertyCountRecord();
+    AddSlotNumberRecord();
+    if (context->IsMergeAbc()) {
+        AddConcurrentModuleRequestsRecord();
+    }
 }
 
 Emitter::~Emitter()
@@ -621,7 +682,7 @@ Emitter::~Emitter()
 
 void Emitter::SetPkgNameField(const std::string &pkgName)
 {
-    auto pkgNameField = panda::pandasm::Field(LANG_EXT);
+    auto pkgNameField = panda::pandasm::Field(source_lang_);
     pkgNameField.name = "pkgName@" + pkgName;
     pkgNameField.type = panda::pandasm::Type("u8", 0);
     pkgNameField.metadata->SetValue(
@@ -638,8 +699,8 @@ void Emitter::GenRecordNameInfo() const
 
 void Emitter::GenJsonContentRecord(const CompilerContext *context)
 {
-    rec_ = new panda::pandasm::Record(std::string(context->RecordName()), panda::panda_file::SourceLang::ECMASCRIPT);
-    auto jsonContentField = panda::pandasm::Field(panda::panda_file::SourceLang::ECMASCRIPT);
+    rec_ = new panda::pandasm::Record(std::string(context->RecordName()), source_lang_);
+    auto jsonContentField = panda::pandasm::Field(source_lang_);
     jsonContentField.name = "jsonFileContent";
     jsonContentField.type = panda::pandasm::Type("u32", 0);
     jsonContentField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::STRING>(
@@ -708,7 +769,7 @@ void Emitter::AddScopeNamesRecord(CompilerContext *context)
     // ScopeNames is a literalarray in each record if it is in mergeAbc, it is a string array which put scope names.
     // _ESScopeNamesRecord is a literalarray in the record when it is not in mergeAbc.
     if (context->IsMergeAbc()) {
-        auto scopeNamesField = panda::pandasm::Field(LANG_EXT);
+        auto scopeNamesField = panda::pandasm::Field(source_lang_);
         scopeNamesField.name = "scopeNames";
         scopeNamesField.type = panda::pandasm::Type("u32", 0);
         scopeNamesField.metadata->SetValue(
@@ -716,9 +777,10 @@ void Emitter::AddScopeNamesRecord(CompilerContext *context)
                 static_cast<std::string_view>(literalKey)));
         rec_->field_list.emplace_back(std::move(scopeNamesField));
     } else {
-        auto scopeNamesRecord = panda::pandasm::Record("_ESScopeNamesRecord", LANG_EXT);
+        auto scopeNamesRecord = panda::pandasm::Record("_ESScopeNamesRecord",
+                                                       source_lang_);
         scopeNamesRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
-        auto scopeNamesField = panda::pandasm::Field(LANG_EXT);
+        auto scopeNamesField = panda::pandasm::Field(source_lang_);
         // If the input arg "source-file" is not specified, context->SourceFile() will be empty,
         // in this case, use it's absolute path.
         if (context->SourceFile().empty()) {
@@ -738,7 +800,7 @@ void Emitter::AddScopeNamesRecord(CompilerContext *context)
 void Emitter::CreateStringClass()
 {
     if (prog_->record_table.find(ir::Annotation::stringClassName) == prog_->record_table.end()) {
-        pandasm::Record record(ir::Annotation::stringClassName, pandasm::extensions::Language::ECMASCRIPT);
+        pandasm::Record record(ir::Annotation::stringClassName, prog_->lang);
         record.metadata->SetAttribute("external");
         prog_->record_table.emplace(ir::Annotation::stringClassName, std::move(record));
     }
@@ -869,9 +931,10 @@ void Emitter::CreateEnumProp(const ir::ClassProperty *prop, const std::string &a
     }
 }
 
-panda::pandasm::Field Emitter::CreateAnnotationProp(const ir::ClassProperty *prop, const std::string &annoName)
+panda::pandasm::Field Emitter::CreateAnnotationProp(const ir::ClassProperty *prop,
+                                                    const std::string &annoName)
 {
-    auto annoRecordField = panda::pandasm::Field(panda::panda_file::SourceLang::ECMASCRIPT);
+    auto annoRecordField = panda::pandasm::Field(source_lang_);
     annoRecordField.name = std::string(prop->Key()->AsIdentifier()->Name());
 
     auto propType = prop->TypeAnnotation()->Type();
@@ -920,7 +983,7 @@ panda::pandasm::Field Emitter::CreateAnnotationProp(const ir::ClassProperty *pro
 
 void Emitter::AddAnnotationRecord(const std::string &annoName, const ir::ClassDeclaration *classDecl)
 {
-    pandasm::Record record(annoName, pandasm::extensions::Language::ECMASCRIPT);
+    pandasm::Record record(annoName, source_lang_);
     record.metadata->SetAccessFlags(panda::ACC_ANNOTATION);
 
     for (auto bodyItem : classDecl->Definition()->Body()) {
@@ -941,7 +1004,7 @@ void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, CompilerCon
     auto moduleLiteral = std::string(context->Binder()->Program()->RecordName()) + "_" +
          std::to_string(module->Index());
     if (context->IsMergeAbc()) {
-        auto moduleIdxField = panda::pandasm::Field(LANG_EXT);
+        auto moduleIdxField = panda::pandasm::Field(source_lang_);
         moduleIdxField.name = "moduleRecordIdx";
         moduleIdxField.type = panda::pandasm::Type("u32", 0);
         moduleIdxField.metadata->SetValue(
@@ -953,10 +1016,11 @@ void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, CompilerCon
             context->PatchFixHelper()->ProcessModule(rec_->name, module->Buffer());
         }
     } else {
-        auto ecmaModuleRecord = panda::pandasm::Record("_ESModuleRecord", LANG_EXT);
+        auto ecmaModuleRecord = panda::pandasm::Record("_ESModuleRecord",
+                                                       source_lang_);
         ecmaModuleRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
 
-        auto moduleIdxField = panda::pandasm::Field(LANG_EXT);
+        auto moduleIdxField = panda::pandasm::Field(source_lang_);
         moduleIdxField.name = context->Binder()->Program()->ModuleRecordFieldName().empty() ?
                               std::string {context->Binder()->Program()->SourceFile()} :
                               context->Binder()->Program()->ModuleRecordFieldName();
@@ -982,7 +1046,7 @@ void Emitter::AddModuleRequestPhaseRecord(ModuleRecordEmitter *module, CompilerC
     auto phaseLiteral = std::string(context->Binder()->Program()->RecordName()) + "_" +
          std::to_string(module->PhaseIndex());
     if (context->IsMergeAbc()) {
-        auto phaseIdxField = panda::pandasm::Field(LANG_EXT);
+        auto phaseIdxField = panda::pandasm::Field(source_lang_);
         phaseIdxField.name = "moduleRequestPhaseIdx";
         phaseIdxField.type = panda::pandasm::Type("u32", 0);
         phaseIdxField.metadata->SetValue(
@@ -990,10 +1054,11 @@ void Emitter::AddModuleRequestPhaseRecord(ModuleRecordEmitter *module, CompilerC
             static_cast<std::string_view>(phaseLiteral)));
         rec_->field_list.emplace_back(std::move(phaseIdxField));
     } else {
-        auto moduleRequestPhaseRecord = panda::pandasm::Record("_ModuleRequestPhaseRecord", LANG_EXT);
+        auto moduleRequestPhaseRecord = panda::pandasm::Record("_ModuleRequestPhaseRecord",
+                                                               source_lang_);
         moduleRequestPhaseRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
 
-        auto phaseIdxField = panda::pandasm::Field(LANG_EXT);
+        auto phaseIdxField = panda::pandasm::Field(source_lang_);
         phaseIdxField.name = "moduleRequestPhaseIdx";
         phaseIdxField.type = panda::pandasm::Type("u32", 0);
         phaseIdxField.metadata->SetValue(
@@ -1011,16 +1076,16 @@ void Emitter::AddModuleRequestPhaseRecord(ModuleRecordEmitter *module, CompilerC
 void Emitter::AddHasTopLevelAwaitRecord(bool hasTLA, const CompilerContext *context)
 {
     if (context->IsMergeAbc()) {
-        auto hasTLAField = panda::pandasm::Field(LANG_EXT);
+        auto hasTLAField = panda::pandasm::Field(source_lang_);
         hasTLAField.name = "hasTopLevelAwait";
         hasTLAField.type = panda::pandasm::Type("u8", 0);
         hasTLAField.metadata->SetValue(
             panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(static_cast<uint8_t>(hasTLA)));
         rec_->field_list.emplace_back(std::move(hasTLAField));
     } else if (hasTLA) {
-        auto hasTLARecord = panda::pandasm::Record("_HasTopLevelAwait", LANG_EXT);
+        auto hasTLARecord = panda::pandasm::Record("_HasTopLevelAwait", source_lang_);
         hasTLARecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
-        auto hasTLAField = panda::pandasm::Field(LANG_EXT);
+        auto hasTLAField = panda::pandasm::Field(source_lang_);
         hasTLAField.name = "hasTopLevelAwait";
         hasTLAField.type = panda::pandasm::Type("u8", 0);
         hasTLAField.metadata->SetValue(
@@ -1035,7 +1100,7 @@ void Emitter::AddSharedModuleRecord(const CompilerContext *context)
 {
     bool isShared = context->Binder()->Program()->IsShared();
 
-    auto sharedModuleField = panda::pandasm::Field(LANG_EXT);
+    auto sharedModuleField = panda::pandasm::Field(source_lang_);
     sharedModuleField.name = "isSharedModule";
     sharedModuleField.type = panda::pandasm::Type("u8", 0);
     sharedModuleField.metadata->SetValue(
@@ -1044,11 +1109,20 @@ void Emitter::AddSharedModuleRecord(const CompilerContext *context)
     if (context->IsMergeAbc()) {
         rec_->field_list.emplace_back(std::move(sharedModuleField));
     } else if (isShared) {
-        auto sharedModuleRecord = panda::pandasm::Record("_SharedModuleRecord", LANG_EXT);
+        auto sharedModuleRecord = panda::pandasm::Record("_SharedModuleRecord",
+                                                         source_lang_);
         sharedModuleRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
         sharedModuleRecord.field_list.emplace_back(std::move(sharedModuleField));
         prog_->record_table.emplace(sharedModuleRecord.name, std::move(sharedModuleRecord));
     }
+}
+
+void Emitter::AddExpectedPropertyCountRecord()
+{
+    static const std::string ANNOTATION = "_ESExpectedPropertyCountAnnotation";
+    pandasm::Record record(ANNOTATION, pandasm::extensions::Language::ECMASCRIPT);
+    record.metadata->AddAccessFlags(panda::ACC_ANNOTATION);
+    prog_->record_table.emplace(ANNOTATION, std::move(record));
 }
 
 // static
@@ -1158,10 +1232,13 @@ void Emitter::DumpAsm(const panda::pandasm::Program *prog)
 {
     auto &ss = std::cout;
 
-    ss << ".language ECMAScript" << std::endl << std::endl;
-
     for (auto &[name, func] : prog->function_table) {
         ss << "slotNum = 0x" << std::hex << func.GetSlotsNum() << std::dec << std::endl;
+        auto expectedCount = func.GetExpectedPropertyCount();
+        if (expectedCount != 0) {
+            ss << "expectedProperty = 0x" << std::hex << expectedCount << std::dec << std::endl;
+        }
+        ss << ".language " << func.language << std::endl;
         ss << ".function any " << name << '(';
 
         for (uint32_t i = 0; i < func.GetParamsNum(); i++) {
@@ -1214,6 +1291,26 @@ panda::pandasm::Program *Emitter::Finalize(bool dumpDebugInfo, util::PatchFix *p
 panda::pandasm::Program *Emitter::GetProgram() const
 {
     return prog_;
+}
+
+void Emitter::AddSlotNumberRecord()
+{
+    static const std::string SLOT_NUMBER = "_ESSlotNumberAnnotation";
+    // Source files with different file type will share the same slot number record.
+    // Thus the language of this record should be set as default.
+    pandasm::Record record(SLOT_NUMBER, pandasm::extensions::DEFAULT_LANGUAGE);
+    record.metadata->AddAccessFlags(panda::ACC_ANNOTATION);
+    prog_->record_table.emplace(SLOT_NUMBER, std::move(record));
+}
+
+void Emitter::AddConcurrentModuleRequestsRecord()
+{
+    static const std::string CONCURRENT_MODULE_REQUESTS = "_ESConcurrentModuleRequestsAnnotation";
+    // Source files with different file type will share the same slot number record.
+    // Thus the language of this record should be set as default.
+    pandasm::Record record(CONCURRENT_MODULE_REQUESTS, pandasm::extensions::DEFAULT_LANGUAGE);
+    record.metadata->AddAccessFlags(panda::ACC_ANNOTATION);
+    prog_->record_table.emplace(CONCURRENT_MODULE_REQUESTS, std::move(record));
 }
 
 }  // namespace panda::es2panda::compiler

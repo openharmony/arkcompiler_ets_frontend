@@ -61,7 +61,7 @@ assert(temp6[0] === 1);
 assert(temp6[1] === 2);
 interface Person {
     name: string;
-    g: number;
+    j: number;
 }
 type PersonKeys = keyof Person;
 let b: PersonKeys = "name";
@@ -81,17 +81,17 @@ assert(temp4[0] === "1");
 assert(temp4[1] === 2);
 type T2 = {
     description: string;
-    h(para1: number): boolean;
+    k(para1: number): boolean;
     (para2: number): number;
 };
 const temp9: T2 = (g: number) => g;
 temp9.description = "test";
-temp9.h = (f: number) => {
+temp9.k = (f: number) => {
     return f > 0 ? true : false;
 };
 assert(temp9(100) === 100);
 assert(temp9.description === "test");
-assert(temp9.h(-100) === false);
+assert(temp9.k(-100) === false);
 type T3 = (para5: number) => number;
 const temp10: T3 = (e: number) => e;
 assert(temp10(200) === 200);
@@ -123,9 +123,9 @@ assert(temp17 === "test");
 let temp18: T4[keyof T5["X1"]] = 6;
 assert(temp18 === 6);
 const MyArray = [
-    { i: "Alice", m1: 15 },
-    { i: "Bob", m1: 23 },
-    { i: "Eve", m1: 38 },
+    { l: "Alice", m1: 15 },
+    { l: "Bob", m1: 23 },
+    { l: "Eve", m1: 38 },
 ];
 type A1 = (typeof MyArray)[1]["m1"];
 let temp19: A1 = 7;
@@ -160,11 +160,11 @@ let temp27: U6["1234"] = "6";
 assert(temp27 === "6");
 // Define properties in type individually
 type nType1 = {
-    j: number;
-    k: number;
+    m: number;
+    o: number;
     "3214": number;
-    l: number;
-    ["m"]: number;
+    p: number;
+    ["q"]: number;
     ["2314"]: number;
 };
 // Define properties in type and access them using indexedAccessType

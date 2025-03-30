@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 import { j } from 'path1';
-import a1 from 'a.html';
+import b1 from 'a.html';
 j('');
-a1;
+b1;

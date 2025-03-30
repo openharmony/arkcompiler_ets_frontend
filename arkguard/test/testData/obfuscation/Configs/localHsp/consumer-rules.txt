@@ -1,0 +1,5 @@
+-enable-toplevel-obfuscation
+-keep-global-name 
+LocalHspClass
+-keep-property-name 
+localHspMethod

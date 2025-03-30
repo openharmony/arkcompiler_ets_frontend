@@ -17,7 +17,7 @@ declare module 'path1' {
     export function h(...k: any[]): string;
     export var i: string;
     export interface j {
-        k: number;
+        m: number;
     }
 }
 declare module '*.html' {

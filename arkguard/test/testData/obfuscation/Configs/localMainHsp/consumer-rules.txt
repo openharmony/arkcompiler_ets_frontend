@@ -1,0 +1,5 @@
+-enable-filename-obfuscation
+-keep-global-name
+LocalMainHspClass 
+-keep-property-name
+localMainHspGreeting

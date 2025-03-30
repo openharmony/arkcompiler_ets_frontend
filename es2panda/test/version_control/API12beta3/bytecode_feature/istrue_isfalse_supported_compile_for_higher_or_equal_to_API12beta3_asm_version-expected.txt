@@ -1,6 +1,5 @@
-.language ECMAScript
-
 slotNum = 0x9
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_8: 
 label_0: 
@@ -36,7 +35,6 @@ label_7:
 	lda v0
 	callarg1 0x7, v1
 label_3: 
-	ldundefined
 	returnundefined
 label_9: 
 }

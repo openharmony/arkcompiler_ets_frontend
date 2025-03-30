@@ -1,0 +1,5 @@
+-enable-string-property-obfuscation
+-keep-global-name
+RemoteMainHspClass 
+-keep-property-name
+remoteMainHspGreeting

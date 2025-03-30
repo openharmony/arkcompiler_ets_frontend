@@ -15,8 +15,6 @@
 
 #include "symbolTable.h"
 
-#include <fstream>
-#include <iostream>
 #include <util/helpers.h>
 
 namespace panda::es2panda::util {

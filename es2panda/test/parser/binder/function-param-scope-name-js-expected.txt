@@ -1,6 +1,5 @@
-.language ECMAScript
-
 slotNum = 0x5
+.language ECMAScript
 .function any .#*#paramFoo(any a0, any a1, any a2, any a3) {
 label_3: 
 label_0: 
@@ -17,30 +16,30 @@ label_2:
 	callarg0 0x2
 label_1: 
 	definefunc 0x4, .#*@0*#^1, 0x0
-	ldundefined
 	returnundefined
 label_4: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#*@0*#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#*@0*#^1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -50,7 +49,6 @@ label_0:
 	lda a2
 	stlexvar 0x0, 0x1
 	definefunc 0x0, .#*#paramFoo, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }

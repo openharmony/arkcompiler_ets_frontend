@@ -13,16 +13,11 @@
  * limitations under the License.
  */
 
-#include <ir/astNode.h>
 #include <ir/base/classDefinition.h>
-#include <ir/base/decorator.h>
 #include <ir/base/metaProperty.h>
-#include <ir/base/methodDefinition.h>
 #include <ir/base/property.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/base/spreadElement.h>
-#include <ir/base/templateElement.h>
-#include <ir/expression.h>
 #include <ir/expressions/arrayExpression.h>
 #include <ir/expressions/arrowFunctionExpression.h>
 #include <ir/expressions/assignmentExpression.h>
@@ -33,7 +28,6 @@
 #include <ir/expressions/classExpression.h>
 #include <ir/expressions/conditionalExpression.h>
 #include <ir/expressions/functionExpression.h>
-#include <ir/expressions/identifier.h>
 #include <ir/expressions/importExpression.h>
 #include <ir/expressions/literals/bigIntLiteral.h>
 #include <ir/expressions/literals/booleanLiteral.h>
@@ -43,9 +37,7 @@
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/memberExpression.h>
 #include <ir/expressions/newExpression.h>
-#include <ir/expressions/objectExpression.h>
 #include <ir/expressions/omittedExpression.h>
-#include <ir/expressions/privateIdentifier.h>
 #include <ir/expressions/sequenceExpression.h>
 #include <ir/expressions/superExpression.h>
 #include <ir/expressions/taggedTemplateExpression.h>
@@ -61,19 +53,8 @@
 #include <ir/ts/tsPrivateIdentifier.h>
 #include <ir/ts/tsSatisfiesExpression.h>
 #include <ir/ts/tsTypeAssertion.h>
-#include <ir/ts/tsTypeParameter.h>
-#include <ir/ts/tsTypeParameterDeclaration.h>
 #include <ir/ts/tsTypeParameterInstantiation.h>
-#include <ir/ts/tsTypeReference.h>
-#include <ir/validationInfo.h>
 #include <lexer/lexer.h>
-#include <lexer/regexp/regexp.h>
-#include <lexer/token/letters.h>
-#include <lexer/token/sourceLocation.h>
-#include <lexer/token/token.h>
-#include <macros.h>
-
-#include <memory>
 
 #include "parserImpl.h"
 

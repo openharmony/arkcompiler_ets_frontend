@@ -1,0 +1,7 @@
+-enable-toplevel-obfuscation
+-enable-property-obfuscation
+-enable-export-obfuscation
+-keep-global-name
+MainRemoteHspClass 
+-keep-property-name
+mainRemoteHspGreeting

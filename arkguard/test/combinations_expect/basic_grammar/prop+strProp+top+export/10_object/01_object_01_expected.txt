@@ -16,8 +16,8 @@ import assert from 'assert';
 const i: unique symbol = Symbol();
 class j {
     p?: number;
-    q?: string;
-    t?: boolean;
+    t?: string;
+    u?: boolean;
     1?: number;
     "x"?: number;
     [i]?: number;
@@ -31,7 +31,7 @@ namespace o {
 o.p;
 let p = {
     p: 1,
-    q: "12",
+    t: "12",
     1: 1,
     "2": "2",
     [3]: 3,
@@ -45,10 +45,10 @@ let p = {
     [l.p]: 11,
     [o.p]: 12,
     k: () => { return 13; },
-    u: () => 14
+    v: () => 14
 };
 assert(p.p === 1);
-assert(p.q === '12');
+assert(p.t === '12');
 assert(p[1] === 1);
 assert(p["2"] === "2");
 assert(p[3] === 3);
@@ -62,21 +62,21 @@ assert(p[13] === 10);
 assert(p[20] === 11);
 assert(p[30] === 12);
 assert(p.k() === 13);
-assert(p.u() === 14);
-function g({ q: r, ...s }: {
-    q: number;
-    t: string;
+assert(p.v() === 14);
+function g({ t: r, ...s }: {
+    t: number;
+    u: string;
 }) {
-    return r + s.t;
+    return r + s.u;
 }
-g({ q: 1, t: "213" });
-assert(g({ q: 1, t: "213" }) === "1213");
+g({ t: 1, u: "213" });
+assert(g({ t: 1, u: "213" }) === "1213");
 function h(q: j) {
     assert(q.p === 1);
-    assert(q.q === "1");
-    assert(q.t === true);
+    assert(q.t === "1");
+    assert(q.u === true);
     assert(q[1] === 1);
     assert(q["x"] === 2);
     assert(q[i] === 3);
 }
-h({ p: 1, q: "1", t: true, 1: 1, "x": 2, [i]: 3 });
+h({ p: 1, t: "1", u: true, 1: 1, "x": 2, [i]: 3 });

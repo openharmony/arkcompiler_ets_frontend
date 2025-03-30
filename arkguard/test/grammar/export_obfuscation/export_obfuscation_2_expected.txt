@@ -12,15 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export interface t {
-    k: string;
-    l: string;
-    m: string;
+export interface u {
+    c1: string;
+    d1: string;
+    e1: string;
 }
-export const u: number = 100;
-interface v {
-    o: string;
-    p: string;
-    q: string;
+export const v: number = 100;
+interface a1 {
+    f1: string;
+    g1: string;
+    h1: string;
 }
-const a1: number = 200;
+const b1: number = 200;

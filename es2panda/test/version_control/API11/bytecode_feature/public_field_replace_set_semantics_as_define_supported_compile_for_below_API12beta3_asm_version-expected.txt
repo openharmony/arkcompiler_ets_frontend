@@ -1,6 +1,6 @@
-.language ECMAScript
-
 slotNum = 0x2
+expectedProperty = 0x3
+.language ECMAScript
 .function any .A(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -12,6 +12,7 @@ label_2:
 }
 
 slotNum = 0x4
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 	nop
 label_7: 
@@ -45,7 +46,6 @@ label_6:
 	throw
 label_1: 
 	poplexenv
-	ldundefined
 	returnundefined
 label_8: 
 }
@@ -53,6 +53,7 @@ label_8:
 .catchall label_2, end_label_3, label_9
 
 slotNum = 0x6
+.language ECMAScript
 .function any .instance_initializer(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -67,7 +68,6 @@ label_0:
 	throw.undefinedifholewithname a
 	lda v0
 	definefieldbyname 0x4, b, a2
-	ldundefined
 	returnundefined
 label_2: 
 }

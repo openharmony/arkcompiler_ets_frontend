@@ -18,7 +18,6 @@
 #include <compiler/core/pandagen.h>
 #include <typescript/checker.h>
 #include <ir/astDump.h>
-#include <ir/base/classDefinition.h>
 #include <ir/expressions/identifier.h>
 #include <ir/expressions/privateIdentifier.h>
 #include <ir/expressions/literals/numberLiteral.h>

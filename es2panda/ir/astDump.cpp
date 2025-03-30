@@ -15,11 +15,6 @@
 
 #include "astDump.h"
 
-#include <ir/astNode.h>
-
-#include <cmath>
-#include <iostream>
-
 namespace panda::es2panda::ir {
 
 AstDumper::AstDumper(const BlockStatement *program, util::StringView sourceCode) : index_(sourceCode), indent_(0)

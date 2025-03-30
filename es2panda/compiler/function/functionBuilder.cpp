@@ -15,13 +15,9 @@
 
 #include "functionBuilder.h"
 
-#include <binder/binder.h>
-#include <compiler/base/iterators.h>
 #include <compiler/core/pandagen.h>
 #include <ir/base/classDefinition.h>
 #include <ir/base/scriptFunction.h>
-#include <ir/statement.h>
-#include <util/helpers.h>
 
 namespace panda::es2panda::compiler {
 

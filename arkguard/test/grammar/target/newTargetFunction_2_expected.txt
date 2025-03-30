@@ -18,9 +18,9 @@ export var kmp = function (m) {
     class o extends n {
         constructor(r, s) {
             super();
-            return new.target.m(r, s);
+            return new.target.t(r, s);
         }
-        static m(p, q) {
+        static t(p, q) {
             return new o();
         }
     }

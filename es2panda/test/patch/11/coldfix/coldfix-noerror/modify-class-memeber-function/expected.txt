@@ -11,9 +11,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any .C(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -23,6 +22,7 @@ label_2:
 }
 
 slotNum = 0x3
+.language ECMAScript
 .function any .ccc(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -32,12 +32,12 @@ label_0:
 	sta v1
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x3
+.language ECMAScript
 .function any .classTest(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -45,22 +45,22 @@ label_0:
 	sta v0
 	defineclasswithbuffer 0x0, .C, _1, 0x0, v0
 	ldobjbyname 0x1, prototype
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	definefunc 0x0, .classTest, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
 
 slotNum = 0x3
+.language ECMAScript
 .function any .name(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -70,7 +70,6 @@ label_0:
 	sta v1
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }

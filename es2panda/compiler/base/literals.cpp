@@ -16,7 +16,6 @@
 #include "literals.h"
 
 #include <compiler/core/pandagen.h>
-#include <ir/base/templateElement.h>
 #include <ir/expressions/taggedTemplateExpression.h>
 #include <ir/expressions/templateLiteral.h>
 

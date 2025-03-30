@@ -1,6 +1,5 @@
-.language ECMAScript
-
 slotNum = 0x1e
+.language ECMAScript
 .function any .#*#testNestedTryBlock(any a0, any a1, any a2) {
 	nop
 label_45: 
@@ -154,7 +153,6 @@ label_17:
 	lda v2
 	throw
 label_16: 
-	ldundefined
 	returnundefined
 label_46: 
 }
@@ -174,6 +172,7 @@ label_46:
 .catchall label_30, end_label_31, label_51
 
 slotNum = 0x54
+.language ECMAScript
 .function any .#*#testTryBlockWithLoop(any a0, any a1, any a2) {
 	nop
 label_71: 
@@ -712,7 +711,6 @@ label_44:
 	lda v15
 	throw
 label_43: 
-	ldundefined
 	returnundefined
 label_72: 
 }
@@ -734,6 +732,7 @@ label_72:
 .catchall label_59, end_label_60, label_80
 
 slotNum = 0xc
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 	nop
 label_12: 
@@ -767,7 +766,6 @@ label_11:
 	tryldglobalbyname 0x9, print
 	callarg1 0xa, v0
 label_2: 
-	ldundefined
 	returnundefined
 label_13: 
 }

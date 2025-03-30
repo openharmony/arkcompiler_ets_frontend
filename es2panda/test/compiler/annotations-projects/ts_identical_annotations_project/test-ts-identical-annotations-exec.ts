@@ -17,5 +17,5 @@
     a: number = 42
 }
 
-@#Anno()
+@__$$ETS_ANNOTATION$$__Anno()
 class A {}

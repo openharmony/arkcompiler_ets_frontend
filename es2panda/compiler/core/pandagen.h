@@ -236,6 +236,7 @@ public:
 
     void SetFunctionKind();
     void SetInSendable();
+    size_t GetExpectedPropertyCount() const;
 
     bool IsDebug() const;
     bool isDebuggerEvaluateExpressionMode() const;
@@ -246,6 +247,7 @@ public:
     const util::StringView &InternalName() const;
     const util::StringView &FunctionName() const;
     binder::Binder *Binder() const;
+    pandasm::extensions::Language SourceLang() const;
 
     Label *AllocLabel();
 

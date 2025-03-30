@@ -15,13 +15,8 @@
 
 #include "lexer.h"
 
-#include <es2panda.h>
 #include <gen/keywords.h>
-#include <lexer/token/letters.h>
-#include <lexer/token/tokenType.h>
 #include <parser/context/parserContext.h>
-
-#include <array>
 
 namespace panda::es2panda::lexer {
 
@@ -188,8 +183,22 @@ void Lexer::SkipMultiLineComment()
 void Lexer::SkipSingleLineComment()
 {
     while (true) {
+        // INVALID_CP may appear in the middle of a comment
+        // It can not be used to determine the end of the comment.
+        if (!Iterator().HasNext()) {
+            Iterator().Next();
+            pos_.nextTokenLine++;
+            return;
+        }
         switch (Iterator().Next()) {
-            case util::StringView::Iterator::INVALID_CP:
+            case util::StringView::Iterator::INVALID_CP: {
+                // This return means if an INVALID_CP appeared in a single comment,
+                // it will terminates single comment,
+                // but INVALID_CP should not terminate single comment,
+                // only the end of the Iterator can terminates single comment and add pos_.nextTokenLine,
+                // this return should be removed in another issure because it is an incompatible bug fix.
+                return;
+            }
             case LEX_CHAR_CR: {
                 if (Iterator().Peek() == LEX_CHAR_LF) {
                     Iterator().Forward(1);

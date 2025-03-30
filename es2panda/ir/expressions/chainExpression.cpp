@@ -15,7 +15,6 @@
 
 #include "chainExpression.h"
 
-#include <compiler/base/optionalChain.h>
 #include <compiler/core/pandagen.h>
 #include <ir/astDump.h>
 #include <ir/expressions/callExpression.h>

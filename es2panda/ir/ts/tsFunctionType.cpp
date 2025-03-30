@@ -15,12 +15,8 @@
 
 #include "tsFunctionType.h"
 
-#include <binder/binder.h>
-#include <binder/scope.h>
 #include <typescript/checker.h>
-#include <typescript/types/signature.h>
 #include <ir/astDump.h>
-#include <ir/ts/tsTypeParameter.h>
 #include <ir/ts/tsTypeParameterDeclaration.h>
 
 namespace panda::es2panda::ir {

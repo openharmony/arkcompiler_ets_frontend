@@ -77,7 +77,10 @@ LexEnvContext::~LexEnvContext()
     const auto &labelSet = catchTable_->LabelSet();
     const auto *node = envScope_->Scope()->Node();
 
-    pg_->SetLabel(node, labelSet.TryEnd());
+    if (!GetTryEndFlag()) {
+        pg_->SetLabel(node, labelSet.TryEnd());
+    }
+    SetTryEndFlag(false);
     pg_->Branch(node, labelSet.CatchEnd());
 
     pg_->SetLabel(node, labelSet.CatchBegin());
@@ -93,18 +96,45 @@ bool LexEnvContext::HasTryCatch() const
 }
 
 void LexEnvContext::AbortContext([[maybe_unused]] ControlFlowChange cfc,
-                                 [[maybe_unused]] const util::StringView &targetLabel)
+                                 const util::StringView &targetLabel)
 {
     if (!envScope_->HasEnv()) {
         return;
     }
 
     const auto *node = envScope_->Scope()->Node();
+    // Process the continue label in the ForUpdate Statement.
     if (node->IsForUpdateStatement()) {
+        if (targetLabel == LabelTarget::CONTINUE_LABEL || targetLabel == LabelTarget::BREAK_LABEL) {
+            return;
+        }
+
+        DynamicContext *iter = this->Prev();
+        // Because multiple labels can be set before the loop statement,
+        // iterates forward until the target label is found.
+        while (iter && iter->Type() == DynamicContextType::LABEL) {
+            const auto &labelName = iter->Target().ContinueLabel();
+            if (labelName == targetLabel) {
+                return;
+            }
+            iter = iter->Prev();
+        }
+        SetTryEndLabel(node);
+        pg_->PopLexEnv(node);
         return;
     }
 
+    SetTryEndLabel(node);
     pg_->PopLexEnv(node);
+}
+
+void LexEnvContext::SetTryEndLabel(const ir::AstNode *node)
+{
+    if (!GetTryEndFlag()) {
+        SetTryEndFlag(true);
+        const auto &labelSet = catchTable_->LabelSet();
+        pg_->SetLabel(node, labelSet.TryEnd());
+    }
 }
 
 IteratorContext::IteratorContext(PandaGen *pg, const Iterator &iterator, LabelTarget target)

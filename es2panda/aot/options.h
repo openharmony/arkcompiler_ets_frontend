@@ -25,6 +25,7 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <util/base64.h>
+#include <util/commonUtil.h>
 
 namespace panda {
 class PandArgParser;
@@ -119,7 +120,7 @@ public:
 
     std::string ExtractContentFromBase64Input(const std::string &inputBase64String);
 
-    const std::string &compilerProtoOutput() const
+    const std::string &CompilerProtoOutput() const
     {
         return compilerProtoOutput_;
     }

@@ -17,6 +17,7 @@
 #define ES2PANDA_AOT_EMITFILES_H
 
 #include <aot/options.h>
+#include <mem/arena_allocator.h>
 #include <util/helpers.h>
 #include <util/workerQueue.h>
 

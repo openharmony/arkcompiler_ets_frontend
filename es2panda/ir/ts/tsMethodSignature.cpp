@@ -16,13 +16,9 @@
 #include "tsMethodSignature.h"
 
 #include <typescript/checker.h>
-#include <binder/binder.h>
-#include <binder/scope.h>
 #include <ir/astDump.h>
 #include <ir/typeNode.h>
-#include <ir/ts/tsTypeParameter.h>
 #include <ir/ts/tsTypeParameterDeclaration.h>
-#include <ir/expressions/literals/numberLiteral.h>
 
 namespace panda::es2panda::ir {
 

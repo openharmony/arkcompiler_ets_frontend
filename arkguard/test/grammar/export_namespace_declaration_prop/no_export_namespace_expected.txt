@@ -12,22 +12,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-declare namespace v1 {
+declare namespace w1 {
     function foo9(): void;
     class className9 {
-        a2: number;
-        c2: b2 | undefined;
+        d2: number;
+        e2: c2 | undefined;
     }
-    interface b2 {
+    interface c2 {
     }
 }
-declare namespace w1 {
+declare namespace z1 {
     export function foo10(): void;
-    export class z1 {
-        d2: number;
-        e2: a2 | undefined;
+    export class a2 {
+        f2: number;
+        g2: b2 | undefined;
     }
-    interface a2 {
+    interface b2 {
     }
     export {};
 }

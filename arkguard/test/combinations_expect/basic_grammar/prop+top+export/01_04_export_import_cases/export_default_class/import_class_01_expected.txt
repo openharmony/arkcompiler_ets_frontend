@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 import assert from 'assert';
-import j from './export_class_01';
-import k from './export_class_02';
-let l = new j('lion');
-let m = new k('tiger');
-assert(l.h === 'lion');
-assert(m.i === 'tiger');
+import l from './export_class_01';
+import m from './export_class_02';
+let o = new l('lion');
+let p = new m('tiger');
+assert(o.i === 'lion');
+assert(p.k === 'tiger');

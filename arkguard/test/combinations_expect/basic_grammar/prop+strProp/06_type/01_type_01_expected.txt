@@ -61,7 +61,7 @@ assert(temp6[0] === 1);
 assert(temp6[1] === 2);
 interface Person {
     name: string;
-    g: number;
+    j: number;
 }
 type PersonKeys = keyof Person;
 let b: PersonKeys = "name";
@@ -81,53 +81,53 @@ assert(temp4[0] === "1");
 assert(temp4[1] === 2);
 type T2 = {
     description: string;
-    h(para1: number): boolean;
+    k(para1: number): boolean;
     (para2: number): number;
 };
 const temp9: T2 = (g: number) => g;
 temp9.description = "test";
-temp9.h = (f: number) => {
+temp9.k = (f: number) => {
     return f > 0 ? true : false;
 };
 assert(temp9(100) === 100);
 assert(temp9.description === "test");
-assert(temp9.h(-100) === false);
+assert(temp9.k(-100) === false);
 type T3 = (para5: number) => number;
 const temp10: T3 = (e: number) => e;
 assert(temp10(200) === 200);
 // Different grammar scenarios of indexedAccessType
 type T4 = {
-    i: number;
-    j: string;
-    k: boolean;
+    l: number;
+    m: string;
+    o: boolean;
 };
 export type T5 = {
     X1: T4;
 };
-let temp5: T5["X1"]["i"] = 2;
+let temp5: T5["X1"]["l"] = 2;
 assert(temp5 === 2);
-let temp11: T4["i"] = 3;
-let temp12: T4["j"] = "test";
-let temp13: T4["k"] = false;
+let temp11: T4["l"] = 3;
+let temp12: T4["m"] = "test";
+let temp13: T4["o"] = false;
 assert(temp11 === 3);
 assert(temp12 === "test");
 assert(temp13 === false);
-let temp14: T4["i" | "j"] = 4;
-let temp15: T4["i" | "j"] = "test";
+let temp14: T4["l" | "m"] = 4;
+let temp15: T4["l" | "m"] = "test";
 assert(temp14 === 4);
 assert(temp15 === "test");
-let temp16: T5["X1"]["i" | "j"] = 5;
-let temp17: T5["X1"]["i" | "j"] = "test";
+let temp16: T5["X1"]["l" | "m"] = 5;
+let temp17: T5["X1"]["l" | "m"] = "test";
 assert(temp16 === 5);
 assert(temp17 === "test");
 let temp18: T4[keyof T5["X1"]] = 6;
 assert(temp18 === 6);
 const MyArray = [
-    { l: "Alice", m: 15 },
-    { l: "Bob", m: 23 },
-    { l: "Eve", m: 38 },
+    { p: "Alice", q: 15 },
+    { p: "Bob", q: 23 },
+    { p: "Eve", q: 38 },
 ];
-type A1 = (typeof MyArray)[1]["m"];
+type A1 = (typeof MyArray)[1]["q"];
 let temp19: A1 = 7;
 assert(temp19 === 7);
 type Tuple = [
@@ -160,21 +160,21 @@ let temp27: U6["1234"] = "6";
 assert(temp27 === "6");
 // Define properties in type individually
 type nType1 = {
-    o: number;
-    p: number;
-    "q": number;
     u: number;
-    ["v"]: number;
+    v: number;
+    "a1": number;
+    b1: number;
+    ["c1"]: number;
     ["2314"]: number;
 };
 // Define properties in type and access them using indexedAccessType
 type nType2 = {
-    a1: number;
-    b1: number;
-    "c1": number;
-    ["d1"]: number;
+    d1: number;
     e1: number;
-    ["f1"]: number;
+    "f1": number;
+    ["g1"]: number;
+    h1: number;
+    ["i1"]: number;
     // need to add into whitelist when enable prop and prop+strProp
     1243: number;
     [2134]: number;
@@ -182,17 +182,17 @@ type nType2 = {
     "3142": number;
     ["2314"]: number;
 };
-let temp28: nType2["a1"] = 1;
+let temp28: nType2["d1"] = 1;
 assert(temp28 === 1);
-let temp29: nType2["b1"] = 2;
+let temp29: nType2["e1"] = 2;
 assert(temp29 === 2);
-let temp30: nType2["c1"] = 3;
+let temp30: nType2["f1"] = 3;
 assert(temp30 === 3);
-let temp31: nType2["d1"] = 4;
+let temp31: nType2["g1"] = 4;
 assert(temp31 === 4);
-let temp32: nType2["e1"] = 5;
+let temp32: nType2["h1"] = 5;
 assert(temp32 === 5);
-let temp33: nType2["f1"] = 6;
+let temp33: nType2["i1"] = 6;
 assert(temp33 === 6);
 // need to add into whitelist when enable prop and prop+strProp
 let temp34: nType2[1243] = 7;

@@ -15,14 +15,8 @@
 
 #include "callExpression.h"
 
-#include <util/helpers.h>
 #include <compiler/core/pandagen.h>
-#include <compiler/core/regScope.h>
 #include <typescript/checker.h>
-#include <typescript/types/objectType.h>
-#include <typescript/types/signature.h>
-#include <typescript/types/type.h>
-#include <ir/astDump.h>
 #include <ir/base/classDefinition.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/base/spreadElement.h>
