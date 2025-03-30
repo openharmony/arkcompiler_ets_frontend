@@ -87,6 +87,10 @@ private:
 
     ir::AstNode *TryFoldTSAsExpressionForString(ir::TSAsExpression *expr);
 
+    ir::AstNode *FoldTSAsExpressionToChar(ir::TSAsExpression *expr);
+
+    ir::AstNode *FoldTSAsExpressionToBoolean(ir::TSAsExpression *expr);
+
     ir::AstNode *FoldTSAsExpression(ir::TSAsExpression *expr);
 
     ir::AstNode *FoldMultilineString(ir::TemplateLiteral *expr);
