@@ -757,6 +757,7 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
         }
         case ir::AstNodeType::SUPER_EXPRESSION: {
             VariableScope *varScope = scope_->EnclosingVariableScope();
+            CHECK_NOT_NULL(varScope);
             varScope->AddFlag(VariableScopeFlags::USE_SUPER);
 
             ResolveReferences(childNode);
