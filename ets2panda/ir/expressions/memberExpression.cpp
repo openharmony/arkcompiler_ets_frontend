@@ -303,7 +303,6 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
     bool const isSetter = Parent()->IsAssignmentExpression() && Parent()->AsAssignmentExpression()->Left() == this;
     std::string_view const methodName =
         isSetter ? compiler::Signatures::SET_INDEX_METHOD : compiler::Signatures::GET_INDEX_METHOD;
-
     auto *const method = objType_->GetProperty(methodName, searchFlag);
     if (method == nullptr || !method->HasFlag(varbinder::VariableFlags::METHOD)) {
         checker->LogError(diagnostic::NO_INDEX_ACCESS_METHOD, {}, Start());
@@ -321,7 +320,6 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
     }
 
     auto &signatures = checker->GetTypeOfVariable(method)->AsETSFunctionType()->CallSignatures();
-
     checker::Signature *signature = checker->ValidateSignatures(signatures, nullptr, arguments, Start(), "indexing",
                                                                 checker::TypeRelationFlag::NO_THROW);
     if (signature == nullptr) {
@@ -337,9 +335,18 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
     ES2PANDA_ASSERT(signature->Function() != nullptr);
 
     if (isSetter) {
-        //  Restore the right assignment node's parent to keep AST invariant valid.
+        if (checker->IsClassStaticMethod(objType_, signature)) {
+            checker->LogError(diagnostic::PROP_IS_STATIC, {methodName, objType_->Name()}, Property()->Start());
+        }
+        // Restore the right assignment node's parent to keep AST invariant valid.
         Parent()->AsAssignmentExpression()->Right()->SetParent(Parent());
         return signature->Params()[1]->TsType();
+    }
+
+    // #24301: requires enum refactoring
+    if (!signature->Owner()->IsETSEnumType() && checker->IsClassStaticMethod(objType_, signature)) {
+        checker->LogError(diagnostic::PROP_IS_STATIC, {methodName, objType_->Name()}, Property()->Start());
+        return nullptr;
     }
 
     return signature->ReturnType();
