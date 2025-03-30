@@ -340,8 +340,10 @@ void ETSFunctionType::IsSubtypeOf(TypeRelation *relation, Type *target)
 {
     AssertNoMethodsInFunctionRelation(this, target);
 
+    ETSChecker *checker = relation->GetChecker()->AsETSChecker();
+
     // fastpath
-    if (target->IsETSObjectType() && target->AsETSObjectType()->IsGlobalETSObjectType()) {
+    if (relation->IsSupertypeOf(target, checker->GlobalBuiltinFunctionType())) {
         relation->Result(true);
         return;
     }
@@ -351,7 +353,6 @@ void ETSFunctionType::IsSubtypeOf(TypeRelation *relation, Type *target)
         return;
     }
 
-    ETSChecker *checker = relation->GetChecker()->AsETSChecker();
     relation->IsSupertypeOf(target, ArrowToFunctionalInterface(checker));
 }
 
