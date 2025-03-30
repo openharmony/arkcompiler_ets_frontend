@@ -41,6 +41,7 @@ class CFG;
 
 namespace ark::es2panda::parser {
 enum class ScriptKind { SCRIPT, MODULE, STDLIB };
+enum EntityType { CLASS_PROPERTY = 0, METHOD_DEFINITION = 1, CLASS_DEFINITION = 2, TS_INTERFACE_DECLARATION = 3 };
 
 class Program {
 public:
@@ -273,6 +274,17 @@ public:
     void AddNodeToETSNolintCollection(const ir::AstNode *node, const std::set<ETSWarnings> &warningsCollection);
     bool NodeContainsETSNolint(const ir::AstNode *node, ETSWarnings warning);
 
+    std::vector<std::pair<std::string, ir::AstNode *>> &DeclGenExportNodes()
+    {
+        // NOTE: ExportNodes is not supported now.
+        return declGenExportNodes_;
+    }
+
+    void AddDeclGenExportNode(const std::string &declGenExportStr, ir::AstNode *node)
+    {
+        declGenExportNodes_.emplace_back(declGenExportStr, node);
+    }
+
     // The name "IsDied", because correct value of canary is a necessary condition for the life of "Program", but
     // not sufficient
     bool IsDied() const
@@ -309,6 +321,7 @@ private:
     bool isASTchecked_ {};
     lexer::SourcePosition packageStartPosition_ {};
     compiler::CFG *cfg_;
+    std::vector<std::pair<std::string, ir::AstNode *>> declGenExportNodes_;
 
 #ifndef NDEBUG
     const static uint32_t POISON_VALUE {0x12346789};
