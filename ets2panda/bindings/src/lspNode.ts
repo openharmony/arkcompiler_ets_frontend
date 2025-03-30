@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { KInt, KNativePointer, KUInt } from "./InteropTypes"
+import { KBoolean, KInt, KNativePointer, KUInt } from "./InteropTypes"
 import { unpackString, VariantTypes } from "./private"
 import { throwError } from "./utils"
 import { isNullPtr } from "./Wrapper"
@@ -151,4 +151,232 @@ export class LspDefinitionData extends LspNode {
   readonly fileName: String
   readonly start: KInt
   readonly length: KInt
+}
+
+export class LspReferenceData extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.fileName = unpackString(global.es2panda._getReferenceFileName(peer));
+    this.start = global.es2panda._getReferenceStart(peer);
+    this.length = global.es2panda._getReferenceLength(peer);
+  }
+  readonly fileName: String;
+  readonly start: KInt;
+  readonly length: KInt;
+}
+
+export class LspReferences extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.referenceInfos = new NativePtrDecoder()
+      .decode(global.es2panda._getReferenceInfos(this.peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspReferenceData(elPeer)
+      })
+  }
+  readonly referenceInfos: LspReferenceData[];
+}
+
+export class LspTextSpan extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.start = global.es2panda._getTextSpanStart(peer);
+    this.length = global.es2panda._getTextSpanLength(peer);
+  }
+  readonly start: KInt;
+  readonly length: KInt;
+}
+
+export class LspSymbolDisplayPart extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.text = unpackString(global.es2panda._getDisplayPartsText(peer));
+    this.kind = unpackString(global.es2panda._getDisplayPartsKind(peer));
+  }
+  readonly text: String;
+  readonly kind: String;
+}
+
+export class LspQuickInfo extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.kind = unpackString(global.es2panda._getQuickInfoKind(peer));
+    this.kindModifier = unpackString(global.es2panda._getQuickInfoKindModifier(peer));
+    this.textSpan = new LspTextSpan(global.es2panda._getTextSpan(peer));
+    this.fileName = unpackString(global.es2panda._getQuickInfoFileName(peer));
+    this.displayParts = new NativePtrDecoder()
+      .decode(global.es2panda._getSymbolDisplayPart(peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspSymbolDisplayPart(elPeer)
+      })
+  }
+  readonly kind: String;
+  readonly kindModifier: String;
+  readonly textSpan: LspTextSpan;
+  readonly fileName: String;
+  readonly displayParts: LspSymbolDisplayPart[];
+}
+
+export enum LspHighlightSpanKind {
+  NONE, DEFINITION, REFERENCE, WRITTEN_REFERENCE
+}
+
+export class LspHighlightSpan extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.fileName = unpackString(global.es2panda._getHighlightFileName(peer));
+    this.textSpan = new LspTextSpan(global.es2panda._getTextSpan(peer));
+    this.contextSpan = new LspTextSpan(global.es2panda._getTextSpan(peer));
+    this.kind = global.es2panda._getHighlightKind(peer)
+  }
+  readonly fileName: String;
+  readonly textSpan: LspTextSpan;
+  readonly contextSpan: LspTextSpan;
+  readonly kind: LspHighlightSpanKind;
+}
+
+export class LspDocumentHighlights extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.fileName = unpackString(global.es2panda._getQuickInfoKind(peer));
+    this.highlightSpans = new NativePtrDecoder()
+      .decode(global.es2panda._getHighlightSpanFromHighlights(peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspHighlightSpan(elPeer)
+      })
+  }
+  readonly fileName: String;
+  readonly highlightSpans: LspHighlightSpan[];
+}
+
+export class LspDocumentHighlightsReferences extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.documentHighlights = new NativePtrDecoder()
+      .decode(global.es2panda._getDocumentHighlightsFromRef(peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspDocumentHighlights(elPeer)
+      })
+  }
+  readonly documentHighlights: LspDocumentHighlights[];
+}
+
+export enum LspCompletionEntryKind {
+  TEXT = 1,
+  METHOD = 2,
+  FUNCTION = 3,
+  CONSTRUCTOR = 4,
+  FIELD = 5,
+  VARIABLE = 6,
+  CLASS = 7,
+  INTERFACE = 8,
+  MODULE = 9,
+  PROPERTY = 10,
+  UNIT = 11,
+  VALUE = 12,
+  ENUM = 13,
+  KEYWORD = 14,
+  SNIPPET = 15,
+  COLOR = 16,
+  FILE = 17,
+  REFERENCE = 18,
+  FOLDER = 19,
+  ENUM_MEMBER = 20,
+  CONSTANT = 21,
+  STRUCT = 22,
+  EVENT = 23,
+  OPERATOR = 24,
+  TYPE_PARAMETER = 25
+}
+
+export enum ResolutionStatus {
+  RESOLVED, UNRESOLVED
+}
+
+export class LspCompletionEntryData extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.fileName = unpackString(global.es2panda._getFileNameFromEntryData(peer));
+    this.namedExport = unpackString(global.es2panda._getNamedExportFromEntryData(peer));
+    this.importDeclaration = unpackString(global.es2panda._getImportDeclarationFromEntryData(peer));
+    this.status = global.es2panda._getStatusFromEntryData(peer);
+  }
+  readonly fileName: String;
+  readonly namedExport: String;
+  readonly importDeclaration: String;
+  readonly status: ResolutionStatus;
+}
+
+export class LspCompletionEntry extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.name = unpackString(global.es2panda._getNameFromEntry(peer));
+    this.sortText = unpackString(global.es2panda._getSortTextFromEntry(peer));
+    this.insertText = unpackString(global.es2panda._getInsertTextFromEntry(peer));
+    this.kind = global.es2panda._getKindFromEntry(peer);
+    this.data = this.getCompletionEntryData(peer);
+  }
+  readonly name: String;
+  readonly sortText: String;
+  readonly insertText: String;
+  readonly kind: LspCompletionEntryKind;
+  readonly data: LspCompletionEntryData | null;
+  private getCompletionEntryData(peer: KNativePointer): LspCompletionEntryData | null {
+    const dataPtr = global.es2panda._getDataFromEntry(peer);
+    if (dataPtr) {
+      return new LspCompletionEntryData(dataPtr);
+    } else {
+      return null;
+    }
+  }
+}
+
+export class LspCompletionInfo extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.entries = new NativePtrDecoder()
+      .decode(global.es2panda._getEntriesFromCompletionInfo(peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspCompletionEntry(elPeer)
+      })
+  }
+  readonly entries: LspCompletionEntry[];
+}
+
+export enum AccessKind { READ, WRITE, READWRITE };
+
+export class LspReferenceLocation extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.uri = unpackString(global.es2panda._getUriFromLocation(peer));
+    this.start = global.es2panda._getStartFromLocation(peer);
+    this.end = global.es2panda._getEndFromLocation(peer);
+    this.accessKind = global.es2panda._getAccessKindFromLocation(peer);
+  }
+  readonly uri: String;
+  readonly start: KInt;
+  readonly end: KInt;
+  readonly accessKind: AccessKind;
+}
+
+export class LspReferenceLocationList extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.entries = new NativePtrDecoder()
+      .decode(global.es2panda._getLocationFromList(peer))
+      .map((elPeer: KNativePointer) => {
+        return new LspReferenceLocation(elPeer)
+      })
+  }
+  readonly entries: LspReferenceLocation[];
+}
+
+export class LspLineAndCharacter extends LspNode {
+  readonly line: number
+  readonly character: number
+  constructor(peer: KNativePointer) {
+    super(peer)
+    this.line = global.es2panda._getLine(peer)
+    this.character = global.es2panda._getChar(peer)
+  }
 }

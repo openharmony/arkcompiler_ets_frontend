@@ -150,15 +150,15 @@ export class Es2pandaNativeModule {
   _getRangeStart(ptr: KPtr): KPtr {
     throw new Error("Not implemented")
   }
-  _getPosLine(ptr: KPtr): KUInt {
+  _getPosLine(ptr: KPtr): KInt {
     throw new Error("Not implemented")
   }
 
-  _getPosChar(ptr: KPtr): KUInt {
+  _getPosChar(ptr: KPtr): KInt {
     throw new Error("Not implemented")
   }
 
-  _getDiagSeverity(ptr: KPtr): KUInt {
+  _getDiagSeverity(ptr: KPtr): KInt {
     throw new Error("Not implemented")
   }
 
@@ -202,6 +202,197 @@ export class Es2pandaNativeModule {
     throw new Error("Not implemented")
   }
 
+  _getImplementationAtPosition(filename: String, position: KInt): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getReferenceStart(ptr: KPtr): KInt {
+    throw new Error("Not implemented")
+  }
+
+  _getReferenceLength(ptr: KPtr): KInt {
+    throw new Error("Not implemented")
+  }
+
+  _getReferenceFileName(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getReferencesFromRefs(ptr: KNativePointer): KPtr[] {
+    throw new Error("Not implemented")
+  }
+
+  _getReferenceInfos(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getReferencesAtPosition(filename: String, position: KInt): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getFileReferences(filename: String): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getSpanOfEnclosingComment(filename: String, position: KInt): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getSuggestionDiagnostics(filename: String): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getQuickInfoAtPosition(filename: String, position: KInt): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getDisplayPartsText(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getDisplayPartsKind(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getQuickInfoKind(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getQuickInfoKindModifier(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getQuickInfoFileName(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getSymbolDisplayPart(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getTextSpanStart(ptr: KNativePointer): KInt {
+    throw new Error("Not implemented")
+  }
+
+  _getTextSpanLength(ptr: KNativePointer): KInt {
+    throw new Error("Not implemented")
+  }
+
+  _getTextSpan(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getHighlightFileName(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getHighlightIsInString(ptr: KNativePointer): boolean {
+    throw new Error("Not implemented")
+  }
+
+  _getHighlightKind(ptr: KPtr): KInt {
+    throw new Error("Not implemented")
+  }
+
+  _getHighlightSpanFromHighlights(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getDocumentHighlightsFromRef(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getDocumentHighlights(filename: String, position: KInt): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getCompletionAtPosition(filename: String, position: KInt): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getFileNameFromEntryData(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getNamedExportFromEntryData(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getImportDeclarationFromEntryData(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getStatusFromEntryData(ptr: KPtr): KInt {
+    throw new Error("Not implemented")
+  }
+
+  _getNameFromEntry(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getSortTextFromEntry(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getInsertTextFromEntry(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getKindFromEntry(ptr: KPtr): KInt {
+    throw new Error("Not implemented")
+  }
+
+  _getDataFromEntry(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getEntriesFromCompletionInfo(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getReferenceLocationAtPosition(filename: String, position: KInt): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getUriFromLocation(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getStartFromLocation(ptr: KNativePointer): KInt {
+    throw new Error("Not implemented")
+  }
+
+  _getEndFromLocation(ptr: KNativePointer): KInt {
+    throw new Error("Not implemented")
+  }
+
+  _getIsDefinitionFromLocation(ptr: KNativePointer): boolean {
+    throw new Error("Not implemented")
+  }
+
+  _getIsImportFromLocation(ptr: KNativePointer): boolean {
+    throw new Error("Not implemented")
+  }
+
+  _getAccessKindFromLocation(ptr: KPtr): KInt {
+    throw new Error("Not implemented")
+  }
+
+  _getLocationFromList(ptr: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getLine(ptr: KNativePointer): KInt {
+    throw new Error("Not implemented")
+  }
+
+  _getChar(ptr: KNativePointer): KInt {
+    throw new Error("Not implemented")
+  }
+
+  _toLineColumnOffset(filename: String, position: KInt): KPtr {
+    throw new Error("Not implemented")
+  }
 }
 
 export function initEs2panda(): Es2pandaNativeModule {

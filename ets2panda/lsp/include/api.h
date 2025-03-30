@@ -71,8 +71,8 @@ typedef struct TextSpan {
 } TextSpan;
 
 typedef struct Position {
-    unsigned int line_;       // Line number
-    unsigned int character_;  // Character position in the line
+    size_t line_;       // Line number
+    size_t character_;  // Character position in the line
 
     Position(unsigned int line_num = 0, unsigned int character_pos = 0) : line_(line_num), character_(character_pos) {}
 } Position;
@@ -351,9 +351,9 @@ typedef struct LSPAPI {
     DiagnosticReferences (*getSyntacticDiagnostics)(char const *fileName);
     DiagnosticReferences (*getCompilerOptionsDiagnostics)(char const *fileName,
                                                           ark::es2panda::lsp::CancellationToken cancellationToken);
-    ReferenceLocationList (*getReferenceLocationAtPosition)(char const *fileName, size_t pos,
+    References (*getReferenceLocationAtPosition)(char const *fileName, size_t pos/*,
                                                             const std::vector<std::string> &autoGenerateFolders,
-                                                            ark::es2panda::lsp::CancellationToken cancellationToken);
+                                                            ark::es2panda::lsp::CancellationToken cancellationToken*/);
     DocumentHighlightsReferences (*getDocumentHighlights)(char const *fileName, size_t position);
     std::vector<ark::es2panda::lsp::RenameLocation> (*findRenameLocations)(
         const std::vector<ark::es2panda::SourceFile> &files, const ark::es2panda::SourceFile &file, size_t position);

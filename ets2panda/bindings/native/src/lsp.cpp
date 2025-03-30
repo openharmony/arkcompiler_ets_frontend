@@ -14,6 +14,7 @@
  */
 
 #include "lsp/include/api.h"
+#include "lsp/include/completions.h"
 #include "common.h"
 
 #include <cstddef>
@@ -76,26 +77,26 @@ KNativePointer impl_getRangeStart(KNativePointer rangePtr)
 }
 TS_INTEROP_1(getRangeStart, KNativePointer, KNativePointer)
 
-KUInt impl_getPosLine(KNativePointer posPtr)
+KInt impl_getPosLine(KNativePointer posPtr)
 {
     auto *pos = reinterpret_cast<Position *>(posPtr);
     return pos->line_;
 }
-TS_INTEROP_1(getPosLine, KUInt, KNativePointer)
+TS_INTEROP_1(getPosLine, KInt, KNativePointer)
 
-KUInt impl_getPosChar(KNativePointer posPtr)
+KInt impl_getPosChar(KNativePointer posPtr)
 {
     auto *pos = reinterpret_cast<Position *>(posPtr);
     return pos->character_;
 }
-TS_INTEROP_1(getPosChar, KUInt, KNativePointer)
+TS_INTEROP_1(getPosChar, KInt, KNativePointer)
 
-KUInt impl_getDiagSeverity(KNativePointer diagRefPtr)
+KInt impl_getDiagSeverity(KNativePointer diagRefPtr)
 {
     auto *diagRef = reinterpret_cast<Diagnostic *>(diagRefPtr);
-    return static_cast<uint32_t>(diagRef->severity_);
+    return static_cast<size_t>(diagRef->severity_);
 }
-TS_INTEROP_1(getDiagSeverity, KUInt, KNativePointer)
+TS_INTEROP_1(getDiagSeverity, KInt, KNativePointer)
 
 KNativePointer impl_getDiagCode(KNativePointer diagRefPtr)
 {
@@ -123,7 +124,7 @@ KNativePointer impl_getDiagTags(KNativePointer diagRefPtr)
     auto *diagRef = reinterpret_cast<Diagnostic *>(diagRefPtr);
     std::vector<void *> ptrs;
     for (auto el : diagRef->tags_) {
-        auto castedEl = static_cast<uint32_t>(el);
+        auto castedEl = static_cast<size_t>(el);
         ptrs.push_back(&castedEl);
     }
     return new std::vector<void *>(ptrs);
@@ -305,3 +306,287 @@ KNativePointer impl_getDocumentHighs(KNativePointer doc)
     return new std::vector<void *>(ptrs);
 }
 TS_INTEROP_1(getDocumentHighs, KNativePointer, KNativePointer)
+
+KNativePointer impl_getSuggestionDiagnostics(KStringPtr &filenamePtr)
+{
+    LSPAPI const *ctx = GetImpl();
+    auto *ptrDiag = new DiagnosticReferences(ctx->getSemanticDiagnostics(GetStringCopy(filenamePtr)));
+    return ptrDiag;
+}
+TS_INTEROP_1(getSuggestionDiagnostics, KNativePointer, KStringPtr)
+
+KNativePointer impl_getDisplayPartsText(KNativePointer ref)
+{
+    auto *refPtr = reinterpret_cast<SymbolDisplayPart *>(ref);
+    return new std::string(refPtr->GetText());
+}
+TS_INTEROP_1(getDisplayPartsText, KNativePointer, KNativePointer)
+
+KNativePointer impl_getDisplayPartsKind(KNativePointer ref)
+{
+    auto *refPtr = reinterpret_cast<SymbolDisplayPart *>(ref);
+    return new std::string(refPtr->GetKind());
+}
+TS_INTEROP_1(getDisplayPartsKind, KNativePointer, KNativePointer)
+
+KNativePointer impl_getQuickInfoKind(KNativePointer quickInfoPtr)
+{
+    auto *quickInfo = reinterpret_cast<QuickInfo *>(quickInfoPtr);
+    return new std::string(quickInfo->GetKind());
+}
+TS_INTEROP_1(getQuickInfoKind, KNativePointer, KNativePointer)
+
+KNativePointer impl_getQuickInfoKindModifier(KNativePointer ref)
+{
+    auto *refPtr = reinterpret_cast<QuickInfo *>(ref);
+    return new std::string(refPtr->GetKindModifiers());
+}
+TS_INTEROP_1(getQuickInfoKindModifier, KNativePointer, KNativePointer)
+
+KNativePointer impl_getQuickInfoFileName(KNativePointer ref)
+{
+    auto *refPtr = reinterpret_cast<QuickInfo *>(ref);
+    return new std::string(refPtr->GetFileName());
+}
+TS_INTEROP_1(getQuickInfoFileName, KNativePointer, KNativePointer)
+
+KNativePointer impl_getSymbolDisplayPart(KNativePointer quickInfoPtr)
+{
+    auto *quickInfo = reinterpret_cast<QuickInfo *>(quickInfoPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : quickInfo->GetDisplayParts()) {
+        ptrs.push_back(new SymbolDisplayPart(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getSymbolDisplayPart, KNativePointer, KNativePointer)
+
+KInt impl_getTextSpanStart(KNativePointer textSpanPtr)
+{
+    auto *textSpan = reinterpret_cast<TextSpan *>(textSpanPtr);
+    return textSpan->start;
+}
+TS_INTEROP_1(getTextSpanStart, KInt, KNativePointer)
+
+KInt impl_getTextSpanLength(KNativePointer textSpanPtr)
+{
+    auto *textSpan = reinterpret_cast<TextSpan *>(textSpanPtr);
+    return textSpan->length;
+}
+TS_INTEROP_1(getTextSpanLength, KInt, KNativePointer)
+
+KNativePointer impl_getTextSpan(KNativePointer quickInfoPtr)
+{
+    auto *quickInfo = reinterpret_cast<QuickInfo *>(quickInfoPtr);
+    return new TextSpan(quickInfo->GetTextSpan());
+}
+TS_INTEROP_1(getTextSpan, KNativePointer, KNativePointer)
+
+KNativePointer impl_getHighlightFileName(KNativePointer highlightPtr)
+{
+    auto *highlight = reinterpret_cast<HighlightSpan *>(highlightPtr);
+    return new std::string(highlight->fileName_);
+}
+TS_INTEROP_1(getHighlightFileName, KNativePointer, KNativePointer)
+
+KInt impl_getHighlightIsInString(KNativePointer highlightPtr)
+{
+    auto *highlight = reinterpret_cast<HighlightSpan *>(highlightPtr);
+    return static_cast<int>(highlight->isInString_);
+}
+TS_INTEROP_1(getHighlightIsInString, KInt, KNativePointer)
+
+KInt impl_getHighlightKind(KNativePointer highlightPtr)
+{
+    auto *highlight = reinterpret_cast<HighlightSpan *>(highlightPtr);
+    return static_cast<size_t>(highlight->kind_);
+}
+TS_INTEROP_1(getHighlightKind, KInt, KNativePointer)
+
+KNativePointer impl_getHighlightSpanFromHighlights(KNativePointer documentHighlightsPtr)
+{
+    auto *documentHighlights = reinterpret_cast<DocumentHighlights *>(documentHighlightsPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : documentHighlights->highlightSpans_) {
+        ptrs.push_back(new HighlightSpan(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getHighlightSpanFromHighlights, KNativePointer, KNativePointer)
+
+KNativePointer impl_getDocumentHighlightsFromRef(KNativePointer documentHighlightsReferencesPtr)
+{
+    auto *documentHighlightsReferences =
+        reinterpret_cast<DocumentHighlightsReferences *>(documentHighlightsReferencesPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : documentHighlightsReferences->documentHighlights_) {
+        ptrs.push_back(new DocumentHighlights(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getDocumentHighlightsFromRef, KNativePointer, KNativePointer)
+
+KNativePointer impl_getFileNameFromEntryData(KNativePointer entryDataPtr)
+{
+    auto *entryData = reinterpret_cast<ark::es2panda::lsp::CompletionEntryData *>(entryDataPtr);
+    return new std::string(entryData->GetFileName());
+}
+TS_INTEROP_1(getFileNameFromEntryData, KNativePointer, KNativePointer)
+
+KNativePointer impl_getNamedExportFromEntryData(KNativePointer entryDataPtr)
+{
+    auto *entryData = reinterpret_cast<ark::es2panda::lsp::CompletionEntryData *>(entryDataPtr);
+    return new std::string(entryData->GetNamedExport());
+}
+TS_INTEROP_1(getNamedExportFromEntryData, KNativePointer, KNativePointer)
+
+KNativePointer impl_getImportDeclarationFromEntryData(KNativePointer entryDataPtr)
+{
+    auto *entryData = reinterpret_cast<ark::es2panda::lsp::CompletionEntryData *>(entryDataPtr);
+    return new std::string(entryData->GetImportDeclaration());
+}
+TS_INTEROP_1(getImportDeclarationFromEntryData, KNativePointer, KNativePointer)
+
+KInt impl_getStatusFromEntryData(KNativePointer entryDataPtr)
+{
+    auto *entryData = reinterpret_cast<ark::es2panda::lsp::CompletionEntryData *>(entryDataPtr);
+    return static_cast<size_t>(entryData->GetStatus());
+}
+TS_INTEROP_1(getStatusFromEntryData, KInt, KNativePointer)
+
+KNativePointer impl_getNameFromEntry(KNativePointer entryPtr)
+{
+    auto *entry = reinterpret_cast<ark::es2panda::lsp::CompletionEntry *>(entryPtr);
+    return new std::string(entry->GetName());
+}
+TS_INTEROP_1(getNameFromEntry, KNativePointer, KNativePointer)
+
+KNativePointer impl_getSortTextFromEntry(KNativePointer entryPtr)
+{
+    auto *entry = reinterpret_cast<ark::es2panda::lsp::CompletionEntry *>(entryPtr);
+    return new std::string(entry->GetSortText());
+}
+TS_INTEROP_1(getSortTextFromEntry, KNativePointer, KNativePointer)
+
+KNativePointer impl_getInsertTextFromEntry(KNativePointer entryPtr)
+{
+    auto *entry = reinterpret_cast<ark::es2panda::lsp::CompletionEntry *>(entryPtr);
+    return new std::string(entry->GetInsertText());
+}
+TS_INTEROP_1(getInsertTextFromEntry, KNativePointer, KNativePointer)
+
+KInt impl_getKindFromEntry(KNativePointer entryPtr)
+{
+    auto *entry = reinterpret_cast<ark::es2panda::lsp::CompletionEntry *>(entryPtr);
+    return static_cast<size_t>(entry->GetCompletionKind());
+}
+TS_INTEROP_1(getKindFromEntry, KInt, KNativePointer)
+
+KNativePointer impl_getDataFromEntry(KNativePointer entryPtr)
+{
+    auto *entry = reinterpret_cast<ark::es2panda::lsp::CompletionEntry *>(entryPtr);
+    auto data = entry->GetCompletionEntryData();
+
+    if (data.has_value()) {
+        return new ark::es2panda::lsp::CompletionEntryData(data.value());
+    }
+    return nullptr;
+}
+TS_INTEROP_1(getDataFromEntry, KNativePointer, KNativePointer)
+
+KNativePointer impl_getEntriesFromCompletionInfo(KNativePointer completionInfoPtr)
+{
+    auto *completionInfo = reinterpret_cast<ark::es2panda::lsp::CompletionInfo *>(completionInfoPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : completionInfo->GetEntries()) {
+        ptrs.push_back(new ark::es2panda::lsp::CompletionEntry(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getEntriesFromCompletionInfo, KNativePointer, KNativePointer)
+
+KNativePointer impl_getReferenceLocationAtPosition(KStringPtr &filenamePtr, KInt position)
+{
+    LSPAPI const *ctx = GetImpl();
+    std::vector<std::string> emptyFolders;
+    return new References(ctx->getReferenceLocationAtPosition(
+        GetStringCopy(filenamePtr), static_cast<std::size_t>(position) /*, emptyFolders , defaultToken*/));
+    return new ReferenceLocationList();
+}
+TS_INTEROP_2(getReferenceLocationAtPosition, KNativePointer, KStringPtr, KInt)
+
+KNativePointer impl_getUriFromLocation(KNativePointer locPtr)
+{
+    auto *loc = reinterpret_cast<ReferenceLocation *>(locPtr);
+    return new std::string(loc->uri);
+}
+TS_INTEROP_1(getUriFromLocation, KNativePointer, KNativePointer)
+
+KInt impl_getStartFromLocation(KNativePointer locPtr)
+{
+    auto *loc = reinterpret_cast<ReferenceLocation *>(locPtr);
+    return loc->start;
+}
+TS_INTEROP_1(getStartFromLocation, KInt, KNativePointer)
+
+KInt impl_getEndFromLocation(KNativePointer locPtr)
+{
+    auto *loc = reinterpret_cast<ReferenceLocation *>(locPtr);
+    return loc->end;
+}
+TS_INTEROP_1(getEndFromLocation, KInt, KNativePointer)
+
+KBoolean impl_getIsDefinitionFromLocation(KNativePointer locPtr)
+{
+    auto *loc = reinterpret_cast<ReferenceLocation *>(locPtr);
+    return static_cast<KBoolean>(loc->isDefinition);
+}
+TS_INTEROP_1(getIsDefinitionFromLocation, KBoolean, KNativePointer)
+
+KBoolean impl_getIsImportFromLocation(KNativePointer locPtr)
+{
+    auto *loc = reinterpret_cast<ReferenceLocation *>(locPtr);
+    return static_cast<KBoolean>(loc->isImport);
+}
+TS_INTEROP_1(getIsImportFromLocation, KBoolean, KNativePointer)
+
+KInt impl_getAccessKindFromLocation(KNativePointer locPtr)
+{
+    auto *loc = reinterpret_cast<ReferenceLocation *>(locPtr);
+    return static_cast<size_t>(loc->accessKind);
+}
+TS_INTEROP_1(getAccessKindFromLocation, KInt, KNativePointer)
+
+KNativePointer impl_getLocationFromList(KNativePointer listPtr)
+{
+    auto *list = reinterpret_cast<ReferenceLocationList *>(listPtr);
+    std::vector<void *> ptrs;
+    for (auto &el : list->referenceLocation) {
+        ptrs.push_back(new ReferenceLocation(el));
+    }
+    return new std::vector<void *>(ptrs);
+}
+TS_INTEROP_1(getLocationFromList, KNativePointer, KNativePointer)
+
+KNativePointer impl_toLineColumnOffset(KStringPtr &filenamePtr, KInt position)
+{
+    LSPAPI const *ctx = GetImpl();
+    auto *ptrDiag =
+        new ark::es2panda::lsp::LineAndCharacter(ctx->toLineColumnOffset(GetStringCopy(filenamePtr), position));
+    return ptrDiag;
+}
+TS_INTEROP_2(toLineColumnOffset, KNativePointer, KStringPtr, KInt)
+
+KInt impl_getLine(KNativePointer locPtr)
+{
+    auto *loc = reinterpret_cast<ark::es2panda::lsp::LineAndCharacter *>(locPtr);
+    return loc->GetLine();
+}
+TS_INTEROP_1(getLine, KInt, KNativePointer)
+
+KInt impl_getChar(KNativePointer locPtr)
+{
+    auto *loc = reinterpret_cast<ark::es2panda::lsp::LineAndCharacter *>(locPtr);
+    return loc->GetCharacter();
+}
+TS_INTEROP_1(getChar, KInt, KNativePointer)

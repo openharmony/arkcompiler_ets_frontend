@@ -14,7 +14,7 @@
  */
 
 import { global } from "./global"
-import { LspDefinitionData, LspDiagsNode } from "./lspNode"
+import { LspDefinitionData, LspDiagsNode, LspReferences, LspQuickInfo, LspDocumentHighlightsReferences, LspCompletionInfo, LspReferenceLocationList, LspLineAndCharacter } from "./lspNode"
 import { unpackString } from "./private"
 export class Lsp {
   getDefinitionAtPosition(filename: String, offset: number): LspDefinitionData {
@@ -30,5 +30,55 @@ export class Lsp {
   getCurrentTokenValue(filename: String, offset: number) {
     let ptr = global.es2panda._getCurrentTokenValue(filename, offset)
     return unpackString(ptr)
+  }
+
+  getImplementationAtPosition(filename: String, offset: number) {
+    let ptr = global.es2panda._getImplementationAtPosition(filename, offset)
+    return new LspDefinitionData(ptr)
+  }
+
+  getFileReferences(filename: String) {
+    let ptr = global.es2panda._getFileReferences(filename)
+    return new LspReferences(ptr)
+  }
+
+  getReferencesAtPosition(filename: String, offset: number) {
+    let ptr = global.es2panda._getReferencesAtPosition(filename, offset)
+    return new LspReferences(ptr)
+  }
+
+  getSyntacticDiagnostics(filename: String): LspDiagsNode {
+    let ptr = global.es2panda._getSemanticDiagnostics(filename)
+    return new LspDiagsNode(ptr)
+  }
+
+  getSuggestionDiagnostics(filename: String): LspDiagsNode {
+    let ptr = global.es2panda._getSuggestionDiagnostics(filename)
+    return new LspDiagsNode(ptr)
+  }
+
+  getQuickInfoAtPosition(filename: String, offset: number) {
+    let ptr = global.es2panda._getQuickInfoAtPosition(filename, offset)
+    return new LspQuickInfo(ptr)
+  }
+
+  getDocumentHighlights(filename: String, offset: number) {
+    let ptr = global.es2panda._getDocumentHighlights(filename, offset)
+    return new LspDocumentHighlightsReferences(ptr)
+  }
+
+  getCompletionAtPosition(filename: String, offset: number) {
+    let ptr = global.es2panda._getCompletionAtPosition(filename, offset)
+    return new LspCompletionInfo(ptr)
+  }
+
+  getReferenceLocationAtPosition(filename: String, offset: number) {
+    let ptr = global.es2panda._getReferenceLocationAtPosition(filename, offset)
+    return new LspReferenceLocationList(ptr)
+  }
+
+  toLineColumnOffset(filename: String, offset: number) {
+    let ptr = global.es2panda._toLineColumnOffset(filename, offset)
+    return new LspLineAndCharacter(ptr)
   }
 }

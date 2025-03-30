@@ -70,7 +70,6 @@ References GetFileReferences(char const *fileName)
     auto options = reinterpret_cast<public_lib::Context *>(context)->config->options;
     auto compilationList = FindProjectSources(options->ArkTSConfig());
     initializer.DestroyContext(context);
-
     auto result = References();
     for (auto const &referenceFile : compilationList) {
         auto referenceContext = initializer.CreateContext(referenceFile.first.c_str(), ES2PANDA_STATE_CHECKED);
@@ -202,44 +201,11 @@ DiagnosticReferences GetCompilerOptionsDiagnostics(char const *fileName, Cancell
     return result;
 }
 
-ReferenceLocationList GetReferenceLocationAtPosition(char const *fileName, size_t pos,
+References GetReferenceLocationAtPosition(char const *fileName, size_t pos/*,
                                                      const std::vector<std::string> &autoGenerateFolders,
-                                                     CancellationToken cancellationToken)
+                                                     CancellationToken cancellationToken*/)
 {
-    Initializer initializer = Initializer();
-    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
-    if (context == nullptr) {
-        return {};
-    }
-
-    auto options = reinterpret_cast<public_lib::Context *>(context)->config->options;
-
-    auto files = options->ArkTSConfig()->Files();
-    if (files.empty()) {
-        return {};
-    }
-
-    RemoveFromFiles(files, autoGenerateFolders);
-
-    auto node = GetTouchingToken(context, pos, false);
-    if (node == nullptr) {
-        return {};
-    }
-
-    auto tokenId = ark::es2panda::lsp::GetOwnerId(node);
-    auto tokenName = ark::es2panda::lsp::GetIdentifierName(node);
-    FileNodeInfo fileNameInfo(tokenName, tokenId);
-    auto list = ReferenceLocationList();
-    initializer.DestroyContext(context);
-    for (const std::string &file : files) {
-        if (cancellationToken.IsCancellationRequested()) {
-            return list;
-        }
-        auto ctx = initializer.CreateContext(file.c_str(), ES2PANDA_STATE_CHECKED);
-        ark::es2panda::lsp::GetReferenceLocationAtPositionImpl(fileNameInfo, ctx, &list);
-        initializer.DestroyContext(ctx);
-    }
-    return list;
+    return GetReferencesAtPosition(fileName, pos);
 }
 
 DocumentHighlightsReferences GetDocumentHighlights(char const *fileName, size_t position)
