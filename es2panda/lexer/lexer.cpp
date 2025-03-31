@@ -271,6 +271,7 @@ void Lexer::ScanNumberLeadingZero()
                 case LEX_CHAR_8:
                 case LEX_CHAR_9: {
                     ThrowError("Invalid octal digit");
+                    break;
                 }
                 default: {
                     break;

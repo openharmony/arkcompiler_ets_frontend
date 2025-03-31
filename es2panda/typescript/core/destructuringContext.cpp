@@ -197,6 +197,7 @@ void DestructuringContext::HandleIdentifierPattern(const ir::AssignmentExpressio
 
 void ArrayDestructuringContext::ValidateInferedType()
 {
+    CHECK_NOT_NULL(inferedType_);
     if (!inferedType_->IsArrayType() && !inferedType_->IsUnionType() &&
         (!inferedType_->IsObjectType() || !inferedType_->AsObjectType()->IsTupleType())) {
         checker_->ThrowTypeError(
@@ -521,6 +522,7 @@ void ArrayDestructuringContext::Start()
 
 void ObjectDestructuringContext::ValidateInferedType()
 {
+    CHECK_NOT_NULL(inferedType_);
     if (!inferedType_->IsObjectType()) {
         return;
     }

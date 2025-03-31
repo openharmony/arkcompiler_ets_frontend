@@ -82,6 +82,7 @@ bool TypeRelation::IsIdenticalTo(Type *source, Type *target)
     CHECK_NOT_NULL(target);
     result_ = CacheLookup(source, target, checker_->IdenticalResults(), RelationType::IDENTICAL);
     if (result_ == RelationResult::CACHE_MISS) {
+        CHECK_NOT_NULL(source);
         checker_->ResolveStructuredTypeMembers(source);
         checker_->ResolveStructuredTypeMembers(target);
         result_ = RelationResult::FALSE;
