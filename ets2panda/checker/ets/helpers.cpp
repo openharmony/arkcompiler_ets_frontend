@@ -684,7 +684,7 @@ static bool NeedWidening(ir::Expression *e)
     }
     const bool isConstInit = e->IsIdentifier() && e->Variable()->Declaration()->IsConstDecl();
 
-    return e->IsConditionalExpression() || e->IsLiteral() || isConstInit;
+    return e->IsConditionalExpression() || e->IsLiteral() || isConstInit || e->IsTemplateLiteral();
 }
 
 // Isolated until 'constant' types are tracked in some cases
