@@ -62,8 +62,8 @@ enum MissingLeftBrace
 /* @@? 22:22 Error SyntaxError: Unexpected token, expected '{'. */
 /* @@? 32:1 Error SyntaxError: Unexpected token ']'. */
 /* @@? 32:1 Error SyntaxError: Unexpected token, expected ',' or '}'. */
-/* @@? 37:10 Error SyntaxError: Invalid enum initialization value */
 /* @@? 37:10 Error SyntaxError: Only constant expression is expected in the field */
+/* @@? 37:10 Error SyntaxError: Invalid enum initialization value */
 /* @@? 38:1 Error SyntaxError: Unexpected token '}'. */
 /* @@? 43:10 Error SyntaxError: Invalid enum initialization value */
 /* @@? 43:10 Error SyntaxError: Only constant expression is expected in the field */

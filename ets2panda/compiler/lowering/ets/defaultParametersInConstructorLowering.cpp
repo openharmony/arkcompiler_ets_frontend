@@ -35,7 +35,8 @@ static bool HasDefaultParameters(const ir::ScriptFunction *function, util::Diagn
         }
 
         if (hasRestParameter) {
-            diagnosticEngine.LogSyntaxError("Rest parameter should be the last one.", param->Start());
+            util::DiagnosticMessageParams diagnosticParams = {};
+            diagnosticEngine.LogDiagnostic(diagnostic::REST_PARAM_LAST, std::move(diagnosticParams), param->Start());
         }
 
         if (param->IsOptional()) {
@@ -44,13 +45,16 @@ static bool HasDefaultParameters(const ir::ScriptFunction *function, util::Diagn
         }
 
         if (hasDefaultParameter) {
-            diagnosticEngine.LogSyntaxError("Required parameter follows default parameter(s).", param->Start());
+            util::DiagnosticMessageParams diagnosticParams = {};
+            diagnosticEngine.LogDiagnostic(diagnostic::REQUIRED_PARAM_AFTER_DEFAULT, std::move(diagnosticParams),
+                                           param->Start());
         }
     }
 
     if (hasDefaultParameter && hasRestParameter) {
-        diagnosticEngine.LogSyntaxError(
-            "Both optional and rest parameters are not allowed in function's parameter list.", function->Start());
+        util::DiagnosticMessageParams diagnosticParams = {};
+        diagnosticEngine.LogDiagnostic(diagnostic::REST_AND_DEFAULT_SAME_TIME, std::move(diagnosticParams),
+                                       function->Start());
     }
 
     return hasDefaultParameter;

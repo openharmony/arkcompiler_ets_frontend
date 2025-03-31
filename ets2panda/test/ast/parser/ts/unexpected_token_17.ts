@@ -22,6 +22,6 @@ abstract /* @@ label */foo/* @@ label1 */(1 /* @@ label2 */> 0/* @@ label3 */) /
 /* @@@ label1 Error SyntaxError: Expected '{', got '('. */
 /* @@@ label2 Error SyntaxError: Unexpected token, expected ';'. */
 /* @@@ label3 Error SyntaxError: Unexpected token, expected ';'. */
-/* @@@ label4 Error SyntaxError: Unexpected token at */
+/* @@@ label4 Error SyntaxError: Unexpected token. */
 /* @@@ label5 Error SyntaxError: Unexpected token, expected ';'. */
 /* @@@ label6 Error SyntaxError: Unexpected token, expected an identifier. */

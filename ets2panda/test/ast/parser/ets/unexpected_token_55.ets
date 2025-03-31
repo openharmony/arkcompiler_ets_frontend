@@ -30,11 +30,15 @@ export class MathSpectralNorm {
 /* @@? 19:23 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
 /* @@? 19:29 Error SyntaxError: Expected ';', got ':'. */
 /* @@? 19:29 Error SyntaxError: Unexpected token ':'. */
+/* @@? 19:29 Error SyntaxError: Unexpected token ':'. */
+/* @@? 19:29 Error SyntaxError: Unexpected token ':'. */
 /* @@? 19:29 Error SyntaxError: Expected ')', got ':'. */
 /* @@? 19:29 Error SyntaxError: Unexpected token ':'. */
 /* @@? 19:29 Error SyntaxError: Unexpected token ':'. */
 /* @@? 19:29 Error SyntaxError: Unexpected token ':'. */
 /* @@? 19:29 Error SyntaxError: Unexpected token ':'. */
+/* @@? 19:34 Error SyntaxError: Unexpected token ')'. */
+/* @@? 19:34 Error SyntaxError: Unexpected token ')'. */
 /* @@? 19:34 Error SyntaxError: Unexpected token ')'. */
 /* @@? 19:34 Error SyntaxError: Unexpected token ')'. */
 /* @@? 19:34 Error SyntaxError: Unexpected token ')'. */

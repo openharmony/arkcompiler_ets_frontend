@@ -52,9 +52,9 @@ throw
 "abc"
 // there were more errors
 /* @@? 16:13 Error SyntaxError: Can only type export class or interface. */
-/* @@? 16:13 Error SyntaxError: Can only type export class or interface! */
+/* @@? 16:13 Error SyntaxError: Can only type export class or interface. */
 /* @@? 19:13 Error SyntaxError: Can only type export class or interface. */
-/* @@? 19:13 Error SyntaxError: Can only type export class or interface! */
+/* @@? 19:13 Error SyntaxError: Can only type export class or interface. */
 /* @@? 22:1 Error SyntaxError: Label must be followed by a loop statement. */
 /* @@? 22:5 Error TypeError: Variable 'x' has already been declared. */
 /* @@? 25:5 Error SyntaxError: Unexpected token 'let'. */

@@ -55,8 +55,8 @@ for (var i of a) {
 /* @@? 22:15 Error SyntaxError: Invalid accessor. */
 /* @@? 24:12 Error SyntaxError: Unexpected modifier. */
 /* @@? 24:12 Error SyntaxError: Duplicated modifier is not allowed. */
-/* @@? 26:6 Error SyntaxError: Unexpected identifier */
-/* @@? 30:6 Error SyntaxError: Private identifier can not be constructor */
+/* @@? 26:6 Error SyntaxError: Unexpected identifier. */
+/* @@? 30:6 Error SyntaxError: Private identifier can not be constructor. */
 /* @@? 35:12 Error SyntaxError: Classes may not have static property named prototype. */
 /* @@? 37:5 Error SyntaxError: Classes may not have a field named 'constructor'. */
 /* @@? 38:12 Error SyntaxError: Classes may not have static property named prototype. */

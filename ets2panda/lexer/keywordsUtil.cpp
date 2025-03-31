@@ -195,7 +195,7 @@ bool KeywordsUtil::IsIdentifierPart(char32_t cp)
 void KeywordsUtil::ScanIdentifierStart(const Keywords *kws, char32_t cp)
 {
     if (!KeywordsUtil::IsIdentifierStart(cp)) {
-        lexer_->LogSyntaxError("Expected an identifier");
+        lexer_->LogError(diagnostic::UNEXPECTED_TOKEN_ID);
     }
 
     cp_ = cp;
@@ -221,7 +221,7 @@ void KeywordsUtil::ScanIdContinue()
 
             auto cp = ScanUnicodeEscapeSequence();
             if (!IsIdentifierPart(cp)) {
-                lexer_->LogSyntaxError("Invalid identifier part");
+                lexer_->LogError(diagnostic::INVALID_IDENTIFIER_PART);
             }
 
             escapeEnd = Iterator().Index();

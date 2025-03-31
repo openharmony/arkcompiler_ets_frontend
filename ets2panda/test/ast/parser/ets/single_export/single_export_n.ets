@@ -19,3 +19,5 @@ let v = 1
 let m = 2
 
 /* @@? 16:9 Error SyntaxError: Unexpected token ','. */
+/* @@? 16:9 Error SyntaxError: Unexpected token ','. */
+/* @@? 16:9 Error SyntaxError: Unexpected token ','. */

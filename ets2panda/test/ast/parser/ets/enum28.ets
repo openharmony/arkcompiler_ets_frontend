@@ -17,5 +17,5 @@ enum Color {
     Red = /* @@ label */`Line 1\nLine 2 ${1}`,
 }
 
-/* @@@ label Error SyntaxError: String Interpolation Expression is not constant expression  */
+/* @@@ label Error SyntaxError: String Interpolation Expression is not constant expression.  */
 /* @@@ label Error SyntaxError: Invalid enum initialization value  */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -47,7 +47,7 @@ bool ETSLexer::ScanCharLiteral()
     switch (cp) {
         case LEX_CHAR_SINGLE_QUOTE:
         case util::StringView::Iterator::INVALID_CP: {
-            LogSyntaxError("Invalid character literal");
+            LogError(diagnostic::INVALID_CHAR);
             status = false;
             break;
         }
@@ -69,7 +69,7 @@ bool ETSLexer::ScanCharLiteral()
     }
 
     if (Iterator().Peek() != LEX_CHAR_SINGLE_QUOTE) {
-        LogSyntaxError("Unterminated character literal");
+        LogError(diagnostic::UNSUPPORTED_CHAR_LIT);
         return false;
     }
 
@@ -85,7 +85,7 @@ void ETSLexer::CheckNumberLiteralEnd()
         Iterator().Forward(1);
         const auto nextCp = Iterator().PeekCp();
         if (KeywordsUtil::IsIdentifierStart(nextCp) || IsDecimalDigit(nextCp)) {
-            LogSyntaxError("Invalid numeric literal");
+            LogError(diagnostic::INVALID_NUMERIC_LIT);
             Iterator().Forward(1);  // Error processing
         }
     } else {
@@ -97,7 +97,7 @@ bool ETSLexer::CheckUtf16Compatible(char32_t cp) const
 {
     if (cp >= util::StringView::Constants::CELESTIAL_OFFSET) {
         // lexer_invalid_characters.ets
-        LogSyntaxError("Unsupported character literal");
+        LogError(diagnostic::UNSUPPORTED_CHAR_LIT);
         return false;
     }
     return true;
@@ -123,7 +123,7 @@ void ETSLexer::ConvertNumber(NumberFlags const flags)
 {
     GetToken().number_ = lexer::Number(GetToken().src_, flags);
     if (GetToken().number_.ConversionError()) {
-        LogSyntaxError("Invalid number");
+        LogError(diagnostic::INVALID_NUM);
     }
 }
 

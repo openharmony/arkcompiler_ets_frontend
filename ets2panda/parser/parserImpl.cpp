@@ -258,7 +258,7 @@ void ParserImpl::ParseClassAccessor(ClassElementDescriptor *desc, char32_t *next
         return;
     }
 
-    LogIfPrivateIdent(desc, "Unexpected identifier");
+    LogIfPrivateIdent(desc, diagnostic::UNEXPECTED_ID);
 
     if ((lexer_->GetToken().Flags() & lexer::TokenFlags::HAS_ESCAPE) != 0) {
         LogError(diagnostic::KEYWORD_CONTAINS_ESCAPED_CHARS);
@@ -272,10 +272,11 @@ void ParserImpl::ParseClassAccessor(ClassElementDescriptor *desc, char32_t *next
     ConsumeClassPrivateIdentifier(desc, nextCp);
 }
 
-void ParserImpl::LogIfPrivateIdent(ClassElementDescriptor *desc, const char *msg)
+void ParserImpl::LogIfPrivateIdent(ClassElementDescriptor *desc, const diagnostic::DiagnosticKind &diagnostic,
+                                   const util::DiagnosticMessageParams &diagnosticParams)
 {
     if (desc->isPrivateIdent) {
-        LogSyntaxError(msg);
+        LogError(diagnostic, diagnosticParams);
     }
 }
 
@@ -296,7 +297,7 @@ void ParserImpl::ValidateClassKey(ClassElementDescriptor *desc)
             LogError(diagnostic::CLASS_FIELD_CONSTRUCTOR);
         }
 
-        LogIfPrivateIdent(desc, "Private identifier can not be constructor");
+        LogIfPrivateIdent(desc, diagnostic::PRIVATE_IDENTIFIER_NOT_CONSTRUCTOR);
 
         if ((desc->modifiers & ir::ModifierFlags::STATIC) == 0) {
             if ((desc->modifiers & ir::ModifierFlags::ASYNC) != 0 ||
@@ -351,14 +352,14 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
             break;
         }
         case lexer::TokenType::LITERAL_STRING: {
-            LogIfPrivateIdent(desc, "Private identifier name can not be string");
+            LogIfPrivateIdent(desc, diagnostic::PRIVATE_IDENTIFIER_STRING);
 
             if (lexer_->GetToken().Ident().Is("constructor")) {
                 LogError(diagnostic::CLASS_FIELD_CONSTRUCTOR);
             }
 
             if (lexer_->GetToken().Ident().Is("prototype") && (desc->modifiers & ir::ModifierFlags::STATIC) != 0) {
-                LogError(diagnostic::STATIC_PROPERTY_PROTOTYPE_REMOOOVE);
+                LogError(diagnostic::STATIC_PROPERTY_PROTOTYPE);
             }
 
             propName = AllocNode<ir::StringLiteral>(lexer_->GetToken().String());
@@ -366,7 +367,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
             break;
         }
         case lexer::TokenType::LITERAL_NUMBER: {
-            LogIfPrivateIdent(desc, "Private identifier name can not be number");
+            LogIfPrivateIdent(desc, diagnostic::PRIVATE_IDENTIFIER_NUMBER);
 
             if ((lexer_->GetToken().Flags() & lexer::TokenFlags::NUMBER_BIGINT) != 0) {
                 propName = AllocNode<ir::BigIntLiteral>(lexer_->GetToken().BigInt());
@@ -378,7 +379,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
             break;
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
-            LogIfPrivateIdent(desc, "Unexpected character in private identifier");
+            LogIfPrivateIdent(desc, diagnostic::UNEXPECTED_CHAR_PRIVATE_IDENTIFIER);
             std::tie(desc->isComputed, desc->invalidComputedProperty, desc->isIndexSignature) =
                 ParseComputedClassFieldOrIndexSignature(&propName);
             break;

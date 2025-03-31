@@ -73,7 +73,8 @@ private:
         ir::ModifierFlags flags;
     };
 
-    void LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const;
+    void LogError(const diagnostic::DiagnosticKind &diagnostic, const util::DiagnosticMessageParams &diagnosticParams,
+                  const lexer::SourcePosition &pos);
 
     // clang-format off
     template <typename TypeNode>

@@ -20,7 +20,7 @@ namespace ark::es2panda::parser {
 
 void ThrowingTypedParser::ThrowUnexpectedToken(lexer::TokenType tokenType) const
 {
-    ThrowSyntaxError({UNEXPECTED_TOKEN, lexer::TokenToString(tokenType), "'."});
+    ThrowSyntaxError({"Unexpected token '", lexer::TokenToString(tokenType), "'."});
 }
 
 void ThrowingTypedParser::ThrowSyntaxError(std::string_view errorMessage) const

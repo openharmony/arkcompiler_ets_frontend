@@ -19,5 +19,5 @@ class TestClass {}
 export {foo}
 export type {TestClass as /* @@ label */foo}
 
-/* @@@ label Error SyntaxError: The given name 'foo' is already used in another export  */
-/* @@@ label Error SyntaxError: The given name 'foo' is already used in another export  */
+/* @@@ label Error SyntaxError: The given name 'foo' is already used in another export.  */
+/* @@@ label Error SyntaxError: The given name 'foo' is already used in another export.  */

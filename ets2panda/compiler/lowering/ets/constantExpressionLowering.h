@@ -39,7 +39,8 @@ public:
     bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
 
 private:
-    void LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const;
+    void LogError(const diagnostic::DiagnosticKind &diagnostic, const util::DiagnosticMessageParams &diagnosticParams,
+                  const lexer::SourcePosition &pos) const;
 
     ir::AstNode *FoldTernaryConstant(ir::ConditionalExpression *cond);
 

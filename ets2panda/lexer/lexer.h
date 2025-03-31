@@ -194,7 +194,7 @@ public:
     void PushTemplateContext(TemplateLiteralParserContext *ctx);
     void LogUnexpectedStrictModeReservedKeyword() const
     {
-        LogSyntaxError("Unexpected strict mode reserved keyword");
+        LogError(diagnostic::UNEXPECTED_STRICT_MODE_RESERVED_KEYWORD);
     }
 
     enum class ConversionResult : uint8_t {
@@ -261,9 +261,12 @@ protected:
     bool ScanRegExpPattern();
     RegExpFlags ScanRegExpFlags();
 
-    void LogSyntaxError(std::string_view const errorMessage) const;
-    void LogSyntaxError(std::string_view const errorMessage, const lexer::SourcePosition &pos) const;
     void LogUnexpectedToken(lexer::TokenType const tokenType) const;
+
+    void LogError(const diagnostic::DiagnosticKind &diagnostic,
+                  const util::DiagnosticMessageParams &diagnosticParams = {}) const;
+    void LogError(const diagnostic::DiagnosticKind &diagnostic, const util::DiagnosticMessageParams &diagnosticParams,
+                  const lexer::SourcePosition &pos) const;
 
     void SetTokenStart();
     void SetTokenEnd();
@@ -409,13 +412,13 @@ void Lexer::ScanString()
         const char32_t cp = Iterator().Peek();
         switch (cp) {
             case util::StringView::Iterator::INVALID_CP: {
-                LogSyntaxError("Unterminated string");
+                LogError(diagnostic::UNTERMINATED_STRING);
                 break;
             }
             case LEX_CHAR_CR:
             case LEX_CHAR_LF: {
                 if constexpr (END != LEX_CHAR_BACK_TICK) {
-                    LogSyntaxError("Newline is not allowed in strings");
+                    LogError(diagnostic::NEWLINE_NOT_ALLOWED_IN_STRING);
                     break;
                 }
                 HandleNewlineHelper(&str, &escapeEnd);
@@ -469,7 +472,7 @@ char32_t Lexer::ScanHexEscape()
         Iterator().Forward(1);
 
         if (!IsHexDigit(cp)) {
-            LogSyntaxError("Invalid unicode escape sequence");
+            LogError(diagnostic::INVALID_UNICODE_ESCAPE);
             return UNICODE_INVALID_CP;
         }
 
@@ -548,7 +551,7 @@ bool Lexer::ScanNumberRadix(bool leadingMinus, bool allowNumericSeparator)
 
     auto cp = Iterator().Peek();
     if (!RANGE_CHECK(cp)) {
-        LogSyntaxError("Invalid digit");
+        LogError(diagnostic::INVALID_DIGIT);
     }
 
     bool allowNumericOnNext = true;
@@ -569,7 +572,7 @@ bool Lexer::ScanNumberRadix(bool leadingMinus, bool allowNumericSeparator)
 
         if (cp == LEX_CHAR_UNDERSCORE) {
             if (!allowNumericSeparator || !allowNumericOnNext) {
-                LogSyntaxError("Invalid numeric separator");
+                LogError(diagnostic::INVALID_NUMERIC_SEP);
             }
 
             GetToken().flags_ |= TokenFlags::NUMBER_HAS_UNDERSCORE;
@@ -580,7 +583,7 @@ bool Lexer::ScanNumberRadix(bool leadingMinus, bool allowNumericSeparator)
 
         if (!allowNumericOnNext) {
             Iterator().Backward(1);
-            LogSyntaxError("Numeric separators are not allowed at the end of numeric literals");
+            LogError(diagnostic::INVALID_NUMERIC_SEP_AT_END_OF_NUM);
         }
 
         break;

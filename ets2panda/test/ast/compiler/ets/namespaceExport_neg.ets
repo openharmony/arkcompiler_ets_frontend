@@ -30,5 +30,5 @@ declare namespace A {
 }
 
 export default A
-/* @@? 27:20 Error SyntaxError: Cannot export 'A', it was already exported  */
+/* @@? 27:20 Error SyntaxError: Cannot export 'A', it was already exported. */
 

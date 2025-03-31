@@ -38,7 +38,7 @@ foo(/* @@ label8 */,)
 
 /* @@@ label Error SyntaxError: Rest parameter must be the last formal parameter. */
 /* @@@ label1 Error SyntaxError: Unexpected token, expected '{'. */
-/* @@@ label2 Error SyntaxError: Unexpected token at */
+/* @@@ label2 Error SyntaxError: Unexpected token. */
 /* @@@ label3 Error SyntaxError: Unexpected token ','. */
 /* @@@ label4 Error SyntaxError: Unexpected token ','. */
 /* @@@ label5 Error SyntaxError: Unexpected token ','. */

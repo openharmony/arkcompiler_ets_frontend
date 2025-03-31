@@ -226,15 +226,15 @@ std::set<ETSWarnings> ETSNolintParser::ParseETSNolintArgs()
 
     while (cp != lexer::LEX_CHAR_SP && cp != lexer::LEX_CHAR_LF && cp != lexer::LEX_CHAR_EOS) {
         cp = PeekSymbol();
+        const lexer::SourcePosition sPos {line_ + 1, 0, parser_->GetProgram()};
         if (cp != lexer::LEX_CHAR_MINUS && cp != lexer::LEX_CHAR_COMMA && cp != lexer::LEX_CHAR_RIGHT_PAREN &&
             (cp < lexer::LEX_CHAR_LOWERCASE_A || cp > lexer::LEX_CHAR_LOWERCASE_Z)) {
-            parser_->DiagnosticEngine().LogSyntaxError(
-                "Unexpected character for ETSNOLINT argument! [VALID ONLY: a-z, '-'].",
-                lexer::SourceLocation {line_ + 1, 0, parser_->GetProgram()});
+            parser_->DiagnosticEngine().LogDiagnostic(diagnostic::UNEXPECTED_CHAR_ETSNOLINT,
+                                                      util::DiagnosticMessageParams {}, sPos);
         }
         if ((cp == lexer::LEX_CHAR_COMMA || cp == lexer::LEX_CHAR_RIGHT_PAREN) && !ValidETSNolintArg(warningName)) {
-            parser_->DiagnosticEngine().LogSyntaxError("Invalid argument for ETSNOLINT!",
-                                                       lexer::SourceLocation {line_ + 1, 0, parser_->GetProgram()});
+            parser_->DiagnosticEngine().LogDiagnostic(diagnostic::INVALID_ARGUMENT_ETSNOLINT,
+                                                      util::DiagnosticMessageParams {}, sPos);
         }
         if ((cp == lexer::LEX_CHAR_COMMA || cp == lexer::LEX_CHAR_RIGHT_PAREN) && ValidETSNolintArg(warningName)) {
             warningsCollection.insert(MapETSNolintArg(warningName));

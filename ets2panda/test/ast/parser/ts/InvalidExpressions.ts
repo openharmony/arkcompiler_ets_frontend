@@ -36,6 +36,11 @@ let x = new Type(1, 2, ;
 /* @@? 22:13 Error SyntaxError: Unexpected token. */
 /* @@? 22:20 Error SyntaxError: Unexpected token. */
 /* @@? 22:24 Error SyntaxError: Unexpected token ':'. */
+/* @@? 22:24 Error SyntaxError: Unexpected token ':'. */
+/* @@? 22:24 Error SyntaxError: Unexpected token ':'. */
+/* @@? 22:30 Error SyntaxError: Unexpected token ')'. */
+/* @@? 22:30 Error SyntaxError: Unexpected token ')'. */
+/* @@? 22:30 Error SyntaxError: Unexpected token ')'. */
 /* @@? 22:30 Error SyntaxError: Unexpected token ')'. */
 /* @@? 22:32 Error SyntaxError: Unexpected token '=>'. */
 /* @@? 24:3 Error SyntaxError: Unexpected token '#'. */

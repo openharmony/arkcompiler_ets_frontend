@@ -15,4 +15,4 @@
 
 export default {foo} /* @@ err */from "./for_re-export"
 
-/* @@@ err Error SyntaxError: Cannot use 'export default' in re-export context */
+/* @@@ err Error SyntaxError: Cannot use 'export default' in re-export context  */

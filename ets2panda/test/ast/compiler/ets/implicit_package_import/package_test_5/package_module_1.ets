@@ -17,37 +17,6 @@ package mypack;
 
 let myvar: number = wont_exist;
 
-/* @@? package_module_2_neg.ets:20:1 Error TypeError: Cannot reference 'this' in this context. */
-/* @@? package_module_2_neg.ets:20:6 Error SyntaxError: Unexpected token 'file'. */
-/* @@? package_module_2_neg.ets:20:6 Error TypeError: Unresolved reference file */
-/* @@? package_module_2_neg.ets:20:11 Error SyntaxError: Unexpected token 'will'. */
-/* @@? package_module_2_neg.ets:20:11 Error TypeError: Unresolved reference will */
-/* @@? package_module_2_neg.ets:20:16 Error SyntaxError: Unexpected token 'contain'. */
-/* @@? package_module_2_neg.ets:20:16 Error TypeError: Unresolved reference contain */
-/* @@? package_module_2_neg.ets:20:24 Error SyntaxError: Unexpected token 'parse'. */
-/* @@? package_module_2_neg.ets:20:24 Error TypeError: Unresolved reference parse */
-/* @@? package_module_2_neg.ets:20:30 Error SyntaxError: Unexpected token 'error'. */
-/* @@? package_module_2_neg.ets:20:30 Error TypeError: Unresolved reference error */
-/* @@? package_module_2_neg.ets:20:35 Error SyntaxError: Unexpected token ','. */
-/* @@? package_module_2_neg.ets:20:35 Error SyntaxError: Unexpected token ','. */
-/* @@? package_module_2_neg.ets:20:35 Error SyntaxError: Unexpected token ','. */
-/* @@? package_module_2_neg.ets:20:37 Error TypeError: Unresolved reference but */
-/* @@? package_module_2_neg.ets:20:41 Error SyntaxError: Unexpected token 'compilation'. */
-/* @@? package_module_2_neg.ets:20:41 Error TypeError: Unresolved reference compilation */
-/* @@? package_module_2_neg.ets:20:53 Error SyntaxError: Unexpected token 'of'. */
-/* @@? package_module_2_neg.ets:20:53 Error TypeError: Unresolved reference of */
-/* @@? package_module_2_neg.ets:20:56 Error SyntaxError: Unexpected token 'package_module_1'. */
-/* @@? package_module_2_neg.ets:20:75 Error SyntaxError: Unexpected token 'is'. */
-/* @@? package_module_2_neg.ets:20:75 Error TypeError: Unresolved reference is */
-/* @@? package_module_2_neg.ets:20:78 Error SyntaxError: Unexpected token 'not'. */
-/* @@? package_module_2_neg.ets:20:78 Error TypeError: Unresolved reference not */
-/* @@? package_module_2_neg.ets:20:82 Error SyntaxError: Unexpected token 'aborted'. */
-/* @@? package_module_2_neg.ets:20:82 Error TypeError: Unresolved reference aborted */
-/* @@? package_module_2_neg.ets:20:89 Error SyntaxError: Unexpected token ','. */
-/* @@? package_module_2_neg.ets:20:89 Error SyntaxError: Unexpected token ','. */
-/* @@? package_module_2_neg.ets:20:89 Error SyntaxError: Unexpected token ','. */
-/* @@? package_module_2_neg.ets:20:96 Error SyntaxError: Unexpected token 'is'. */
-/* @@? package_module_2_neg.ets:20:99 Error SyntaxError: Unexpected token 'just'. */
-/* @@? package_module_2_neg.ets:20:99 Error TypeError: Unresolved reference just */
-/* @@? package_module_2_neg.ets:20:104 Error SyntaxError: Unexpected token 'ignored'. */
-/* @@? package_module_2_neg.ets:20:104 Error TypeError: Unresolved reference ignored */
+/* @@? package_module_2_neg.ets:22:1 Error TypeError: Unresolved reference syntax */
+/* @@? package_module_2_neg.ets:22:8 Error SyntaxError: Unexpected token 'error'. */
+/* @@? package_module_2_neg.ets:22:8 Error TypeError: Unresolved reference error */

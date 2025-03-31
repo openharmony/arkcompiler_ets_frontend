@@ -51,13 +51,13 @@ public:
         if (!ScanNumberLeadingZeroImpl<uint32_t>(leadingMinus)) {
             Rewind(savedLexerPosition);
             if (!ScanNumberLeadingZeroImpl<uint64_t>(leadingMinus)) {
-                LogSyntaxError("Number is too large");
+                LogError(diagnostic::TOO_LARGE_NUM);
             }
         }
 
         if ((GetToken().flags_ & TokenFlags::NUMBER_BIGINT) != 0) {
             if (!allowBigint) {
-                LogSyntaxError("Invalid BigInt number");
+                LogError(diagnostic::INVALID_BIGINT);
             }
         }
     }

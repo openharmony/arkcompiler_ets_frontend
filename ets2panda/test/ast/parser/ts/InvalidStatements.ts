@@ -136,7 +136,7 @@ module module2
 /* @@? 79:9 Error SyntaxError: Type parameter declaration expected. */
 /* @@? 79:9 Error SyntaxError: Unexpected token, expected '>'. */
 /* @@? 79:12 Error SyntaxError: Expected '{', got '>'. */
-/* @@? 79:14 Error SyntaxError: Unexpected token at */
+/* @@? 79:14 Error SyntaxError: Unexpected token. */
 /* @@? 81:22 Error SyntaxError: Required type parameters may not follow optional type parameters. */
 /* @@? 83:9 Error SyntaxError: Type parameter list cannot be empty. */
 /* @@? 86:14 Error SyntaxError: Abstract methods can only appear within an abstract class. */

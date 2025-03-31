@@ -49,9 +49,10 @@ public:
         return lexer_->parserContext_;
     }
 
-    void LogSyntaxError(std::string_view msg) const
+    void LogError(const diagnostic::DiagnosticKind &diagnostic,
+                  const util::DiagnosticMessageParams &diagnosticParams = {}) const
     {
-        lexer_->LogSyntaxError(msg);
+        lexer_->LogError(diagnostic, diagnosticParams);
     }
 
     void LogUnexpectedStrictModeReservedKeyword() const
@@ -78,7 +79,7 @@ public:
 
     inline void LogEscapedKeyword() const
     {
-        LogSyntaxError("Escape sequences are not allowed in keywords");
+        LogError(diagnostic::ESCAPE_SEQUENCES_IN_KEYWORD);
     }
 
     inline void SetKeyword(KeywordString kws) const

@@ -33,8 +33,8 @@ interface I {
 /* @@? 16:21 Error SyntaxError: Unexpected token, expected ','. */
 /* @@? 16:21 Error SyntaxError: Identifier expected. */
 /* @@? 16:21 Error TypeError: Interface expected here. */
-/* @@? 16:23 Error TypeError: Interface expected here. */
 /* @@? 16:23 Error SyntaxError: Identifier expected. */
+/* @@? 16:23 Error TypeError: Interface expected here. */
 /* @@? 18:1 Error TypeError: Variable 'C' has already been declared. */
 /* @@? 18:23 Error SyntaxError: Unexpected token, expected ','. */
 /* @@? 18:25 Error SyntaxError: Identifier expected. */

@@ -15,4 +15,4 @@
 
 export default * from './export_default1'
 
-/* @@? 16:18 Error SyntaxError: Cannot use 'export default' in re-export context  */
+/* @@? 16:18 Error SyntaxError: Cannot use 'export default' in re-export context */

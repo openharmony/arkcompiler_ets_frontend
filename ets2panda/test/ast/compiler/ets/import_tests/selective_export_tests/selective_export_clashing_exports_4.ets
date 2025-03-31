@@ -21,4 +21,4 @@ export {
   msg as /* @@ label */foo
 }
 
-/* @@@ label Error SyntaxError: The given name 'foo' is already used in another export  */
+/* @@@ label Error SyntaxError: The given name 'foo' is already used in another export.  */

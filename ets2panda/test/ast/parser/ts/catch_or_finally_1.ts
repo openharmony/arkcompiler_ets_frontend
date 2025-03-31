@@ -24,9 +24,12 @@ try /* @@ label6 */[] /* @@ label7 */finally {}
 /* @@? 17:23 Error SyntaxError: Missing catch or finally clause. */
 /* @@? 17:51 Error SyntaxError: Unexpected token '{'. */
 /* @@? 17:69 Error SyntaxError: Unexpected token 'finally'. */
+/* @@? 17:69 Error SyntaxError: Unexpected token 'finally'. */
 /* @@? 18:46 Error SyntaxError: Unexpected token '{'. */
 /* @@? 20:20 Error SyntaxError: Expected '{', got '['. */
 /* @@? 20:20 Error SyntaxError: Expected '{', got '['. */
 /* @@? 20:38 Error SyntaxError: Unexpected token 'finally'. */
-/* @@? 33:1 Error SyntaxError: Expected '}', got 'eos'. */
-/* @@? 33:1 Error SyntaxError: Missing catch or finally clause. */
+/* @@? 20:38 Error SyntaxError: Unexpected token 'finally'. */
+/* @@? 20:38 Error SyntaxError: Unexpected token 'finally'. */
+/* @@? 36:1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 36:1 Error SyntaxError: Missing catch or finally clause. */
