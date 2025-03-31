@@ -366,6 +366,10 @@ bool ETSChecker::ValidateSignatureInvocationContext(Signature *substitutedSig, i
 bool ETSChecker::IsValidRestArgument(ir::Expression *const argument, Signature *const substitutedSig,
                                      const TypeRelationFlag flags, const std::size_t index)
 {
+    if (argument->IsObjectExpression()) {
+        // Object literals should be checked separately afterwards after call resolution
+        return true;
+    }
     const auto argumentType = argument->Check(this);
     auto *targetType = substitutedSig->RestVar()->TsType();
     if (targetType->IsETSTupleType()) {
@@ -1007,7 +1011,8 @@ void ETSChecker::CheckObjectLiteralArguments(Signature *signature, ArenaVector<i
         Type *tp;
         if (index >= signature->Params().size()) {
             ES2PANDA_ASSERT(signature->RestVar());
-            tp = signature->RestVar()->TsType();
+            // Use element type as rest object literal type
+            tp = signature->RestVar()->TsType()->AsETSArrayType()->ElementType();
         } else {
             // #22952: infer optional parameter heuristics
             tp = GetNonNullishType(signature->Params()[index]->TsType());
