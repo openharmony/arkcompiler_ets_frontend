@@ -2062,18 +2062,42 @@ export class TypeScriptLinter {
       TypeScriptLinter.nameSpaceFunctionCache.set(nameSpace, new Set<string>());
     }
 
-    const functionNames = TypeScriptLinter.nameSpaceFunctionCache.get(nameSpace)!;
+    const nameSet = TypeScriptLinter.nameSpaceFunctionCache.get(nameSpace)!;
 
     for (const statement of moduleBlock.statements) {
-      if (ts.isFunctionDeclaration(statement) && statement.name) {
-        const functionName = statement.name.text;
-        if (functionNames.has(functionName)) {
+      const names = TypeScriptLinter.getDeclarationNames(statement);
+      for (const name of names) {
+        if (nameSet.has(name)) {
           this.incrementCounters(statement, FaultID.NoDuplicateFunctionName);
         } else {
-          functionNames.add(functionName);
+          nameSet.add(name);
         }
       }
     }
+  }
+
+  private static getDeclarationNames(statement: ts.Statement): Set<string> {
+    const names = new Set<string>();
+
+    if (
+      ts.isFunctionDeclaration(statement) && statement.name && statement.body ||
+      ts.isClassDeclaration(statement) && statement.name ||
+      ts.isInterfaceDeclaration(statement) && statement.name ||
+      ts.isEnumDeclaration(statement) && statement.name
+    ) {
+      names.add(statement.name.text);
+      return names;
+    }
+
+    if (ts.isVariableStatement(statement)) {
+      for (const decl of statement.declarationList.declarations) {
+        if (ts.isIdentifier(decl.name)) {
+          names.add(decl.name.text);
+        }
+      }
+    }
+
+    return names;
   }
 
   private handleModuleBlock(moduleBlock: ts.ModuleBlock): void {
