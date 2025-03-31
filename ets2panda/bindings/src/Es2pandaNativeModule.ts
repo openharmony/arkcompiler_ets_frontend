@@ -103,11 +103,15 @@ export class Es2pandaNativeModule {
     throw new Error("Not implemented")
   }
 
-  _getCurrentTokenValue(filename: String, position: KInt): KPtr {
+  _getCurrentTokenValue(context: KNativePointer, position: KInt): KPtr {
     throw new Error("Not implemented")
   }
 
-  _getSemanticDiagnostics(filename: String): KPtr {
+  _getSemanticDiagnostics(context: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getSyntacticDiagnostics(context: KNativePointer): KPtr {
     throw new Error("Not implemented")
   }
 
@@ -123,7 +127,7 @@ export class Es2pandaNativeModule {
     throw new Error("Not implemented")
   }
 
-  _getDefinitionAtPosition(filename: String, position: KInt): KPtr {
+  _getDefinitionAtPosition(context: KNativePointer, position: KInt): KPtr {
     throw new Error("Not implemented")
   }
 
@@ -202,7 +206,7 @@ export class Es2pandaNativeModule {
     throw new Error("Not implemented")
   }
 
-  _getImplementationAtPosition(filename: String, position: KInt): KPtr {
+  _getImplementationAtPosition(context: KNativePointer, position: KInt): KPtr {
     throw new Error("Not implemented")
   }
 
@@ -226,11 +230,27 @@ export class Es2pandaNativeModule {
     throw new Error("Not implemented")
   }
 
-  _getReferencesAtPosition(filename: String, position: KInt): KPtr {
+  _getDeclInfo(context: KNativePointer, position: KInt): KPtr {
     throw new Error("Not implemented")
   }
 
-  _getFileReferences(filename: String): KPtr {
+  _getDeclInfoFileText(declInfo: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getDeclInfoFileName(declInfo: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _getReferencesAtPosition(context: KNativePointer, declInfo: KNativePointer): KPtr {
+    throw new Error("Not implemented")
+  }
+
+  _isPackageModule(context: KNativePointer): boolean {
+    throw new Error("Not implemented")
+  }
+
+  _getFileReferences(filename: String, context: KNativePointer, isPackageModule: boolean): KPtr {
     throw new Error("Not implemented")
   }
 
@@ -238,11 +258,11 @@ export class Es2pandaNativeModule {
     throw new Error("Not implemented")
   }
 
-  _getSuggestionDiagnostics(filename: String): KPtr {
+  _getSuggestionDiagnostics(context: KNativePointer): KPtr {
     throw new Error("Not implemented")
   }
 
-  _getQuickInfoAtPosition(filename: String, position: KInt): KPtr {
+  _getQuickInfoAtPosition(filename: String, context: KNativePointer, position: KInt): KPtr {
     throw new Error("Not implemented")
   }
 
@@ -302,11 +322,11 @@ export class Es2pandaNativeModule {
     throw new Error("Not implemented")
   }
 
-  _getDocumentHighlights(filename: String, position: KInt): KPtr {
+  _getDocumentHighlights(context: KNativePointer, position: KInt): KPtr {
     throw new Error("Not implemented")
   }
 
-  _getCompletionAtPosition(filename: String, position: KInt): KPtr {
+  _getCompletionAtPosition(context: KNativePointer, position: KInt): KPtr {
     throw new Error("Not implemented")
   }
 
@@ -350,10 +370,6 @@ export class Es2pandaNativeModule {
     throw new Error("Not implemented")
   }
 
-  _getReferenceLocationAtPosition(filename: String, position: KInt): KPtr {
-    throw new Error("Not implemented")
-  }
-
   _getUriFromLocation(ptr: KNativePointer): KPtr {
     throw new Error("Not implemented")
   }
@@ -390,7 +406,7 @@ export class Es2pandaNativeModule {
     throw new Error("Not implemented")
   }
 
-  _toLineColumnOffset(filename: String, position: KInt): KPtr {
+  _toLineColumnOffset(context: KNativePointer, position: KInt): KPtr {
     throw new Error("Not implemented")
   }
 }

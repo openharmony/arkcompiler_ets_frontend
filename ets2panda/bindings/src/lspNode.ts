@@ -165,6 +165,16 @@ export class LspReferenceData extends LspNode {
   readonly length: KInt;
 }
 
+export class LspDeclInfo extends LspNode {
+  constructor(peer: KNativePointer) {
+    super(peer);
+    this.fileName = unpackString(global.es2panda._getDeclInfoFileName(peer));
+    this.fileText = unpackString(global.es2panda._getDeclInfoFileText(peer));
+  }
+  readonly fileName: String;
+  readonly fileText: String;
+}
+
 export class LspReferences extends LspNode {
   constructor(peer: KNativePointer) {
     super(peer);

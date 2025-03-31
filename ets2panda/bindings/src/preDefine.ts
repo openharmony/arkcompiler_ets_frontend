@@ -13,9 +13,15 @@
  * limitations under the License.
  */
 
-export { Lsp } from "./lsp_helper";
-export { DriverHelper } from "./driver_helper";
-export { Es2pandaContextState } from "./generated/Es2pandaEnums"
-export { LspCompletionInfo, LspCompletionEntryKind, LspDefinitionData, LspDiagsNode, LspDiagnosticNode, LspDiagSeverity } from './lspNode'
-export { generateArkTsConfigByModules } from './arktsConfigGenerate'
-export { ModuleDescriptor } from './buildConfigGenerate'
+export const ARKTSCONFIG_JSON_FILE: string = 'arktsconfig.json';
+
+export const ABC_SUFFIX: string = '.abc';
+
+export enum LANGUAGE_VERSION {
+  ARKTS_1_2 = '1.2',
+  ARKTS_1_1 = '1.1',
+  ARKTS_HYBRID = 'hybrid',
+};
+
+export const PANDA_SDK_PATH_FROM_SDK: string = './build-tools/ets2panda';
+export const SYSTEM_SDK_PATH_FROM_SDK: string = './';

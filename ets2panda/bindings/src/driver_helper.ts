@@ -81,3 +81,43 @@ export class DriverHelper {
     global.es2panda._GenerateTsDeclarationsFromContext(this._cfg.peer, declOutPath, etsOutPath, exportAll_)
   }
 }
+
+export class LspDriverHelper {
+  public createCfg(cmd: string[], filePath: string): Config {
+    return Config.create(cmd, filePath, true)
+  }
+
+  public createCtx(source: string, filePath: string, cfg: Config): Context {
+    return Context.lspCreateFromString(source, filePath, cfg)
+  }
+
+  public proceedToState(ctx: Context, state: Es2pandaContextState) {
+    if (ctx === undefined) {
+      throwError("Trying to proceed to state while cts is undefined")
+    }
+    if (state <= global.es2panda._ContextState(ctx.peer)) {
+      return
+    }
+
+    try {
+      global.es2panda._ProceedToState(ctx.peer, state)
+    } catch (e) {
+      global.es2panda._DestroyContext(ctx.peer)
+      throw e
+    }
+  }
+
+  public destroyContext(ctx: Context) {
+    if (ctx === undefined) {
+      return
+    }
+    global.es2panda._DestroyContext(ctx.peer)
+  }
+
+  public destroyConfig(cfg: Config) {
+    if (cfg === undefined) {
+      return
+    }
+    global.es2panda._DestroyConfig(cfg.peer)
+  }
+}
