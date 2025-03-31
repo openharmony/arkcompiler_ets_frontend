@@ -52,6 +52,10 @@ private:
                 ApplyWidening<ShortType>(WIDENABLE_TO_SHORT);
                 break;
             }
+            case TypeFlag::CHAR: {
+                ApplyWidening<CharType>(WIDENABLE_TO_CHAR);
+                break;
+            }
             case TypeFlag::INT: {
                 ApplyWidening<IntType>(WIDENABLE_TO_INT);
                 break;
