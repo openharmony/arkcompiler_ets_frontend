@@ -100,6 +100,39 @@ void TSDeclGen::ProcessClassDependencies(const ir::ClassDeclaration *classDecl)
         AddSuperType(state_.super);
     }
     ProcessInterfacesDependencies(classDef->TsType()->AsETSObjectType()->Interfaces());
+
+    if (classDef->TypeParams() != nullptr) {
+        GenSeparated(
+            classDef->TypeParams()->Params(),
+            [this](ir::TSTypeParameter *param) {
+                if (param->Constraint() == nullptr) {
+                    return;
+                }
+                AddSuperType(param->Constraint());
+            },
+            "");
+    }
+
+    GenSeparated(
+        classDef->Body(), [this](ir::AstNode *prop) { ProcessClassPropDependencies(prop); }, "");
+}
+
+void TSDeclGen::ProcessClassPropDependencies(const ir::AstNode *prop)
+{
+    if (prop->IsClassProperty() && prop->AsClassProperty()->Value() != nullptr) {
+        AddSuperType(prop->AsClassProperty()->Value());
+    } else if (prop->IsMethodDefinition()) {
+        ProcessClassMethodDependencies(prop->AsMethodDefinition());
+    }
+}
+
+void TSDeclGen::ProcessClassMethodDependencies(const ir::MethodDefinition *methodDef)
+{
+    auto sig = methodDef->Function()->Signature();
+    GenSeparated(
+        sig->Params(), [this](varbinder::LocalVariable *param) { AddSuperType(param->TsType()); }, "");
+
+    AddSuperType(sig->ReturnType());
 }
 
 void TSDeclGen::AddSuperType(const ir::Expression *super)
@@ -107,6 +140,15 @@ void TSDeclGen::AddSuperType(const ir::Expression *super)
     const auto superType = checker::ETSChecker::ETSType(super->TsType());
     if (superType == checker::TypeFlag::ETS_OBJECT || superType == checker::TypeFlag::ETS_DYNAMIC_TYPE) {
         auto objectType = super->TsType()->AsETSObjectType();
+        AddObjectDependencies(objectType->Name());
+    }
+}
+
+void TSDeclGen::AddSuperType(const checker::Type *tsType)
+{
+    const auto superType = checker::ETSChecker::ETSType(tsType);
+    if (superType == checker::TypeFlag::ETS_OBJECT || superType == checker::TypeFlag::ETS_DYNAMIC_TYPE) {
+        auto objectType = tsType->AsETSObjectType();
         AddObjectDependencies(objectType->Name());
     }
 }
@@ -415,25 +457,44 @@ void TSDeclGen::ProcessFuncParameter(varbinder::LocalVariable *param)
     }
     const auto *paramType = param->TsType();
     const auto *paramDeclNode = param->Declaration()->Node();
-    if (paramDeclNode->IsETSParameterExpression()) {
-        const auto *expr = paramDeclNode->AsETSParameterExpression();
-        OutDts(expr->IsOptional() ? "?" : "");
-        OutDts(": ");
 
-        const auto *typeAnnotation = expr->TypeAnnotation();
-        if (typeAnnotation != nullptr && typeAnnotation->IsETSTypeReference() && paramType->IsETSFunctionType()) {
-            auto name = typeAnnotation->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name();
-            OutDts(name);
-        } else if (typeAnnotation != nullptr && expr->IsOptional()) {
-            GenType(typeAnnotation->TsType());
-        } else {
-            GenType(paramType);
-        }
-    } else {
+    if (!paramDeclNode->IsETSParameterExpression()) {
         if (param->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
             OutDts("?");
         }
         OutDts(": ");
+        GenType(paramType);
+        return;
+    }
+
+    const auto *expr = paramDeclNode->AsETSParameterExpression();
+    OutDts(expr->IsOptional() ? "?" : "");
+    OutDts(": ");
+
+    const auto *typeAnnotation = expr->TypeAnnotation();
+    if (typeAnnotation == nullptr) {
+        GenType(paramType);
+        return;
+    }
+
+    if (typeAnnotation->IsETSTypeReference()) {
+        auto etsTypeRef = typeAnnotation->AsETSTypeReference();
+        if (paramType->IsETSFunctionType()) {
+            auto name = etsTypeRef->Part()->Name()->AsIdentifier()->Name();
+            indirectDependencyObjects_.insert(name.Mutf8());
+            OutDts(name);
+        } else if (etsTypeRef->Part()->Name()->IsTSQualifiedName()) {
+            auto qualifiedName = etsTypeRef->Part()->Name()->AsTSQualifiedName();
+            auto leftName = qualifiedName->Left()->AsIdentifier()->Name();
+            auto rightName = qualifiedName->Right()->AsIdentifier()->Name();
+            indirectDependencyObjects_.insert(leftName.Mutf8());
+            OutDts(leftName, ".", rightName);
+        } else {
+            GenType(paramType);
+        }
+    } else if (expr->IsOptional()) {
+        GenType(typeAnnotation->TsType());
+    } else {
         GenType(paramType);
     }
 }
@@ -474,12 +535,54 @@ void TSDeclGen::GenFunctionType(const checker::ETSFunctionType *etsFunctionType,
     OutDts(")");
     if (!isSetter && !isConstructor) {
         OutDts(methodDef != nullptr ? ": " : " => ");
-        if (methodDef != nullptr && sig->HasFunction() && sig->Function()->ReturnTypeAnnotation() != nullptr &&
-            sig->Function()->ReturnTypeAnnotation()->IsTSThisType()) {
-            OutDts("this");
-        } else {
+        if (!sig->HasFunction()) {
             GenType(sig->ReturnType());
+            return;
         }
+        ProcessFunctionReturnType(sig);
+    }
+}
+
+void TSDeclGen::ProcessFunctionReturnType(const checker::Signature *sig)
+{
+    const auto returnStatements = sig->Function()->ReturnStatements();
+    if (!returnStatements.empty() && returnStatements.size() == 1 && returnStatements.at(0)->Argument() != nullptr &&
+        returnStatements.at(0)->Argument()->IsETSNewClassInstanceExpression()) {
+        auto newExpr = returnStatements.at(0)->Argument()->AsETSNewClassInstanceExpression();
+        if (newExpr->GetTypeRef() != nullptr && newExpr->GetTypeRef()->IsETSTypeReference()) {
+            ProcessFunctionReturnTypeRef(sig, newExpr->GetTypeRef()->AsETSTypeReference());
+            return;
+        }
+    }
+
+    const auto returnTypeAnnotation = sig->Function()->ReturnTypeAnnotation();
+    if (returnTypeAnnotation != nullptr) {
+        if (returnTypeAnnotation->IsTSThisType()) {
+            OutDts("this");
+            return;
+        }
+        if (returnTypeAnnotation->IsETSTypeReference()) {
+            ProcessFunctionReturnTypeRef(sig, returnTypeAnnotation->AsETSTypeReference());
+            return;
+        }
+    }
+    GenType(sig->ReturnType());
+}
+
+void TSDeclGen::ProcessFunctionReturnTypeRef(const checker::Signature *sig, const ir::ETSTypeReference *expr)
+{
+    if (sig->ReturnType()->IsETSFunctionType()) {
+        auto funcName = expr->Part()->Name()->AsIdentifier()->Name();
+        OutDts(funcName);
+        indirectDependencyObjects_.insert(funcName.Mutf8());
+    } else if (expr->Part()->Name()->IsTSQualifiedName()) {
+        auto qualiFiedName = expr->Part()->Name()->AsTSQualifiedName();
+        auto leftName = qualiFiedName->Left()->AsIdentifier()->Name();
+        auto rightName = qualiFiedName->Right()->AsIdentifier()->Name();
+        OutDts(leftName, ".", rightName);
+        indirectDependencyObjects_.insert(leftName.Mutf8());
+    } else {
+        GenType(sig->ReturnType());
     }
 }
 
@@ -858,10 +961,14 @@ void TSDeclGen::GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAl
     const auto typeAnnotation = typeAlias->TypeAnnotation();
     const auto *aliasedType = typeAnnotation->GetType(checker_);
     GenAnnotations(typeAlias);
-    OutDts("export type ", name);
+    if (classNode_.isIndirect) {
+        OutDts("type ", name);
+    } else {
+        OutDts("export type ", name);
+    }
     GenTypeParameters(typeAlias->TypeParams());
     OutDts(" = ");
-    if (typeAnnotation->IsETSTypeReference()) {
+    if (typeAnnotation->IsETSTypeReference() && typeAnnotation->AsETSTypeReference()->Part()->Name()->IsIdentifier()) {
         const auto part = typeAnnotation->AsETSTypeReference()->Part();
         const auto partName = part->Name()->AsIdentifier()->Name();
         OutDts(partName.Is("Exception") ? "Error" : partName);
@@ -1396,6 +1503,7 @@ void TSDeclGen::GenGlobalVarDeclaration(const ir::ClassProperty *globalVar)
         if (part->Name()->IsIdentifier()) {
             auto partName = part->Name()->AsIdentifier()->Name().Mutf8();
             GenPartName(partName);
+            indirectDependencyObjects_.insert(partName);
             OutDts(partName);
             GenGenericParameter(globalVar);
         }
