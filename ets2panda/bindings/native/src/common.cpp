@@ -15,9 +15,64 @@
 
 #include "common.h"
 #include <string>
+#include <iostream>
 #include "public/es2panda_lib.h"
+#include "dynamic-loader.h"
 
 // NOLINTBEGIN
+
+using std::string, std::cout, std::endl, std::vector;
+
+static es2panda_Impl *impl = nullptr;
+
+#ifdef _WIN32
+#include <windows.h>
+#define PLUGIN_DIR "windows_host_tools"
+#define LIB_PREFIX "lib"
+#define LIB_SUFFIX ".dll"
+#else
+#include <dlfcn.h>
+
+#ifdef __x86_64__
+#define PLUGIN_DIR "linux_host_tools"
+#else
+#define PLUGIN_DIR "linux_arm64_host_tools"
+#endif
+
+#define LIB_PREFIX "lib"
+#define LIB_SUFFIX ".so"
+#endif
+
+const char *LIB_ES2PANDA_PUBLIC = LIB_PREFIX "es2panda_public" LIB_SUFFIX;
+
+void *FindLibrary()
+{
+    std::string libraryName;
+    char *envValue = getenv("PANDA_SDK_PATH");
+    if (envValue) {
+        libraryName = string(envValue) + ("/" PLUGIN_DIR "/lib/") + LIB_ES2PANDA_PUBLIC;
+    } else {
+        libraryName = LIB_ES2PANDA_PUBLIC;
+    }
+    return LoadLibrary(libraryName);
+}
+
+es2panda_Impl *GetPublicImpl()
+{
+    if (impl) {
+        return impl;
+    }
+    auto library = FindLibrary();
+    if (!library) {
+        std::cout << "Cannot find " << LIB_ES2PANDA_PUBLIC << endl;
+    }
+    auto symbol = FindSymbol(library, "es2panda_GetImpl");
+    if (!symbol) {
+        std::cout << "Cannot find Impl Entry point" << endl;
+    }
+    impl = reinterpret_cast<es2panda_Impl *(*)(int)>(symbol)(ES2PANDA_LIB_VERSION);
+    return impl;
+}
 
 std::string GetString(KStringPtr ptr)
 {
@@ -47,14 +102,14 @@ KNativePointer impl_CreateConfig(KInt argc, KStringArray argvPtr)
         argv[i] = strdup(std::string(reinterpret_cast<const char *>(argvPtr + position), strLen).c_str());
         position += strLen;
     }
-    return es2panda_GetImpl(ES2PANDA_LIB_VERSION)->CreateConfig(argc, argv);
+    return GetPublicImpl()->CreateConfig(argc, argv);
 }
 TS_INTEROP_2(CreateConfig, KNativePointer, KInt, KStringArray)
 
 KNativePointer impl_DestroyConfig(KNativePointer configPtr)
 {
     auto config = reinterpret_cast<es2panda_Config *>(configPtr);
-    es2panda_GetImpl(ES2PANDA_LIB_VERSION)->DestroyConfig(config);
+    GetPublicImpl()->DestroyConfig(config);
     return nullptr;
 }
 TS_INTEROP_1(DestroyConfig, KNativePointer, KNativePointer)
@@ -62,7 +117,7 @@ TS_INTEROP_1(DestroyConfig, KNativePointer, KNativePointer)
 KNativePointer impl_DestroyContext(KNativePointer contextPtr)
 {
     auto context = reinterpret_cast<es2panda_Context *>(contextPtr);
-    es2panda_GetImpl(ES2PANDA_LIB_VERSION)->DestroyContext(context);
+    GetPublicImpl()->DestroyContext(context);
     return nullptr;
 }
 TS_INTEROP_1(DestroyContext, KNativePointer, KNativePointer)
