@@ -778,12 +778,6 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
 
     checker::Type *initType = nullptr;
     if (init != nullptr) {
-        TypeStackElement typeStackElement(this, init, {"Circular dependency detected for identifier: ", ident->Name()},
-                                          init->Start());
-        if (typeStackElement.HasTypeError()) {
-            return init->SetTsType(GlobalTypeError());
-        }
-
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         if (!CheckInit(ident, typeAnnotation, init, annotationType, bindingVar)) {
             init->SetTsType(GlobalTypeError());

@@ -468,6 +468,25 @@ void ETSChecker::IterateInVariableContext(varbinder::Variable *const var)
     }
 }
 
+static Type *GetTypeFromVarLikeVariableDeclaration(ETSChecker *checker, varbinder::Variable *const var)
+{
+    if (var->TsType() != nullptr) {
+        return var->TsType();
+    }
+
+    auto *declNode = var->Declaration()->Node();
+    if (var->Declaration()->Node()->IsIdentifier()) {
+        declNode = declNode->Parent();
+    }
+    util::DiagnosticMessageParams err = {"Circular dependency detected for identifier: ", var->Declaration()->Name()};
+    TypeStackElement tse(checker, var->Declaration(), err, declNode->Start());
+    if (tse.HasTypeError()) {
+        var->SetTsType(checker->GlobalTypeError());
+        return checker->GlobalTypeError();
+    }
+    return declNode->Check(checker);
+}
+
 Type *ETSChecker::GetTypeFromVariableDeclaration(varbinder::Variable *const var)
 {
     Type *variableType = nullptr;
@@ -486,11 +505,7 @@ Type *ETSChecker::GetTypeFromVariableDeclaration(varbinder::Variable *const var)
         case varbinder::DeclType::LET:
             [[fallthrough]];
         case varbinder::DeclType::VAR: {
-            auto *declNode = var->Declaration()->Node();
-            if (var->Declaration()->Node()->IsIdentifier()) {
-                declNode = declNode->Parent();
-            }
-            variableType = declNode->Check(this);
+            variableType = GetTypeFromVarLikeVariableDeclaration(this, var);
             break;
         }
 
