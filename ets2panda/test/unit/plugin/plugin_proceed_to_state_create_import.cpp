@@ -41,7 +41,8 @@ static void CreateImportDecl(es2panda_Context *context)
 
     auto *importDecl = g_impl->ETSParserBuildImportDeclaration(context, Es2pandaImportKinds::IMPORT_KINDS_ALL,
                                                                specifiersArray.data(), 1, importPath);
-    g_impl->InsertETSImportDeclarationAndParse(context, importDecl);
+    auto *program = g_impl->ContextProgram(context);
+    g_impl->InsertETSImportDeclarationAndParse(context, program, importDecl);
     auto *importDeclString = g_impl->AstNodeDumpEtsSrcConst(context, importDecl);
     std::cout << importDeclString << std::endl;
 }
