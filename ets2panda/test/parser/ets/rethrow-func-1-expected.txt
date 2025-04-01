@@ -87,40 +87,6 @@
         },
         "superClass": null,
         "implements": [],
-        "annotations": [
-          {
-            "expr_": {
-              "type": "Identifier",
-              "name": "Module",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "rethrow-func-1.ets"
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "rethrow-func-1.ets"
-                }
-              }
-            },
-            "properties": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1,
-                "program": "rethrow-func-1.ets"
-              },
-              "end": {
-                "line": 1,
-                "column": 1,
-                "program": "rethrow-func-1.ets"
-              }
-            }
-          }
-        ],
         "body": [
           {
             "type": "MethodDefinition",

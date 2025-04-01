@@ -890,9 +890,6 @@ void TSDeclGen::GenAnnotations(const T *node)
     GenSeparated(
         node->Annotations(),
         [this](ir::AnnotationUsage *anno) {
-            if (anno->GetBaseName()->Name() == compiler::Signatures::MODULE_ANNOTATION) {
-                return;
-            }
             OutDts("@", anno->GetBaseName()->Name());
             GenAnnotationProperties(anno);
             OutEndlDts();

@@ -507,40 +507,6 @@
         },
         "superClass": null,
         "implements": [],
-        "annotations": [
-          {
-            "expr_": {
-              "type": "Identifier",
-              "name": "Module",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "FunctionType.ets"
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "FunctionType.ets"
-                }
-              }
-            },
-            "properties": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1,
-                "program": "FunctionType.ets"
-              },
-              "end": {
-                "line": 1,
-                "column": 1,
-                "program": "FunctionType.ets"
-              }
-            }
-          }
-        ],
         "body": [
           {
             "type": "MethodDefinition",

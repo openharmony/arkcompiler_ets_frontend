@@ -1448,40 +1448,6 @@
         },
         "superClass": null,
         "implements": [],
-        "annotations": [
-          {
-            "expr_": {
-              "type": "Identifier",
-              "name": "Module",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "asyncfun_lambda_lib.ets"
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "asyncfun_lambda_lib.ets"
-                }
-              }
-            },
-            "properties": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1,
-                "program": "asyncfun_lambda_lib.ets"
-              },
-              "end": {
-                "line": 1,
-                "column": 1,
-                "program": "asyncfun_lambda_lib.ets"
-              }
-            }
-          }
-        ],
         "body": [
           {
             "type": "MethodDefinition",

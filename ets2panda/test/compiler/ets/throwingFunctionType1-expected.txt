@@ -87,40 +87,6 @@
         },
         "superClass": null,
         "implements": [],
-        "annotations": [
-          {
-            "expr_": {
-              "type": "Identifier",
-              "name": "Module",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "throwingFunctionType1.ets"
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "throwingFunctionType1.ets"
-                }
-              }
-            },
-            "properties": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1,
-                "program": "throwingFunctionType1.ets"
-              },
-              "end": {
-                "line": 1,
-                "column": 1,
-                "program": "throwingFunctionType1.ets"
-              }
-            }
-          }
-        ],
         "body": [
           {
             "type": "MethodDefinition",

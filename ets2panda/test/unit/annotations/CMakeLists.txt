@@ -35,3 +35,6 @@ ets2panda_add_gtest(annotations_retention_policy
 ets2panda_add_gtest(annotations_for_namespace
     CPP_SOURCES annotations_for_namespace.cpp    
 )
+ets2panda_add_gtest(annotations_module
+    CPP_SOURCES annotations_module.cpp
+)

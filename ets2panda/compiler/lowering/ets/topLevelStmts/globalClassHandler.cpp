@@ -49,14 +49,33 @@ void GlobalClassHandler::AddStaticBlockToClass(ir::AstNode *node)
     }
 }
 
-ir::AnnotationUsage *GlobalClassHandler::CreateModuleAnnotation(const lexer::SourceRange &range)
+std::string AddToNamespaceChain(std::string chain, std::string name)
 {
-    auto *identModule = NodeAllocator::Alloc<ir::Identifier>(allocator_, Signatures::MODULE_ANNOTATION, allocator_);
-    identModule->SetRange(range);
-    auto *annotationModule = NodeAllocator::Alloc<ir::AnnotationUsage>(allocator_, identModule, allocator_);
-    annotationModule->AddModifier(ir::ModifierFlags::ANNOTATION_USAGE);
-    annotationModule->SetRange(range);
-    return annotationModule;
+    if (chain.empty()) {
+        return name;
+    }
+    if (name.empty()) {
+        return chain;
+    }
+    return chain + "." + name;
+}
+
+void GlobalClassHandler::CollectNamespaceExportedClasses(ir::ClassDefinition *classDef)
+{
+    CollectExportedClasses(classDef, classDef->Body());
+}
+
+template <class Node>
+void GlobalClassHandler::CollectExportedClasses(ir::ClassDefinition *classDef, const ArenaVector<Node *> &statements)
+{
+    for (const auto *statement : statements) {
+        if (!statement->IsExported()) {
+            continue;
+        }
+        if (statement->IsClassDeclaration()) {
+            classDef->AddToExportedClasses(statement->AsClassDeclaration());
+        }
+    }
 }
 
 ir::ClassDeclaration *GlobalClassHandler::CreateTransformedClass(ir::ETSModule *ns)
@@ -78,8 +97,6 @@ ir::ClassDeclaration *GlobalClassHandler::CreateTransformedClass(ir::ETSModule *
         auto clone = anno->Clone(allocator_, classDef);
         annotations.push_back(clone);
     }
-
-    annotations.push_back(CreateModuleAnnotation(ns->Range()));
 
     classDef->SetAnnotations(std::move(annotations));
     return classDecl;
@@ -185,6 +202,7 @@ ir::ClassDeclaration *GlobalClassHandler::TransformNamespace(ir::ETSModule *ns, 
     for (auto *cls : globalClasses) {
         globalClass->Body().emplace_back(cls);
         cls->SetParent(globalClass);
+        CollectNamespaceExportedClasses(cls->Definition());
     }
 
     // Add rest statement, such as type declaration
@@ -202,6 +220,7 @@ void GlobalClassHandler::CollectProgramGlobalClasses(parser::Program *program, A
     for (auto cls : classDecls) {
         program->Ast()->Statements().push_back(cls);
         cls->SetParent(program->Ast());
+        CollectNamespaceExportedClasses(cls->Definition());
     }
 }
 
@@ -243,6 +262,8 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
     globalClass->SetGlobalInitialized();
 
     CollectProgramGlobalClasses(globalProgram, namespaces);
+
+    CollectExportedClasses(globalClass, globalProgram->Ast()->Statements());
 
     // NOTE(vpukhov): stdlib checks are to be removed - do not extend the existing logic
     if (globalProgram->Kind() != parser::ScriptKind::STDLIB) {
@@ -482,10 +503,6 @@ ir::ClassDeclaration *GlobalClassHandler::CreateGlobalClass(const parser::Progra
     classDef->SetRange(rangeToStartOfFile);
     auto *classDecl = NodeAllocator::Alloc<ir::ClassDeclaration>(allocator_, classDef, allocator_);
     classDecl->SetRange(rangeToStartOfFile);
-
-    auto *annotationModule = CreateModuleAnnotation(classDef->Range());
-    annotationModule->SetParent(classDef);
-    classDef->Annotations().push_back(annotationModule);
 
     return classDecl;
 }

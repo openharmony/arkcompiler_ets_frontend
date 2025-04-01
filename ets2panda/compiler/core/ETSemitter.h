@@ -111,6 +111,7 @@ private:
     void GenInterfaceMethodDefinition(const ir::MethodDefinition *methodDef, bool external);
     void GenClassInheritedFields(const checker::ETSObjectType *baseType, pandasm::Record &classRecord);
     pandasm::AnnotationData GenAnnotationSignature(const ir::ClassDefinition *classDef);
+    pandasm::AnnotationData GenAnnotationModule(const ir::ClassDefinition *classDef);
     pandasm::AnnotationData GenAnnotationEnclosingClass(std::string_view className);
     pandasm::AnnotationData GenAnnotationEnclosingMethod(const ir::MethodDefinition *methodDef);
     pandasm::AnnotationData GenAnnotationInnerClass(const ir::ClassDefinition *classDef, const ir::AstNode *parent);

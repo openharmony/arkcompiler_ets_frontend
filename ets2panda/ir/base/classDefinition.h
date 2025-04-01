@@ -23,6 +23,7 @@
 #include "ir/expressions/identifier.h"
 #include "ir/srcDump.h"
 #include "ir/statements/annotationUsage.h"
+#include "ir/statements/classDeclaration.h"
 #include "util/language.h"
 
 namespace ark::es2panda::ir {
@@ -94,7 +95,8 @@ public:
           capturedVars_(body_.get_allocator()),
           localVariableIsNeeded_(body_.get_allocator()),
           localIndex_(classCounter_++),
-          localPrefix_("$" + std::to_string(localIndex_))
+          localPrefix_("$" + std::to_string(localIndex_)),
+          exportedClasses_(body_.get_allocator())
     {
     }
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
@@ -109,7 +111,8 @@ public:
           capturedVars_(allocator->Adapter()),
           localVariableIsNeeded_(allocator->Adapter()),
           localIndex_(classCounter_++),
-          localPrefix_("$" + std::to_string(localIndex_))
+          localPrefix_("$" + std::to_string(localIndex_)),
+          exportedClasses_(body_.get_allocator())
     {
     }
 
@@ -124,7 +127,8 @@ public:
           capturedVars_(allocator->Adapter()),
           localVariableIsNeeded_(allocator->Adapter()),
           localIndex_(classCounter_++),
-          localPrefix_("$" + std::to_string(localIndex_))
+          localPrefix_("$" + std::to_string(localIndex_)),
+          exportedClasses_(body_.get_allocator())
     {
     }
 
@@ -469,6 +473,17 @@ public:
         modifiers_ &= ~(ClassDefinitionModifiers::CLASSDEFINITION_CHECKED);
     }
 
+    void AddToExportedClasses(const ir::ClassDeclaration *cls)
+    {
+        ES2PANDA_ASSERT(cls->IsExported());
+        exportedClasses_.push_back(cls);
+    }
+
+    [[nodiscard]] const ArenaVector<const ir::ClassDeclaration *> &ExportedClasses() const noexcept
+    {
+        return exportedClasses_;
+    }
+
 private:
     void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VReg classReg,
                                         const std::vector<compiler::VReg> &staticComputedFieldKeys) const;
@@ -494,6 +509,7 @@ private:
     static int classCounter_;
     const int localIndex_ {};
     const std::string localPrefix_ {};
+    ArenaVector<const ir::ClassDeclaration *> exportedClasses_;
 };
 }  // namespace ark::es2panda::ir
 
