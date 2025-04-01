@@ -21,6 +21,7 @@ export const COMMON_METHOD_IDENTIFIER = 'CommonMethod';
 export const APPLY_STYLES_IDENTIFIER = 'applyStyles';
 export const STATE_STYLES = 'stateStyles';
 export const ARKUI_PACKAGE_NAME = '@kits.ArkUI';
+export const VALUE_IDENTIFIER = 'value';
 
 export enum CustomDecoratorName {
   Extend = 'Extend',

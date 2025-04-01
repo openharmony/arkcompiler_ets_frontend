@@ -13,7 +13,9 @@
  * limitations under the License.
  */
 
-import { Component, State, Row, Slider, Checkbox, Blank, Text } from '@kits.ArkUI';
+import { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kits.ArkUI';
+
+import { MyCard } from './'
 
 @Component
 struct Myomponent {
@@ -35,6 +37,49 @@ struct Test {
       Checkbox().select($$(this.checked))
       Blank()
       Text(this.checked ? '开启': '关闭')
+    }
+  }
+}
+
+@Entry
+@ComponentV2
+struct Index {
+  @Local value: number = 0;
+
+  build() {
+    Column() {
+      Text(`${this.value}`)
+      Button(`change value`).onClick(() => {
+        this.value++;
+      })
+      Star({
+        value: this.value,
+        $value: value => {
+          this.value = value;
+        }
+      })
+      MyCard({
+        str: this.str,
+        $str: value => {
+          this.str = value;
+        }
+      })
+    }
+  }
+}
+
+
+@ComponentV2
+struct Star {
+  @Param value: number = 0;
+  @Event $value: (val: number) => void = (val: number) => {};
+
+  build() {
+    Column() {
+      Text(`${this.value}`)
+      Button(`change value `).onClick(() => {
+        this.$value(10);
+      })
     }
   }
 }
