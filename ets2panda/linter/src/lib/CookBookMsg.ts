@@ -297,3 +297,5 @@ cookBookTag[333] = 'Casting interop JS objects to "number" type is not allowed (
 cookBookTag[334] = 'The "typeof" expression can\'t be used with interop JS objects (arkts-interop-js-typeof)';
 cookBookTag[335] = 'Interop object does not have property num (arkts-interop-does-not-have-num)';
 cookBookTag[336] = 'Binary operations on js objects (arkts-no-js-obj-binary-operation)';
+cookBookTag[337] =
+  'Importing data directly from the "JS" module for comparison is not supported (arkts-js-data-compare)';

@@ -12,79 +12,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+'use static'
 
-export const arkts2Rules: number[] = [
-  1,
-  25,
-  30,
-  34,
-  37,
-  29,
-  111,
-  137,
-  139,
-  140,
-  144,
-  149,
-  183,
-  184,
-  189,
-  190,
-  192,
-  193,
-  198,
-  202,
-  203,
-  206,
-  207,
-  208,
-  209,
-  210,
-  211,
-  212,
-  222,
-  232,
-  233,
-  234,
-  235,
-  236,
-  237,
-  238,
-  239,
-  251,
-  252,
-  253,
-  254,
-  255,
-  256,
-  257,
-  258,
-  259,
-  260,
-  263,
-  301,
-  302,
-  303,
-  304,
-  305,
-  306,
-  307,
-  308,
-  309,
-  310,
-  311,
-  312,
-  313,
-  314,
-  315,
-  316,
-  321,
-  330,
-  331,
-  332,
-  333,
-  334,
-  335,
-  336,
-  337
-];
+import {foo, m, n} from "./interop_import_js_compare_js"
+let a = foo.a
+let b = foo.b
+a > b
+a < b
+a >= b
+a <= b
+a = 1
+
+m > n
+m = 1
+
+let x = 1, y = 2;
+x > y;
+x < y;
+x >= y;
+x <= y;
+
+let bar = { a: 1, b: 2 };
+
+let x2 = bar.a, y2 = bar.b;
+x2 > y2;
+x2 < y2;
+x2 >= y2;
+x2 <= y2;

@@ -1622,6 +1622,59 @@ export class TypeScriptLinter {
       default:
     }
     this.checkNumericSemantics(tsBinaryExpr);
+    this.checkInterOpImportJsDataCompare(tsBinaryExpr);
+  }
+
+  private checkInterOpImportJsDataCompare(expr: ts.BinaryExpression): void {
+    if (!this.useStatic || !this.options.arkts2 || !TypeScriptLinter.isComparisonOperator(expr.operatorToken.kind)) {
+      return;
+    }
+
+    const isJsFileSymbol = (symbol: ts.Symbol | undefined): boolean => {
+      if (!symbol) {
+        return false;
+      }
+
+      const declaration = symbol.declarations?.[0];
+      if (!declaration || !ts.isVariableDeclaration(declaration)) {
+        return false;
+      }
+
+      const initializer = declaration.initializer;
+      if (!initializer) {
+        return false;
+      }
+
+      return isJsFileExpression(initializer);
+    };
+
+    const isJsFileExpression = (expr: ts.Expression): boolean => {
+      if (ts.isPropertyAccessExpression(expr)) {
+        const initializerSym = this.tsUtils.trueSymbolAtLocation(expr.expression);
+        return initializerSym?.declarations?.[0]?.getSourceFile()?.fileName.endsWith(EXTNAME_JS) ?? false;
+      }
+      return expr.getSourceFile()?.fileName.endsWith(EXTNAME_JS) ?? false;
+    };
+
+    const processExpression = (expr: ts.Expression): void => {
+      const symbol = this.tsUtils.trueSymbolAtLocation(expr);
+      if (isJsFileSymbol(symbol)) {
+        this.incrementCounters(expr, FaultID.InterOpImportJsDataCompare);
+      }
+    };
+
+    processExpression(expr.left);
+    processExpression(expr.right);
+  }
+
+  private static isComparisonOperator(kind: ts.SyntaxKind): boolean {
+    return [
+      ts.SyntaxKind.GreaterThanToken,
+      ts.SyntaxKind.LessThanToken,
+      ts.SyntaxKind.GreaterThanEqualsToken,
+      ts.SyntaxKind.LessThanEqualsToken,
+      ts.SyntaxKind.EqualsToken
+    ].includes(kind);
   }
 
   private handleTsInterop(nodeToCheck: ts.Node, handler: { (): void }): void {
