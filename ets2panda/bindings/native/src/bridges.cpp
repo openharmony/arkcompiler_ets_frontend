@@ -15,27 +15,24 @@
 
 #include "common.h"
 
-#include "public/es2panda_lib.h"
-
 KNativePointer impl_ProceedToState(KNativePointer contextPtr, KInt state)
 {
     auto context = reinterpret_cast<es2panda_Context *>(contextPtr);
-    return es2panda_GetImpl(ES2PANDA_LIB_VERSION)->ProceedToState(context, es2panda_ContextState(state));
+    return GetPublicImpl()->ProceedToState(context, es2panda_ContextState(state));
 }
 TS_INTEROP_2(ProceedToState, KNativePointer, KNativePointer, KInt)
 
 KNativePointer impl_ContextProgram(KNativePointer contextPtr)
 {
     auto context = reinterpret_cast<es2panda_Context *>(contextPtr);
-    return es2panda_GetImpl(ES2PANDA_LIB_VERSION)->ContextProgram(context);
+    return GetPublicImpl()->ContextProgram(context);
 }
 TS_INTEROP_1(ContextProgram, KNativePointer, KNativePointer)
 
 KNativePointer impl_CreateContextFromString(KNativePointer configPtr, KStringPtr &sourcePtr, KStringPtr &filenamePtr)
 {
     auto config = reinterpret_cast<es2panda_Config *>(configPtr);
-    return es2panda_GetImpl(ES2PANDA_LIB_VERSION)
-        ->CreateContextFromString(config, sourcePtr.data(), filenamePtr.data());
+    return GetPublicImpl()->CreateContextFromString(config, sourcePtr.data(), filenamePtr.data());
 }
 TS_INTEROP_3(CreateContextFromString, KNativePointer, KNativePointer, KStringPtr, KStringPtr)
 
@@ -43,16 +40,15 @@ KInt impl_GenerateTsDeclarationsFromContext(KNativePointer contextPtr, KStringPt
                                             KBoolean exportAll)
 {
     auto context = reinterpret_cast<es2panda_Context *>(contextPtr);
-    return static_cast<KInt>(
-        es2panda_GetImpl(ES2PANDA_LIB_VERSION)
-            ->GenerateTsDeclarationsFromContext(context, outputDeclEts.data(), outputEts.data(), exportAll != 0));
+    return static_cast<KInt>(GetPublicImpl()->GenerateTsDeclarationsFromContext(context, outputDeclEts.data(),
+                                                                                outputEts.data(), exportAll != 0));
 }
 TS_INTEROP_4(GenerateTsDeclarationsFromContext, KInt, KNativePointer, KStringPtr, KStringPtr, KBoolean)
 
 KNativePointer impl_CreateContextFromFile(KNativePointer configPtr, KStringPtr &filenamePtr)
 {
     auto config = reinterpret_cast<es2panda_Config *>(configPtr);
-    return es2panda_GetImpl(ES2PANDA_LIB_VERSION)->CreateContextFromFile(config, GetStringCopy(filenamePtr));
+    return GetPublicImpl()->CreateContextFromFile(config, GetStringCopy(filenamePtr));
 }
 TS_INTEROP_2(CreateContextFromFile, KNativePointer, KNativePointer, KStringPtr)
 
@@ -60,14 +56,14 @@ KInt impl_ContextState(KNativePointer contextPtr)
 {
     auto context = reinterpret_cast<es2panda_Context *>(contextPtr);
 
-    return static_cast<KInt>(es2panda_GetImpl(ES2PANDA_LIB_VERSION)->ContextState(context));
+    return static_cast<KInt>(GetPublicImpl()->ContextState(context));
 }
 TS_INTEROP_1(ContextState, KInt, KNativePointer)
 
 KNativePointer impl_ContextErrorMessage(KNativePointer contextPtr)
 {
     auto context = reinterpret_cast<es2panda_Context *>(contextPtr);
-    return new std::string(es2panda_GetImpl(ES2PANDA_LIB_VERSION)->ContextErrorMessage(context));
+    return new std::string(GetPublicImpl()->ContextErrorMessage(context));
 }
 TS_INTEROP_1(ContextErrorMessage, KNativePointer, KNativePointer)
 
@@ -75,6 +71,6 @@ KNativePointer impl_ProgramAst(KNativePointer programPtr)
 {
     auto context = reinterpret_cast<es2panda_Context *>(programPtr);
     auto program = reinterpret_cast<es2panda_Program *>(programPtr);
-    return es2panda_GetImpl(ES2PANDA_LIB_VERSION)->ProgramAst(context, program);
+    return GetPublicImpl()->ProgramAst(context, program);
 }
 TS_INTEROP_1(ProgramAst, KNativePointer, KNativePointer)

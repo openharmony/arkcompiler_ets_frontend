@@ -24,11 +24,18 @@ import { PluginDriver, PluginHook } from './ui_plugins_driver'
 import * as fs from "fs"
 import * as path from 'path'
 
+function initBuildEnv(): void {
+  const currentPath: string | undefined = process.env.PATH;
+  let pandaLibPath: string = path.resolve(__dirname, '../../ets2panda/lib');
+  process.env.PATH = `${currentPath}${path.delimiter}${pandaLibPath}`;
+}
+
 export class Lsp {
   private fileNameToArktsconfig: any // Map<fileName, arktsconfig.json>
   private moduleToBuildConfig: any // Map<moduleName, build_config.json>
 
   constructor(projectPath: string) {
+    initBuildEnv()
     let compileFileInfoPath = path.join(projectPath, '.idea', '.deveco', 'lsp_compileFileInfos.json')
     this.fileNameToArktsconfig = JSON.parse(fs.readFileSync(compileFileInfoPath, 'utf-8'))
     let buildConfigPath = path.join(projectPath, '.idea', '.deveco', 'lsp_build_config.json')
@@ -43,13 +50,11 @@ export class Lsp {
     let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath)
     const source = fs.readFileSync(filePath, 'utf8').toString().replace(/\r\n/g, '\n');
     let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg)
-    PluginDriver.getInstance().getPluginContext().setArkTSProgram(localCtx.program)
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED)
-    let ast = EtsScript.fromContext(localCtx)
-    PluginDriver.getInstance().getPluginContext().setArkTSAst(ast)
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED)
-    let ptr = global.es2panda._getDefinitionAtPosition(localCtx.peer, offset)
+    let ptr = global.es2panda._getDefinitionAtPosition(localCtx, offset)
     PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN)
     lspDriverHelper.destroyContext(localCtx);
     lspDriverHelper.destroyConfig(localCfg);
@@ -64,13 +69,11 @@ export class Lsp {
     let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath)
     const source = fs.readFileSync(filePath, 'utf8').toString().replace(/\r\n/g, '\n');
     let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg)
-    PluginDriver.getInstance().getPluginContext().setArkTSProgram(localCtx.program)
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED)
-    let ast = EtsScript.fromContext(localCtx)
-    PluginDriver.getInstance().getPluginContext().setArkTSAst(ast)
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED)
-    let ptr = global.es2panda._getSemanticDiagnostics(localCtx.peer)
+    let ptr = global.es2panda._getSemanticDiagnostics(localCtx)
     PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN)
     lspDriverHelper.destroyContext(localCtx);
     lspDriverHelper.destroyConfig(localCfg);
@@ -85,13 +88,11 @@ export class Lsp {
     let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath)
     const source = fs.readFileSync(filePath, 'utf8').toString().replace(/\r\n/g, '\n');
     let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg)
-    PluginDriver.getInstance().getPluginContext().setArkTSProgram(localCtx.program)
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED)
-    let ast = EtsScript.fromContext(localCtx)
-    PluginDriver.getInstance().getPluginContext().setArkTSAst(ast)
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED)
-    let ptr = global.es2panda._getCurrentTokenValue(localCtx.peer, offset)
+    let ptr = global.es2panda._getCurrentTokenValue(localCtx, offset)
     PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN)
     lspDriverHelper.destroyContext(localCtx);
     lspDriverHelper.destroyConfig(localCfg);
@@ -106,13 +107,11 @@ export class Lsp {
     let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath)
     const source = fs.readFileSync(filePath, 'utf8').toString().replace(/\r\n/g, '\n');
     let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg)
-    PluginDriver.getInstance().getPluginContext().setArkTSProgram(localCtx.program)
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED)
-    let ast = EtsScript.fromContext(localCtx)
-    PluginDriver.getInstance().getPluginContext().setArkTSAst(ast)
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED)
-    let ptr = global.es2panda._getImplementationAtPosition(localCtx.peer, offset)
+    let ptr = global.es2panda._getImplementationAtPosition(localCtx, offset)
     PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN)
     lspDriverHelper.destroyContext(localCtx);
     lspDriverHelper.destroyConfig(localCfg);
@@ -127,13 +126,11 @@ export class Lsp {
     let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath)
     const source = fs.readFileSync(filePath, 'utf8').toString().replace(/\r\n/g, '\n');
     let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg)
-    PluginDriver.getInstance().getPluginContext().setArkTSProgram(localCtx.program)
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED)
-    let ast = EtsScript.fromContext(localCtx)
-    PluginDriver.getInstance().getPluginContext().setArkTSAst(ast)
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED)
-    let isPackageModule = global.es2panda._isPackageModule(localCtx.peer)
+    let isPackageModule = global.es2panda._isPackageModule(localCtx)
     PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN)
     lspDriverHelper.destroyContext(localCtx);
     lspDriverHelper.destroyConfig(localCfg);
@@ -147,13 +144,11 @@ export class Lsp {
       let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath)
       const source = fs.readFileSync(filePath, 'utf8').toString().replace(/\r\n/g, '\n');
       let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg)
-      PluginDriver.getInstance().getPluginContext().setArkTSProgram(localCtx.program)
+      PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx)
       lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED)
-      let ast = EtsScript.fromContext(localCtx)
-      PluginDriver.getInstance().getPluginContext().setArkTSAst(ast)
       PluginDriver.getInstance().runPluginHook(PluginHook.PARSED)
       lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED)
-      let ptr = global.es2panda._getFileReferences(filePath, localCtx.peer, isPackageModule)
+      let ptr = global.es2panda._getFileReferences(filePath, localCtx, isPackageModule)
       let refs = new LspReferences(ptr)
       PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN)
       lspDriverHelper.destroyContext(localCtx)
@@ -175,13 +170,11 @@ export class Lsp {
     let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath)
     const source = fs.readFileSync(filePath, 'utf8').toString().replace(/\r\n/g, '\n');
     let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg)
-    PluginDriver.getInstance().getPluginContext().setArkTSProgram(localCtx.program)
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED)
-    let ast = EtsScript.fromContext(localCtx)
-    PluginDriver.getInstance().getPluginContext().setArkTSAst(ast)
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED)
-    let declInfo = global.es2panda._getDeclInfo(localCtx.peer, offset)
+    let declInfo = global.es2panda._getDeclInfo(localCtx, offset)
     PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN)
     lspDriverHelper.destroyContext(localCtx)
     lspDriverHelper.destroyConfig(localCfg)
@@ -195,13 +188,11 @@ export class Lsp {
       let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath)
       const source = fs.readFileSync(filePath, 'utf8').toString().replace(/\r\n/g, '\n');
       let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg)
-      PluginDriver.getInstance().getPluginContext().setArkTSProgram(localCtx.program)
+      PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx)
       lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED)
-      let ast = EtsScript.fromContext(localCtx)
-      PluginDriver.getInstance().getPluginContext().setArkTSAst(ast)
       PluginDriver.getInstance().runPluginHook(PluginHook.PARSED)
       lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED)
-      let ptr = global.es2panda._getReferencesAtPosition(localCtx.peer, declInfo)
+      let ptr = global.es2panda._getReferencesAtPosition(localCtx, declInfo)
       PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN)
       lspDriverHelper.destroyContext(localCtx)
       lspDriverHelper.destroyConfig(localCfg)
@@ -219,13 +210,11 @@ export class Lsp {
     let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath)
     const source = fs.readFileSync(filePath, 'utf8').toString().replace(/\r\n/g, '\n');
     let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg)
-    PluginDriver.getInstance().getPluginContext().setArkTSProgram(localCtx.program)
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED)
-    let ast = EtsScript.fromContext(localCtx)
-    PluginDriver.getInstance().getPluginContext().setArkTSAst(ast)
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED)
-    let ptr = global.es2panda._getSyntacticDiagnostics(localCtx.peer)
+    let ptr = global.es2panda._getSyntacticDiagnostics(localCtx)
     PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN)
     lspDriverHelper.destroyContext(localCtx)
     lspDriverHelper.destroyConfig(localCfg)
@@ -240,13 +229,11 @@ export class Lsp {
     let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath)
     const source = fs.readFileSync(filePath, 'utf8').toString().replace(/\r\n/g, '\n');
     let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg)
-    PluginDriver.getInstance().getPluginContext().setArkTSProgram(localCtx.program)
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED)
-    let ast = EtsScript.fromContext(localCtx)
-    PluginDriver.getInstance().getPluginContext().setArkTSAst(ast)
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED)
-    let ptr = global.es2panda._getSuggestionDiagnostics(localCtx.peer)
+    let ptr = global.es2panda._getSuggestionDiagnostics(localCtx)
     PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN)
     lspDriverHelper.destroyContext(localCtx)
     lspDriverHelper.destroyConfig(localCfg)
@@ -261,13 +248,11 @@ export class Lsp {
     let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath)
     const source = fs.readFileSync(filePath, 'utf8').toString().replace(/\r\n/g, '\n');
     let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg)
-    PluginDriver.getInstance().getPluginContext().setArkTSProgram(localCtx.program)
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED)
-    let ast = EtsScript.fromContext(localCtx)
-    PluginDriver.getInstance().getPluginContext().setArkTSAst(ast)
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED)
-    let ptr = global.es2panda._getQuickInfoAtPosition(filename, localCtx.peer, offset)
+    let ptr = global.es2panda._getQuickInfoAtPosition(filename, localCtx, offset)
     PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN)
     lspDriverHelper.destroyContext(localCtx)
     lspDriverHelper.destroyConfig(localCfg)
@@ -282,13 +267,11 @@ export class Lsp {
     let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath)
     const source = fs.readFileSync(filePath, 'utf8').toString().replace(/\r\n/g, '\n');
     let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg)
-    PluginDriver.getInstance().getPluginContext().setArkTSProgram(localCtx.program)
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED)
-    let ast = EtsScript.fromContext(localCtx)
-    PluginDriver.getInstance().getPluginContext().setArkTSAst(ast)
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED)
-    let ptr = global.es2panda._getDocumentHighlights(localCtx.peer, offset)
+    let ptr = global.es2panda._getDocumentHighlights(localCtx, offset)
     PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN)
     lspDriverHelper.destroyContext(localCtx)
     lspDriverHelper.destroyConfig(localCfg)
@@ -303,13 +286,11 @@ export class Lsp {
     let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath)
     const source = fs.readFileSync(filePath, 'utf8').toString().replace(/\r\n/g, '\n');
     let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg)
-    PluginDriver.getInstance().getPluginContext().setArkTSProgram(localCtx.program)
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED)
-    let ast = EtsScript.fromContext(localCtx)
-    PluginDriver.getInstance().getPluginContext().setArkTSAst(ast)
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED)
-    let ptr = global.es2panda._getCompletionAtPosition(localCtx.peer, offset)
+    let ptr = global.es2panda._getCompletionAtPosition(localCtx, offset)
     PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN)
     lspDriverHelper.destroyContext(localCtx)
     lspDriverHelper.destroyConfig(localCfg)
@@ -324,13 +305,11 @@ export class Lsp {
     let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath)
     const source = fs.readFileSync(filePath, 'utf8').toString().replace(/\r\n/g, '\n');
     let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg)
-    PluginDriver.getInstance().getPluginContext().setArkTSProgram(localCtx.program)
+    PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED)
-    let ast = EtsScript.fromContext(localCtx)
-    PluginDriver.getInstance().getPluginContext().setArkTSAst(ast)
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED)
-    let ptr = global.es2panda._toLineColumnOffset(localCtx.peer, offset)
+    let ptr = global.es2panda._toLineColumnOffset(localCtx, offset)
     PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN)
     lspDriverHelper.destroyContext(localCtx)
     lspDriverHelper.destroyConfig(localCfg)

@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+import { KNativePointer } from "./InteropTypes";
 import { BuildConfig } from "./types";
 
 export enum PluginHook {
@@ -63,11 +64,13 @@ class PluginContext {
   private ast: object | undefined;
   private program: object | undefined;
   private projectConfig: object | undefined;
+  private contextPtr: KNativePointer | undefined;
 
   constructor() {
     this.ast = undefined;
     this.program = undefined;
     this.projectConfig = undefined;
+    this.contextPtr = undefined;
   }
 
   public setArkTSAst(ast: object): void {
@@ -92,6 +95,14 @@ class PluginContext {
 
   public getProjectConfig(): object | undefined {
     return this.projectConfig;
+  }
+
+  public setContextPtr(ptr: KNativePointer): void {
+    this.contextPtr = ptr
+  }
+
+  public getContextPtr(): KNativePointer | undefined {
+    return this.contextPtr
   }
 }
 

@@ -28,8 +28,7 @@ KNativePointer impl_CreateMemberExpression(KNativePointer context, KNativePointe
     const auto expressionKind = static_cast<Es2pandaMemberExpressionKind>(kind);
     const auto isComputed = static_cast<KBoolean>(computed);
     const auto optArg = static_cast<KBoolean>(optionalArg);
-    const auto result = es2panda_GetImpl(ES2PANDA_LIB_VERSION)
-                            ->CreateMemberExpression(ctx, objArg, prop, expressionKind, isComputed, optArg);
+    const auto result = GetPublicImpl()->CreateMemberExpression(ctx, objArg, prop, expressionKind, isComputed, optArg);
     return result;
 }
 // CC-OFFNXT(G.FUN.01-CPP) solid logic
@@ -47,9 +46,8 @@ KNativePointer impl_UpdateMemberExpression(KNativePointer context, KNativePointe
     const auto _kind = static_cast<Es2pandaMemberExpressionKind>(kind);
     const auto _computed = static_cast<KBoolean>(computed);
     const auto _optional_arg = static_cast<KBoolean>(optional_arg);
-    const auto result =
-        es2panda_GetImpl(ES2PANDA_LIB_VERSION)
-            ->UpdateMemberExpression(_context, _original, _object_arg, _property, _kind, _computed, _optional_arg);
+    const auto result = GetPublicImpl()->UpdateMemberExpression(_context, _original, _object_arg, _property, _kind,
+                                                                _computed, _optional_arg);
     return result;
 }
 // CC-OFFNXT(G.FUN.01-CPP) solid logic
@@ -60,7 +58,7 @@ KNativePointer impl_MemberExpressionObject(KNativePointer context, KNativePointe
 {
     const auto _context = reinterpret_cast<es2panda_Context *>(context);
     const auto _receiver = reinterpret_cast<es2panda_AstNode *>(receiver);
-    const auto result = es2panda_GetImpl(ES2PANDA_LIB_VERSION)->MemberExpressionObject(_context, _receiver);
+    const auto result = GetPublicImpl()->MemberExpressionObject(_context, _receiver);
     return result;
 }
 TS_INTEROP_2(MemberExpressionObject, KNativePointer, KNativePointer, KNativePointer)
@@ -69,7 +67,7 @@ KNativePointer impl_MemberExpressionProperty(KNativePointer context, KNativePoin
 {
     const auto _context = reinterpret_cast<es2panda_Context *>(context);
     const auto _receiver = reinterpret_cast<es2panda_AstNode *>(receiver);
-    const auto result = es2panda_GetImpl(ES2PANDA_LIB_VERSION)->MemberExpressionProperty(_context, _receiver);
+    const auto result = GetPublicImpl()->MemberExpressionProperty(_context, _receiver);
     return result;
 }
 TS_INTEROP_2(MemberExpressionProperty, KNativePointer, KNativePointer, KNativePointer)
@@ -78,7 +76,7 @@ KInt impl_MemberExpressionKindConst(KNativePointer context, KNativePointer recei
 {
     const auto _context = reinterpret_cast<es2panda_Context *>(context);
     const auto _receiver = reinterpret_cast<es2panda_AstNode *>(receiver);
-    const auto result = es2panda_GetImpl(ES2PANDA_LIB_VERSION)->MemberExpressionKindConst(_context, _receiver);
+    const auto result = GetPublicImpl()->MemberExpressionKindConst(_context, _receiver);
     return result;
 }
 TS_INTEROP_2(MemberExpressionKindConst, KInt, KNativePointer, KNativePointer)
