@@ -683,40 +683,6 @@
         },
         "superClass": null,
         "implements": [],
-        "annotations": [
-          {
-            "expr_": {
-              "type": "Identifier",
-              "name": "Module",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "test-type-alias-call8.ets"
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "test-type-alias-call8.ets"
-                }
-              }
-            },
-            "properties": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1,
-                "program": "test-type-alias-call8.ets"
-              },
-              "end": {
-                "line": 1,
-                "column": 1,
-                "program": "test-type-alias-call8.ets"
-              }
-            }
-          }
-        ],
         "body": [
           {
             "type": "MethodDefinition",

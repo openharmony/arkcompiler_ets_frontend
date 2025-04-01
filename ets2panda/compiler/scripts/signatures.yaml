@@ -66,9 +66,9 @@ defines:
   - name: ets.debug.export
     ref: DEBUG_EXPORT_ATTRIBUTE
     comment: ETS annotation type
-  - name: Module
-    ref: MODULE_ANNOTATION
-    comment: ETS annotation
+  - name: exported
+    ref: ANNOTATION_KEY_EXPORTED
+    comment: ETS annotation key
   - name: value
     ref: ANNOTATION_KEY_VALUE
     comment: ETS annotation key
@@ -98,6 +98,9 @@ defines:
     comment: Ets record
   - name: ets/annotation/Signature
     ref: ETS_ANNOTATION_SIGNATURE
+    comment: Ets record
+  - name: ets/annotation/Module
+    ref: ETS_ANNOTATION_MODULE
     comment: Ets record
   - name: ets/coroutine/Async
     ref: ETS_COROUTINE_ASYNC

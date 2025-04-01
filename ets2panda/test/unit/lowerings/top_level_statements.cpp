@@ -27,16 +27,12 @@ TEST_F(LoweringTest, TestTopLevelStmtsSyntheticModuleGlobalClass)
     CONTEXT(ES2PANDA_STATE_LOWERED, text)
     {
         const auto *const ast = GetAst();
-        auto *classDef = ast->FindChild(
-            [](ir::AstNode *child) { return child->IsClassDefinition() && child->AsClassDefinition()->IsGlobal(); });
+        [[maybe_unused]] auto *classDef = ast->FindChild([](ir::AstNode *child) {
+            return child->IsClassDefinition() &&
+                   (child->AsClassDefinition()->InternalName().Mutf8() == "dummy.ETSGLOBAL");
+        });
         ASSERT(classDef != nullptr);
-        bool foundModuleAnnotation = false;
-        for (auto *anno : classDef->AsClassDefinition()->Annotations()) {
-            if (anno->Expr()->AsIdentifier()->Name() == "Module") {
-                foundModuleAnnotation = true;
-            }
-        }
-        ASSERT_TRUE(foundModuleAnnotation);
+        ASSERT(classDef->AsClassDefinition()->IsGlobalInitialized());
     }
 }
 
@@ -51,18 +47,84 @@ TEST_F(LoweringTest, TestTopLevelStmtsSyntheticModuleClass)
     CONTEXT(ES2PANDA_STATE_LOWERED, text)
     {
         const auto *const ast = GetAst();
-        auto *classDef = ast->FindChild([](ir::AstNode *child) {
-            return child->IsClassDefinition() &&
-                   ((child->AsClassDefinition()->Modifiers() & ir::ClassDefinitionModifiers::CLASS_DECL) != 0U);
+        [[maybe_unused]] auto *classDef = ast->FindChild([](ir::AstNode *child) {
+            return child->IsClassDefinition() && (child->AsClassDefinition()->InternalName().Mutf8() == "dummy.X");
         });
         ASSERT(classDef != nullptr);
-        bool foundModuleAnnotation = false;
-        for (auto *anno : classDef->AsClassDefinition()->Annotations()) {
-            if (anno->Expr()->AsIdentifier()->Name() == "Module") {
-                foundModuleAnnotation = true;
-            }
+        ASSERT(classDef->AsClassDefinition()->IsNamespaceTransformed());
+    }
+}
+
+TEST_F(LoweringTest, TestTopLevelStmtsExportedClass)
+{
+    char const *text = R"(
+        export class A {}
+        class B {}
+    )";
+
+    CONTEXT(ES2PANDA_STATE_LOWERED, text)
+    {
+        const auto *const ast = GetAst();
+        auto *classDef = ast->FindChild([](ir::AstNode *child) {
+            return child->IsClassDefinition() && child->AsClassDefinition()->IsGlobalInitialized();
+        });
+        ASSERT_NE(classDef, nullptr);
+
+        const auto &exportedClasses = classDef->AsClassDefinition()->ExportedClasses();
+        ASSERT_EQ(exportedClasses.size(), 1);
+        ASSERT_TRUE(exportedClasses[0]->IsExported());
+        ASSERT_EQ(exportedClasses[0]->Definition()->InternalName().Mutf8(), "dummy.A");
+    }
+}
+
+TEST_F(LoweringTest, TestTopLevelStmtsExportedNamespace)
+{
+    char const *text = R"(
+        export namespace A {}
+        namespace B {}
+    )";
+
+    CONTEXT(ES2PANDA_STATE_LOWERED, text)
+    {
+        const auto *const ast = GetAst();
+        auto *classDef = ast->FindChild([](ir::AstNode *child) {
+            return child->IsClassDefinition() && child->AsClassDefinition()->IsGlobalInitialized();
+        });
+        ASSERT_NE(classDef, nullptr);
+
+        const auto &exportedClasses = classDef->AsClassDefinition()->ExportedClasses();
+        ASSERT_EQ(exportedClasses.size(), 1);
+        ASSERT_TRUE(exportedClasses[0]->IsExported());
+        ASSERT_EQ(exportedClasses[0]->Definition()->InternalName().Mutf8(), "dummy.A");
+    }
+}
+
+TEST_F(LoweringTest, TestTopLevelStmtsExportedNamespaceNested)
+{
+    char const *text = R"(
+        export namespace A {
+            export namespace B {}
+            namespace C {}
+            export class D {}
+            class E {}
         }
-        ASSERT_TRUE(foundModuleAnnotation);
+    )";
+
+    CONTEXT(ES2PANDA_STATE_LOWERED, text)
+    {
+        const auto *const ast = GetAst();
+        auto *classDef = ast->FindChild([](ir::AstNode *child) {
+            return child->IsClassDefinition() && child->AsClassDefinition()->IsNamespaceTransformed();
+        });
+        ASSERT(classDef != nullptr);
+
+        const auto &exportedClasses = classDef->AsClassDefinition()->ExportedClasses();
+        constexpr uint32_t EXPORTED_CLASSES_NUM = 2;
+        ASSERT_EQ(exportedClasses.size(), EXPORTED_CLASSES_NUM);
+        ASSERT_TRUE(exportedClasses[0]->IsExported());
+        ASSERT_TRUE(exportedClasses[1]->IsExported());
+        ASSERT_EQ(exportedClasses[0]->Definition()->InternalName().Mutf8(), "dummy.A.B");
+        ASSERT_EQ(exportedClasses[1]->Definition()->InternalName().Mutf8(), "dummy.A.D");
     }
 }
 

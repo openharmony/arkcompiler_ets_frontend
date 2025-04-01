@@ -137,6 +137,40 @@ void AsmTest::CheckRecordAnnotations(ark::pandasm::Program *program, const std::
     }
 }
 
+void AsmTest::CheckModuleAnnotation(ark::pandasm::Program *program, const std::string &recordName, bool isModule,
+                                    const std::vector<std::string> &expectedAnnotations)
+{
+    const auto &recordTable = program->recordTable;
+    ASSERT_FALSE(recordTable.empty()) << "No records found in the program.";
+    auto found = recordTable.find(recordName);
+    ASSERT_NE(found, recordTable.end());
+
+    auto annotations = found->second.metadata->GetAnnotations();
+    auto it = std::find_if(annotations.begin(), annotations.end(), [](const ark::pandasm::AnnotationData &annotation) {
+        return annotation.GetName() == std::string {ark::es2panda::compiler::Signatures::ETS_ANNOTATION_MODULE};
+    });
+    if (isModule) {
+        ASSERT_NE(it, annotations.end()) << recordName << " missing expected annotation: "
+                                         << ark::es2panda::compiler::Signatures::ETS_ANNOTATION_MODULE;
+    } else {
+        ASSERT_EQ(it, annotations.end()) << recordName << " has annotation: "
+                                         << ark::es2panda::compiler::Signatures::ETS_ANNOTATION_MODULE
+                                         << ", but shouldn't";
+        return;
+    }
+    ASSERT_EQ(it->GetElements().size(), 1);
+    const auto &element = it->GetElements()[0];
+    ASSERT_EQ(element.GetName(), std::string {ark::es2panda::compiler::Signatures::ANNOTATION_KEY_EXPORTED})
+        << recordName << "module annotation missing element "
+        << ark::es2panda::compiler::Signatures::ANNOTATION_KEY_EXPORTED;
+
+    for (const auto &val : element.GetValue()->GetAsArray()->GetValues()) {
+        auto name = val.GetValue<ark::pandasm::Type>().GetName();
+        auto foundExpected = std::find(expectedAnnotations.begin(), expectedAnnotations.end(), name);
+        ASSERT_NE(foundExpected, expectedAnnotations.end()) << "Value mismatch for " + name;
+    }
+}
+
 void AsmTest::CheckRecordWithoutAnnotations(ark::pandasm::Program *program, const std::string &recordName,
                                             bool isModule)
 {
