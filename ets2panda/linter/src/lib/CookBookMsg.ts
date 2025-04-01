@@ -264,7 +264,7 @@ cookBookTag[256] = '"@Styles" decorator is not supported (arkui-no-styles-decora
 cookBookTag[257] =
   '"@AnimatableExtend" decorator should be transformed to use receiver (arkui-animatableextend-use-receiver)';
 cookBookTag[258] = 'Data observation needs to add "@Observed" (arkui-data-observation)';
-cookBookTag[259] = 'ArkUI interface should be imported before using (akrui-modular-interface)';
+cookBookTag[259] = 'ArkUI interface should be imported before using (arkui-modular-interface)';
 cookBookTag[301] = 'Importing from "oh module" requires specifying full path (arkts-ohmurl-full-path)';
 cookBookTag[302] =
   'Class type is not compatible with "Object" parameter in interop call (arkts-interop-call-object-param)';

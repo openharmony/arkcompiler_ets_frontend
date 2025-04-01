@@ -29,9 +29,10 @@ import {
   ATTRIBUTE_SUFFIX,
   INSTANCE_IDENTIFIER,
   COMMON_METHOD_IDENTIFIER,
-  APPLY_STYLES_IDENTIFIER
-} from '../utils/consts/AutofixConstants';
-import { DecoratorName } from '../utils/consts/DecoratorName';
+  APPLY_STYLES_IDENTIFIER,
+  CustomDecoratorName,
+  ARKUI_PACKAGE_NAME
+} from '../utils/consts/ArkuiConstants';
 
 const UNDEFINED_NAME = 'undefined';
 
@@ -2303,7 +2304,7 @@ export class Autofixer {
     }
     const typeName = componentName + ATTRIBUTE_SUFFIX;
     interfacesNeedToImport.add(typeName);
-    interfacesNeedToImport.add(DecoratorName.Memo);
+    interfacesNeedToImport.add(CustomDecoratorName.Memo);
     const parameDecl = ts.factory.createParameterDeclaration(
       undefined,
       undefined,
@@ -2316,9 +2317,9 @@ export class Autofixer {
     const newFuncDecl = Autofixer.createFunctionDeclaration(funcDecl, undefined, parameDecl, returnType, newBlock);
     const newDecorators: ts.Decorator[] = [];
     if (preserveDecorator) {
-      newDecorators.push(ts.factory.createDecorator(ts.factory.createIdentifier(DecoratorName.AnimatableExtend)));
+      newDecorators.push(ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.AnimatableExtend)));
     }
-    newDecorators.push(ts.factory.createDecorator(ts.factory.createIdentifier(DecoratorName.Memo)));
+    newDecorators.push(ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Memo)));
     const text1 = this.printer.printList(
       ts.ListFormat.Decorators,
       ts.factory.createNodeArray(newDecorators),
@@ -2581,11 +2582,10 @@ export class Autofixer {
       const identifier = ts.factory.createIdentifier(interfaceName);
       importSpecifiers.push(ts.factory.createImportSpecifier(false, undefined, identifier));
     });
-    const moduleName = '@ohos.arkui.components';
     const importDeclaration = ts.factory.createImportDeclaration(
       undefined,
       ts.factory.createImportClause(false, undefined, ts.factory.createNamedImports(importSpecifiers)),
-      ts.factory.createStringLiteral(moduleName, true),
+      ts.factory.createStringLiteral(ARKUI_PACKAGE_NAME, true),
       undefined
     );
 
@@ -2630,9 +2630,9 @@ export class Autofixer {
     );
     const returnType = ts.factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword);
     const newFuncDecl = Autofixer.createFunctionDeclaration(funcDecl, undefined, parameDecl, returnType, newBlock);
-    const MemoDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(DecoratorName.Memo));
+    const MemoDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Memo));
     needImport.add(COMMON_METHOD_IDENTIFIER);
-    needImport.add(DecoratorName.Memo);
+    needImport.add(CustomDecoratorName.Memo);
     const text1 = this.printer.printNode(ts.EmitHint.Unspecified, MemoDecorator, funcDecl.getSourceFile());
     const text2 = this.printer.printNode(ts.EmitHint.Unspecified, newFuncDecl, funcDecl.getSourceFile());
     const text = text1 + '\n' + text2;
@@ -2676,9 +2676,9 @@ export class Autofixer {
       ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
       newBlock
     );
-    const MemoDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(DecoratorName.Memo));
+    const MemoDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Memo));
     needImport.add(COMMON_METHOD_IDENTIFIER);
-    needImport.add(DecoratorName.Memo);
+    needImport.add(CustomDecoratorName.Memo);
     const text1 = this.printer.printNode(ts.EmitHint.Unspecified, methodDecl.name, methodDecl.getSourceFile());
     const text2 = this.printer.printNode(
       ts.EmitHint.Unspecified,
@@ -2749,7 +2749,7 @@ export class Autofixer {
       stateValues.push(values);
     }
     needImport.add(COMMON_METHOD_IDENTIFIER);
-    needImport.add(DecoratorName.Memo);
+    needImport.add(CustomDecoratorName.Memo);
     const text = this.createPropertyText(stateParams, stateValues, stateStyles);
     return [{ start: object.getStart(), end: object.getEnd(), replacementText: text }];
   }
@@ -2776,7 +2776,7 @@ export class Autofixer {
     );
     const voidToken = ts.factory.createToken(ts.SyntaxKind.VoidKeyword);
     const arrowToken = ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken);
-    const MemoDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(DecoratorName.Memo));
+    const MemoDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Memo));
     const propertyTexts: string[] = [];
     for (let i = 0; i < blocks.length; i++) {
       const arrowFunc = ts.factory.createArrowFunction(
@@ -2809,7 +2809,7 @@ export class Autofixer {
       return undefined;
     }
 
-    const observedDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(DecoratorName.Observed));
+    const observedDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Observed));
     const sourceFile = classDecl.getSourceFile();
     const text = this.printer.printNode(ts.EmitHint.Unspecified, observedDecorator, sourceFile) + '\n';
     return [{ start: classDecl.getStart(), end: classDecl.getStart(), replacementText: text }];

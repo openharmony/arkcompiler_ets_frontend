@@ -20,3 +20,27 @@ export const INSTANCE_IDENTIFIER = 'instance';
 export const COMMON_METHOD_IDENTIFIER = 'CommonMethod';
 export const APPLY_STYLES_IDENTIFIER = 'applyStyles';
 export const STATE_STYLES = 'stateStyles';
+export const ARKUI_PACKAGE_NAME = '@kits.ArkUI';
+
+export enum CustomDecoratorName {
+  Extend = 'Extend',
+  Styles = 'Styles',
+  AnimatableExtend = 'AnimatableExtend',
+  Memo = 'Memo',
+  Observed = 'Observed'
+}
+
+export const observedDecoratorName: Set<string> = new Set([
+  'State',
+  'Prop',
+  'Link',
+  'Provide',
+  'Consume',
+  'LocalStorageProp',
+  'LocalStorageLink',
+  'StorageProp',
+  'StorageLink',
+  'Track'
+]);
+
+export const skipImportDecoratorName: Set<string> = new Set(['Extend', 'Styles', 'Sendable', 'Concurrent']);

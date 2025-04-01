@@ -1553,66 +1553,6 @@
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)",
             "severity": "ERROR"
-        },
-        {
-            "line": 427,
-            "column": 9,
-            "endLine": 427,
-            "endColumn": 15,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 428,
-            "column": 9,
-            "endLine": 428,
-            "endColumn": 15,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 429,
-            "column": 9,
-            "endLine": 429,
-            "endColumn": 16,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 480,
-            "column": 2,
-            "endLine": 480,
-            "endColumn": 10,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 621,
-            "column": 17,
-            "endLine": 621,
-            "endColumn": 20,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 622,
-            "column": 39,
-            "endLine": 622,
-            "endColumn": 44,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
         }
     ]
 }
