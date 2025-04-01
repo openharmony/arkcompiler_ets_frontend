@@ -43,3 +43,7 @@ warning:
 - name : IMPLICIT_UNBOXING_TO
   id: 8
   message: "Implicit Unboxing to {}{}."
+
+- name : ANNOTATION_UNUSED_GENERIC_ALIAS_WARN
+  id: 9
+  message: "Type alias generic parameter '{}' is not used in type annotation"

@@ -16,6 +16,7 @@
 
 #include "etsWarningAnalyzer.h"
 
+#include "generated/diagnostic.h"
 #include "parser/program/program.h"
 #include "util/options.h"
 #include "ir/expressions/binaryExpression.h"
@@ -166,6 +167,31 @@ void ETSWarningAnalyzer::CheckProhibitedTopLevelStatements(const ir::Statement *
         default:
             LogWarning(diagnostic::PROHIBIT_TOP_LEVEL_STATEMENTS, statement->Start());
             break;
+    }
+}
+
+void ETSWarningAnalyzer::ETSWarningAnnotationUnusedGenericAliasWarn(const ir::AstNode *node)
+{
+    if (!node->IsTSTypeAliasDeclaration()) {
+        node->Iterate([&](auto *childNode) { ETSWarningAnnotationUnusedGenericAliasWarn(childNode); });
+        return;
+    }
+
+    auto st = node->AsTSTypeAliasDeclaration();
+    for (auto *const param : st->TypeParams()->Params()) {
+        const auto *const res = st->TypeAnnotation()->FindChild([&param](const ir::AstNode *const astNode) {
+            if (!astNode->IsIdentifier()) {
+                return false;
+            }
+
+            return param->Name()->AsIdentifier()->Variable() == astNode->AsIdentifier()->Variable();
+        });
+
+        if (res == nullptr) {
+            util::DiagnosticMessageParams diagnosticParams = {param->Name()->Name()};
+            LogWarning(diagnostic::ANNOTATION_UNUSED_GENERIC_ALIAS_WARN, diagnosticParams, param->Start());
+            return;
+        }
     }
 }
 
