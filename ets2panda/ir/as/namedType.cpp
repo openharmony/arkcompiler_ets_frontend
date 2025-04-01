@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -44,6 +44,13 @@ void NamedType::TransformChildren(const NodeTransformer &cb, std::string_view co
             next_ = transformedNode->AsNamedType();
         }
     }
+
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void NamedType::Iterate(const NodeTraverser &cb) const
@@ -57,6 +64,9 @@ void NamedType::Iterate(const NodeTraverser &cb) const
     if (next_ != nullptr) {
         cb(next_);
     }
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 void NamedType::Dump(AstDumper *dumper) const
@@ -65,11 +75,15 @@ void NamedType::Dump(AstDumper *dumper) const
                  {"name", name_},
                  {"typeParameters", AstDumper::Optional(typeParams_)},
                  {"next", AstDumper::Optional(next_)},
-                 {"isNullable", nullable_}});
+                 {"isNullable", nullable_},
+                 {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void NamedType::Dump(SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("NamedType");
 }
 
@@ -88,8 +102,8 @@ checker::Type *NamedType::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *NamedType::Check(checker::ETSChecker *checker)
+checker::VerifiedType NamedType::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

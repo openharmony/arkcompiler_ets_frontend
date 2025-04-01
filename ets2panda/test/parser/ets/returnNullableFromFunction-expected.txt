@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 7
+              "column": 7,
+              "program": "returnNullableFromFunction.ets"
             },
             "end": {
               "line": 16,
-              "column": 8
+              "column": 8,
+              "program": "returnNullableFromFunction.ets"
             }
           }
         },
@@ -30,12 +32,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "returnNullableFromFunction.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "returnNullableFromFunction.ets"
                 }
               }
             },
@@ -53,12 +57,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "returnNullableFromFunction.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "returnNullableFromFunction.ets"
                     }
                   }
                 },
@@ -71,34 +77,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "returnNullableFromFunction.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "returnNullableFromFunction.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "returnNullableFromFunction.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "returnNullableFromFunction.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "returnNullableFromFunction.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "returnNullableFromFunction.ets"
                 }
               }
             },
@@ -106,12 +118,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 16,
-                "column": 11
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 16,
-                "column": 11
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -119,22 +133,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 9
+            "column": 9,
+            "program": "returnNullableFromFunction.ets"
           },
           "end": {
-            "line": 16,
-            "column": 11
+            "line": 18,
+            "column": 9,
+            "program": "returnNullableFromFunction.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "returnNullableFromFunction.ets"
         },
         "end": {
-          "line": 16,
-          "column": 11
+          "line": 18,
+          "column": 9,
+          "program": "returnNullableFromFunction.ets"
         }
       }
     },
@@ -148,17 +166,159 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "returnNullableFromFunction.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "returnNullableFromFunction.ets"
             }
           }
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "returnNullableFromFunction.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "returnNullableFromFunction.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "returnNullableFromFunction.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "returnNullableFromFunction.ets"
+              }
+            }
+          }
+        ],
         "body": [
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "returnNullableFromFunction.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "returnNullableFromFunction.ets"
+              }
+            }
+          },
           {
             "type": "MethodDefinition",
             "key": {
@@ -168,11 +328,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -192,11 +354,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -210,33 +374,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -245,11 +415,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "returnNullableFromFunction.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "returnNullableFromFunction.ets"
               }
             }
           },
@@ -262,11 +434,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 10
+                  "column": 10,
+                  "program": "returnNullableFromFunction.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 13
+                  "column": 13,
+                  "program": "returnNullableFromFunction.ets"
                 }
               }
             },
@@ -286,11 +460,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 10
+                      "column": 10,
+                      "program": "returnNullableFromFunction.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 13
+                      "column": 13,
+                      "program": "returnNullableFromFunction.ets"
                     }
                   }
                 },
@@ -309,33 +485,39 @@
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 18
+                          "column": 18,
+                          "program": "returnNullableFromFunction.ets"
                         },
                         "end": {
                           "line": 18,
-                          "column": 19
+                          "column": 19,
+                          "program": "returnNullableFromFunction.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 18
+                        "column": 18,
+                        "program": "returnNullableFromFunction.ets"
                       },
                       "end": {
                         "line": 18,
-                        "column": 21
+                        "column": 21,
+                        "program": "returnNullableFromFunction.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 18
+                      "column": 18,
+                      "program": "returnNullableFromFunction.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 21
+                      "column": 21,
+                      "program": "returnNullableFromFunction.ets"
                     }
                   }
                 },
@@ -364,33 +546,39 @@
                                       "loc": {
                                         "start": {
                                           "line": 19,
-                                          "column": 14
+                                          "column": 14,
+                                          "program": "returnNullableFromFunction.ets"
                                         },
                                         "end": {
                                           "line": 19,
-                                          "column": 15
+                                          "column": 15,
+                                          "program": "returnNullableFromFunction.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 19,
-                                        "column": 14
+                                        "column": 14,
+                                        "program": "returnNullableFromFunction.ets"
                                       },
                                       "end": {
                                         "line": 19,
-                                        "column": 17
+                                        "column": 17,
+                                        "program": "returnNullableFromFunction.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 19,
-                                      "column": 14
+                                      "column": 14,
+                                      "program": "returnNullableFromFunction.ets"
                                     },
                                     "end": {
                                       "line": 19,
-                                      "column": 17
+                                      "column": 17,
+                                      "program": "returnNullableFromFunction.ets"
                                     }
                                   }
                                 },
@@ -399,11 +587,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 19,
-                                      "column": 18
+                                      "column": 18,
+                                      "program": "returnNullableFromFunction.ets"
                                     },
                                     "end": {
                                       "line": 19,
-                                      "column": 22
+                                      "column": 22,
+                                      "program": "returnNullableFromFunction.ets"
                                     }
                                   }
                                 }
@@ -411,11 +601,13 @@
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 14
+                                  "column": 14,
+                                  "program": "returnNullableFromFunction.ets"
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 22
+                                  "column": 22,
+                                  "program": "returnNullableFromFunction.ets"
                                 }
                               }
                             },
@@ -423,11 +615,13 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 9
+                                "column": 9,
+                                "program": "returnNullableFromFunction.ets"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 11
+                                "column": 11,
+                                "program": "returnNullableFromFunction.ets"
                               }
                             }
                           },
@@ -444,33 +638,39 @@
                                   "loc": {
                                     "start": {
                                       "line": 19,
-                                      "column": 29
+                                      "column": 29,
+                                      "program": "returnNullableFromFunction.ets"
                                     },
                                     "end": {
                                       "line": 19,
-                                      "column": 30
+                                      "column": 30,
+                                      "program": "returnNullableFromFunction.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 19,
-                                    "column": 29
+                                    "column": 29,
+                                    "program": "returnNullableFromFunction.ets"
                                   },
                                   "end": {
                                     "line": 19,
-                                    "column": 31
+                                    "column": 31,
+                                    "program": "returnNullableFromFunction.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 29
+                                  "column": 29,
+                                  "program": "returnNullableFromFunction.ets"
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 31
+                                  "column": 31,
+                                  "program": "returnNullableFromFunction.ets"
                                 }
                               }
                             },
@@ -478,22 +678,26 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 25
+                                "column": 25,
+                                "program": "returnNullableFromFunction.ets"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 33
+                                "column": 33,
+                                "program": "returnNullableFromFunction.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 9
+                              "column": 9,
+                              "program": "returnNullableFromFunction.ets"
                             },
                             "end": {
                               "line": 19,
-                              "column": 33
+                              "column": 33,
+                              "program": "returnNullableFromFunction.ets"
                             }
                           }
                         }
@@ -502,11 +706,13 @@
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 5
+                          "column": 5,
+                          "program": "returnNullableFromFunction.ets"
                         },
                         "end": {
                           "line": 19,
-                          "column": 33
+                          "column": 33,
+                          "program": "returnNullableFromFunction.ets"
                         }
                       }
                     },
@@ -519,22 +725,26 @@
                         "loc": {
                           "start": {
                             "line": 21,
-                            "column": 12
+                            "column": 12,
+                            "program": "returnNullableFromFunction.ets"
                           },
                           "end": {
                             "line": 21,
-                            "column": 14
+                            "column": 14,
+                            "program": "returnNullableFromFunction.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 5
+                          "column": 5,
+                          "program": "returnNullableFromFunction.ets"
                         },
                         "end": {
                           "line": 21,
-                          "column": 15
+                          "column": 15,
+                          "program": "returnNullableFromFunction.ets"
                         }
                       }
                     }
@@ -542,33 +752,39 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 20
+                      "column": 20,
+                      "program": "returnNullableFromFunction.ets"
                     },
                     "end": {
                       "line": 22,
-                      "column": 2
+                      "column": 2,
+                      "program": "returnNullableFromFunction.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 10
+                    "column": 10,
+                    "program": "returnNullableFromFunction.ets"
                   },
                   "end": {
                     "line": 22,
-                    "column": 2
+                    "column": 2,
+                    "program": "returnNullableFromFunction.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 10
+                  "column": 10,
+                  "program": "returnNullableFromFunction.ets"
                 },
                 "end": {
                   "line": 22,
-                  "column": 2
+                  "column": 2,
+                  "program": "returnNullableFromFunction.ets"
                 }
               }
             },
@@ -577,11 +793,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 1
+                "column": 1,
+                "program": "returnNullableFromFunction.ets"
               },
               "end": {
                 "line": 22,
-                "column": 2
+                "column": 2,
+                "program": "returnNullableFromFunction.ets"
               }
             }
           }
@@ -589,22 +807,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "returnNullableFromFunction.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "returnNullableFromFunction.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "returnNullableFromFunction.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "returnNullableFromFunction.ets"
         }
       }
     }
@@ -612,11 +834,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "returnNullableFromFunction.ets"
     },
     "end": {
       "line": 23,
-      "column": 1
+      "column": 1,
+      "program": "returnNullableFromFunction.ets"
     }
   }
 }

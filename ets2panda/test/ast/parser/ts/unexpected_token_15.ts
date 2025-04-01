@@ -15,7 +15,7 @@
 
 declare module "foo"
 
-/* @@? 22:1 Error SyntaxError: Unexpected token, expected: ';'.  */
+/* @@? 22:1 Error SyntaxError: Unexpected token, expected ';'.  */
 /* @@? 1:1 Node {
     "type": "Program"
 }  */

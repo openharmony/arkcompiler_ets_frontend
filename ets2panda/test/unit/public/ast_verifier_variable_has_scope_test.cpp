@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,15 +18,11 @@
 
 #include <gtest/gtest.h>
 
-using ark::es2panda::compiler::ast_verifier::ASTVerifier;
-using ark::es2panda::compiler::ast_verifier::InvariantNameSet;
-using ark::es2panda::ir::AstNode;
+using ark::es2panda::compiler::ast_verifier::VariableHasScope;
 
 namespace {
 TEST_F(ASTVerifierTest, ParametersInAsyncFunction)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         async function bar(flag: boolean): Promise<double> {
             if (flag) {
@@ -37,31 +33,21 @@ TEST_F(ASTVerifierTest, ParametersInAsyncFunction)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
-
-    InvariantNameSet checks;
-    checks.insert("VariableHasScopeForAll");
-    const auto &messages = verifier.Verify(ast, checks);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<VariableHasScope>());
+    }
 }
 
 TEST_F(ASTVerifierTest, TestUnions)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         function assert_ccexc(f: () => void) {
             try {
                 f();
-                assert false : "exception expected";
+                assertTrue(false, "exception expected");
             } catch (e) {
-                assert(e instanceof ClassCastError);
+                assertTrue(e instanceof ClassCastError);
             }
         }
 
@@ -76,24 +62,14 @@ TEST_F(ASTVerifierTest, TestUnions)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
-
-    InvariantNameSet checks;
-    checks.insert("VariableHasScopeForAll");
-    const auto &messages = verifier.Verify(ast, checks);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<VariableHasScope>());
+    }
 }
 
 TEST_F(ASTVerifierTest, LambdasHaveCorrectScope)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         type BenchmarkFunc = () => void;
 
@@ -105,24 +81,14 @@ TEST_F(ASTVerifierTest, LambdasHaveCorrectScope)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
-
-    InvariantNameSet checks;
-    checks.insert("VariableHasScopeForAll");
-    const auto &messages = verifier.Verify(ast, checks);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<VariableHasScope>());
+    }
 }
 
 TEST_F(ASTVerifierTest, AsyncLambda1)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         let fs: ((p: int) => int)[]
         function foo(i: int): ((p: int) => int) {
@@ -142,24 +108,14 @@ TEST_F(ASTVerifierTest, AsyncLambda1)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
-
-    InvariantNameSet checks;
-    checks.insert("VariableHasScopeForAll");
-    const auto &messages = verifier.Verify(ast, checks);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<VariableHasScope>());
+    }
 }
 
 TEST_F(ASTVerifierTest, AsyncLambda2)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         let global: int;
         async function func(param: int): Promise<String | null> {
@@ -176,18 +132,10 @@ TEST_F(ASTVerifierTest, AsyncLambda2)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_LOWERED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
-
-    InvariantNameSet checks;
-    checks.insert("VariableHasScopeForAll");
-    const auto &messages = verifier.Verify(ast, checks);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_LOWERED, text)
+    {
+        EXPECT_TRUE(Verify<VariableHasScope>());
+    }
 }
 
 }  // namespace

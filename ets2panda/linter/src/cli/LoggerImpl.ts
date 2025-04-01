@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,31 +14,31 @@
  */
 
 import type { LoggerInterface } from '../lib/Logger';
-import Logger from '../utils/logger';
+import { ConsoleLogger } from './ConsoleLogger';
 
 export class LoggerImpl implements LoggerInterface {
   trace(message: string): void {
     void this;
-    Logger.getLogger().trace(message);
+    ConsoleLogger.getLogger().trace(message);
   }
 
   debug(message: string): void {
     void this;
-    Logger.getLogger().debug(message);
+    ConsoleLogger.getLogger().debug(message);
   }
 
   info(message: string): void {
     void this;
-    Logger.getLogger().info(message);
+    ConsoleLogger.getLogger().info(message);
   }
 
   warn(message: string): void {
     void this;
-    Logger.getLogger().warn(message);
+    ConsoleLogger.getLogger().warn(message);
   }
 
   error(message: string): void {
     void this;
-    Logger.getLogger().error(message);
+    ConsoleLogger.getLogger().error(message);
   }
 }

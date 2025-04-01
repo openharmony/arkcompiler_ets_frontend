@@ -11,16 +11,52 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
             }
           }
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",
@@ -31,11 +67,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +93,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +113,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +154,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
               }
             }
           },
@@ -125,11 +173,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 19
+                  "column": 19,
+                  "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                 }
               }
             },
@@ -149,11 +199,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 10
+                      "column": 10,
+                      "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 19
+                      "column": 19,
+                      "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                     }
                   }
                 },
@@ -166,11 +218,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 23
+                      "column": 23,
+                      "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 27
+                      "column": 27,
+                      "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                     }
                   }
                 },
@@ -180,33 +234,39 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 28
+                      "column": 28,
+                      "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 30
+                      "column": 30,
+                      "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 10
+                    "column": 10,
+                    "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                   },
                   "end": {
                     "line": 16,
-                    "column": 30
+                    "column": 30,
+                    "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 30
+                  "column": 30,
+                  "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                 }
               }
             },
@@ -215,11 +275,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 1
+                "column": 1,
+                "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
               },
               "end": {
                 "line": 16,
-                "column": 30
+                "column": 30,
+                "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
               }
             }
           },
@@ -232,11 +294,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 10
+                  "column": 10,
+                  "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 14
+                  "column": 14,
+                  "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                 }
               }
             },
@@ -256,11 +320,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 10
+                      "column": 10,
+                      "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 14
+                      "column": 14,
+                      "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                     }
                   }
                 },
@@ -273,11 +339,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 18
+                      "column": 18,
+                      "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 22
+                      "column": 22,
+                      "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                     }
                   }
                 },
@@ -300,22 +368,26 @@
                                 "loc": {
                                   "start": {
                                     "line": 19,
-                                    "column": 22
+                                    "column": 22,
+                                    "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                                   },
                                   "end": {
                                     "line": 19,
-                                    "column": 26
+                                    "column": 26,
+                                    "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 16
+                                  "column": 16,
+                                  "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 26
+                                  "column": 26,
+                                  "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                                 }
                               }
                             },
@@ -323,11 +395,13 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 9
+                                "column": 9,
+                                "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 14
+                                "column": 14,
+                                "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                               }
                             }
                           },
@@ -345,11 +419,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 19,
-                                    "column": 33
+                                    "column": 33,
+                                    "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                                   },
                                   "end": {
                                     "line": 19,
-                                    "column": 37
+                                    "column": 37,
+                                    "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                                   }
                                 }
                               },
@@ -367,11 +443,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 19,
-                                            "column": 41
+                                            "column": 41,
+                                            "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                                           },
                                           "end": {
                                             "line": 19,
-                                            "column": 50
+                                            "column": 50,
+                                            "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                                           }
                                         }
                                       },
@@ -380,22 +458,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 19,
-                                          "column": 41
+                                          "column": 41,
+                                          "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                                         },
                                         "end": {
                                           "line": 19,
-                                          "column": 52
+                                          "column": 52,
+                                          "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 1,
-                                        "column": 1
+                                        "column": 1,
+                                        "program": null
                                       },
                                       "end": {
                                         "line": 1,
-                                        "column": 1
+                                        "column": 1,
+                                        "program": null
                                       }
                                     }
                                   }
@@ -403,44 +485,52 @@
                                 "loc": {
                                   "start": {
                                     "line": 1,
-                                    "column": 1
+                                    "column": 1,
+                                    "program": null
                                   },
                                   "end": {
                                     "line": 1,
-                                    "column": 1
+                                    "column": 1,
+                                    "program": null
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 29
+                                  "column": 29,
+                                  "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 52
+                                  "column": 52,
+                                  "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 29
+                                "column": 29,
+                                "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 52
+                                "column": 52,
+                                "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 9
+                              "column": 9,
+                              "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                             },
                             "end": {
                               "line": 19,
-                              "column": 52
+                              "column": 52,
+                              "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                             }
                           }
                         }
@@ -449,11 +539,13 @@
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 5
+                          "column": 5,
+                          "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                         },
                         "end": {
                           "line": 19,
-                          "column": 53
+                          "column": 53,
+                          "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                         }
                       }
                     },
@@ -468,11 +560,13 @@
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 5
+                              "column": 5,
+                              "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                             },
                             "end": {
                               "line": 20,
-                              "column": 10
+                              "column": 10,
+                              "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                             }
                           }
                         },
@@ -481,22 +575,26 @@
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 5
+                            "column": 5,
+                            "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                           },
                           "end": {
                             "line": 20,
-                            "column": 12
+                            "column": 12,
+                            "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 5
+                          "column": 5,
+                          "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                         },
                         "end": {
                           "line": 20,
-                          "column": 13
+                          "column": 13,
+                          "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                         }
                       }
                     }
@@ -504,33 +602,39 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 23
+                      "column": 23,
+                      "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                     },
                     "end": {
                       "line": 21,
-                      "column": 2
+                      "column": 2,
+                      "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 10
+                    "column": 10,
+                    "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                   },
                   "end": {
                     "line": 21,
-                    "column": 2
+                    "column": 2,
+                    "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 10
+                  "column": 10,
+                  "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                 },
                 "end": {
                   "line": 21,
-                  "column": 2
+                  "column": 2,
+                  "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
                 }
               }
             },
@@ -539,11 +643,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 1
+                "column": 1,
+                "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
               },
               "end": {
                 "line": 21,
-                "column": 2
+                "column": 2,
+                "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
               }
             }
           }
@@ -551,22 +657,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
         }
       }
     }
@@ -574,11 +684,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
     },
     "end": {
       "line": 22,
-      "column": 1
+      "column": 1,
+      "program": "lambdaExpressionWithoutBlockStatementCallAVoidFunction.ets"
     }
   }
 }

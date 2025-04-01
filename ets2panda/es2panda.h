@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,25 +16,27 @@
 #ifndef ES2PANDA_PUBLIC_H
 #define ES2PANDA_PUBLIC_H
 
-#include "macros.h"
-#include "util/arktsconfig.h"
+#include "util/es2pandaMacros.h"
 #include "util/plugin.h"
-#include "util/ustring.h"
-
-#include <string>
-#include <functional>
-#include <memory>
-#include <unordered_set>
+#include "util/diagnostic.h"
+#include "generated/options.h"
+#include "util/language.h"
 
 namespace ark::pandasm {
 struct Program;
 }  // namespace ark::pandasm
 
 namespace ark::es2panda {
+using ETSWarnings = util::gen::ets_warnings::Enum;
+using EvalMode = util::gen::eval_mode::Enum;
+using ScriptExtension = util::gen::extension::Enum;
 
 constexpr std::string_view ES2PANDA_VERSION = "0.1";
+constexpr auto COMPILER_SIZE = sizeof(size_t) <= 4 ? 2_GB : 32_GB;
+
 namespace util {
 class Options;
+class DiagnosticEngine;
 }  // namespace util
 namespace parser {
 class ParserImpl;
@@ -47,14 +49,6 @@ class CompilerImpl;
 namespace varbinder {
 class VarBinder;
 }  // namespace varbinder
-
-enum class ScriptExtension {
-    JS,
-    TS,
-    AS,
-    ETS,
-    INVALID,
-};
 
 enum class CompilationMode {
     GEN_STD_LIB,
@@ -74,15 +68,14 @@ inline Language ToLanguage(ScriptExtension ext)
         case ScriptExtension::ETS:
             return Language(Language::Id::ETS);
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
-    UNREACHABLE();
 }
 
 struct SourceFile {
     SourceFile(std::string_view fn, std::string_view s);
     SourceFile(std::string_view fn, std::string_view s, bool m);
-    SourceFile(std::string_view fn, std::string_view s, std::string_view rp, bool m);
+    SourceFile(std::string_view fn, std::string_view s, std::string_view rp, bool m, bool d);
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     std::string_view filePath {};
@@ -90,155 +83,16 @@ struct SourceFile {
     std::string_view source {};
     std::string_view resolvedPath {};
     bool isModule {};
+    // NOTE(dkofanov): Should be aligned with 'Program::moduleInfo_'.
+    bool isDeclForDynamicStaticInterop {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
-enum ETSWarnings {
-    NONE,
-    IMPLICIT_BOXING_UNBOXING,
-    PROHIBIT_TOP_LEVEL_STATEMENTS,
-    BOOST_EQUALITY_STATEMENT,
-    REMOVE_LAMBDA,
-    SUGGEST_FINAL,
-    REMOVE_ASYNC_FUNCTIONS,
-};
-
-struct CompilerOptions {
-    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    bool isDebug {};
-    bool isEtsModule {};
-    bool isEval {};
-    bool isDirectEval {};
-    bool isFunctionEval {};
-    bool dumpAst {};
-    bool opDumpAstOnlySilent {};
-    bool dumpCheckedAst {};
-    bool dumpAsm {};
-    bool dumpDebugInfo {};
-    bool parseOnly {};
-    bool verifierAllChecks {};
-    bool verifierFullProgram {};
-    bool debuggerEvalMode {};
-    uint64_t debuggerEvalLine {};
-    std::string debuggerEvalSource {};
-    std::string stdLib {};
-    std::vector<std::string> plugins {};
-    std::vector<std::string> debuggerEvalPandaFiles {};
-    std::unordered_set<std::string> skipPhases {};
-    std::unordered_set<std::string> verifierWarnings {};
-    std::unordered_set<std::string> verifierErrors {};
-    std::unordered_set<std::string> dumpBeforePhases {};
-    std::unordered_set<std::string> dumpEtsSrcBeforePhases {};
-    std::string exitBeforePhase {};
-    std::unordered_set<std::string> dumpAfterPhases {};
-    std::unordered_set<std::string> dumpEtsSrcAfterPhases {};
-    std::string exitAfterPhase {};
-    std::shared_ptr<ArkTsConfig> arktsConfig {};
-    CompilationMode compilationMode {};
-    // NOLINTEND(misc-non-private-member-variables-in-classes)
-
-    // ETS Warning Groups
-    bool etsEnableAll {};          // Enable all ETS-warnings for System ArkTS
-    bool etsSubsetWarnings {};     // Enable only ETS-warnings that keep you in subset
-    bool etsNonsubsetWarnings {};  // Enable only ETS-warnings that do not keep you in subset
-    bool etsHasWarnings = false;
-
-    // Subset ETS-Warnings
-    bool etsProhibitTopLevelStatements {};
-    bool etsBoostEqualityStatement {};
-    bool etsRemoveLambda {};
-    bool etsImplicitBoxingUnboxing {};
-
-    // Non-subset ETS-Warnings
-    bool etsSuggestFinal {};
-    bool etsRemoveAsync {};
-
-    bool etsWerror {};  // Treat all enabled ETS-warnings as errors
-    std::vector<ETSWarnings> etsWarningCollection = {};
-};
-
-enum class ErrorType {
-    INVALID,
-    GENERIC,
-    SYNTAX,
-    TYPE,
-    ETS_WARNING,
-};
-
-class Error : public std::exception {
-public:
-    Error() noexcept = default;
-    explicit Error(ErrorType type, std::string_view file, std::string_view message) noexcept
-        : type_(type), file_(file), message_(message)
-    {
-    }
-    explicit Error(ErrorType type, std::string_view file, std::string_view message, size_t line, size_t column) noexcept
-        : type_(type), file_(file), message_(message), line_(line), col_(column)
-    {
-    }
-    ~Error() override = default;
-    DEFAULT_COPY_SEMANTIC(Error);
-    DEFAULT_MOVE_SEMANTIC(Error);
-
-    ErrorType Type() const noexcept
-    {
-        return type_;
-    }
-
-    const char *TypeString() const noexcept
-    {
-        switch (type_) {
-            case ErrorType::SYNTAX:
-                return "SyntaxError";
-            case ErrorType::TYPE:
-                return "TypeError";
-            case ErrorType::ETS_WARNING:
-                return "System ArkTS: warning treated as error.";
-            default:
-                break;
-        }
-
-        return "Error";
-    }
-
-    const char *what() const noexcept override
-    {
-        return message_.c_str();
-    }
-
-    int ErrorCode() const noexcept
-    {
-        return errorCode_;
-    }
-
-    const std::string &Message() const noexcept
-    {
-        return message_;
-    }
-
-    const std::string &File() const noexcept
-    {
-        return file_;
-    }
-
-    size_t Line() const
-    {
-        return line_;
-    }
-
-    size_t Col() const
-    {
-        return col_;
-    }
-
-private:
-    ErrorType type_ {ErrorType::INVALID};
-    std::string file_;
-    std::string message_;
-    size_t line_ {};
-    size_t col_ {};
-    int errorCode_ {1};
-};
+// NOLINTBEGIN(modernize-avoid-c-arrays)
+inline static constexpr char const ERROR_LITERAL[] = "*ERROR_LITERAL*";
+inline static constexpr char const ERROR_TYPE[] = "*ERROR_TYPE*";
+inline static constexpr char const INVALID_EXPRESSION[] = "...";
+// NOLINTEND(modernize-avoid-c-arrays)
 
 class Compiler {
 public:
@@ -249,15 +103,12 @@ public:
     NO_COPY_SEMANTIC(Compiler);
     NO_MOVE_SEMANTIC(Compiler);
 
-    pandasm::Program *Compile(const SourceFile &input, const util::Options &options, uint32_t parseStatus = 0);
+    pandasm::Program *Compile(const SourceFile &input, const util::Options &options,
+                              util::DiagnosticEngine &diagnosticEngine, uint32_t parseStatus = 0);
 
     static void DumpAsm(const pandasm::Program *prog);
 
-    // This is used as a _different_ channel of error reporting than GetError().
-    // If this is true, the errors in question have already been reported to the user.
-    bool IsAnyError() const noexcept;
-
-    const Error &GetError() const noexcept
+    const util::ThrowableDiagnostic &GetError() const noexcept
     {
         return error_;
     }
@@ -270,11 +121,15 @@ public:
     }
 
 private:
-    std::vector<util::Plugin> const plugins_;
-    compiler::CompilerImpl *compiler_;
-    Error error_;
-    ScriptExtension ext_;
+    std::vector<util::Plugin> const plugins_ {};
+    compiler::CompilerImpl *compiler_ {};
+    util::ThrowableDiagnostic error_ {};
+    ScriptExtension ext_ {};
 };
+
+// g_diagnosticEngine used only for flush diagnostic before unexpected process termination:
+// - inside SIGSEGV handler
+extern util::DiagnosticEngine *g_diagnosticEngine;
 }  // namespace ark::es2panda
 
 #endif

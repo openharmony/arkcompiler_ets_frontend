@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -38,7 +38,7 @@ ArenaVector<ir::TypeNode *> GetFunctionParameters(checker::ETSChecker *checker, 
     mda.EnumerateTypesInProto(
         [checker, &parameters, &pf = std::as_const(pf)](panda_file::Type type, panda_file::File::EntityId classId) {
             auto *typeNode = helpers::PandaTypeToTypeNode(pf, type, classId, checker);
-            ASSERT(typeNode);
+            ES2PANDA_ASSERT(typeNode);
             parameters.push_back(typeNode);
         },
         true);  // true -- skip `this` parameter
@@ -48,7 +48,7 @@ ArenaVector<ir::TypeNode *> GetFunctionParameters(checker::ETSChecker *checker, 
 
 ir::ReturnStatement *CreateTypedReturnStatement(checker::ETSChecker *checker, ir::TypeNode *type)
 {
-    ASSERT(type);
+    ES2PANDA_ASSERT(type);
 
     if (type->IsETSPrimitiveType() && type->AsETSPrimitiveType()->GetPrimitiveType() == ir::PrimitiveType::VOID) {
         return checker->AllocNode<ir::ReturnStatement>();
@@ -114,15 +114,15 @@ ir::AstNode *MethodBuilder::Build() &&
 void MethodBuilder::CollectParametersAndReturnType()
 {
     auto parameters = GetFunctionParameters(checker_, mda_);
-    auto *checker = checker_->Allocator();
+    auto *allocator = checker_->Allocator();
 
     // Start from 1, because 0 is return type
     for (size_t idx = 1U; idx < parameters.size(); ++idx) {
-        util::UString paramName(GetFieldName(idx), checker);
+        util::UString paramName(GetFieldName(idx), allocator);
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *paramIdent = checker_->AllocNode<ir::Identifier>(paramName.View(), parameters[idx], checker);
+        auto *paramIdent = checker_->AllocNode<ir::Identifier>(paramName.View(), parameters[idx], allocator);
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *param = checker_->AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr);
+        auto *param = checker_->AllocNode<ir::ETSParameterExpression>(paramIdent, false, allocator);
         params_.push_back(param);
     }
 

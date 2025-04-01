@@ -17,27 +17,21 @@
 #include <algorithm>
 #include "macros.h"
 
-#include "test/unit/node_creator.h"
+#include "test/utils/node_creator.h"
+#include "test/utils/scope_init_test.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "varbinder/tsBinding.h"
 #include "varbinder/ETSBinder.h"
 
 namespace ark::es2panda {
 
-class ScopesInitPhaseTest : public testing::Test {
+class ScopesInitPhaseTest : public test::utils::ScopeInitTest {
 public:
     ~ScopesInitPhaseTest() override = default;
 
     ScopesInitPhaseTest()
         : allocator_(std::make_unique<ArenaAllocator>(SpaceType::SPACE_TYPE_COMPILER)), nodeGen_(allocator_.get())
     {
-    }
-
-    static void SetUpTestCase()
-    {
-        constexpr auto COMPILER_SIZE = operator""_MB(256ULL);
-        mem::MemConfig::Initialize(0, 0, COMPILER_SIZE, 0, 0, 0);
-        PoolManager::Initialize();
     }
 
     ArenaAllocator *Allocator()
@@ -48,22 +42,6 @@ public:
     gtests::NodeGenerator &NodeGen()
     {
         return nodeGen_;
-    }
-
-    /*
-     * Shortcut to convert single elemnt block expression body to it's name
-     * Example: { let x; } => x
-     */
-    static ir::Identifier *BodyToFirstName(ir::Statement *body)
-    {
-        return body->AsBlockStatement()
-            ->Statements()
-            .front()
-            ->AsVariableDeclaration()
-            ->Declarators()
-            .front()
-            ->Id()
-            ->AsIdentifier();
     }
 
     NO_COPY_SEMANTIC(ScopesInitPhaseTest);

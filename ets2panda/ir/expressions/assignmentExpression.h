@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,7 @@
 #define ES2PANDA_IR_EXPRESSION_ASSIGNMENT_EXPRESSION_H
 
 #include "ir/expression.h"
-#include "lexer/token/tokenType.h"
+#include "generated/tokenType.h"
 namespace ark::es2panda::checker {
 class ETSAnalyzer;
 }  // namespace ark::es2panda::checker
@@ -76,6 +76,15 @@ public:
 
         if (right_ != nullptr) {
             right_->SetParent(this);
+        }
+    }
+
+    void SetLeft(Expression *const expr) noexcept
+    {
+        left_ = expr;
+
+        if (left_ != nullptr) {
+            left_->SetParent(this);
         }
     }
 
@@ -145,11 +154,18 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     void CompilePattern(compiler::PandaGen *pg) const;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {
         v->Accept(this);
+    }
+
+    void CleanUp() override
+    {
+        AstNode::CleanUp();
+        target_ = nullptr;
+        operationType_ = nullptr;
     }
 
 protected:

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,49 +14,6 @@
  */
 
 #include "varbinder.h"
-#include "varbinder/privateBinding.h"
-#include "parser/program/program.h"
-#include "util/helpers.h"
-#include "varbinder/scope.h"
-#include "varbinder/tsBinding.h"
-#include "es2panda.h"
-#include "ir/astNode.h"
-#include "ir/base/catchClause.h"
-#include "ir/base/classDefinition.h"
-#include "ir/base/classProperty.h"
-#include "ir/base/classStaticBlock.h"
-#include "ir/base/methodDefinition.h"
-#include "ir/base/property.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/base/spreadElement.h"
-#include "ir/expressions/arrayExpression.h"
-#include "ir/expressions/assignmentExpression.h"
-#include "ir/expressions/blockExpression.h"
-#include "ir/expressions/memberExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/objectExpression.h"
-#include "ir/statements/blockStatement.h"
-#include "ir/statements/doWhileStatement.h"
-#include "ir/statements/forInStatement.h"
-#include "ir/statements/forOfStatement.h"
-#include "ir/statements/forUpdateStatement.h"
-#include "ir/statements/ifStatement.h"
-#include "ir/statements/switchStatement.h"
-#include "ir/statements/variableDeclaration.h"
-#include "ir/statements/variableDeclarator.h"
-#include "ir/statements/whileStatement.h"
-#include "ir/module/exportNamedDeclaration.h"
-#include "ir/module/importDeclaration.h"
-#include "ir/ts/tsFunctionType.h"
-#include "ir/ts/tsConstructorType.h"
-#include "ir/ts/tsTypeParameterDeclaration.h"
-#include "ir/ts/tsTypeAliasDeclaration.h"
-#include "ir/ts/tsTypeReference.h"
-#include "ir/ts/tsInterfaceDeclaration.h"
-#include "ir/ets/etsNewClassInstanceExpression.h"
-#include "ir/ets/etsTypeReference.h"
-#include "ir/base/tsSignatureDeclaration.h"
-#include "ir/base/tsMethodSignature.h"
 #include "public/public.h"
 
 namespace ark::es2panda::varbinder {
@@ -72,74 +29,64 @@ void VarBinder::InitTopScope()
     varScope_ = topScope_;
 }
 
-std::tuple<ParameterDecl *, Variable *> VarBinder::AddParamDecl(ir::AstNode *param)
+Variable *VarBinder::AddParamDecl(ir::Expression *param)
 {
-    ASSERT(scope_->IsFunctionParamScope() || scope_->IsCatchParamScope());
-    auto [decl, node, var] = static_cast<ParamScope *>(scope_)->AddParamDecl(Allocator(), param);
+    ES2PANDA_ASSERT(scope_->IsFunctionParamScope() || scope_->IsCatchParamScope());
 
-    if (node == nullptr) {
-        return {decl, var};
+    auto [var, node] = static_cast<ParamScope *>(scope_)->AddParamDecl(Allocator(), param);
+    ES2PANDA_ASSERT(var != nullptr);
+
+    if (node != nullptr) {
+        ThrowRedeclaration(node->Start(), var->Name());
     }
 
-    ThrowRedeclaration(node->Start(), decl->Name());
+    return var;
 }
 
 void VarBinder::ThrowRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
-    std::stringstream ss;
-    ss << "Variable '" << name << "' has already been declared.";
-    ThrowError(pos, ss.str());
-}
-
-void VarBinder::ThrowUnresolvableVariable(const lexer::SourcePosition &pos, const util::StringView &name) const
-{
-    std::stringstream ss;
-    ss << "Cannot find variable '" << name << "'.";
-    ThrowError(pos, ss.str());
+    auto const str = std::string {"Variable '"}.append(name.Utf8()).append("' has already been declared.");
+    ThrowError(pos, str);
 }
 
 void VarBinder::ThrowUnresolvableType(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
-    std::stringstream ss;
-    ss << "Cannot find type '" << name << "'.";
-    ThrowError(pos, ss.str());
+    auto const str = std::string {"Cannot find type '"}.append(name.Utf8()).append("'.");
+    ThrowError(pos, str);
 }
 
 void VarBinder::ThrowTDZ(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
-    std::stringstream ss;
-    ss << "Variable '" << name << "' is accessed before it's initialization.";
-    ThrowError(pos, ss.str());
+    auto const str = std::string {"Variable '"}.append(name.Utf8()).append("' is accessed before it's initialization.");
+    ThrowError(pos, str);
 }
 
 void VarBinder::ThrowInvalidCapture(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
-    std::stringstream ss;
-    ss << "Cannot capture variable'" << name << "'.";
-    ThrowError(pos, ss.str());
+    auto const str = std::string {"Cannot capture variable '"}.append(name.Utf8()).append("'.");
+    ThrowError(pos, str);
 }
 
 void VarBinder::ThrowPrivateFieldMismatch(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
-    std::stringstream ss;
-    ss << "Private field '" << name << "' must be declared in an enclosing class";
-
-    ThrowError(pos, ss.str());
+    auto const str =
+        std::string {"Private field '"}.append(name.Utf8()).append("' must be declared in an enclosing class");
+    ThrowError(pos, str);
 }
 
-void VarBinder::ThrowError(const lexer::SourcePosition &pos, const std::string_view &msg) const
+void VarBinder::ThrowError(const lexer::SourcePosition &pos, const std::string_view msg) const
 {
     lexer::LineIndex index(program_->SourceCode());
     lexer::SourceLocation loc = index.GetLocation(pos);
 
-    throw Error(ErrorType::SYNTAX, program_->SourceFilePath().Utf8(), msg, loc.line, loc.col);
+    context_->diagnosticEngine->ThrowSyntaxError(msg, program_->SourceFilePath().Utf8(), loc.line, loc.col);
 }
 
 void VarBinder::IdentifierAnalysis()
 {
-    ASSERT(program_->Ast());
-    ASSERT(scope_ == topScope_);
-    ASSERT(varScope_ == topScope_);
+    ES2PANDA_ASSERT(program_->Ast());
+    ES2PANDA_ASSERT(scope_ == topScope_);
+    ES2PANDA_ASSERT(varScope_ == topScope_);
 
     functionScopes_.push_back(topScope_);
     topScope_->BindName(MAIN);
@@ -158,7 +105,7 @@ void VarBinder::LookupReference(const util::StringView &name)
         return;
     }
 
-    ASSERT(res.variable);
+    ES2PANDA_ASSERT(res.variable);
     res.variable->SetLexical(res.scope);
 }
 
@@ -167,13 +114,12 @@ bool VarBinder::InstantiateArgumentsImpl(Scope **scope, Scope *iter, const ir::A
     if (node->AsScriptFunction()->IsArrow()) {
         return false;
     }
-    auto *argumentsVariable =
-        (*scope)->AddDecl<ConstDecl, LocalVariable>(Allocator(), FUNCTION_ARGUMENTS, VariableFlags::INITIALIZED);
-    if (iter->IsFunctionParamScope()) {
-        if (argumentsVariable == nullptr) {
-            return true;
-        }
 
+    auto [argumentsVariable, exists] =
+        (*scope)->AddDecl<ConstDecl, LocalVariable>(Allocator(), FUNCTION_ARGUMENTS, VariableFlags::INITIALIZED);
+    if (exists && Extension() != ScriptExtension::JS) {
+        ThrowRedeclaration(node->Start(), FUNCTION_ARGUMENTS);
+    } else if (iter->IsFunctionParamScope()) {
         *scope = iter->AsFunctionParamScope()->GetFunctionScope();
         (*scope)->InsertBinding(argumentsVariable->Name(), argumentsVariable);
     }
@@ -226,7 +172,7 @@ void VarBinder::InstantiatePrivateContext(const ir::Identifier *ident) const
 
     while (classDef != nullptr) {
         auto *scope = classDef->Scope();
-        Variable *variable = scope->FindLocal(classDef->PrivateId(), varbinder::ResolveBindingOptions::BINDINGS);
+        Variable *variable = scope->FindLocal(classDef->InternalName(), varbinder::ResolveBindingOptions::BINDINGS);
 
         if (!variable->HasFlag(VariableFlags::INITIALIZED)) {
             break;
@@ -260,7 +206,7 @@ void VarBinder::LookupIdentReference(ir::Identifier *ident)
 
     auto res = scope_->Find(ident->Name(), BindingOptions());
     if (res.level != 0) {
-        ASSERT(res.variable);
+        ES2PANDA_ASSERT(res.variable);
         res.variable->SetLexical(res.scope);
     }
 
@@ -303,12 +249,12 @@ void VarBinder::BuildVarDeclaratorId(ir::AstNode *childNode)
             auto *ident = childNode->AsIdentifier();
             const auto &name = ident->Name();
 
-            if (util::Helpers::IsGlobalIdentifier(name)) {
+            if (util::Helpers::IsGlobalIdentifier(name) || name.Is(ERROR_LITERAL)) {
                 break;
             }
 
             auto *variable = scope_->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS);
-            ASSERT(variable);
+            ES2PANDA_ASSERT(variable);
             ident->SetVariable(variable);
             BuildSignatureDeclarationBaseParams(ident->TypeAnnotation());
             variable->AddFlag(VariableFlags::INITIALIZED);
@@ -379,7 +325,7 @@ void VarBinder::InitializeClassBinding(ir::ClassDefinition *classDef)
 {
     auto res = scope_->Find(classDef->Ident()->Name());
 
-    ASSERT(res.variable && res.variable->Declaration()->IsLetDecl());
+    ES2PANDA_ASSERT(res.variable && res.variable->Declaration()->IsLetDecl());
     res.variable->AddFlag(VariableFlags::INITIALIZED);
 }
 
@@ -387,8 +333,8 @@ void VarBinder::InitializeClassIdent(ir::ClassDefinition *classDef)
 {
     auto res = scope_->Find(classDef->Ident()->Name());
 
-    ASSERT(res.variable &&
-           (res.variable->Declaration()->IsConstDecl() || res.variable->Declaration()->IsReadonlyDecl()));
+    ES2PANDA_ASSERT(res.variable &&
+                    (res.variable->Declaration()->IsConstDecl() || res.variable->Declaration()->IsReadonlyDecl()));
     res.variable->AddFlag(VariableFlags::INITIALIZED);
 }
 
@@ -404,7 +350,7 @@ void VarBinder::BuildClassDefinition(ir::ClassDefinition *classDef)
         ResolveReference(classDef->Super());
     }
 
-    Variable *variable = scope_->FindLocal(classDef->PrivateId(), varbinder::ResolveBindingOptions::BINDINGS);
+    Variable *variable = scope_->FindLocal(classDef->InternalName(), varbinder::ResolveBindingOptions::BINDINGS);
     variable->AddFlag(VariableFlags::INITIALIZED);
 
     if (classDef->Ident() != nullptr) {
@@ -483,7 +429,7 @@ void VarBinder::AddCompilableFunction(ir::ScriptFunction *func)
 {
     if (func->IsArrow()) {
         VariableScope *outerVarScope = scope_->EnclosingVariableScope();
-        ASSERT(outerVarScope != nullptr);
+        ES2PANDA_ASSERT(outerVarScope != nullptr);
         outerVarScope->AddFlag(ScopeFlags::INNER_ARROW);
     }
 
@@ -499,7 +445,7 @@ void VarBinder::VisitScriptFunction(ir::ScriptFunction *func)
 {
     auto *funcScope = func->Scope();
     {
-        ASSERT(funcScope != nullptr);
+        ES2PANDA_ASSERT(funcScope != nullptr);
         auto paramScopeCtx = LexicalScope<FunctionParamScope>::Enter(this, funcScope->ParamScope());
 
         for (auto *param : func->Params()) {
@@ -619,7 +565,7 @@ void VarBinder::ResolveReferences(const ir::AstNode *parent)
 
 LocalVariable *VarBinder::AddMandatoryParam(const std::string_view &name)
 {
-    ASSERT(scope_->IsFunctionParamScope());
+    ES2PANDA_ASSERT(scope_->IsFunctionParamScope());
 
     auto *decl = Allocator()->New<ParameterDecl>(name);
     auto *param = Allocator()->New<LocalVariable>(decl, VariableFlags::VAR);
@@ -649,23 +595,23 @@ void VarBinder::LookUpMandatoryReferences(const FunctionScope *funcScope, bool n
 
 void VarBinder::AddMandatoryParams()
 {
-    ASSERT(scope_ == topScope_);
-    ASSERT(!functionScopes_.empty());
+    ES2PANDA_ASSERT(scope_ == topScope_);
+    ES2PANDA_ASSERT(!functionScopes_.empty());
     auto iter = functionScopes_.begin();
     [[maybe_unused]] auto *funcScope = *iter++;
 
-    ASSERT(funcScope->IsGlobalScope() || funcScope->IsModuleScope());
+    ES2PANDA_ASSERT(funcScope->IsGlobalScope() || funcScope->IsModuleScope());
 
-    const auto &options = context_->config->options->CompilerOptions();
-    if (options.isDirectEval) {
+    const auto *options = context_->config->options;
+    if (options->IsDirectEval()) {
         AddMandatoryParams(EVAL_SCRIPT_MANDATORY_PARAMS);
         topScope_->ParamScope()->Params().back()->SetLexical(topScope_);
     } else {
         AddMandatoryParams(FUNCTION_MANDATORY_PARAMS);
     }
 
-    if (options.isFunctionEval) {
-        ASSERT(iter != functionScopes_.end());
+    if (options->IsFunctionEval()) {
+        ES2PANDA_ASSERT(iter != functionScopes_.end());
         funcScope = *iter++;
         auto scopeCtx = LexicalScope<FunctionScope>::Enter(this, funcScope);
         AddMandatoryParams(ARROW_MANDATORY_PARAMS);
@@ -688,7 +634,7 @@ void VarBinder::AddMandatoryParams()
 
         if (ctor != nullptr && util::Helpers::GetClassDefiniton(ctor)->Super() != nullptr &&
             funcScope->HasFlag(ScopeFlags::USE_SUPER)) {
-            ASSERT(ctor->Scope()->HasFlag(ScopeFlags::INNER_ARROW));
+            ES2PANDA_ASSERT(ctor->Scope()->HasFlag(ScopeFlags::INNER_ARROW));
             ctor->Scope()->AddFlag(ScopeFlags::SET_LEXICAL_FUNCTION);
             lexicalFunctionObject = true;
             AddMandatoryParams(CTOR_ARROW_MANDATORY_PARAMS);

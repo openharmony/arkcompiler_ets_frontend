@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,13 +20,16 @@
 namespace ark::es2panda::lexer {
 LexerPosition::LexerPosition(const util::StringView &source) : iterator_(source) {}
 
-Lexer::Lexer(const parser::ParserContext *parserContext, util::ErrorLogger *errorLogger, bool startLexer)
+Lexer::Lexer(const parser::ParserContext *parserContext, util::DiagnosticEngine &diagnosticEngine, bool startLexer)
     : allocator_(parserContext->GetProgram()->Allocator()),
       parserContext_(parserContext),
       source_(parserContext->GetProgram()->SourceCode()),
       pos_(source_),
-      errorLogger_(errorLogger)
+      diagnosticEngine_(diagnosticEngine)
 {
+    // It is necessary to set the position of the first token manually, because by default it is filled with an empty
+    // value
+    pos_.token_.loc_.start = SourcePosition {Iterator().Index(), pos_.line_, parserContext_->GetProgram()};
     if (startLexer) {
         SkipWhiteSpaces();
     }
@@ -34,7 +37,7 @@ Lexer::Lexer(const parser::ParserContext *parserContext, util::ErrorLogger *erro
 
 char32_t Lexer::ScanUnicodeEscapeSequence()
 {
-    ASSERT(Iterator().Peek() == LEX_CHAR_LOWERCASE_U);
+    ES2PANDA_ASSERT(Iterator().Peek() == LEX_CHAR_LOWERCASE_U);
     auto constexpr UNICODE_ESCAPE_SEQUENCE_LENGTH = 4;
 
     Iterator().Forward(1);
@@ -107,6 +110,11 @@ size_t Lexer::Line() const
     return pos_.line_;
 }
 
+const parser::Program *Lexer::GetProgram() const
+{
+    return parserContext_->GetProgram();
+}
+
 LexerPosition Lexer::Save() const
 {
     return pos_;
@@ -154,8 +162,13 @@ void Lexer::SkipMultiLineComment()
                 LogSyntaxError("Unterminated multi-line comment");
                 return;
             }
+            case LEX_CHAR_CR: {
+                if (Iterator().Peek() == LEX_CHAR_LF) {
+                    Iterator().Forward(1);
+                }
+                [[fallthrough]];
+            }
             case LEX_CHAR_LF:
-            case LEX_CHAR_CR:
             case LEX_CHAR_LS:
             case LEX_CHAR_PS: {
                 pos_.nextTokenLine_++;
@@ -204,17 +217,14 @@ void Lexer::SkipSingleLineComment()
 
 void Lexer::LogSyntaxError(std::string_view const errorMessage) const
 {
-    lexer::LineIndex index(source_);
-    lexer::SourceLocation loc = index.GetLocation(SourcePosition(Iterator().Index(), pos_.line_));
-    errorLogger_->WriteLog(Error {ErrorType::SYNTAX, parserContext_->GetProgram()->SourceFilePath().Utf8(),
-                                  errorMessage, loc.line, loc.col});
+    diagnosticEngine_.LogSyntaxError(errorMessage,
+                                     SourcePosition(Iterator().Index(), pos_.line_, parserContext_->GetProgram()));
 }
 
 void Lexer::LogUnexpectedToken(lexer::TokenType const tokenType) const
 {
-    std::stringstream ss;
-    ss << "Unexpected token: '" << TokenToString(tokenType) << "'.";
-    LogSyntaxError(ss.str());
+    auto const str = std::string {parser::UNEXPECTED_TOKEN}.append(TokenToString(tokenType)).append("'.");
+    LogSyntaxError(str);
 }
 
 void Lexer::CheckNumberLiteralEnd()
@@ -228,7 +238,18 @@ void Lexer::CheckNumberLiteralEnd()
     }
 
     const auto nextCp = Iterator().PeekCp();
-    if (KeywordsUtil::IsIdentifierStart(nextCp) || IsDecimalDigit(nextCp)) {
+    if (IsDecimalDigit(nextCp)) {
+        LogSyntaxError("Invalid numeric literal");
+        return;
+    }
+    CheckNumberLiteralEndForIdentifier();
+}
+
+void Lexer::CheckNumberLiteralEndForIdentifier()
+{
+    // This check is needed only in Ecmascript
+    const auto nextCp = Iterator().PeekCp();
+    if (KeywordsUtil::IsIdentifierStart(nextCp)) {
         LogSyntaxError("Invalid numeric literal");
     }
 }
@@ -502,8 +523,58 @@ LexerTemplateString Lexer::ScanTemplateString()
         Iterator().Forward(cpSize);
     }
 
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
     return templateStr;
+}
+
+util::StringView Lexer::ScanMultilineString()
+{
+    util::UString str(Allocator());
+    size_t cpSize = 0U;
+    bool isreturn = false;
+
+    while (!isreturn) {
+        char32_t cp = Iterator().PeekCp(&cpSize);
+        switch (cp) {
+            case util::StringView::Iterator::INVALID_CP:
+                LogSyntaxError("Unexpected token, expected '`'");
+                [[fallthrough]];
+            case LEX_CHAR_BACK_TICK:
+                isreturn = true;
+                break;
+            case LEX_CHAR_CR: {
+                Iterator().Forward(1);
+                if (Iterator().Peek() != LEX_CHAR_LF) {
+                    Iterator().Backward(1);
+                }
+                [[fallthrough]];
+            }
+            case LEX_CHAR_LF:
+                pos_.line_++;
+                str.Append(LEX_CHAR_LF);
+                Iterator().Forward(1);
+                continue;
+            case LEX_CHAR_BACKSLASH: {
+                Iterator().Forward(1);
+                char32_t nextCp = ScanUnicodeCharacter();
+                str.Append(nextCp);
+                continue;
+            }
+            default: {
+                break;
+            }
+        }
+
+        if (isreturn) {
+            return str.View();
+        }
+
+        str.Append(cp);
+        Iterator().Forward(cpSize);
+    }
+
+    ES2PANDA_UNREACHABLE();
+    return str.View();
 }
 
 void Lexer::ResetTokenEnd()
@@ -588,7 +659,7 @@ char32_t Lexer::ScanUnicodeCharacter()
         }
         default:
             if (IsDecimalDigit(Iterator().Peek())) {
-                LogSyntaxError("Invalid character escape sequence in strict mode");
+                LogSyntaxError("Invalid character escape sequence");
                 cp = UNICODE_INVALID_CP;
             }
             break;
@@ -901,7 +972,7 @@ void Lexer::ScanSlashPunctuator()
     }
 }
 
-void Lexer::ScanDotPunctuator()
+void Lexer::ScanDotPunctuator(KeywordsUtil &kwu)
 {
     GetToken().type_ = TokenType::PUNCTUATOR_PERIOD;
 
@@ -916,7 +987,7 @@ void Lexer::ScanDotPunctuator()
         case LEX_CHAR_7:
         case LEX_CHAR_8:
         case LEX_CHAR_9: {
-            ScanNumber();
+            ScanNumber((kwu.Flags() & NextTokenFlags::UNARY_MINUS) != std::underlying_type_t<NextTokenFlags>(0U));
             break;
         }
         case LEX_CHAR_QUESTION: {
@@ -1142,7 +1213,7 @@ RegExp Lexer::ScanRegExp()
 
     const auto pattern = SourceView(patternStart, Iterator().Index());
 
-    ASSERT(Iterator().Peek() == LEX_CHAR_SLASH);
+    ES2PANDA_ASSERT(Iterator().Peek() == LEX_CHAR_SLASH);
     Iterator().Forward(1);
 
     const auto flagsStart = Iterator().Index();
@@ -1178,13 +1249,13 @@ void Lexer::SetTokenStart()
         GetToken().flags_ = TokenFlags::NONE;
     }
 
-    pos_.token_.loc_.start = SourcePosition {Iterator().Index(), pos_.line_};
+    pos_.token_.loc_.start = SourcePosition {Iterator().Index(), pos_.line_, parserContext_->GetProgram()};
     GetToken().keywordType_ = TokenType::EOS;
 }
 
 void Lexer::SetTokenEnd()
 {
-    pos_.token_.loc_.end = SourcePosition {Iterator().Index(), pos_.line_};
+    pos_.token_.loc_.end = SourcePosition {Iterator().Index(), pos_.line_, parserContext_->GetProgram()};
 }
 
 bool Lexer::SkipWhiteSpacesHelperSlash(char32_t *cp)
@@ -1350,7 +1421,7 @@ void Lexer::NextToken(Keywords *kws)
             break;
         }
         case LEX_CHAR_DOT: {
-            ScanDotPunctuator();
+            ScanDotPunctuator(kwu);
             break;
         }
         case LEX_CHAR_SLASH: {
@@ -1405,13 +1476,7 @@ void Lexer::NextToken(Keywords *kws)
             ScanAtPunctuator();
             break;
         }
-        case LEX_CHAR_DOLLAR_SIGN: {
-            if (ScanDollarPunctuator()) {
-                break;
-            }
-
-            [[fallthrough]];
-        }
+        case LEX_CHAR_DOLLAR_SIGN:
         case LEX_CHAR_UPPERCASE_A:
         case LEX_CHAR_UPPERCASE_B:
         case LEX_CHAR_UPPERCASE_C:

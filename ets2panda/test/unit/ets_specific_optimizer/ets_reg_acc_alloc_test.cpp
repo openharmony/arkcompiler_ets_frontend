@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -57,7 +57,9 @@ TEST_F(RegAccAllocTest, Ets_Ldobj)
     pandasm::Parser p;
     auto source = std::string(R"(
         .language eTS
-        .union_field std.core.String status
+        .record $NamedAccessMeta-std.core.String {
+            std.core.String status
+        }
         .record ETSGLOBAL <ets.abstract, ets.extends=std.core.Object, access.record=public> {
         }
         .record std.core.Object <external>
@@ -71,7 +73,7 @@ TEST_F(RegAccAllocTest, Ets_Ldobj)
             ldai 0x1
             ldarr.obj v0
             sta.obj v0
-            ets.ldobj.name.obj v0, status
+            ets.ldobj.name.obj v0, $NamedAccessMeta-std.core.String.status
             return.void
         }
         )");
@@ -87,7 +89,7 @@ TEST_F(RegAccAllocTest, Ets_Ldobj)
     ark::bytecodeopt::g_options = ark::bytecodeopt::Options("--opt-level=2");
     EXPECT_TRUE(OptimizeBytecode(&program, &maps, fileName, false, true));
     ark::bytecodeopt::g_options = oldOptions;
-    for (const auto &inst : program.functionTable.find("ETSGLOBAL.foo:(std.core.Object[])")->second.ins) {
+    for (const auto &inst : program.functionStaticTable.find("ETSGLOBAL.foo:(std.core.Object[])")->second.ins) {
         if (inst.opcode == ark::pandasm::Opcode::ETS_LDOBJ_NAME_OBJ) {
             ASSERT_FALSE(inst.HasFlag(pandasm::InstFlags::ACC_READ));
         }

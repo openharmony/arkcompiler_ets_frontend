@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,6 +14,7 @@
  */
 
 #include "checker/typeChecker/TypeChecker.h"
+#include "generated/diagnostic.h"
 
 namespace ark::es2panda::checker {
 
@@ -21,9 +22,7 @@ void ETSTypeChecker::VisitArrowFunctionExpression(ir::ArrowFunctionExpression *n
 {
     Iterate(node);
     if (!node->TsType()->IsETSObjectType()) {
-        LogTypeError({"Cannot infer arrow function type from context for type: '", node->TsType(),
-                      "', consider adding type explicitly"},
-                     node->Start());
+        LogError(diagnostic::INFER_FAIL_ON_LAMBDA, {node->TsType()}, node->Start());
     }
 }
 
@@ -39,7 +38,7 @@ bool RunTypeChecker(Checker *checker, ScriptExtension ext, ir::AstNode *node)
         case ScriptExtension::AS:
             return ASTypeChecker(checker).Check(node);
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 }
 

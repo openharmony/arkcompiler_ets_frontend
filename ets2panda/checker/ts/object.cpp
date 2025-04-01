@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -177,7 +177,7 @@ void TSChecker::ResolveObjectTypeMembers(ObjectType *type)
         return;
     }
 
-    ASSERT(type->Variable() && type->Variable()->Declaration()->Node()->IsTSTypeLiteral());
+    ES2PANDA_ASSERT(type->Variable() && type->Variable()->Declaration()->Node()->IsTSTypeLiteral());
     auto *typeLiteral = type->Variable()->Declaration()->Node()->AsTSTypeLiteral();
     ArenaVector<ir::TSSignatureDeclaration *> signatureDeclarations(Allocator()->Adapter());
     ArenaVector<ir::TSIndexSignature *> indexDeclarations(Allocator()->Adapter());
@@ -223,7 +223,7 @@ void TSChecker::ResolvePropertiesOfObjectType(ObjectType *type, ir::AstNode *mem
         return;
     }
 
-    ASSERT(member->IsTSIndexSignature());
+    ES2PANDA_ASSERT(member->IsTSIndexSignature());
     indexDeclarations.push_back(member->AsTSIndexSignature());
 }
 
@@ -376,7 +376,7 @@ IndexInfo *TSChecker::GetApplicableIndexInfo(Type *type, Type *indexType)
     }
 
     if (type->IsUnionType()) {
-        ASSERT(type->AsUnionType()->MergedObjectType());
+        ES2PANDA_ASSERT(type->AsUnionType()->MergedObjectType());
 
         if (getNumberInfo) {
             return type->AsUnionType()->MergedObjectType()->NumberIndexInfo();
@@ -439,7 +439,7 @@ ArenaVector<ObjectType *> TSChecker::GetBaseTypes(InterfaceType *type)
         return type->Bases();
     }
 
-    ASSERT(type->Variable() && type->Variable()->Declaration()->IsInterfaceDecl());
+    ES2PANDA_ASSERT(type->Variable() && type->Variable()->Declaration()->IsInterfaceDecl());
     varbinder::InterfaceDecl *decl = type->Variable()->Declaration()->AsInterfaceDecl();
 
     TypeStackElement tse(this, type, {"Type ", type->Name(), " recursively references itself as a base type."},
@@ -507,7 +507,7 @@ void TSChecker::ResolveDeclaredMembers(InterfaceType *type)
         return;
     }
 
-    ASSERT(type->Variable() && type->Variable()->Declaration()->IsInterfaceDecl());
+    ES2PANDA_ASSERT(type->Variable() && type->Variable()->Declaration()->IsInterfaceDecl());
     varbinder::InterfaceDecl *decl = type->Variable()->Declaration()->AsInterfaceDecl();
 
     ArenaVector<ir::TSSignatureDeclaration *> signatureDeclarations(Allocator()->Adapter());

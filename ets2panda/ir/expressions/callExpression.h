@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -130,6 +130,8 @@ public:
 
     void SetTrailingBlock(ir::BlockStatement *const block) noexcept;
 
+    bool IsExtensionAccessorCall();
+
     [[nodiscard]] ir::BlockStatement *TrailingBlock() const noexcept
     {
         return trailingBlock_;
@@ -145,6 +147,11 @@ public:
         return isTrailingBlockInNewLine_;
     }
 
+    bool IsETSConstructorCall() const noexcept
+    {
+        return callee_->IsThisExpression() || callee_->IsSuperExpression();
+    }
+
     [[nodiscard]] CallExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
@@ -155,11 +162,18 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {
         v->Accept(this);
+    }
+
+    void CleanUp() override
+    {
+        AstNode::CleanUp();
+        signature_ = nullptr;
+        uncheckedType_ = nullptr;
     }
 
 protected:
@@ -174,11 +188,6 @@ protected:
     bool isTrailingBlockInNewLine_ {false};
     checker::Type *uncheckedType_ {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
-
-private:
-    bool IsETSConstructorCall() const;
-    checker::Type *InitAnonymousLambdaCallee(checker::ETSChecker *checker, Expression *callee,
-                                             checker::Type *calleeType);
 };
 }  // namespace ark::es2panda::ir
 

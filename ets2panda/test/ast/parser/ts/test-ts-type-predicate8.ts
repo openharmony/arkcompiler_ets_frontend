@@ -14,7 +14,7 @@
  */
 
 
-var var1: (is: number | string) => (number | string) is number;
+var var1: (is: number | string) => (number | string) /* @@ label */is /* @@ label1 */number;
 
-/* @@? 17:54 Error SyntaxError: Unexpected token 'identification literal'.  */
-/* @@? 17:57 Error SyntaxError: Unexpected token 'identification literal'.  */
+/* @@@ label Error SyntaxError: Unexpected token 'is'. */
+/* @@@ label1 Error SyntaxError: Unexpected token 'number'. */

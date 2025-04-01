@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,7 @@
 #ifndef ES2PANDA_UTIL_PLUGINS_H
 #define ES2PANDA_UTIL_PLUGINS_H
 
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "os/library_loader.h"
 #include "public/es2panda_lib.h"
 #include "util/ustring.h"
@@ -54,6 +54,13 @@ public:
         }
     }
 
+    void AfterBind(es2panda_Context *context) const
+    {
+        if (afterBind_ != nullptr) {
+            afterBind_(context);
+        }
+    }
+
     void AfterCheck(es2panda_Context *context) const
     {
         if (afterCheck_ != nullptr) {
@@ -78,6 +85,7 @@ private:
 
     void (*initialize_)() = nullptr;
     void (*afterParse_)(es2panda_Context *) = nullptr;
+    void (*afterBind_)(es2panda_Context *) = nullptr;
     void (*afterCheck_)(es2panda_Context *) = nullptr;
     void (*afterLowerings_)(es2panda_Context *) = nullptr;
 };

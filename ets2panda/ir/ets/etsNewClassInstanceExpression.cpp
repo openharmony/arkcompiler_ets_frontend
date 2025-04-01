@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,8 +18,6 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "checker/TSchecker.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 void ETSNewClassInstanceExpression::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
@@ -35,13 +33,6 @@ void ETSNewClassInstanceExpression::TransformChildren(const NodeTransformer &cb,
             arg = transformedNode->AsExpression();
         }
     }
-
-    if (classDef_ != nullptr) {
-        if (auto *transformedNode = cb(classDef_); classDef_ != transformedNode) {
-            classDef_->SetTransformedNode(transformationName, transformedNode);
-            classDef_ = transformedNode->AsClassDefinition();
-        }
-    }
 }
 
 void ETSNewClassInstanceExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const
@@ -51,26 +42,27 @@ void ETSNewClassInstanceExpression::Iterate([[maybe_unused]] const NodeTraverser
     for (auto *arg : arguments_) {
         cb(arg);
     }
-
-    if (classDef_ != nullptr) {
-        cb(classDef_);
-    }
 }
 
 void ETSNewClassInstanceExpression::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ETSNewClassInstanceExpression"},
-                 {"typeReference", typeReference_},
-                 {"arguments", arguments_},
-                 {"classBody", AstDumper::Optional(classDef_)}});
+    dumper->Add(
+        {{"type", "ETSNewClassInstanceExpression"}, {"typeReference", typeReference_}, {"arguments", arguments_}});
 }
 
 void ETSNewClassInstanceExpression::Dump(ir::SrcDumper *dumper) const
 {
     dumper->Add("new ");
     if (typeReference_ != nullptr) {
+        if (typeReference_->IsETSUnionType()) {
+            dumper->Add("(");
+        }
         typeReference_->Dump(dumper);
+        if (typeReference_->IsETSUnionType()) {
+            dumper->Add(")");
+        }
     }
+
     dumper->Add("(");
     for (auto argument : arguments_) {
         argument->Dump(dumper);
@@ -96,9 +88,9 @@ checker::Type *ETSNewClassInstanceExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ETSNewClassInstanceExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType ETSNewClassInstanceExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ETSNewClassInstanceExpression::ETSNewClassInstanceExpression(ETSNewClassInstanceExpression const &other,
@@ -107,7 +99,6 @@ ETSNewClassInstanceExpression::ETSNewClassInstanceExpression(ETSNewClassInstance
 {
     typeReference_ =
         other.typeReference_ != nullptr ? other.typeReference_->Clone(allocator, this)->AsExpression() : nullptr;
-    classDef_ = other.classDef_ != nullptr ? other.classDef_->Clone(allocator, this)->AsClassDefinition() : nullptr;
 
     for (auto *const argument : other.arguments_) {
         arguments_.emplace_back(argument->Clone(allocator, this)->AsExpression());
@@ -117,13 +108,16 @@ ETSNewClassInstanceExpression::ETSNewClassInstanceExpression(ETSNewClassInstance
 ETSNewClassInstanceExpression *ETSNewClassInstanceExpression::Clone(ArenaAllocator *const allocator,
                                                                     AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<ETSNewClassInstanceExpression>(*this, allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    auto *const clone = allocator->New<ETSNewClassInstanceExpression>(*this, allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    return clone;
 }
+
+bool ETSNewClassInstanceExpression::TypeIsAllowedForInstantiation(checker::Type *type)
+{
+    return !(type->IsETSNullType() || type->IsETSUndefinedType() || type->IsETSNeverType() || type->IsETSVoidType());
+}
+
 }  // namespace ark::es2panda::ir

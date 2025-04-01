@@ -10,11 +10,13 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 6
+            "column": 6,
+            "program": "nullableTuple.ets"
           },
           "end": {
             "line": 16,
-            "column": 23
+            "column": 23,
+            "program": "nullableTuple.ets"
           }
         }
       },
@@ -32,33 +34,39 @@
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 27
+                    "column": 27,
+                    "program": "nullableTuple.ets"
                   },
                   "end": {
                     "line": 16,
-                    "column": 33
+                    "column": 33,
+                    "program": "nullableTuple.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 27
+                  "column": 27,
+                  "program": "nullableTuple.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 34
+                  "column": 34,
+                  "program": "nullableTuple.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 16,
-                "column": 27
+                "column": 27,
+                "program": "nullableTuple.ets"
               },
               "end": {
                 "line": 16,
-                "column": 34
+                "column": 34,
+                "program": "nullableTuple.ets"
               }
             }
           },
@@ -73,57 +81,66 @@
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 35
+                    "column": 35,
+                    "program": "nullableTuple.ets"
                   },
                   "end": {
                     "line": 16,
-                    "column": 41
+                    "column": 41,
+                    "program": "nullableTuple.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 35
+                  "column": 35,
+                  "program": "nullableTuple.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 42
+                  "column": 42,
+                  "program": "nullableTuple.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 16,
-                "column": 35
+                "column": 35,
+                "program": "nullableTuple.ets"
               },
               "end": {
                 "line": 16,
-                "column": 42
+                "column": 42,
+                "program": "nullableTuple.ets"
               }
             }
           }
         ],
-        "spreadType": null,
         "loc": {
           "start": {
             "line": 16,
-            "column": 26
+            "column": 26,
+            "program": "nullableTuple.ets"
           },
           "end": {
             "line": 16,
-            "column": 43
+            "column": 42,
+            "program": "nullableTuple.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "nullableTuple.ets"
         },
         "end": {
           "line": 16,
-          "column": 43
+          "column": 43,
+          "program": "nullableTuple.ets"
         }
       }
     },
@@ -136,11 +153,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 6
+            "column": 6,
+            "program": "nullableTuple.ets"
           },
           "end": {
             "line": 17,
-            "column": 17
+            "column": 17,
+            "program": "nullableTuple.ets"
           }
         }
       },
@@ -158,33 +177,39 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 20
+                    "column": 20,
+                    "program": "nullableTuple.ets"
                   },
                   "end": {
                     "line": 17,
-                    "column": 37
+                    "column": 37,
+                    "program": "nullableTuple.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 20
+                  "column": 20,
+                  "program": "nullableTuple.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 38
+                  "column": 38,
+                  "program": "nullableTuple.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 17,
-                "column": 20
+                "column": 20,
+                "program": "nullableTuple.ets"
               },
               "end": {
                 "line": 17,
-                "column": 38
+                "column": 38,
+                "program": "nullableTuple.ets"
               }
             }
           },
@@ -193,11 +218,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 38
+                "column": 38,
+                "program": "nullableTuple.ets"
               },
               "end": {
                 "line": 17,
-                "column": 47
+                "column": 47,
+                "program": "nullableTuple.ets"
               }
             }
           }
@@ -205,22 +232,26 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 20
+            "column": 20,
+            "program": "nullableTuple.ets"
           },
           "end": {
             "line": 17,
-            "column": 47
+            "column": 47,
+            "program": "nullableTuple.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "nullableTuple.ets"
         },
         "end": {
           "line": 17,
-          "column": 48
+          "column": 48,
+          "program": "nullableTuple.ets"
         }
       }
     },
@@ -234,16 +265,52 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "nullableTuple.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "nullableTuple.ets"
             }
           }
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "nullableTuple.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "nullableTuple.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "nullableTuple.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "nullableTuple.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",
@@ -254,11 +321,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -278,11 +347,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -296,33 +367,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -331,11 +408,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "nullableTuple.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "nullableTuple.ets"
               }
             }
           },
@@ -348,11 +427,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 10
+                  "column": 10,
+                  "program": "nullableTuple.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 14
+                  "column": 14,
+                  "program": "nullableTuple.ets"
                 }
               }
             },
@@ -372,11 +453,13 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 10
+                      "column": 10,
+                      "program": "nullableTuple.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 14
+                      "column": 14,
+                      "program": "nullableTuple.ets"
                     }
                   }
                 },
@@ -389,11 +472,13 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 18
+                      "column": 18,
+                      "program": "nullableTuple.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 22
+                      "column": 22,
+                      "program": "nullableTuple.ets"
                     }
                   }
                 },
@@ -419,33 +504,39 @@
                                   "loc": {
                                     "start": {
                                       "line": 20,
-                                      "column": 11
+                                      "column": 11,
+                                      "program": "nullableTuple.ets"
                                     },
                                     "end": {
                                       "line": 20,
-                                      "column": 28
+                                      "column": 28,
+                                      "program": "nullableTuple.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 11
+                                    "column": 11,
+                                    "program": "nullableTuple.ets"
                                   },
                                   "end": {
                                     "line": 20,
-                                    "column": 30
+                                    "column": 30,
+                                    "program": "nullableTuple.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 20,
-                                  "column": 11
+                                  "column": 11,
+                                  "program": "nullableTuple.ets"
                                 },
                                 "end": {
                                   "line": 20,
-                                  "column": 30
+                                  "column": 30,
+                                  "program": "nullableTuple.ets"
                                 }
                               }
                             },
@@ -453,11 +544,13 @@
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 8
+                                "column": 8,
+                                "program": "nullableTuple.ets"
                               },
                               "end": {
                                 "line": 20,
-                                "column": 9
+                                "column": 9,
+                                "program": "nullableTuple.ets"
                               }
                             }
                           },
@@ -470,11 +563,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 32
+                                    "column": 32,
+                                    "program": "nullableTuple.ets"
                                   },
                                   "end": {
                                     "line": 20,
-                                    "column": 36
+                                    "column": 36,
+                                    "program": "nullableTuple.ets"
                                   }
                                 }
                               },
@@ -484,11 +579,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 38
+                                    "column": 38,
+                                    "program": "nullableTuple.ets"
                                   },
                                   "end": {
                                     "line": 20,
-                                    "column": 51
+                                    "column": 51,
+                                    "program": "nullableTuple.ets"
                                   }
                                 }
                               }
@@ -496,22 +593,26 @@
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 31
+                                "column": 31,
+                                "program": "nullableTuple.ets"
                               },
                               "end": {
                                 "line": 20,
-                                "column": 52
+                                "column": 52,
+                                "program": "nullableTuple.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 8
+                              "column": 8,
+                              "program": "nullableTuple.ets"
                             },
                             "end": {
                               "line": 20,
-                              "column": 52
+                              "column": 52,
+                              "program": "nullableTuple.ets"
                             }
                           }
                         }
@@ -520,11 +621,13 @@
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 4
+                          "column": 4,
+                          "program": "nullableTuple.ets"
                         },
                         "end": {
                           "line": 20,
-                          "column": 53
+                          "column": 53,
+                          "program": "nullableTuple.ets"
                         }
                       }
                     },
@@ -547,33 +650,39 @@
                                   "loc": {
                                     "start": {
                                       "line": 21,
-                                      "column": 11
+                                      "column": 11,
+                                      "program": "nullableTuple.ets"
                                     },
                                     "end": {
                                       "line": 21,
-                                      "column": 22
+                                      "column": 22,
+                                      "program": "nullableTuple.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 21,
-                                    "column": 11
+                                    "column": 11,
+                                    "program": "nullableTuple.ets"
                                   },
                                   "end": {
                                     "line": 21,
-                                    "column": 24
+                                    "column": 24,
+                                    "program": "nullableTuple.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 21,
-                                  "column": 11
+                                  "column": 11,
+                                  "program": "nullableTuple.ets"
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 24
+                                  "column": 24,
+                                  "program": "nullableTuple.ets"
                                 }
                               }
                             },
@@ -581,11 +690,13 @@
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 8
+                                "column": 8,
+                                "program": "nullableTuple.ets"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 9
+                                "column": 9,
+                                "program": "nullableTuple.ets"
                               }
                             }
                           },
@@ -595,22 +706,26 @@
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 25
+                                "column": 25,
+                                "program": "nullableTuple.ets"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 34
+                                "column": 34,
+                                "program": "nullableTuple.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 21,
-                              "column": 8
+                              "column": 8,
+                              "program": "nullableTuple.ets"
                             },
                             "end": {
                               "line": 21,
-                              "column": 34
+                              "column": 34,
+                              "program": "nullableTuple.ets"
                             }
                           }
                         }
@@ -619,97 +734,129 @@
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 4
+                          "column": 4,
+                          "program": "nullableTuple.ets"
                         },
                         "end": {
                           "line": 21,
-                          "column": 35
+                          "column": 35,
+                          "program": "nullableTuple.ets"
                         }
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
-                          "type": "MemberExpression",
-                          "object": {
-                            "type": "Identifier",
-                            "name": "x",
-                            "decorators": [],
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "Identifier",
+                          "name": "assertEQ",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 23,
+                              "column": 4,
+                              "program": "nullableTuple.ets"
+                            },
+                            "end": {
+                              "line": 23,
+                              "column": 12,
+                              "program": "nullableTuple.ets"
+                            }
+                          }
+                        },
+                        "arguments": [
+                          {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "x",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 23,
+                                  "column": 13,
+                                  "program": "nullableTuple.ets"
+                                },
+                                "end": {
+                                  "line": 23,
+                                  "column": 14,
+                                  "program": "nullableTuple.ets"
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "NumberLiteral",
+                              "value": 0,
+                              "loc": {
+                                "start": {
+                                  "line": 23,
+                                  "column": 15,
+                                  "program": "nullableTuple.ets"
+                                },
+                                "end": {
+                                  "line": 23,
+                                  "column": 16,
+                                  "program": "nullableTuple.ets"
+                                }
+                              }
+                            },
+                            "computed": true,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 23,
-                                "column": 11
+                                "column": 13,
+                                "program": "nullableTuple.ets"
                               },
                               "end": {
                                 "line": 23,
-                                "column": 12
+                                "column": 17,
+                                "program": "nullableTuple.ets"
                               }
                             }
                           },
-                          "property": {
+                          {
                             "type": "NumberLiteral",
-                            "value": 0,
+                            "value": 12,
                             "loc": {
                               "start": {
                                 "line": 23,
-                                "column": 13
+                                "column": 19,
+                                "program": "nullableTuple.ets"
                               },
                               "end": {
                                 "line": 23,
-                                "column": 14
+                                "column": 23,
+                                "program": "nullableTuple.ets"
                               }
                             }
-                          },
-                          "computed": true,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 23,
-                              "column": 11
-                            },
-                            "end": {
-                              "line": 23,
-                              "column": 15
-                            }
                           }
-                        },
-                        "right": {
-                          "type": "NumberLiteral",
-                          "value": 12,
-                          "loc": {
-                            "start": {
-                              "line": 23,
-                              "column": 19
-                            },
-                            "end": {
-                              "line": 23,
-                              "column": 23
-                            }
-                          }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 23,
-                            "column": 11
+                            "column": 4,
+                            "program": "nullableTuple.ets"
                           },
                           "end": {
                             "line": 23,
-                            "column": 23
+                            "column": 24,
+                            "program": "nullableTuple.ets"
                           }
                         }
                       },
-                      "second": null,
                       "loc": {
                         "start": {
                           "line": 23,
-                          "column": 4
+                          "column": 4,
+                          "program": "nullableTuple.ets"
                         },
                         "end": {
                           "line": 23,
-                          "column": 24
+                          "column": 25,
+                          "program": "nullableTuple.ets"
                         }
                       }
                     }
@@ -717,33 +864,39 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 23
+                      "column": 23,
+                      "program": "nullableTuple.ets"
                     },
                     "end": {
                       "line": 24,
-                      "column": 2
+                      "column": 2,
+                      "program": "nullableTuple.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 10
+                    "column": 10,
+                    "program": "nullableTuple.ets"
                   },
                   "end": {
                     "line": 24,
-                    "column": 2
+                    "column": 2,
+                    "program": "nullableTuple.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 10
+                  "column": 10,
+                  "program": "nullableTuple.ets"
                 },
                 "end": {
                   "line": 24,
-                  "column": 2
+                  "column": 2,
+                  "program": "nullableTuple.ets"
                 }
               }
             },
@@ -752,11 +905,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 1
+                "column": 1,
+                "program": "nullableTuple.ets"
               },
               "end": {
                 "line": 24,
-                "column": 2
+                "column": 2,
+                "program": "nullableTuple.ets"
               }
             }
           }
@@ -764,22 +919,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "nullableTuple.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "nullableTuple.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "nullableTuple.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "nullableTuple.ets"
         }
       }
     }
@@ -787,11 +946,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "nullableTuple.ets"
     },
     "end": {
       "line": 25,
-      "column": 1
+      "column": 1,
+      "program": "nullableTuple.ets"
     }
   }
 }

@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+# Copyright (c) 2021-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -22,6 +22,8 @@ defines:
     ref: ETS_GLOBAL
   - name: _$init$_
     ref: INIT_METHOD
+  - name: _$initializerBlockInit$_
+    ref: INITIALIZER_BLOCK_INIT
   - name: $_get
     ref: GET_INDEX_METHOD
   - name: $_set
@@ -64,6 +66,9 @@ defines:
   - name: ets.debug.export
     ref: DEBUG_EXPORT_ATTRIBUTE
     comment: ETS annotation type
+  - name: Module
+    ref: MODULE_ANNOTATION
+    comment: ETS annotation
   - name: value
     ref: ANNOTATION_KEY_VALUE
     comment: ETS annotation key
@@ -124,11 +129,11 @@ defines:
     ref: DYNAMIC_MODULE_CLASS_INIT
   - name: $lambdaobject
     ref: LAMBDA_OBJECT
-  - name: invoke
+  - name: $_invoke
     ref: LAMBDA_OBJECT_INVOKE
-  - name: invoke
+  - name: $_invoke
     ref: STATIC_INVOKE_METHOD
-  - name: instantiate
+  - name: $_instantiate
     ref: STATIC_INSTANTIATE_METHOD
   - name: undefined
     ref: UNDEFINED
@@ -138,12 +143,30 @@ defines:
     ref: READONLY_TYPE_NAME
   - name: 'Partial'
     ref: PARTIAL_TYPE_NAME
+  - name: 'FixedArray'
+    ref: FIXED_ARRAY_TYPE_NAME
   - name: 'Required'
     ref: REQUIRED_TYPE_NAME
+  - name: 'Array'
+    ref: ARRAY
   - name: '<property>'
     ref: PROPERTY
   - name: 'never'
     ref: NEVER_TYPE_NAME
+  - name: 'SOURCE'
+    ref: SOURCE_POLICY
+  - name: 'BYTECODE'
+    ref: BYTECODE_POLICY
+  - name: 'RUNTIME'
+    ref: RUNTIME_POLICY
+  - name: 'std.annotations.'
+    ref: STD_ANNOTATIONS
+  - name: 'std.annotations.Retention'
+    ref: STD_ANNOTATIONS_RETENTION
+  - name: Retention
+    ref: BUILTIN_RETENTION
+  - name: 'Symbol'
+    ref: SYMBOL
 
 packages:
   - name: 'std.core'
@@ -281,6 +304,9 @@ builtins:
   - name: Error
     package: PKG_ESCOMPAT
     ref: BUILTIN_ERROR
+  - name: ErrorOptions
+    package: PKG_ESCOMPAT
+    ref: BUILTIN_ERROR_OPTIONS
   - name: BigInt
     package: PKG_ESCOMPAT
     ref: BUILTIN_BIGINT
@@ -323,6 +349,7 @@ builtins:
   - name: DoubleBox
     package: PKG_STD_CORE
     ref: BUILTIN_DOUBLE_BOX
+
   - name: Function0
     package: PKG_STD_CORE
     ref: BUILTIN_FUNCTION0
@@ -377,114 +404,165 @@ builtins:
   - name: FunctionN
     package: PKG_STD_CORE
     ref: BUILTIN_FUNCTIONN
-  - name: ThrowingFunction0
+
+  - name: Lambda0
     package: PKG_STD_CORE
-    ref: BUILTIN_THROWING_FUNCTION0
-  - name: ThrowingFunction1
+    ref: BUILTIN_LAMBDA0
+  - name: Lambda1
     package: PKG_STD_CORE
-    ref: BUILTIN_THROWING_FUNCTION1
-  - name: ThrowingFunction2
+    ref: BUILTIN_LAMBDA1
+  - name: Lambda2
     package: PKG_STD_CORE
-    ref: BUILTIN_THROWING_FUNCTION2
-  - name: ThrowingFunction3
+    ref: BUILTIN_LAMBDA2
+  - name: Lambda3
     package: PKG_STD_CORE
-    ref: BUILTIN_THROWING_FUNCTION3
-  - name: ThrowingFunction4
+    ref: BUILTIN_LAMBDA3
+  - name: Lambda4
     package: PKG_STD_CORE
-    ref: BUILTIN_THROWING_FUNCTION4
-  - name: ThrowingFunction5
+    ref: BUILTIN_LAMBDA4
+  - name: Lambda5
     package: PKG_STD_CORE
-    ref: BUILTIN_THROWING_FUNCTION5
-  - name: ThrowingFunction6
+    ref: BUILTIN_LAMBDA5
+  - name: Lambda6
     package: PKG_STD_CORE
-    ref: BUILTIN_THROWING_FUNCTION6
-  - name: ThrowingFunction7
+    ref: BUILTIN_LAMBDA6
+  - name: Lambda7
     package: PKG_STD_CORE
-    ref: BUILTIN_THROWING_FUNCTION7
-  - name: ThrowingFunction8
+    ref: BUILTIN_LAMBDA7
+  - name: Lambda8
     package: PKG_STD_CORE
-    ref: BUILTIN_THROWING_FUNCTION8
-  - name: ThrowingFunction9
+    ref: BUILTIN_LAMBDA8
+  - name: Lambda9
     package: PKG_STD_CORE
-    ref: BUILTIN_THROWING_FUNCTION9
-  - name: ThrowingFunction10
+    ref: BUILTIN_LAMBDA9
+  - name: Lambda10
     package: PKG_STD_CORE
-    ref: BUILTIN_THROWING_FUNCTION10
-  - name: ThrowingFunction11
+    ref: BUILTIN_LAMBDA10
+  - name: Lambda11
     package: PKG_STD_CORE
-    ref: BUILTIN_THROWING_FUNCTION11
-  - name: ThrowingFunction12
+    ref: BUILTIN_LAMBDA11
+  - name: Lambda12
     package: PKG_STD_CORE
-    ref: BUILTIN_THROWING_FUNCTION12
-  - name: ThrowingFunction13
+    ref: BUILTIN_LAMBDA12
+  - name: Lambda13
     package: PKG_STD_CORE
-    ref: BUILTIN_THROWING_FUNCTION13
-  - name: ThrowingFunction14
+    ref: BUILTIN_LAMBDA13
+  - name: Lambda14
     package: PKG_STD_CORE
-    ref: BUILTIN_THROWING_FUNCTION14
-  - name: ThrowingFunction15
+    ref: BUILTIN_LAMBDA14
+  - name: Lambda15
     package: PKG_STD_CORE
-    ref: BUILTIN_THROWING_FUNCTION15
-  - name: ThrowingFunction16
+    ref: BUILTIN_LAMBDA15
+  - name: Lambda16
     package: PKG_STD_CORE
-    ref: BUILTIN_THROWING_FUNCTION16
-  - name: ThrowingFunctionN
+    ref: BUILTIN_LAMBDA16
+  - name: LambdaN
     package: PKG_STD_CORE
-    ref: BUILTIN_THROWING_FUNCTIONN
-  - name: RethrowingFunction0
+    ref: BUILTIN_LAMBDAN
+
+  - name: FunctionR0
     package: PKG_STD_CORE
-    ref: BUILTIN_RETHROWING_FUNCTION0
-  - name: RethrowingFunction1
+    ref: BUILTIN_FUNCTIONR0
+  - name: FunctionR1
     package: PKG_STD_CORE
-    ref: BUILTIN_RETHROWING_FUNCTION1
-  - name: RethrowingFunction2
+    ref: BUILTIN_FUNCTIONR1
+  - name: FunctionR2
     package: PKG_STD_CORE
-    ref: BUILTIN_RETHROWING_FUNCTION2
-  - name: RethrowingFunction3
+    ref: BUILTIN_FUNCTIONR2
+  - name: FunctionR3
     package: PKG_STD_CORE
-    ref: BUILTIN_RETHROWING_FUNCTION3
-  - name: RethrowingFunction4
+    ref: BUILTIN_FUNCTIONR3
+  - name: FunctionR4
     package: PKG_STD_CORE
-    ref: BUILTIN_RETHROWING_FUNCTION4
-  - name: RethrowingFunction5
+    ref: BUILTIN_FUNCTIONR4
+  - name: FunctionR5
     package: PKG_STD_CORE
-    ref: BUILTIN_RETHROWING_FUNCTION5
-  - name: RethrowingFunction6
+    ref: BUILTIN_FUNCTIONR5
+  - name: FunctionR6
     package: PKG_STD_CORE
-    ref: BUILTIN_RETHROWING_FUNCTION6
-  - name: RethrowingFunction7
+    ref: BUILTIN_FUNCTIONR6
+  - name: FunctionR7
     package: PKG_STD_CORE
-    ref: BUILTIN_RETHROWING_FUNCTION7
-  - name: RethrowingFunction8
+    ref: BUILTIN_FUNCTIONR7
+  - name: FunctionR8
     package: PKG_STD_CORE
-    ref: BUILTIN_RETHROWING_FUNCTION8
-  - name: RethrowingFunction9
+    ref: BUILTIN_FUNCTIONR8
+  - name: FunctionR9
     package: PKG_STD_CORE
-    ref: BUILTIN_RETHROWING_FUNCTION9
-  - name: RethrowingFunction10
+    ref: BUILTIN_FUNCTIONR9
+  - name: FunctionR10
     package: PKG_STD_CORE
-    ref: BUILTIN_RETHROWING_FUNCTION10
-  - name: RethrowingFunction11
+    ref: BUILTIN_FUNCTIONR10
+  - name: FunctionR11
     package: PKG_STD_CORE
-    ref: BUILTIN_RETHROWING_FUNCTION11
-  - name: RethrowingFunction12
+    ref: BUILTIN_FUNCTIONR11
+  - name: FunctionR12
     package: PKG_STD_CORE
-    ref: BUILTIN_RETHROWING_FUNCTION12
-  - name: RethrowingFunction13
+    ref: BUILTIN_FUNCTIONR12
+  - name: FunctionR13
     package: PKG_STD_CORE
-    ref: BUILTIN_RETHROWING_FUNCTION13
-  - name: RethrowingFunction14
+    ref: BUILTIN_FUNCTIONR13
+  - name: FunctionR14
     package: PKG_STD_CORE
-    ref: BUILTIN_RETHROWING_FUNCTION14
-  - name: RethrowingFunction15
+    ref: BUILTIN_FUNCTIONR14
+  - name: FunctionR15
     package: PKG_STD_CORE
-    ref: BUILTIN_RETHROWING_FUNCTION15
-  - name: RethrowingFunction16
+    ref: BUILTIN_FUNCTIONR15
+  - name: FunctionR16
     package: PKG_STD_CORE
-    ref: BUILTIN_RETHROWING_FUNCTION16
-  - name: RethrowingFunctionN
+    ref: BUILTIN_FUNCTIONR16
+
+  - name: LambdaR0
     package: PKG_STD_CORE
-    ref: BUILTIN_RETHROWING_FUNCTIONN
+    ref: BUILTIN_LAMBDAR0
+  - name: LambdaR1
+    package: PKG_STD_CORE
+    ref: BUILTIN_LAMBDAR1
+  - name: LambdaR2
+    package: PKG_STD_CORE
+    ref: BUILTIN_LAMBDAR2
+  - name: LambdaR3
+    package: PKG_STD_CORE
+    ref: BUILTIN_LAMBDAR3
+  - name: LambdaR4
+    package: PKG_STD_CORE
+    ref: BUILTIN_LAMBDAR4
+  - name: LambdaR5
+    package: PKG_STD_CORE
+    ref: BUILTIN_LAMBDAR5
+  - name: LambdaR6
+    package: PKG_STD_CORE
+    ref: BUILTIN_LAMBDAR6
+  - name: LambdaR7
+    package: PKG_STD_CORE
+    ref: BUILTIN_LAMBDAR7
+  - name: LambdaR8
+    package: PKG_STD_CORE
+    ref: BUILTIN_LAMBDAR8
+  - name: LambdaR9
+    package: PKG_STD_CORE
+    ref: BUILTIN_LAMBDAR9
+  - name: LambdaR10
+    package: PKG_STD_CORE
+    ref: BUILTIN_LAMBDAR10
+  - name: LambdaR11
+    package: PKG_STD_CORE
+    ref: BUILTIN_LAMBDAR11
+  - name: LambdaR12
+    package: PKG_STD_CORE
+    ref: BUILTIN_LAMBDAR12
+  - name: LambdaR13
+    package: PKG_STD_CORE
+    ref: BUILTIN_LAMBDAR13
+  - name: LambdaR14
+    package: PKG_STD_CORE
+    ref: BUILTIN_LAMBDAR14
+  - name: LambdaR15
+    package: PKG_STD_CORE
+    ref: BUILTIN_LAMBDAR15
+  - name: LambdaR16
+    package: PKG_STD_CORE
+    ref: BUILTIN_LAMBDAR16
 
 signatures:
   - callee: BUILTIN_OBJECT
@@ -537,7 +615,7 @@ signatures:
 
   - callee: BUILTIN_ASSERTION_ERROR
     method_name: $CTOR
-    params: [BUILTIN_STRING]
+    params: [BUILTIN_STRING, BUILTIN_ERROR_OPTIONS]
     return_type: PRIMITIVE_VOID
     ref: BUILTIN_ASSERTION_ERROR_CTOR
 
@@ -549,7 +627,7 @@ signatures:
 
   - callee: BUILTIN_ERROR
     method_name: $CTOR
-    params: [BUILTIN_OBJECT]
+    params: [BUILTIN_STRING]
     return_type: PRIMITIVE_VOID
     ref: BUILTIN_ERROR_CTOR
 

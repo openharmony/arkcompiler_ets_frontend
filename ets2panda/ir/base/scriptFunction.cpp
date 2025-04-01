@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,13 +24,12 @@
 namespace ark::es2panda::ir {
 
 ScriptFunction::ScriptFunction(ArenaAllocator *allocator, ScriptFunctionData &&data)
-    : AstNode(AstNodeType::SCRIPT_FUNCTION, data.flags),
+    : AnnotationAllowed<AstNode>(AstNodeType::SCRIPT_FUNCTION, data.flags, allocator),
       irSignature_(std::move(data.signature)),
       body_(data.body),
       funcFlags_(data.funcFlags),
       lang_(data.lang),
-      returnStatements_(allocator->Adapter()),
-      annotations_(allocator->Adapter())
+      returnStatements_(allocator->Adapter())
 {
     for (auto *param : irSignature_.Params()) {
         param->SetParent(this);
@@ -68,7 +67,7 @@ void ScriptFunction::SetIdent(Identifier *id) noexcept
 
 ScriptFunction *ScriptFunction::Clone(ArenaAllocator *allocator, AstNode *parent)
 {
-    ArenaVector<Expression *> params {allocator->Adapter()};
+    ArenaVector<ir::Expression *> params {allocator->Adapter()};
     ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
     for (auto *param : Params()) {
         params.push_back(param->Clone(allocator, nullptr)->AsExpression());
@@ -85,7 +84,8 @@ ScriptFunction *ScriptFunction::Clone(ArenaAllocator *allocator, AstNode *parent
                                         : nullptr,
                 std::move(params),
                 ReturnTypeAnnotation() != nullptr ? ReturnTypeAnnotation()->Clone(allocator, nullptr)->AsTypeNode()
-                                                  : nullptr},
+                                                  : nullptr,
+                HasReceiver()},
             funcFlags_, flags_, lang_});
     res->SetParent(parent);
     res->SetAnnotations(std::move(annotationUsages));
@@ -110,7 +110,7 @@ void ScriptFunction::TransformChildren(const NodeTransformer &cb, std::string_vi
         }
     }
 
-    for (auto *&it : annotations_) {
+    for (auto *&it : VectorIterationGuard(Annotations())) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsAnnotationUsage();
@@ -127,7 +127,7 @@ void ScriptFunction::Iterate(const NodeTraverser &cb) const
     if (body_ != nullptr) {
         cb(body_);
     }
-    for (auto *it : annotations_) {
+    for (auto *it : VectorIterationGuard(Annotations())) {
         cb(it);
     }
 }
@@ -158,7 +158,7 @@ void ScriptFunction::Dump(ir::AstDumper *dumper) const
                  {"typeParameters", AstDumper::Optional(irSignature_.TypeParams())},
                  {"declare", AstDumper::Optional(IsDeclare())},
                  {"body", AstDumper::Optional(body_)},
-                 {"annotations", AstDumper::Optional(annotations_)},
+                 {"annotations", AstDumper::Optional(Annotations())},
                  {"throwMarker", AstDumper::Optional(throwMarker)}});
 }
 
@@ -171,10 +171,6 @@ void ScriptFunction::Dump(ir::SrcDumper *dumper) const
     }
     dumper->Add("(");
     for (auto param : Params()) {
-        if (param->IsETSParameterExpression() && param->AsETSParameterExpression()->Ident() != nullptr &&
-            param->AsETSParameterExpression()->Ident()->Name() == varbinder::VarBinder::MANDATORY_PARAM_THIS) {
-            continue;
-        }
         param->Dump(dumper);
         if (param != Params().back()) {
             dumper->Add(", ");
@@ -230,8 +226,8 @@ checker::Type *ScriptFunction::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ScriptFunction::Check(checker::ETSChecker *checker)
+checker::VerifiedType ScriptFunction::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

@@ -26,10 +26,12 @@
 namespace ark::es2panda::ir {
 void BlockStatement::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    for (auto *&it : statements_) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode->AsStatement();
+    // This will survive pushing element to the back of statements_ in the process
+    // NOLINTNEXTLINE(modernize-loop-convert)
+    for (size_t ix = 0; ix < statements_.size(); ix++) {
+        if (auto *transformedNode = cb(statements_[ix]); statements_[ix] != transformedNode) {
+            statements_[ix]->SetTransformedNode(transformationName, transformedNode);
+            statements_[ix] = transformedNode->AsStatement();
         }
     }
 }
@@ -102,8 +104,8 @@ checker::Type *BlockStatement::Check([[maybe_unused]] checker::TSChecker *checke
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *BlockStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType BlockStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

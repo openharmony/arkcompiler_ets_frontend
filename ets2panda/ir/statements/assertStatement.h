@@ -56,12 +56,14 @@ public:
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {
         v->Accept(this);
     }
+
+    AssertStatement *Clone(ArenaAllocator *const allocator, AstNode *const parent) override;
 
 private:
     Expression *test_;

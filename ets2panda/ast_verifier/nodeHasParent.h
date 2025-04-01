@@ -20,10 +20,10 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-class NodeHasParent {
-public:
-    explicit NodeHasParent([[maybe_unused]] ArenaAllocator &allocator) {}
-    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
+class NodeHasParent : public RecursiveInvariant<VerifierInvariants::NODE_HAS_PARENT> {
+    template <VerifierInvariants ID>
+    friend class InvariantBase;
+    [[nodiscard]] CheckResult operator()(const ir::AstNode *ast);
 };
 
 }  // namespace ark::es2panda::compiler::ast_verifier

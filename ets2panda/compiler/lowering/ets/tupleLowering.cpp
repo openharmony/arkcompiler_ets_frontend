@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -51,20 +51,19 @@ public:
     checker::Type *SetArgumentType(checker::Type *const argumentType)
     {
         auto *const savedType = argument_->TsType();
-        argument_->SetTsType(argumentType->AsETSTupleType()->ElementType());
+        argument_->SetTsType(argumentType->AsETSTupleType()->GetLubType());
         return savedType;
     }
 
     void ComputeTypes(checker::Type *const argumentType)
     {
         tupleTypeAtIdx_ = argumentType->AsETSTupleType()->GetTypeAtIndex(
-
             // After the checker, we are guranteed that the index is correct.
-            *checker_->GetTupleElementAccessValue(argument_->AsMemberExpression()->Property()->TsType(),
-                                                  argument_->AsMemberExpression()->Property()->Start()));
+            *checker_->GetTupleElementAccessValue(argument_->AsMemberExpression()->Property()->TsType()));
 
-        tupleElementTypeNode_ = checker_->AllocNode<ir::OpaqueTypeNode>(argumentType->AsETSTupleType()->ElementType());
-        tupleTypeAtIdxNode_ = checker_->AllocNode<ir::OpaqueTypeNode>(tupleTypeAtIdx_);
+        tupleElementTypeNode_ = checker_->AllocNode<ir::OpaqueTypeNode>(argumentType->AsETSTupleType()->GetLubType(),
+                                                                        checker_->Allocator());
+        tupleTypeAtIdxNode_ = checker_->AllocNode<ir::OpaqueTypeNode>(tupleTypeAtIdx_, checker_->Allocator());
     }
 
     ArenaVector<ir::Expression *> GenerateExpressions()
@@ -126,12 +125,12 @@ private:
     std::tuple<ir::Identifier *, varbinder::LocalVariable *const> GenerateSymbol(checker::Type *const type) const
     {
         auto *gensym = Gensym(checker_->Allocator());
-        auto *const tmpVar = NearestScope(update_)->AddDecl<varbinder::LetDecl, varbinder::LocalVariable>(
+        auto [variable, _] = NearestScope(update_)->AddDecl<varbinder::LetDecl, varbinder::LocalVariable>(
             checker_->Allocator(), gensym->Name(), varbinder::VariableFlags::LOCAL);
-        tmpVar->SetTsType(type);
-        gensym->SetVariable(tmpVar);
-        gensym->SetTsType(tmpVar->TsType());
-        return std::make_tuple(gensym, tmpVar);
+        gensym->SetVariable(variable);
+        variable->SetTsType(type);
+        gensym->SetTsType(type);
+        return std::make_tuple(gensym, variable->AsLocalVariable());
     }
 
     std::tuple<ir::MemberExpression *const, ir::MemberExpression *const> CloneArgument(
@@ -233,13 +232,13 @@ static ir::AssignmentExpression *ConvertTupleAssignment(checker::ETSChecker *con
 
     // Set tuple type to <tuple element_type> (because we may need implicit boxing)
     auto *const savedLeftType = left->TsType();
-    left->SetTsType(leftObjectType->AsETSTupleType()->ElementType());
+    left->SetTsType(leftObjectType->AsETSTupleType()->GetLubType());
     // --------------
 
     // Compute necessary types and OpaqueTypeNodes
     auto *const elementTypeTypeNode =
-        checker->AllocNode<ir::OpaqueTypeNode>(leftObjectType->AsETSTupleType()->ElementType());
-    auto *const tupleTypeAtIdxTypeNode = checker->AllocNode<ir::OpaqueTypeNode>(savedLeftType);
+        checker->AllocNode<ir::OpaqueTypeNode>(leftObjectType->AsETSTupleType()->GetLubType(), checker->Allocator());
+    auto *const tupleTypeAtIdxTypeNode = checker->AllocNode<ir::OpaqueTypeNode>(savedLeftType, checker->Allocator());
     // --------------
 
     // make node: tuple[n] = ((variable as <tuple type at index n>) as <tuple element_type>)
@@ -260,15 +259,8 @@ static ir::AssignmentExpression *ConvertTupleAssignment(checker::ETSChecker *con
     return newAssignment;
 }
 
-bool TupleLowering::Perform(public_lib::Context *const ctx, parser::Program *const program)
+bool TupleLowering::PerformForModule(public_lib::Context *const ctx, parser::Program *const program)
 {
-    for (const auto &[_, ext_programs] : program->ExternalSources()) {
-        (void)_;
-        for (auto *const extProg : ext_programs) {
-            Perform(ctx, extProg);
-        }
-    }
-
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
 
     program->Ast()->TransformChildrenRecursively(
@@ -291,17 +283,9 @@ bool TupleLowering::Perform(public_lib::Context *const ctx, parser::Program *con
     return true;
 }
 
-bool TupleLowering::Postcondition(public_lib::Context *const ctx, const parser::Program *const program)
+bool TupleLowering::PostconditionForModule([[maybe_unused]] public_lib::Context *const ctx,
+                                           const parser::Program *const program)
 {
-    for (const auto &[_, ext_programs] : program->ExternalSources()) {
-        (void)_;
-        for (const auto *const extProg : ext_programs) {
-            if (!Postcondition(ctx, extProg)) {
-                return false;
-            }
-        }
-    }
-
     return !program->Ast()->IsAnyChild([](const ir::AstNode *const ast) {
         const bool isLeftMemberExpr =
             ast->IsAssignmentExpression() && ast->AsAssignmentExpression()->Left()->IsMemberExpression();
@@ -314,7 +298,7 @@ bool TupleLowering::Postcondition(public_lib::Context *const ctx, const parser::
         // yes, then the right hand side must be a type of the element type.
         return isLeftMemberExpr && isLeftTuple &&
                (ast->AsAssignmentExpression()->Right()->TsType() ==
-                ast->AsAssignmentExpression()->Left()->AsMemberExpression()->TsType()->AsETSTupleType()->ElementType());
+                ast->AsAssignmentExpression()->Left()->AsMemberExpression()->TsType()->AsETSTupleType()->GetLubType());
     });
 }
 

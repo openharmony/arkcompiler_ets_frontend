@@ -15,7 +15,6 @@
 
 
 a.(b)
-/* @@? 17:3 Error SyntaxError: Identifier expected, got '('.  */
-/* @@? 17:4 Error SyntaxError: Unexpected token 'identification literal'.  */
-/* @@? 17:5 Error SyntaxError: Unexpected token ')'.  */
-/* @@? 17:5 Error SyntaxError: Unexpected token: ')'.  */
+/* @@? 17:3 Error SyntaxError: Identifier expected, got '('. */
+/* @@? 17:4 Error SyntaxError: Unexpected token 'b'. */
+/* @@? 17:5 Error SyntaxError: Unexpected token ')'. */

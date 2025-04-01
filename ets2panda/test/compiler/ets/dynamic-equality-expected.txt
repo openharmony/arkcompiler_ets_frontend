@@ -5,15 +5,17 @@
       "type": "ImportDeclaration",
       "source": {
         "type": "StringLiteral",
-        "value": "dynamic_js_import_tests",
+        "value": "dynamic_import_tests",
         "loc": {
           "start": {
             "line": 20,
-            "column": 19
+            "column": 19,
+            "program": "dynamic-equality.ets"
           },
           "end": {
             "line": 20,
-            "column": 44
+            "column": 41,
+            "program": "dynamic-equality.ets"
           }
         }
       },
@@ -27,11 +29,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 10
+                "column": 10,
+                "program": "dynamic-equality.ets"
               },
               "end": {
                 "line": 20,
-                "column": 11
+                "column": 11,
+                "program": "dynamic-equality.ets"
               }
             }
           },
@@ -42,22 +46,26 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 10
+                "column": 10,
+                "program": "dynamic-equality.ets"
               },
               "end": {
                 "line": 20,
-                "column": 11
+                "column": 11,
+                "program": "dynamic-equality.ets"
               }
             }
           },
           "loc": {
             "start": {
               "line": 20,
-              "column": 10
+              "column": 10,
+              "program": "dynamic-equality.ets"
             },
             "end": {
               "line": 20,
-              "column": 11
+              "column": 11,
+              "program": "dynamic-equality.ets"
             }
           }
         }
@@ -65,11 +73,13 @@
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "dynamic-equality.ets"
         },
         "end": {
           "line": 20,
-          "column": 44
+          "column": 41,
+          "program": "dynamic-equality.ets"
         }
       }
     },
@@ -83,16 +93,52 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "dynamic-equality.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "dynamic-equality.ets"
             }
           }
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "dynamic-equality.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "dynamic-equality.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "dynamic-equality.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "dynamic-equality.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",
@@ -103,11 +149,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -127,11 +175,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -145,33 +195,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -180,11 +236,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "dynamic-equality.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "dynamic-equality.ets"
               }
             }
           },
@@ -197,11 +255,13 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 10
+                  "column": 10,
+                  "program": "dynamic-equality.ets"
                 },
                 "end": {
                   "line": 22,
-                  "column": 14
+                  "column": 14,
+                  "program": "dynamic-equality.ets"
                 }
               }
             },
@@ -221,11 +281,13 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 10
+                      "column": 10,
+                      "program": "dynamic-equality.ets"
                     },
                     "end": {
                       "line": 22,
-                      "column": 14
+                      "column": 14,
+                      "program": "dynamic-equality.ets"
                     }
                   }
                 },
@@ -238,11 +300,13 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 18
+                      "column": 18,
+                      "program": "dynamic-equality.ets"
                     },
                     "end": {
                       "line": 22,
-                      "column": 21
+                      "column": 21,
+                      "program": "dynamic-equality.ets"
                     }
                   }
                 },
@@ -261,11 +325,13 @@
                             "loc": {
                               "start": {
                                 "line": 23,
-                                "column": 9
+                                "column": 9,
+                                "program": "dynamic-equality.ets"
                               },
                               "end": {
                                 "line": 23,
-                                "column": 10
+                                "column": 10,
+                                "program": "dynamic-equality.ets"
                               }
                             }
                           },
@@ -278,11 +344,13 @@
                               "loc": {
                                 "start": {
                                   "line": 23,
-                                  "column": 13
+                                  "column": 13,
+                                  "program": "dynamic-equality.ets"
                                 },
                                 "end": {
                                   "line": 23,
-                                  "column": 14
+                                  "column": 14,
+                                  "program": "dynamic-equality.ets"
                                 }
                               }
                             },
@@ -291,22 +359,26 @@
                             "loc": {
                               "start": {
                                 "line": 23,
-                                "column": 13
+                                "column": 13,
+                                "program": "dynamic-equality.ets"
                               },
                               "end": {
                                 "line": 23,
-                                "column": 16
+                                "column": 16,
+                                "program": "dynamic-equality.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 23,
-                              "column": 9
+                              "column": 9,
+                              "program": "dynamic-equality.ets"
                             },
                             "end": {
                               "line": 23,
-                              "column": 16
+                              "column": 16,
+                              "program": "dynamic-equality.ets"
                             }
                           }
                         }
@@ -315,11 +387,13 @@
                       "loc": {
                         "start": {
                           "line": 23,
-                          "column": 5
+                          "column": 5,
+                          "program": "dynamic-equality.ets"
                         },
                         "end": {
                           "line": 23,
-                          "column": 17
+                          "column": 17,
+                          "program": "dynamic-equality.ets"
                         }
                       }
                     },
@@ -335,11 +409,13 @@
                             "loc": {
                               "start": {
                                 "line": 24,
-                                "column": 9
+                                "column": 9,
+                                "program": "dynamic-equality.ets"
                               },
                               "end": {
                                 "line": 24,
-                                "column": 10
+                                "column": 10,
+                                "program": "dynamic-equality.ets"
                               }
                             }
                           },
@@ -352,11 +428,13 @@
                               "loc": {
                                 "start": {
                                   "line": 24,
-                                  "column": 13
+                                  "column": 13,
+                                  "program": "dynamic-equality.ets"
                                 },
                                 "end": {
                                   "line": 24,
-                                  "column": 14
+                                  "column": 14,
+                                  "program": "dynamic-equality.ets"
                                 }
                               }
                             },
@@ -365,22 +443,26 @@
                             "loc": {
                               "start": {
                                 "line": 24,
-                                "column": 13
+                                "column": 13,
+                                "program": "dynamic-equality.ets"
                               },
                               "end": {
                                 "line": 24,
-                                "column": 16
+                                "column": 16,
+                                "program": "dynamic-equality.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 24,
-                              "column": 9
+                              "column": 9,
+                              "program": "dynamic-equality.ets"
                             },
                             "end": {
                               "line": 24,
-                              "column": 16
+                              "column": 16,
+                              "program": "dynamic-equality.ets"
                             }
                           }
                         }
@@ -389,11 +471,13 @@
                       "loc": {
                         "start": {
                           "line": 24,
-                          "column": 5
+                          "column": 5,
+                          "program": "dynamic-equality.ets"
                         },
                         "end": {
                           "line": 24,
-                          "column": 17
+                          "column": 17,
+                          "program": "dynamic-equality.ets"
                         }
                       }
                     },
@@ -409,11 +493,13 @@
                           "loc": {
                             "start": {
                               "line": 25,
-                              "column": 9
+                              "column": 9,
+                              "program": "dynamic-equality.ets"
                             },
                             "end": {
                               "line": 25,
-                              "column": 10
+                              "column": 10,
+                              "program": "dynamic-equality.ets"
                             }
                           }
                         },
@@ -424,22 +510,26 @@
                           "loc": {
                             "start": {
                               "line": 25,
-                              "column": 15
+                              "column": 15,
+                              "program": "dynamic-equality.ets"
                             },
                             "end": {
                               "line": 25,
-                              "column": 16
+                              "column": 16,
+                              "program": "dynamic-equality.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 25,
-                            "column": 9
+                            "column": 9,
+                            "program": "dynamic-equality.ets"
                           },
                           "end": {
                             "line": 25,
-                            "column": 16
+                            "column": 16,
+                            "program": "dynamic-equality.ets"
                           }
                         }
                       },
@@ -454,22 +544,26 @@
                               "loc": {
                                 "start": {
                                   "line": 26,
-                                  "column": 16
+                                  "column": 16,
+                                  "program": "dynamic-equality.ets"
                                 },
                                 "end": {
                                   "line": 26,
-                                  "column": 17
+                                  "column": 17,
+                                  "program": "dynamic-equality.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 26,
-                                "column": 9
+                                "column": 9,
+                                "program": "dynamic-equality.ets"
                               },
                               "end": {
                                 "line": 26,
-                                "column": 18
+                                "column": 18,
+                                "program": "dynamic-equality.ets"
                               }
                             }
                           }
@@ -477,11 +571,13 @@
                         "loc": {
                           "start": {
                             "line": 25,
-                            "column": 18
+                            "column": 18,
+                            "program": "dynamic-equality.ets"
                           },
                           "end": {
                             "line": 27,
-                            "column": 6
+                            "column": 6,
+                            "program": "dynamic-equality.ets"
                           }
                         }
                       },
@@ -496,22 +592,26 @@
                               "loc": {
                                 "start": {
                                   "line": 28,
-                                  "column": 16
+                                  "column": 16,
+                                  "program": "dynamic-equality.ets"
                                 },
                                 "end": {
                                   "line": 28,
-                                  "column": 17
+                                  "column": 17,
+                                  "program": "dynamic-equality.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 28,
-                                "column": 9
+                                "column": 9,
+                                "program": "dynamic-equality.ets"
                               },
                               "end": {
                                 "line": 28,
-                                "column": 18
+                                "column": 18,
+                                "program": "dynamic-equality.ets"
                               }
                             }
                           }
@@ -519,22 +619,26 @@
                         "loc": {
                           "start": {
                             "line": 27,
-                            "column": 12
+                            "column": 12,
+                            "program": "dynamic-equality.ets"
                           },
                           "end": {
                             "line": 29,
-                            "column": 6
+                            "column": 6,
+                            "program": "dynamic-equality.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 25,
-                          "column": 5
+                          "column": 5,
+                          "program": "dynamic-equality.ets"
                         },
                         "end": {
                           "line": 29,
-                          "column": 6
+                          "column": 6,
+                          "program": "dynamic-equality.ets"
                         }
                       }
                     }
@@ -542,33 +646,39 @@
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 22
+                      "column": 22,
+                      "program": "dynamic-equality.ets"
                     },
                     "end": {
                       "line": 30,
-                      "column": 2
+                      "column": 2,
+                      "program": "dynamic-equality.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 10
+                    "column": 10,
+                    "program": "dynamic-equality.ets"
                   },
                   "end": {
                     "line": 30,
-                    "column": 2
+                    "column": 2,
+                    "program": "dynamic-equality.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 10
+                  "column": 10,
+                  "program": "dynamic-equality.ets"
                 },
                 "end": {
                   "line": 30,
-                  "column": 2
+                  "column": 2,
+                  "program": "dynamic-equality.ets"
                 }
               }
             },
@@ -577,11 +687,13 @@
             "loc": {
               "start": {
                 "line": 22,
-                "column": 1
+                "column": 1,
+                "program": "dynamic-equality.ets"
               },
               "end": {
                 "line": 30,
-                "column": 2
+                "column": 2,
+                "program": "dynamic-equality.ets"
               }
             }
           }
@@ -589,22 +701,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "dynamic-equality.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "dynamic-equality.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "dynamic-equality.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "dynamic-equality.ets"
         }
       }
     },
@@ -618,11 +734,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": null
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": null
             }
           }
         },
@@ -638,11 +756,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -657,11 +777,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -670,11 +792,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": null
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": null
               }
             }
           },
@@ -691,11 +815,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -719,11 +845,13 @@
                             "loc": {
                               "start": {
                                 "line": 1,
-                                "column": 1
+                                "column": 1,
+                                "program": null
                               },
                               "end": {
                                 "line": 1,
-                                "column": 1
+                                "column": 1,
+                                "program": null
                               }
                             }
                           },
@@ -734,11 +862,13 @@
                             "loc": {
                               "start": {
                                 "line": 1,
-                                "column": 1
+                                "column": 1,
+                                "program": null
                               },
                               "end": {
                                 "line": 1,
-                                "column": 1
+                                "column": 1,
+                                "program": null
                               }
                             }
                           },
@@ -747,11 +877,13 @@
                           "loc": {
                             "start": {
                               "line": 1,
-                              "column": 1
+                              "column": 1,
+                              "program": null
                             },
                             "end": {
                               "line": 1,
-                              "column": 1
+                              "column": 1,
+                              "program": null
                             }
                           }
                         },
@@ -760,22 +892,26 @@
                         "loc": {
                           "start": {
                             "line": 1,
-                            "column": 1
+                            "column": 1,
+                            "program": null
                           },
                           "end": {
                             "line": 1,
-                            "column": 1
+                            "column": 1,
+                            "program": null
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 1,
-                          "column": 1
+                          "column": 1,
+                          "program": null
                         },
                         "end": {
                           "line": 1,
-                          "column": 1
+                          "column": 1,
+                          "program": null
                         }
                       }
                     }
@@ -783,44 +919,52 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": null
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": null
               }
             }
           },
@@ -828,16 +972,18 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
-              "name": "invoke",
+              "name": "$_invoke",
               "decorators": [],
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -852,16 +998,18 @@
                 "type": "ScriptFunction",
                 "id": {
                   "type": "Identifier",
-                  "name": "invoke",
+                  "name": "$_invoke",
                   "decorators": [],
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -879,11 +1027,13 @@
                         "loc": {
                           "start": {
                             "line": 1,
-                            "column": 1
+                            "column": 1,
+                            "program": null
                           },
                           "end": {
                             "line": 1,
-                            "column": 1
+                            "column": 1,
+                            "program": null
                           }
                         }
                       },
@@ -891,22 +1041,26 @@
                       "loc": {
                         "start": {
                           "line": 1,
-                          "column": 1
+                          "column": 1,
+                          "program": null
                         },
                         "end": {
                           "line": 1,
-                          "column": 1
+                          "column": 1,
+                          "program": null
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 1,
-                        "column": 1
+                        "column": 1,
+                        "program": null
                       },
                       "end": {
                         "line": 1,
-                        "column": 1
+                        "column": 1,
+                        "program": null
                       }
                     }
                   },
@@ -920,11 +1074,13 @@
                         "loc": {
                           "start": {
                             "line": 1,
-                            "column": 1
+                            "column": 1,
+                            "program": null
                           },
                           "end": {
                             "line": 1,
-                            "column": 1
+                            "column": 1,
+                            "program": null
                           }
                         }
                       },
@@ -932,22 +1088,26 @@
                       "loc": {
                         "start": {
                           "line": 1,
-                          "column": 1
+                          "column": 1,
+                          "program": null
                         },
                         "end": {
                           "line": 1,
-                          "column": 1
+                          "column": 1,
+                          "program": null
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 1,
-                        "column": 1
+                        "column": 1,
+                        "program": null
                       },
                       "end": {
                         "line": 1,
-                        "column": 1
+                        "column": 1,
+                        "program": null
                       }
                     }
                   },
@@ -961,11 +1121,13 @@
                         "loc": {
                           "start": {
                             "line": 1,
-                            "column": 1
+                            "column": 1,
+                            "program": null
                           },
                           "end": {
                             "line": 1,
-                            "column": 1
+                            "column": 1,
+                            "program": null
                           }
                         }
                       },
@@ -973,22 +1135,26 @@
                       "loc": {
                         "start": {
                           "line": 1,
-                          "column": 1
+                          "column": 1,
+                          "program": null
                         },
                         "end": {
                           "line": 1,
-                          "column": 1
+                          "column": 1,
+                          "program": null
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 1,
-                        "column": 1
+                        "column": 1,
+                        "program": null
                       },
                       "end": {
                         "line": 1,
-                        "column": 1
+                        "column": 1,
+                        "program": null
                       }
                     }
                   }
@@ -998,33 +1164,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1033,11 +1205,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": null
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -1045,22 +1219,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": null
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": null
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": null
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": null
         }
       }
     },
@@ -1074,11 +1252,13 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": null
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": null
             }
           }
         },
@@ -1089,16 +1269,18 @@
             "type": "ClassProperty",
             "key": {
               "type": "Identifier",
-              "name": "dynamic_js_import_tests0",
+              "name": "dynamic_import_tests0",
               "decorators": [],
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1113,11 +1295,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1126,11 +1310,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": null
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": null
               }
             }
           },
@@ -1147,11 +1333,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -1176,26 +1364,30 @@
                             "loc": {
                               "start": {
                                 "line": 1,
-                                "column": 1
+                                "column": 1,
+                                "program": null
                               },
                               "end": {
                                 "line": 1,
-                                "column": 1
+                                "column": 1,
+                                "program": null
                               }
                             }
                           },
                           "property": {
                             "type": "Identifier",
-                            "name": "dynamic_js_import_tests0",
+                            "name": "dynamic_import_tests0",
                             "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 1,
-                                "column": 1
+                                "column": 1,
+                                "program": null
                               },
                               "end": {
                                 "line": 1,
-                                "column": 1
+                                "column": 1,
+                                "program": null
                               }
                             }
                           },
@@ -1204,11 +1396,13 @@
                           "loc": {
                             "start": {
                               "line": 1,
-                              "column": 1
+                              "column": 1,
+                              "program": null
                             },
                             "end": {
                               "line": 1,
-                              "column": 1
+                              "column": 1,
+                              "program": null
                             }
                           }
                         },
@@ -1223,11 +1417,13 @@
                               "loc": {
                                 "start": {
                                   "line": 1,
-                                  "column": 1
+                                  "column": 1,
+                                  "program": null
                                 },
                                 "end": {
                                   "line": 1,
-                                  "column": 1
+                                  "column": 1,
+                                  "program": null
                                 }
                               }
                             },
@@ -1238,11 +1434,13 @@
                               "loc": {
                                 "start": {
                                   "line": 1,
-                                  "column": 1
+                                  "column": 1,
+                                  "program": null
                                 },
                                 "end": {
                                   "line": 1,
-                                  "column": 1
+                                  "column": 1,
+                                  "program": null
                                 }
                               }
                             },
@@ -1251,26 +1449,30 @@
                             "loc": {
                               "start": {
                                 "line": 1,
-                                "column": 1
+                                "column": 1,
+                                "program": null
                               },
                               "end": {
                                 "line": 1,
-                                "column": 1
+                                "column": 1,
+                                "program": null
                               }
                             }
                           },
                           "arguments": [
                             {
                               "type": "StringLiteral",
-                              "value": "dynamic_js_import_tests",
+                              "value": "dynamic_import_tests",
                               "loc": {
                                 "start": {
                                   "line": 1,
-                                  "column": 1
+                                  "column": 1,
+                                  "program": null
                                 },
                                 "end": {
                                   "line": 1,
-                                  "column": 1
+                                  "column": 1,
+                                  "program": null
                                 }
                               }
                             }
@@ -1279,33 +1481,39 @@
                           "loc": {
                             "start": {
                               "line": 1,
-                              "column": 1
+                              "column": 1,
+                              "program": null
                             },
                             "end": {
                               "line": 1,
-                              "column": 1
+                              "column": 1,
+                              "program": null
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 1,
-                            "column": 1
+                            "column": 1,
+                            "program": null
                           },
                           "end": {
                             "line": 1,
-                            "column": 1
+                            "column": 1,
+                            "program": null
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 1,
-                          "column": 1
+                          "column": 1,
+                          "program": null
                         },
                         "end": {
                           "line": 1,
-                          "column": 1
+                          "column": 1,
+                          "program": null
                         }
                       }
                     }
@@ -1313,44 +1521,52 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": null
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": null
               }
             }
           },
@@ -1363,11 +1579,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1387,11 +1605,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -1404,11 +1624,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -1418,33 +1640,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1453,11 +1681,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": null
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -1465,22 +1695,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": null
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": null
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": null
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": null
         }
       }
     }
@@ -1488,11 +1722,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "dynamic-equality.ets"
     },
     "end": {
       "line": 31,
-      "column": 1
+      "column": 1,
+      "program": "dynamic-equality.ets"
     }
   }
 }

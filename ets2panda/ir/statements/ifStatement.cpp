@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,8 +18,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 void IfStatement::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
@@ -62,7 +60,7 @@ void IfStatement::Dump(ir::AstDumper *dumper) const
 
 void IfStatement::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(test_);
+    ES2PANDA_ASSERT(test_);
     dumper->Add("if (");
     test_->Dump(dumper);
     dumper->Add(") {");
@@ -105,9 +103,9 @@ checker::Type *IfStatement::Check([[maybe_unused]] checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *IfStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType IfStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 IfStatement *IfStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
@@ -115,21 +113,19 @@ IfStatement *IfStatement::Clone(ArenaAllocator *const allocator, AstNode *const 
     auto *const test = test_->Clone(allocator, nullptr)->AsExpression();
     auto *const consequent = consequent_->Clone(allocator, nullptr)->AsStatement();
     auto *const alternate = alternate_ != nullptr ? consequent_->Clone(allocator, nullptr)->AsStatement() : nullptr;
+    auto *const clone = allocator->New<IfStatement>(test, consequent, alternate);
 
-    if (auto *const clone = allocator->New<IfStatement>(test, consequent, alternate); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        test->SetParent(clone);
-        consequent->SetParent(clone);
-        if (alternate != nullptr) {
-            alternate->SetParent(clone);
-        }
-
-        clone->SetRange(Range());
-        return clone;
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+
+    test->SetParent(clone);
+    consequent->SetParent(clone);
+    if (alternate != nullptr) {
+        alternate->SetParent(clone);
+    }
+
+    clone->SetRange(Range());
+    return clone;
 }
 }  // namespace ark::es2panda::ir

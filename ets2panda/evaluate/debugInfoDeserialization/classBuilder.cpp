@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -52,8 +52,8 @@ ir::ClassDeclaration *ClassBuilder::Build(parser::Program *program) &&
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *classDef = checker_->AllocNode<ir::ClassDefinition>(
-        util::StringView(), classId, nullptr, nullptr, ArenaVector<ir::TSClassImplements *>(allocator->Adapter()),
-        nullptr, superClass_, ArenaVector<ir::AstNode *>(allocator->Adapter()), classModifiers_, modifierFlags_,
+        classId, nullptr, nullptr, ArenaVector<ir::TSClassImplements *>(allocator->Adapter()), nullptr, superClass_,
+        ArenaVector<ir::AstNode *>(allocator->Adapter()), classModifiers_, modifierFlags_,
         ToLanguage(program->Extension()));
 
     // Set parents for all class'es fields and methods.
@@ -81,7 +81,7 @@ void ClassBuilder::BuildFields(ArenaVector<ir::AstNode *> &classBody)
         const char *name = utf::Mutf8AsCString(pf.GetStringData(fda.GetNameId()).data);
 
         auto *typeNode = helpers::PandaTypeToTypeNode(pf, fda, checker_);
-        ASSERT(typeNode);
+        ES2PANDA_ASSERT(typeNode);
 
         auto *field = helpers::CreateClassProperty(checker_, name, typeNode, helpers::GetModifierFlags(fda, true));
         classBody.push_back(field);

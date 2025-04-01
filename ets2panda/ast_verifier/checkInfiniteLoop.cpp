@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,6 +14,7 @@
  */
 
 #include "checkInfiniteLoop.h"
+#include "ir/expression.h"
 #include "ir/statements/forUpdateStatement.h"
 #include "checker/types/type.h"
 #include "ir/statements/doWhileStatement.h"
@@ -21,18 +22,18 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-[[nodiscard]] CheckResult CheckInfiniteLoop::operator()(CheckContext &ctx, const ir::AstNode *ast)
+[[nodiscard]] CheckResult CheckInfiniteLoop::operator()(const ir::AstNode *ast)
 {
     if (ast->IsDoWhileStatement()) {
-        return HandleDoWhileStatement(ctx, ast->AsDoWhileStatement());
+        return HandleDoWhileStatement(ast->AsDoWhileStatement());
     }
 
     if (ast->IsWhileStatement()) {
-        return HandleWhileStatement(ctx, ast->AsWhileStatement());
+        return HandleWhileStatement(ast->AsWhileStatement());
     }
 
     if (ast->IsForUpdateStatement()) {
-        return HandleForUpdateStatement(ctx, ast->AsForUpdateStatement());
+        return HandleForUpdateStatement(ast->AsForUpdateStatement());
     }
 
     return {CheckDecision::CORRECT, CheckAction::CONTINUE};
@@ -40,7 +41,7 @@ namespace ark::es2panda::compiler::ast_verifier {
 
 bool CheckInfiniteLoop::ConditionIsAlwaysTrue(const ir::Expression *const test) const
 {
-    ASSERT(test);
+    ES2PANDA_ASSERT(test);
     auto const *const type = test->TsType();
     if (type == nullptr) {
         return false;
@@ -57,7 +58,7 @@ bool CheckInfiniteLoop::ConditionIsAlwaysTrue(const ir::Expression *const test) 
 
 bool CheckInfiniteLoop::HasBreakOrReturnStatement(const ir::Statement *const body) const
 {
-    ASSERT(body);
+    ES2PANDA_ASSERT(body);
     bool hasExit = body->IsBreakStatement() || body->IsReturnStatement();
     body->IterateRecursively(
         [&hasExit](ir::AstNode *child) { hasExit |= child->IsBreakStatement() || child->IsReturnStatement(); });
@@ -65,8 +66,7 @@ bool CheckInfiniteLoop::HasBreakOrReturnStatement(const ir::Statement *const bod
     return hasExit;
 }
 
-[[nodiscard]] CheckResult CheckInfiniteLoop::HandleWhileStatement(CheckContext &ctx,
-                                                                  const ir::WhileStatement *const stmt) const
+[[nodiscard]] CheckResult CheckInfiniteLoop::HandleWhileStatement(const ir::WhileStatement *const stmt)
 {
     auto const *body = stmt->Body();
     auto const *test = stmt->Test();
@@ -76,15 +76,15 @@ bool CheckInfiniteLoop::HasBreakOrReturnStatement(const ir::Statement *const bod
 
     if (ConditionIsAlwaysTrue(test)) {
         if (!HasBreakOrReturnStatement(body)) {
-            ctx.AddCheckMessage("INFINITE LOOP", *stmt, stmt->Start());
+            AddCheckMessage("INFINITE LOOP", *stmt);
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
     }
 
     return {CheckDecision::CORRECT, CheckAction::CONTINUE};
 }
 
-[[nodiscard]] CheckResult CheckInfiniteLoop::HandleDoWhileStatement(CheckContext &ctx,
-                                                                    const ir::DoWhileStatement *const stmt) const
+[[nodiscard]] CheckResult CheckInfiniteLoop::HandleDoWhileStatement(const ir::DoWhileStatement *const stmt)
 {
     auto const *body = stmt->Body();
     auto const *test = stmt->Test();
@@ -94,15 +94,15 @@ bool CheckInfiniteLoop::HasBreakOrReturnStatement(const ir::Statement *const bod
 
     if (ConditionIsAlwaysTrue(test)) {
         if (!HasBreakOrReturnStatement(body)) {
-            ctx.AddCheckMessage("INFINITE LOOP", *stmt, stmt->Start());
+            AddCheckMessage("INFINITE LOOP", *stmt);
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
     }
 
     return {CheckDecision::CORRECT, CheckAction::CONTINUE};
 }
 
-[[nodiscard]] CheckResult CheckInfiniteLoop::HandleForUpdateStatement(CheckContext &ctx,
-                                                                      const ir::ForUpdateStatement *const stmt) const
+[[nodiscard]] CheckResult CheckInfiniteLoop::HandleForUpdateStatement(const ir::ForUpdateStatement *const stmt)
 {
     auto const *body = stmt->Body();
     if (body == nullptr) {
@@ -114,8 +114,8 @@ bool CheckInfiniteLoop::HasBreakOrReturnStatement(const ir::Statement *const bod
     auto const *test = stmt->Test();
     if (test == nullptr || ConditionIsAlwaysTrue(test)) {
         if (!HasBreakOrReturnStatement(body)) {
-            ctx.AddCheckMessage("INFINITE LOOP", *stmt, stmt->Start());
-            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+            AddCheckMessage("INFINITE LOOP", *stmt);
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,8 +18,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 void ETSPackageDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
@@ -62,24 +60,23 @@ checker::Type *ETSPackageDeclaration::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ETSPackageDeclaration::Check(checker::ETSChecker *checker)
+checker::VerifiedType ETSPackageDeclaration::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ETSPackageDeclaration *ETSPackageDeclaration::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto const name = name_ != nullptr ? name_->Clone(allocator, nullptr)->AsExpression() : nullptr;
-    if (auto *const clone = allocator->New<ETSPackageDeclaration>(name); clone != nullptr) {
-        if (name != nullptr) {
-            name->SetParent(clone);
-        }
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    auto *const clone = allocator->New<ETSPackageDeclaration>(name);
+
+    if (name != nullptr) {
+        name->SetParent(clone);
+    }
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    return clone;
 }
 }  // namespace ark::es2panda::ir

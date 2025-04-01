@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -132,3 +132,41 @@ faultDesc[FaultID.ObjectLiteralProperty] = 'Object literal property';
 faultDesc[FaultID.OptionalMethod] = 'Optional method';
 faultDesc[FaultID.ImportType] = 'Import type syntax';
 faultDesc[FaultID.DynamicCtorCall] = 'Dynamic constructor call';
+faultDesc[FaultID.MathPow] = 'Exponent call';
+faultDesc[FaultID.IncompationbleFunctionType] = 'Incompationble function type';
+faultDesc[FaultID.VoidOperator] = 'Void operator';
+faultDesc[FaultID.ExponentOp] = 'Exponent operation';
+faultDesc[FaultID.RegularExpressionLiteral] = 'Regex literals';
+faultDesc[FaultID.ArgumentsObject] = 'Special arguments object inside functions';
+faultDesc[FaultID.LimitedVoidType] = 'Limited void type';
+faultDesc[FaultID.DecoratorsNotSupported] = 'Decorators are not supported';
+faultDesc[FaultID.DebuggerStatement] = 'Debugger statement';
+faultDesc[FaultID.TsOverload] = 'Ts Overload';
+faultDesc[FaultID.NoSideEffectImport] = 'No side effect import';
+faultDesc[FaultID.DynamicImport] = 'Dynamic import';
+faultDesc[FaultID.ImportLazyIdentifier] = 'Import Lazy Identifier';
+faultDesc[FaultID.CaseExpression] = 'Case Expression';
+faultDesc[FaultID.SwitchExpression] = 'Switch Expression';
+faultDesc[FaultID.LimitedLiteralType] = 'Limited literal type';
+faultDesc[FaultID.IndexNegative] = 'Index negative';
+faultDesc[FaultID.ArrayIndexExprType] = 'Array index expr type';
+faultDesc[FaultID.NoTuplesArrays] = 'No tuples arrays';
+faultDesc[FaultID.DoubleExclaBindingNotSupported] = 'Incorrect bidirectional data binding used "!!"';
+faultDesc[FaultID.DoubleDollarBindingNotSupported] = 'Incorrect bidirectional data binding used "$$"';
+faultDesc[FaultID.DollarBindingNotSupported] = 'Link decorator passing';
+faultDesc[FaultID.ExtendDecoratorNotSupported] = '"@Extend" decorator';
+faultDesc[FaultID.MethodOverridingField] = '"Method overriding field" to keep style consistent';
+faultDesc[FaultID.ClassstaticInitialization] = 'The static properties of a class need to have initial values';
+faultDesc[FaultID.AvoidUnionTypes] = 'Union types';
+faultDesc[FaultID.TaggedTemplates] = 'Tagged template';
+faultDesc[FaultID.InvalidIdentifier] = 'Invalid identifiers';
+faultDesc[FaultID.ExtendsExpression] = 'Extends Expression';
+faultDesc[FaultID.NumericSemantics] = 'Numeric semantics';
+faultDesc[FaultID.AnimatableExtendDecoratorTransform] = '"@AnimatableExtend" decorator';
+faultDesc[FaultID.NoDuplicateFunctionName] = 'No duplicate function name';
+faultDesc[FaultID.OhmUrlFullPath] = 'Require full path file name';
+faultDesc[FaultID.UIInterfaceImport] = 'UI interface';
+faultDesc[FaultID.StylesDecoratorNotSupported] = '"@Styles" decorator';
+faultDesc[FaultID.DataObservation] = 'Data observation';
+faultDesc[FaultID.InteropCallReflect] = 'Interop call with Reflect API';
+faultDesc[FaultID.InteropCallObjectParam] = 'Interop call with "Object" parameter';

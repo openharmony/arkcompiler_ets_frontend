@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,25 +17,43 @@
 #define ES2PANDA_LEXER_TOKEN_SOURCE_LOCATION_H
 
 #include "macros.h"
-#include "util/ustring.h"
-
 #include <cstddef>
 #include <cstdint>
 #include <vector>
 
+namespace ark::es2panda::parser {
+class Program;
+}  // namespace ark::es2panda::parser
+
+namespace ark::es2panda::util {
+class StringView;
+}  // namespace ark::es2panda::util
+
 namespace ark::es2panda::lexer {
+
+class SourceLocation;
 class SourcePosition {
 public:
     explicit SourcePosition() noexcept = default;
-    explicit SourcePosition(size_t i, size_t l) noexcept : index(i), line(l) {}
+    explicit SourcePosition(const parser::Program *prog) noexcept : program_(prog) {}
+    explicit SourcePosition(size_t i, size_t l, const parser::Program *prog) noexcept
+        : index(i), line(l), program_(prog)
+    {
+    }
+
     DEFAULT_COPY_SEMANTIC(SourcePosition);
     DEFAULT_MOVE_SEMANTIC(SourcePosition);
     ~SourcePosition() = default;
-
+    SourceLocation ToLocation() const;
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     size_t index {};
     size_t line {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
+
+    const parser::Program *Program() const;
+
+private:
+    const parser::Program *program_ {};
 };
 
 class SourceRange {
@@ -55,7 +73,9 @@ public:
 class SourceLocation {
 public:
     explicit SourceLocation() noexcept = default;
-    explicit SourceLocation(size_t l, size_t c) noexcept : line(l), col(c) {}
+    explicit SourceLocation(size_t l, size_t c, const parser::Program *prog) noexcept : line(l), col(c), program_(prog)
+    {
+    }
     DEFAULT_COPY_SEMANTIC(SourceLocation);
     DEFAULT_MOVE_SEMANTIC(SourceLocation);
     ~SourceLocation() = default;
@@ -64,6 +84,11 @@ public:
     size_t line {};
     size_t col {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
+
+    const parser::Program *Program() const;
+
+private:
+    const parser::Program *program_ {};
 };
 
 class Range {
@@ -107,6 +132,7 @@ public:
     ~LineIndex() = default;
 
     SourceLocation GetLocation(SourcePosition pos) const noexcept;
+    size_t GetOffset(SourceLocation loc) const noexcept;
 
 private:
     std::vector<OffsetEntry> entries_;

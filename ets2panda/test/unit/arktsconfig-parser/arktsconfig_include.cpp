@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,7 @@
 
 #include "common.h"
 #include "util/arktsconfig.h"
-
+#include "util/diagnosticEngine.h"
 namespace {
 
 // NOTE(morlovsky): change to non-sideeffect ones (without opening the file)
@@ -64,8 +64,10 @@ class ArkTsConfigInclude : public ::testing::TestWithParam<common::Params> {};
 TEST_P(ArkTsConfigInclude, CheckInclude)
 {
     auto param = GetParam();
-    auto config = ark::es2panda::ArkTsConfig {*param.path};
-    ASSERT_EQ(config.Parse(), param.expected);
+    ark::es2panda::util::DiagnosticEngine de;
+    auto config = ark::es2panda::ArkTsConfig {*param.path, de};
+    std::unordered_set<std::string> parsedSet;
+    ASSERT_EQ(config.Parse(parsedSet), param.expected);
 }
 
 INSTANTIATE_TEST_SUITE_P(ArkTsConfigIncludeSuite, ArkTsConfigInclude,

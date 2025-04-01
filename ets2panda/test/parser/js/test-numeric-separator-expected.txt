@@ -9,22 +9,26 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 1
+            "column": 1,
+            "program": "test-numeric-separator.js"
           },
           "end": {
             "line": 17,
-            "column": 10
+            "column": 10,
+            "program": "test-numeric-separator.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test-numeric-separator.js"
         },
         "end": {
           "line": 17,
-          "column": 10
+          "column": 10,
+          "program": "test-numeric-separator.js"
         }
       }
     },
@@ -36,22 +40,26 @@
         "loc": {
           "start": {
             "line": 18,
-            "column": 1
+            "column": 1,
+            "program": "test-numeric-separator.js"
           },
           "end": {
             "line": 18,
-            "column": 11
+            "column": 11,
+            "program": "test-numeric-separator.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 18,
-          "column": 1
+          "column": 1,
+          "program": "test-numeric-separator.js"
         },
         "end": {
           "line": 18,
-          "column": 11
+          "column": 11,
+          "program": "test-numeric-separator.js"
         }
       }
     },
@@ -63,22 +71,26 @@
         "loc": {
           "start": {
             "line": 19,
-            "column": 1
+            "column": 1,
+            "program": "test-numeric-separator.js"
           },
           "end": {
             "line": 19,
-            "column": 6
+            "column": 6,
+            "program": "test-numeric-separator.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 19,
-          "column": 1
+          "column": 1,
+          "program": "test-numeric-separator.js"
         },
         "end": {
           "line": 19,
-          "column": 6
+          "column": 6,
+          "program": "test-numeric-separator.js"
         }
       }
     },
@@ -90,22 +102,26 @@
         "loc": {
           "start": {
             "line": 20,
-            "column": 1
+            "column": 1,
+            "program": "test-numeric-separator.js"
           },
           "end": {
             "line": 20,
-            "column": 20
+            "column": 20,
+            "program": "test-numeric-separator.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "test-numeric-separator.js"
         },
         "end": {
           "line": 20,
-          "column": 20
+          "column": 20,
+          "program": "test-numeric-separator.js"
         }
       }
     },
@@ -117,22 +133,26 @@
         "loc": {
           "start": {
             "line": 21,
-            "column": 1
+            "column": 1,
+            "program": "test-numeric-separator.js"
           },
           "end": {
             "line": 21,
-            "column": 14
+            "column": 14,
+            "program": "test-numeric-separator.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 21,
-          "column": 1
+          "column": 1,
+          "program": "test-numeric-separator.js"
         },
         "end": {
           "line": 21,
-          "column": 14
+          "column": 14,
+          "program": "test-numeric-separator.js"
         }
       }
     },
@@ -144,22 +164,26 @@
         "loc": {
           "start": {
             "line": 22,
-            "column": 1
+            "column": 1,
+            "program": "test-numeric-separator.js"
           },
           "end": {
             "line": 22,
-            "column": 12
+            "column": 12,
+            "program": "test-numeric-separator.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 22,
-          "column": 1
+          "column": 1,
+          "program": "test-numeric-separator.js"
         },
         "end": {
           "line": 22,
-          "column": 12
+          "column": 12,
+          "program": "test-numeric-separator.js"
         }
       }
     }
@@ -167,11 +191,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-numeric-separator.js"
     },
     "end": {
       "line": 22,
-      "column": 12
+      "column": 12,
+      "program": "test-numeric-separator.js"
     }
   }
 }

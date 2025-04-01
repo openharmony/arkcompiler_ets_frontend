@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,9 +19,6 @@
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/base/templateElement.h"
 
 namespace ark::es2panda::ir {
 TemplateLiteral::TemplateLiteral([[maybe_unused]] Tag const tag, TemplateLiteral const &other,
@@ -37,29 +34,30 @@ TemplateLiteral::TemplateLiteral([[maybe_unused]] Tag const tag, TemplateLiteral
     for (auto *expression : other.expressions_) {
         expressions_.emplace_back(expression->Clone(allocator, this)->AsExpression());
     }
+
+    multilineString_ = util::StringView(other.multilineString_);
 }
 
 TemplateLiteral *TemplateLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<TemplateLiteral>(Tag {}, *this, allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    auto *const clone = allocator->New<TemplateLiteral>(Tag {}, *this, allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    clone->SetRange(Range());
+    return clone;
 }
 
 void TemplateLiteral::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    for (auto *&it : expressions_) {
+    for (auto *&it : VectorIterationGuard(expressions_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsExpression();
         }
     }
 
-    for (auto *&it : quasis_) {
+    for (auto *&it : VectorIterationGuard(quasis_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsTemplateElement();
@@ -69,11 +67,11 @@ void TemplateLiteral::TransformChildren(const NodeTransformer &cb, std::string_v
 
 void TemplateLiteral::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : expressions_) {
+    for (auto *it : VectorIterationGuard(expressions_)) {
         cb(it);
     }
 
-    for (auto *it : quasis_) {
+    for (auto *it : VectorIterationGuard(quasis_)) {
         cb(it);
     }
 }
@@ -117,8 +115,13 @@ void TemplateLiteral::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
     etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *TemplateLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TemplateLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
+}
+
+util::StringView TemplateLiteral::GetMultilineString() const
+{
+    return multilineString_;
 }
 }  // namespace ark::es2panda::ir

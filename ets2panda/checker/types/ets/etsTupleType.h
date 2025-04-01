@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,35 +17,46 @@
 #define ES2PANDA_COMPILER_CHECKER_TYPES_ETS_TUPLE_TYPE_H
 
 #include "checker/types/type.h"
-#include "checker/types/ets/etsArrayType.h"
 
 namespace ark::es2panda::checker {
 
-class ETSTupleType : public ETSArrayType {
-    using TupleSizeType = int32_t;
+class ETSTupleType : public Type {
+    using TupleSizeType = std::size_t;
 
 public:
-    explicit ETSTupleType(ArenaAllocator *const allocator, Type *const elementType = nullptr,
-                          Type *const spreadType = nullptr)
-        : ETSArrayType(elementType), typeList_(allocator->Adapter()), spreadType_(spreadType)
+    explicit ETSTupleType(ArenaAllocator *const allocator, Type *const lubType, ETSArrayType *const holderArrayType)
+        : Type(checker::TypeFlag::ETS_TUPLE),
+          typeList_(allocator->Adapter()),
+          lubType_(lubType),
+          holderArrayType_(holderArrayType)
     {
         typeFlags_ |= TypeFlag::ETS_TUPLE;
     }
 
-    explicit ETSTupleType(ArenaAllocator *const allocator, const TupleSizeType size, Type *const elementType = nullptr,
-                          Type *const spreadType = nullptr)
-        : ETSArrayType(elementType), typeList_(allocator->Adapter()), spreadType_(spreadType), size_(size)
+    explicit ETSTupleType(ArenaAllocator *const allocator, const TupleSizeType size, Type *const lubType,
+                          ETSArrayType *const holderArrayType)
+        : Type(checker::TypeFlag::ETS_TUPLE),
+          typeList_(allocator->Adapter()),
+          lubType_(lubType),
+          holderArrayType_(holderArrayType),
+          size_(size)
     {
         typeFlags_ |= TypeFlag::ETS_TUPLE;
     }
-    explicit ETSTupleType(const ArenaVector<Type *> &typeList, Type *const elementType = nullptr,
-                          Type *const spreadType = nullptr)
-        : ETSArrayType(elementType),
+
+    explicit ETSTupleType(const ArenaVector<Type *> &typeList, Type *const lubType, ETSArrayType *const holderArrayType)
+        : Type(checker::TypeFlag::ETS_TUPLE),
           typeList_(typeList),
-          spreadType_(spreadType),
-          size_(static_cast<TupleSizeType>(typeList.size()))
+          lubType_(lubType),
+          holderArrayType_(holderArrayType),
+          size_(typeList.size())
     {
         typeFlags_ |= TypeFlag::ETS_TUPLE;
+    }
+
+    [[nodiscard]] Type *GetLubType() const
+    {
+        return lubType_;
     }
 
     [[nodiscard]] TupleSizeType GetTupleSize() const
@@ -53,9 +64,9 @@ public:
         return size_;
     }
 
-    [[nodiscard]] TupleSizeType GetMinTupleSize() const
+    [[nodiscard]] ETSArrayType *GetHolderArrayType() const
     {
-        return size_ + (spreadType_ == nullptr ? 0 : 1);
+        return holderArrayType_;
     }
 
     [[nodiscard]] ArenaVector<Type *> const &GetTupleTypesList() const
@@ -63,22 +74,12 @@ public:
         return typeList_;
     }
 
-    [[nodiscard]] bool HasSpreadType() const
+    std::tuple<bool, bool> ResolveConditionExpr() const override
     {
-        return spreadType_ != nullptr;
+        return {false, false};
     }
 
-    [[nodiscard]] Type *GetSpreadType() const
-    {
-        return spreadType_;
-    }
-
-    void SetSpreadType(Type *const newSpreadType)
-    {
-        spreadType_ = newSpreadType;
-    }
-
-    [[nodiscard]] Type *GetTypeAtIndex(int32_t index) const;
+    [[nodiscard]] Type *GetTypeAtIndex(TupleSizeType index) const;
 
     void ToString(std::stringstream &ss, bool precise) const override;
 
@@ -86,12 +87,20 @@ public:
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
     Type *Substitute(TypeRelation *relation, const Substitution *substitution) override;
+    void IsSubtypeOf(TypeRelation *relation, Type *target) override;
     void Cast(TypeRelation *relation, Type *target) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
+    void CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag) override;
+
+    void ToAssemblerType(std::stringstream &ss) const override;
+    void ToAssemblerTypeWithRank(std::stringstream &ss) const override;
+    void ToDebugInfoType(std::stringstream &ss) const override;
+    uint32_t Rank() const override;
 
 private:
     ArenaVector<Type *> const typeList_;
-    Type *spreadType_ {};
+    Type *const lubType_ {};
+    ETSArrayType *const holderArrayType_ {};
     TupleSizeType size_ {0};
 };
 

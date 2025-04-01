@@ -1,0 +1,31 @@
+/*
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+@interface MyAnno {
+    testProperty1: string
+    testProperty2: number
+}
+
+abstract class A {
+    @MyAnno()
+    foo1(){} // OK
+
+    @MyAnno()
+    abstract foo2() //CTE
+} 
+
+/* @@? 25:14 Error SyntaxError: Annotations are not allowed on an abstract class or methods. */
+/* @@? 25:14 Error SyntaxError: Annotations are not allowed on an abstract class or methods. */
+/* @@? 21:6 Error TypeError: The required field 'testProperty2' must be specified. Fields without default values cannot be omitted. */
+/* @@? 21:6 Error TypeError: The required field 'testProperty1' must be specified. Fields without default values cannot be omitted. */

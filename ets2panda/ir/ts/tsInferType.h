@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,7 +23,10 @@ class TSTypeParameter;
 
 class TSInferType : public TypeNode {
 public:
-    explicit TSInferType(TSTypeParameter *typeParam) : TypeNode(AstNodeType::TS_INFER_TYPE), typeParam_(typeParam) {}
+    explicit TSInferType(TSTypeParameter *typeParam, ArenaAllocator *const allocator)
+        : TypeNode(AstNodeType::TS_INFER_TYPE, allocator), typeParam_(typeParam)
+    {
+    }
 
     const TSTypeParameter *TypeParam() const
     {
@@ -38,7 +41,7 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {

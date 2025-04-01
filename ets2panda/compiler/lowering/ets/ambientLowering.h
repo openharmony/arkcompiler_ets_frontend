@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,14 +18,14 @@
 #include "compiler/lowering/phase.h"
 
 namespace ark::es2panda::compiler {
-class AmbientLowering : public Phase {
+class AmbientLowering : public PhaseForDeclarations {
 public:
     std::string_view Name() const override;
-    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
-    bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
+    bool PostconditionForModule(public_lib::Context *ctx, const parser::Program *program) override;
 
 private:
-    ir::ClassDefinition *CreateIndexerMethodIfNeeded(ir::ClassDefinition *classDef, public_lib::Context *ctx);
+    ir::AstNode *CreateIndexerMethodIfNeeded(ir::AstNode *ast, public_lib::Context *ctx);
 };
 }  // namespace ark::es2panda::compiler
 

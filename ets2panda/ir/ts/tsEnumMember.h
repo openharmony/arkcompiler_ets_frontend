@@ -28,6 +28,11 @@ public:
     {
     }
 
+    explicit TSEnumMember(Expression *key, Expression *init, bool isGenerated)
+        : Statement(AstNodeType::TS_ENUM_MEMBER), key_(key), init_(init), isGenerated_(isGenerated)
+    {
+    }
+
     const Expression *Key() const
     {
         return key_;
@@ -43,6 +48,16 @@ public:
         return init_;
     }
 
+    Expression *Init()
+    {
+        return init_;
+    }
+
+    bool IsGenerated() const
+    {
+        return isGenerated_;
+    }
+
     [[nodiscard]] util::StringView Name() const;
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
@@ -52,7 +67,7 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {
@@ -62,6 +77,7 @@ public:
 private:
     Expression *key_;
     Expression *init_;
+    bool isGenerated_ {false};
 };
 }  // namespace ark::es2panda::ir
 

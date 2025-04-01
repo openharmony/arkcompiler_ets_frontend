@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,10 +28,16 @@ class TSTypeParameterDeclaration;
 
 class ETSFunctionType : public TypeNode {
 public:
-    explicit ETSFunctionType(FunctionSignature &&signature, ir::ScriptFunctionFlags funcFlags)
-        : TypeNode(AstNodeType::ETS_FUNCTION_TYPE), signature_(std::move(signature)), funcFlags_(funcFlags)
+    explicit ETSFunctionType(FunctionSignature &&signature, ir::ScriptFunctionFlags const funcFlags,
+                             ArenaAllocator *const allocator) noexcept
+        : TypeNode(AstNodeType::ETS_FUNCTION_TYPE, allocator), signature_(std::move(signature)), funcFlags_(funcFlags)
     {
     }
+
+    ETSFunctionType() = delete;
+    ~ETSFunctionType() override = default;
+    NO_COPY_SEMANTIC(ETSFunctionType);
+    NO_MOVE_SEMANTIC(ETSFunctionType);
 
     [[nodiscard]] bool IsScopeBearer() const noexcept override
     {
@@ -53,11 +59,6 @@ public:
         scope_ = nullptr;
     }
 
-    [[nodiscard]] FunctionSignature IrSignature() noexcept
-    {
-        return signature_;
-    }
-
     const TSTypeParameterDeclaration *TypeParams() const
     {
         return signature_.TypeParams();
@@ -68,7 +69,7 @@ public:
         return signature_.TypeParams();
     }
 
-    const ArenaVector<Expression *> &Params() const
+    const ArenaVector<ir::Expression *> &Params() const
     {
         return signature_.Params();
     }
@@ -113,9 +114,9 @@ public:
         return (funcFlags_ & ir::ScriptFunctionFlags::RETHROWS) != 0;
     }
 
-    size_t DefaultParamIndex() const
+    bool IsExtensionFunction() const
     {
-        return signature_.DefaultParamIndex();
+        return signature_.HasReceiver();
     }
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
@@ -126,7 +127,7 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override

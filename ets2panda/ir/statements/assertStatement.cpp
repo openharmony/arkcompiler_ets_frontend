@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -57,7 +57,7 @@ void AssertStatement::Dump(ir::AstDumper *dumper) const
 
 void AssertStatement::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(test_);
+    ES2PANDA_ASSERT(test_);
     dumper->Add("assert(");
     test_->Dump(dumper);
     dumper->Add(")");
@@ -87,8 +87,26 @@ checker::Type *AssertStatement::Check([[maybe_unused]] checker::TSChecker *check
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *AssertStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType AssertStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
+}
+
+AssertStatement *AssertStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    ir::AssertStatement *clone = allocator->New<ir::AssertStatement>(test_, second_);
+    if (clone == nullptr) {
+        LOG(FATAL, ES2PANDA) << "Failed to allocate memory for AssertStatement node";
+    }
+
+    clone->SetParent(parent);
+    if (test_ != nullptr) {
+        clone->test_ = test_->Clone(allocator, clone)->AsExpression();
+    }
+    if (second_ != nullptr) {
+        clone->second_ = second_->Clone(allocator, clone)->AsExpression();
+    }
+    clone->SetRange(Range());
+    return clone;
 }
 }  // namespace ark::es2panda::ir

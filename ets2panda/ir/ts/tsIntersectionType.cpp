@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,28 +25,41 @@
 namespace ark::es2panda::ir {
 void TSIntersectionType::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    for (auto *&it : types_) {
+    for (auto *&it : VectorIterationGuard(types_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsExpression();
+        }
+    }
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
         }
     }
 }
 
 void TSIntersectionType::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : types_) {
+    for (auto *it : VectorIterationGuard(types_)) {
+        cb(it);
+    }
+    for (auto *it : VectorIterationGuard(Annotations())) {
         cb(it);
     }
 }
 
 void TSIntersectionType::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "TSIntersectionType"}, {"types", types_}});
+    dumper->Add(
+        {{"type", "TSIntersectionType"}, {"types", types_}, {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void TSIntersectionType::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("TSIntersectionType");
 }
 
@@ -75,8 +88,8 @@ checker::Type *TSIntersectionType::GetType([[maybe_unused]] checker::ETSChecker 
     return checker->GlobalETSObjectType();
 }
 
-checker::Type *TSIntersectionType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSIntersectionType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

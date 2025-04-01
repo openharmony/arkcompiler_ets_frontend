@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,8 +27,8 @@ class TSTypeParameterDeclaration;
 
 class TSFunctionType : public TypeNode {
 public:
-    explicit TSFunctionType(FunctionSignature &&signature)
-        : TypeNode(AstNodeType::TS_FUNCTION_TYPE), signature_(std::move(signature))
+    explicit TSFunctionType(FunctionSignature &&signature, ArenaAllocator *const allocator)
+        : TypeNode(AstNodeType::TS_FUNCTION_TYPE, allocator), signature_(std::move(signature))
     {
     }
     // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
@@ -46,7 +46,7 @@ public:
 
     void SetScope(varbinder::Scope *scope)
     {
-        ASSERT(scope_ == nullptr);
+        ES2PANDA_ASSERT(scope_ == nullptr);
         scope_ = scope;
     }
 
@@ -65,7 +65,7 @@ public:
         return signature_.TypeParams();
     }
 
-    const ArenaVector<Expression *> &Params() const
+    const ArenaVector<ir::Expression *> &Params() const
     {
         return signature_.Params();
     }
@@ -92,7 +92,7 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override

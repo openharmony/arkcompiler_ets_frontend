@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,12 +13,14 @@
  * limitations under the License.
  */
 
+#include "checker/types/ets/etsTupleType.h"
 #include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"
 #include "checker/ets/function_helpers.h"
 #include "checker/ets/typeRelationContext.h"
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "checker/types/ets/etsObjectType.h"
+#include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "ir/base/catchClause.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
@@ -29,7 +31,6 @@
 #include "ir/ets/etsParameterExpression.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
-#include "ir/ets/etsUnionType.h"
 #include "ir/expressions/arrowFunctionExpression.h"
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/callExpression.h"
@@ -65,85 +66,12 @@ bool ETSChecker::IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typ
         return true;
     }
     // NOTE(vpukhov): #19701 void refactoring
-    ASSERT(IsReferenceType(typeArgument) || typeArgument->IsETSVoidType());
-    auto *constraint = typeParam->GetConstraintType()->Substitute(Relation(), substitution);
-    bool retVal = false;
-    // NOTE(vpukhov): #19701 void refactoring
     if (typeArgument->IsETSVoidType()) {
-        retVal = Relation()->IsSupertypeOf(constraint, GlobalETSUndefinedType());
-    } else if (typeArgument->IsETSFunctionType()) {
-        retVal = Relation()->IsSupertypeOf(
-            constraint,
-            this->FunctionTypeToFunctionalInterfaceType(typeArgument->AsETSFunctionType()->CallSignatures().front()));
-    } else {
-        retVal = Relation()->IsSupertypeOf(constraint, typeArgument);
+        typeArgument = GlobalETSUndefinedType();
     }
-
-    return retVal;
-}
-
-bool ETSChecker::HasTypeArgsOfObject(Type *argType, Type *paramType)
-{
-    return paramType->IsETSObjectType() && argType->IsETSObjectType() &&
-           !argType->AsETSObjectType()->TypeArguments().empty() &&
-           !paramType->AsETSObjectType()->TypeArguments().empty();
-}
-
-bool ETSChecker::InsertTypeIntoSubstitution(const ArenaVector<Type *> &typeParams, const Type *typeParam,
-                                            const size_t index, Substitution *substitution, Type *objectParam)
-{
-    // Check if the type parameter is in the signature, and the type argument is not already in the return vector
-    if (typeParams.size() > index &&
-        IsCompatibleTypeArgument(typeParams[index]->AsETSTypeParameter(), objectParam, substitution) &&
-        std::find(typeParams.begin(), typeParams.end(), typeParam) != typeParams.end()) {
-        substitution->emplace(typeParams[index]->AsETSTypeParameter(), objectParam);
-        return true;
-    }
-
-    return false;
-}
-
-bool ETSChecker::EnhanceSubstitutionForGenericType(const ArenaVector<Type *> &typeParams, const Type *argType,
-                                                   const Type *paramType, Substitution *substitution)
-{
-    ArenaVector<Type *> objectParams(Allocator()->Adapter());
-
-    if (!argType->AsETSObjectType()->GetDeclNode()->IsClassDefinition()) {
-        return false;
-    }
-
-    const auto paramTypeArgs = paramType->AsETSObjectType()->TypeArguments();
-
-    for (const auto it : typeParams) {
-        bool found = false;
-
-        for (size_t i = 0; i < paramTypeArgs.size() && !found; i++) {
-            if (paramTypeArgs[i] == it) {
-                objectParams.push_back(argType->AsETSObjectType()->TypeArguments()[i]);
-                found = true;
-            }
-        }
-
-        if (!found) {
-            objectParams.push_back(nullptr);
-        }
-    }
-
-    if (objectParams.size() < paramTypeArgs.size()) {
-        return false;
-    }
-
-    bool res = true;
-    for (size_t j = 0; j < paramTypeArgs.size() && res; ++j) {
-        if (objectParams[j] != nullptr) {
-            res = InsertTypeIntoSubstitution(typeParams, paramTypeArgs[j], j, substitution, objectParams[j]);
-        } else {
-            res = EnhanceSubstitutionForType(typeParams, paramTypeArgs[j],
-                                             argType->AsETSObjectType()->TypeArguments()[j], substitution);
-        }
-    }
-
-    return res;
+    ES2PANDA_ASSERT(IsReferenceType(typeArgument));
+    auto constraint = typeParam->GetConstraintType()->Substitute(Relation(), substitution);
+    return Relation()->IsSupertypeOf(constraint, typeArgument);
 }
 
 bool ETSChecker::EnhanceSubstitutionForReadonly(const ArenaVector<Type *> &typeParams, ETSReadonlyType *paramType,
@@ -166,15 +94,19 @@ bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParam
         if (std::find(typeParams.begin(), typeParams.end(), originalTparam) != typeParams.end() &&
             substitution->count(originalTparam) == 0) {
             if (!IsReferenceType(argumentType)) {
-                LogTypeError({argumentType, " is not compatible with type ", tparam}, tparam->GetDeclNode()->Start());
+                LogError(diagnostic::INFERENCE_TYPE_INCOMPAT, {tparam, argumentType}, tparam->GetDeclNode()->Start());
                 return false;
             }
 
-            ETSChecker::EmplaceSubstituted(substitution, originalTparam, argumentType);
+            // #23068 substitution happens before the constraint check, should be restored
+            EmplaceSubstituted(substitution, originalTparam, argumentType);
             return IsCompatibleTypeArgument(tparam, argumentType, substitution);
         }
     }
 
+    if (paramType->IsETSFunctionType()) {
+        return EnhanceSubstitutionForFunction(typeParams, paramType->AsETSFunctionType(), argumentType, substitution);
+    }
     if (paramType->IsETSReadonlyType()) {
         return EnhanceSubstitutionForReadonly(typeParams, paramType->AsETSReadonlyType(), argumentType, substitution);
     }
@@ -182,14 +114,13 @@ bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParam
         return EnhanceSubstitutionForUnion(typeParams, paramType->AsETSUnionType(), argumentType, substitution);
     }
     if (paramType->IsETSObjectType()) {
-        if (HasTypeArgsOfObject(argumentType, paramType) &&
-            EnhanceSubstitutionForGenericType(typeParams, argumentType, paramType, substitution)) {
-            return true;
-        }
         return EnhanceSubstitutionForObject(typeParams, paramType->AsETSObjectType(), argumentType, substitution);
     }
     if (paramType->IsETSArrayType()) {
         return EnhanceSubstitutionForArray(typeParams, paramType->AsETSArrayType(), argumentType, substitution);
+    }
+    if (paramType->IsETSFunctionType()) {
+        return EnhanceSubstitutionForFunction(typeParams, paramType->AsETSFunctionType(), argumentType, substitution);
     }
 
     return true;
@@ -235,54 +166,86 @@ bool ETSChecker::EnhanceSubstitutionForUnion(const ArenaVector<Type *> &typePara
     return true;
 }
 
-bool ETSChecker::EnhanceSubstitutionForObject(const ArenaVector<Type *> &typeParams, ETSObjectType *paramType,
-                                              Type *argumentType, Substitution *substitution)
+bool ETSChecker::EnhanceSubstitutionForFunction(const ArenaVector<Type *> &typeParams, ETSFunctionType *paramType,
+                                                Type *argumentType, Substitution *substitution)
 {
-    auto *paramObjType = paramType->AsETSObjectType();
-
     auto const enhance = [this, typeParams, substitution](Type *ptype, Type *atype) {
         return EnhanceSubstitutionForType(typeParams, ptype, atype, substitution);
     };
 
-    if (argumentType->IsETSObjectType()) {
-        auto *argObjType = argumentType->AsETSObjectType();
-        if (GetOriginalBaseType(argObjType) != GetOriginalBaseType(paramObjType)) {
-            return true;  // don't attempt anything fancy for now
-        }
-        bool res = true;
-        for (size_t i = 0; i < argObjType->TypeArguments().size(); i++) {
-            res &= enhance(paramObjType->TypeArguments()[i], argObjType->TypeArguments()[i]);
-        }
-        return res;
-    }
-
-    if (argumentType->IsETSFunctionType() && paramObjType->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-        auto &parameterSignatures =
-            paramObjType
-                ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME)
-                ->TsType()
-                ->AsETSFunctionType()
-                ->CallSignatures();
-        auto &argumentSignatures = argumentType->AsETSFunctionType()->CallSignatures();
-        ASSERT(argumentSignatures.size() == 1);
-        ASSERT(parameterSignatures.size() == 1);
-        auto *argumentSignature = argumentSignatures[0];
-        auto *parameterSignature = parameterSignatures[0];
+    if (argumentType->IsETSFunctionType()) {
+        auto parameterSignature = paramType->ArrowSignature();
+        auto argumentSignature = argumentType->AsETSFunctionType()->ArrowSignature();
         // NOTE(gogabr): handle rest parameter for argumentSignature
-        if (parameterSignature->GetSignatureInfo()->params.size() !=
-            argumentSignature->GetSignatureInfo()->params.size()) {
+        if (parameterSignature->MinArgCount() < argumentSignature->MinArgCount()) {
             return false;
         }
         bool res = true;
-        for (size_t idx = 0; idx < argumentSignature->GetSignatureInfo()->params.size(); idx++) {
-            res &= enhance(parameterSignature->GetSignatureInfo()->params[idx]->TsType(),
-                           argumentSignature->GetSignatureInfo()->params[idx]->TsType());
+        size_t const commonArity = std::min(argumentSignature->ArgCount(), parameterSignature->ArgCount());
+        for (size_t idx = 0; idx < commonArity; idx++) {
+            auto *declNode = argumentSignature->Params()[idx]->Declaration()->Node();
+            if (declNode->IsETSParameterExpression() &&
+                declNode->AsETSParameterExpression()->Ident()->TypeAnnotation() == nullptr) {
+                continue;
+            }
+            res &= enhance(parameterSignature->Params()[idx]->TsType(), argumentSignature->Params()[idx]->TsType());
+        }
+
+        if (argumentSignature->HasRestParameter() && parameterSignature->HasRestParameter()) {
+            res &= enhance(parameterSignature->RestVar()->TsType(), argumentSignature->RestVar()->TsType());
         }
         res &= enhance(parameterSignature->ReturnType(), argumentSignature->ReturnType());
         return res;
     }
 
     return true;
+}
+
+// Try to find the base type somewhere in object subtypes. Incomplete, yet safe
+static ETSObjectType *FindEnhanceTargetInSupertypes(ETSObjectType *object, ETSObjectType *base)
+{
+    ES2PANDA_ASSERT(base == base->GetOriginalBaseType());
+    if (object->GetConstOriginalBaseType() == base) {
+        return object;
+    }
+    auto const traverse = [base](ETSObjectType *v) { return FindEnhanceTargetInSupertypes(v, base); };
+
+    for (auto itf : object->Interfaces()) {
+        auto res = traverse(itf);
+        if (res != nullptr) {
+            return res;
+        }
+    }
+
+    if (object->SuperType() != nullptr) {
+        auto res = traverse(object->SuperType());
+        if (res != nullptr) {
+            return res;
+        }
+    }
+    return nullptr;
+}
+
+bool ETSChecker::EnhanceSubstitutionForObject(const ArenaVector<Type *> &typeParams, ETSObjectType *paramType,
+                                              Type *argumentType, Substitution *substitution)
+{
+    auto const enhance = [this, typeParams, substitution](Type *ptype, Type *atype) {
+        return EnhanceSubstitutionForType(typeParams, ptype, atype, substitution);
+    };
+
+    if (!argumentType->IsETSObjectType()) {
+        return true;
+    }
+    auto enhanceType = FindEnhanceTargetInSupertypes(argumentType->AsETSObjectType(), paramType->GetOriginalBaseType());
+    if (enhanceType == nullptr) {
+        return true;
+    }
+    ES2PANDA_ASSERT(enhanceType->GetOriginalBaseType() == paramType->GetOriginalBaseType());
+    bool res = true;
+    for (size_t i = 0; i < enhanceType->TypeArguments().size(); i++) {
+        res &= enhance(paramType->TypeArguments()[i], enhanceType->TypeArguments()[i]);
+    }
+    return res;
 }
 
 bool ETSChecker::EnhanceSubstitutionForArray(const ArenaVector<Type *> &typeParams, ETSArrayType *const paramType,
@@ -295,20 +258,18 @@ bool ETSChecker::EnhanceSubstitutionForArray(const ArenaVector<Type *> &typePara
 }
 
 Signature *ETSChecker::ValidateParameterlessConstructor(Signature *signature, const lexer::SourcePosition &pos,
-                                                        TypeRelationFlag flags)
+                                                        bool throwError)
 {
-    std::size_t const parameterCount = signature->MinArgCount();
-    auto const reportError = (flags & TypeRelationFlag::NO_THROW) == 0;
-
-    if (parameterCount != 0) {
-        if (reportError) {
-            LogTypeError({"No Matching Parameterless Constructor, parameter count ", parameterCount}, pos);
+    if (signature->MinArgCount() != 0) {
+        if (throwError) {
+            LogError(diagnostic::NO_SUCH_PARAMLESS_CTOR_2, {signature->MinArgCount()}, pos);
         }
         return nullptr;
     }
     return signature;
 }
 
+// #22952: remove optional arrow leftovers
 bool ETSChecker::CheckOptionalLambdaFunction(ir::Expression *argument, Signature *substitutedSig, std::size_t index)
 {
     if (argument->IsArrowFunctionExpression()) {
@@ -336,14 +297,14 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
                                                  const ArenaVector<ir::Expression *> &arguments, TypeRelationFlag flags,
                                                  const std::vector<bool> &argTypeInferenceRequired, bool reportError)
 {
-    std::size_t const argumentCount = arguments.size();
-    std::size_t const parameterCount = substitutedSig->MinArgCount();
-    auto count = std::min(parameterCount, argumentCount);
-    for (std::size_t index = 0; index < count; ++index) {
+    auto const commonArity = std::min(arguments.size(), substitutedSig->ArgCount());
+    for (size_t index = 0; index < commonArity; ++index) {
         auto &argument = arguments[index];
 
+        // #22952: infer optional parameter heuristics
+        auto const paramType = GetNonNullishType(substitutedSig->Params()[index]->TsType());
         if (argument->IsObjectExpression()) {
-            if (substitutedSig->Params()[index]->TsType()->IsETSObjectType()) {
+            if (paramType->IsETSObjectType()) {
                 // No chance to check the argument at this point
                 continue;
             }
@@ -351,17 +312,16 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
         }
 
         if (argument->IsMemberExpression()) {
-            SetArrayPreferredTypeForNestedMemberExpressions(arguments[index]->AsMemberExpression(),
-                                                            substitutedSig->Params()[index]->TsType());
+            SetArrayPreferredTypeForNestedMemberExpressions(argument->AsMemberExpression(), paramType);
         } else if (argument->IsSpreadElement()) {
             if (reportError) {
-                LogTypeError("Spread argument cannot be passed for ordinary parameter.", argument->Start());
+                LogError(diagnostic::SPREAD_ONTO_SINGLE_PARAM, {}, argument->Start());
             }
             return false;
         }
 
         if (argTypeInferenceRequired[index]) {
-            ASSERT(argument->IsArrowFunctionExpression());
+            ES2PANDA_ASSERT(argument->IsArrowFunctionExpression());
             auto *const arrowFuncExpr = argument->AsArrowFunctionExpression();
             ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
             if (CheckLambdaAssignable(substitutedSig->Function()->Params()[index], lambda)) {
@@ -371,92 +331,75 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
         }
 
         if (argument->IsArrayExpression()) {
-            argument->AsArrayExpression()->GetPrefferedTypeFromFuncParam(
-                this, substitutedSig->Function()->Params()[index], flags);
-        }
-
-        if (!CheckInvokable(substitutedSig, argument, index, flags)) {
-            return false;
+            argument->AsArrayExpression()->SetPreferredTypeBasedOnFuncParam(this, paramType, flags);
         }
 
         if (argument->IsIdentifier() && ValidateArgumentAsIdentifier(argument->AsIdentifier())) {
-            LogTypeError("Class name can't be the argument of function or method.", argument->Start());
+            LogError(diagnostic::ARG_IS_CLASS_ID, {}, argument->Start());
             return false;
         }
 
-        // clang-format off
-        if (!ValidateSignatureInvocationContext(
-            substitutedSig, argument,
-            TryGettingFunctionTypeFromInvokeFunction(substitutedSig->Params()[index]->TsType()), index, flags)) {
-            // clang-format on
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        if (!ValidateSignatureInvocationContext(substitutedSig, argument, index, flags)) {
             return false;
         }
     }
 
     return true;
-}
-
-bool ETSChecker::CheckInvokable(Signature *substitutedSig, ir::Expression *argument, std::size_t index,
-                                TypeRelationFlag flags)
-{
-    auto *argumentType = argument->Check(this);
-    if (argumentType->IsTypeError()) {
-        return true;
-    }
-
-    auto *targetType = substitutedSig->Params()[index]->TsType();
-    flags |= TypeRelationFlag::ONLY_CHECK_WIDENING;
-
-    auto const invocationCtx =
-        checker::InvocationContext(Relation(), argument, argumentType, targetType, argument->Start(),
-                                   {"Type '", argumentType, "' is not compatible with type '",
-                                    TryGettingFunctionTypeFromInvokeFunction(targetType), "' at index ", index + 1},
-                                   flags);
-    if (Relation()->IsError()) {
-        return false;
-    }
-    return invocationCtx.IsInvocable() || CheckOptionalLambdaFunction(argument, substitutedSig, index);
 }
 
 bool ETSChecker::ValidateSignatureInvocationContext(Signature *substitutedSig, ir::Expression *argument,
-                                                    const Type *targetType, std::size_t index, TypeRelationFlag flags)
+                                                    std::size_t index, TypeRelationFlag flags)
 {
+    Type *targetType = substitutedSig->Params()[index]->TsType();
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     Type *argumentType = argument->Check(this);
+
     flags |= TypeRelationFlag::ONLY_CHECK_WIDENING;
 
     auto const invocationCtx = checker::InvocationContext(
-        Relation(), argument, argumentType, substitutedSig->Params()[index]->TsType(), argument->Start(),
+        Relation(), argument, argumentType, targetType, argument->Start(),
         {"Type '", argumentType, "' is not compatible with type '", targetType, "' at index ", index + 1}, flags);
-    if (!invocationCtx.IsInvocable()) {
-        return CheckOptionalLambdaFunction(argument, substitutedSig, index);
+
+    return invocationCtx.IsInvocable() || CheckOptionalLambdaFunction(argument, substitutedSig, index);
+}
+
+bool ETSChecker::IsValidRestArgument(ir::Expression *const argument, Signature *const substitutedSig,
+                                     const TypeRelationFlag flags, const std::size_t index)
+{
+    const auto argumentType = argument->Check(this);
+    auto *targetType = substitutedSig->RestVar()->TsType();
+    if (targetType->IsETSTupleType()) {
+        // NOTE (mmartin): check tuple assignability for rest arguments
+        LogTypeError("Tuple types for rest arguments are not yet implemented", argument->Start());
+        return false;
     }
 
-    return true;
+    targetType = substitutedSig->RestVar()->TsType()->AsETSArrayType()->ElementType();
+    if (substitutedSig->OwnerVar() == nullptr) {
+        targetType = MaybeBoxType(targetType);
+    }
+    auto const invocationCtx =
+        checker::InvocationContext(Relation(), argument, argumentType, targetType, argument->Start(),
+                                   {"Type '", argumentType, "' is not compatible with rest parameter type '",
+                                    targetType, "' at index ", index + 1},
+                                   flags);
+
+    return invocationCtx.IsInvocable();
 }
 
 bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const ArenaVector<ir::Expression *> &arguments,
-                                             TypeRelationFlag flags, bool reportError)
+                                             TypeRelationFlag flags, bool reportError, const bool unique)
 {
-    std::size_t const argumentCount = arguments.size();
-    std::size_t const parameterCount = substitutedSig->MinArgCount();
-    auto count = std::min(parameterCount, argumentCount);
-    auto const restCount = argumentCount - count;
+    size_t const argumentCount = arguments.size();
+    auto const commonArity = std::min(substitutedSig->ArgCount(), argumentCount);
+    auto const restCount = argumentCount - commonArity;
 
-    for (std::size_t index = count; index < argumentCount; ++index) {
+    for (size_t index = commonArity; index < argumentCount; ++index) {
         auto &argument = arguments[index];
 
         if (!argument->IsSpreadElement()) {
-            auto *const argumentType = argument->Check(this);
-            const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(
-                substitutedSig->RestVar()->TsType()->AsETSArrayType()->ElementType());
-            const Type *sourceType = TryGettingFunctionTypeFromInvokeFunction(argumentType);
-            auto const invocationCtx = checker::InvocationContext(
-                Relation(), argument, argumentType,
-                substitutedSig->RestVar()->TsType()->AsETSArrayType()->ElementType(), argument->Start(),
-                {"Type '", sourceType, "' is not compatible with rest parameter type '", targetType, "' at index ",
-                 index + 1},
-                flags);
-            if (!invocationCtx.IsInvocable()) {
+            if (!IsValidRestArgument(argument, substitutedSig, flags, index)) {
                 return false;
             }
             continue;
@@ -464,20 +407,24 @@ bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const Ar
 
         if (restCount > 1U) {
             if (reportError) {
-                LogTypeError("Spread argument for the rest parameter can be only one.", argument->Start());
+                LogError(diagnostic::MULTIPLE_SPREADS, {}, argument->Start());
             }
             return false;
         }
 
         auto *const restArgument = argument->AsSpreadElement()->Argument();
-        auto *const argumentType = restArgument->Check(this);
-        const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(substitutedSig->RestVar()->TsType());
-        const Type *sourceType = TryGettingFunctionTypeFromInvokeFunction(argumentType);
+        Type *targetType = substitutedSig->RestVar()->TsType();
+        // backing out of check that results in a signature mismatch would be difficult
+        // so only attempt it if there is only one candidate signature
+        if (unique && restArgument->IsArrayExpression()) {
+            restArgument->AsArrayExpression()->SetPreferredType(targetType);
+        }
+        auto const argumentType = restArgument->Check(this);
 
         auto const invocationCtx = checker::InvocationContext(
             Relation(), restArgument, argumentType, substitutedSig->RestVar()->TsType(), argument->Start(),
-            {"Type '", sourceType, "' is not compatible with rest parameter type '", targetType, "' at index ",
-             index + 1},
+            {"Type '", argumentType, "' is not compatible with rest parameter type '",
+             substitutedSig->RestVar()->TsType(), "' at index ", index + 1},
             flags);
         if (!invocationCtx.IsInvocable()) {
             return false;
@@ -487,142 +434,68 @@ bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const Ar
     return true;
 }
 
-void ETSChecker::MaybeSubstituteLambdaArgumentsInFunctionCall(ir::CallExpression *callExpr)
-{
-    ir::AstNode *expr = callExpr;
-
-    while (!expr->IsFunctionExpression()) {
-        if (expr->Parent() == nullptr || expr->Parent()->IsClassDefinition()) {
-            return;
-        }
-        expr = expr->Parent();
-    }
-
-    for (const auto it : expr->AsFunctionExpression()->Function()->Params()) {
-        if (const auto ident = it->AsETSParameterExpression()->Ident();
-            callExpr->Callee()->IsIdentifier() && ident->Name() == callExpr->Callee()->AsIdentifier()->Name() &&
-            ident->IsAnnotatedExpression()) {
-            if (ident->AsAnnotatedExpression()->TypeAnnotation()->IsETSFunctionType()) {
-                MaybeSubstituteLambdaArguments(
-                    ident->AsAnnotatedExpression()->TypeAnnotation()->AsETSFunctionType()->Params(), callExpr);
-            }
-        }
-    }
-}
-
-void ETSChecker::MaybeSubstituteLambdaArgumentsInFunctionCallHelper(ir::CallExpression *callExpr, ir::Identifier *ident)
-{
-    ir::ETSFunctionType *funcType = nullptr;
-    ir::TypeNode *typeAnnotation = ident->TypeAnnotation();
-
-    if (typeAnnotation->IsETSTypeReference()) {
-        auto typeAnnotationIdentifier = ident->TypeAnnotation()->AsETSTypeReference()->Part()->Name()->Variable();
-        typeAnnotation = typeAnnotationIdentifier->Declaration()->Node()->AsTSTypeAliasDeclaration()->TypeAnnotation();
-    }
-
-    if (typeAnnotation->IsETSFunctionType()) {
-        funcType = typeAnnotation->AsETSFunctionType();
-    } else if (typeAnnotation->IsETSUnionType()) {
-        auto found = std::find_if(typeAnnotation->AsETSUnionType()->Types().begin(),
-                                  typeAnnotation->AsETSUnionType()->Types().end(),
-                                  [](ir::TypeNode *const type) { return type->IsETSFunctionType(); });
-        if (found != typeAnnotation->AsETSUnionType()->Types().end()) {
-            funcType = (*found)->AsETSFunctionType();
-        }
-    }
-
-    if (funcType == nullptr) {
-        return;
-    }
-
-    MaybeSubstituteLambdaArguments(funcType->AsETSFunctionType()->Params(), callExpr);
-}
-
-void ETSChecker::MaybeSubstituteLambdaArguments(const ArenaVector<ir::Expression *> &params,
-                                                ir::CallExpression *callExpr)
-{
-    for (size_t i = 0; i < params.size(); i++) {
-        if (params[i]->AsETSParameterExpression()->IsDefault() && callExpr->Arguments().size() <= i &&
-            params[i]->AsETSParameterExpression()->Initializer() != nullptr) {
-            callExpr->Arguments().push_back(
-                params[i]->AsETSParameterExpression()->Initializer()->Clone(Allocator(), callExpr)->AsExpression());
-        }
-    }
-}
-
 Signature *ETSChecker::ValidateSignature(
     std::tuple<Signature *, const ir::TSTypeParameterInstantiation *, TypeRelationFlag> info,
     const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos,
-    const std::vector<bool> &argTypeInferenceRequired)
+    const std::vector<bool> &argTypeInferenceRequired, const bool unique)
 {
-    auto [signature, typeArguments, flags] = info;
-    Signature *substitutedSig = MaybeSubstituteTypeParameters(this, signature, typeArguments, arguments, pos, flags);
-    if (substitutedSig == nullptr) {
+    auto [baseSignature, typeArguments, flags] = info;
+    // In case of overloads, it is necessary to iterate through the compatible signatures again,
+    // setting the boxing/unboxing flag for the arguments if needed.
+    // So handle substitution arguments only in the case of unique function or collecting signature phase.
+    Signature *const signature =
+        ((flags & TypeRelationFlag::ONLY_CHECK_BOXING_UNBOXING) == 0 && !unique)
+            ? baseSignature
+            : MaybeSubstituteTypeParameters(this, baseSignature, typeArguments, arguments, pos, flags);
+    if (signature == nullptr) {
         return nullptr;
     }
 
-    fflush(stdout);
-
-    auto const hasRestParameter = substitutedSig->RestVar() != nullptr;
-    std::size_t const argumentCount = arguments.size();
-    std::size_t const parameterCount = substitutedSig->MinArgCount();
+    size_t const argCount = arguments.size();
+    auto const hasRestParameter = signature->RestVar() != nullptr;
     auto const reportError = (flags & TypeRelationFlag::NO_THROW) == 0;
 
-    if (argumentCount < parameterCount || (argumentCount > parameterCount && !hasRestParameter)) {
+    if (argCount < signature->MinArgCount() || (argCount > signature->ArgCount() && !hasRestParameter)) {
         if (reportError) {
-            LogTypeError({"Expected ", parameterCount, " arguments, got ", argumentCount, "."}, pos);
+            LogError(diagnostic::PARAM_COUNT_MISMATCH, {signature->MinArgCount(), argCount}, pos);
         }
         return nullptr;
     }
 
-    if (argumentCount > parameterCount && hasRestParameter && (flags & TypeRelationFlag::IGNORE_REST_PARAM) != 0) {
+    if (argCount > signature->ArgCount() && hasRestParameter && (flags & TypeRelationFlag::IGNORE_REST_PARAM) != 0) {
         return nullptr;
     }
 
-    auto count = std::min(parameterCount, argumentCount);
+    auto count = std::min(signature->ArgCount(), argCount);
     // Check all required formal parameter(s) first
-    if (!ValidateSignatureRequiredParams(substitutedSig, arguments, flags, argTypeInferenceRequired, reportError)) {
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    if (!ValidateSignatureRequiredParams(signature, arguments, flags, argTypeInferenceRequired, reportError)) {
         return nullptr;
     }
 
     // Check rest parameter(s) if any exists
-    if (!hasRestParameter || count >= argumentCount) {
-        return substitutedSig;
+    if (!hasRestParameter || count >= argCount) {
+        return signature;
     }
-    if (!ValidateSignatureRestParams(substitutedSig, arguments, flags, reportError)) {
+    if (!ValidateSignatureRestParams(signature, arguments, flags, reportError, unique)) {
         return nullptr;
     }
 
-    return substitutedSig;
+    return signature;
 }
 
 Signature *ETSChecker::CollectParameterlessConstructor(ArenaVector<Signature *> &signatures,
-                                                       const lexer::SourcePosition &pos, TypeRelationFlag resolveFlags)
+                                                       const lexer::SourcePosition &pos)
 {
-    Signature *compatibleSignature = nullptr;
-
-    auto collectSignatures = [&](TypeRelationFlag relationFlags) {
-        for (auto *sig : signatures) {
-            if (auto *concreteSig = ValidateParameterlessConstructor(sig, pos, relationFlags); concreteSig != nullptr) {
-                compatibleSignature = concreteSig;
-                break;
-            }
-        }
-    };
-
     // We are able to provide more specific error messages.
-    if (signatures.size() == 1) {
-        collectSignatures(resolveFlags);
-    } else {
-        collectSignatures(resolveFlags | TypeRelationFlag::NO_THROW);
-    }
-
-    if (compatibleSignature == nullptr) {
-        if ((resolveFlags & TypeRelationFlag::NO_THROW) == 0) {
-            LogTypeError({"No matching parameterless constructor"}, pos);
+    bool throwError = signatures.size() == 1;
+    for (auto *sig : signatures) {
+        if (auto *concreteSig = ValidateParameterlessConstructor(sig, pos, throwError); concreteSig != nullptr) {
+            return concreteSig;
         }
     }
-    return compatibleSignature;
+    LogError(diagnostic::NO_SUCH_PARAMLESS_CTOR, {}, pos);
+    return nullptr;
 }
 
 bool IsSignatureAccessible(Signature *sig, ETSObjectType *containingClass, TypeRelation *relation)
@@ -665,6 +538,7 @@ std::array<TypeRelationFlag, 9U> GetFlagVariants()
         TypeRelationFlag::NO_THROW | TypeRelationFlag::STRING_TO_CHAR,
     };
 }
+
 ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> &signatures,
                                                        const ir::TSTypeParameterInstantiation *typeArguments,
                                                        const ArenaVector<ir::Expression *> &arguments,
@@ -680,8 +554,9 @@ ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> 
                 !IsSignatureAccessible(sig, Context().ContainingClass(), Relation())) {
                 continue;
             }
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             auto *concreteSig = ValidateSignature(std::make_tuple(sig, typeArguments, relationFlags), arguments, pos,
-                                                  argTypeInferenceRequired);
+                                                  argTypeInferenceRequired, signatures.size() == 1);
             if (concreteSig == nullptr) {
                 continue;
             }
@@ -701,18 +576,27 @@ ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> 
         collectSignatures(flags);
     } else {
         for (auto flags : GetFlagVariants()) {
-            flags = flags | resolveFlags;
+            // CollectSignatures gathers the possible signatures, but in doing so, it also sets the boxing/unboxing
+            // flags where necessary. Since these might not be the actually used functions in every cases,
+            // this setting needs to be delayed for compatibleSignatures. In case of only one signature,
+            // it is not required, only when the signatures.size() > 1
+            flags = flags | resolveFlags | TypeRelationFlag::ONLY_CHECK_BOXING_UNBOXING;
             collectSignatures(flags);
-            if (!compatibleSignatures.empty()) {
-                break;
+            if (compatibleSignatures.empty()) {
+                continue;
             }
+            for (auto signature : compatibleSignatures) {
+                flags &= ~TypeRelationFlag::ONLY_CHECK_BOXING_UNBOXING;
+                ValidateSignature(std::make_tuple(signature, typeArguments, flags), arguments, pos,
+                                  argTypeInferenceRequired, signatures.size() == 1);
+            }
+            break;
         }
     }
 
-    if (compatibleSignatures.empty() && notVisibleSignature != nullptr) {
-        LogTypeError(
-            {"Signature ", notVisibleSignature->Function()->Id()->Name(), notVisibleSignature, " is not visible here."},
-            pos);
+    if (compatibleSignatures.empty() && notVisibleSignature != nullptr &&
+        ((resolveFlags & TypeRelationFlag::NO_THROW) == 0)) {
+        LogError(diagnostic::SIG_INVISIBLE, {notVisibleSignature->Function()->Id()->Name(), notVisibleSignature}, pos);
     }
     return compatibleSignatures;
 }
@@ -725,15 +609,57 @@ Signature *ETSChecker::GetMostSpecificSignature(ArenaVector<Signature *> &compat
     Signature *mostSpecificSignature = ChooseMostSpecificSignature(compatibleSignatures, argTypeInferenceRequired, pos);
 
     if (mostSpecificSignature == nullptr) {
-        LogTypeError({"Reference to ", compatibleSignatures.front()->Function()->Id()->Name(), " is ambiguous"}, pos);
+        LogError(diagnostic::AMBIGUOUS_FUNC_REF, {compatibleSignatures.front()->Function()->Id()->Name()}, pos);
         return nullptr;
     }
 
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     if (!TypeInference(mostSpecificSignature, arguments, resolveFlags)) {
         return nullptr;
     }
 
     return mostSpecificSignature;
+}
+
+void ETSChecker::ThrowSignatureMismatch(ArenaVector<Signature *> &signatures,
+                                        const ArenaVector<ir::Expression *> &arguments,
+                                        const lexer::SourcePosition &pos, std::string_view signatureKind)
+{
+    if (!arguments.empty() && !signatures.empty()) {
+        std::string msg {};
+        auto someSignature = signatures[0];
+
+        if (someSignature->HasFunction()) {
+            if (someSignature->Function()->IsConstructor()) {
+                msg.append(util::Helpers::GetClassDefiniton(someSignature->Function())->InternalName().Mutf8());
+            } else {
+                msg.append(someSignature->Function()->Id()->Name().Mutf8());
+            }
+        }
+
+        msg += "(";
+
+        for (std::size_t index = 0U; index < arguments.size(); ++index) {
+            auto const &argument = arguments[index];
+            Type const *const argumentType = argument->Check(this);
+            if (!argumentType->IsTypeError()) {
+                msg += argumentType->ToString();
+            } else {
+                //  NOTE (DZ): extra cases for some specific nodes can be added here (as for 'ArrowFunctionExpression')
+                msg += argument->ToString();
+            }
+
+            if (index == arguments.size() - 1U) {
+                msg += ")";
+                LogError(diagnostic::NO_MATCHING_SIG, {signatureKind, msg.c_str()}, pos);
+                return;
+            }
+
+            msg += ", ";
+        }
+    }
+
+    LogError(diagnostic::NO_MATCHING_SIG_2, {signatureKind}, pos);
 }
 
 Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
@@ -742,43 +668,15 @@ Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
                                           const lexer::SourcePosition &pos, std::string_view signatureKind,
                                           TypeRelationFlag resolveFlags)
 {
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto compatibleSignatures = CollectSignatures(signatures, typeArguments, arguments, pos, resolveFlags);
     if (!compatibleSignatures.empty()) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         return GetMostSpecificSignature(compatibleSignatures, arguments, pos, resolveFlags);
     }
 
-    if ((resolveFlags & TypeRelationFlag::NO_THROW) == 0 && !arguments.empty() && !signatures.empty()) {
-        std::stringstream ss;
-
-        if (signatures[0]->Function()->IsConstructor()) {
-            ss << util::Helpers::GetClassDefiniton(signatures[0]->Function())->PrivateId().Mutf8();
-        } else {
-            ss << signatures[0]->Function()->Id()->Name().Mutf8();
-        }
-
-        ss << "(";
-
-        for (uint32_t index = 0; index < arguments.size(); ++index) {
-            if (arguments[index]->IsArrowFunctionExpression()) {
-                // NOTE(peterseres): Refactor this case and add test case
-                break;
-            }
-
-            arguments[index]->Check(this);
-            arguments[index]->TsType()->ToString(ss);
-
-            if (index == arguments.size() - 1) {
-                ss << ")";
-                LogTypeError({"No matching ", signatureKind, " signature for ", ss.str().c_str()}, pos);
-                return nullptr;
-            }
-
-            ss << ", ";
-        }
-    }
-
     if ((resolveFlags & TypeRelationFlag::NO_THROW) == 0) {
-        LogTypeError({"No matching ", signatureKind, " signature"}, pos);
+        ThrowSignatureMismatch(signatures, arguments, pos, signatureKind);
     }
 
     return nullptr;
@@ -810,22 +708,23 @@ Signature *ETSChecker::FindMostSpecificSignature(const ArenaVector<Signature *> 
             continue;
         }
         if (mostSpecificSignature->Owner() == sig->Owner()) {
-            // NOTE: audovichenko. Remove this 'if' when #12443 gets resolved
-            if (mostSpecificSignature->Function() == sig->Function()) {
-                // The same signature
-                continue;
-            }
             return nullptr;
         }
     }
     return mostSpecificSignature;
 }
 
+static Type *GetParatmeterTypeOrRestAtIdx(Signature *sig, const size_t idx)
+{
+    return idx < sig->ArgCount() ? sig->Params().at(idx)->TsType()
+                                 : sig->RestVar()->TsType()->AsETSArrayType()->ElementType();
+}
+
 static void InitMostSpecificType(const ArenaVector<Signature *> &signatures, [[maybe_unused]] Type *&mostSpecificType,
                                  [[maybe_unused]] Signature *&prevSig, const size_t idx)
 {
     for (auto *sig : signatures) {
-        if (Type *sigType = sig->Params().at(idx)->TsType();
+        if (Type *sigType = GetParatmeterTypeOrRestAtIdx(sig, idx);
             sigType->IsETSObjectType() && !sigType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
             mostSpecificType = sigType;
             prevSig = sig;
@@ -834,16 +733,12 @@ static void InitMostSpecificType(const ArenaVector<Signature *> &signatures, [[m
     }
 }
 
-void ETSChecker::SearchAmongMostSpecificTypes(
-    Type *&mostSpecificType, Signature *&prevSig,
-    std::tuple<const lexer::SourcePosition &, size_t, size_t, size_t, Signature *> info, bool lookForClassType)
+void ETSChecker::SearchAmongMostSpecificTypes(Type *&mostSpecificType, Signature *&prevSig,
+                                              std::tuple<const lexer::SourcePosition &, size_t, Signature *> info,
+                                              bool lookForClassType)
 {
-    auto [pos, argumentsSize, paramCount, idx, sig] = info;
-    if (lookForClassType && argumentsSize == ULONG_MAX) {
-        [[maybe_unused]] const bool equalParamSize = sig->Params().size() == paramCount;
-        ASSERT(equalParamSize);
-    }
-    Type *sigType = sig->Params().at(idx)->TsType();
+    auto [pos, idx, sig] = info;
+    Type *sigType = GetParatmeterTypeOrRestAtIdx(sig, idx);
     const bool isClassType =
         sigType->IsETSObjectType() && !sigType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE);
     if (isClassType == lookForClassType) {
@@ -856,16 +751,25 @@ void ETSChecker::SearchAmongMostSpecificTypes(
         } else if (sigType->IsETSObjectType() && mostSpecificType->IsETSObjectType() &&
                    !Relation()->IsAssignableTo(mostSpecificType, sigType)) {
             auto funcName = sig->Function()->Id()->Name();
-            LogTypeError({"Call to `", funcName, "` is ambiguous as `2` versions of `", funcName, "` are available: `",
-                          funcName, prevSig, "` and `", funcName, sig, "`"},
-                         pos);
+            LogError(diagnostic::AMBIGUOUS_CALL, {funcName, funcName, funcName, prevSig, funcName, sig}, pos);
+        }
+    }
+}
+
+static void CollectSuitableSignaturesForTypeInference(size_t paramIdx, ArenaVector<Signature *> &signatures,
+                                                      ArenaMultiMap<size_t, Signature *> &bestSignaturesForParameter)
+{
+    for (auto *sig : signatures) {
+        if (paramIdx >= sig->Params().size() || !sig->Params().at(paramIdx)->TsType()->IsETSObjectType() ||
+            !sig->Params().at(paramIdx)->TsType()->AsETSObjectType()->IsGlobalETSObjectType()) {
+            bestSignaturesForParameter.insert({paramIdx, sig});
         }
     }
 }
 
 ArenaMultiMap<size_t, Signature *> ETSChecker::GetSuitableSignaturesForParameter(
     const std::vector<bool> &argTypeInferenceRequired, size_t paramCount, ArenaVector<Signature *> &signatures,
-    const lexer::SourcePosition &pos, size_t argumentsSize)
+    const lexer::SourcePosition &pos)
 {
     // Collect which signatures are most specific for each parameter.
     ArenaMultiMap<size_t /* parameter index */, Signature *> bestSignaturesForParameter(Allocator()->Adapter());
@@ -874,10 +778,8 @@ ArenaMultiMap<size_t, Signature *> ETSChecker::GetSuitableSignaturesForParameter
                                                                           TypeRelationFlag::ONLY_CHECK_WIDENING);
 
     for (size_t i = 0; i < paramCount; ++i) {
-        if (argTypeInferenceRequired[i]) {
-            for (auto *sig : signatures) {
-                bestSignaturesForParameter.insert({i, sig});
-            }
+        if (i >= argTypeInferenceRequired.size() || argTypeInferenceRequired[i]) {
+            CollectSuitableSignaturesForTypeInference(i, signatures, bestSignaturesForParameter);
             continue;
         }
         // 1st step: check which is the most specific parameter type for i. parameter.
@@ -886,16 +788,14 @@ ArenaMultiMap<size_t, Signature *> ETSChecker::GetSuitableSignaturesForParameter
 
         InitMostSpecificType(signatures, mostSpecificType, prevSig, i);
         for (auto *sig : signatures) {
-            SearchAmongMostSpecificTypes(mostSpecificType, prevSig,
-                                         std::make_tuple(pos, argumentsSize, paramCount, i, sig), true);
+            SearchAmongMostSpecificTypes(mostSpecificType, prevSig, std::make_tuple(pos, i, sig), true);
         }
         for (auto *sig : signatures) {
-            SearchAmongMostSpecificTypes(mostSpecificType, prevSig,
-                                         std::make_tuple(pos, argumentsSize, paramCount, i, sig), false);
+            SearchAmongMostSpecificTypes(mostSpecificType, prevSig, std::make_tuple(pos, i, sig), false);
         }
 
         for (auto *sig : signatures) {
-            Type *sigType = sig->Params().at(i)->TsType();
+            Type *sigType = GetParatmeterTypeOrRestAtIdx(sig, i);
             if (Relation()->IsIdenticalTo(sigType, mostSpecificType)) {
                 bestSignaturesForParameter.insert({i, sig});
             }
@@ -908,13 +808,16 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
                                                    const std::vector<bool> &argTypeInferenceRequired,
                                                    const lexer::SourcePosition &pos, size_t argumentsSize)
 {
-    ASSERT(signatures.empty() == false);
+    ES2PANDA_ASSERT(signatures.empty() == false);
 
     if (signatures.size() == 1) {
         return signatures.front();
     }
 
-    size_t paramCount = signatures.front()->Params().size();
+    std::sort(signatures.begin(), signatures.end(),
+              [](Signature *sig1, Signature *sig2) { return sig1->ArgCount() > sig2->ArgCount(); });
+
+    size_t paramCount = signatures.front()->ArgCount();
     if (argumentsSize != ULONG_MAX) {
         paramCount = argumentsSize;
     }
@@ -931,7 +834,7 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
         if (signatures.size() > 1 && std::any_of(signatures.begin(), signatures.end(), [signatures](const auto *param) {
                 return param->RestVar()->TsType() != signatures.front()->RestVar()->TsType();
             })) {
-            LogTypeError({"Call to `", signatures.front()->Function()->Id()->Name(), "` is ambiguous "}, pos);
+            LogError(diagnostic::AMBIGUOUS_CALL_2, {signatures.front()->Function()->Id()->Name()}, pos);
             return nullptr;
         }
         // Else return the signature with the rest parameter
@@ -941,11 +844,90 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
     }
 
     ArenaMultiMap<size_t /* parameter index */, Signature *> bestSignaturesForParameter =
-        GetSuitableSignaturesForParameter(argTypeInferenceRequired, paramCount, signatures, pos, argumentsSize);
+        GetSuitableSignaturesForParameter(argTypeInferenceRequired, paramCount, signatures, pos);
     // Find the signature that are most specific for all parameters.
     Signature *mostSpecificSignature = FindMostSpecificSignature(signatures, bestSignaturesForParameter, paramCount);
 
     return mostSpecificSignature;
+}
+
+static bool IsLastParameterLambdaWithReceiver(Signature *sig)
+{
+    auto const &params = sig->Function()->Params();
+
+    return !params.empty() && (params.back()->AsETSParameterExpression()->TypeAnnotation() != nullptr) &&
+           params.back()->AsETSParameterExpression()->TypeAnnotation()->IsETSFunctionType() &&
+           params.back()->AsETSParameterExpression()->TypeAnnotation()->AsETSFunctionType()->IsExtensionFunction();
+}
+
+Signature *ETSChecker::ResolvePotentialTrailingLambdaWithReceiver(ir::CallExpression *callExpr,
+                                                                  ArenaVector<Signature *> const &signatures,
+                                                                  ArenaVector<ir::Expression *> &arguments)
+{
+    auto *trailingLambda = arguments.back()->AsArrowFunctionExpression();
+    ArenaVector<Signature *> normalSig(Allocator()->Adapter());
+    ArenaVector<Signature *> sigContainLambdaWithReceiverAsParam(Allocator()->Adapter());
+    Signature *signature = nullptr;
+    for (auto sig : signatures) {
+        if (!IsLastParameterLambdaWithReceiver(sig)) {
+            normalSig.emplace_back(sig);
+            continue;
+        }
+
+        auto *candidateFunctionType =
+            sig->Function()->Params().back()->AsETSParameterExpression()->TypeAnnotation()->AsETSFunctionType();
+        auto *currentReceiver = candidateFunctionType->Params()[0];
+        trailingLambda->Function()->Params().emplace_back(currentReceiver);
+        sigContainLambdaWithReceiverAsParam.emplace_back(sig);
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        signature = ValidateSignatures(sigContainLambdaWithReceiverAsParam, callExpr->TypeParams(), arguments,
+                                       callExpr->Start(), "call",
+                                       TypeRelationFlag::NO_THROW | TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA);
+        if (signature != nullptr) {
+            return signature;
+        }
+        sigContainLambdaWithReceiverAsParam.clear();
+        trailingLambda->Function()->Params().clear();
+    }
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    return ValidateSignatures(normalSig, callExpr->TypeParams(), arguments, callExpr->Start(), "call",
+                              TypeRelationFlag::NO_THROW | TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA);
+}
+
+void ETSChecker::UpdateDeclarationFromSignature(ir::CallExpression *expr, checker::Signature *signature)
+{
+    if (signature == nullptr) {
+        return;
+    }
+
+    ir::AstNode *callIdentifier = expr->Callee();
+    while (callIdentifier != nullptr && callIdentifier->IsMemberExpression()) {
+        callIdentifier = callIdentifier->AsMemberExpression()->Property();
+    }
+    if (callIdentifier == nullptr || !callIdentifier->IsIdentifier()) {
+        return;
+    }
+
+    auto signatureVar = callIdentifier->Variable();
+    if (signatureVar == nullptr || !signatureVar->HasFlag(varbinder::VariableFlags::METHOD) ||
+        !signature->HasFunction() || signature->Function()->IsDynamic()) {
+        return;
+    }
+
+    auto sigName = signature->Function()->Id()->Name();
+    if (callIdentifier->AsIdentifier()->Name() != sigName) {
+        return;
+    }
+
+    ir::AstNode *declNode = signature->Function();
+    while (!declNode->IsMethodDefinition()) {
+        declNode = declNode->Parent();
+    }
+    auto allocator = Allocator();
+    auto newDecl = allocator->New<varbinder::FunctionDecl>(allocator, sigName, declNode);
+    auto newVar = allocator->New<varbinder::LocalVariable>(newDecl, varbinder::VariableFlags::METHOD |
+                                                                        varbinder::VariableFlags::SYNTHETIC);
+    callIdentifier->SetVariable(newVar);
 }
 
 Signature *ETSChecker::ResolveCallExpressionAndTrailingLambda(ArenaVector<Signature *> &signatures,
@@ -953,42 +935,41 @@ Signature *ETSChecker::ResolveCallExpressionAndTrailingLambda(ArenaVector<Signat
                                                               const lexer::SourcePosition &pos,
                                                               const TypeRelationFlag reportFlag)
 {
-    Signature *sig = nullptr;
     if (callExpr->TrailingBlock() == nullptr) {
-        for (auto it : signatures) {
-            MaybeSubstituteLambdaArguments(it->Function()->Params(), callExpr);
-
-            if (callExpr->Arguments().size() != it->Function()->Params().size()) {
-                MaybeSubstituteLambdaArgumentsInFunctionCall(callExpr);
-            }
-        }
-
-        sig = ValidateSignatures(signatures, callExpr->TypeParams(), callExpr->Arguments(), pos, "call", reportFlag);
+        auto sig =
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+            ValidateSignatures(signatures, callExpr->TypeParams(), callExpr->Arguments(), pos, "call", reportFlag);
+        UpdateDeclarationFromSignature(callExpr, sig);
         return sig;
     }
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto arguments = ExtendArgumentsWithFakeLamda(callExpr);
-    sig = ValidateSignatures(signatures, callExpr->TypeParams(), arguments, pos, "call",
-                             TypeRelationFlag::NO_THROW | TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA);
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    auto sig = ResolvePotentialTrailingLambdaWithReceiver(callExpr, signatures, arguments);
     if (sig != nullptr) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        TransformTraillingLambda(callExpr);
+        TransformTraillingLambda(callExpr, sig);
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         TypeInference(sig, callExpr->Arguments());
+        UpdateDeclarationFromSignature(callExpr, sig);
         return sig;
     }
 
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     sig = ValidateSignatures(signatures, callExpr->TypeParams(), callExpr->Arguments(), pos, "call", reportFlag);
     if (sig != nullptr) {
         EnsureValidCurlyBrace(callExpr);
     }
 
+    UpdateDeclarationFromSignature(callExpr, sig);
     return sig;
 }
 
 Signature *ETSChecker::ResolveConstructExpression(ETSObjectType *type, const ArenaVector<ir::Expression *> &arguments,
                                                   const lexer::SourcePosition &pos)
 {
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     return ValidateSignatures(type->ConstructSignatures(), nullptr, arguments, pos, "construct");
 }
 
@@ -1004,11 +985,12 @@ void ETSChecker::CheckObjectLiteralArguments(Signature *signature, ArenaVector<i
         }
 
         Type *tp;
-        if (index >= signature->MinArgCount()) {
-            ASSERT(signature->RestVar());
+        if (index >= signature->Params().size()) {
+            ES2PANDA_ASSERT(signature->RestVar());
             tp = signature->RestVar()->TsType();
         } else {
-            tp = signature->Params()[index]->TsType();
+            // #22952: infer optional parameter heuristics
+            tp = GetNonNullishType(signature->Params()[index]->TsType());
         }
 
         arguments[index]->AsObjectExpression()->SetPreferredType(tp);
@@ -1016,68 +998,121 @@ void ETSChecker::CheckObjectLiteralArguments(Signature *signature, ArenaVector<i
     }
 }
 
-checker::ETSFunctionType *ETSChecker::BuildMethodSignature(ir::MethodDefinition *method)
+// Note: this function is extracted to reduce the size of `BuildMethodSignature`
+static bool CollectOverload(checker::ETSChecker *checker, ir::MethodDefinition *method, ETSFunctionType *funcType)
 {
-    if (method->TsType() != nullptr) {
-        return method->TsType()->AsETSFunctionType();
-    }
-
-    bool isConstructSig = method->IsConstructor();
-
-    method->Function()->Id()->SetVariable(method->Id()->Variable());
-    BuildFunctionSignature(method->Function(), isConstructSig);
-    if (method->Function()->Signature() == nullptr) {
-        return nullptr;
-    }
-    auto *funcType = BuildNamedFunctionType(method->Function());
-    std::vector<checker::ETSFunctionType *> overloads;
+    ir::OverloadInfo &ldInfo = method->GetOverloadInfo();
+    ArenaVector<ETSFunctionType *> overloads(checker->Allocator()->Adapter());
 
     for (ir::MethodDefinition *const currentFunc : method->Overloads()) {
+        ldInfo.isDeclare &= currentFunc->IsDeclare();
+
         currentFunc->Function()->Id()->SetVariable(currentFunc->Id()->Variable());
-        BuildFunctionSignature(currentFunc->Function(), isConstructSig);
+        checker->BuildFunctionSignature(currentFunc->Function(), method->IsConstructor());
         if (currentFunc->Function()->Signature() == nullptr) {
-            return nullptr;
+            method->Id()->Variable()->SetTsType(checker->GlobalTypeError());
+            return false;
         }
-        auto *const overloadType = BuildNamedFunctionType(currentFunc->Function());
-        CheckIdenticalOverloads(funcType, overloadType, currentFunc);
+        auto *const overloadType = checker->BuildMethodType(currentFunc->Function());
+        ldInfo.needHelperOverload |=
+            checker->CheckIdenticalOverloads(funcType, overloadType, currentFunc, ldInfo.isDeclare);
+
         currentFunc->SetTsType(overloadType);
-        funcType->AddCallSignature(currentFunc->Function()->Signature());
+        auto overloadSig = currentFunc->Function()->Signature();
+        funcType->AddCallSignature(overloadSig);
+        if (overloadSig->IsExtensionAccessor()) {
+            funcType->GetExtensionAccessorSigs().emplace_back(overloadSig);
+        } else if (overloadSig->IsExtensionFunction()) {
+            funcType->GetExtensionFunctionSigs().emplace_back(overloadSig);
+        }
         overloads.push_back(overloadType);
+
+        ldInfo.minArg = std::min(ldInfo.minArg, currentFunc->Function()->Signature()->MinArgCount());
+        ldInfo.maxArg = std::max(ldInfo.maxArg, currentFunc->Function()->Signature()->ArgCount());
+        ldInfo.hasRestVar |= (currentFunc->Function()->Signature()->RestVar() != nullptr);
+        ldInfo.returnVoid |= currentFunc->Function()->Signature()->ReturnType()->IsETSVoidType();
     }
+
     for (size_t baseFuncCounter = 0; baseFuncCounter < overloads.size(); ++baseFuncCounter) {
         auto *overloadType = overloads.at(baseFuncCounter);
         for (size_t compareFuncCounter = baseFuncCounter + 1; compareFuncCounter < overloads.size();
              compareFuncCounter++) {
             auto *compareOverloadType = overloads.at(compareFuncCounter);
-            CheckIdenticalOverloads(overloadType, compareOverloadType, method->Overloads()[compareFuncCounter]);
+            ldInfo.needHelperOverload |= checker->CheckIdenticalOverloads(
+                overloadType, compareOverloadType, method->Overloads()[compareFuncCounter], ldInfo.isDeclare);
         }
     }
-
-    method->Id()->Variable()->SetTsType(funcType);
-    return funcType;
+    return true;
 }
 
-void ETSChecker::CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType *overload,
-                                         const ir::MethodDefinition *const currentFunc)
+checker::Type *ETSChecker::BuildMethodSignature(ir::MethodDefinition *method)
 {
+    if (method->TsType() != nullptr) {
+        return method->TsType()->AsETSFunctionType();
+    }
+
+    method->Function()->Id()->SetVariable(method->Id()->Variable());
+    BuildFunctionSignature(method->Function(), method->IsConstructor());
+    if (method->Function()->Signature() == nullptr) {
+        return method->Id()->Variable()->SetTsType(GlobalTypeError());
+    }
+    auto *funcType = BuildMethodType(method->Function());
+    method->InitializeOverloadInfo();
+    if (!CollectOverload(this, method, funcType)) {
+        return GlobalTypeError();
+    }
+    ir::OverloadInfo &ldInfo = method->GetOverloadInfo();
+
+    ldInfo.needHelperOverload &= ldInfo.isDeclare;
+    if (ldInfo.needHelperOverload) {
+        Warning("Function " + std::string(funcType->Name()) + " with this assembly signature already declared.",
+                method->Start());
+    }
+
+    return method->Id()->Variable()->SetTsType(funcType);
+}
+
+bool ETSChecker::CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType *overload,
+                                         const ir::MethodDefinition *const currentFunc, bool omitSameAsm)
+{
+    // Don't necessary to check overload for invalid functions
+    if (func->Name().Is(ERROR_LITERAL)) {
+        ES2PANDA_ASSERT(IsAnyError());
+        return false;
+    }
+
     SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK);
 
-    Relation()->IsIdenticalTo(func, overload);
+    Relation()->SignatureIsIdenticalTo(func->CallSignatures()[0], overload->CallSignatures()[0]);
     if (Relation()->IsTrue() && func->CallSignatures()[0]->GetSignatureInfo()->restVar ==
                                     overload->CallSignatures()[0]->GetSignatureInfo()->restVar) {
-        LogTypeError("Function " + func->Name().Mutf8() + " is already declared.", currentFunc->Start());
-        return;
+        LogError(diagnostic::FUNCTION_REDECL_BY_TYPE_SIG, {func->Name().Mutf8()}, currentFunc->Start());
+        return false;
     }
-    if (HasSameAssemblySignatures(func, overload)) {
-        LogTypeError("Function " + func->Name().Mutf8() + " with this assembly signature already declared.",
-                     currentFunc->Start());
+
+    if (!HasSameAssemblySignatures(func, overload)) {
+        return false;
     }
+
+    if (!omitSameAsm) {
+        LogError(diagnostic::FUNCTION_REDECL_BY_ASM_SIG, {func->Name().Mutf8()}, currentFunc->Start());
+        return false;
+    }
+
+    func->CallSignatures()[0]->AddSignatureFlag(SignatureFlags::DUPLICATE_ASM);
+    overload->CallSignatures()[0]->AddSignatureFlag(SignatureFlags::DUPLICATE_ASM);
+
+    return true;
 }
 
 Signature *ETSChecker::ComposeSignature(ir::ScriptFunction *func, SignatureInfo *signatureInfo, Type *returnType,
                                         varbinder::Variable *nameVar)
 {
     auto *signature = CreateSignature(signatureInfo, returnType, func);
+    if (signature == nullptr) {  // #23134
+        ES2PANDA_ASSERT(IsAnyError());
+        return nullptr;
+    }
     signature->SetOwner(Context().ContainingClass());
     signature->SetOwnerVar(nameVar);
 
@@ -1087,180 +1122,110 @@ Signature *ETSChecker::ComposeSignature(ir::ScriptFunction *func, SignatureInfo 
     }
 
     if (returnTypeAnnotation != nullptr && returnTypeAnnotation->IsTSThisType()) {
+        // #22951: the original signature retains the arbitrary this type
+        // (sometimes ETSGLOBAL). should be resolved woth proper `this` functions support
         signature->AddSignatureFlag(SignatureFlags::THIS_RETURN_TYPE);
     }
 
-    if (func->IsAbstract()) {
-        signature->AddSignatureFlag(SignatureFlags::ABSTRACT);
-        signature->AddSignatureFlag(SignatureFlags::VIRTUAL);
-    }
-
-    if (func->IsStatic()) {
-        signature->AddSignatureFlag(SignatureFlags::STATIC);
-    }
-
-    if (func->IsConstructor()) {
-        signature->AddSignatureFlag(SignatureFlags::CONSTRUCTOR);
-    }
-
-    if ((signature->Owner() != nullptr && signature->Owner()->GetDeclNode()->IsFinal()) || func->IsFinal()) {
+    if (signature->Owner() != nullptr && signature->Owner()->GetDeclNode()->IsFinal()) {
         signature->AddSignatureFlag(SignatureFlags::FINAL);
     }
-
-    if (func->IsPublic()) {
-        signature->AddSignatureFlag(SignatureFlags::PUBLIC);
-    } else if (func->IsInternal()) {
-        if (func->IsProtected()) {
-            signature->AddSignatureFlag(SignatureFlags::INTERNAL_PROTECTED);
-        } else {
-            signature->AddSignatureFlag(SignatureFlags::INTERNAL);
-        }
-    } else if (func->IsProtected()) {
-        signature->AddSignatureFlag(SignatureFlags::PROTECTED);
-    } else if (func->IsPrivate()) {
-        signature->AddSignatureFlag(SignatureFlags::PRIVATE);
-    }
-
     return signature;
 }
 
-Type *ETSChecker::ComposeReturnType(ir::ScriptFunction *func)
+Type *ETSChecker::ComposeReturnType(ir::TypeNode *typeAnnotation, bool isAsync)
 {
-    if (auto typeAnnotation = func->ReturnTypeAnnotation(); typeAnnotation != nullptr) {
+    if (typeAnnotation != nullptr) {
         return typeAnnotation->GetType(this);
     }
-    if (func->IsAsyncFunc()) {
-        return CreatePromiseOf(GlobalVoidType());
-    }
-    return GlobalVoidType();
+    return isAsync ? CreatePromiseOf(GlobalVoidType()) : GlobalVoidType();
 }
 
-SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ScriptFunction *func)
+static varbinder::LocalVariable *SetupSignatureParameter(ir::ETSParameterExpression *param, Type *type)
 {
-    auto *signatureInfo = CreateSignatureInfo();
-    signatureInfo->restVar = nullptr;
-    signatureInfo->minArgCount = 0;
+    auto *const variable = param->Ident()->Variable();  // #23134
+    if (variable == nullptr) {
+        return nullptr;
+    }
+    param->Ident()->SetTsType(type);
+    variable->SetTsType(type);
+    return variable->AsLocalVariable();
+}
 
-    if ((func->IsConstructor() || !func->IsStatic()) && !func->IsArrow()) {
-        auto *thisVar = func->Scope()->ParamScope()->Params().front();
-        thisVar->SetTsType(Context().ContainingClass());
+// Should be moved to original ComposeSignatureInfo after AST fix
+static bool AppendSignatureInfoParam(ETSChecker *checker, SignatureInfo *sigInfo, ir::ETSParameterExpression *param)
+{
+    if (param->IsRestParameter()) {
+        return true;
     }
 
-    if (func->TypeParams() != nullptr) {
-        auto [typeParamTypes, ok] = CreateUnconstrainedTypeParameters(func->TypeParams());
+    auto variable = SetupSignatureParameter(param, [checker, param]() {
+        if (param->TypeAnnotation() != nullptr) {
+            auto type = param->TypeAnnotation()->GetType(checker);
+            return param->IsOptional() ? checker->CreateETSUnionType({type, checker->GlobalETSUndefinedType()}) : type;
+        }
+        if (param->Ident()->TsType() != nullptr) {
+            return param->Ident()->TsType();
+        }
+
+        if (!param->Ident()->IsErrorPlaceHolder() && !checker->HasStatus(checker::CheckerStatus::IN_TYPE_INFER)) {
+            checker->LogError(diagnostic::INFER_FAILURE_FUNC_PARAM, {param->Ident()->Name()}, param->Start());
+        }
+
+        return checker->GlobalTypeError();
+    }());
+    if (variable == nullptr) {  // #23134
+        return false;
+    }
+
+    sigInfo->params.push_back(variable);
+    if (!param->IsOptional()) {
+        ++sigInfo->minArgCount;
+    }
+    ES2PANDA_ASSERT(!param->IsOptional() ||
+                    checker->Relation()->IsSupertypeOf(param->Ident()->TsType(), checker->GlobalETSUndefinedType()));
+    return true;
+}
+
+SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::TSTypeParameterDeclaration *typeParams,
+                                                ArenaVector<ir::Expression *> const &params)
+{
+    auto *const signatureInfo = CreateSignatureInfo();
+
+    if (typeParams != nullptr) {
+        auto [typeParamTypes, ok] = CreateUnconstrainedTypeParameters(typeParams);
         signatureInfo->typeParams = std::move(typeParamTypes);
         if (ok) {
-            AssignTypeParameterConstraints(func->TypeParams());
+            AssignTypeParameterConstraints(typeParams);
         }
     }
 
-    for (auto *const it : func->Params()) {
-        auto *const param = it->AsETSParameterExpression();
+    for (auto *const p : params) {
+        if (!p->IsETSParameterExpression() ||
+            !AppendSignatureInfoParam(this, signatureInfo, p->AsETSParameterExpression())) {  // #23134
+            ES2PANDA_ASSERT(IsAnyError());
+            return nullptr;
+        }
+    }
 
-        if (param->IsRestParameter()) {
-            auto const *const restIdent = param->Ident();
-
-            ASSERT(restIdent->Variable());
-            signatureInfo->restVar = restIdent->Variable()->AsLocalVariable();
-
-            auto *const restParamTypeAnnotation = param->TypeAnnotation();
-            ASSERT(restParamTypeAnnotation);
-
-            signatureInfo->restVar->SetTsType(restParamTypeAnnotation->GetType(this));
-            auto arrayType = signatureInfo->restVar->TsType()->AsETSArrayType();
-            CreateBuiltinArraySignature(arrayType, arrayType->Rank());
-        } else {
-            auto *const paramIdent = param->Ident();
-
-            varbinder::Variable *const paramVar = paramIdent->Variable();
-            ASSERT(paramVar);
-
-            auto *const paramTypeAnnotation = param->TypeAnnotation();
-            if (paramIdent->TsType() == nullptr && paramTypeAnnotation == nullptr) {
-                LogTypeError({"The type of parameter '", paramIdent->Name(), "' cannot be determined"}, param->Start());
+    if (!params.empty()) {
+        if (auto param = params.back()->AsETSParameterExpression(); param->IsRestParameter()) {
+            if (param->TypeAnnotation() == nullptr) {  // #23134
+                ES2PANDA_ASSERT(IsAnyError());
                 return nullptr;
             }
-
-            if (paramIdent->TsType() == nullptr) {
-                ASSERT(paramTypeAnnotation);
-
-                paramVar->SetTsType(paramTypeAnnotation->GetType(this));
-            } else {
-                paramVar->SetTsType(paramIdent->TsType());
-            }
-            signatureInfo->params.push_back(paramVar->AsLocalVariable());
-            ++signatureInfo->minArgCount;
+            signatureInfo->restVar = SetupSignatureParameter(param, param->TypeAnnotation()->GetType(this));
+            ES2PANDA_ASSERT(signatureInfo->restVar != nullptr);
         }
     }
 
     return signatureInfo;
 }
 
-ArenaVector<SignatureInfo *> ETSChecker::ComposeSignatureInfosForArrowFunction(
-    ir::ArrowFunctionExpression *arrowFuncExpr)
-{
-    ArenaVector<SignatureInfo *> signatureInfos(Allocator()->Adapter());
-
-    for (size_t i = arrowFuncExpr->Function()->DefaultParamIndex(); i < arrowFuncExpr->Function()->Params().size();
-         i++) {
-        auto *signatureInfo = CreateSignatureInfo();
-        signatureInfo->restVar = nullptr;
-        signatureInfo->minArgCount = 0;
-
-        if (arrowFuncExpr->Function()->TypeParams() != nullptr) {
-            signatureInfo->typeParams =
-                CreateUnconstrainedTypeParameters(arrowFuncExpr->Function()->TypeParams()).first;
-        }
-
-        for (size_t j = 0; j < i; j++) {
-            SetParamForSignatureInfoOfArrowFunction(signatureInfo,
-                                                    arrowFuncExpr->Function()->Params()[j]->AsETSParameterExpression());
-        }
-
-        signatureInfos.push_back(signatureInfo);
-    }
-
-    return signatureInfos;
-}
-
-void ETSChecker::SetParamForSignatureInfoOfArrowFunction(SignatureInfo *signatureInfo,
-                                                         ir::ETSParameterExpression *param)
-{
-    if (param->IsRestParameter()) {
-        auto const *const restIdent = param->Ident();
-
-        ASSERT(restIdent->Variable());
-        signatureInfo->restVar = restIdent->Variable()->AsLocalVariable();
-
-        auto *const restParamTypeAnnotation = param->TypeAnnotation();
-        ASSERT(restParamTypeAnnotation);
-
-        signatureInfo->restVar->SetTsType(restParamTypeAnnotation->GetType(this));
-        auto arrayType = signatureInfo->restVar->TsType()->AsETSArrayType();
-        CreateBuiltinArraySignature(arrayType, arrayType->Rank());
-    } else {
-        auto *const paramIdent = param->Ident();
-
-        varbinder::Variable *const paramVar = paramIdent->Variable();
-        ASSERT(paramVar);
-
-        auto *const paramTypeAnnotation = param->TypeAnnotation();
-        if (paramIdent->TsType() == nullptr) {
-            ASSERT(paramTypeAnnotation);
-
-            paramVar->SetTsType(paramTypeAnnotation->GetType(this));
-        } else {
-            paramVar->SetTsType(paramIdent->TsType());
-        }
-        signatureInfo->params.push_back(paramVar->AsLocalVariable());
-        ++signatureInfo->minArgCount;
-    }
-}
-
 void ETSChecker::ValidateMainSignature(ir::ScriptFunction *func)
 {
     if (func->Params().size() >= 2U) {
-        LogTypeError("0 or 1 argument are allowed", func->Start());
+        LogError(diagnostic::MAIN_INVALID_ARG_COUNT, {}, func->Start());
         return;
     }
 
@@ -1268,54 +1233,13 @@ void ETSChecker::ValidateMainSignature(ir::ScriptFunction *func)
         auto const *const param = func->Params()[0]->AsETSParameterExpression();
 
         if (param->IsRestParameter()) {
-            LogTypeError("Rest parameter is not allowed in the 'main' function.", param->Start());
+            LogError(diagnostic::MAIN_WITH_REST, {}, param->Start());
         }
 
         const auto paramType = param->Variable()->TsType();
         if (!paramType->IsETSArrayType() || !paramType->AsETSArrayType()->ElementType()->IsETSStringType()) {
-            LogTypeError("Only 'string[]' type argument is allowed.", param->Start());
+            LogError(diagnostic::MAIN_PARAM_NOT_ARR_OF_STRING, {}, param->Start());
         }
-    }
-}
-
-static void AddSignatureFlags(const ir::ScriptFunction *const func, Signature *const signature)
-{
-    if (func->IsAbstract()) {
-        signature->AddSignatureFlag(SignatureFlags::ABSTRACT);
-        signature->AddSignatureFlag(SignatureFlags::VIRTUAL);
-    }
-
-    if (func->IsStatic()) {
-        signature->AddSignatureFlag(SignatureFlags::STATIC);
-    }
-
-    if (func->IsConstructor()) {
-        signature->AddSignatureFlag(SignatureFlags::CONSTRUCTOR);
-    }
-
-    if ((func->Signature()->Owner() != nullptr && func->Signature()->Owner()->GetDeclNode()->IsFinal()) ||
-        func->IsFinal()) {
-        signature->AddSignatureFlag(SignatureFlags::FINAL);
-    }
-
-    if (func->IsPublic()) {
-        signature->AddSignatureFlag(SignatureFlags::PUBLIC);
-    } else if (func->IsInternal()) {
-        if (func->IsProtected()) {
-            signature->AddSignatureFlag(SignatureFlags::INTERNAL_PROTECTED);
-        } else {
-            signature->AddSignatureFlag(SignatureFlags::INTERNAL);
-        }
-    } else if (func->IsProtected()) {
-        signature->AddSignatureFlag(SignatureFlags::PROTECTED);
-    } else if (func->IsPrivate()) {
-        signature->AddSignatureFlag(SignatureFlags::PRIVATE);
-    }
-
-    if (func->IsSetter()) {
-        signature->AddSignatureFlag(SignatureFlags::SETTER);
-    } else if (func->IsGetter()) {
-        signature->AddSignatureFlag(SignatureFlags::GETTER);
     }
 }
 
@@ -1325,9 +1249,26 @@ void ETSChecker::BuildFunctionSignature(ir::ScriptFunction *func, bool isConstru
     auto *nameVar = isArrow ? nullptr : func->Id()->Variable();
     auto funcName = nameVar == nullptr ? util::StringView() : nameVar->Name();
 
-    auto *signatureInfo = ComposeSignatureInfo(func);
-    if (signatureInfo == nullptr) {
+    if ((func->IsConstructor() || !func->IsStatic()) && !func->IsArrow()) {
+        auto thisVar = func->Scope()->ParamScope()->Params().front();
+        thisVar->SetTsType(Context().ContainingClass());
+    }
+    auto *signatureInfo = ComposeSignatureInfo(func->TypeParams(), func->Params());
+    auto *returnType = func->GetPreferredReturnType() != nullptr
+                           ? func->GetPreferredReturnType()
+                           : ComposeReturnType(func->ReturnTypeAnnotation(), func->IsAsyncFunc());
+    auto *signature = ComposeSignature(func, signatureInfo, returnType, nameVar);
+    if (signature == nullptr) {  // #23134
+        ES2PANDA_ASSERT(IsAnyError());
         return;
+    }
+
+    func->SetSignature(signature);
+
+    if (isConstructSig) {
+        signature->AddSignatureFlag(SignatureFlags::CONSTRUCT);
+    } else {
+        signature->AddSignatureFlag(SignatureFlags::CALL);
     }
 
     if (funcName.Is(compiler::Signatures::MAIN) &&
@@ -1338,23 +1279,20 @@ void ETSChecker::BuildFunctionSignature(ir::ScriptFunction *func, bool isConstru
         ValidateMainSignature(func);
     }
 
-    auto *returnType = ComposeReturnType(func);
-    auto *signature = ComposeSignature(func, signatureInfo, returnType, nameVar);
-    if (isConstructSig) {
-        signature->AddSignatureFlag(SignatureFlags::CONSTRUCT);
-    } else {
-        signature->AddSignatureFlag(SignatureFlags::CALL);
-    }
-    func->SetSignature(signature);
-    AddSignatureFlags(func, signature);
     VarBinder()->AsETSBinder()->BuildFunctionName(func);
 }
 
-checker::ETSFunctionType *ETSChecker::BuildNamedFunctionType(ir::ScriptFunction *func)
+checker::ETSFunctionType *ETSChecker::BuildMethodType(ir::ScriptFunction *func)
 {
-    ASSERT(!func->IsArrow());
+    ES2PANDA_ASSERT(!func->IsArrow());
     auto *nameVar = func->Id()->Variable();
-    auto *funcType = CreateETSFunctionType(func, func->Signature(), nameVar->Name());
+    ETSFunctionType *funcType;
+    if (func->IsDynamic()) {
+        funcType = CreateETSDynamicMethodType(nameVar->Name(), {{func->Signature()}, Allocator()->Adapter()},
+                                              func->Language());
+    } else {
+        funcType = CreateETSMethodType(nameVar->Name(), {{func->Signature()}, Allocator()->Adapter()});
+    }
     funcType->SetVariable(nameVar);
     return funcType;
 }
@@ -1369,7 +1307,7 @@ Signature *ETSChecker::CheckEveryAbstractSignatureIsOverridden(ETSFunctionType *
         bool isOverridden = false;
         for (auto sourceSig : source->CallSignatures()) {
             if ((*targetSig)->Function()->Id()->Name() == sourceSig->Function()->Id()->Name() &&
-                Relation()->IsCompatibleTo(*targetSig, sourceSig)) {
+                Relation()->SignatureIsSupertypeOf(*targetSig, sourceSig)) {
                 target->CallSignatures().erase(targetSig);
                 isOverridden = true;
                 break;
@@ -1416,9 +1354,7 @@ bool ETSChecker::IsMethodOverridesOther(Signature *base, Signature *derived)
     if (IsOverridableIn(base)) {
         SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK |
                                                                     TypeRelationFlag::OVERRIDING_CONTEXT);
-        if (Relation()->IsCompatibleTo(base, derived)) {
-            CheckThrowMarkers(base, derived);
-
+        if (Relation()->SignatureIsSupertypeOf(base, derived)) {
             if (derived->HasSignatureFlag(SignatureFlags::STATIC)) {
                 return false;
             }
@@ -1431,30 +1367,10 @@ bool ETSChecker::IsMethodOverridesOther(Signature *base, Signature *derived)
     return false;
 }
 
-bool ETSChecker::CheckThrowMarkers(Signature *source, Signature *target)
-{
-    ir::ScriptFunctionFlags throwMarkers = ir::ScriptFunctionFlags::THROWS | ir::ScriptFunctionFlags::RETHROWS;
-    if ((source->Function()->Flags() & throwMarkers) == (target->Function()->Flags() & throwMarkers)) {
-        return true;
-    }
-
-    if ((source->Function()->IsRethrowing() && target->Function()->IsThrowing()) ||
-        (!source->Function()->IsThrowing() &&
-         (target->Function()->IsRethrowing() || target->Function()->IsThrowing()))) {
-        LogTypeError(
-            "A method that overrides or hides another method cannot change throw or rethrow clauses of the "
-            "overridden "
-            "or hidden method.",
-            target->Function()->Body() == nullptr ? target->Function()->Start() : target->Function()->Body()->Start());
-        return false;
-    }
-    return true;
-}
-
 OverrideErrorCode ETSChecker::CheckOverride(Signature *signature, Signature *other)
 {
     if (other->HasSignatureFlag(SignatureFlags::STATIC)) {
-        ASSERT(signature->HasSignatureFlag(SignatureFlags::STATIC));
+        ES2PANDA_ASSERT(signature->HasSignatureFlag(SignatureFlags::STATIC));
         return OverrideErrorCode::NO_ERROR;
     }
 
@@ -1477,6 +1393,9 @@ OverrideErrorCode ETSChecker::CheckOverride(Signature *signature, Signature *oth
     if (signature->ProtectionFlag() > other->ProtectionFlag()) {
         return OverrideErrorCode::OVERRIDDEN_WEAKER;
     }
+    if (signature->HasProtectionFlagInternal() != other->HasProtectionFlagInternal()) {
+        return OverrideErrorCode::OVERRIDDEN_INTERNAL;
+    }
 
     return OverrideErrorCode::NO_ERROR;
 }
@@ -1496,7 +1415,7 @@ Signature *ETSChecker::AdjustForTypeParameters(Signature *source, Signature *tar
         if (!targetTypeParams[ix]->IsETSTypeParameter()) {
             continue;
         }
-        ETSChecker::EmplaceSubstituted(substitution, targetTypeParams[ix]->AsETSTypeParameter(), sourceTypeParams[ix]);
+        EmplaceSubstituted(substitution, targetTypeParams[ix]->AsETSTypeParameter(), sourceTypeParams[ix]);
     }
     return target->Substitute(Relation(), substitution);
 }
@@ -1518,15 +1437,45 @@ void ETSChecker::ReportOverrideError(Signature *signature, Signature *overridden
             reason = "overridden method has weaker access privilege.";
             break;
         }
+        case OverrideErrorCode::OVERRIDDEN_INTERNAL: {
+            reason =
+                "internal members can only be overridden by internal members, "
+                "and non-internal members cannot be overridden by internal members.";
+            break;
+        }
+        case OverrideErrorCode::INCOMPATIBLE_TYPEPARAM: {
+            reason =
+                "overriding type parameter's conatraints are not compatible with type parameter constraints of the "
+                "overridden method.";
+            break;
+        }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
-    LogTypeError({signature->Function()->Id()->Name(), signature, " in ", signature->Owner(), " cannot override ",
-                  overriddenSignature->Function()->Id()->Name(), overriddenSignature, " in ",
-                  overriddenSignature->Owner(), " because ", reason},
-                 signature->Function()->Start());
+    LogError(diagnostic::CANNOT_OVERRIDE,
+             {signature->Function()->Id()->Name(), signature, signature->Owner(),
+              overriddenSignature->Function()->Id()->Name(), overriddenSignature, overriddenSignature->Owner(), reason},
+             signature->Function()->Start());
+}
+
+bool CheckTypeParameterConstraints(ArenaVector<Type *> typeParamList1, ArenaVector<Type *> typeParamList2,
+                                   TypeRelation *relation)
+{
+    if (!typeParamList1.empty() || !typeParamList2.empty()) {
+        if (typeParamList1.size() != typeParamList2.size()) {
+            return false;
+        }
+        for (size_t i = 0; i < typeParamList1.size(); i++) {
+            auto c1 = typeParamList1[i]->AsETSTypeParameter()->GetConstraintType();
+            auto c2 = typeParamList2[i]->AsETSTypeParameter()->GetConstraintType();
+            if (!relation->IsSupertypeOf(c1, c2)) {  // contravariance check
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
@@ -1539,6 +1488,11 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
     }
 
     for (auto *it : target->TsType()->AsETSFunctionType()->CallSignatures()) {
+        bool typeParamError = false;
+        if (!CheckTypeParameterConstraints(signature->TypeParams(), it->TypeParams(), Relation())) {
+            typeParamError = true;
+        }
+
         auto *itSubst = AdjustForTypeParameters(signature, it);
 
         if (itSubst == nullptr) {
@@ -1546,10 +1500,6 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
         }
 
         if (itSubst->HasSignatureFlag(SignatureFlags::ABSTRACT) || site->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
-            if (site->HasObjectFlag(ETSObjectFlags::INTERFACE) && !CheckThrowMarkers(itSubst, signature)) {
-                return false;
-            }
-
             if ((itSubst->Function()->IsSetter() && !signature->Function()->IsSetter()) ||
                 (itSubst->Function()->IsGetter() && !signature->Function()->IsGetter())) {
                 continue;
@@ -1560,21 +1510,17 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
             continue;
         }
 
+        if (typeParamError) {
+            ReportOverrideError(signature, it, OverrideErrorCode::INCOMPATIBLE_TYPEPARAM);
+            return false;
+        }
+
         if (auto err = CheckOverride(signature, itSubst); err != OverrideErrorCode::NO_ERROR) {
             ReportOverrideError(signature, it, err);
             return false;
         }
 
-        if (signature->Owner()->HasObjectFlag(ETSObjectFlags::INTERFACE) &&
-            Relation()->IsIdenticalTo(itSubst->Owner(), GlobalETSObjectType()) &&
-            !itSubst->HasSignatureFlag(SignatureFlags::PRIVATE)) {
-            LogTypeError("Cannot override non-private method of the class Object from an interface.",
-                         signature->Function()->Start());
-            return false;
-        }
-
         isOverridingAnySignature = true;
-        it->AddSignatureFlag(SignatureFlags::VIRTUAL);
     }
 
     return isOverridingAnySignature;
@@ -1603,11 +1549,12 @@ void ETSChecker::CheckOverride(Signature *signature)
 
         iter = iter->SuperType();
     }
-
+    lexer::SourcePosition ownerPos = signature->Owner()->GetDeclNode()->Start();
+    lexer::SourcePosition signaturePos = signature->Function()->Start();
+    lexer::SourcePosition pos = signaturePos.line == 0 && signaturePos.index == 0 ? ownerPos : signaturePos;
     if (!isOverriding && signature->Function()->IsOverride()) {
-        LogTypeError({"Method ", signature->Function()->Id()->Name(), signature, " in ", signature->Owner(),
-                      " not overriding any method"},
-                     signature->Function()->Start());
+        LogError(diagnostic::OVERRIDE_DOESNT_OVERRIDE,
+                 {signature->Function()->Id()->Name(), signature, signature->Owner()}, pos);
     }
 }
 
@@ -1616,7 +1563,7 @@ Signature *ETSChecker::GetSignatureFromMethodDefinition(const ir::MethodDefiniti
     if (methodDef->TsType()->IsTypeError()) {
         return nullptr;
     }
-    ASSERT(methodDef->TsType() && methodDef->TsType()->IsETSFunctionType());
+    ES2PANDA_ASSERT_POS(methodDef->TsType() && methodDef->TsType()->IsETSFunctionType(), methodDef->Start());
     for (auto *it : methodDef->TsType()->AsETSFunctionType()->CallSignatures()) {
         if (it->Function() == methodDef->Function()) {
             return it;
@@ -1626,19 +1573,29 @@ Signature *ETSChecker::GetSignatureFromMethodDefinition(const ir::MethodDefiniti
     return nullptr;
 }
 
+bool ETSChecker::NeedToVerifySignatureVisibility(Signature *signature, const lexer::SourcePosition &pos)
+{
+    if (signature == nullptr) {
+        LogError(diagnostic::SIG_UNAVAILABLE, {}, pos);
+        return false;
+    }
+
+    return (Context().Status() & CheckerStatus::IGNORE_VISIBILITY) == 0U &&
+           (signature->HasSignatureFlag(SignatureFlags::PRIVATE) ||
+            signature->HasSignatureFlag(SignatureFlags::PROTECTED));
+}
+
 void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, const ir::CallExpression *callExpr,
                                                 Signature *signature, const lexer::SourcePosition &pos,
-                                                char const *errorMessage)
+                                                const DiagnosticInfo &errorInfo)
 {
-    if ((Context().Status() & CheckerStatus::IGNORE_VISIBILITY) != 0U ||
-        (!signature->HasSignatureFlag(SignatureFlags::PRIVATE) &&
-         !signature->HasSignatureFlag(SignatureFlags::PROTECTED))) {
+    if (!NeedToVerifySignatureVisibility(signature, pos)) {
         return;
     }
     const auto *declNode = callee->GetDeclNode();
     auto *containingClass = Context().ContainingClass();
     bool isContainingSignatureInherited = containingClass->IsSignatureInherited(signature);
-    ASSERT(declNode && (declNode->IsClassDefinition() || declNode->IsTSInterfaceDeclaration()));
+    ES2PANDA_ASSERT(declNode && (declNode->IsClassDefinition() || declNode->IsTSInterfaceDeclaration()));
 
     if (declNode->IsTSInterfaceDeclaration()) {
         const auto *enclosingFunc =
@@ -1646,7 +1603,7 @@ void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, const ir:
         if (callExpr->Callee()->IsMemberExpression() &&
             callExpr->Callee()->AsMemberExpression()->Object()->IsThisExpression() &&
             signature->Function()->IsPrivate() && !enclosingFunc->IsPrivate()) {
-            LogTypeError({"Cannot reference 'this' in this context."}, enclosingFunc->Start());
+            LogError(diagnostic::THIS_OUTSIDE_METHOD_CTX, {}, enclosingFunc->Start());
         }
 
         if (containingClass == declNode->AsTSInterfaceDeclaration()->TsType() && isContainingSignatureInherited) {
@@ -1666,11 +1623,12 @@ void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, const ir:
         return;
     }
 
-    if (errorMessage == nullptr) {
-        LogTypeError({"Signature ", signature->Function()->Id()->Name(), signature, " is not visible here."}, pos);
+    const auto [diagnostic, diagnosticParams] = errorInfo;
+    if (diagnostic == std::nullopt) {
+        LogError(diagnostic::SIG_INVISIBLE, {signature->Function()->Id()->Name(), signature}, pos);
         return;
     }
-    LogTypeError(errorMessage, pos);
+    LogError(diagnostic.value(), diagnosticParams, pos);
 }
 
 void ETSChecker::CheckCapturedVariable(ir::AstNode *const node, varbinder::Variable *const var)
@@ -1685,12 +1643,11 @@ void ETSChecker::CheckCapturedVariable(ir::AstNode *const node, varbinder::Varia
             const auto *resolved = identNode->Variable();
 
             if (resolved == nullptr) {
-                resolved =
-                    FindVariableInFunctionScope(identNode->Name(), varbinder::ResolveBindingOptions::ALL_NON_TYPE);
+                resolved = FindVariableInFunctionScope(identNode->Name());
             }
 
             if (resolved == nullptr) {
-                resolved = FindVariableInGlobal(identNode, varbinder::ResolveBindingOptions::ALL_NON_TYPE);
+                resolved = FindVariableInGlobal(identNode);
             }
 
             if (resolved == var) {
@@ -1741,7 +1698,7 @@ bool ETSChecker::AreOverrideEquivalent(Signature *const s1, Signature *const s2)
     }
 
     SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::OVERRIDING_CONTEXT);
-    return Relation()->IsCompatibleTo(s1, s2);
+    return Relation()->SignatureIsSupertypeOf(s1, s2);
 }
 
 bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const s2)
@@ -1756,7 +1713,7 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
     // is parametrized or not to use a proper subtyping check. To be replaced with IsETSPrimitiveType after #19701.
     auto const hasPrimitiveReturnType = [](Signature *s) {
         bool origIsRef = s->Function()->Signature()->ReturnType()->IsETSReferenceType();
-        ASSERT(origIsRef == s->ReturnType()->IsETSReferenceType());
+        ES2PANDA_ASSERT_POS(origIsRef == s->ReturnType()->IsETSReferenceType(), s->Function()->Start());
         return !origIsRef;
     };
     // - If R1 is a primitive type then R2 is identical to R1.
@@ -1765,18 +1722,9 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
     }
 
     // - If R1 is a reference type then R1, adapted to the type parameters of d2 (link to generic methods), is a
-    // subtype of R2.
-    ASSERT(IsReferenceType(r1));
-
-    // Starting from this line, everything should be be restored to IsSupertypeOf check, to be reverted in #18866
-    if (Relation()->IsSupertypeOf(r2, r1)) {
-        return true;
-    }
-
-    return s2->Function()->ReturnTypeAnnotation()->IsETSTypeReference() &&
-           s2->Function()->ReturnTypeAnnotation()->GetType(this)->IsETSTypeParameter() &&
-           Relation()->IsSupertypeOf(
-               s2->Function()->ReturnTypeAnnotation()->GetType(this)->AsETSTypeParameter()->GetConstraintType(), r1);
+    //   subtype of R2.
+    ES2PANDA_ASSERT(IsReferenceType(r1));
+    return Relation()->IsSupertypeOf(r2, r1);
 }
 
 std::string ETSChecker::GetAsyncImplName(const util::StringView &name)
@@ -1789,7 +1737,7 @@ std::string ETSChecker::GetAsyncImplName(const util::StringView &name)
 std::string ETSChecker::GetAsyncImplName(ir::MethodDefinition *asyncMethod)
 {
     ir::Identifier *asyncName = asyncMethod->Function()->Id();
-    ASSERT(asyncName != nullptr);
+    ES2PANDA_ASSERT_POS(asyncName != nullptr, asyncMethod->Start());
     return GetAsyncImplName(asyncName->Name());
 }
 
@@ -1835,10 +1783,14 @@ ir::MethodDefinition *ETSChecker::CreateAsyncImplMethod(ir::MethodDefinition *as
 
     if (!asyncFunc->Signature()->HasSignatureFlag(SignatureFlags::NEED_RETURN_TYPE)) {
         // Set impl method return type "Object" because it may return Promise as well as Promise parameter's type
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto *objectId = AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_OBJECT_CLASS, Allocator());
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         VarBinder()->AsETSBinder()->LookupTypeReference(objectId, false);
-        returnTypeAnn =
-            AllocNode<ir::ETSTypeReference>(AllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr));
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        returnTypeAnn = AllocNode<ir::ETSTypeReference>(
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+            AllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr, Allocator()), Allocator());
         objectId->SetParent(returnTypeAnn->Part());
         returnTypeAnn->Part()->SetParent(returnTypeAnn);
         auto *asyncFuncRetTypeAnn = asyncFunc->ReturnTypeAnnotation();
@@ -1855,6 +1807,7 @@ ir::MethodDefinition *ETSChecker::CreateAsyncImplMethod(ir::MethodDefinition *as
     }  // NOTE(vpukhov): #19874 - returnTypeAnn is not set
 
     ir::MethodDefinition *implMethod =
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         CreateMethod(implName.View(), modifiers, flags, std::move(params), paramScope, returnTypeAnn, body);
     asyncFunc->SetBody(nullptr);
 
@@ -1876,7 +1829,7 @@ static void CreateFuncDecl(ETSChecker *checker, ir::MethodDefinition *func, varb
     varbinder::Variable *var = scope->FindLocal(func->Id()->Name(), varbinder::ResolveBindingOptions::ALL_DECLARATION);
     if (var == nullptr) {
         var = std::get<1>(
-            varBinder->NewVarDecl<varbinder::FunctionDecl>(func->Start(), allocator, func->Id()->Name(), func));
+            varBinder->NewVarDecl<varbinder::FunctionDecl>(func->Id()->Start(), allocator, func->Id()->Name(), func));
     }
     var->AddFlag(varbinder::VariableFlags::METHOD);
     var->SetScope(ctx.GetScope());
@@ -1896,7 +1849,7 @@ ir::MethodDefinition *ETSChecker::CreateAsyncProxy(ir::MethodDefinition *asyncMe
     varbinder::FunctionScope *implFuncScope = implMethod->Function()->Scope();
     for (auto *decl : asyncFunc->Scope()->Decls()) {
         auto res = asyncFunc->Scope()->Bindings().find(decl->Name());
-        ASSERT(res != asyncFunc->Scope()->Bindings().end());
+        ES2PANDA_ASSERT(res != asyncFunc->Scope()->Bindings().end());
         auto *const var = std::get<1>(*res);
         var->SetScope(implFuncScope);
         implFuncScope->Decls().push_back(decl);
@@ -1933,6 +1886,7 @@ ir::MethodDefinition *ETSChecker::CreateMethod(const util::StringView &name, ir:
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *scope = VarBinder()->Allocator()->New<varbinder::FunctionScope>(Allocator(), paramScope);
     // clang-format off
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *const func = AllocNode<ir::ScriptFunction>(
         Allocator(), ir::ScriptFunction::ScriptFunctionData {
             // CC-OFFNXT(G.FMT.05-CPP) project codestyle clang format off
@@ -1956,6 +1910,7 @@ ir::MethodDefinition *ETSChecker::CreateMethod(const util::StringView &name, ir:
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *nameClone = nameId->Clone(Allocator(), nullptr);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *method = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, nameClone, funcExpr, modifiers,
@@ -1973,13 +1928,18 @@ varbinder::FunctionParamScope *ETSChecker::CopyParams(const ArenaVector<ir::Expr
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto *const paramNew = paramOld->Clone(Allocator(), paramOld->Parent())->AsETSParameterExpression();
 
-        auto *const var = std::get<1>(VarBinder()->AddParamDecl(paramNew));
-
-        var->SetTsType(paramOld->Ident()->Variable()->TsType());
+        varbinder::Variable *var = VarBinder()->AddParamDecl(paramNew);
+        Type *paramType = paramOld->Variable()->TsType();
+        var->SetTsType(paramType);
         var->SetScope(paramCtx.GetScope());
-        paramNew->SetVariable(var);
 
-        paramNew->SetTsType(paramOld->Ident()->Variable()->TsType());
+        paramNew->SetVariable(var);
+        paramNew->SetTsType(paramType);
+
+        if (auto *newTypeAnno = paramNew->TypeAnnotation(); newTypeAnno != nullptr) {
+            newTypeAnno->SetTsType(paramOld->TypeAnnotation()->TsType());
+            compiler::InitScopesPhaseETS::RunExternalNode(newTypeAnno, VarBinder()->AsETSBinder());
+        }
 
         outParams.emplace_back(paramNew);
     }
@@ -2028,10 +1988,11 @@ void ETSChecker::MoveTrailingBlockToEnclosingBlockStatement(ir::CallExpression *
     }
 }
 
-void ETSChecker::TransformTraillingLambda(ir::CallExpression *callExpr)
+using SFunctionData = ir::ScriptFunction::ScriptFunctionData;
+void ETSChecker::TransformTraillingLambda(ir::CallExpression *callExpr, Signature *sig)
 {
     auto *trailingBlock = callExpr->TrailingBlock();
-    ASSERT(trailingBlock != nullptr);
+    ES2PANDA_ASSERT(trailingBlock != nullptr);
 
     auto *funcParamScope = varbinder::LexicalScope<varbinder::FunctionParamScope>(VarBinder()).GetScope();
     auto paramCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(VarBinder(), funcParamScope, false);
@@ -2051,10 +2012,28 @@ void ETSChecker::TransformTraillingLambda(ir::CallExpression *callExpr)
     }
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
+    ir::ScriptFunctionFlags flags = ir::ScriptFunctionFlags::ARROW;
+    bool trailingLambdaHasReceiver = false;
+    if (IsLastParameterLambdaWithReceiver(sig)) {
+        auto *actualLambdaType =
+            sig->Function()->Params().back()->AsETSParameterExpression()->TypeAnnotation()->AsETSFunctionType();
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        auto *receiverOfTrailingBlock = actualLambdaType->Params()[0]->Clone(Allocator(), nullptr)->AsExpression();
+        auto *receiverVar = receiverOfTrailingBlock->AsETSParameterExpression()->Ident()->Variable();
+        auto *receiverVarClone =
+            Allocator()->New<varbinder::LocalVariable>(receiverVar->Declaration(), receiverVar->Flags());
+        receiverVarClone->SetTsType(receiverVar->TsType());
+        receiverVarClone->SetScope(funcParamScope);
+        funcScope->InsertBinding(receiverVarClone->Name(), receiverVarClone);
+        receiverOfTrailingBlock->AsETSParameterExpression()->Ident()->SetVariable(receiverVarClone);
+        params.emplace_back(receiverOfTrailingBlock);
+        trailingLambdaHasReceiver = true;
+    }
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *funcNode = AllocNode<ir::ScriptFunction>(
-        Allocator(), ir::ScriptFunction::ScriptFunctionData {trailingBlock,
-                                                             ir::FunctionSignature(nullptr, std::move(params), nullptr),
-                                                             ir::ScriptFunctionFlags::ARROW});
+        Allocator(),
+        SFunctionData {trailingBlock,
+                       ir::FunctionSignature(nullptr, std::move(params), nullptr, trailingLambdaHasReceiver), flags});
     funcNode->SetScope(funcScope);
     funcScope->BindNode(funcNode);
     funcParamScope->BindNode(funcNode);
@@ -2064,7 +2043,7 @@ void ETSChecker::TransformTraillingLambda(ir::CallExpression *callExpr)
     callExpr->SetTrailingBlock(nullptr);
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(funcNode);
+    auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(funcNode, Allocator());
     arrowFuncNode->SetRange(trailingBlock->Range());
     arrowFuncNode->SetParent(callExpr);
 
@@ -2082,13 +2061,15 @@ ArenaVector<ir::Expression *> ETSChecker::ExtendArgumentsWithFakeLamda(ir::CallE
     auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
     body->SetScope(funcScope);
 
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *funcNode = AllocNode<ir::ScriptFunction>(
         Allocator(),
         ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
                                                 ir::ScriptFunctionFlags::ARROW});
     funcNode->SetScope(funcScope);
     funcScope->BindNode(funcNode);
-    auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(funcNode);
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(funcNode, Allocator());
     arrowFuncNode->SetParent(callExpr);
 
     ArenaVector<ir::Expression *> fakeArguments = callExpr->Arguments();
@@ -2107,7 +2088,7 @@ void ETSChecker::EnsureValidCurlyBrace(ir::CallExpression *callExpr)
         return;
     }
 
-    LogTypeError({"No matching call signature with trailing lambda"}, callExpr->Start());
+    LogError(diagnostic::NO_SUCH_SIG_WITH_TRAILING_LAMBDA, {}, callExpr->Start());
 }
 
 ETSObjectType *ETSChecker::GetCachedFunctionalInterface(ir::ETSFunctionType *type)
@@ -2123,7 +2104,7 @@ ETSObjectType *ETSChecker::GetCachedFunctionalInterface(ir::ETSFunctionType *typ
 void ETSChecker::CacheFunctionalInterface(ir::ETSFunctionType *type, ETSObjectType *ifaceType)
 {
     auto hash = GetHashFromFunctionType(type);
-    ASSERT(functionalInterfaceCache_.find(hash) == functionalInterfaceCache_.cend());
+    ES2PANDA_ASSERT(functionalInterfaceCache_.find(hash) == functionalInterfaceCache_.cend());
     functionalInterfaceCache_.emplace(hash, ifaceType);
 }
 
@@ -2155,7 +2136,7 @@ size_t &ETSChecker::ConstraintCheckScopesCount()
 
 bool ETSChecker::CmpAssemblerTypesWithRank(Signature const *const sig1, Signature const *const sig2) noexcept
 {
-    for (size_t ix = 0; ix < sig1->MinArgCount(); ix++) {
+    for (size_t ix = 0U; ix < sig1->Params().size(); ++ix) {
         std::stringstream s1;
         std::stringstream s2;
         sig1->Params()[ix]->TsType()->ToAssemblerTypeWithRank(s1);
@@ -2170,7 +2151,7 @@ bool ETSChecker::CmpAssemblerTypesWithRank(Signature const *const sig1, Signatur
 
 bool ETSChecker::HasSameAssemblySignature(Signature const *const sig1, Signature const *const sig2) noexcept
 {
-    if (sig1->MinArgCount() != sig2->MinArgCount()) {
+    if (sig1->ArgCount() != sig2->ArgCount()) {
         return false;
     }
 

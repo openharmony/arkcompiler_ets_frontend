@@ -9,11 +9,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 19
+            "column": 19,
+            "program": "test-interface1.ts"
           },
           "end": {
             "line": 19,
-            "column": 2
+            "column": 2,
+            "program": "test-interface1.ts"
           }
         }
       },
@@ -24,11 +26,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 11
+            "column": 11,
+            "program": "test-interface1.ts"
           },
           "end": {
             "line": 17,
-            "column": 18
+            "column": 18,
+            "program": "test-interface1.ts"
           }
         }
       },
@@ -36,11 +40,13 @@
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test-interface1.ts"
         },
         "end": {
           "line": 19,
-          "column": 2
+          "column": 2,
+          "program": "test-interface1.ts"
         }
       }
     }
@@ -48,11 +54,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-interface1.ts"
     },
     "end": {
       "line": 19,
-      "column": 2
+      "column": 2,
+      "program": "test-interface1.ts"
     }
   }
 }

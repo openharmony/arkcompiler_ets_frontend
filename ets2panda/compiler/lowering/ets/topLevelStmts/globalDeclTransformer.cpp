@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,12 +25,11 @@ void GlobalDeclTransformer::FilterDeclarations(ArenaVector<ir::Statement *> &stm
     stmts.erase(std::remove_if(stmts.begin(), stmts.end(), isDeclCb), stmts.end());
 }
 
-GlobalDeclTransformer::ResultT GlobalDeclTransformer::TransformStatements(const ArenaVector<ir::Statement *> &stmts,
-                                                                          bool addInitializer)
+GlobalDeclTransformer::ResultT GlobalDeclTransformer::TransformStatements(const ArenaVector<ir::Statement *> &stmts)
 {
-    addInitializer_ = addInitializer;
     result_.classProperties.clear();
-    result_.initStatements.clear();
+    result_.initializers[0].clear();
+    result_.initializers[1].clear();
     for (auto stmt : stmts) {
         stmt->Accept(this);
     }
@@ -43,11 +42,18 @@ void GlobalDeclTransformer::VisitFunctionDeclaration(ir::FunctionDeclaration *fu
     funcDecl->Function()->SetStart(funcDecl->Function()->Id()->Start());
     funcExpr->SetRange(funcDecl->Function()->Range());
     ir::MethodDefinitionKind methodKind;
-    if (funcDecl->Function()->IsExtensionMethod()) {
-        methodKind = ir::MethodDefinitionKind::EXTENSION_METHOD;
+    if (funcDecl->Function()->HasReceiver()) {
+        if (funcDecl->Function()->IsGetter()) {
+            methodKind = ir::MethodDefinitionKind::EXTENSION_GET;
+        } else if (funcDecl->Function()->IsSetter()) {
+            methodKind = ir::MethodDefinitionKind::EXTENSION_SET;
+        } else {
+            methodKind = ir::MethodDefinitionKind::EXTENSION_METHOD;
+        }
     } else {
         methodKind = ir::MethodDefinitionKind::METHOD;
     }
+
     auto *method = util::NodeAllocator::ForceSetParent<ir::MethodDefinition>(
         allocator_, methodKind, funcDecl->Function()->Id()->Clone(allocator_, nullptr), funcExpr,
         funcDecl->Function()->Modifiers(), allocator_, false);
@@ -67,20 +73,69 @@ void GlobalDeclTransformer::VisitVariableDeclaration(ir::VariableDeclaration *va
         auto id = declarator->Id()->AsIdentifier();
         auto typeAnn = id->TypeAnnotation();
         id->SetTsTypeAnnotation(nullptr);
-        auto *field = util::NodeAllocator::ForceSetParent<ir::ClassProperty>(allocator_, id->Clone(allocator_, nullptr),
-                                                                             declarator->Init(), typeAnn,
-                                                                             varDecl->Modifiers(), allocator_, false);
+        auto *field = util::NodeAllocator::ForceSetParent<ir::ClassProperty>(
+            allocator_, id->Clone(allocator_, nullptr), declarator->Init(), typeAnn,
+            varDecl->Modifiers() | declarator->Modifiers(), allocator_, false);
         field->SetRange(declarator->Range());
 
-        if (varDecl->IsExported() && varDecl->HasExportAlias()) {
+        if (!varDecl->Annotations().empty()) {
+            ArenaVector<ir::AnnotationUsage *> propAnnotations(allocator_->Adapter());
+            for (auto *annotationUsage : varDecl->Annotations()) {
+                propAnnotations.push_back(annotationUsage->Clone(allocator_, field)->AsAnnotationUsage());
+            }
+            field->SetAnnotations(std::move(propAnnotations));
+        }
+
+        if ((varDecl->IsExported() || declarator->IsExported()) &&
+            (varDecl->HasExportAlias() || declarator->HasExportAlias())) {
             field->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
         }
 
         result_.classProperties.emplace_back(field);
         if (auto stmt = InitTopLevelProperty(field); stmt != nullptr) {
-            result_.initStatements.emplace_back(stmt);
+            result_.initializers[0].emplace_back(stmt);
         }
     }
+}
+
+static bool IsFinalBlockOfTryStatement(ir::AstNode const *node)
+{
+    if (!node->IsBlockStatement() || node->Parent() == nullptr) {
+        return false;
+    }
+
+    auto parent = node->Parent();
+    return parent->IsTryStatement() && (parent->AsTryStatement()->FinallyBlock() == node);
+}
+
+// Note: Extract the expressions from ClassStaticBlock to Initializer block.
+void GlobalDeclTransformer::VisitClassStaticBlock(ir::ClassStaticBlock *classStaticBlock)
+{
+    auto containUnhandledThrow = [&](ir::AstNode *ast) {
+        if (!ast->IsThrowStatement()) {
+            return;
+        }
+
+        auto const *parent = ast->Parent();
+        while (parent != nullptr) {
+            if (parent->IsTryStatement() && !parent->AsTryStatement()->CatchClauses().empty()) {
+                return;
+            }
+
+            if (parent->IsCatchClause() || IsFinalBlockOfTryStatement(parent)) {
+                break;
+            }
+            parent = parent->Parent();
+        }
+        parser_->LogError(diagnostic::UNHANDLED_THROW_IN_INITIALIZER, {}, ast->Start());
+    };
+
+    auto *staticBlock = classStaticBlock->Function();
+    ES2PANDA_ASSERT((staticBlock->Flags() & ir::ScriptFunctionFlags::STATIC_BLOCK) != 0);
+    classStaticBlock->IterateRecursivelyPostorder(containUnhandledThrow);
+    auto &initStatements = staticBlock->Body()->AsBlockStatement()->Statements();
+    result_.initializers[1].insert(result_.initializers[1].begin(), initStatements.begin(), initStatements.end());
+    ++initializerBlockCount_;
 }
 
 ir::Identifier *GlobalDeclTransformer::RefIdent(const util::StringView &name)
@@ -91,43 +146,41 @@ ir::Identifier *GlobalDeclTransformer::RefIdent(const util::StringView &name)
 
 ir::ExpressionStatement *GlobalDeclTransformer::InitTopLevelProperty(ir::ClassProperty *classProperty)
 {
-    ir::ExpressionStatement *initStmt = nullptr;
     const auto initializer = classProperty->Value();
-    if (addInitializer_ && !classProperty->IsConst() && initializer != nullptr) {
-        auto *ident = RefIdent(classProperty->Id()->Name());
-        ident->SetRange(classProperty->Id()->Range());
-
-        initializer->SetParent(nullptr);
-        auto *assignmentExpression = util::NodeAllocator::Alloc<ir::AssignmentExpression>(
-            allocator_, ident, initializer, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
-        assignmentExpression->SetRange({ident->Start(), initializer->End()});
-        assignmentExpression->SetTsType(initializer->TsType());
-
-        auto expressionStatement =
-            util::NodeAllocator::Alloc<ir::ExpressionStatement>(allocator_, assignmentExpression);
-        expressionStatement->SetRange(classProperty->Range());
-
-        classProperty->SetRange({ident->Start(), initializer->End()});
-
-        if (classProperty->TypeAnnotation() != nullptr) {
-            classProperty->SetValue(nullptr);
-        } else {
-            // Code will be ignored, but checker is going to deduce the type.
-            classProperty->SetValue(initializer->Clone(allocator_, classProperty)->AsExpression());
-        }
-        initStmt = expressionStatement;
-    } else {
+    if (classProperty->IsConst() || initializer == nullptr) {
         classProperty->SetStart(classProperty->Id()->Start());
+        return nullptr;
     }
-    return initStmt;
+
+    auto const ident = RefIdent(classProperty->Id()->Name());
+    ident->SetRange(classProperty->Id()->Range());
+
+    initializer->SetParent(nullptr);
+    auto *assignmentExpression = util::NodeAllocator::Alloc<ir::AssignmentExpression>(
+        allocator_, ident, initializer, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    assignmentExpression->SetRange({ident->Start(), initializer->End()});
+    assignmentExpression->SetTsType(initializer->TsType());
+
+    auto expressionStatement = util::NodeAllocator::Alloc<ir::ExpressionStatement>(allocator_, assignmentExpression);
+    expressionStatement->SetRange(classProperty->Range());
+
+    classProperty->SetRange({ident->Start(), initializer->End()});
+
+    if (classProperty->TypeAnnotation() != nullptr) {
+        classProperty->SetValue(nullptr);
+    } else {
+        // Code will be ignored, but checker is going to deduce the type.
+        classProperty->SetValue(initializer->Clone(allocator_, classProperty)->AsExpression());
+    }
+    return expressionStatement;
 }
 
 void GlobalDeclTransformer::HandleNode(ir::AstNode *node)
 {
-    ASSERT(node->IsStatement());
+    ES2PANDA_ASSERT(node->IsStatement());
     if (typeDecl_.count(node->Type()) == 0U) {
-        ASSERT(!propertiesDecl_.count(node->Type()));
-        result_.initStatements.emplace_back(node->AsStatement());
+        ES2PANDA_ASSERT(!propertiesDecl_.count(node->Type()));
+        result_.initializers[0].emplace_back(node->AsStatement());
     }
 }
 

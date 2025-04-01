@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,7 @@
 #include "astNode.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
+#include "ir/typed.h"
 
 namespace ark::es2panda::ir {
 
@@ -74,23 +75,23 @@ bool AstNode::IsScopeBearer() const noexcept
 
 varbinder::Scope *AstNode::Scope() const noexcept
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 void AstNode::ClearScope() noexcept
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 ir::ClassElement *AstNode::AsClassElement()
 {
-    ASSERT(IsMethodDefinition() || IsClassProperty() || IsClassStaticBlock());
+    ES2PANDA_ASSERT(IsMethodDefinition() || IsClassProperty() || IsClassStaticBlock());
     return reinterpret_cast<ir::ClassElement *>(this);
 }
 
 const ir::ClassElement *AstNode::AsClassElement() const
 {
-    ASSERT(IsMethodDefinition() || IsClassProperty() || IsClassStaticBlock());
+    ES2PANDA_ASSERT(IsMethodDefinition() || IsClassProperty() || IsClassStaticBlock());
     return reinterpret_cast<const ir::ClassElement *>(this);
 }
 
@@ -118,7 +119,7 @@ const ir::BlockStatement *AstNode::GetTopStatement() const
 
 AstNode *AstNode::Clone([[maybe_unused]] ArenaAllocator *const allocator, [[maybe_unused]] AstNode *const parent)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 void AstNode::TransformChildrenRecursively(const NodeTransformer &cb, std::string_view transformationName)
@@ -210,7 +211,7 @@ AstNode *AstNode::FindChild(const NodePredicate &cb) const
     return found;
 }
 
-varbinder::Scope *AstNode::EnclosingScope(const ir::AstNode *expr)
+varbinder::Scope *AstNode::EnclosingScope(const ir::AstNode *expr) noexcept
 {
     while (expr != nullptr && !expr->IsScopeBearer()) {
         expr = expr->Parent();
@@ -242,8 +243,19 @@ AstNode *AstNode::OriginalNode() const noexcept
 
 void AstNode::SetTransformedNode(std::string_view const transformationName, AstNode *transformedNode)
 {
-    ASSERT(!transformedNode_.has_value());
+    ES2PANDA_ASSERT(!transformedNode_.has_value());
     transformedNode->SetOriginalNode(this);
     transformedNode_ = std::make_optional(std::make_pair(transformationName, transformedNode));
+}
+
+void AstNode::CleanUp()
+{
+    SetVariable(nullptr);
+    if (IsScopeBearer()) {
+        ClearScope();
+    }
+    if (IsTyped()) {
+        this->AsTyped()->SetTsType(nullptr);
+    }
 }
 }  // namespace ark::es2panda::ir

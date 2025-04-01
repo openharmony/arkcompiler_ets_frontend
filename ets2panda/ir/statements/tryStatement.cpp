@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,7 +33,7 @@ void TryStatement::TransformChildren(const NodeTransformer &cb, std::string_view
         block_ = transformedNode->AsBlockStatement();
     }
 
-    for (auto *&it : catchClauses_) {
+    for (auto *&it : VectorIterationGuard(catchClauses_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsCatchClause();
@@ -52,7 +52,7 @@ void TryStatement::Iterate(const NodeTraverser &cb) const
 {
     cb(block_);
 
-    for (auto *it : catchClauses_) {
+    for (auto *it : VectorIterationGuard(catchClauses_)) {
         cb(it);
     }
 
@@ -71,7 +71,7 @@ void TryStatement::Dump(ir::AstDumper *dumper) const
 
 void TryStatement::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(block_ != nullptr);
+    ES2PANDA_ASSERT(block_ != nullptr);
     dumper->Add("try {");
     dumper->IncrIndent();
     dumper->Endl();
@@ -114,9 +114,36 @@ checker::Type *TryStatement::Check([[maybe_unused]] checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TryStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TryStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
+}
+
+TryStatement::TryStatement(TryStatement const &other, ArenaAllocator *allocator)
+    : Statement(other),
+      catchClauses_(allocator->Adapter()),
+      finalizerInsertions_(allocator->Adapter()),
+      finallyCanCompleteNormally_(other.finallyCanCompleteNormally_)
+{
+    block_ = other.block_ == nullptr ? nullptr : other.block_->Clone(allocator, this)->AsBlockStatement();
+    for (auto &cc : other.catchClauses_) {
+        catchClauses_.push_back(cc == nullptr ? nullptr : cc->Clone(allocator, this)->AsCatchClause());
+    }
+    finalizer_ = other.finalizer_ == nullptr ? nullptr : other.finalizer_->Clone(allocator, this)->AsBlockStatement();
+    for (auto &[label, st] : other.finalizerInsertions_) {
+        finalizerInsertions_.emplace_back(label, st);
+    }
+}
+
+TryStatement *TryStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const clone = allocator->New<TryStatement>(*this, allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    clone->SetRange(Range());
+    return clone;
 }
 
 }  // namespace ark::es2panda::ir

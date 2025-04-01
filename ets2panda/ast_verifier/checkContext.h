@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_COMPILER_CORE_AST_VERIFIER_CHECKCONTEXT_H
 #define ES2PANDA_COMPILER_CORE_AST_VERIFIER_CHECKCONTEXT_H
 
+#include "generated/options.h"
 #include "ir/astNode.h"
 #include "utils/json_builder.h"
 
@@ -23,72 +24,82 @@ namespace ark::es2panda::compiler::ast_verifier {
 
 enum class CheckDecision { CORRECT, INCORRECT };
 enum class CheckAction { CONTINUE, SKIP_SUBTREE };
-using CheckResult = std::tuple<CheckDecision, CheckAction>;
 
-enum class CheckSeverity { ERROR, WARNING, UNKNOWN };
-inline std::string CheckSeverityString(CheckSeverity value)
-{
-    switch (value) {
-        case CheckSeverity::ERROR:
-            return "error";
-        case CheckSeverity::WARNING:
-            return "warning";
-        default:
-            UNREACHABLE();
-    }
-}
+using CheckResult = std::tuple<CheckDecision, CheckAction>;
+using VerifierInvariants = util::gen::ast_verifier::Enum;
+using Enum = VerifierInvariants;
 
 class CheckMessage {
 public:
-    explicit CheckMessage(util::StringView name, util::StringView cause, util::StringView message, size_t line)
-        : invariantName_ {name}, cause_ {cause}, message_ {message}, line_ {line}
+    explicit CheckMessage(util::StringView cause, const ir::AstNode *node) : cause_ {cause}, node_ {node} {}
+
+    std::function<void(JsonObjectBuilder &)> DumpJSON() const
     {
+        return [this](JsonObjectBuilder &body) {
+            body.AddProperty("cause", cause_);
+            body.AddProperty("ast", node_->DumpJSON());
+            body.AddProperty("line", node_->Start().line + 1);
+        };
     }
 
-    std::string Invariant() const
+    std::string ToString() const
     {
-        return invariantName_;
+        return cause_ + "(AstNodeType::" + std::string(ir::ToString(node_->Type())) + ", line " +
+               std::to_string(node_->Start().line + 1) + ')';
     }
 
-    std::string Cause() const
+    const auto &Cause() const
     {
         return cause_;
     }
 
-    std::function<void(JsonObjectBuilder &)> DumpJSON(CheckSeverity severity, const std::string &sourceName,
-                                                      const std::string &phaseName) const
-    {
-        return [sourceName, phaseName, severity, this](JsonObjectBuilder &body) {
-            body.AddProperty("severity", CheckSeverityString(severity));
-            body.AddProperty("invariant", invariantName_);
-            body.AddProperty("cause", cause_);
-            body.AddProperty("ast", message_);
-            body.AddProperty("line", line_ + 1);
-            body.AddProperty("source", sourceName);
-            body.AddProperty("phase", phaseName);
-        };
-    }
-
 private:
-    std::string invariantName_;
     std::string cause_;
-    std::string message_;
-    size_t line_;
+    const ir::AstNode *node_;
 };
 
 using Messages = std::vector<CheckMessage>;
 
 class CheckContext {
 public:
-    explicit CheckContext() : checkName_ {"Invalid"} {}
+    void Init()
+    {
+        messages_.clear();
+    }
 
-    void AddCheckMessage(const std::string &cause, const ir::AstNode &node, const lexer::SourcePosition &from);
-    void SetCheckName(util::StringView checkName);
-    Messages GetMessages();
+    void AddCheckMessage(const std::string &cause, const ir::AstNode &node);
+
+    auto &&MoveMessages() &&
+    {
+        return std::move(messages_);
+    }
+
+    const auto &ViewMessages() const
+    {
+        return messages_;
+    }
+
+    bool HasMessages() const
+    {
+        return !messages_.empty();
+    }
 
 private:
     Messages messages_;
-    util::StringView checkName_;
+};
+
+template <VerifierInvariants ENUM>
+class InvariantBase : public CheckContext {
+public:
+    constexpr static VerifierInvariants ID = ENUM;
+    constexpr static std::string_view NAME = util::gen::ast_verifier::ToString(ID);
+    CheckResult VerifyNode(const ir::AstNode *ast);
+};
+
+template <VerifierInvariants ID>
+class RecursiveInvariant : public InvariantBase<ID> {
+public:
+    void VerifyAst(const ir::AstNode *ast);
 };
 
 }  // namespace ark::es2panda::compiler::ast_verifier

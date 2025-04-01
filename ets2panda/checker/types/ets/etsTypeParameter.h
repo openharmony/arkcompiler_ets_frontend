@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -58,7 +58,7 @@ public:
 
     [[nodiscard]] Type *GetConstraintType() const
     {
-        ASSERT(constraint_ != nullptr);
+        ES2PANDA_ASSERT(constraint_ != nullptr);
         return constraint_;
     }
 
@@ -70,6 +70,7 @@ public:
     void CastTarget(TypeRelation *relation, Type *source) override;
     void IsSupertypeOf(TypeRelation *relation, Type *source) override;
     void IsSubtypeOf(TypeRelation *relation, Type *target) override;
+    void CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
     Type *Substitute(TypeRelation *relation, const Substitution *substitution) override;
 

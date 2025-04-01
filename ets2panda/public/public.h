@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,12 +21,14 @@
 #include "assembler/assembly-program.h"
 #include "libpandabase/mem/arena_allocator.h"
 
-#include "es2panda.h"
 #include "compiler/core/compileQueue.h"
 #include "parser/ETSparser.h"
 #include "checker/checker.h"
 #include "compiler/core/emitter.h"
-#include "util/options.h"
+
+namespace ark::es2panda::util {
+class Options;
+}  // namespace ark::es2panda::util
 
 namespace ark::es2panda::compiler {
 class Phase;
@@ -34,7 +36,9 @@ class Phase;
 
 namespace ark::es2panda::public_lib {
 struct ConfigImpl {
-    const util::Options *options;
+    const util::Options *options = nullptr;
+    util::DiagnosticEngine *diagnosticEngine = nullptr;
+    std::vector<diagnostic::DiagnosticKind> diagnosticKindStorage;
 };
 
 struct Context {
@@ -59,6 +63,7 @@ struct Context {
     checker::SemanticAnalyzer *analyzer = nullptr;
     compiler::Emitter *emitter = nullptr;
     pandasm::Program *program = nullptr;
+    util::DiagnosticEngine *diagnosticEngine = nullptr;
 
     es2panda_ContextState state = ES2PANDA_STATE_NEW;
     std::string errorMessage;

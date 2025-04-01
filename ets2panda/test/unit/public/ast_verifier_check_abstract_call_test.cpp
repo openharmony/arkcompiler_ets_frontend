@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,13 +18,11 @@
 #include "ir/expressions/callExpression.h"
 #include "checker/ETSchecker.h"
 #include "checker/types/signature.h"
-
+#include "util/diagnosticEngine.h"
 #include <gtest/gtest.h>
 
 using ark::es2panda::checker::SignatureFlags;
-using ark::es2panda::compiler::ast_verifier::ASTVerifier;
-using ark::es2panda::compiler::ast_verifier::InvariantNameSet;
-using ark::es2panda::ir::AstNode;
+using ark::es2panda::compiler::ast_verifier::CheckAbstractMethod;
 using ark::es2panda::ir::Identifier;
 using ark::es2panda::ir::MemberExpression;
 using ark::es2panda::ir::MemberExpressionKind;
@@ -34,8 +32,8 @@ namespace {
 
 TEST_F(ASTVerifierTest, LabelsHaveReferences)
 {
-    ark::es2panda::checker::ETSChecker checker;
-    ASTVerifier verifier {Allocator()};
+    ark::es2panda::util::DiagnosticEngine de;
+    ark::es2panda::checker::ETSChecker checker(de);
 
     char const *text = R"(
         abstract class A {
@@ -50,39 +48,28 @@ TEST_F(ASTVerifierTest, LabelsHaveReferences)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        // Setup call to abstract method via super
+        GetAst()->IterateRecursively([&checker, this](ark::es2panda::ir::AstNode *child) {
+            if (child->IsCallExpression()) {
+                auto *const call = child->AsCallExpression();
+                auto *super = checker.AllocNode<SuperExpression>();
+                auto *id = checker.AllocNode<Identifier>("foo", Allocator());
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+                auto *callee =
+                    checker.AllocNode<MemberExpression>(super, id, MemberExpressionKind::PROPERTY_ACCESS, false, false);
+                call->SetCallee(callee);
 
-    // Setup call to abstract method via super
-    ast->IterateRecursively([&checker, this](ark::es2panda::ir::AstNode *child) {
-        if (child->IsCallExpression()) {
-            auto *const call = child->AsCallExpression();
-            auto *super = checker.AllocNode<SuperExpression>();
-            auto *id = checker.AllocNode<Identifier>("foo", Allocator());
+                // For testing just copy signature from original callee and add abstract flag
+                auto *const signature = call->Signature();
+                signature->AddSignatureFlag(SignatureFlags::ABSTRACT);
+                call->SetSignature(signature);
+            }
+        });
 
-            auto *callee =
-                checker.AllocNode<MemberExpression>(super, id, MemberExpressionKind::PROPERTY_ACCESS, false, false);
-            call->SetCallee(callee);
-
-            // For testing just copy signature from original callee and add abstract flag
-            auto *const signature = call->Signature();
-            signature->AddSignatureFlag(SignatureFlags::ABSTRACT);
-            call->SetSignature(signature);
-        }
-    });
-
-    InvariantNameSet checks;
-    checks.insert("CheckAbstractMethodForAll");
-    const auto &messages = verifier.Verify(ast, checks);
-
-    // Expecting warning
-    ASSERT_EQ(messages.size(), 1);
-    ASSERT_EQ(messages[0].Cause(), "CALL TO ABSTRACT METHOD VIA SUPER");
-
-    impl_->DestroyContext(ctx);
+        EXPECT_TRUE(Verify<CheckAbstractMethod>(ExpectVerifierMessage {"CALL TO ABSTRACT METHOD VIA SUPER"}));
+    }
 }
 
 }  // namespace

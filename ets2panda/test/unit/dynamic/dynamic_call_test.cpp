@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,6 @@
 
 #include "checker/ets/dynamic/dynamicCall.h"
 #include "checker/types/ets/etsDynamicType.h"
-#include "test/unit/es2panda_unit_gtest.h"
 #include "ir/expressions/callExpression.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/identifier.h"
@@ -27,6 +26,9 @@
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "util/language.h"
 #include "parser/ETSparser.h"
+#include "test/utils/scope_init_test.h"
+
+using Es2pandaUnitGtest = test::utils::ScopeInitTest;
 
 namespace ark::es2panda::testing {
 
@@ -38,7 +40,8 @@ public:
             Allocator()->New<parser::Program>(Allocator(), Allocator()->New<varbinder::ETSBinder>(Allocator()));
         program->VarBinder()->SetProgram(program);
         program->VarBinder()->InitTopScope();
-        auto etsParser = parser::ETSParser(program, CompilerOptions {});
+        auto diagnosticEngine = util::DiagnosticEngine();
+        auto etsParser = parser::ETSParser(program, nullptr, diagnosticEngine);
         auto expr = etsParser.CreateExpression(strExpr);
         return {program, expr};
     }
@@ -49,7 +52,7 @@ public:
             return nullptr;
         }
         auto dynamicType = Allocator()->New<checker::ETSDynamicType>(
-            Allocator(), std::make_tuple("test", "test", Language::FromString("sts").value()),
+            Allocator(), std::make_tuple("test", "test", Language::FromString("ets").value()),
             std::make_tuple(obj, checker::ETSObjectFlags::NO_OPTS, nullptr), false);
         if (obj->IsETSTypeReference()) {
             obj = obj->AsETSTypeReference()->Part()->Name();
@@ -85,11 +88,9 @@ public:
         ArenaVector<ir::AstNode *> specifiers {Allocator()->Adapter()};
         auto specifier = Allocator()->New<ir::ImportSpecifier>(aIdent, aIdent);
         specifiers.emplace_back(specifier);
-        auto importSrc = Allocator()->New<ir::ImportSource>(Allocator()->New<ir::StringLiteral>("/tmp"),
-                                                            Allocator()->New<ir::StringLiteral>(),
-                                                            Language::FromString("js").value(), false);
-        auto importDecl =
-            util::NodeAllocator::Alloc<ir::ETSImportDeclaration>(Allocator(), importSrc, std::move(specifiers));
+        util::ImportPathManager::ImportMetadata importMetadata {util::ImportFlags::NONE, Language::Id::JS, "", "", ""};
+        auto importDecl = util::NodeAllocator::Alloc<ir::ETSImportDeclaration>(
+            Allocator(), Allocator()->New<ir::StringLiteral>("/tmp"), importMetadata, std::move(specifiers));
         compiler::InitScopesPhaseETS::RunExternalNode(importDecl, varbinder);
         varbinder->BuildImportDeclaration(importDecl);
         auto var = varbinder->TopScope()->Find(specifierName);
@@ -168,7 +169,8 @@ TEST_F(DynamicCall, JoinDynStaticCallMember)
 
     auto bObj = obj->AsMemberExpression()->Object()->AsMemberExpression()->Object();
     ASSERT_EQ(bObj->AsMemberExpression()->Property()->AsIdentifier()->Name(), "c");
-    auto staticType = Allocator()->New<checker::ETSObjectType>(Allocator(), checker::ETSObjectFlags::NO_OPTS);
+    auto staticType =
+        Allocator()->New<checker::ETSObjectType>(Allocator(), "", "", nullptr, checker::ETSObjectFlags::NO_OPTS);
     bObj->AsMemberExpression()->Object()->SetTsType(staticType);
 
     auto [squeezedObj, name] = checker::DynamicCall::SqueezeExpr(Allocator(), obj->AsMemberExpression());

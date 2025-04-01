@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,9 +16,9 @@
 #ifndef ES2PANDA_IR_EXPRESSION_IDENTIFIER_H
 #define ES2PANDA_IR_EXPRESSION_IDENTIFIER_H
 
-#include "checker/checkerContext.h"
 #include "ir/expression.h"
 #include "ir/validationInfo.h"
+#include <varbinder/varbinder.h>
 
 namespace ark::es2panda::varbinder {
 class Variable;
@@ -38,6 +38,7 @@ enum class IdentifierFlags : uint32_t {
     IGNORE_BOX = 1U << 5U,
     ANNOTATIONDECL = 1U << 6U,
     ANNOTATIONUSAGE = 1U << 7U,
+    ERROR_PLACEHOLDER = 1U << 8U,
 };
 
 }  // namespace ark::es2panda::ir
@@ -60,17 +61,9 @@ public:
     NO_MOVE_SEMANTIC(Identifier);
 
 public:
-    explicit Identifier(ArenaAllocator *const allocator) : Identifier("", allocator) {}
-    explicit Identifier(util::StringView const name, ArenaAllocator *const allocator)
-        : AnnotatedExpression(AstNodeType::IDENTIFIER), name_(name), decorators_(allocator->Adapter())
-    {
-    }
-
-    explicit Identifier(util::StringView const name, TypeNode *const typeAnnotation, ArenaAllocator *const allocator)
-        : AnnotatedExpression(AstNodeType::IDENTIFIER, typeAnnotation), name_(name), decorators_(allocator->Adapter())
-    {
-    }
-
+    explicit Identifier(ArenaAllocator *const allocator);
+    explicit Identifier(util::StringView const name, ArenaAllocator *const allocator);
+    explicit Identifier(util::StringView const name, TypeNode *const typeAnnotation, ArenaAllocator *const allocator);
     explicit Identifier(Tag tag, Identifier const &other, ArenaAllocator *allocator);
 
     [[nodiscard]] const util::StringView &Name() const noexcept
@@ -83,10 +76,7 @@ public:
         return name_;
     }
 
-    void SetName(const util::StringView &newName) noexcept
-    {
-        name_ = newName;
-    }
+    void SetName(const util::StringView &newName) noexcept;
 
     [[nodiscard]] const ArenaVector<Decorator *> &Decorators() const noexcept
     {
@@ -96,6 +86,11 @@ public:
     const ArenaVector<Decorator *> *DecoratorsPtr() const override
     {
         return &Decorators();
+    }
+
+    bool IsErrorPlaceHolder() const noexcept
+    {
+        return (flags_ & IdentifierFlags::ERROR_PLACEHOLDER) != 0;
     }
 
     [[nodiscard]] bool IsOptional() const noexcept
@@ -145,6 +140,11 @@ public:
     [[nodiscard]] bool IsMutator() const noexcept
     {
         return (flags_ & IdentifierFlags::SET) != 0;
+    }
+
+    [[nodiscard]] bool IsReceiver() const noexcept
+    {
+        return name_ == varbinder::VarBinder::MANDATORY_PARAM_THIS;
     }
 
     [[nodiscard]] bool IsPrivateIdent() const noexcept
@@ -213,7 +213,9 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
+
+    std::string ToString() const override;
 
     void Accept(ASTVisitorT *v) override
     {

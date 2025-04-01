@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -39,7 +39,7 @@ bool ETSNullType::AssignmentSource(TypeRelation *relation, Type *target)
 
 void ETSNullType::Compare([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *other)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 void ETSNullType::Cast(TypeRelation *relation, Type *target)
@@ -64,7 +64,7 @@ void ETSNullType::ToAssemblerType(std::stringstream &ss) const
 
 void ETSNullType::ToDebugInfoType(std::stringstream &ss) const
 {
-    ETSObjectType::DebugInfoTypeFromName(ss, compiler::Signatures::BUILTIN_OBJECT);
+    ss << ETSObjectType::NameToDescriptor(compiler::Signatures::BUILTIN_OBJECT);
 }
 
 Type *ETSNullType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
@@ -90,7 +90,7 @@ bool ETSUndefinedType::AssignmentSource(TypeRelation *relation, Type *target)
 
 void ETSUndefinedType::Compare([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *other)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 void ETSUndefinedType::Cast(TypeRelation *relation, Type *target)
@@ -115,7 +115,7 @@ void ETSUndefinedType::ToAssemblerType(std::stringstream &ss) const
 
 void ETSUndefinedType::ToDebugInfoType(std::stringstream &ss) const
 {
-    ETSObjectType::DebugInfoTypeFromName(ss, compiler::Signatures::BUILTIN_OBJECT);
+    ss << ETSObjectType::NameToDescriptor(compiler::Signatures::BUILTIN_OBJECT);
 }
 
 Type *ETSUndefinedType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 #
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -141,6 +141,9 @@ class CppParser:
             self.res.update(self.parsed)
 
     def res_append_namespace(self) -> None:
+        if not self.parsed:
+            return
+
         self.parsed["namespace"] = self.namespace
 
         if self.parent_class_name != "":
@@ -158,6 +161,9 @@ class CppParser:
             self.res[self.current_modifier] = {}
 
     def res_append_method_or_constructor(self) -> None:
+        if not self.parsed:
+            return
+
         # Constructor
         if self.parsed["name"] == self.parent_class_name: # CC-OFF(G.TYP.07) dict key exist
             self.res_append_in_modifier("constructors")

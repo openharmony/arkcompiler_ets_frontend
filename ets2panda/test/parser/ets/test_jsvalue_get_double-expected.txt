@@ -11,16 +11,52 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "test_jsvalue_get_double.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "test_jsvalue_get_double.ets"
             }
           }
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "test_jsvalue_get_double.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "test_jsvalue_get_double.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "test_jsvalue_get_double.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "test_jsvalue_get_double.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",
@@ -31,11 +67,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +93,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +113,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +154,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "test_jsvalue_get_double.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "test_jsvalue_get_double.ets"
               }
             }
           },
@@ -125,11 +173,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -149,11 +199,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -176,11 +228,13 @@
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 5
+                              "column": 5,
+                              "program": "test_jsvalue_get_double.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 10
+                              "column": 10,
+                              "program": "test_jsvalue_get_double.ets"
                             }
                           }
                         },
@@ -191,33 +245,39 @@
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 21
+                              "column": 21,
+                              "program": "test_jsvalue_get_double.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 22
+                              "column": 22,
+                              "program": "test_jsvalue_get_double.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 5
+                            "column": 5,
+                            "program": "test_jsvalue_get_double.ets"
                           },
                           "end": {
                             "line": 17,
-                            "column": 22
+                            "column": 22,
+                            "program": "test_jsvalue_get_double.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 5
+                          "column": 5,
+                          "program": "test_jsvalue_get_double.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 22
+                          "column": 22,
+                          "program": "test_jsvalue_get_double.ets"
                         }
                       }
                     }
@@ -225,33 +285,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -260,11 +326,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "test_jsvalue_get_double.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "test_jsvalue_get_double.ets"
               }
             }
           },
@@ -277,11 +345,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 5
+                  "column": 5,
+                  "program": "test_jsvalue_get_double.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 6
+                  "column": 6,
+                  "program": "test_jsvalue_get_double.ets"
                 }
               }
             },
@@ -302,33 +372,39 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 8
+                      "column": 8,
+                      "program": "test_jsvalue_get_double.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 15
+                      "column": 15,
+                      "program": "test_jsvalue_get_double.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 8
+                    "column": 8,
+                    "program": "test_jsvalue_get_double.ets"
                   },
                   "end": {
                     "line": 16,
-                    "column": 16
+                    "column": 16,
+                    "program": "test_jsvalue_get_double.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 8
+                  "column": 8,
+                  "program": "test_jsvalue_get_double.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 16
+                  "column": 16,
+                  "program": "test_jsvalue_get_double.ets"
                 }
               }
             },
@@ -337,11 +413,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 5
+                "column": 5,
+                "program": "test_jsvalue_get_double.ets"
               },
               "end": {
                 "line": 16,
-                "column": 6
+                "column": 6,
+                "program": "test_jsvalue_get_double.ets"
               }
             }
           },
@@ -354,11 +432,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 5
+                  "column": 5,
+                  "program": "test_jsvalue_get_double.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 10
+                  "column": 10,
+                  "program": "test_jsvalue_get_double.ets"
                 }
               }
             },
@@ -373,11 +453,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 12
+                  "column": 12,
+                  "program": "test_jsvalue_get_double.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 18
+                  "column": 18,
+                  "program": "test_jsvalue_get_double.ets"
                 }
               }
             },
@@ -386,11 +468,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "test_jsvalue_get_double.ets"
               },
               "end": {
                 "line": 17,
-                "column": 22
+                "column": 22,
+                "program": "test_jsvalue_get_double.ets"
               }
             }
           }
@@ -398,22 +482,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "test_jsvalue_get_double.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "test_jsvalue_get_double.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "test_jsvalue_get_double.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "test_jsvalue_get_double.ets"
         }
       }
     }
@@ -421,11 +509,14 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test_jsvalue_get_double.ets"
     },
     "end": {
       "line": 18,
-      "column": 1
+      "column": 1,
+      "program": "test_jsvalue_get_double.ets"
     }
   }
 }
+Warning: Variable 'v' is used before being assigned. [test_jsvalue_get_double.ets:17:21]

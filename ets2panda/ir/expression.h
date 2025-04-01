@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,6 @@
 #ifndef ES2PANDA_IR_EXPRESSION_H
 #define ES2PANDA_IR_EXPRESSION_H
 
-#include "ir/astNode.h"
 #include "ir/typed.h"
 
 namespace ark::es2panda::ir {
@@ -44,13 +43,13 @@ public:
 
     [[nodiscard]] const Literal *AsLiteral() const
     {
-        ASSERT(IsLiteral());
+        ES2PANDA_ASSERT(IsLiteral());
         return reinterpret_cast<const Literal *>(this);
     }
 
     [[nodiscard]] Literal *AsLiteral()
     {
-        ASSERT(IsLiteral());
+        ES2PANDA_ASSERT(IsLiteral());
         return reinterpret_cast<Literal *>(this);
     }
 
@@ -76,27 +75,31 @@ public:
 
     [[nodiscard]] TypeNode *AsTypeNode()
     {
-        ASSERT(IsTypeNode());
+        ES2PANDA_ASSERT(IsTypeNode());
         return reinterpret_cast<TypeNode *>(this);
     }
 
     [[nodiscard]] const TypeNode *AsTypeNode() const
     {
-        ASSERT(IsTypeNode());
+        ES2PANDA_ASSERT(IsTypeNode());
         return reinterpret_cast<const TypeNode *>(this);
     }
 
     [[nodiscard]] AnnotatedExpression *AsAnnotatedExpression()
     {
-        ASSERT(IsAnnotatedExpression());
+        ES2PANDA_ASSERT(IsAnnotatedExpression());
         return reinterpret_cast<AnnotatedExpression *>(this);
     }
 
     [[nodiscard]] const AnnotatedExpression *AsAnnotatedExpression() const
     {
-        ASSERT(IsAnnotatedExpression());
+        ES2PANDA_ASSERT(IsAnnotatedExpression());
         return reinterpret_cast<const AnnotatedExpression *>(this);
     }
+
+    bool IsBrokenExpression() const noexcept;
+
+    [[nodiscard]] virtual std::string ToString() const;
 
 protected:
     explicit Expression(AstNodeType const type) : TypedAstNode(type) {}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,10 +20,13 @@
 #include "mem/pool_manager.h"
 #include "util/ustring.h"
 #include "ir/module/importSpecifier.h"
-#include "parser/program/program.h"
 
 #include <cmath>
 #include <string>
+
+namespace ark::es2panda::parser {
+class Program;
+}  // namespace ark::es2panda::parser
 
 namespace ark::es2panda::varbinder {
 class Variable;
@@ -56,14 +59,6 @@ enum class AstNodeType;
 }  // namespace ark::es2panda::ir
 
 namespace ark::es2panda::util {
-enum class LogLevel : std::uint8_t {
-    DEBUG,
-    INFO,
-    WARNING,
-    ERROR,
-    FATAL,
-    INVALID,
-};
 
 class NodeAllocator {
 public:
@@ -92,7 +87,7 @@ public:
             return nullptr;
         }
         ret->Iterate([ret](ir::AstNode *child) {
-            ASSERT(child->Parent() == nullptr);
+            ES2PANDA_ASSERT(child->Parent() == nullptr);
             child->SetParent(ret);
         });
         return ret;
@@ -154,15 +149,15 @@ public:
     static compiler::Literal ToConstantLiteral(const ir::Expression *expr);
     static bool IsBindingPattern(const ir::AstNode *node);
     static bool IsPattern(const ir::AstNode *node);
-    static std::vector<ir::Identifier *> CollectBindingNames(ir::AstNode *node);
+    static std::vector<ir::Identifier *> CollectBindingNames(ir::Expression *node);
     static util::StringView FunctionName(ArenaAllocator *allocator, const ir::ScriptFunction *func);
     static void CheckImportedName(const ArenaVector<ir::ImportSpecifier *> &specifiers,
                                   const ir::ImportSpecifier *specifier, const std::string &fileName);
     static void CheckDefaultImportedName(const ArenaVector<ir::ImportDefaultSpecifier *> &specifiers,
                                          const ir::ImportDefaultSpecifier *specifier, const std::string &fileName);
     static void CheckDefaultImport(const ArenaVector<ir::ETSImportDeclaration *> &statements);
-    static std::tuple<util::StringView, bool> ParamName(ArenaAllocator *allocator, const ir::AstNode *param,
-                                                        uint32_t index);
+    static std::tuple<util::StringView, bool> ParamName(ArenaAllocator *allocator, const ir::Expression *param,
+                                                        std::uint32_t index);
 
     template <typename T, typename V>
     static ArenaVector<T *> ConvertVector(const ArenaVector<V *> &src)
@@ -189,27 +184,16 @@ public:
     static std::string UTF16toUTF8(const char16_t c);
 
     template <typename... Elements>
-    static void LogDebug(Elements &&...elems);
-    template <typename... Elements>
-    static void LogInfo(Elements &&...elems);
-    template <typename... Elements>
-    static void LogWarning(Elements &&...elems);
-    template <typename... Elements>
-    static void LogError(Elements &&...elems);
-    template <typename... Elements>
-    static void LogFatal(Elements &&...elems);
-
-    template <typename... Elements>
     static std::string AppendAll(Elements &&...elems);
 
     static std::pair<std::string_view, std::string_view> SplitSignature(std::string_view signature);
 
-    static std::vector<std::string> &StdLib();
+    static std::vector<std::string> const &StdLib();
     static bool IsStdLib(const parser::Program *program);
+    [[nodiscard]] static checker::Type *CheckReturnTypeOfCheck([[maybe_unused]] const ir::AstNode *const node,
+                                                               checker::Type *const type);
 
-private:
-    template <LogLevel LOG_L, typename... Elements>
-    static void Log(Elements &&...elems);
+    [[nodiscard]] static util::UString EscapeHTMLString(ArenaAllocator *allocator, const std::string &str);
 };
 
 template <typename T>
@@ -224,75 +208,6 @@ bool Helpers::IsInteger(double number)
     }
 
     return false;
-}
-
-template <LogLevel LOG_L, typename... Elements>
-void Helpers::Log(Elements &&...elems)
-{
-    constexpr auto ES2PANDA = ark::Logger::Component::ES2PANDA;
-    constexpr auto LOG_LEVEL = []() {
-        switch (LOG_L) {
-            case LogLevel::DEBUG: {
-                return ark::Logger::Level::DEBUG;
-            }
-            case LogLevel::INFO: {
-                return ark::Logger::Level::INFO;
-            }
-            case LogLevel::WARNING: {
-                return ark::Logger::Level::WARNING;
-            }
-            case LogLevel::ERROR: {
-                return ark::Logger::Level::ERROR;
-            }
-            case LogLevel::FATAL: {
-                return ark::Logger::Level::FATAL;
-            }
-            default: {
-                UNREACHABLE_CONSTEXPR();
-            }
-        }
-    }();
-
-#ifndef NDEBUG
-    const bool isMessageSuppressed = ark::Logger::IsMessageSuppressed(LOG_LEVEL, ES2PANDA);
-#else
-    const bool isMessageSuppressed = false;
-#endif
-    if (!ark::Logger::IsLoggingOnOrAbort(LOG_LEVEL, ES2PANDA) || isMessageSuppressed) {
-        return;
-    }
-
-    (ark::Logger::Message(LOG_LEVEL, ES2PANDA, false).GetStream() << ... << std::forward<Elements>(elems));
-}
-
-template <typename... Elements>
-void Helpers::LogDebug(Elements &&...elems)
-{
-    Helpers::Log<LogLevel::DEBUG>(std::forward<Elements>(elems)...);
-}
-
-template <typename... Elements>
-void Helpers::LogInfo(Elements &&...elems)
-{
-    Helpers::Log<LogLevel::INFO>(std::forward<Elements>(elems)...);
-}
-
-template <typename... Elements>
-void Helpers::LogWarning(Elements &&...elems)
-{
-    Helpers::Log<LogLevel::WARNING>(std::forward<Elements>(elems)...);
-}
-
-template <typename... Elements>
-void Helpers::LogError(Elements &&...elems)
-{
-    Helpers::Log<LogLevel::ERROR>(std::forward<Elements>(elems)...);
-}
-
-template <typename... Elements>
-void Helpers::LogFatal(Elements &&...elems)
-{
-    Helpers::Log<LogLevel::FATAL>(std::forward<Elements>(elems)...);
 }
 
 template <typename... Elements>

@@ -87,6 +87,20 @@ function parseCommand(program: Command, cmdArgs: string[]): ParsedCommand {
   };
 }
 
+function formOptionPaths(cmdlOptions: CommandLineOptions, options: OptionValues): CommandLineOptions {
+  const opts = cmdlOptions;
+  if (options.sdkExternalApiPath) {
+    opts.sdkExternalApiPath = options.sdkExternalApiPath;
+  }
+  if (options.sdkDefaultApiPath) {
+    opts.sdkDefaultApiPath = options.sdkDefaultApiPath;
+  }
+  if (options.arktsWholeProjectPath) {
+    opts.arktsWholeProjectPath = options.arktsWholeProjectPath;
+  }
+  return opts;
+}
+
 function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
   const opts: CommandLineOptions = {
     inputFiles: parsedCmd.args.inputFiles,
@@ -123,7 +137,14 @@ function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
   if (options.useRtLogic !== undefined) {
     opts.linterOptions.useRtLogic = options.useRtLogic;
   }
-  return opts;
+  if (options.ideInteractive) {
+    opts.linterOptions.ideInteractive = true;
+  }
+  if (options.migrate !== undefined) {
+    opts.linterOptions.migratorMode = options.migrate;
+    opts.linterOptions.enableAutofix = true;
+  }
+  return formOptionPaths(opts, options);
 }
 
 function createCommand(): Command {
@@ -131,7 +152,7 @@ function createCommand(): Command {
   program.
     name('tslinter').
     description('Linter for TypeScript sources').
-    version('0.0.1').
+    version('0.0.2').
     configureHelp({ helpWidth: 100 }).
     exitOverride();
   program.
@@ -148,6 +169,11 @@ function createCommand(): Command {
     option('--autofix', 'automatically fix problems found by linter').
     option('--arkts-2', 'enable ArkTS 2.0 mode').
     option('--use-rt-logic', 'run linter with RT logic').
+    option('-e, --sdk-external-api-path <paths...>', 'paths to external API files').
+    option('-d, --sdk-default-api-path <path>', 'paths to default API files').
+    option('--ide-interactive', 'Migration Helper IDE interactive mode').
+    option('-w, --arkts-whole-project-path <path>', 'path to whole project').
+    option('--migrate', 'run as ArkTS migrator').
     addOption(new Option('--warnings-as-errors', 'treat warnings as errors').hideHelp(true)).
     addOption(new Option('--no-check-ts-as-source', 'check TS files as third-party libary').hideHelp(true)).
     addOption(new Option('--no-use-rt-logic', 'run linter with SDK logic').hideHelp(true)).

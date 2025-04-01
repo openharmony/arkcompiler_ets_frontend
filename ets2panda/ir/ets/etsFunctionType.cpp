@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,18 +19,25 @@
 #include "checker/ETSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 void ETSFunctionType::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
     signature_.TransformChildren(cb, transformationName);
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void ETSFunctionType::Iterate(const NodeTraverser &cb) const
 {
     signature_.Iterate(cb);
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 void ETSFunctionType::Dump(ir::AstDumper *dumper) const
@@ -45,11 +52,15 @@ void ETSFunctionType::Dump(ir::AstDumper *dumper) const
                  {"params", signature_.Params()},
                  {"typeParameters", AstDumper::Optional(signature_.TypeParams())},
                  {"returnType", signature_.ReturnType()},
-                 {"throwMarker", AstDumper::Optional(throwMarker)}});
+                 {"throwMarker", AstDumper::Optional(throwMarker)},
+                 {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void ETSFunctionType::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("((");
     for (auto *param : Params()) {
         param->Dump(dumper);
@@ -97,9 +108,9 @@ checker::Type *ETSFunctionType::GetType([[maybe_unused]] checker::TSChecker *che
     return nullptr;
 }
 
-checker::Type *ETSFunctionType::Check(checker::ETSChecker *checker)
+checker::VerifiedType ETSFunctionType::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 checker::Type *ETSFunctionType::GetType(checker::ETSChecker *checker)
@@ -122,32 +133,37 @@ ETSFunctionType *ETSFunctionType::Clone(ArenaAllocator *const allocator, AstNode
     auto *const returnTypeClone =
         signature_.ReturnType() != nullptr ? signature_.ReturnType()->Clone(allocator, nullptr)->AsTypeNode() : nullptr;
 
-    if (auto *const clone = allocator->New<ETSFunctionType>(
-            FunctionSignature(typeParamsClone, std::move(paramsClone), returnTypeClone), funcFlags_);
-        clone != nullptr) {
-        if (typeParamsClone != nullptr) {
-            typeParamsClone->SetParent(clone);
-        }
+    auto *const clone = allocator->New<ETSFunctionType>(
+        FunctionSignature(typeParamsClone, std::move(paramsClone), returnTypeClone), funcFlags_, allocator);
 
-        if (returnTypeClone != nullptr) {
-            returnTypeClone->SetParent(clone);
-        }
-
-        for (auto *param : clone->Params()) {
-            param->SetParent(clone);
-        }
-
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        // Reset scope for clone
-        // Using old scopes with clone may lead to incorrect ast-structure
-        clone->SetScope(nullptr);
-
-        return clone;
+    if (typeParamsClone != nullptr) {
+        typeParamsClone->SetParent(clone);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    if (returnTypeClone != nullptr) {
+        returnTypeClone->SetParent(clone);
+    }
+
+    for (auto *param : clone->Params()) {
+        param->SetParent(clone);
+    }
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    // If the scope is set to empty, it will result in the inability to retrieve the scope after clone,
+    // and an error cannot find type will be reported
+    clone->SetScope(this->scope_);
+
+    return clone;
 }
 }  // namespace ark::es2panda::ir

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,72 +19,167 @@
 #include "parser/program/program.h"
 #include "checker/ETSchecker.h"
 #include "libpandabase/os/file.h"
+#include "libpandabase/utils/arena_containers.h"
+#include "util/options.h"
+#include "util/diagnosticEngine.h"
 
 namespace ark::es2panda::declgen_ets2ts {
 
+struct DeclgenOptions {
+    bool exportAll = false;
+    std::string outputDeclEts;
+    std::string outputEts;
+};
+
 // Consume program after checker stage and generate out_path typescript file with declarations
 bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::parser::Program *program,
-                            const std::string &outPath);
+                            const DeclgenOptions &declgenOptions);
 
 class TSDeclGen {
 public:
     TSDeclGen(checker::ETSChecker *checker, const ark::es2panda::parser::Program *program)
-        : checker_(checker), program_(program)
+        : checker_(checker),
+          program_(program),
+          diagnosticEngine_(checker->DiagnosticEngine()),
+          allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
+          indirectDependencyObjects_(allocator_.Adapter()),
+          typeAliasMap_(allocator_.Adapter()),
+          paramDefaultMap_(allocator_.Adapter())
     {
     }
 
-    std::stringstream &Output()
+    void SetDeclgenOptions(const DeclgenOptions &options)
     {
-        return output_;
+        declgenOptions_ = options;
+    }
+
+    const DeclgenOptions &GetDeclgenOptions()
+    {
+        return declgenOptions_;
     }
 
     void Generate();
 
+    std::string GetDtsOutput() const
+    {
+        return outputDts_.str();
+    }
+
+    std::string GetTsOutput() const
+    {
+        return outputTs_.str();
+    }
+
     static constexpr std::string_view INDENT = "    ";
 
 private:
-    void ThrowError(std::string_view message, const lexer::SourcePosition &pos);
+    void LogError(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &params,
+                  const lexer::SourcePosition &pos);
+    void LogWarning(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &params,
+                    const lexer::SourcePosition &pos);
+
     const ir::Identifier *GetKeyIdent(const ir::Expression *key);
+    const checker::Signature *GetFuncSignature(const checker::ETSFunctionType *etsFunctionType,
+                                               const ir::MethodDefinition *methodDef);
 
     void GenType(const checker::Type *checkerType);
     void GenFunctionType(const checker::ETSFunctionType *functionType, const ir::MethodDefinition *methodDef = nullptr);
-    void GenFunctionBody(const ir::MethodDefinition *methodDef, const checker::Signature *sig, const bool isConstructor,
-                         const bool isSetter);
     void GenObjectType(const checker::ETSObjectType *objectType);
-    void GenEnumType(const checker::ETSIntEnumType *enumType);
     void GenUnionType(const checker::ETSUnionType *unionType);
+    void GenTupleType(const checker::ETSTupleType *tupleType);
 
     void GenImportDeclaration(const ir::ETSImportDeclaration *importDeclaration);
+    void GenReExportDeclaration(const ir::ETSReExportDeclaration *reExportDeclaration);
     void GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAlias);
-    void GenEnumDeclaration(const ir::TSEnumDeclaration *enumDecl);
+    void GenEnumDeclaration(const ir::ClassProperty *enumMember);
     void GenInterfaceDeclaration(const ir::TSInterfaceDeclaration *interfaceDecl);
     void GenClassDeclaration(const ir::ClassDeclaration *classDecl);
     void GenMethodDeclaration(const ir::MethodDefinition *methodDef);
     void GenPropDeclaration(const ir::ClassProperty *classProp);
+    void GenPropAccessor(const ir::ClassProperty *classProp, const std::string &accessorKind);
+    void GenGenericParameter(const ir::ClassProperty *globalVar);
     void GenGlobalVarDeclaration(const ir::ClassProperty *globalVar);
     void GenLiteral(const ir::Literal *literal);
 
     template <class T>
-    void GenModifier(const T *node);
+    void GenModifier(const T *node, bool isProp = false);
     void GenTypeParameters(const ir::TSTypeParameterDeclaration *typeParams);
+    void GenTypeParameters(const ir::TSTypeParameterInstantiation *typeParams);
     void GenExport(const ir::Identifier *symbol);
     void GenExport(const ir::Identifier *symbol, const std::string &alias);
     void GenDefaultExport(const ir::Identifier *symbol);
-    void ExportIfNeeded(const ir::Identifier *symbol);
+    bool ShouldEmitDeclarationSymbol(const ir::Identifier *symbol);
 
     template <class T, class CB>
-    void GenSeparated(const T &container, const CB &cb, const char *separator = ", ");
+    void GenSeparated(const T &container, const CB &cb, const char *separator = ", ", bool isReExport = false);
 
-    void Out() {}
+    void PrepareClassDeclaration(const ir::ClassDefinition *classDef);
+    bool ShouldSkipMethodDeclaration(const ir::MethodDefinition *methodDef);
+    bool ShouldSkipClassDeclaration(const std::string_view &className) const;
+    void HandleClassDeclarationTypeInfo(const ir::ClassDefinition *classDef, const std::string_view &className);
+    void ProcessClassBody(const ir::ClassDefinition *classDef);
+    void ProcessParamDefaultToMap(const ir::Statement *stmt);
+    void ProcessFuncParameter(varbinder::LocalVariable *param);
+    void ProcessFuncParameters(const checker::Signature *sig);
+    std::string ReplaceETSGLOBAL(const std::string &typeName);
+    std::string GetIndent() const;
+    std::string RemoveModuleExtensionName(const std::string &filepath);
+    void GenPartName(std::string &partName);
+    void ProcessIndent();
+
+    void GenGlobalDescriptor();
+    void CollectIndirectExportDependencies();
+    void ProcessTypeAliasDependencies(const ir::TSTypeAliasDeclaration *typeAliasDecl);
+    void ProcessClassDependencies(const ir::ClassDeclaration *classDecl);
+    void AddSuperType(const ir::Expression *super);
+    void ProcessInterfacesDependencies(const ArenaVector<checker::ETSObjectType *> &interfaces);
+    void AddObjectDependencies(const util::StringView &typeName, const std::string &alias = "");
+    void GenDeclarations();
+    void CloseClassBlock(const bool isDts);
+
+    void EmitClassDeclaration(const ir::ClassDefinition *classDef, const std::string_view &className);
+    void EmitClassGlueCode(const ir::ClassDefinition *classDef, const std::string &className);
+    void EmitMethodGlueCode(const std::string &methodName, const ir::Identifier *methodIdentifier);
+    void EmitPropGlueCode(const ir::ClassProperty *classProp, const std::string &propName);
+
+    bool HandleBasicTypes(const checker::Type *checkerType);
+    void HandleFunctionType(const checker::Type *checkerType);
+    bool HandleETSSpecificTypes(const checker::Type *checkerType);
+    bool HandleObjectType(const checker::Type *checkerType);
+    bool HandleSpecificObjectTypes(const checker::ETSObjectType *objectType);
+    void HandleArrayType(const checker::Type *checkerType);
+    void HandleTypeArgument(checker::Type *arg, const std::string &typeStr);
+
+    void ProcessInterfaceBody(const ir::TSInterfaceBody *body);
+    void ProcessMethodDefinition(const ir::MethodDefinition *methodDef,
+                                 std::unordered_set<std::string> &processedMethods);
+
+    void OutDts() {}
+
     template <class F, class... T>
-    void Out(F &&first, T &&...rest)
+    void OutDts(F &&first, T &&...rest)
     {
-        output_ << first;
-        Out(std::forward<T>(rest)...);
+        outputDts_ << first;
+        OutDts(std::forward<T>(rest)...);
     }
-    void OutEndl(const std::size_t count = 1)
+
+    void OutTs() {}
+
+    template <class F, class... T>
+    void OutTs(F &&first, T &&...rest)
     {
-        ark::os::file::File::GetEndLine(output_, count);
+        outputTs_ << first;
+        OutTs(std::forward<T>(rest)...);
+    }
+
+    void OutEndlDts(const std::size_t count = 1)
+    {
+        ark::os::file::File::GetEndLine(outputDts_, count);
+    }
+
+    void OutEndlTs(const std::size_t count = 1)
+    {
+        ark::os::file::File::GetEndLine(outputTs_, count);
     }
 
     void ResetState()
@@ -96,12 +191,37 @@ private:
         const ir::Expression *super {nullptr};
         bool inInterface {false};
         bool inGlobalClass {false};
+        bool inNamespace {false};
+        bool inEnum {false};
+        bool isClassInNamespace {false};
         std::string currentClassDescriptor {};
+        std::stack<bool> inUnionBodyStack {};
+        std::string currentTypeAliasName;
+        const ir::TSTypeParameterDeclaration *currentTypeParams {nullptr};
     } state_ {};
 
-    std::stringstream output_ {};
+    struct ClassNode {
+        bool hasNestedClass {false};
+        bool isIndirect {false};
+        size_t indentLevel {1};
+    } classNode_ {};
+
+    const std::unordered_set<std::string_view> numberTypes_ = {"Long",  "Float", "Double", "Byte",
+                                                               "Short", "Int",   "Number"};
+    const std::unordered_set<std::string_view> stringTypes_ = {"Char", "String"};
+    const std::set<std::string> extensions_ = {".sts", ".ets", ".ts", ".js"};
+
+    std::stringstream outputDts_;
+    std::stringstream outputTs_;
     checker::ETSChecker *checker_ {};
     const ark::es2panda::parser::Program *program_ {};
+    util::DiagnosticEngine &diagnosticEngine_;
+    ArenaAllocator allocator_;
+    ArenaSet<std::string> indirectDependencyObjects_;
+    DeclgenOptions declgenOptions_ {};
+    std::string globalDesc_;
+    ArenaMap<std::string, std::string> typeAliasMap_;
+    ArenaMap<util::StringView, util::StringView> paramDefaultMap_;
 };
 }  // namespace ark::es2panda::declgen_ets2ts
 

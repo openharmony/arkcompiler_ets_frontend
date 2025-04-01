@@ -11,16 +11,52 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "generic_func_rest_param_spread_infer.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "generic_func_rest_param_spread_infer.ets"
             }
           }
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "generic_func_rest_param_spread_infer.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "generic_func_rest_param_spread_infer.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "generic_func_rest_param_spread_infer.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "generic_func_rest_param_spread_infer.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",
@@ -31,11 +67,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +93,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +113,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +154,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "generic_func_rest_param_spread_infer.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "generic_func_rest_param_spread_infer.ets"
               }
             }
           },
@@ -125,11 +173,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "generic_func_rest_param_spread_infer.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 14
+                  "column": 14,
+                  "program": "generic_func_rest_param_spread_infer.ets"
                 }
               }
             },
@@ -149,11 +199,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 10
+                      "column": 10,
+                      "program": "generic_func_rest_param_spread_infer.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 14
+                      "column": 14,
+                      "program": "generic_func_rest_param_spread_infer.ets"
                     }
                   }
                 },
@@ -176,11 +228,13 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 9
+                                "column": 9,
+                                "program": "generic_func_rest_param_spread_infer.ets"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 13
+                                "column": 13,
+                                "program": "generic_func_rest_param_spread_infer.ets"
                               }
                             }
                           },
@@ -195,11 +249,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 16
+                                    "column": 16,
+                                    "program": "generic_func_rest_param_spread_infer.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 21
+                                    "column": 21,
+                                    "program": "generic_func_rest_param_spread_infer.ets"
                                   }
                                 }
                               },
@@ -210,11 +266,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 22
+                                    "column": 22,
+                                    "program": "generic_func_rest_param_spread_infer.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 24
+                                    "column": 24,
+                                    "program": "generic_func_rest_param_spread_infer.ets"
                                   }
                                 }
                               },
@@ -223,11 +281,13 @@
                               "loc": {
                                 "start": {
                                   "line": 17,
-                                  "column": 16
+                                  "column": 16,
+                                  "program": "generic_func_rest_param_spread_infer.ets"
                                 },
                                 "end": {
                                   "line": 17,
-                                  "column": 24
+                                  "column": 24,
+                                  "program": "generic_func_rest_param_spread_infer.ets"
                                 }
                               }
                             },
@@ -245,11 +305,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 17,
-                                            "column": 30
+                                            "column": 30,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           },
                                           "end": {
                                             "line": 17,
-                                            "column": 31
+                                            "column": 31,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           }
                                         }
                                       },
@@ -259,11 +321,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 17,
-                                            "column": 33
+                                            "column": 33,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           },
                                           "end": {
                                             "line": 17,
-                                            "column": 34
+                                            "column": 34,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           }
                                         }
                                       },
@@ -273,11 +337,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 17,
-                                            "column": 36
+                                            "column": 36,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           },
                                           "end": {
                                             "line": 17,
-                                            "column": 37
+                                            "column": 37,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           }
                                         }
                                       }
@@ -285,11 +351,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 17,
-                                        "column": 29
+                                        "column": 29,
+                                        "program": "generic_func_rest_param_spread_infer.ets"
                                       },
                                       "end": {
                                         "line": 17,
-                                        "column": 38
+                                        "column": 38,
+                                        "program": "generic_func_rest_param_spread_infer.ets"
                                       }
                                     }
                                   },
@@ -306,66 +374,79 @@
                                           "loc": {
                                             "start": {
                                               "line": 17,
-                                              "column": 42
+                                              "column": 42,
+                                              "program": "generic_func_rest_param_spread_infer.ets"
                                             },
                                             "end": {
                                               "line": 17,
-                                              "column": 45
+                                              "column": 45,
+                                              "program": "generic_func_rest_param_spread_infer.ets"
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 17,
-                                            "column": 42
+                                            "column": 42,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           },
                                           "end": {
                                             "line": 17,
-                                            "column": 46
+                                            "column": 46,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
                                           "line": 17,
-                                          "column": 42
+                                          "column": 42,
+                                          "program": "generic_func_rest_param_spread_infer.ets"
                                         },
                                         "end": {
                                           "line": 17,
-                                          "column": 46
+                                          "column": 46,
+                                          "program": "generic_func_rest_param_spread_infer.ets"
                                         }
                                       }
                                     },
+                                    "annotations": [],
                                     "loc": {
                                       "start": {
                                         "line": 17,
-                                        "column": 45
+                                        "column": 45,
+                                        "program": "generic_func_rest_param_spread_infer.ets"
                                       },
                                       "end": {
                                         "line": 17,
-                                        "column": 47
+                                        "column": 47,
+                                        "program": "generic_func_rest_param_spread_infer.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 17,
-                                      "column": 28
+                                      "column": 28,
+                                      "program": "generic_func_rest_param_spread_infer.ets"
                                     },
                                     "end": {
                                       "line": 17,
-                                      "column": 48
+                                      "column": 48,
+                                      "program": "generic_func_rest_param_spread_infer.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 25
+                                    "column": 25,
+                                    "program": "generic_func_rest_param_spread_infer.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 48
+                                    "column": 48,
+                                    "program": "generic_func_rest_param_spread_infer.ets"
                                   }
                                 }
                               }
@@ -374,22 +455,26 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 16
+                                "column": 16,
+                                "program": "generic_func_rest_param_spread_infer.ets"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 49
+                                "column": 49,
+                                "program": "generic_func_rest_param_spread_infer.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 9
+                              "column": 9,
+                              "program": "generic_func_rest_param_spread_infer.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 49
+                              "column": 49,
+                              "program": "generic_func_rest_param_spread_infer.ets"
                             }
                           }
                         }
@@ -398,11 +483,13 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 5
+                          "column": 5,
+                          "program": "generic_func_rest_param_spread_infer.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 50
+                          "column": 50,
+                          "program": "generic_func_rest_param_spread_infer.ets"
                         }
                       }
                     },
@@ -418,11 +505,13 @@
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 9
+                                "column": 9,
+                                "program": "generic_func_rest_param_spread_infer.ets"
                               },
                               "end": {
                                 "line": 18,
-                                "column": 13
+                                "column": 13,
+                                "program": "generic_func_rest_param_spread_infer.ets"
                               }
                             }
                           },
@@ -437,11 +526,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 18,
-                                    "column": 16
+                                    "column": 16,
+                                    "program": "generic_func_rest_param_spread_infer.ets"
                                   },
                                   "end": {
                                     "line": 18,
-                                    "column": 21
+                                    "column": 21,
+                                    "program": "generic_func_rest_param_spread_infer.ets"
                                   }
                                 }
                               },
@@ -452,11 +543,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 18,
-                                    "column": 22
+                                    "column": 22,
+                                    "program": "generic_func_rest_param_spread_infer.ets"
                                   },
                                   "end": {
                                     "line": 18,
-                                    "column": 24
+                                    "column": 24,
+                                    "program": "generic_func_rest_param_spread_infer.ets"
                                   }
                                 }
                               },
@@ -465,11 +558,13 @@
                               "loc": {
                                 "start": {
                                   "line": 18,
-                                  "column": 16
+                                  "column": 16,
+                                  "program": "generic_func_rest_param_spread_infer.ets"
                                 },
                                 "end": {
                                   "line": 18,
-                                  "column": 24
+                                  "column": 24,
+                                  "program": "generic_func_rest_param_spread_infer.ets"
                                 }
                               }
                             },
@@ -487,11 +582,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 18,
-                                            "column": 30
+                                            "column": 30,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           },
                                           "end": {
                                             "line": 18,
-                                            "column": 31
+                                            "column": 31,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           }
                                         }
                                       },
@@ -501,11 +598,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 18,
-                                            "column": 33
+                                            "column": 33,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           },
                                           "end": {
                                             "line": 18,
-                                            "column": 34
+                                            "column": 34,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           }
                                         }
                                       },
@@ -515,11 +614,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 18,
-                                            "column": 36
+                                            "column": 36,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           },
                                           "end": {
                                             "line": 18,
-                                            "column": 37
+                                            "column": 37,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           }
                                         }
                                       }
@@ -527,11 +628,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 18,
-                                        "column": 29
+                                        "column": 29,
+                                        "program": "generic_func_rest_param_spread_infer.ets"
                                       },
                                       "end": {
                                         "line": 18,
-                                        "column": 38
+                                        "column": 38,
+                                        "program": "generic_func_rest_param_spread_infer.ets"
                                       }
                                     }
                                   },
@@ -548,66 +651,79 @@
                                           "loc": {
                                             "start": {
                                               "line": 18,
-                                              "column": 42
+                                              "column": 42,
+                                              "program": "generic_func_rest_param_spread_infer.ets"
                                             },
                                             "end": {
                                               "line": 18,
-                                              "column": 48
+                                              "column": 48,
+                                              "program": "generic_func_rest_param_spread_infer.ets"
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 18,
-                                            "column": 42
+                                            "column": 42,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           },
                                           "end": {
                                             "line": 18,
-                                            "column": 49
+                                            "column": 49,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
                                           "line": 18,
-                                          "column": 42
+                                          "column": 42,
+                                          "program": "generic_func_rest_param_spread_infer.ets"
                                         },
                                         "end": {
                                           "line": 18,
-                                          "column": 49
+                                          "column": 49,
+                                          "program": "generic_func_rest_param_spread_infer.ets"
                                         }
                                       }
                                     },
+                                    "annotations": [],
                                     "loc": {
                                       "start": {
                                         "line": 18,
-                                        "column": 48
+                                        "column": 48,
+                                        "program": "generic_func_rest_param_spread_infer.ets"
                                       },
                                       "end": {
                                         "line": 18,
-                                        "column": 50
+                                        "column": 50,
+                                        "program": "generic_func_rest_param_spread_infer.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 18,
-                                      "column": 28
+                                      "column": 28,
+                                      "program": "generic_func_rest_param_spread_infer.ets"
                                     },
                                     "end": {
                                       "line": 18,
-                                      "column": 51
+                                      "column": 51,
+                                      "program": "generic_func_rest_param_spread_infer.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 18,
-                                    "column": 25
+                                    "column": 25,
+                                    "program": "generic_func_rest_param_spread_infer.ets"
                                   },
                                   "end": {
                                     "line": 18,
-                                    "column": 51
+                                    "column": 51,
+                                    "program": "generic_func_rest_param_spread_infer.ets"
                                   }
                                 }
                               }
@@ -616,22 +732,26 @@
                             "loc": {
                               "start": {
                                 "line": 18,
-                                "column": 16
+                                "column": 16,
+                                "program": "generic_func_rest_param_spread_infer.ets"
                               },
                               "end": {
                                 "line": 18,
-                                "column": 52
+                                "column": 52,
+                                "program": "generic_func_rest_param_spread_infer.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 9
+                              "column": 9,
+                              "program": "generic_func_rest_param_spread_infer.ets"
                             },
                             "end": {
                               "line": 18,
-                              "column": 52
+                              "column": 52,
+                              "program": "generic_func_rest_param_spread_infer.ets"
                             }
                           }
                         }
@@ -640,11 +760,13 @@
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 5
+                          "column": 5,
+                          "program": "generic_func_rest_param_spread_infer.ets"
                         },
                         "end": {
                           "line": 18,
-                          "column": 53
+                          "column": 53,
+                          "program": "generic_func_rest_param_spread_infer.ets"
                         }
                       }
                     },
@@ -660,11 +782,13 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 9
+                                "column": 9,
+                                "program": "generic_func_rest_param_spread_infer.ets"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 13
+                                "column": 13,
+                                "program": "generic_func_rest_param_spread_infer.ets"
                               }
                             }
                           },
@@ -679,11 +803,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 19,
-                                    "column": 16
+                                    "column": 16,
+                                    "program": "generic_func_rest_param_spread_infer.ets"
                                   },
                                   "end": {
                                     "line": 19,
-                                    "column": 21
+                                    "column": 21,
+                                    "program": "generic_func_rest_param_spread_infer.ets"
                                   }
                                 }
                               },
@@ -694,11 +820,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 19,
-                                    "column": 22
+                                    "column": 22,
+                                    "program": "generic_func_rest_param_spread_infer.ets"
                                   },
                                   "end": {
                                     "line": 19,
-                                    "column": 24
+                                    "column": 24,
+                                    "program": "generic_func_rest_param_spread_infer.ets"
                                   }
                                 }
                               },
@@ -707,11 +835,13 @@
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 16
+                                  "column": 16,
+                                  "program": "generic_func_rest_param_spread_infer.ets"
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 24
+                                  "column": 24,
+                                  "program": "generic_func_rest_param_spread_infer.ets"
                                 }
                               }
                             },
@@ -729,11 +859,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 19,
-                                            "column": 30
+                                            "column": 30,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           },
                                           "end": {
                                             "line": 19,
-                                            "column": 31
+                                            "column": 31,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           }
                                         }
                                       },
@@ -743,11 +875,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 19,
-                                            "column": 33
+                                            "column": 33,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           },
                                           "end": {
                                             "line": 19,
-                                            "column": 34
+                                            "column": 34,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           }
                                         }
                                       },
@@ -757,11 +891,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 19,
-                                            "column": 36
+                                            "column": 36,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           },
                                           "end": {
                                             "line": 19,
-                                            "column": 37
+                                            "column": 37,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           }
                                         }
                                       }
@@ -769,11 +905,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 19,
-                                        "column": 29
+                                        "column": 29,
+                                        "program": "generic_func_rest_param_spread_infer.ets"
                                       },
                                       "end": {
                                         "line": 19,
-                                        "column": 38
+                                        "column": 38,
+                                        "program": "generic_func_rest_param_spread_infer.ets"
                                       }
                                     }
                                   },
@@ -790,66 +928,79 @@
                                           "loc": {
                                             "start": {
                                               "line": 19,
-                                              "column": 42
+                                              "column": 42,
+                                              "program": "generic_func_rest_param_spread_infer.ets"
                                             },
                                             "end": {
                                               "line": 19,
-                                              "column": 48
+                                              "column": 48,
+                                              "program": "generic_func_rest_param_spread_infer.ets"
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 19,
-                                            "column": 42
+                                            "column": 42,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           },
                                           "end": {
                                             "line": 19,
-                                            "column": 49
+                                            "column": 49,
+                                            "program": "generic_func_rest_param_spread_infer.ets"
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
                                           "line": 19,
-                                          "column": 42
+                                          "column": 42,
+                                          "program": "generic_func_rest_param_spread_infer.ets"
                                         },
                                         "end": {
                                           "line": 19,
-                                          "column": 49
+                                          "column": 49,
+                                          "program": "generic_func_rest_param_spread_infer.ets"
                                         }
                                       }
                                     },
+                                    "annotations": [],
                                     "loc": {
                                       "start": {
                                         "line": 19,
-                                        "column": 48
+                                        "column": 48,
+                                        "program": "generic_func_rest_param_spread_infer.ets"
                                       },
                                       "end": {
                                         "line": 19,
-                                        "column": 50
+                                        "column": 50,
+                                        "program": "generic_func_rest_param_spread_infer.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 19,
-                                      "column": 28
+                                      "column": 28,
+                                      "program": "generic_func_rest_param_spread_infer.ets"
                                     },
                                     "end": {
                                       "line": 19,
-                                      "column": 51
+                                      "column": 51,
+                                      "program": "generic_func_rest_param_spread_infer.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 19,
-                                    "column": 25
+                                    "column": 25,
+                                    "program": "generic_func_rest_param_spread_infer.ets"
                                   },
                                   "end": {
                                     "line": 19,
-                                    "column": 51
+                                    "column": 51,
+                                    "program": "generic_func_rest_param_spread_infer.ets"
                                   }
                                 }
                               }
@@ -858,22 +1009,26 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 16
+                                "column": 16,
+                                "program": "generic_func_rest_param_spread_infer.ets"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 52
+                                "column": 52,
+                                "program": "generic_func_rest_param_spread_infer.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 9
+                              "column": 9,
+                              "program": "generic_func_rest_param_spread_infer.ets"
                             },
                             "end": {
                               "line": 19,
-                              "column": 52
+                              "column": 52,
+                              "program": "generic_func_rest_param_spread_infer.ets"
                             }
                           }
                         }
@@ -882,11 +1037,13 @@
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 5
+                          "column": 5,
+                          "program": "generic_func_rest_param_spread_infer.ets"
                         },
                         "end": {
                           "line": 19,
-                          "column": 53
+                          "column": 53,
+                          "program": "generic_func_rest_param_spread_infer.ets"
                         }
                       }
                     }
@@ -894,33 +1051,39 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 17
+                      "column": 17,
+                      "program": "generic_func_rest_param_spread_infer.ets"
                     },
                     "end": {
                       "line": 20,
-                      "column": 2
+                      "column": 2,
+                      "program": "generic_func_rest_param_spread_infer.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 10
+                    "column": 10,
+                    "program": "generic_func_rest_param_spread_infer.ets"
                   },
                   "end": {
                     "line": 20,
-                    "column": 2
+                    "column": 2,
+                    "program": "generic_func_rest_param_spread_infer.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "generic_func_rest_param_spread_infer.ets"
                 },
                 "end": {
                   "line": 20,
-                  "column": 2
+                  "column": 2,
+                  "program": "generic_func_rest_param_spread_infer.ets"
                 }
               }
             },
@@ -929,11 +1092,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 1
+                "column": 1,
+                "program": "generic_func_rest_param_spread_infer.ets"
               },
               "end": {
                 "line": 20,
-                "column": 2
+                "column": 2,
+                "program": "generic_func_rest_param_spread_infer.ets"
               }
             }
           }
@@ -941,22 +1106,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "generic_func_rest_param_spread_infer.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "generic_func_rest_param_spread_infer.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "generic_func_rest_param_spread_infer.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "generic_func_rest_param_spread_infer.ets"
         }
       }
     }
@@ -964,11 +1133,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "generic_func_rest_param_spread_infer.ets"
     },
     "end": {
       "line": 21,
-      "column": 1
+      "column": 1,
+      "program": "generic_func_rest_param_spread_infer.ets"
     }
   }
 }

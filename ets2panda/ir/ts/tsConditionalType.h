@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,8 +22,8 @@ namespace ark::es2panda::ir {
 class TSConditionalType : public TypeNode {
 public:
     explicit TSConditionalType(Expression *checkType, Expression *extendsType, Expression *trueType,
-                               Expression *falseType)
-        : TypeNode(AstNodeType::TS_CONDITIONAL_TYPE),
+                               Expression *falseType, ArenaAllocator *const allocator)
+        : TypeNode(AstNodeType::TS_CONDITIONAL_TYPE, allocator),
           checkType_(checkType),
           extendsType_(extendsType),
           trueType_(trueType),
@@ -59,7 +59,7 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {

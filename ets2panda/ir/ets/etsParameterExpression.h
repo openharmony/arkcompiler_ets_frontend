@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,10 @@
 #ifndef ES2PANDA_IR_EXPRESSION_ETS_PARAMETER_EXPRESSION_H
 #define ES2PANDA_IR_EXPRESSION_ETS_PARAMETER_EXPRESSION_H
 
+#include "ir/annotationAllowed.h"
 #include "ir/expression.h"
+#include "ir/expressions/identifier.h"
+#include "ir/statements/annotationUsage.h"
 
 namespace ark::es2panda::checker {
 class ETSAnalyzer;
@@ -24,7 +27,7 @@ class ETSAnalyzer;
 
 namespace ark::es2panda::ir {
 
-class ETSParameterExpression final : public Expression {
+class ETSParameterExpression final : public AnnotationAllowed<Expression> {
 public:
     ETSParameterExpression() = delete;
     ~ETSParameterExpression() override = default;
@@ -32,13 +35,22 @@ public:
     NO_COPY_SEMANTIC(ETSParameterExpression);
     NO_MOVE_SEMANTIC(ETSParameterExpression);
 
-    explicit ETSParameterExpression(AnnotatedExpression *identOrSpread, Expression *initializer);
+    explicit ETSParameterExpression(AnnotatedExpression *identOrSpread, bool isOptional,
+                                    ArenaAllocator *const allocator);
 
-    // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
-    friend class checker::ETSAnalyzer;
+    explicit ETSParameterExpression(AnnotatedExpression *identOrSpread, ir::Expression *initializer,
+                                    ArenaAllocator *const allocator);
+
+    [[nodiscard]] const util::StringView &Name() const noexcept;
 
     [[nodiscard]] const Identifier *Ident() const noexcept;
     [[nodiscard]] Identifier *Ident() noexcept;
+
+    void SetIdent(Identifier *ident) noexcept
+    {
+        ident_ = ident;
+        ident_->SetParent(this);
+    }
 
     [[nodiscard]] const SpreadElement *RestParameter() const noexcept;
     [[nodiscard]] SpreadElement *RestParameter() noexcept;
@@ -55,9 +67,23 @@ public:
     [[nodiscard]] TypeNode const *TypeAnnotation() const noexcept;
     [[nodiscard]] TypeNode *TypeAnnotation() noexcept;
 
-    [[nodiscard]] bool IsDefault() const noexcept
+    void SetTypeAnnotation(TypeNode *typeNode) noexcept;
+
+    [[nodiscard]] bool IsOptional() const noexcept
     {
-        return initializer_ != nullptr;
+        return isOptional_;
+    }
+
+    void SetOptional(bool value) noexcept
+    {
+        isOptional_ = value;
+        ES2PANDA_ASSERT(isOptional_ || initializer_ == nullptr);
+    }
+
+    void SetInitializer(Expression *initExpr) noexcept
+    {
+        initializer_ = initExpr;
+        ES2PANDA_ASSERT(isOptional_ || initializer_ == nullptr);
     }
 
     [[nodiscard]] bool IsRestParameter() const noexcept
@@ -84,11 +110,7 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
-    void SetInitializer(Expression *initExpr = nullptr)
-    {
-        initializer_ = initExpr;
-    };
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {
@@ -97,10 +119,11 @@ public:
 
 private:
     Identifier *ident_;
-    Expression *initializer_;
+    Expression *initializer_ = nullptr;
     SpreadElement *spread_ = nullptr;
     util::StringView savedLexer_ = "";
     std::size_t extraValue_ = 0U;
+    bool isOptional_ = false;
 };
 }  // namespace ark::es2panda::ir
 

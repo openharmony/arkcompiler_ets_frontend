@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -66,7 +66,6 @@ enum class DeclType {
     _(ANNOTATION, AnnotationScope)                \
     _(ANNOTATIONPARAMSCOPE, AnnotationParamScope) \
     _(LOCAL, LocalScope)                          \
-    _(LOCAL_WITH_ALIAS, LocalScopeWithTypeAlias)  \
     /* Variable Scopes */                         \
     _(LOOP, LoopScope)                            \
     _(LOOP_DECL, LoopDeclarationScope)            \
@@ -101,7 +100,6 @@ enum class ResolveBindingOptions : uint32_t {
 
     LAST = TYPE_ALIASES,
     ALL = (LAST << 1U) - 1U,
-    ALL_NON_TYPE = ALL - TYPE_ALIASES,
 };
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
@@ -165,6 +163,7 @@ enum class VariableFlags : uint64_t {
     CAPTURED_MODIFIED = 1ULL << 32ULL,
     ANNOTATIONDECL = 1ULL << 33ULL,
     ANNOTATIONUSAGE = 1ULL << 34ULL,
+    NAMESPACE = 1ULL << 35ULL,
 
     HOIST_VAR = HOIST | VAR,
     CLASS_OR_INTERFACE = CLASS | INTERFACE,

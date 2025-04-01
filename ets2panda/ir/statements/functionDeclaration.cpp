@@ -25,14 +25,14 @@
 namespace ark::es2panda::ir {
 void FunctionDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    for (auto *&it : decorators_) {
+    for (auto *&it : VectorIterationGuard(decorators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsDecorator();
         }
     }
 
-    for (auto *&it : annotations_) {
+    for (auto *&it : VectorIterationGuard(Annotations())) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsAnnotationUsage();
@@ -47,11 +47,11 @@ void FunctionDeclaration::TransformChildren(const NodeTransformer &cb, std::stri
 
 void FunctionDeclaration::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
         cb(it);
     }
 
-    for (auto *it : annotations_) {
+    for (auto *it : VectorIterationGuard(Annotations())) {
         cb(it);
     }
 
@@ -62,13 +62,13 @@ void FunctionDeclaration::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", func_->IsOverload() ? "TSDeclareFunction" : "FunctionDeclaration"},
                  {"decorators", AstDumper::Optional(decorators_)},
-                 {"annotations", AstDumper::Optional(annotations_)},
+                 {"annotations", AstDumper::Optional(Annotations())},
                  {"function", func_}});
 }
 
 void FunctionDeclaration::Dump(ir::SrcDumper *dumper) const
 {
-    for (auto *anno : annotations_) {
+    for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }
     if (func_->IsNative()) {
@@ -82,35 +82,6 @@ void FunctionDeclaration::Dump(ir::SrcDumper *dumper) const
     }
     dumper->Add("function ");
 
-    if (func_->IsExtensionMethod()) {
-        for (const auto *param : func_->Params()) {
-            if (param->IsETSParameterExpression() && param->AsETSParameterExpression()->Ident() != nullptr &&
-                param->AsETSParameterExpression()->Ident()->Name() == varbinder::VarBinder::MANDATORY_PARAM_THIS &&
-                param->AsETSParameterExpression()->Ident()->TypeAnnotation() != nullptr &&
-                param->AsETSParameterExpression()->Ident()->TypeAnnotation()->IsETSTypeReference() &&
-                param->AsETSParameterExpression()->Ident()->TypeAnnotation()->AsETSTypeReference()->Part() != nullptr &&
-                param->AsETSParameterExpression()->Ident()->TypeAnnotation()->AsETSTypeReference()->Part()->Name() !=
-                    // CC-OFFNXT(G.FMT.02-CPP) project code style
-                    nullptr &&
-                param->AsETSParameterExpression()
-                    ->Ident()
-                    ->TypeAnnotation()
-                    ->AsETSTypeReference()
-                    ->Part()
-                    ->Name()
-                    ->IsIdentifier()) {
-                dumper->Add(std::string(param->AsETSParameterExpression()
-                                            ->Ident()
-                                            ->TypeAnnotation()
-                                            ->AsETSTypeReference()
-                                            ->Part()
-                                            ->Name()
-                                            ->AsIdentifier()
-                                            ->Name()));
-                dumper->Add(".");
-            }
-        }
-    }
     func_->Id()->Dump(dumper);
     func_->Dump(dumper);
 }
@@ -130,8 +101,8 @@ checker::Type *FunctionDeclaration::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *FunctionDeclaration::Check(checker::ETSChecker *checker)
+checker::VerifiedType FunctionDeclaration::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

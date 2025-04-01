@@ -11,16 +11,52 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "assign.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "assign.ets"
             }
           }
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "assign.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "assign.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "assign.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "assign.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",
@@ -31,11 +67,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +93,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -82,11 +122,13 @@
                           "loc": {
                             "start": {
                               "line": 16,
-                              "column": 5
+                              "column": 5,
+                              "program": "assign.ets"
                             },
                             "end": {
                               "line": 16,
-                              "column": 6
+                              "column": 6,
+                              "program": "assign.ets"
                             }
                           }
                         },
@@ -96,33 +138,39 @@
                           "loc": {
                             "start": {
                               "line": 16,
-                              "column": 9
+                              "column": 9,
+                              "program": "assign.ets"
                             },
                             "end": {
                               "line": 16,
-                              "column": 10
+                              "column": 10,
+                              "program": "assign.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 16,
-                            "column": 5
+                            "column": 5,
+                            "program": "assign.ets"
                           },
                           "end": {
                             "line": 16,
-                            "column": 10
+                            "column": 10,
+                            "program": "assign.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 16,
-                          "column": 5
+                          "column": 5,
+                          "program": "assign.ets"
                         },
                         "end": {
                           "line": 16,
-                          "column": 10
+                          "column": 10,
+                          "program": "assign.ets"
                         }
                       }
                     }
@@ -130,33 +178,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -165,11 +219,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "assign.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "assign.ets"
               }
             }
           },
@@ -182,11 +238,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 5
+                  "column": 5,
+                  "program": "assign.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 6
+                  "column": 6,
+                  "program": "assign.ets"
                 }
               }
             },
@@ -196,11 +254,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 9
+                  "column": 9,
+                  "program": "assign.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "assign.ets"
                 }
               }
             },
@@ -215,11 +275,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 5
+                "column": 5,
+                "program": "assign.ets"
               },
               "end": {
                 "line": 16,
-                "column": 10
+                "column": 10,
+                "program": "assign.ets"
               }
             }
           },
@@ -232,11 +294,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 7
+                  "column": 7,
+                  "program": "assign.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 8
+                  "column": 8,
+                  "program": "assign.ets"
                 }
               }
             },
@@ -246,11 +310,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 11
+                  "column": 11,
+                  "program": "assign.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 12
+                  "column": 12,
+                  "program": "assign.ets"
                 }
               }
             },
@@ -265,11 +331,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 7
+                "column": 7,
+                "program": "assign.ets"
               },
               "end": {
                 "line": 17,
-                "column": 12
+                "column": 12,
+                "program": "assign.ets"
               }
             }
           },
@@ -282,11 +350,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 10
+                  "column": 10,
+                  "program": "assign.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 14
+                  "column": 14,
+                  "program": "assign.ets"
                 }
               }
             },
@@ -306,11 +376,13 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 10
+                      "column": 10,
+                      "program": "assign.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 14
+                      "column": 14,
+                      "program": "assign.ets"
                     }
                   }
                 },
@@ -323,11 +395,13 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 18
+                      "column": 18,
+                      "program": "assign.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 22
+                      "column": 22,
+                      "program": "assign.ets"
                     }
                   }
                 },
@@ -346,11 +420,13 @@
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 3
+                              "column": 3,
+                              "program": "assign.ets"
                             },
                             "end": {
                               "line": 20,
-                              "column": 4
+                              "column": 4,
+                              "program": "assign.ets"
                             }
                           }
                         },
@@ -361,33 +437,39 @@
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 7
+                              "column": 7,
+                              "program": "assign.ets"
                             },
                             "end": {
                               "line": 20,
-                              "column": 8
+                              "column": 8,
+                              "program": "assign.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 3
+                            "column": 3,
+                            "program": "assign.ets"
                           },
                           "end": {
                             "line": 20,
-                            "column": 8
+                            "column": 8,
+                            "program": "assign.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 3
+                          "column": 3,
+                          "program": "assign.ets"
                         },
                         "end": {
                           "line": 20,
-                          "column": 9
+                          "column": 9,
+                          "program": "assign.ets"
                         }
                       }
                     }
@@ -395,33 +477,39 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 23
+                      "column": 23,
+                      "program": "assign.ets"
                     },
                     "end": {
                       "line": 21,
-                      "column": 2
+                      "column": 2,
+                      "program": "assign.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 10
+                    "column": 10,
+                    "program": "assign.ets"
                   },
                   "end": {
                     "line": 21,
-                    "column": 2
+                    "column": 2,
+                    "program": "assign.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 10
+                  "column": 10,
+                  "program": "assign.ets"
                 },
                 "end": {
                   "line": 21,
-                  "column": 2
+                  "column": 2,
+                  "program": "assign.ets"
                 }
               }
             },
@@ -430,11 +518,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 1
+                "column": 1,
+                "program": "assign.ets"
               },
               "end": {
                 "line": 21,
-                "column": 2
+                "column": 2,
+                "program": "assign.ets"
               }
             }
           }
@@ -442,22 +532,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "assign.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "assign.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "assign.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "assign.ets"
         }
       }
     }
@@ -465,11 +559,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "assign.ets"
     },
     "end": {
       "line": 22,
-      "column": 1
+      "column": 1,
+      "program": "assign.ets"
     }
   }
 }

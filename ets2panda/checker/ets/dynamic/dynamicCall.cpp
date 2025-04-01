@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,6 +15,7 @@
 
 #include "checker/ets/dynamic/dynamicCall.h"
 
+#include "ir/ets/etsImportDeclaration.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
 #include "ir/module/importSpecifier.h"
@@ -35,7 +36,7 @@ DynamicCall::Result DynamicCall::ResolveCall(const varbinder::ETSBinder *varbind
             callee = qname->Left();
             calleeName.emplace_back(qname->Right()->AsIdentifier()->Name());
         }
-        ASSERT(callee->IsIdentifier());
+        ES2PANDA_ASSERT(callee->IsIdentifier());
     } else if (callee->IsMemberExpression()) {
         const auto memberExpr = callee->AsMemberExpression();
         callee = SqueezeExpr(memberExpr, calleeName);
@@ -68,7 +69,7 @@ const ir::Expression *DynamicCall::SqueezeExpr(const ir::MemberExpression *membe
     if (!memberExpr->Object()->TsType()->IsETSDynamicType() || memberExpr->IsComputed()) {
         return memberExpr;
     }
-    ASSERT(memberExpr->Property()->IsIdentifier());
+    ES2PANDA_ASSERT(memberExpr->Property()->IsIdentifier());
     name.emplace_back(memberExpr->Property()->AsIdentifier()->Name());
     if (memberExpr->Object()->IsMemberExpression()) {
         return SqueezeExpr(memberExpr->Object()->AsMemberExpression(), name);

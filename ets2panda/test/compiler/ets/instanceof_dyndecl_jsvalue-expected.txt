@@ -1,4 +1,3 @@
-TypeError: Right-hand side of instanceof expression must represent a type. [instanceof_dyndecl_jsvalue.sts:23:12]
 {
   "type": "Program",
   "statements": [
@@ -10,11 +9,13 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
         "loc": {
           "start": {
             "line": 20,
-            "column": 27
+            "column": 27,
+            "program": "instanceof_dyndecl_jsvalue.ets"
           },
           "end": {
             "line": 20,
-            "column": 68
+            "column": 68,
+            "program": "instanceof_dyndecl_jsvalue.ets"
           }
         }
       },
@@ -28,11 +29,13 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
             "loc": {
               "start": {
                 "line": 20,
-                "column": 10
+                "column": 10,
+                "program": "instanceof_dyndecl_jsvalue.ets"
               },
               "end": {
                 "line": 20,
-                "column": 19
+                "column": 19,
+                "program": "instanceof_dyndecl_jsvalue.ets"
               }
             }
           },
@@ -43,22 +46,26 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
             "loc": {
               "start": {
                 "line": 20,
-                "column": 10
+                "column": 10,
+                "program": "instanceof_dyndecl_jsvalue.ets"
               },
               "end": {
                 "line": 20,
-                "column": 19
+                "column": 19,
+                "program": "instanceof_dyndecl_jsvalue.ets"
               }
             }
           },
           "loc": {
             "start": {
               "line": 20,
-              "column": 10
+              "column": 10,
+              "program": "instanceof_dyndecl_jsvalue.ets"
             },
             "end": {
               "line": 20,
-              "column": 19
+              "column": 19,
+              "program": "instanceof_dyndecl_jsvalue.ets"
             }
           }
         }
@@ -66,11 +73,13 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "instanceof_dyndecl_jsvalue.ets"
         },
         "end": {
           "line": 20,
-          "column": 68
+          "column": 68,
+          "program": "instanceof_dyndecl_jsvalue.ets"
         }
       }
     },
@@ -84,17 +93,159 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "instanceof_dyndecl_jsvalue.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "instanceof_dyndecl_jsvalue.ets"
             }
           }
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "instanceof_dyndecl_jsvalue.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "instanceof_dyndecl_jsvalue.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "instanceof_dyndecl_jsvalue.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "instanceof_dyndecl_jsvalue.ets"
+              }
+            }
+          }
+        ],
         "body": [
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "instanceof_dyndecl_jsvalue.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "instanceof_dyndecl_jsvalue.ets"
+              }
+            }
+          },
           {
             "type": "MethodDefinition",
             "key": {
@@ -104,11 +255,13 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -128,11 +281,13 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -146,33 +301,39 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -181,11 +342,13 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_dyndecl_jsvalue.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_dyndecl_jsvalue.ets"
               }
             }
           },
@@ -198,11 +361,13 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 10
+                  "column": 10,
+                  "program": "instanceof_dyndecl_jsvalue.ets"
                 },
                 "end": {
                   "line": 22,
-                  "column": 21
+                  "column": 21,
+                  "program": "instanceof_dyndecl_jsvalue.ets"
                 }
               }
             },
@@ -222,11 +387,13 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 10
+                      "column": 10,
+                      "program": "instanceof_dyndecl_jsvalue.ets"
                     },
                     "end": {
                       "line": 22,
-                      "column": 21
+                      "column": 21,
+                      "program": "instanceof_dyndecl_jsvalue.ets"
                     }
                   }
                 },
@@ -250,33 +417,39 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
                             "loc": {
                               "start": {
                                 "line": 22,
-                                "column": 25
+                                "column": 25,
+                                "program": "instanceof_dyndecl_jsvalue.ets"
                               },
                               "end": {
                                 "line": 22,
-                                "column": 34
+                                "column": 34,
+                                "program": "instanceof_dyndecl_jsvalue.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 22,
-                              "column": 25
+                              "column": 25,
+                              "program": "instanceof_dyndecl_jsvalue.ets"
                             },
                             "end": {
                               "line": 22,
-                              "column": 35
+                              "column": 35,
+                              "program": "instanceof_dyndecl_jsvalue.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 22,
-                            "column": 25
+                            "column": 25,
+                            "program": "instanceof_dyndecl_jsvalue.ets"
                           },
                           "end": {
                             "line": 22,
-                            "column": 35
+                            "column": 35,
+                            "program": "instanceof_dyndecl_jsvalue.ets"
                           }
                         }
                       },
@@ -284,22 +457,26 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
                       "loc": {
                         "start": {
                           "line": 22,
-                          "column": 22
+                          "column": 22,
+                          "program": "instanceof_dyndecl_jsvalue.ets"
                         },
                         "end": {
                           "line": 22,
-                          "column": 35
+                          "column": 35,
+                          "program": "instanceof_dyndecl_jsvalue.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 22,
-                        "column": 22
+                        "column": 22,
+                        "program": "instanceof_dyndecl_jsvalue.ets"
                       },
                       "end": {
                         "line": 22,
-                        "column": 35
+                        "column": 35,
+                        "program": "instanceof_dyndecl_jsvalue.ets"
                       }
                     }
                   }
@@ -309,11 +486,13 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 37
+                      "column": 37,
+                      "program": "instanceof_dyndecl_jsvalue.ets"
                     },
                     "end": {
                       "line": 22,
-                      "column": 44
+                      "column": 44,
+                      "program": "instanceof_dyndecl_jsvalue.ets"
                     }
                   }
                 },
@@ -332,11 +511,13 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
                           "loc": {
                             "start": {
                               "line": 23,
-                              "column": 12
+                              "column": 12,
+                              "program": "instanceof_dyndecl_jsvalue.ets"
                             },
                             "end": {
                               "line": 23,
-                              "column": 13
+                              "column": 13,
+                              "program": "instanceof_dyndecl_jsvalue.ets"
                             }
                           }
                         },
@@ -351,55 +532,65 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
                               "loc": {
                                 "start": {
                                   "line": 23,
-                                  "column": 25
+                                  "column": 25,
+                                  "program": "instanceof_dyndecl_jsvalue.ets"
                                 },
                                 "end": {
                                   "line": 23,
-                                  "column": 32
+                                  "column": 32,
+                                  "program": "instanceof_dyndecl_jsvalue.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 23,
-                                "column": 25
+                                "column": 25,
+                                "program": "instanceof_dyndecl_jsvalue.ets"
                               },
                               "end": {
                                 "line": 23,
-                                "column": 33
+                                "column": 33,
+                                "program": "instanceof_dyndecl_jsvalue.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 23,
-                              "column": 25
+                              "column": 25,
+                              "program": "instanceof_dyndecl_jsvalue.ets"
                             },
                             "end": {
                               "line": 23,
-                              "column": 33
+                              "column": 33,
+                              "program": "instanceof_dyndecl_jsvalue.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 23,
-                            "column": 12
+                            "column": 12,
+                            "program": "instanceof_dyndecl_jsvalue.ets"
                           },
                           "end": {
                             "line": 23,
-                            "column": 33
+                            "column": 33,
+                            "program": "instanceof_dyndecl_jsvalue.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 23,
-                          "column": 5
+                          "column": 5,
+                          "program": "instanceof_dyndecl_jsvalue.ets"
                         },
                         "end": {
                           "line": 23,
-                          "column": 33
+                          "column": 33,
+                          "program": "instanceof_dyndecl_jsvalue.ets"
                         }
                       }
                     }
@@ -407,33 +598,39 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
                   "loc": {
                     "start": {
                       "line": 22,
-                      "column": 45
+                      "column": 45,
+                      "program": "instanceof_dyndecl_jsvalue.ets"
                     },
                     "end": {
                       "line": 24,
-                      "column": 2
+                      "column": 2,
+                      "program": "instanceof_dyndecl_jsvalue.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 10
+                    "column": 10,
+                    "program": "instanceof_dyndecl_jsvalue.ets"
                   },
                   "end": {
                     "line": 24,
-                    "column": 2
+                    "column": 2,
+                    "program": "instanceof_dyndecl_jsvalue.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 10
+                  "column": 10,
+                  "program": "instanceof_dyndecl_jsvalue.ets"
                 },
                 "end": {
                   "line": 24,
-                  "column": 2
+                  "column": 2,
+                  "program": "instanceof_dyndecl_jsvalue.ets"
                 }
               }
             },
@@ -442,11 +639,13 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
             "loc": {
               "start": {
                 "line": 22,
-                "column": 1
+                "column": 1,
+                "program": "instanceof_dyndecl_jsvalue.ets"
               },
               "end": {
                 "line": 24,
-                "column": 2
+                "column": 2,
+                "program": "instanceof_dyndecl_jsvalue.ets"
               }
             }
           }
@@ -454,22 +653,26 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "instanceof_dyndecl_jsvalue.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "instanceof_dyndecl_jsvalue.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "instanceof_dyndecl_jsvalue.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "instanceof_dyndecl_jsvalue.ets"
         }
       }
     }
@@ -477,11 +680,14 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "instanceof_dyndecl_jsvalue.ets"
     },
     "end": {
       "line": 25,
-      "column": 1
+      "column": 1,
+      "program": "instanceof_dyndecl_jsvalue.ets"
     }
   }
 }
+TypeError: Right-hand side of instanceof expression must represent a type. [instanceof_dyndecl_jsvalue.ets:23:12]

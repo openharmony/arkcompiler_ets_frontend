@@ -57,6 +57,11 @@ export interface TestArguments {
      * Enables 'ArkTS 2.0' mode, runs test with '--arkts-2' option.
      */
     arkts2?: string;
+
+    /**
+     * Enables 'migrate' mode, runs test with '--migrate' option.
+     */
+    migrate?: string;
   };
 }
 

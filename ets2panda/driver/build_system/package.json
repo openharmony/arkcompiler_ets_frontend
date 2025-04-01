@@ -1,0 +1,27 @@
+{
+  "name": "ArkTS2.0_build_system",
+  "version": "1.0.0",
+  "description": "Compile ArkTS 2.0 source code into bytecode, encompassing UI transformations.",
+  "private": true,
+  "main": "dist/index.js",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "npm run clean && tsc",
+    "build_debug": "npm run clean && tsc --sourceMap",
+
+    "mixed_hap:gen_decl": "npm run build && node ./dist/entry.js test/demo_mix_hap/build_config_decl.json",
+    "mixed_hap:gen_abc": "node ./dist/entry.js test/demo_mix_hap/build_config.json",
+    "mixed_hap:run": "npm run mixed_hap:gen_decl && npm run mixed_hap:gen_abc",
+
+    "demo_hap:gen_abc": "npm run build && node ./dist/entry.js test/demo_hap/build_config.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "22.10.7",
+    "@tsconfig/recommended": "1.0.8",
+    "rimraf": "6.0.1"
+  },
+  "dependencies": {
+
+  }
+}

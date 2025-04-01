@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -119,7 +119,7 @@ void TSChecker::ThrowReturnTypeCircularityError(ir::ScriptFunction *func)
 std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSChecker::CheckFunctionIdentifierParameter(
     ir::Identifier *param)
 {
-    ASSERT(param->Variable());
+    ES2PANDA_ASSERT(param->Variable());
     varbinder::Variable *paramVar = param->Variable();
     bool isOptional = param->IsOptional();
 
@@ -142,7 +142,7 @@ Type *TSChecker::CreateParameterTypeForArrayAssignmentPattern(ir::ArrayExpressio
         return inferredType;
     }
 
-    ASSERT(inferredType->AsObjectType()->IsTupleType());
+    ES2PANDA_ASSERT(inferredType->AsObjectType()->IsTupleType());
     TupleType *inferredTuple = inferredType->AsObjectType()->AsTupleType();
 
     if (inferredTuple->FixedLength() > arrayPattern->Elements().size()) {
@@ -187,7 +187,7 @@ Type *TSChecker::CreateParameterTypeForObjectAssignmentPattern(ir::ObjectExpress
             continue;
         }
 
-        ASSERT(prop->Value()->IsAssignmentPattern());
+        ES2PANDA_ASSERT(prop->Value()->IsAssignmentPattern());
         ir::AssignmentExpression *assignmentPattern = prop->Value()->AsAssignmentPattern();
 
         varbinder::LocalVariable *newProp = varbinder::Scope::CreateVar(
@@ -207,7 +207,7 @@ ReturnedVariable TSChecker::CheckFunctionAssignmentPatternParameter(ir::Assignme
     if (param->Left()->IsIdentifier()) {
         ir::Identifier *paramIdent = param->Left()->AsIdentifier();
         varbinder::Variable *paramVar = paramIdent->Variable();
-        ASSERT(paramVar);
+        ES2PANDA_ASSERT(paramVar);
 
         if (paramIdent->TypeAnnotation() != nullptr) {
             paramIdent->TypeAnnotation()->Check(this);
@@ -272,12 +272,12 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
     switch (param->Argument()->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
             ir::Identifier *restIdent = param->Argument()->AsIdentifier();
-            ASSERT(restIdent->Variable());
+            ES2PANDA_ASSERT(restIdent->Variable());
             restIdent->Variable()->SetTsType(restType->AsArrayType()->ElementType());
             return {nullptr, restIdent->Variable()->AsLocalVariable(), false};
         }
         case ir::AstNodeType::OBJECT_PATTERN: {
-            ASSERT(param->Argument()->IsObjectPattern());
+            ES2PANDA_ASSERT(param->Argument()->IsObjectPattern());
             auto savedContext = SavedCheckerContext(this, CheckerStatus::FORCE_TUPLE);
             auto destructuringContext =
                 ObjectDestructuringContext({this, param->Argument(), false, false, nullptr, nullptr});
@@ -296,7 +296,7 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
             return {nullptr, nullptr, false};
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 }
@@ -350,7 +350,7 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
 {
     std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> result;
     if (param->TsType() != nullptr) {
-        ASSERT(param->TsType()->Variable());
+        ES2PANDA_ASSERT(param->TsType()->Variable());
         varbinder::Variable *var = param->TsType()->Variable();
         result = {var->AsLocalVariable(), nullptr, var->HasFlag(varbinder::VariableFlags::OPTIONAL)};
         return result;
@@ -380,7 +380,7 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -447,7 +447,7 @@ void TSChecker::HandlePropertyPatternParameterName(ir::Property *prop, std::stri
                 break;
             }
             default: {
-                UNREACHABLE();
+                ES2PANDA_UNREACHABLE();
                 break;
             }
         }
@@ -522,7 +522,7 @@ ir::Statement *FindSubsequentFunctionNode(ir::BlockStatement *block, ir::ScriptF
         }
     }
 
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
     return nullptr;
 }
 
@@ -556,7 +556,7 @@ void TSChecker::CheckOverloadSignatureCompatibility(Signature *bodyCallSignature
         }
     }
 
-    ASSERT(signature->Function());
+    ES2PANDA_ASSERT(signature->Function());
     ThrowTypeError("This overload signature is not compatible with its implementation signature",
                    signature->Function()->Id()->Start());
 }
@@ -572,9 +572,9 @@ void TSChecker::InferFunctionDeclarationType(const varbinder::FunctionDecl *decl
     ObjectDescriptor *descWithOverload = Allocator()->New<ObjectDescriptor>(Allocator());
     for (auto it = decl->Decls().begin(); it != decl->Decls().end() - 1; it++) {
         ir::ScriptFunction *func = *it;
-        ASSERT(func->IsOverload() && (*it)->Parent()->Parent()->IsBlockStatement());
+        ES2PANDA_ASSERT(func->IsOverload() && (*it)->Parent()->Parent()->IsBlockStatement());
         ir::Statement *subsequentNode = FindSubsequentFunctionNode((*it)->Parent()->Parent()->AsBlockStatement(), func);
-        ASSERT(subsequentNode);
+        ES2PANDA_ASSERT(subsequentNode);
         ValidateSubsequentNode(subsequentNode, func);
 
         ScopeContext scopeCtx(this, func->Scope());
@@ -705,7 +705,7 @@ bool TSChecker::CallMatchesSignature(const ArenaVector<ir::Expression *> &args, 
         bool validateRestArg = false;
 
         if (index >= signature->Params().size()) {
-            ASSERT(signature->RestVar());
+            ES2PANDA_ASSERT(signature->RestVar());
             validateRestArg = true;
             sigArgType = signature->RestVar()->TsType();
         } else {

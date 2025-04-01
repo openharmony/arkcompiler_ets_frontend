@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,7 @@
 
 #include "tsInterfaceDeclaration.h"
 
-#include "macros.h"
+#include "util/es2pandaMacros.h"
 #include "varbinder/declaration.h"
 #include "varbinder/variable.h"
 #include "checker/TSchecker.h"
@@ -34,10 +34,17 @@
 namespace ark::es2panda::ir {
 void TSInterfaceDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    for (auto *&it : decorators_) {
+    for (auto *&it : VectorIterationGuard(decorators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsDecorator();
+        }
+    }
+
+    for (auto *&it : Annotations()) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
         }
     }
 
@@ -53,7 +60,7 @@ void TSInterfaceDeclaration::TransformChildren(const NodeTransformer &cb, std::s
         }
     }
 
-    for (auto *&it : extends_) {
+    for (auto *&it : VectorIterationGuard(extends_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsTSInterfaceHeritage();
@@ -68,7 +75,11 @@ void TSInterfaceDeclaration::TransformChildren(const NodeTransformer &cb, std::s
 
 void TSInterfaceDeclaration::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
+        cb(it);
+    }
+
+    for (auto *it : Annotations()) {
         cb(it);
     }
 
@@ -78,7 +89,7 @@ void TSInterfaceDeclaration::Iterate(const NodeTraverser &cb) const
         cb(typeParams_);
     }
 
-    for (auto *it : extends_) {
+    for (auto *it : VectorIterationGuard(extends_)) {
         cb(it);
     }
 
@@ -89,6 +100,7 @@ void TSInterfaceDeclaration::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSInterfaceDeclaration"},
                  {"decorators", AstDumper::Optional(decorators_)},
+                 {"annotations", AstDumper::Optional(Annotations())},
                  {"body", body_},
                  {"id", id_},
                  {"extends", extends_},
@@ -97,7 +109,11 @@ void TSInterfaceDeclaration::Dump(ir::AstDumper *dumper) const
 
 void TSInterfaceDeclaration::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(id_);
+    ES2PANDA_ASSERT(id_);
+
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
 
     if (IsDeclare()) {
         dumper->Add("declare ");
@@ -147,8 +163,8 @@ checker::Type *TSInterfaceDeclaration::Check([[maybe_unused]] checker::TSChecker
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSInterfaceDeclaration::Check(checker::ETSChecker *checker)
+checker::VerifiedType TSInterfaceDeclaration::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

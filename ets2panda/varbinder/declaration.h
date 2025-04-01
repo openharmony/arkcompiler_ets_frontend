@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,8 @@
 #define ES2PANDA_COMPILER_SCOPES_DECLARATION_H
 
 #include "varbinder/variableFlags.h"
-#include "macros.h"
+#include "util/es2pandaMacros.h"
+#include "util/diagnosticEngine.h"
 #include "util/ustring.h"
 
 namespace ark::es2panda::ir {
@@ -72,13 +73,13 @@ public:
     /* CC-OFFNXT(G.PRE.02) name part*/                                                      \
     className *As##className()                                                              \
     {                                                                                       \
-        ASSERT(Is##className());                                                            \
+        ES2PANDA_ASSERT(Is##className());                                                   \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
         return reinterpret_cast<className *>(this); /* CC-OFF(G.PRE.02) name part */        \
     }                                                                                       \
     const className *As##className() const                                                  \
     {                                                                                       \
-        ASSERT(Is##className());                                                            \
+        ES2PANDA_ASSERT(Is##className());                                                   \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
         return reinterpret_cast<const className *>(this);                                   \
     }

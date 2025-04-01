@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,24 +17,25 @@
 
 #include "varbinder/varbinder.h"
 #include "parser/program/program.h"
+#include "util/options.h"
 
 namespace ark::es2panda::checker {
 
-bool JSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options)
+bool JSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const util::Options &options)
 {
     Initialize(varbinder);
     varbinder->IdentifierAnalysis();
 
-    if (options.dumpAst) {
+    if (options.IsDumpAst()) {
         std::cout << Program()->Dump() << std::endl;
     }
 
-    if (options.opDumpAstOnlySilent) {
+    if (options.IsDumpAstOnlySilent()) {
         Program()->DumpSilent();
         return false;
     }
 
-    return !options.parseOnly;
+    return !options.IsParseOnly();
 }
 
 }  // namespace ark::es2panda::checker

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,13 +19,15 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-[[nodiscard]] CheckResult VariableHasEnclosingScope::operator()(CheckContext &ctx, const ir::AstNode *ast)
+[[nodiscard]] CheckResult VariableHasEnclosingScope::operator()(const ir::AstNode *ast)
 {
-    const auto maybeVar = VariableHasScope::GetLocalScopeVariable(allocator_, ctx, ast);
-    if (!maybeVar) {
+    if (!ast->IsIdentifier()) {
         return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }
-    const auto var = *maybeVar;
+    const auto *var = TryGetLocalScopeVariable(ast->AsIdentifier());
+    if (var == nullptr) {
+        return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+    }
     const auto scope = var->GetScope();
     if (scope == nullptr) {
         // already checked
@@ -33,7 +35,7 @@ namespace ark::es2panda::compiler::ast_verifier {
     }
     const auto encloseScope = scope->EnclosingVariableScope();
     if (encloseScope == nullptr) {
-        ctx.AddCheckMessage("NO_ENCLOSING_VAR_SCOPE", *ast, ast->Start());
+        AddCheckMessage("NO_ENCLOSING_VAR_SCOPE", *ast);
         return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
     }
     const auto node = scope->Node();
@@ -48,12 +50,12 @@ namespace ark::es2panda::compiler::ast_verifier {
         }
 
         result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
-        ctx.AddCheckMessage("VARIABLE_NOT_ENCLOSE_SCOPE", *ast, ast->Start());
+        AddCheckMessage("VARIABLE_NOT_ENCLOSE_SCOPE", *ast);
     }
 
     if (!IsContainedIn<varbinder::Scope>(scope, encloseScope)) {
         result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
-        ctx.AddCheckMessage("VARIABLE_NOT_ENCLOSE_SCOPE", *ast, ast->Start());
+        AddCheckMessage("VARIABLE_NOT_ENCLOSE_SCOPE", *ast);
     }
 
     return result;

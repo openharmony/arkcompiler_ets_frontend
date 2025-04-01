@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,14 +16,32 @@
 #ifndef ES2PANDA_CHECKER_CHECKER_CONTEXT_H
 #define ES2PANDA_CHECKER_CHECKER_CONTEXT_H
 
-#include "checker/types/type.h"
-#include "ir/statements/loopStatement.h"
-#include "varbinder/variable.h"
+#include "es2panda.h"
+#include "generated/tokenType.h"
+#include "lexer/token/sourceLocation.h"
+#include "util/enumbitops.h"
+
+namespace ark::es2panda::ir {
+class ArrowFunctionExpression;
+class AstNode;
+class LoopStatement;
+class BlockStatement;
+class Identifier;
+class UnaryExpression;
+class BreakStatement;
+class Statement;
+class BinaryExpression;
+}  // namespace ark::es2panda::ir
+namespace ark::es2panda::varbinder {
+class Variable;
+}  // namespace ark::es2panda::varbinder
 
 namespace ark::es2panda::checker {
 
 class ETSObjectType;
 class Signature;
+class Type;
+class Checker;
 
 using ENUMBITOPS_OPERATORS;
 
@@ -44,7 +62,7 @@ enum class CheckerStatus : uint32_t {
     BUILTINS_INITIALIZED = 1U << 12U,
     IN_LAMBDA = 1U << 13U,
     IGNORE_VISIBILITY = 1U << 14U,
-    IN_INSTANCE_EXTENSION_METHOD = 1U << 15U,
+    IN_EXTENSION_METHOD = 1U << 15U,
     IN_LOCAL_CLASS = 1U << 16U,
     IN_INSTANCEOF_CONTEXT = 1U << 17U,
     IN_TEST_EXPRESSION = 1U << 18U,
@@ -55,6 +73,10 @@ enum class CheckerStatus : uint32_t {
     MEET_THROW = 1U << 23U,
     IN_EXTERNAL = 1U << 24U,
     IN_BRIDGE_TEST = 1U << 25U,
+    IN_GETTER = 1U << 26U,
+    IN_SETTER = 1U << 27U,
+    IN_EXTENSION_ACCESSOR_CHECK = 1U << 28U,
+    IN_TYPE_INFER = 1U << 29U,
 };
 
 }  // namespace ark::es2panda::checker
@@ -72,7 +94,11 @@ using SmartCastTestMap = ArenaMap<varbinder::Variable const *, std::pair<checker
 using SmartCastTuple = std::tuple<varbinder::Variable const *, checker::Type *, checker::Type *>;
 using SmartCastTestArray = std::vector<SmartCastTuple>;
 using PreservedSmartCastsMap = ArenaMultiMap<ir::AstNode const *, SmartCastArray>;
-using SmartVariables = std::unordered_set<varbinder::Variable const *>;
+
+// ReassignedVariableMap
+//  - key: a variable that is on the left side of an assignment
+//  - value: a boolean that marks, if the variable was accessed after it has been reassigned
+using ReassignedVariableMap = std::unordered_map<varbinder::Variable const *, bool>;
 
 struct SmartCastCondition final {
     SmartCastCondition() = default;
@@ -199,7 +225,8 @@ public:
         return CloneTestSmartCasts(true);
     }
 
-    [[nodiscard]] std::pair<SmartCastArray, bool> EnterLoop(ir::LoopStatement const &loop) noexcept;
+    [[nodiscard]] std::pair<SmartCastArray, bool> EnterLoop(const ir::LoopStatement &loop,
+                                                            SmartCastTypes loopConditionSmartCasts) noexcept;
 
     [[nodiscard]] bool IsInLoop() const noexcept
     {
@@ -225,6 +252,11 @@ public:
 
     [[nodiscard]] SmartCastArray CheckTryBlock(ir::BlockStatement const &tryBlock) noexcept;
 
+    checker::Type *GetIntersectionOfTypes(checker::Type *type1, checker::Type *type2) const noexcept;
+    checker::Type *GetUnionOfTypes(checker::Type *type1, checker::Type *type2) const noexcept;
+    void MergeSmartTypesForLogicalAnd(SmartCastTuple &newSmartCastTypes);
+    void InvalidateNecessarySmartCastsInLogicalAnd(std::optional<SmartCastTuple> &newSmartCastTypes);
+    ReassignedVariableMap GetReassignedVariablesInNode(const ir::AstNode *node) const;
     void CheckTestSmartCastCondition(lexer::TokenType operatorType);
     void CheckIdentifierSmartCastCondition(ir::Identifier const *identifier) noexcept;
     void CheckUnarySmartCastCondition(ir::UnaryExpression const *unaryExpression) noexcept;
@@ -233,6 +265,7 @@ public:
     void OnBreakStatement(ir::BreakStatement const *breakStatement);
     void AddBreakSmartCasts(ir::Statement const *targetStatement, SmartCastArray &&smartCasts);
     void CombineBreakSmartCasts(ir::Statement const *targetStatement);
+    friend class SavedCheckerContextStatus;
 
 private:
     Checker *parent_;
@@ -257,7 +290,29 @@ private:
     void ClearTestSmartCasts() noexcept;
     [[nodiscard]] std::optional<SmartCastTuple> ResolveSmartCastTypes();
     [[nodiscard]] bool CheckTestOrSmartCastCondition(SmartCastTuple const &types);
-    void CheckAssignments(ir::AstNode const *node, SmartVariables &changedVariables) noexcept;
+    void CheckAssignments(ir::AstNode const *node, ReassignedVariableMap &changedVariables) const noexcept;
+};
+
+class SavedCheckerContextStatus final {
+public:
+    explicit SavedCheckerContextStatus(CheckerContext *context, CheckerStatus status)
+        : context_(context), storedStatus_(status), preStatus_(context_->status_)
+    {
+        context_->status_ = context_->status_ | storedStatus_;
+    }
+
+    ~SavedCheckerContextStatus()
+    {
+        context_->status_ = preStatus_;
+    }
+
+    NO_COPY_SEMANTIC(SavedCheckerContextStatus);
+    DEFAULT_MOVE_SEMANTIC(SavedCheckerContextStatus);
+
+private:
+    CheckerContext *context_;
+    CheckerStatus storedStatus_;
+    CheckerStatus preStatus_;
 };
 }  // namespace ark::es2panda::checker
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -46,6 +46,7 @@ faultsAttrs[FaultID.IndexedAccessType] = new FaultAttributes(28);
 faultsAttrs[FaultID.PropertyAccessByIndex] = new FaultAttributes(29);
 faultsAttrs[FaultID.StructuralIdentity] = new FaultAttributes(30);
 faultsAttrs[FaultID.GenericCallNoTypeArgs] = new FaultAttributes(34);
+faultsAttrs[FaultID.RegularExpressionLiteral] = new FaultAttributes(37);
 faultsAttrs[FaultID.ObjectLiteralNoContextType] = new FaultAttributes(38);
 faultsAttrs[FaultID.ObjectTypeLiteral] = new FaultAttributes(40);
 faultsAttrs[FaultID.ArrayLiteralNoContextType] = new FaultAttributes(43);
@@ -144,3 +145,40 @@ faultsAttrs[FaultID.ObjectLiteralProperty] = new FaultAttributes(183);
 faultsAttrs[FaultID.OptionalMethod] = new FaultAttributes(184);
 faultsAttrs[FaultID.ImportType] = new FaultAttributes(185);
 faultsAttrs[FaultID.DynamicCtorCall] = new FaultAttributes(186);
+faultsAttrs[FaultID.MathPow] = new FaultAttributes(187);
+faultsAttrs[FaultID.NumericSemantics] = new FaultAttributes(189);
+faultsAttrs[FaultID.IncompationbleFunctionType] = new FaultAttributes(190);
+faultsAttrs[FaultID.LimitedVoidType] = new FaultAttributes(192);
+faultsAttrs[FaultID.VoidOperator] = new FaultAttributes(193);
+faultsAttrs[FaultID.TsOverload] = new FaultAttributes(198);
+faultsAttrs[FaultID.LimitedLiteralType] = new FaultAttributes(202);
+faultsAttrs[FaultID.ExponentOp] = new FaultAttributes(203);
+faultsAttrs[FaultID.DebuggerStatement] = new FaultAttributes(206);
+faultsAttrs[FaultID.ArgumentsObject] = new FaultAttributes(207);
+faultsAttrs[FaultID.TaggedTemplates] = new FaultAttributes(208);
+faultsAttrs[FaultID.ArrayIndexExprType] = new FaultAttributes(209);
+faultsAttrs[FaultID.SwitchExpression] = new FaultAttributes(210);
+faultsAttrs[FaultID.CaseExpression] = new FaultAttributes(211);
+faultsAttrs[FaultID.IndexNegative] = new FaultAttributes(212);
+faultsAttrs[FaultID.NoSideEffectImport] = new FaultAttributes(222);
+faultsAttrs[FaultID.ImportLazyIdentifier] = new FaultAttributes(232);
+faultsAttrs[FaultID.DynamicImport] = new FaultAttributes(233);
+faultsAttrs[FaultID.DecoratorsNotSupported] = new FaultAttributes(234);
+faultsAttrs[FaultID.AvoidUnionTypes] = new FaultAttributes(235);
+faultsAttrs[FaultID.MethodOverridingField] = new FaultAttributes(236);
+faultsAttrs[FaultID.NoTuplesArrays] = new FaultAttributes(237);
+faultsAttrs[FaultID.ClassstaticInitialization] = new FaultAttributes(238);
+faultsAttrs[FaultID.InvalidIdentifier] = new FaultAttributes(239);
+faultsAttrs[FaultID.DoubleExclaBindingNotSupported] = new FaultAttributes(251);
+faultsAttrs[FaultID.DoubleDollarBindingNotSupported] = new FaultAttributes(252);
+faultsAttrs[FaultID.DollarBindingNotSupported] = new FaultAttributes(253);
+faultsAttrs[FaultID.ExtendDecoratorNotSupported] = new FaultAttributes(254);
+faultsAttrs[FaultID.ExtendsExpression] = new FaultAttributes(255);
+faultsAttrs[FaultID.StylesDecoratorNotSupported] = new FaultAttributes(256);
+faultsAttrs[FaultID.AnimatableExtendDecoratorTransform] = new FaultAttributes(257);
+faultsAttrs[FaultID.DataObservation] = new FaultAttributes(258);
+faultsAttrs[FaultID.UIInterfaceImport] = new FaultAttributes(259);
+faultsAttrs[FaultID.OhmUrlFullPath] = new FaultAttributes(301);
+faultsAttrs[FaultID.InteropCallObjectParam] = new FaultAttributes(302);
+faultsAttrs[FaultID.InteropCallReflect] = new FaultAttributes(303);
+faultsAttrs[FaultID.NoDuplicateFunctionName] = new FaultAttributes(304);

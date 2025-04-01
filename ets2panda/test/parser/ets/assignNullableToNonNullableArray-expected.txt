@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 16,
-              "column": 7
+              "column": 7,
+              "program": "assignNullableToNonNullableArray.ets"
             },
             "end": {
               "line": 16,
-              "column": 8
+              "column": 8,
+              "program": "assignNullableToNonNullableArray.ets"
             }
           }
         },
@@ -30,12 +32,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "assignNullableToNonNullableArray.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "assignNullableToNonNullableArray.ets"
                 }
               }
             },
@@ -53,12 +57,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "assignNullableToNonNullableArray.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "assignNullableToNonNullableArray.ets"
                     }
                   }
                 },
@@ -71,34 +77,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "assignNullableToNonNullableArray.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 16,
+                      "column": 10,
+                      "program": "assignNullableToNonNullableArray.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "assignNullableToNonNullableArray.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 16,
+                    "column": 10,
+                    "program": "assignNullableToNonNullableArray.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "assignNullableToNonNullableArray.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 16,
+                  "column": 10,
+                  "program": "assignNullableToNonNullableArray.ets"
                 }
               }
             },
@@ -106,12 +118,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 16,
-                "column": 11
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 16,
-                "column": 11
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -119,22 +133,26 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 9
+            "column": 9,
+            "program": "assignNullableToNonNullableArray.ets"
           },
           "end": {
-            "line": 16,
-            "column": 11
+            "line": 18,
+            "column": 9,
+            "program": "assignNullableToNonNullableArray.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "assignNullableToNonNullableArray.ets"
         },
         "end": {
-          "line": 16,
-          "column": 11
+          "line": 18,
+          "column": 9,
+          "program": "assignNullableToNonNullableArray.ets"
         }
       }
     },
@@ -148,16 +166,52 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "assignNullableToNonNullableArray.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "assignNullableToNonNullableArray.ets"
             }
           }
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "assignNullableToNonNullableArray.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "assignNullableToNonNullableArray.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "assignNullableToNonNullableArray.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "assignNullableToNonNullableArray.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",
@@ -168,11 +222,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -192,11 +248,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -210,33 +268,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -245,11 +309,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "assignNullableToNonNullableArray.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "assignNullableToNonNullableArray.ets"
               }
             }
           },
@@ -262,11 +328,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 10
+                  "column": 10,
+                  "program": "assignNullableToNonNullableArray.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 14
+                  "column": 14,
+                  "program": "assignNullableToNonNullableArray.ets"
                 }
               }
             },
@@ -286,11 +354,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 10
+                      "column": 10,
+                      "program": "assignNullableToNonNullableArray.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 14
+                      "column": 14,
+                      "program": "assignNullableToNonNullableArray.ets"
                     }
                   }
                 },
@@ -303,11 +373,13 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 18
+                      "column": 18,
+                      "program": "assignNullableToNonNullableArray.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 22
+                      "column": 22,
+                      "program": "assignNullableToNonNullableArray.ets"
                     }
                   }
                 },
@@ -335,44 +407,53 @@
                                     "loc": {
                                       "start": {
                                         "line": 19,
-                                        "column": 14
+                                        "column": 14,
+                                        "program": "assignNullableToNonNullableArray.ets"
                                       },
                                       "end": {
                                         "line": 19,
-                                        "column": 20
+                                        "column": 20,
+                                        "program": "assignNullableToNonNullableArray.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 19,
-                                      "column": 14
+                                      "column": 14,
+                                      "program": "assignNullableToNonNullableArray.ets"
                                     },
                                     "end": {
                                       "line": 19,
-                                      "column": 21
+                                      "column": 21,
+                                      "program": "assignNullableToNonNullableArray.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 19,
-                                    "column": 14
+                                    "column": 14,
+                                    "program": "assignNullableToNonNullableArray.ets"
                                   },
                                   "end": {
                                     "line": 19,
-                                    "column": 21
+                                    "column": 21,
+                                    "program": "assignNullableToNonNullableArray.ets"
                                   }
                                 }
                               },
+                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 20
+                                  "column": 20,
+                                  "program": "assignNullableToNonNullableArray.ets"
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 22
+                                  "column": 22,
+                                  "program": "assignNullableToNonNullableArray.ets"
                                 }
                               }
                             },
@@ -380,11 +461,13 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 9
+                                "column": 9,
+                                "program": "assignNullableToNonNullableArray.ets"
                               },
                               "end": {
                                 "line": 19,
-                                "column": 11
+                                "column": 11,
+                                "program": "assignNullableToNonNullableArray.ets"
                               }
                             }
                           },
@@ -392,11 +475,13 @@
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 9
+                              "column": 9,
+                              "program": "assignNullableToNonNullableArray.ets"
                             },
                             "end": {
                               "line": 19,
-                              "column": 11
+                              "column": 11,
+                              "program": "assignNullableToNonNullableArray.ets"
                             }
                           }
                         }
@@ -405,11 +490,13 @@
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 5
+                          "column": 5,
+                          "program": "assignNullableToNonNullableArray.ets"
                         },
                         "end": {
                           "line": 19,
-                          "column": 23
+                          "column": 23,
+                          "program": "assignNullableToNonNullableArray.ets"
                         }
                       }
                     },
@@ -437,44 +524,53 @@
                                         "loc": {
                                           "start": {
                                             "line": 20,
-                                            "column": 14
+                                            "column": 14,
+                                            "program": "assignNullableToNonNullableArray.ets"
                                           },
                                           "end": {
                                             "line": 20,
-                                            "column": 15
+                                            "column": 15,
+                                            "program": "assignNullableToNonNullableArray.ets"
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
                                           "line": 20,
-                                          "column": 14
+                                          "column": 14,
+                                          "program": "assignNullableToNonNullableArray.ets"
                                         },
                                         "end": {
                                           "line": 20,
-                                          "column": 16
+                                          "column": 16,
+                                          "program": "assignNullableToNonNullableArray.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 20,
-                                        "column": 14
+                                        "column": 14,
+                                        "program": "assignNullableToNonNullableArray.ets"
                                       },
                                       "end": {
                                         "line": 20,
-                                        "column": 16
+                                        "column": 16,
+                                        "program": "assignNullableToNonNullableArray.ets"
                                       }
                                     }
                                   },
+                                  "annotations": [],
                                   "loc": {
                                     "start": {
                                       "line": 20,
-                                      "column": 15
+                                      "column": 15,
+                                      "program": "assignNullableToNonNullableArray.ets"
                                     },
                                     "end": {
                                       "line": 20,
-                                      "column": 17
+                                      "column": 17,
+                                      "program": "assignNullableToNonNullableArray.ets"
                                     }
                                   }
                                 },
@@ -483,11 +579,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 20,
-                                      "column": 20
+                                      "column": 20,
+                                      "program": "assignNullableToNonNullableArray.ets"
                                     },
                                     "end": {
                                       "line": 20,
-                                      "column": 24
+                                      "column": 24,
+                                      "program": "assignNullableToNonNullableArray.ets"
                                     }
                                   }
                                 }
@@ -495,11 +593,13 @@
                               "loc": {
                                 "start": {
                                   "line": 20,
-                                  "column": 15
+                                  "column": 15,
+                                  "program": "assignNullableToNonNullableArray.ets"
                                 },
                                 "end": {
                                   "line": 20,
-                                  "column": 24
+                                  "column": 24,
+                                  "program": "assignNullableToNonNullableArray.ets"
                                 }
                               }
                             },
@@ -507,11 +607,13 @@
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 9
+                                "column": 9,
+                                "program": "assignNullableToNonNullableArray.ets"
                               },
                               "end": {
                                 "line": 20,
-                                "column": 11
+                                "column": 11,
+                                "program": "assignNullableToNonNullableArray.ets"
                               }
                             }
                           },
@@ -531,33 +633,39 @@
                                       "loc": {
                                         "start": {
                                           "line": 20,
-                                          "column": 32
+                                          "column": 32,
+                                          "program": "assignNullableToNonNullableArray.ets"
                                         },
                                         "end": {
                                           "line": 20,
-                                          "column": 33
+                                          "column": 33,
+                                          "program": "assignNullableToNonNullableArray.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 20,
-                                        "column": 32
+                                        "column": 32,
+                                        "program": "assignNullableToNonNullableArray.ets"
                                       },
                                       "end": {
                                         "line": 20,
-                                        "column": 34
+                                        "column": 34,
+                                        "program": "assignNullableToNonNullableArray.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 20,
-                                      "column": 32
+                                      "column": 32,
+                                      "program": "assignNullableToNonNullableArray.ets"
                                     },
                                     "end": {
                                       "line": 20,
-                                      "column": 34
+                                      "column": 34,
+                                      "program": "assignNullableToNonNullableArray.ets"
                                     }
                                   }
                                 },
@@ -565,11 +673,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 28
+                                    "column": 28,
+                                    "program": "assignNullableToNonNullableArray.ets"
                                   },
                                   "end": {
                                     "line": 20,
-                                    "column": 36
+                                    "column": 36,
+                                    "program": "assignNullableToNonNullableArray.ets"
                                   }
                                 }
                               },
@@ -586,33 +696,39 @@
                                       "loc": {
                                         "start": {
                                           "line": 20,
-                                          "column": 41
+                                          "column": 41,
+                                          "program": "assignNullableToNonNullableArray.ets"
                                         },
                                         "end": {
                                           "line": 20,
-                                          "column": 42
+                                          "column": 42,
+                                          "program": "assignNullableToNonNullableArray.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 20,
-                                        "column": 41
+                                        "column": 41,
+                                        "program": "assignNullableToNonNullableArray.ets"
                                       },
                                       "end": {
                                         "line": 20,
-                                        "column": 43
+                                        "column": 43,
+                                        "program": "assignNullableToNonNullableArray.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 20,
-                                      "column": 41
+                                      "column": 41,
+                                      "program": "assignNullableToNonNullableArray.ets"
                                     },
                                     "end": {
                                       "line": 20,
-                                      "column": 43
+                                      "column": 43,
+                                      "program": "assignNullableToNonNullableArray.ets"
                                     }
                                   }
                                 },
@@ -620,11 +736,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 37
+                                    "column": 37,
+                                    "program": "assignNullableToNonNullableArray.ets"
                                   },
                                   "end": {
                                     "line": 20,
-                                    "column": 45
+                                    "column": 45,
+                                    "program": "assignNullableToNonNullableArray.ets"
                                   }
                                 }
                               }
@@ -632,22 +750,26 @@
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 27
+                                "column": 27,
+                                "program": "assignNullableToNonNullableArray.ets"
                               },
                               "end": {
                                 "line": 20,
-                                "column": 45
+                                "column": 45,
+                                "program": "assignNullableToNonNullableArray.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 9
+                              "column": 9,
+                              "program": "assignNullableToNonNullableArray.ets"
                             },
                             "end": {
                               "line": 20,
-                              "column": 45
+                              "column": 45,
+                              "program": "assignNullableToNonNullableArray.ets"
                             }
                           }
                         }
@@ -656,11 +778,13 @@
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 5
+                          "column": 5,
+                          "program": "assignNullableToNonNullableArray.ets"
                         },
                         "end": {
                           "line": 20,
-                          "column": 46
+                          "column": 46,
+                          "program": "assignNullableToNonNullableArray.ets"
                         }
                       }
                     },
@@ -676,11 +800,13 @@
                           "loc": {
                             "start": {
                               "line": 22,
-                              "column": 5
+                              "column": 5,
+                              "program": "assignNullableToNonNullableArray.ets"
                             },
                             "end": {
                               "line": 22,
-                              "column": 7
+                              "column": 7,
+                              "program": "assignNullableToNonNullableArray.ets"
                             }
                           }
                         },
@@ -691,33 +817,39 @@
                           "loc": {
                             "start": {
                               "line": 22,
-                              "column": 10
+                              "column": 10,
+                              "program": "assignNullableToNonNullableArray.ets"
                             },
                             "end": {
                               "line": 22,
-                              "column": 12
+                              "column": 12,
+                              "program": "assignNullableToNonNullableArray.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 22,
-                            "column": 5
+                            "column": 5,
+                            "program": "assignNullableToNonNullableArray.ets"
                           },
                           "end": {
                             "line": 22,
-                            "column": 12
+                            "column": 12,
+                            "program": "assignNullableToNonNullableArray.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 22,
-                          "column": 5
+                          "column": 5,
+                          "program": "assignNullableToNonNullableArray.ets"
                         },
                         "end": {
                           "line": 22,
-                          "column": 13
+                          "column": 13,
+                          "program": "assignNullableToNonNullableArray.ets"
                         }
                       }
                     }
@@ -725,33 +857,39 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 23
+                      "column": 23,
+                      "program": "assignNullableToNonNullableArray.ets"
                     },
                     "end": {
                       "line": 23,
-                      "column": 2
+                      "column": 2,
+                      "program": "assignNullableToNonNullableArray.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 10
+                    "column": 10,
+                    "program": "assignNullableToNonNullableArray.ets"
                   },
                   "end": {
                     "line": 23,
-                    "column": 2
+                    "column": 2,
+                    "program": "assignNullableToNonNullableArray.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 10
+                  "column": 10,
+                  "program": "assignNullableToNonNullableArray.ets"
                 },
                 "end": {
                   "line": 23,
-                  "column": 2
+                  "column": 2,
+                  "program": "assignNullableToNonNullableArray.ets"
                 }
               }
             },
@@ -760,11 +898,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 1
+                "column": 1,
+                "program": "assignNullableToNonNullableArray.ets"
               },
               "end": {
                 "line": 23,
-                "column": 2
+                "column": 2,
+                "program": "assignNullableToNonNullableArray.ets"
               }
             }
           }
@@ -772,22 +912,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "assignNullableToNonNullableArray.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "assignNullableToNonNullableArray.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "assignNullableToNonNullableArray.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "assignNullableToNonNullableArray.ets"
         }
       }
     }
@@ -795,11 +939,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "assignNullableToNonNullableArray.ets"
     },
     "end": {
       "line": 24,
-      "column": 1
+      "column": 1,
+      "program": "assignNullableToNonNullableArray.ets"
     }
   }
 }

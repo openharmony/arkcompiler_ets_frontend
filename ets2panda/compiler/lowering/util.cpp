@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,8 @@
 
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "ir/expressions/identifier.h"
+#include "checker/checker.h"
+#include "checker/ETSAnalyzer.h"
 
 namespace ark::es2panda::compiler {
 
@@ -46,16 +48,20 @@ ir::Identifier *Gensym(ArenaAllocator *const allocator)
 
 util::UString GenName(ArenaAllocator *const allocator)
 {
-    static std::string const GENSYM_CORE = "gensym%%_";
     static std::size_t gensymCounter = 0U;
+    return util::UString {std::string(GENSYM_CORE) + std::to_string(++gensymCounter), allocator};
+}
 
-    return util::UString {GENSYM_CORE + std::to_string(++gensymCounter), allocator};
+void SetSourceRangesRecursively(ir::AstNode *node, const lexer::SourceRange &range)
+{
+    node->SetRange(range);
+    node->IterateRecursively([](ir::AstNode *n) { n->SetRange(n->Parent()->Range()); });
 }
 
 // Function to clear expression node types and identifier node variables (for correct re-binding and re-checking)
 void ClearTypesVariablesAndScopes(ir::AstNode *node) noexcept
 {
-    auto doNode = [](ir::AstNode *nn) {
+    std::function<void(ir::AstNode *)> doNode = [&](ir::AstNode *nn) {
         if (nn->IsScopeBearer()) {
             nn->ClearScope();
         }
@@ -65,10 +71,12 @@ void ClearTypesVariablesAndScopes(ir::AstNode *node) noexcept
         if (nn->IsIdentifier()) {
             nn->AsIdentifier()->SetVariable(nullptr);
         }
+        if (!nn->IsETSTypeReference()) {
+            nn->Iterate([&](ir::AstNode *child) { doNode(child); });
+        }
     };
 
     doNode(node);
-    node->IterateRecursively(doNode);
 }
 
 ArenaSet<varbinder::Variable *> FindCaptured(ArenaAllocator *allocator, ir::AstNode *scopeBearer) noexcept
@@ -87,7 +95,7 @@ ArenaSet<varbinder::Variable *> FindCaptured(ArenaAllocator *allocator, ir::AstN
                 scopes.insert(ast->Scope()->Parent());
             }
         }
-        if (ast->IsIdentifier()) {
+        if (ast->IsIdentifier() && !ast->Parent()->IsLabelledStatement()) {
             auto *var = ast->AsIdentifier()->Variable();
             if (var == nullptr || !var->HasFlag(varbinder::VariableFlags::LOCAL)) {
                 return;
@@ -101,9 +109,72 @@ ArenaSet<varbinder::Variable *> FindCaptured(ArenaAllocator *allocator, ir::AstN
     return result;
 }
 
-// Rerun varbinder and checker on the node.
-void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node)
+static void ResetGlobalClass(parser::Program *prog)
 {
+    for (auto *statement : prog->Ast()->Statements()) {
+        if (statement->IsClassDeclaration() && statement->AsClassDeclaration()->Definition()->IsGlobal()) {
+            prog->SetGlobalClass(statement->AsClassDeclaration()->Definition());
+            break;
+        }
+    }
+}
+
+static bool IsGeneratedForUtilityType(ir::AstNode const *ast)
+{
+    if (ast->IsClassDeclaration()) {
+        auto &name = ast->AsClassDeclaration()->Definition()->Ident()->Name();
+        return name.EndsWith(checker::PARTIAL_CLASS_SUFFIX);
+    }
+    if (ast->IsTSInterfaceDeclaration()) {
+        auto &name = ast->AsTSInterfaceDeclaration()->Id()->Name();
+        return name.EndsWith(checker::PARTIAL_CLASS_SUFFIX);
+    }
+    return false;
+}
+
+static void ClearHelper(parser::Program *prog)
+{
+    ResetGlobalClass(prog);
+    // #24256 Should be removed when code refactoring on checker is done and no ast node allocated in checker.
+    auto &stmts = prog->Ast()->Statements();
+    // clang-format off
+    stmts.erase(std::remove_if(stmts.begin(), stmts.end(),
+        [](ir::AstNode *ast) -> bool {
+            return !ast->HasAstNodeFlags(ir::AstNodeFlags::NOCLEANUP) ||
+                IsGeneratedForUtilityType(ast);
+        }),
+        stmts.end());
+    // clang-format on
+
+    prog->Ast()->IterateRecursively([](ir::AstNode *ast) -> void { ast->CleanUp(); });
+    prog->Ast()->ClearScope();
+}
+
+// Rerun varbinder on the node. (First clear typesVariables and scopes)
+varbinder::Scope *Rebind(varbinder::ETSBinder *varBinder, ir::AstNode *node)
+{
+    if (node->IsProgram()) {
+        auto program = node->AsETSModule()->Program();
+        if (program->IsPackage()) {
+            return nullptr;
+        }
+
+        for (auto [_, program_list] : program->ExternalSources()) {
+            for (auto prog : program_list) {
+                ClearHelper(prog);
+            }
+        }
+
+        ClearHelper(program);
+
+        varBinder->CleanUp();
+        for (auto *phase : GetRebindPhase()) {
+            phase->Apply(varBinder->GetContext(), program);
+        }
+
+        return varBinder->TopScope();
+    }
+
     auto *scope = NearestScope(node->Parent());
     auto bscope = varbinder::LexicalScope<varbinder::Scope>::Enter(varBinder, scope);
 
@@ -111,17 +182,65 @@ void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::
     InitScopesPhaseETS::RunExternalNode(node, varBinder);
     varBinder->ResolveReferencesForScopeWithContext(node, scope);
 
-    auto *containingClass = ContainingClass(node);
+    return scope;
+}
+
+// Rerun varbinder and checker on the node.
+void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node)
+{
+    if (node->IsProgram()) {
+        auto program = node->AsETSModule()->Program();
+        if (program->IsPackage()) {
+            return;
+        }
+
+        for (auto [_, program_list] : program->ExternalSources()) {
+            for (auto prog : program_list) {
+                ClearHelper(prog);
+            }
+        }
+
+        ClearHelper(program);
+
+        varBinder->CleanUp();
+        varBinder->GetContext()->checker->CleanUp();
+
+        for (auto *phase : GetRecheckPhase()) {
+            phase->Apply(varBinder->GetContext(), program);
+        }
+        return;
+    }
+
+    auto *scope = Rebind(varBinder, node);
+
     // NOTE(gogabr: should determine checker status more finely.
-    auto checkerCtx = checker::SavedCheckerContext(
-        checker, (containingClass == nullptr) ? checker::CheckerStatus::NO_OPTS : checker::CheckerStatus::IN_CLASS,
-        containingClass);
+    auto *containingClass = ContainingClass(node);
+    checker::CheckerStatus newStatus =
+        (containingClass == nullptr) ? checker::CheckerStatus::NO_OPTS : checker::CheckerStatus::IN_CLASS;
+    if ((checker->Context().Status() & checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK) != 0) {
+        newStatus |= checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK;
+    }
+    auto checkerCtx = checker::SavedCheckerContext(checker, newStatus, containingClass);
     auto scopeCtx = checker::ScopeContext(checker, scope);
 
     node->Check(checker);
 }
 
-// Note: run varbinder and checker on the new node generated in lowering phases
+// NOTE: used to get the declaration from identifier in Plugin API and LSP
+ir::AstNode *DeclarationFromIdentifier(ir::Identifier *node)
+{
+    auto idVar = node->Variable();
+    if (idVar == nullptr) {
+        return nullptr;
+    }
+    auto decl = idVar->Declaration();
+    if (decl == nullptr) {
+        return nullptr;
+    }
+    return decl->Node();
+}
+
+// Note: run varbinder and checker on the new node generated in lowering phases (without ClearTypesVariablesAndScopes)
 void CheckLoweredNode(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node)
 {
     InitScopesPhaseETS::RunExternalNode(node, varBinder);
@@ -129,12 +248,29 @@ void CheckLoweredNode(varbinder::ETSBinder *varBinder, checker::ETSChecker *chec
     varBinder->ResolveReferencesForScopeWithContext(node, scope);
 
     auto *containingClass = ContainingClass(node);
-    auto checkerCtx = checker::SavedCheckerContext(
-        checker, (containingClass == nullptr) ? checker::CheckerStatus::NO_OPTS : checker::CheckerStatus::IN_CLASS,
-        containingClass);
+    checker::CheckerStatus newStatus =
+        (containingClass == nullptr) ? checker::CheckerStatus::NO_OPTS : checker::CheckerStatus::IN_CLASS;
+    if ((checker->Context().Status() & checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK) != 0) {
+        newStatus |= checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK;
+    }
+    auto checkerCtx = checker::SavedCheckerContext(checker, newStatus, containingClass);
     auto scopeCtx = checker::ScopeContext(checker, scope);
 
     node->Check(checker);
 }
 
+bool IsAnonymousClassType(const checker::Type *type)
+{
+    if (type == nullptr || !type->IsETSObjectType()) {
+        return false;
+    }
+
+    auto declNode = type->AsETSObjectType()->GetDeclNode();
+    return declNode != nullptr && declNode->IsClassDefinition() && declNode->AsClassDefinition()->IsAnonymous();
+}
+
+bool ClassDefinitionIsEnumTransformed(const ir::AstNode *node)
+{
+    return node != nullptr && node->IsClassDefinition() && node->AsClassDefinition()->IsEnumTransformed();
+}
 }  // namespace ark::es2panda::compiler

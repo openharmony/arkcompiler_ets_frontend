@@ -45,15 +45,8 @@ static ir::AstNode *ConvertExpression(checker::ETSChecker *const checker, ir::Ar
 
 using AstNodePtr = ir::AstNode *;
 
-bool ExpressionLambdaConstructionPhase::Perform(public_lib::Context *ctx, parser::Program *program)
+bool ExpressionLambdaConstructionPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    for (auto &[_, ext_programs] : program->ExternalSources()) {
-        (void)_;
-        for (auto *extProg : ext_programs) {
-            Perform(ctx, extProg);
-        }
-    }
-
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
 
     program->Ast()->TransformChildrenRecursively(
@@ -70,17 +63,9 @@ bool ExpressionLambdaConstructionPhase::Perform(public_lib::Context *ctx, parser
     return true;
 }
 
-bool ExpressionLambdaConstructionPhase::Postcondition(public_lib::Context *ctx, const parser::Program *program)
+bool ExpressionLambdaConstructionPhase::PostconditionForModule([[maybe_unused]] public_lib::Context *ctx,
+                                                               const parser::Program *program)
 {
-    for (auto &[_, ext_programs] : program->ExternalSources()) {
-        (void)_;
-        for (auto *extProg : ext_programs) {
-            if (!Postcondition(ctx, extProg)) {
-                return false;
-            }
-        }
-    }
-
     return !program->Ast()->IsAnyChild([](const ir::AstNode *node) {
         return node->IsArrowFunctionExpression() &&
                node->AsArrowFunctionExpression()->Function()->Body()->IsExpression();

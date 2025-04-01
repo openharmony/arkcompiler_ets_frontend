@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,20 +29,33 @@ void TSInferType::TransformChildren(const NodeTransformer &cb, std::string_view 
         typeParam_->SetTransformedNode(transformationName, transformedNode);
         typeParam_ = transformedNode->AsTSTypeParameter();
     }
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void TSInferType::Iterate(const NodeTraverser &cb) const
 {
     cb(typeParam_);
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 void TSInferType::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "TSInferType"}, {"typeParameter", typeParam_}});
+    dumper->Add(
+        {{"type", "TSInferType"}, {"typeParameter", typeParam_}, {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void TSInferType::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("TSInferType");
 }
 
@@ -65,8 +78,8 @@ checker::Type *TSInferType::GetType([[maybe_unused]] checker::TSChecker *checker
     return nullptr;
 }
 
-checker::Type *TSInferType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSInferType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

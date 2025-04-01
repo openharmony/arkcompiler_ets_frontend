@@ -20,18 +20,15 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-class CheckInfiniteLoop {
-public:
-    explicit CheckInfiniteLoop([[maybe_unused]] ArenaAllocator &allocator) {}
-    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
-
-private:
+class CheckInfiniteLoop : public RecursiveInvariant<VerifierInvariants::CHECK_INFINITE_LOOP> {
+    template <VerifierInvariants ID>
+    friend class InvariantBase;
+    [[nodiscard]] CheckResult operator()(const ir::AstNode *ast);
     bool ConditionIsAlwaysTrue(const ir::Expression *const test) const;
     bool HasBreakOrReturnStatement(const ir::Statement *const body) const;
-    [[nodiscard]] CheckResult HandleWhileStatement(CheckContext &ctx, const ir::WhileStatement *const stmt) const;
-    [[nodiscard]] CheckResult HandleDoWhileStatement(CheckContext &ctx, const ir::DoWhileStatement *const stmt) const;
-    [[nodiscard]] CheckResult HandleForUpdateStatement(CheckContext &ctx,
-                                                       const ir::ForUpdateStatement *const stmt) const;
+    [[nodiscard]] CheckResult HandleWhileStatement(const ir::WhileStatement *const stmt);
+    [[nodiscard]] CheckResult HandleDoWhileStatement(const ir::DoWhileStatement *const stmt);
+    [[nodiscard]] CheckResult HandleForUpdateStatement(const ir::ForUpdateStatement *const stmt);
 };
 
 }  // namespace ark::es2panda::compiler::ast_verifier

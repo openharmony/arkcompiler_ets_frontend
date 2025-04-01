@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,7 +20,8 @@ flags: [module]
 import(import.mta)
 import.meta
 
-/* @@? 20:15 Error SyntaxError: The only valid meta property for import is import.Meta  */
+/* @@? 20:15 Error SyntaxError: The only valid meta property for import is import.Meta.  */
 /* @@? 1:1 Node {
     "type": "Program"
-}  */
+}  *//* @@? 20:15 Error SyntaxError: The only valid meta property for import is import.Meta.  */
+/* @@? 20:15 Error SyntaxError: The only valid meta property for import is import.Meta.  */

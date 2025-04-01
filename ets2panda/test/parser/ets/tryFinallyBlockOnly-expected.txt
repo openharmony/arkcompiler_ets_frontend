@@ -11,16 +11,52 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "tryFinallyBlockOnly.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "tryFinallyBlockOnly.ets"
             }
           }
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "tryFinallyBlockOnly.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "tryFinallyBlockOnly.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "tryFinallyBlockOnly.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "tryFinallyBlockOnly.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",
@@ -31,11 +67,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +93,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +113,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +154,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "tryFinallyBlockOnly.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "tryFinallyBlockOnly.ets"
               }
             }
           },
@@ -125,11 +173,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "tryFinallyBlockOnly.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 14
+                  "column": 14,
+                  "program": "tryFinallyBlockOnly.ets"
                 }
               }
             },
@@ -149,11 +199,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 10
+                      "column": 10,
+                      "program": "tryFinallyBlockOnly.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 14
+                      "column": 14,
+                      "program": "tryFinallyBlockOnly.ets"
                     }
                   }
                 },
@@ -166,11 +218,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 19
+                      "column": 19,
+                      "program": "tryFinallyBlockOnly.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 22
+                      "column": 22,
+                      "program": "tryFinallyBlockOnly.ets"
                     }
                   }
                 },
@@ -185,11 +239,13 @@
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 9
+                            "column": 9,
+                            "program": "tryFinallyBlockOnly.ets"
                           },
                           "end": {
                             "line": 18,
-                            "column": 6
+                            "column": 6,
+                            "program": "tryFinallyBlockOnly.ets"
                           }
                         }
                       },
@@ -200,22 +256,26 @@
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 15
+                            "column": 15,
+                            "program": "tryFinallyBlockOnly.ets"
                           },
                           "end": {
                             "line": 18,
-                            "column": 17
+                            "column": 17,
+                            "program": "tryFinallyBlockOnly.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 5
+                          "column": 5,
+                          "program": "tryFinallyBlockOnly.ets"
                         },
                         "end": {
                           "line": 18,
-                          "column": 17
+                          "column": 17,
+                          "program": "tryFinallyBlockOnly.ets"
                         }
                       }
                     },
@@ -227,22 +287,26 @@
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 12
+                            "column": 12,
+                            "program": "tryFinallyBlockOnly.ets"
                           },
                           "end": {
                             "line": 19,
-                            "column": 13
+                            "column": 13,
+                            "program": "tryFinallyBlockOnly.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 5
+                          "column": 5,
+                          "program": "tryFinallyBlockOnly.ets"
                         },
                         "end": {
                           "line": 19,
-                          "column": 14
+                          "column": 14,
+                          "program": "tryFinallyBlockOnly.ets"
                         }
                       }
                     }
@@ -250,33 +314,39 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 23
+                      "column": 23,
+                      "program": "tryFinallyBlockOnly.ets"
                     },
                     "end": {
                       "line": 20,
-                      "column": 2
+                      "column": 2,
+                      "program": "tryFinallyBlockOnly.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 10
+                    "column": 10,
+                    "program": "tryFinallyBlockOnly.ets"
                   },
                   "end": {
                     "line": 20,
-                    "column": 2
+                    "column": 2,
+                    "program": "tryFinallyBlockOnly.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "tryFinallyBlockOnly.ets"
                 },
                 "end": {
                   "line": 20,
-                  "column": 2
+                  "column": 2,
+                  "program": "tryFinallyBlockOnly.ets"
                 }
               }
             },
@@ -285,11 +355,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 1
+                "column": 1,
+                "program": "tryFinallyBlockOnly.ets"
               },
               "end": {
                 "line": 20,
-                "column": 2
+                "column": 2,
+                "program": "tryFinallyBlockOnly.ets"
               }
             }
           }
@@ -297,22 +369,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "tryFinallyBlockOnly.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "tryFinallyBlockOnly.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "tryFinallyBlockOnly.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "tryFinallyBlockOnly.ets"
         }
       }
     }
@@ -320,11 +396,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "tryFinallyBlockOnly.ets"
     },
     "end": {
       "line": 21,
-      "column": 1
+      "column": 1,
+      "program": "tryFinallyBlockOnly.ets"
     }
   }
 }

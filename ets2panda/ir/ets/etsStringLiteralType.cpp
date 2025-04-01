@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,39 +16,53 @@
 #include "etsStringLiteralType.h"
 
 #include "checker/ETSchecker.h"
-#include "ir/astDump.h"
 
 namespace ark::es2panda::ir {
 void ETSStringLiteralType::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
                                              [[maybe_unused]] std::string_view const transformationName)
 {
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
-void ETSStringLiteralType::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
+void ETSStringLiteralType::Iterate([[maybe_unused]] const NodeTraverser &cb) const
+{
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
+}
 
 void ETSStringLiteralType::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ETSStringLiteralType"}, {"value", value_}});
+    dumper->Add(
+        {{"type", "ETSStringLiteralType"}, {"value", value_}, {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void ETSStringLiteralType::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add(value_.Mutf8());
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
+    dumper->Add("\"" + value_.Mutf8() + "\"");
 }
 
 void ETSStringLiteralType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 checker::Type *ETSStringLiteralType::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
-checker::Type *ETSStringLiteralType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType ETSStringLiteralType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 checker::Type *ETSStringLiteralType::GetType([[maybe_unused]] checker::ETSChecker *checker)
@@ -59,12 +73,21 @@ checker::Type *ETSStringLiteralType::GetType([[maybe_unused]] checker::ETSChecke
 
 ETSStringLiteralType *ETSStringLiteralType::Clone(ArenaAllocator *allocator, AstNode *parent)
 {
-    if (auto *const clone = allocator->New<ir::ETSStringLiteralType>(value_); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    auto *const clone = allocator->New<ir::ETSStringLiteralType>(value_, allocator);
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    return nullptr;
+
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    clone->SetRange(Range());
+    return clone;
 }
 }  // namespace ark::es2panda::ir

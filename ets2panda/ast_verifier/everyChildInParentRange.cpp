@@ -34,7 +34,7 @@ static bool IsInParentsRange(const ir::AstNode *ast, ir::AstNode const *node)
     return true;
 }
 
-CheckResult EveryChildInParentRange::operator()(CheckContext &ctx, const ir::AstNode *ast)
+CheckResult EveryChildInParentRange::operator()(const ir::AstNode *ast)
 {
     auto result = std::make_tuple(CheckDecision::CORRECT, CheckAction::CONTINUE);
     if (ast->Parent() == nullptr) {
@@ -42,7 +42,7 @@ CheckResult EveryChildInParentRange::operator()(CheckContext &ctx, const ir::Ast
     }
     ast->Iterate([&](const ir::AstNode *node) {
         if (!IsInParentsRange(ast, node)) {
-            ctx.AddCheckMessage("INCORRECT_CHILD_RANGE", *node, node->Start());
+            AddCheckMessage("INCORRECT_CHILD_RANGE", *node);
             result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
     });

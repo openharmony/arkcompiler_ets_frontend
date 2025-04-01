@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 16
+              "column": 16,
+              "program": "test-class-definiton18.ts"
             },
             "end": {
               "line": 17,
-              "column": 19
+              "column": 19,
+              "program": "test-class-definiton18.ts"
             }
           }
         },
@@ -29,12 +31,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 17,
+                "column": 21,
+                "program": "test-class-definiton18.ts"
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 17,
+                "column": 21,
+                "program": "test-class-definiton18.ts"
               }
             }
           },
@@ -56,34 +60,40 @@
                 "statements": [],
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 17,
+                    "column": 21,
+                    "program": "test-class-definiton18.ts"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 17,
+                    "column": 21,
+                    "program": "test-class-definiton18.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 17,
+                  "column": 21,
+                  "program": "test-class-definiton18.ts"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 17,
+                  "column": 21,
+                  "program": "test-class-definiton18.ts"
                 }
               }
             },
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 17,
+                "column": 21,
+                "program": "test-class-definiton18.ts"
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 17,
+                "column": 21,
+                "program": "test-class-definiton18.ts"
               }
             }
           },
@@ -91,12 +101,14 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 20,
-              "column": 2
+              "line": 1,
+              "column": 1,
+              "program": null
             },
             "end": {
-              "line": 20,
-              "column": 2
+              "line": 1,
+              "column": 1,
+              "program": null
             }
           }
         },
@@ -110,11 +122,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 5
+                  "column": 5,
+                  "program": "test-class-definiton18.ts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-definiton18.ts"
                 }
               }
             },
@@ -134,22 +148,26 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 6
+                    "column": 6,
+                    "program": "test-class-definiton18.ts"
                   },
                   "end": {
                     "line": 18,
-                    "column": 9
+                    "column": 9,
+                    "program": "test-class-definiton18.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-class-definiton18.ts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 9
+                  "column": 9,
+                  "program": "test-class-definiton18.ts"
                 }
               }
             },
@@ -158,11 +176,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 5
+                "column": 5,
+                "program": "test-class-definiton18.ts"
               },
               "end": {
                 "line": 18,
-                "column": 9
+                "column": 9,
+                "program": "test-class-definiton18.ts"
               }
             }
           },
@@ -175,11 +195,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 14
+                  "column": 14,
+                  "program": "test-class-definiton18.ts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 15
+                  "column": 15,
+                  "program": "test-class-definiton18.ts"
                 }
               }
             },
@@ -199,22 +221,26 @@
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 15
+                    "column": 15,
+                    "program": "test-class-definiton18.ts"
                   },
                   "end": {
                     "line": 19,
-                    "column": 18
+                    "column": 18,
+                    "program": "test-class-definiton18.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 15
+                  "column": 15,
+                  "program": "test-class-definiton18.ts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 18
+                  "column": 18,
+                  "program": "test-class-definiton18.ts"
                 }
               }
             },
@@ -223,11 +249,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 5
+                "column": 5,
+                "program": "test-class-definiton18.ts"
               },
               "end": {
                 "line": 19,
-                "column": 18
+                "column": 18,
+                "program": "test-class-definiton18.ts"
               }
             }
           }
@@ -235,22 +263,26 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 20
+            "column": 20,
+            "program": "test-class-definiton18.ts"
           },
           "end": {
             "line": 20,
-            "column": 2
+            "column": 2,
+            "program": "test-class-definiton18.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 10
+          "column": 10,
+          "program": "test-class-definiton18.ts"
         },
         "end": {
           "line": 20,
-          "column": 2
+          "column": 2,
+          "program": "test-class-definiton18.ts"
         }
       }
     }
@@ -258,11 +290,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-class-definiton18.ts"
     },
     "end": {
       "line": 20,
-      "column": 2
+      "column": 2,
+      "program": "test-class-definiton18.ts"
     }
   }
 }

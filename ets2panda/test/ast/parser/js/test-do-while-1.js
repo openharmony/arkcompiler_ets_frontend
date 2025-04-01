@@ -14,5 +14,5 @@
  */
 
 
-do a = 2 while (a > b)
-/* @@? 17:10 Error SyntaxError: Unexpected token 'while'. */
+do a = 2 /* @@ label */while (a > b)
+/* @@@ label Error SyntaxError: Unexpected token 'while'. */

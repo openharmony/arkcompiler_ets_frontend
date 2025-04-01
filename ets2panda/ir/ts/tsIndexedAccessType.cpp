@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,21 +34,36 @@ void TSIndexedAccessType::TransformChildren(const NodeTransformer &cb, std::stri
         indexType_->SetTransformedNode(transformationName, transformedNode);
         indexType_ = static_cast<TypeNode *>(transformedNode);
     }
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void TSIndexedAccessType::Iterate(const NodeTraverser &cb) const
 {
     cb(objectType_);
     cb(indexType_);
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 void TSIndexedAccessType::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "TSIndexedAccessType"}, {"objectType", objectType_}, {"indexType", indexType_}});
+    dumper->Add({{"type", "TSIndexedAccessType"},
+                 {"objectType", objectType_},
+                 {"indexType", indexType_},
+                 {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void TSIndexedAccessType::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("TSIndexedAccessType");
 }
 
@@ -80,8 +95,8 @@ checker::Type *TSIndexedAccessType::GetType([[maybe_unused]] checker::TSChecker 
     return TsType();
 }
 
-checker::Type *TSIndexedAccessType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSIndexedAccessType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

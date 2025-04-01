@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -144,7 +144,7 @@ RegAllocator::RegAllocator(CodeGen *const cg, RegSpiller *const spiller) noexcep
 
 void RegAllocator::Run(IRNode *const ins, const int32_t spillMax)
 {
-    ASSERT(Spiller().Restored());
+    ES2PANDA_ASSERT(Spiller().Restored());
     std::array<VReg *, IRNode::MAX_REG_OPERAND> regs {};
     const auto regCnt = ins->Registers(&regs);
     const auto registers =
@@ -211,7 +211,7 @@ RangeRegAllocator::RangeRegAllocator(CodeGen *const cg, RegSpiller *const spille
 
 void RangeRegAllocator::Run(IRNode *const ins, VReg rangeStart, const std::size_t argCount)
 {
-    ASSERT(Spiller().Restored());
+    ES2PANDA_ASSERT(Spiller().Restored());
     const auto rangeEnd = rangeStart + argCount;
 
     std::array<VReg *, IRNode::MAX_REG_OPERAND> regs {};

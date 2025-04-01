@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,8 +21,8 @@
 namespace ark::es2panda::ir {
 class TSIntersectionType : public TypeNode {
 public:
-    explicit TSIntersectionType(ArenaVector<Expression *> &&types)
-        : TypeNode(AstNodeType::TS_INTERSECTION_TYPE), types_(std::move(types))
+    explicit TSIntersectionType(ArenaVector<Expression *> &&types, ArenaAllocator *const allocator)
+        : TypeNode(AstNodeType::TS_INTERSECTION_TYPE, allocator), types_(std::move(types))
     {
     }
 
@@ -40,7 +40,7 @@ public:
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {

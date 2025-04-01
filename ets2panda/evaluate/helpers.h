@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -107,7 +107,7 @@ static inline constexpr std::string_view DEBUGGER_API_CLASS_NAME = "DebuggerAPI"
                 /* CC-OFFNXT(G.PRE.05) function gen */ \
                 return #TYPE_NAME_BASE "Object";       \
             default:                                   \
-                UNREACHABLE();                         \
+                ES2PANDA_UNREACHABLE();                \
                 /* CC-OFFNXT(G.PRE.05) function gen */ \
                 return {};                             \
         }                                              \
@@ -131,10 +131,10 @@ template <typename F>
 void DoScopedAction(checker::ETSChecker *checker, varbinder::ETSBinder *varBinder, parser::Program *program,
                     varbinder::Scope *scope, ir::AstNode *parentClass, F &&action)
 {
-    ASSERT(checker);
-    ASSERT(varBinder);
+    ES2PANDA_ASSERT(checker);
+    ES2PANDA_ASSERT(varBinder);
     // Must enter either program global scope or a local scope.
-    ASSERT(program != nullptr || scope != nullptr);
+    ES2PANDA_ASSERT(program != nullptr || scope != nullptr);
 
     SafeStateScope s(checker, varBinder);
 

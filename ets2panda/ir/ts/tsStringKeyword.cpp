@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,17 +25,31 @@ namespace ark::es2panda::ir {
 void TSStringKeyword::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
                                         [[maybe_unused]] std::string_view const transformationName)
 {
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
-void TSStringKeyword::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
+void TSStringKeyword::Iterate([[maybe_unused]] const NodeTraverser &cb) const
+{
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
+}
 
 void TSStringKeyword::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "TSStringKeyword"}});
+    dumper->Add({{"type", "TSStringKeyword"}, {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void TSStringKeyword::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("TSStringKeyword");
 }
 
@@ -59,8 +73,8 @@ checker::Type *TSStringKeyword::GetType([[maybe_unused]] checker::TSChecker *che
     return checker->GlobalStringType();
 }
 
-checker::Type *TSStringKeyword::Check(checker::ETSChecker *checker)
+checker::VerifiedType TSStringKeyword::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

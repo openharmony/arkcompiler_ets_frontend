@@ -9,11 +9,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 13
+            "column": 13,
+            "program": "test-ts-type-assertion.ts"
           },
           "end": {
             "line": 17,
-            "column": 15
+            "column": 15,
+            "program": "test-ts-type-assertion.ts"
           }
         }
       },
@@ -24,11 +26,13 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 11
+            "column": 11,
+            "program": "test-ts-type-assertion.ts"
           },
           "end": {
             "line": 17,
-            "column": 12
+            "column": 12,
+            "program": "test-ts-type-assertion.ts"
           }
         }
       },
@@ -36,11 +40,13 @@
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test-ts-type-assertion.ts"
         },
         "end": {
           "line": 17,
-          "column": 15
+          "column": 15,
+          "program": "test-ts-type-assertion.ts"
         }
       }
     },
@@ -57,11 +63,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 10
+                  "column": 10,
+                  "program": "test-ts-type-assertion.ts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 13
+                  "column": 13,
+                  "program": "test-ts-type-assertion.ts"
                 }
               }
             },
@@ -69,11 +77,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 5
+                "column": 5,
+                "program": "test-ts-type-assertion.ts"
               },
               "end": {
                 "line": 18,
-                "column": 8
+                "column": 8,
+                "program": "test-ts-type-assertion.ts"
               }
             }
           },
@@ -81,11 +91,13 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 5
+              "column": 5,
+              "program": "test-ts-type-assertion.ts"
             },
             "end": {
               "line": 18,
-              "column": 8
+              "column": 8,
+              "program": "test-ts-type-assertion.ts"
             }
           }
         }
@@ -94,11 +106,13 @@
       "loc": {
         "start": {
           "line": 18,
-          "column": 1
+          "column": 1,
+          "program": "test-ts-type-assertion.ts"
         },
         "end": {
           "line": 18,
-          "column": 14
+          "column": 14,
+          "program": "test-ts-type-assertion.ts"
         }
       }
     },
@@ -114,11 +128,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 5
+                "column": 5,
+                "program": "test-ts-type-assertion.ts"
               },
               "end": {
                 "line": 19,
-                "column": 8
+                "column": 8,
+                "program": "test-ts-type-assertion.ts"
               }
             }
           },
@@ -129,11 +145,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-ts-type-assertion.ts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 18
+                  "column": 18,
+                  "program": "test-ts-type-assertion.ts"
                 }
               }
             },
@@ -144,33 +162,39 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 20
+                  "column": 20,
+                  "program": "test-ts-type-assertion.ts"
                 },
                 "end": {
                   "line": 19,
-                  "column": 23
+                  "column": 23,
+                  "program": "test-ts-type-assertion.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 19,
-                "column": 11
+                "column": 11,
+                "program": "test-ts-type-assertion.ts"
               },
               "end": {
                 "line": 19,
-                "column": 24
+                "column": 24,
+                "program": "test-ts-type-assertion.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 19,
-              "column": 5
+              "column": 5,
+              "program": "test-ts-type-assertion.ts"
             },
             "end": {
               "line": 19,
-              "column": 24
+              "column": 24,
+              "program": "test-ts-type-assertion.ts"
             }
           }
         }
@@ -179,11 +203,13 @@
       "loc": {
         "start": {
           "line": 19,
-          "column": 1
+          "column": 1,
+          "program": "test-ts-type-assertion.ts"
         },
         "end": {
           "line": 19,
-          "column": 24
+          "column": 24,
+          "program": "test-ts-type-assertion.ts"
         }
       }
     },
@@ -199,11 +225,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 5
+                "column": 5,
+                "program": "test-ts-type-assertion.ts"
               },
               "end": {
                 "line": 20,
-                "column": 8
+                "column": 8,
+                "program": "test-ts-type-assertion.ts"
               }
             }
           },
@@ -218,22 +246,26 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 12
+                    "column": 12,
+                    "program": "test-ts-type-assertion.ts"
                   },
                   "end": {
                     "line": 20,
-                    "column": 13
+                    "column": 13,
+                    "program": "test-ts-type-assertion.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 12
+                  "column": 12,
+                  "program": "test-ts-type-assertion.ts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 13
+                  "column": 13,
+                  "program": "test-ts-type-assertion.ts"
                 }
               }
             },
@@ -244,33 +276,39 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 15
+                  "column": 15,
+                  "program": "test-ts-type-assertion.ts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 18
+                  "column": 18,
+                  "program": "test-ts-type-assertion.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 20,
-                "column": 11
+                "column": 11,
+                "program": "test-ts-type-assertion.ts"
               },
               "end": {
                 "line": 20,
-                "column": 19
+                "column": 19,
+                "program": "test-ts-type-assertion.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 20,
-              "column": 5
+              "column": 5,
+              "program": "test-ts-type-assertion.ts"
             },
             "end": {
               "line": 20,
-              "column": 19
+              "column": 19,
+              "program": "test-ts-type-assertion.ts"
             }
           }
         }
@@ -279,11 +317,13 @@
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "test-ts-type-assertion.ts"
         },
         "end": {
           "line": 20,
-          "column": 19
+          "column": 19,
+          "program": "test-ts-type-assertion.ts"
         }
       }
     }
@@ -291,11 +331,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-ts-type-assertion.ts"
     },
     "end": {
       "line": 20,
-      "column": 19
+      "column": 19,
+      "program": "test-ts-type-assertion.ts"
     }
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,8 +17,8 @@
 #define ES2PANDA_IR_ETS_RE_EXPORT_DECLARATION_H
 
 #include "ir/ets/etsImportDeclaration.h"
-#include "ir/ets/etsImportSource.h"
 #include "ir/module/importDeclaration.h"
+#include "util/importPathManager.h"
 #include "varbinder/varbinder.h"
 
 namespace ark::es2panda::ir {
@@ -65,10 +65,7 @@ public:
         return nullptr;
     }
 
-    checker::Type *Check(checker::ETSChecker * /*checker*/) override
-    {
-        return nullptr;
-    }
+    checker::VerifiedType Check(checker::ETSChecker * /*checker*/) override;
 
     void Accept(ASTVisitorT *v) override
     {

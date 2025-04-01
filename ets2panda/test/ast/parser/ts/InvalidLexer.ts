@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,15 +26,15 @@ funct\u{0069}on
 
 `string ${expr
 
-/* @@? 16:7 Error SyntaxError: Invalid RegExp flag  */
-/* @@? 16:7 Error SyntaxError: Unexpected token 'identification literal'.  */
-/* @@? 18:8 Error SyntaxError: Invalid RegExp flag  */
-/* @@? 20:5 Error SyntaxError: Unterminated RegExp  */
-/* @@? 20:5 Error SyntaxError: Expected an identifier  */
-/* @@? 20:5 Error SyntaxError: Unexpected token 'identification literal'.  */
-/* @@? 22:1 Error SyntaxError: Unexpected strict mode reserved keyword  */
-/* @@? 24:1 Error SyntaxError: Escape sequences are not allowed in keywords  */
-/* @@? 40:67 Error SyntaxError: Unexpected token, expected: '}'.  */
-/* @@? 40:67 Error SyntaxError: Unterminated string  */
-/* @@? 40:67 Error SyntaxError: Unexpected token, expected '${' or '`'  */
-/* @@? 40:67 Error SyntaxError: Unexpected token, expected '`'  */
+/* @@? 16:7 Error SyntaxError: Invalid RegExp flag */
+/* @@? 16:7 Error SyntaxError: Unexpected token: 'identification literal'. */
+/* @@? 18:8 Error SyntaxError: Invalid RegExp flag */
+/* @@? 20:5 Error SyntaxError: Unterminated RegExp */
+/* @@? 20:5 Error SyntaxError: Expected an identifier */
+/* @@? 20:5 Error SyntaxError: Unexpected token: 'identification literal'. */
+/* @@? 22:1 Error SyntaxError: Unexpected strict mode reserved keyword */
+/* @@? 24:1 Error SyntaxError: Escape sequences are not allowed in keywords */
+/* @@? 40:66 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@? 40:66 Error SyntaxError: Unterminated string */
+/* @@? 40:66 Error SyntaxError: Unexpected token, expected '${' or '`' */
+/* @@? 40:66 Error SyntaxError: Unexpected token, expected '`' */

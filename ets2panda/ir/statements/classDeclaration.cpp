@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,7 +24,7 @@
 namespace ark::es2panda::ir {
 void ClassDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    for (auto *&it : decorators_) {
+    for (auto *&it : VectorIterationGuard(decorators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsDecorator();
@@ -39,7 +39,7 @@ void ClassDeclaration::TransformChildren(const NodeTransformer &cb, std::string_
 
 void ClassDeclaration::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
         cb(it);
     }
 
@@ -57,7 +57,7 @@ void ClassDeclaration::Dump(ir::SrcDumper *dumper) const
         def_->Dump(dumper);
     }
     // NOTE(nsizov): support decorators when supported in ArkTS
-    ASSERT(decorators_.empty());
+    ES2PANDA_ASSERT(decorators_.empty());
 }
 
 void ClassDeclaration::Compile(compiler::PandaGen *pg) const
@@ -75,8 +75,8 @@ checker::Type *ClassDeclaration::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ClassDeclaration::Check(checker::ETSChecker *checker)
+checker::VerifiedType ClassDeclaration::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

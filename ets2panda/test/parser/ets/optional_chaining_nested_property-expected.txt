@@ -11,11 +11,13 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 7
+              "column": 7,
+              "program": "optional_chaining_nested_property.ets"
             },
             "end": {
               "line": 17,
-              "column": 10
+              "column": 10,
+              "program": "optional_chaining_nested_property.ets"
             }
           }
         },
@@ -31,11 +33,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 5
+                  "column": 5,
+                  "program": "optional_chaining_nested_property.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 12
+                  "column": 12,
+                  "program": "optional_chaining_nested_property.ets"
                 }
               }
             },
@@ -45,11 +49,13 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 23
+                  "column": 23,
+                  "program": "optional_chaining_nested_property.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 25
+                  "column": 25,
+                  "program": "optional_chaining_nested_property.ets"
                 }
               }
             },
@@ -70,33 +76,39 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 14
+                      "column": 14,
+                      "program": "optional_chaining_nested_property.ets"
                     },
                     "end": {
                       "line": 18,
-                      "column": 20
+                      "column": 20,
+                      "program": "optional_chaining_nested_property.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 14
+                    "column": 14,
+                    "program": "optional_chaining_nested_property.ets"
                   },
                   "end": {
                     "line": 18,
-                    "column": 22
+                    "column": 22,
+                    "program": "optional_chaining_nested_property.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 14
+                  "column": 14,
+                  "program": "optional_chaining_nested_property.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 22
+                  "column": 22,
+                  "program": "optional_chaining_nested_property.ets"
                 }
               }
             },
@@ -105,11 +117,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 5
+                "column": 5,
+                "program": "optional_chaining_nested_property.ets"
               },
               "end": {
                 "line": 18,
-                "column": 25
+                "column": 25,
+                "program": "optional_chaining_nested_property.ets"
               }
             }
           },
@@ -122,11 +136,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 5
+                  "column": 5,
+                  "program": "optional_chaining_nested_property.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 9
+                  "column": 9,
+                  "program": "optional_chaining_nested_property.ets"
                 }
               }
             },
@@ -136,11 +152,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 20
+                  "column": 20,
+                  "program": "optional_chaining_nested_property.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 22
+                  "column": 22,
+                  "program": "optional_chaining_nested_property.ets"
                 }
               }
             },
@@ -161,33 +179,39 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 11
+                      "column": 11,
+                      "program": "optional_chaining_nested_property.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 17
+                      "column": 17,
+                      "program": "optional_chaining_nested_property.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 11
+                    "column": 11,
+                    "program": "optional_chaining_nested_property.ets"
                   },
                   "end": {
                     "line": 19,
-                    "column": 19
+                    "column": 19,
+                    "program": "optional_chaining_nested_property.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 11
+                  "column": 11,
+                  "program": "optional_chaining_nested_property.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 19
+                  "column": 19,
+                  "program": "optional_chaining_nested_property.ets"
                 }
               }
             },
@@ -196,11 +220,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 5
+                "column": 5,
+                "program": "optional_chaining_nested_property.ets"
               },
               "end": {
                 "line": 19,
-                "column": 22
+                "column": 22,
+                "program": "optional_chaining_nested_property.ets"
               }
             }
           },
@@ -213,11 +239,13 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 5
+                  "column": 5,
+                  "program": "optional_chaining_nested_property.ets"
                 },
                 "end": {
                   "line": 20,
-                  "column": 10
+                  "column": 10,
+                  "program": "optional_chaining_nested_property.ets"
                 }
               }
             },
@@ -227,11 +255,13 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 18
+                  "column": 18,
+                  "program": "optional_chaining_nested_property.ets"
                 },
                 "end": {
                   "line": 20,
-                  "column": 19
+                  "column": 19,
+                  "program": "optional_chaining_nested_property.ets"
                 }
               }
             },
@@ -252,33 +282,39 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 12
+                      "column": 12,
+                      "program": "optional_chaining_nested_property.ets"
                     },
                     "end": {
                       "line": 20,
-                      "column": 15
+                      "column": 15,
+                      "program": "optional_chaining_nested_property.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 12
+                    "column": 12,
+                    "program": "optional_chaining_nested_property.ets"
                   },
                   "end": {
                     "line": 20,
-                    "column": 17
+                    "column": 17,
+                    "program": "optional_chaining_nested_property.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 12
+                  "column": 12,
+                  "program": "optional_chaining_nested_property.ets"
                 },
                 "end": {
                   "line": 20,
-                  "column": 17
+                  "column": 17,
+                  "program": "optional_chaining_nested_property.ets"
                 }
               }
             },
@@ -287,11 +323,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 5
+                "column": 5,
+                "program": "optional_chaining_nested_property.ets"
               },
               "end": {
                 "line": 20,
-                "column": 19
+                "column": 19,
+                "program": "optional_chaining_nested_property.ets"
               }
             }
           },
@@ -303,12 +341,14 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 17,
+                  "column": 12,
+                  "program": "optional_chaining_nested_property.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 17,
+                  "column": 12,
+                  "program": "optional_chaining_nested_property.ets"
                 }
               }
             },
@@ -326,12 +366,14 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 17,
+                      "column": 12,
+                      "program": "optional_chaining_nested_property.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 17,
+                      "column": 12,
+                      "program": "optional_chaining_nested_property.ets"
                     }
                   }
                 },
@@ -344,34 +386,40 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 1,
-                      "column": 1
+                      "line": 17,
+                      "column": 12,
+                      "program": "optional_chaining_nested_property.ets"
                     },
                     "end": {
-                      "line": 1,
-                      "column": 1
+                      "line": 17,
+                      "column": 12,
+                      "program": "optional_chaining_nested_property.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
-                    "column": 1
+                    "line": 17,
+                    "column": 12,
+                    "program": "optional_chaining_nested_property.ets"
                   },
                   "end": {
-                    "line": 1,
-                    "column": 1
+                    "line": 17,
+                    "column": 12,
+                    "program": "optional_chaining_nested_property.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
-                  "column": 1
+                  "line": 17,
+                  "column": 12,
+                  "program": "optional_chaining_nested_property.ets"
                 },
                 "end": {
-                  "line": 1,
-                  "column": 1
+                  "line": 17,
+                  "column": 12,
+                  "program": "optional_chaining_nested_property.ets"
                 }
               }
             },
@@ -379,12 +427,14 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 21,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               },
               "end": {
-                "line": 21,
-                "column": 2
+                "line": 1,
+                "column": 1,
+                "program": null
               }
             }
           }
@@ -392,22 +442,26 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 11
+            "column": 11,
+            "program": "optional_chaining_nested_property.ets"
           },
           "end": {
-            "line": 21,
-            "column": 2
+            "line": 23,
+            "column": 4,
+            "program": "optional_chaining_nested_property.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "optional_chaining_nested_property.ets"
         },
         "end": {
-          "line": 21,
-          "column": 2
+          "line": 23,
+          "column": 4,
+          "program": "optional_chaining_nested_property.ets"
         }
       }
     },
@@ -421,16 +475,52 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "optional_chaining_nested_property.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "optional_chaining_nested_property.ets"
             }
           }
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "optional_chaining_nested_property.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "optional_chaining_nested_property.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "optional_chaining_nested_property.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "optional_chaining_nested_property.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",
@@ -441,11 +531,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -465,11 +557,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -483,33 +577,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -518,11 +618,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "optional_chaining_nested_property.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "optional_chaining_nested_property.ets"
               }
             }
           },
@@ -535,11 +637,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -559,11 +663,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -586,11 +692,13 @@
                           "loc": {
                             "start": {
                               "line": 23,
-                              "column": 5
+                              "column": 5,
+                              "program": "optional_chaining_nested_property.ets"
                             },
                             "end": {
                               "line": 23,
-                              "column": 8
+                              "column": 8,
+                              "program": "optional_chaining_nested_property.ets"
                             }
                           }
                         },
@@ -609,11 +717,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 24,
-                                    "column": 5
+                                    "column": 5,
+                                    "program": "optional_chaining_nested_property.ets"
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 12
+                                    "column": 12,
+                                    "program": "optional_chaining_nested_property.ets"
                                   }
                                 }
                               },
@@ -623,11 +733,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 24,
-                                    "column": 14
+                                    "column": 14,
+                                    "program": "optional_chaining_nested_property.ets"
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 24
+                                    "column": 24,
+                                    "program": "optional_chaining_nested_property.ets"
                                   }
                                 }
                               },
@@ -635,11 +747,13 @@
                               "loc": {
                                 "start": {
                                   "line": 24,
-                                  "column": 5
+                                  "column": 5,
+                                  "program": "optional_chaining_nested_property.ets"
                                 },
                                 "end": {
                                   "line": 24,
-                                  "column": 24
+                                  "column": 24,
+                                  "program": "optional_chaining_nested_property.ets"
                                 }
                               }
                             }
@@ -647,33 +761,39 @@
                           "loc": {
                             "start": {
                               "line": 23,
-                              "column": 16
+                              "column": 16,
+                              "program": "optional_chaining_nested_property.ets"
                             },
                             "end": {
                               "line": 25,
-                              "column": 2
+                              "column": 2,
+                              "program": "optional_chaining_nested_property.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 23,
-                            "column": 5
+                            "column": 5,
+                            "program": "optional_chaining_nested_property.ets"
                           },
                           "end": {
                             "line": 25,
-                            "column": 2
+                            "column": 2,
+                            "program": "optional_chaining_nested_property.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 23,
-                          "column": 5
+                          "column": 5,
+                          "program": "optional_chaining_nested_property.ets"
                         },
                         "end": {
                           "line": 25,
-                          "column": 2
+                          "column": 2,
+                          "program": "optional_chaining_nested_property.ets"
                         }
                       }
                     },
@@ -689,11 +809,13 @@
                           "loc": {
                             "start": {
                               "line": 27,
-                              "column": 5
+                              "column": 5,
+                              "program": "optional_chaining_nested_property.ets"
                             },
                             "end": {
                               "line": 27,
-                              "column": 18
+                              "column": 18,
+                              "program": "optional_chaining_nested_property.ets"
                             }
                           }
                         },
@@ -707,16 +829,18 @@
                                   "type": "VariableDeclarator",
                                   "id": {
                                     "type": "Identifier",
-                                    "name": "gensym%%_5",
+                                    "name": "gensym%%_17",
                                     "decorators": [],
                                     "loc": {
                                       "start": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "optional_chaining_nested_property.ets"
                                       },
                                       "end": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "optional_chaining_nested_property.ets"
                                       }
                                     }
                                   },
@@ -730,16 +854,18 @@
                                             "type": "VariableDeclarator",
                                             "id": {
                                               "type": "Identifier",
-                                              "name": "gensym%%_4",
+                                              "name": "gensym%%_16",
                                               "decorators": [],
                                               "loc": {
                                                 "start": {
                                                   "line": 1,
-                                                  "column": 3
+                                                  "column": 3,
+                                                  "program": "optional_chaining_nested_property.ets"
                                                 },
                                                 "end": {
                                                   "line": 1,
-                                                  "column": 3
+                                                  "column": 3,
+                                                  "program": "optional_chaining_nested_property.ets"
                                                 }
                                               }
                                             },
@@ -750,22 +876,26 @@
                                               "loc": {
                                                 "start": {
                                                   "line": 27,
-                                                  "column": 21
+                                                  "column": 21,
+                                                  "program": "optional_chaining_nested_property.ets"
                                                 },
                                                 "end": {
                                                   "line": 27,
-                                                  "column": 24
+                                                  "column": 24,
+                                                  "program": "optional_chaining_nested_property.ets"
                                                 }
                                               }
                                             },
                                             "loc": {
                                               "start": {
                                                 "line": 1,
-                                                "column": 3
+                                                "column": 3,
+                                                "program": "optional_chaining_nested_property.ets"
                                               },
                                               "end": {
                                                 "line": 1,
-                                                "column": 3
+                                                "column": 3,
+                                                "program": "optional_chaining_nested_property.ets"
                                               }
                                             }
                                           }
@@ -774,11 +904,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 27,
-                                            "column": 21
+                                            "column": 21,
+                                            "program": "optional_chaining_nested_property.ets"
                                           },
                                           "end": {
                                             "line": 27,
-                                            "column": 41
+                                            "column": 41,
+                                            "program": "optional_chaining_nested_property.ets"
                                           }
                                         }
                                       },
@@ -791,16 +923,18 @@
                                             "operator": "==",
                                             "left": {
                                               "type": "Identifier",
-                                              "name": "gensym%%_4",
+                                              "name": "gensym%%_16",
                                               "decorators": [],
                                               "loc": {
                                                 "start": {
                                                   "line": 1,
-                                                  "column": 3
+                                                  "column": 3,
+                                                  "program": "optional_chaining_nested_property.ets"
                                                 },
                                                 "end": {
                                                   "line": 1,
-                                                  "column": 3
+                                                  "column": 3,
+                                                  "program": "optional_chaining_nested_property.ets"
                                                 }
                                               }
                                             },
@@ -810,22 +944,26 @@
                                               "loc": {
                                                 "start": {
                                                   "line": 1,
-                                                  "column": 3
+                                                  "column": 3,
+                                                  "program": "optional_chaining_nested_property.ets"
                                                 },
                                                 "end": {
                                                   "line": 1,
-                                                  "column": 3
+                                                  "column": 3,
+                                                  "program": "optional_chaining_nested_property.ets"
                                                 }
                                               }
                                             },
                                             "loc": {
                                               "start": {
                                                 "line": 1,
-                                                "column": 3
+                                                "column": 3,
+                                                "program": "optional_chaining_nested_property.ets"
                                               },
                                               "end": {
                                                 "line": 1,
-                                                "column": 3
+                                                "column": 3,
+                                                "program": "optional_chaining_nested_property.ets"
                                               }
                                             }
                                           },
@@ -835,11 +973,13 @@
                                             "loc": {
                                               "start": {
                                                 "line": 1,
-                                                "column": 3
+                                                "column": 3,
+                                                "program": "optional_chaining_nested_property.ets"
                                               },
                                               "end": {
                                                 "line": 1,
-                                                "column": 3
+                                                "column": 3,
+                                                "program": "optional_chaining_nested_property.ets"
                                               }
                                             }
                                           },
@@ -847,16 +987,18 @@
                                             "type": "MemberExpression",
                                             "object": {
                                               "type": "Identifier",
-                                              "name": "gensym%%_4",
+                                              "name": "gensym%%_16",
                                               "decorators": [],
                                               "loc": {
                                                 "start": {
                                                   "line": 27,
-                                                  "column": 21
+                                                  "column": 21,
+                                                  "program": "optional_chaining_nested_property.ets"
                                                 },
                                                 "end": {
                                                   "line": 27,
-                                                  "column": 33
+                                                  "column": 33,
+                                                  "program": "optional_chaining_nested_property.ets"
                                                 }
                                               }
                                             },
@@ -867,11 +1009,13 @@
                                               "loc": {
                                                 "start": {
                                                   "line": 27,
-                                                  "column": 26
+                                                  "column": 26,
+                                                  "program": "optional_chaining_nested_property.ets"
                                                 },
                                                 "end": {
                                                   "line": 27,
-                                                  "column": 33
+                                                  "column": 33,
+                                                  "program": "optional_chaining_nested_property.ets"
                                                 }
                                               }
                                             },
@@ -880,33 +1024,39 @@
                                             "loc": {
                                               "start": {
                                                 "line": 27,
-                                                "column": 21
+                                                "column": 21,
+                                                "program": "optional_chaining_nested_property.ets"
                                               },
                                               "end": {
                                                 "line": 27,
-                                                "column": 33
+                                                "column": 33,
+                                                "program": "optional_chaining_nested_property.ets"
                                               }
                                             }
                                           },
                                           "loc": {
                                             "start": {
                                               "line": 1,
-                                              "column": 3
+                                              "column": 3,
+                                              "program": "optional_chaining_nested_property.ets"
                                             },
                                             "end": {
                                               "line": 1,
-                                              "column": 3
+                                              "column": 3,
+                                              "program": "optional_chaining_nested_property.ets"
                                             }
                                           }
                                         },
                                         "loc": {
                                           "start": {
                                             "line": 1,
-                                            "column": 3
+                                            "column": 3,
+                                            "program": "optional_chaining_nested_property.ets"
                                           },
                                           "end": {
                                             "line": 1,
-                                            "column": 3
+                                            "column": 3,
+                                            "program": "optional_chaining_nested_property.ets"
                                           }
                                         }
                                       }
@@ -914,22 +1064,26 @@
                                     "loc": {
                                       "start": {
                                         "line": 27,
-                                        "column": 21
+                                        "column": 21,
+                                        "program": "optional_chaining_nested_property.ets"
                                       },
                                       "end": {
                                         "line": 27,
-                                        "column": 41
+                                        "column": 41,
+                                        "program": "optional_chaining_nested_property.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optional_chaining_nested_property.ets"
                                     },
                                     "end": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optional_chaining_nested_property.ets"
                                     }
                                   }
                                 }
@@ -938,11 +1092,13 @@
                               "loc": {
                                 "start": {
                                   "line": 27,
-                                  "column": 5
+                                  "column": 5,
+                                  "program": "optional_chaining_nested_property.ets"
                                 },
                                 "end": {
                                   "line": 27,
-                                  "column": 41
+                                  "column": 41,
+                                  "program": "optional_chaining_nested_property.ets"
                                 }
                               }
                             },
@@ -955,16 +1111,18 @@
                                   "operator": "==",
                                   "left": {
                                     "type": "Identifier",
-                                    "name": "gensym%%_5",
+                                    "name": "gensym%%_17",
                                     "decorators": [],
                                     "loc": {
                                       "start": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "optional_chaining_nested_property.ets"
                                       },
                                       "end": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "optional_chaining_nested_property.ets"
                                       }
                                     }
                                   },
@@ -974,22 +1132,26 @@
                                     "loc": {
                                       "start": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "optional_chaining_nested_property.ets"
                                       },
                                       "end": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "optional_chaining_nested_property.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optional_chaining_nested_property.ets"
                                     },
                                     "end": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optional_chaining_nested_property.ets"
                                     }
                                   }
                                 },
@@ -999,11 +1161,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optional_chaining_nested_property.ets"
                                     },
                                     "end": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optional_chaining_nested_property.ets"
                                     }
                                   }
                                 },
@@ -1011,16 +1175,18 @@
                                   "type": "MemberExpression",
                                   "object": {
                                     "type": "Identifier",
-                                    "name": "gensym%%_5",
+                                    "name": "gensym%%_17",
                                     "decorators": [],
                                     "loc": {
                                       "start": {
                                         "line": 27,
-                                        "column": 21
+                                        "column": 21,
+                                        "program": "optional_chaining_nested_property.ets"
                                       },
                                       "end": {
                                         "line": 27,
-                                        "column": 41
+                                        "column": 41,
+                                        "program": "optional_chaining_nested_property.ets"
                                       }
                                     }
                                   },
@@ -1031,11 +1197,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 27,
-                                        "column": 35
+                                        "column": 35,
+                                        "program": "optional_chaining_nested_property.ets"
                                       },
                                       "end": {
                                         "line": 27,
-                                        "column": 41
+                                        "column": 41,
+                                        "program": "optional_chaining_nested_property.ets"
                                       }
                                     }
                                   },
@@ -1044,33 +1212,39 @@
                                   "loc": {
                                     "start": {
                                       "line": 27,
-                                      "column": 21
+                                      "column": 21,
+                                      "program": "optional_chaining_nested_property.ets"
                                     },
                                     "end": {
                                       "line": 27,
-                                      "column": 41
+                                      "column": 41,
+                                      "program": "optional_chaining_nested_property.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 1,
-                                    "column": 3
+                                    "column": 3,
+                                    "program": "optional_chaining_nested_property.ets"
                                   },
                                   "end": {
                                     "line": 1,
-                                    "column": 3
+                                    "column": 3,
+                                    "program": "optional_chaining_nested_property.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 1,
-                                  "column": 3
+                                  "column": 3,
+                                  "program": "optional_chaining_nested_property.ets"
                                 },
                                 "end": {
                                   "line": 1,
-                                  "column": 3
+                                  "column": 3,
+                                  "program": "optional_chaining_nested_property.ets"
                                 }
                               }
                             }
@@ -1078,33 +1252,39 @@
                           "loc": {
                             "start": {
                               "line": 27,
-                              "column": 5
+                              "column": 5,
+                              "program": "optional_chaining_nested_property.ets"
                             },
                             "end": {
                               "line": 27,
-                              "column": 41
+                              "column": 41,
+                              "program": "optional_chaining_nested_property.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 27,
-                            "column": 5
+                            "column": 5,
+                            "program": "optional_chaining_nested_property.ets"
                           },
                           "end": {
                             "line": 27,
-                            "column": 41
+                            "column": 41,
+                            "program": "optional_chaining_nested_property.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 27,
-                          "column": 5
+                          "column": 5,
+                          "program": "optional_chaining_nested_property.ets"
                         },
                         "end": {
                           "line": 27,
-                          "column": 41
+                          "column": 41,
+                          "program": "optional_chaining_nested_property.ets"
                         }
                       }
                     }
@@ -1112,33 +1292,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -1147,11 +1333,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "optional_chaining_nested_property.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "optional_chaining_nested_property.ets"
               }
             }
           },
@@ -1164,11 +1352,13 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 5
+                  "column": 5,
+                  "program": "optional_chaining_nested_property.ets"
                 },
                 "end": {
                   "line": 23,
-                  "column": 8
+                  "column": 8,
+                  "program": "optional_chaining_nested_property.ets"
                 }
               }
             },
@@ -1189,33 +1379,39 @@
                   "loc": {
                     "start": {
                       "line": 23,
-                      "column": 10
+                      "column": 10,
+                      "program": "optional_chaining_nested_property.ets"
                     },
                     "end": {
                       "line": 23,
-                      "column": 13
+                      "column": 13,
+                      "program": "optional_chaining_nested_property.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 10
+                    "column": 10,
+                    "program": "optional_chaining_nested_property.ets"
                   },
                   "end": {
                     "line": 23,
-                    "column": 15
+                    "column": 15,
+                    "program": "optional_chaining_nested_property.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 10
+                  "column": 10,
+                  "program": "optional_chaining_nested_property.ets"
                 },
                 "end": {
                   "line": 23,
-                  "column": 15
+                  "column": 15,
+                  "program": "optional_chaining_nested_property.ets"
                 }
               }
             },
@@ -1224,11 +1420,13 @@
             "loc": {
               "start": {
                 "line": 23,
-                "column": 5
+                "column": 5,
+                "program": "optional_chaining_nested_property.ets"
               },
               "end": {
                 "line": 25,
-                "column": 2
+                "column": 2,
+                "program": "optional_chaining_nested_property.ets"
               }
             }
           },
@@ -1241,11 +1439,13 @@
               "loc": {
                 "start": {
                   "line": 27,
-                  "column": 5
+                  "column": 5,
+                  "program": "optional_chaining_nested_property.ets"
                 },
                 "end": {
                   "line": 27,
-                  "column": 18
+                  "column": 18,
+                  "program": "optional_chaining_nested_property.ets"
                 }
               }
             },
@@ -1259,16 +1459,18 @@
                       "type": "VariableDeclarator",
                       "id": {
                         "type": "Identifier",
-                        "name": "gensym%%_7",
+                        "name": "gensym%%_19",
                         "decorators": [],
                         "loc": {
                           "start": {
                             "line": 1,
-                            "column": 3
+                            "column": 3,
+                            "program": "optional_chaining_nested_property.ets"
                           },
                           "end": {
                             "line": 1,
-                            "column": 3
+                            "column": 3,
+                            "program": "optional_chaining_nested_property.ets"
                           }
                         }
                       },
@@ -1282,16 +1484,18 @@
                                 "type": "VariableDeclarator",
                                 "id": {
                                   "type": "Identifier",
-                                  "name": "gensym%%_6",
+                                  "name": "gensym%%_18",
                                   "decorators": [],
                                   "loc": {
                                     "start": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optional_chaining_nested_property.ets"
                                     },
                                     "end": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optional_chaining_nested_property.ets"
                                     }
                                   }
                                 },
@@ -1302,22 +1506,26 @@
                                   "loc": {
                                     "start": {
                                       "line": 27,
-                                      "column": 21
+                                      "column": 21,
+                                      "program": "optional_chaining_nested_property.ets"
                                     },
                                     "end": {
                                       "line": 27,
-                                      "column": 24
+                                      "column": 24,
+                                      "program": "optional_chaining_nested_property.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 1,
-                                    "column": 3
+                                    "column": 3,
+                                    "program": "optional_chaining_nested_property.ets"
                                   },
                                   "end": {
                                     "line": 1,
-                                    "column": 3
+                                    "column": 3,
+                                    "program": "optional_chaining_nested_property.ets"
                                   }
                                 }
                               }
@@ -1326,11 +1534,13 @@
                             "loc": {
                               "start": {
                                 "line": 27,
-                                "column": 21
+                                "column": 21,
+                                "program": "optional_chaining_nested_property.ets"
                               },
                               "end": {
                                 "line": 27,
-                                "column": 41
+                                "column": 41,
+                                "program": "optional_chaining_nested_property.ets"
                               }
                             }
                           },
@@ -1343,16 +1553,18 @@
                                 "operator": "==",
                                 "left": {
                                   "type": "Identifier",
-                                  "name": "gensym%%_6",
+                                  "name": "gensym%%_18",
                                   "decorators": [],
                                   "loc": {
                                     "start": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optional_chaining_nested_property.ets"
                                     },
                                     "end": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optional_chaining_nested_property.ets"
                                     }
                                   }
                                 },
@@ -1362,22 +1574,26 @@
                                   "loc": {
                                     "start": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optional_chaining_nested_property.ets"
                                     },
                                     "end": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optional_chaining_nested_property.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 1,
-                                    "column": 3
+                                    "column": 3,
+                                    "program": "optional_chaining_nested_property.ets"
                                   },
                                   "end": {
                                     "line": 1,
-                                    "column": 3
+                                    "column": 3,
+                                    "program": "optional_chaining_nested_property.ets"
                                   }
                                 }
                               },
@@ -1387,11 +1603,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 1,
-                                    "column": 3
+                                    "column": 3,
+                                    "program": "optional_chaining_nested_property.ets"
                                   },
                                   "end": {
                                     "line": 1,
-                                    "column": 3
+                                    "column": 3,
+                                    "program": "optional_chaining_nested_property.ets"
                                   }
                                 }
                               },
@@ -1399,16 +1617,18 @@
                                 "type": "MemberExpression",
                                 "object": {
                                   "type": "Identifier",
-                                  "name": "gensym%%_6",
+                                  "name": "gensym%%_18",
                                   "decorators": [],
                                   "loc": {
                                     "start": {
                                       "line": 27,
-                                      "column": 21
+                                      "column": 21,
+                                      "program": "optional_chaining_nested_property.ets"
                                     },
                                     "end": {
                                       "line": 27,
-                                      "column": 33
+                                      "column": 33,
+                                      "program": "optional_chaining_nested_property.ets"
                                     }
                                   }
                                 },
@@ -1419,11 +1639,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 27,
-                                      "column": 26
+                                      "column": 26,
+                                      "program": "optional_chaining_nested_property.ets"
                                     },
                                     "end": {
                                       "line": 27,
-                                      "column": 33
+                                      "column": 33,
+                                      "program": "optional_chaining_nested_property.ets"
                                     }
                                   }
                                 },
@@ -1432,33 +1654,39 @@
                                 "loc": {
                                   "start": {
                                     "line": 27,
-                                    "column": 21
+                                    "column": 21,
+                                    "program": "optional_chaining_nested_property.ets"
                                   },
                                   "end": {
                                     "line": 27,
-                                    "column": 33
+                                    "column": 33,
+                                    "program": "optional_chaining_nested_property.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 1,
-                                  "column": 3
+                                  "column": 3,
+                                  "program": "optional_chaining_nested_property.ets"
                                 },
                                 "end": {
                                   "line": 1,
-                                  "column": 3
+                                  "column": 3,
+                                  "program": "optional_chaining_nested_property.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 1,
-                                "column": 3
+                                "column": 3,
+                                "program": "optional_chaining_nested_property.ets"
                               },
                               "end": {
                                 "line": 1,
-                                "column": 3
+                                "column": 3,
+                                "program": "optional_chaining_nested_property.ets"
                               }
                             }
                           }
@@ -1466,22 +1694,26 @@
                         "loc": {
                           "start": {
                             "line": 27,
-                            "column": 21
+                            "column": 21,
+                            "program": "optional_chaining_nested_property.ets"
                           },
                           "end": {
                             "line": 27,
-                            "column": 41
+                            "column": 41,
+                            "program": "optional_chaining_nested_property.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 1,
-                          "column": 3
+                          "column": 3,
+                          "program": "optional_chaining_nested_property.ets"
                         },
                         "end": {
                           "line": 1,
-                          "column": 3
+                          "column": 3,
+                          "program": "optional_chaining_nested_property.ets"
                         }
                       }
                     }
@@ -1490,11 +1722,13 @@
                   "loc": {
                     "start": {
                       "line": 27,
-                      "column": 5
+                      "column": 5,
+                      "program": "optional_chaining_nested_property.ets"
                     },
                     "end": {
                       "line": 27,
-                      "column": 41
+                      "column": 41,
+                      "program": "optional_chaining_nested_property.ets"
                     }
                   }
                 },
@@ -1507,16 +1741,18 @@
                       "operator": "==",
                       "left": {
                         "type": "Identifier",
-                        "name": "gensym%%_7",
+                        "name": "gensym%%_19",
                         "decorators": [],
                         "loc": {
                           "start": {
                             "line": 1,
-                            "column": 3
+                            "column": 3,
+                            "program": "optional_chaining_nested_property.ets"
                           },
                           "end": {
                             "line": 1,
-                            "column": 3
+                            "column": 3,
+                            "program": "optional_chaining_nested_property.ets"
                           }
                         }
                       },
@@ -1526,22 +1762,26 @@
                         "loc": {
                           "start": {
                             "line": 1,
-                            "column": 3
+                            "column": 3,
+                            "program": "optional_chaining_nested_property.ets"
                           },
                           "end": {
                             "line": 1,
-                            "column": 3
+                            "column": 3,
+                            "program": "optional_chaining_nested_property.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 1,
-                          "column": 3
+                          "column": 3,
+                          "program": "optional_chaining_nested_property.ets"
                         },
                         "end": {
                           "line": 1,
-                          "column": 3
+                          "column": 3,
+                          "program": "optional_chaining_nested_property.ets"
                         }
                       }
                     },
@@ -1551,11 +1791,13 @@
                       "loc": {
                         "start": {
                           "line": 1,
-                          "column": 3
+                          "column": 3,
+                          "program": "optional_chaining_nested_property.ets"
                         },
                         "end": {
                           "line": 1,
-                          "column": 3
+                          "column": 3,
+                          "program": "optional_chaining_nested_property.ets"
                         }
                       }
                     },
@@ -1563,16 +1805,18 @@
                       "type": "MemberExpression",
                       "object": {
                         "type": "Identifier",
-                        "name": "gensym%%_7",
+                        "name": "gensym%%_19",
                         "decorators": [],
                         "loc": {
                           "start": {
                             "line": 27,
-                            "column": 21
+                            "column": 21,
+                            "program": "optional_chaining_nested_property.ets"
                           },
                           "end": {
                             "line": 27,
-                            "column": 41
+                            "column": 41,
+                            "program": "optional_chaining_nested_property.ets"
                           }
                         }
                       },
@@ -1583,11 +1827,13 @@
                         "loc": {
                           "start": {
                             "line": 27,
-                            "column": 35
+                            "column": 35,
+                            "program": "optional_chaining_nested_property.ets"
                           },
                           "end": {
                             "line": 27,
-                            "column": 41
+                            "column": 41,
+                            "program": "optional_chaining_nested_property.ets"
                           }
                         }
                       },
@@ -1596,33 +1842,39 @@
                       "loc": {
                         "start": {
                           "line": 27,
-                          "column": 21
+                          "column": 21,
+                          "program": "optional_chaining_nested_property.ets"
                         },
                         "end": {
                           "line": 27,
-                          "column": 41
+                          "column": 41,
+                          "program": "optional_chaining_nested_property.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 1,
-                        "column": 3
+                        "column": 3,
+                        "program": "optional_chaining_nested_property.ets"
                       },
                       "end": {
                         "line": 1,
-                        "column": 3
+                        "column": 3,
+                        "program": "optional_chaining_nested_property.ets"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 3
+                      "column": 3,
+                      "program": "optional_chaining_nested_property.ets"
                     },
                     "end": {
                       "line": 1,
-                      "column": 3
+                      "column": 3,
+                      "program": "optional_chaining_nested_property.ets"
                     }
                   }
                 }
@@ -1630,11 +1882,13 @@
               "loc": {
                 "start": {
                   "line": 27,
-                  "column": 5
+                  "column": 5,
+                  "program": "optional_chaining_nested_property.ets"
                 },
                 "end": {
                   "line": 27,
-                  "column": 41
+                  "column": 41,
+                  "program": "optional_chaining_nested_property.ets"
                 }
               }
             },
@@ -1649,11 +1903,13 @@
             "loc": {
               "start": {
                 "line": 27,
-                "column": 5
+                "column": 5,
+                "program": "optional_chaining_nested_property.ets"
               },
               "end": {
                 "line": 27,
-                "column": 41
+                "column": 41,
+                "program": "optional_chaining_nested_property.ets"
               }
             }
           }
@@ -1661,22 +1917,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "optional_chaining_nested_property.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "optional_chaining_nested_property.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "optional_chaining_nested_property.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "optional_chaining_nested_property.ets"
         }
       }
     }
@@ -1684,11 +1944,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "optional_chaining_nested_property.ets"
     },
     "end": {
       "line": 28,
-      "column": 1
+      "column": 1,
+      "program": "optional_chaining_nested_property.ets"
     }
   }
 }

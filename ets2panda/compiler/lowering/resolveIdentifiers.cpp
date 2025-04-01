@@ -16,27 +16,27 @@
 #include "resolveIdentifiers.h"
 
 #include "varbinder/ETSBinder.h"
+#include "util/options.h"
 
 namespace ark::es2panda::compiler {
 bool ResolveIdentifiers::Perform(public_lib::Context *ctx, [[maybe_unused]] parser::Program *program)
 {
-    auto const &options = ctx->config->options->CompilerOptions();
+    auto const *options = ctx->config->options;
     auto *varbinder = ctx->parserProgram->VarBinder()->AsETSBinder();
 
-    if (options.dumpAst) {
+    if (options->IsDumpAst()) {
         std::cout << varbinder->Program()->Dump() << std::endl;
     }
 
-    if (options.opDumpAstOnlySilent) {
+    if (options->IsDumpAstOnlySilent()) {
         varbinder->Program()->DumpSilent();
+    }
+
+    if (options->IsParseOnly()) {
         return false;
     }
 
-    if (options.parseOnly) {
-        return false;
-    }
-
-    varbinder->SetGenStdLib(options.compilationMode == CompilationMode::GEN_STD_LIB);
+    varbinder->SetGenStdLib(options->GetCompilationMode() == CompilationMode::GEN_STD_LIB);
     varbinder->IdentifierAnalysis();
 
     return true;

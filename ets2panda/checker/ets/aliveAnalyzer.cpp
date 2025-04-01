@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -178,7 +178,7 @@ void AliveAnalyzer::AnalyzeDef(const ir::AstNode *node)
 {
     AnalyzeStat(node);
     if (node != nullptr && node->IsClassStaticBlock() && status_ == LivenessStatus::DEAD) {
-        checker_->LogTypeError("Initializer must be able to complete normally.", node->Start());
+        checker_->LogError(diagnostic::INIT_DOESNT_COMPLETE, {}, node->Start());
     }
 }
 
@@ -189,7 +189,7 @@ void AliveAnalyzer::AnalyzeStat(const ir::AstNode *node)
     }
 
     if (status_ == LivenessStatus::DEAD) {
-        checker_->LogTypeError("Unreachable statement.", node->Start());
+        checker_->LogError(diagnostic::UNREACHABLE_STMT, {}, node->Start());
         return;
     }
 
@@ -240,7 +240,7 @@ void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
 
     status_ = LivenessStatus::ALIVE;
     AnalyzeStat(func->Body());
-    ASSERT(methodDef->TsType() && methodDef->TsType()->IsETSFunctionType());
+    ES2PANDA_ASSERT(methodDef->TsType() && methodDef->TsType()->IsETSFunctionType());
     const auto *returnType = methodDef->TsType()->AsETSFunctionType()->FindSignature(func)->ReturnType();
     const auto isVoid = returnType->IsETSVoidType() || returnType == checker_->GlobalVoidType();
 
@@ -253,12 +253,12 @@ void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
 
     if (status_ == LivenessStatus::ALIVE && !isVoid && !isPromiseVoid && !checker_->IsAsyncImplMethod(methodDef)) {
         if (!methodDef->Function()->HasReturnStatement()) {
-            checker_->LogTypeError("Function with a non void return type must return a value.", func->Start());
+            checker_->LogError(diagnostic::MISSING_RETURN_STMT, {}, func->Start());
             ClearPendingExits();
             return;
         }
 
-        checker_->LogTypeError("Not all code paths return a value.", func->Start());
+        checker_->LogError(diagnostic::NONRETURNING_PATHS, {}, func->Start());
     }
 
     ClearPendingExits();
@@ -281,7 +281,7 @@ void AliveAnalyzer::AnalyzeDoLoop(const ir::DoWhileStatement *doWhile)
     AnalyzeStat(doWhile->Body());
     status_ = Or(status_, ResolveContinues(doWhile));
     AnalyzeNode(doWhile->Test());
-    ASSERT(doWhile->Test()->TsType() && doWhile->Test()->TsType()->IsConditionalExprType());
+    ES2PANDA_ASSERT(doWhile->Test()->TsType() && doWhile->Test()->TsType()->IsConditionalExprType());
     const auto exprRes = doWhile->Test()->TsType()->ResolveConditionExpr();
     status_ = And(status_, static_cast<LivenessStatus>(!std::get<0>(exprRes) || !std::get<1>(exprRes)));
     status_ = Or(status_, ResolveBreaks(doWhile));
@@ -291,7 +291,7 @@ void AliveAnalyzer::AnalyzeWhileLoop(const ir::WhileStatement *whileStmt)
 {
     SetOldPendingExits(PendingExits());
     AnalyzeNode(whileStmt->Test());
-    ASSERT(whileStmt->Test()->TsType() && whileStmt->Test()->TsType()->IsConditionalExprType());
+    ES2PANDA_ASSERT(whileStmt->Test()->TsType() && whileStmt->Test()->TsType()->IsConditionalExprType());
     const auto exprRes = whileStmt->Test()->TsType()->ResolveConditionExpr();
     status_ = And(status_, static_cast<LivenessStatus>(!std::get<0>(exprRes) || std::get<1>(exprRes)));
     AnalyzeStat(whileStmt->Body());
@@ -309,7 +309,7 @@ void AliveAnalyzer::AnalyzeForLoop(const ir::ForUpdateStatement *forStmt)
 
     if (forStmt->Test() != nullptr) {
         AnalyzeNode(forStmt->Test());
-        ASSERT(forStmt->Test()->TsType() && forStmt->Test()->TsType()->IsConditionalExprType());
+        ES2PANDA_ASSERT(forStmt->Test()->TsType() && forStmt->Test()->TsType()->IsConditionalExprType());
         condType = forStmt->Test()->TsType();
         std::tie(resolveType, res) = forStmt->Test()->TsType()->ResolveConditionExpr();
         status_ = From(!resolveType || res);
@@ -365,10 +365,6 @@ void AliveAnalyzer::AnalyzeNewClass(const ir::ETSNewClassInstanceExpression *new
 {
     for (const auto *it : newClass->GetArguments()) {
         AnalyzeNode(it);
-    }
-
-    if (newClass->ClassDefinition() != nullptr) {
-        AnalyzeNode(newClass->ClassDefinition());
     }
 }
 

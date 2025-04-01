@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,12 +16,12 @@
 class A {
     #a;
     foo() {
-        if (#a) {
+        if (#a/* @@ label */) {
 
         }
-    }
+    /* @@ label1 */}
 }
 
-/* @@? 19:15 Error SyntaxError: Unexpected private identifier  */
-/* @@? 22:5 Error SyntaxError: Expected right parenthesis in an 'IfStatement'  */
-/* @@? 23:1 Error SyntaxError: Unexpected token: '}'.  */
+/* @@@ label Error SyntaxError: Unexpected private identifier. */
+/* @@@ label1 Error SyntaxError: Expected ')', got '}'. */
+/* @@@ label1 Error SyntaxError: Unexpected token '}'. */

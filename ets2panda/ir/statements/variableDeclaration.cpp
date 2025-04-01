@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,28 +15,29 @@
 
 #include "variableDeclaration.h"
 
-#include "macros.h"
-#include "varbinder/variable.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/base/decorator.h"
-#include "ir/statements/variableDeclarator.h"
 
 namespace ark::es2panda::ir {
 void VariableDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    for (auto *&it : decorators_) {
+    for (auto *&it : VectorIterationGuard(decorators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsDecorator();
         }
     }
 
-    for (auto *&it : declarators_) {
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
+
+    for (auto *&it : VectorIterationGuard(declarators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsVariableDeclarator();
@@ -46,11 +47,15 @@ void VariableDeclaration::TransformChildren(const NodeTransformer &cb, std::stri
 
 void VariableDeclaration::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
         cb(it);
     }
 
-    for (auto *it : declarators_) {
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
+
+    for (auto *it : VectorIterationGuard(declarators_)) {
         cb(it);
     }
 }
@@ -73,7 +78,7 @@ void VariableDeclaration::Dump(ir::AstDumper *dumper) const
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
 
@@ -81,11 +86,20 @@ void VariableDeclaration::Dump(ir::AstDumper *dumper) const
                  {"declarations", declarators_},
                  {"kind", kind},
                  {"decorators", AstDumper::Optional(decorators_)},
+                 {"annotations", AstDumper::Optional(Annotations())},
                  {"declare", AstDumper::Optional(IsDeclare())}});
 }
 
 void VariableDeclaration::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
+
+    if (IsDeclare()) {
+        dumper->Add("declare ");
+    }
+
     switch (kind_) {
         case VariableDeclarationKind::CONST:
             dumper->Add("const ");
@@ -97,7 +111,7 @@ void VariableDeclaration::Dump(ir::SrcDumper *dumper) const
             dumper->Add("var ");
             break;
         default:
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
     }
 
     for (auto declarator : declarators_) {
@@ -115,7 +129,7 @@ void VariableDeclaration::Dump(ir::SrcDumper *dumper) const
 
 VariableDeclaration::VariableDeclaration([[maybe_unused]] Tag const tag, VariableDeclaration const &other,
                                          ArenaAllocator *const allocator)
-    : Statement(static_cast<Statement const &>(other)),
+    : AnnotationAllowed<Statement>(static_cast<AnnotationAllowed<Statement> const &>(other)),
       kind_(other.kind_),
       decorators_(allocator->Adapter()),
       declarators_(allocator->Adapter())
@@ -133,13 +147,12 @@ VariableDeclaration::VariableDeclaration([[maybe_unused]] Tag const tag, Variabl
 
 VariableDeclaration *VariableDeclaration::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<VariableDeclaration>(Tag {}, *this, allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    auto *const clone = allocator->New<VariableDeclaration>(Tag {}, *this, allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    clone->SetRange(range_);
+    return clone;
 }
 
 void VariableDeclaration::Compile(compiler::PandaGen *pg) const
@@ -157,8 +170,8 @@ checker::Type *VariableDeclaration::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *VariableDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType VariableDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

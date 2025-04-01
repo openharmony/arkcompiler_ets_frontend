@@ -10,11 +10,13 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 6
+            "column": 6,
+            "program": "union_generic_field_access.ets"
           },
           "end": {
             "line": 16,
-            "column": 16
+            "column": 16,
+            "program": "union_generic_field_access.ets"
           }
         }
       },
@@ -32,33 +34,39 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 5
+                    "column": 5,
+                    "program": "union_generic_field_access.ets"
                   },
                   "end": {
                     "line": 17,
-                    "column": 14
+                    "column": 14,
+                    "program": "union_generic_field_access.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 5
+                  "column": 5,
+                  "program": "union_generic_field_access.ets"
                 },
                 "end": {
                   "line": 18,
-                  "column": 6
+                  "column": 6,
+                  "program": "union_generic_field_access.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "union_generic_field_access.ets"
               },
               "end": {
                 "line": 18,
-                "column": 6
+                "column": 6,
+                "program": "union_generic_field_access.ets"
               }
             }
           },
@@ -73,33 +81,39 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 7
+                    "column": 7,
+                    "program": "union_generic_field_access.ets"
                   },
                   "end": {
                     "line": 18,
-                    "column": 17
+                    "column": 17,
+                    "program": "union_generic_field_access.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 7
+                  "column": 7,
+                  "program": "union_generic_field_access.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 6
+                  "column": 6,
+                  "program": "union_generic_field_access.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 18,
-                "column": 7
+                "column": 7,
+                "program": "union_generic_field_access.ets"
               },
               "end": {
                 "line": 19,
-                "column": 6
+                "column": 6,
+                "program": "union_generic_field_access.ets"
               }
             }
           },
@@ -114,33 +128,39 @@
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 7
+                    "column": 7,
+                    "program": "union_generic_field_access.ets"
                   },
                   "end": {
                     "line": 19,
-                    "column": 17
+                    "column": 17,
+                    "program": "union_generic_field_access.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 7
+                  "column": 7,
+                  "program": "union_generic_field_access.ets"
                 },
                 "end": {
                   "line": 20,
-                  "column": 6
+                  "column": 6,
+                  "program": "union_generic_field_access.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 19,
-                "column": 7
+                "column": 7,
+                "program": "union_generic_field_access.ets"
               },
               "end": {
                 "line": 20,
-                "column": 6
+                "column": 6,
+                "program": "union_generic_field_access.ets"
               }
             }
           },
@@ -155,33 +175,39 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 7
+                    "column": 7,
+                    "program": "union_generic_field_access.ets"
                   },
                   "end": {
                     "line": 20,
-                    "column": 19
+                    "column": 19,
+                    "program": "union_generic_field_access.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 7
+                  "column": 7,
+                  "program": "union_generic_field_access.ets"
                 },
                 "end": {
                   "line": 21,
-                  "column": 6
+                  "column": 6,
+                  "program": "union_generic_field_access.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 20,
-                "column": 7
+                "column": 7,
+                "program": "union_generic_field_access.ets"
               },
               "end": {
                 "line": 21,
-                "column": 6
+                "column": 6,
+                "program": "union_generic_field_access.ets"
               }
             }
           },
@@ -196,33 +222,39 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 7
+                    "column": 7,
+                    "program": "union_generic_field_access.ets"
                   },
                   "end": {
                     "line": 21,
-                    "column": 19
+                    "column": 19,
+                    "program": "union_generic_field_access.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 7
+                  "column": 7,
+                  "program": "union_generic_field_access.ets"
                 },
                 "end": {
                   "line": 24,
-                  "column": 9
+                  "column": 9,
+                  "program": "union_generic_field_access.ets"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 21,
-                "column": 7
+                "column": 7,
+                "program": "union_generic_field_access.ets"
               },
               "end": {
                 "line": 24,
-                "column": 9
+                "column": 9,
+                "program": "union_generic_field_access.ets"
               }
             }
           }
@@ -230,22 +262,26 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 5
+            "column": 5,
+            "program": "union_generic_field_access.ets"
           },
           "end": {
             "line": 24,
-            "column": 9
+            "column": 9,
+            "program": "union_generic_field_access.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 16,
-          "column": 1
+          "column": 1,
+          "program": "union_generic_field_access.ets"
         },
         "end": {
           "line": 24,
-          "column": 9
+          "column": 9,
+          "program": "union_generic_field_access.ets"
         }
       }
     },
@@ -259,17 +295,159 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "union_generic_field_access.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "union_generic_field_access.ets"
             }
           }
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "union_generic_field_access.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "union_generic_field_access.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "union_generic_field_access.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "union_generic_field_access.ets"
+              }
+            }
+          }
+        ],
         "body": [
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "union_generic_field_access.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "union_generic_field_access.ets"
+              }
+            }
+          },
           {
             "type": "MethodDefinition",
             "key": {
@@ -279,11 +457,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -303,11 +483,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -321,33 +503,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -356,11 +544,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "union_generic_field_access.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "union_generic_field_access.ets"
               }
             }
           },
@@ -373,11 +563,13 @@
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 10
+                  "column": 10,
+                  "program": "union_generic_field_access.ets"
                 },
                 "end": {
                   "line": 24,
-                  "column": 19
+                  "column": 19,
+                  "program": "union_generic_field_access.ets"
                 }
               }
             },
@@ -397,11 +589,13 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 10
+                      "column": 10,
+                      "program": "union_generic_field_access.ets"
                     },
                     "end": {
                       "line": 24,
-                      "column": 19
+                      "column": 19,
+                      "program": "union_generic_field_access.ets"
                     }
                   }
                 },
@@ -428,33 +622,39 @@
                                 "loc": {
                                   "start": {
                                     "line": 24,
-                                    "column": 48
+                                    "column": 48,
+                                    "program": "union_generic_field_access.ets"
                                   },
                                   "end": {
                                     "line": 24,
-                                    "column": 49
+                                    "column": 49,
+                                    "program": "union_generic_field_access.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 24,
-                                  "column": 48
+                                  "column": 48,
+                                  "program": "union_generic_field_access.ets"
                                 },
                                 "end": {
                                   "line": 24,
-                                  "column": 51
+                                  "column": 51,
+                                  "program": "union_generic_field_access.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 24,
-                                "column": 48
+                                "column": 48,
+                                "program": "union_generic_field_access.ets"
                               },
                               "end": {
                                 "line": 24,
-                                "column": 51
+                                "column": 51,
+                                "program": "union_generic_field_access.ets"
                               }
                             }
                           },
@@ -463,11 +663,13 @@
                             "loc": {
                               "start": {
                                 "line": 24,
-                                "column": 52
+                                "column": 52,
+                                "program": "union_generic_field_access.ets"
                               },
                               "end": {
                                 "line": 24,
-                                "column": 61
+                                "column": 61,
+                                "program": "union_generic_field_access.ets"
                               }
                             }
                           }
@@ -475,11 +677,13 @@
                         "loc": {
                           "start": {
                             "line": 24,
-                            "column": 48
+                            "column": 48,
+                            "program": "union_generic_field_access.ets"
                           },
                           "end": {
                             "line": 24,
-                            "column": 61
+                            "column": 61,
+                            "program": "union_generic_field_access.ets"
                           }
                         }
                       },
@@ -487,22 +691,26 @@
                       "loc": {
                         "start": {
                           "line": 24,
-                          "column": 42
+                          "column": 42,
+                          "program": "union_generic_field_access.ets"
                         },
                         "end": {
                           "line": 24,
-                          "column": 61
+                          "column": 61,
+                          "program": "union_generic_field_access.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 42
+                        "column": 42,
+                        "program": "union_generic_field_access.ets"
                       },
                       "end": {
                         "line": 24,
-                        "column": 61
+                        "column": 61,
+                        "program": "union_generic_field_access.ets"
                       }
                     }
                   }
@@ -512,11 +720,13 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 64
+                      "column": 64,
+                      "program": "union_generic_field_access.ets"
                     },
                     "end": {
                       "line": 24,
-                      "column": 71
+                      "column": 71,
+                      "program": "union_generic_field_access.ets"
                     }
                   }
                 },
@@ -532,11 +742,13 @@
                         "loc": {
                           "start": {
                             "line": 24,
-                            "column": 20
+                            "column": 20,
+                            "program": "union_generic_field_access.ets"
                           },
                           "end": {
                             "line": 24,
-                            "column": 21
+                            "column": 21,
+                            "program": "union_generic_field_access.ets"
                           }
                         }
                       },
@@ -551,44 +763,52 @@
                             "loc": {
                               "start": {
                                 "line": 24,
-                                "column": 30
+                                "column": 30,
+                                "program": "union_generic_field_access.ets"
                               },
                               "end": {
                                 "line": 24,
-                                "column": 40
+                                "column": 40,
+                                "program": "union_generic_field_access.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 24,
-                              "column": 30
+                              "column": 30,
+                              "program": "union_generic_field_access.ets"
                             },
                             "end": {
                               "line": 24,
-                              "column": 41
+                              "column": 41,
+                              "program": "union_generic_field_access.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 24,
-                            "column": 30
+                            "column": 30,
+                            "program": "union_generic_field_access.ets"
                           },
                           "end": {
                             "line": 24,
-                            "column": 41
+                            "column": 41,
+                            "program": "union_generic_field_access.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 24,
-                          "column": 20
+                          "column": 20,
+                          "program": "union_generic_field_access.ets"
                         },
                         "end": {
                           "line": 24,
-                          "column": 41
+                          "column": 41,
+                          "program": "union_generic_field_access.ets"
                         }
                       }
                     }
@@ -596,11 +816,13 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 19
+                      "column": 19,
+                      "program": "union_generic_field_access.ets"
                     },
                     "end": {
                       "line": 24,
-                      "column": 41
+                      "column": 41,
+                      "program": "union_generic_field_access.ets"
                     }
                   }
                 },
@@ -619,11 +841,13 @@
                             "loc": {
                               "start": {
                                 "line": 25,
-                                "column": 9
+                                "column": 9,
+                                "program": "union_generic_field_access.ets"
                               },
                               "end": {
                                 "line": 25,
-                                "column": 12
+                                "column": 12,
+                                "program": "union_generic_field_access.ets"
                               }
                             }
                           },
@@ -640,16 +864,18 @@
                                       "type": "VariableDeclarator",
                                       "id": {
                                         "type": "Identifier",
-                                        "name": "gensym%%_4",
+                                        "name": "gensym%%_16",
                                         "decorators": [],
                                         "loc": {
                                           "start": {
                                             "line": 1,
-                                            "column": 3
+                                            "column": 3,
+                                            "program": "union_generic_field_access.ets"
                                           },
                                           "end": {
                                             "line": 1,
-                                            "column": 3
+                                            "column": 3,
+                                            "program": "union_generic_field_access.ets"
                                           }
                                         }
                                       },
@@ -660,22 +886,26 @@
                                         "loc": {
                                           "start": {
                                             "line": 25,
-                                            "column": 15
+                                            "column": 15,
+                                            "program": "union_generic_field_access.ets"
                                           },
                                           "end": {
                                             "line": 25,
-                                            "column": 19
+                                            "column": 19,
+                                            "program": "union_generic_field_access.ets"
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
                                           "line": 1,
-                                          "column": 3
+                                          "column": 3,
+                                          "program": "union_generic_field_access.ets"
                                         },
                                         "end": {
                                           "line": 1,
-                                          "column": 3
+                                          "column": 3,
+                                          "program": "union_generic_field_access.ets"
                                         }
                                       }
                                     }
@@ -684,11 +914,13 @@
                                   "loc": {
                                     "start": {
                                       "line": 25,
-                                      "column": 15
+                                      "column": 15,
+                                      "program": "union_generic_field_access.ets"
                                     },
                                     "end": {
                                       "line": 25,
-                                      "column": 32
+                                      "column": 32,
+                                      "program": "union_generic_field_access.ets"
                                     }
                                   }
                                 },
@@ -701,16 +933,18 @@
                                       "operator": "==",
                                       "left": {
                                         "type": "Identifier",
-                                        "name": "gensym%%_4",
+                                        "name": "gensym%%_16",
                                         "decorators": [],
                                         "loc": {
                                           "start": {
                                             "line": 1,
-                                            "column": 3
+                                            "column": 3,
+                                            "program": "union_generic_field_access.ets"
                                           },
                                           "end": {
                                             "line": 1,
-                                            "column": 3
+                                            "column": 3,
+                                            "program": "union_generic_field_access.ets"
                                           }
                                         }
                                       },
@@ -720,22 +954,26 @@
                                         "loc": {
                                           "start": {
                                             "line": 1,
-                                            "column": 3
+                                            "column": 3,
+                                            "program": "union_generic_field_access.ets"
                                           },
                                           "end": {
                                             "line": 1,
-                                            "column": 3
+                                            "column": 3,
+                                            "program": "union_generic_field_access.ets"
                                           }
                                         }
                                       },
                                       "loc": {
                                         "start": {
                                           "line": 1,
-                                          "column": 3
+                                          "column": 3,
+                                          "program": "union_generic_field_access.ets"
                                         },
                                         "end": {
                                           "line": 1,
-                                          "column": 3
+                                          "column": 3,
+                                          "program": "union_generic_field_access.ets"
                                         }
                                       }
                                     },
@@ -745,11 +983,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 1,
-                                          "column": 3
+                                          "column": 3,
+                                          "program": "union_generic_field_access.ets"
                                         },
                                         "end": {
                                           "line": 1,
-                                          "column": 3
+                                          "column": 3,
+                                          "program": "union_generic_field_access.ets"
                                         }
                                       }
                                     },
@@ -757,16 +997,18 @@
                                       "type": "MemberExpression",
                                       "object": {
                                         "type": "Identifier",
-                                        "name": "gensym%%_4",
+                                        "name": "gensym%%_16",
                                         "decorators": [],
                                         "loc": {
                                           "start": {
                                             "line": 25,
-                                            "column": 15
+                                            "column": 15,
+                                            "program": "union_generic_field_access.ets"
                                           },
                                           "end": {
                                             "line": 25,
-                                            "column": 27
+                                            "column": 27,
+                                            "program": "union_generic_field_access.ets"
                                           }
                                         }
                                       },
@@ -777,11 +1019,13 @@
                                         "loc": {
                                           "start": {
                                             "line": 25,
-                                            "column": 21
+                                            "column": 21,
+                                            "program": "union_generic_field_access.ets"
                                           },
                                           "end": {
                                             "line": 25,
-                                            "column": 27
+                                            "column": 27,
+                                            "program": "union_generic_field_access.ets"
                                           }
                                         }
                                       },
@@ -790,33 +1034,39 @@
                                       "loc": {
                                         "start": {
                                           "line": 25,
-                                          "column": 15
+                                          "column": 15,
+                                          "program": "union_generic_field_access.ets"
                                         },
                                         "end": {
                                           "line": 25,
-                                          "column": 27
+                                          "column": 27,
+                                          "program": "union_generic_field_access.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "union_generic_field_access.ets"
                                       },
                                       "end": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "union_generic_field_access.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "union_generic_field_access.ets"
                                     },
                                     "end": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "union_generic_field_access.ets"
                                     }
                                   }
                                 }
@@ -824,11 +1074,13 @@
                               "loc": {
                                 "start": {
                                   "line": 25,
-                                  "column": 15
+                                  "column": 15,
+                                  "program": "union_generic_field_access.ets"
                                 },
                                 "end": {
                                   "line": 25,
-                                  "column": 32
+                                  "column": 32,
+                                  "program": "union_generic_field_access.ets"
                                 }
                               }
                             },
@@ -838,33 +1090,39 @@
                               "loc": {
                                 "start": {
                                   "line": 25,
-                                  "column": 31
+                                  "column": 31,
+                                  "program": "union_generic_field_access.ets"
                                 },
                                 "end": {
                                   "line": 25,
-                                  "column": 32
+                                  "column": 32,
+                                  "program": "union_generic_field_access.ets"
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 25,
-                                "column": 15
+                                "column": 15,
+                                "program": "union_generic_field_access.ets"
                               },
                               "end": {
                                 "line": 25,
-                                "column": 32
+                                "column": 32,
+                                "program": "union_generic_field_access.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 25,
-                              "column": 9
+                              "column": 9,
+                              "program": "union_generic_field_access.ets"
                             },
                             "end": {
                               "line": 25,
-                              "column": 32
+                              "column": 32,
+                              "program": "union_generic_field_access.ets"
                             }
                           }
                         }
@@ -873,11 +1131,13 @@
                       "loc": {
                         "start": {
                           "line": 25,
-                          "column": 5
+                          "column": 5,
+                          "program": "union_generic_field_access.ets"
                         },
                         "end": {
                           "line": 25,
-                          "column": 33
+                          "column": 33,
+                          "program": "union_generic_field_access.ets"
                         }
                       }
                     },
@@ -889,22 +1149,26 @@
                         "loc": {
                           "start": {
                             "line": 26,
-                            "column": 12
+                            "column": 12,
+                            "program": "union_generic_field_access.ets"
                           },
                           "end": {
                             "line": 26,
-                            "column": 16
+                            "column": 16,
+                            "program": "union_generic_field_access.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 26,
-                          "column": 5
+                          "column": 5,
+                          "program": "union_generic_field_access.ets"
                         },
                         "end": {
                           "line": 26,
-                          "column": 17
+                          "column": 17,
+                          "program": "union_generic_field_access.ets"
                         }
                       }
                     }
@@ -912,33 +1176,39 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 72
+                      "column": 72,
+                      "program": "union_generic_field_access.ets"
                     },
                     "end": {
                       "line": 27,
-                      "column": 2
+                      "column": 2,
+                      "program": "union_generic_field_access.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 24,
-                    "column": 10
+                    "column": 10,
+                    "program": "union_generic_field_access.ets"
                   },
                   "end": {
                     "line": 27,
-                    "column": 2
+                    "column": 2,
+                    "program": "union_generic_field_access.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 10
+                  "column": 10,
+                  "program": "union_generic_field_access.ets"
                 },
                 "end": {
                   "line": 27,
-                  "column": 2
+                  "column": 2,
+                  "program": "union_generic_field_access.ets"
                 }
               }
             },
@@ -947,11 +1217,13 @@
             "loc": {
               "start": {
                 "line": 24,
-                "column": 1
+                "column": 1,
+                "program": "union_generic_field_access.ets"
               },
               "end": {
                 "line": 27,
-                "column": 2
+                "column": 2,
+                "program": "union_generic_field_access.ets"
               }
             }
           }
@@ -959,22 +1231,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "union_generic_field_access.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "union_generic_field_access.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "union_generic_field_access.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "union_generic_field_access.ets"
         }
       }
     }
@@ -982,11 +1258,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "union_generic_field_access.ets"
     },
     "end": {
       "line": 27,
-      "column": 2
+      "column": 2,
+      "program": "union_generic_field_access.ets"
     }
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,7 +26,7 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-[[nodiscard]] CheckResult ImportExportAccessValid::operator()(CheckContext &ctx, const ir::AstNode *ast)
+[[nodiscard]] CheckResult ImportExportAccessValid::operator()(const ir::AstNode *ast)
 {
     std::unordered_set<std::string> importedVariables {};
     if (ast->IsETSImportDeclaration()) {
@@ -49,12 +49,12 @@ namespace ark::es2panda::compiler::ast_verifier {
         const auto *callee = callExpr->Callee();
         if (callee != nullptr && callee->IsIdentifier() &&
             !HandleImportExportIdentifier(importedVariables, callee->AsIdentifier(), callExpr)) {
-            ctx.AddCheckMessage("PROPERTY_NOT_VISIBLE_HERE(NOT_EXPORTED)", *callee, callee->Start());
+            AddCheckMessage("PROPERTY_NOT_VISIBLE_HERE(NOT_EXPORTED)", *callee);
             return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
     }
     if (ast->IsIdentifier() && !HandleImportExportIdentifier(importedVariables, ast->AsIdentifier(), nullptr)) {
-        ctx.AddCheckMessage("PROPERTY_NOT_VISIBLE_HERE(NOT_EXPORTED)", *ast, ast->Start());
+        AddCheckMessage("PROPERTY_NOT_VISIBLE_HERE(NOT_EXPORTED)", *ast);
         return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
     }
     return {CheckDecision::CORRECT, CheckAction::CONTINUE};
@@ -80,7 +80,8 @@ bool ImportExportAccessValid::InvariantImportExportMethod(const std::unordered_s
     auto *signature = callExpr->AsCallExpression()->Signature();
     if (signature == nullptr || signature->Owner() == nullptr) {
         // NOTE(vpukhov): Add a synthetic owner for dynamic signatures
-        ASSERT(callExpr->AsCallExpression()->Callee()->TsType()->HasTypeFlag(checker::TypeFlag::ETS_DYNAMIC_FLAG));
+        ES2PANDA_ASSERT(
+            callExpr->AsCallExpression()->Callee()->TsType()->HasTypeFlag(checker::TypeFlag::ETS_DYNAMIC_FLAG));
         return true;
     }
 

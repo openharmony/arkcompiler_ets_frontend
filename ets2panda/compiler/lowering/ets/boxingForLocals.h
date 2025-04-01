@@ -20,15 +20,15 @@
 
 namespace ark::es2panda::compiler {
 
-class BoxingForLocals : public Phase {
+class BoxingForLocals : public PhaseForBodies {
 public:
     std::string_view Name() const override
     {
         return "BoxingForLocals";
     }
 
-    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
-    bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
+    bool PostconditionForModule(public_lib::Context *ctx, const parser::Program *program) override;
 };
 
 }  // namespace ark::es2panda::compiler

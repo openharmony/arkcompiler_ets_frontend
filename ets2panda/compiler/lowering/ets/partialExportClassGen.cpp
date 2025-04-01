@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,30 +17,19 @@
 
 #include "checker/ETSchecker.h"
 #include "varbinder/ETSBinder.h"
-#include "varbinder/recordTable.h"
 
 namespace ark::es2panda::compiler {
 
 static void GeneratePartialDeclForExported(const public_lib::Context *const ctx, ir::AstNode *const node)
 {
     // NOTE (mmartin): handle interfaces
-
     if (node->IsClassDeclaration()) {
         ctx->checker->AsETSChecker()->CreatePartialType(node->AsClassDeclaration()->Definition()->TsType());
     }
 }
 
-bool PartialExportClassGen::Perform(public_lib::Context *const ctx, parser::Program *const program)
+bool PartialExportClassGen::PerformForModule(public_lib::Context *const ctx, parser::Program *const program)
 {
-    if (ctx->checker->VarBinder()->IsGenStdLib()) {
-        for (const auto &[_, extPrograms] : program->ExternalSources()) {
-            (void)_;
-            for (auto *const extProg : extPrograms) {
-                Perform(ctx, extProg);
-            }
-        }
-    }
-
     program->Ast()->TransformChildrenRecursively(
         [ctx, &program](ir::AstNode *const ast) {
             if ((ast->IsClassDeclaration() || ast->IsTSInterfaceDeclaration()) && ast->IsExported()) {

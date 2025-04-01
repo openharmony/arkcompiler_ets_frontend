@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,6 +28,7 @@ class ETSNolintParser;
 
 namespace ark::es2panda::lexer {
 class Keywords;
+class KeywordsUtil;
 
 using ENUMBITOPS_OPERATORS;
 
@@ -114,7 +115,8 @@ class TemplateLiteralParserContext;
 
 class Lexer {
 public:
-    explicit Lexer(const parser::ParserContext *parserContext, util::ErrorLogger *errorLogger, bool startLexer = true);
+    explicit Lexer(const parser::ParserContext *parserContext, util::DiagnosticEngine &diagnosticEngine,
+                   bool startLexer = true);
     NO_COPY_SEMANTIC(Lexer);
     NO_MOVE_SEMANTIC(Lexer);
     virtual ~Lexer() = default;
@@ -126,6 +128,7 @@ public:
     Token &GetToken();
     const Token &GetToken() const;
     size_t Line() const;
+    const parser::Program *GetProgram() const;
 
     bool TryEatTokenType(lexer::TokenType type)
     {
@@ -137,9 +140,19 @@ public:
         return false;
     }
 
-    const util::ErrorLogger *ErrorLogger()
+    bool TryEatTokenFromKeywordType(lexer::TokenType type)
     {
-        return errorLogger_;
+        auto token = GetToken();
+        if (token.KeywordType() == type) {
+            NextToken();
+            return true;
+        }
+        return false;
+    }
+
+    util::DiagnosticEngine &DiagnosticEngine()
+    {
+        return diagnosticEngine_;
     }
 
     std::optional<Token> TryEatTokenKeyword(lexer::TokenType type)
@@ -176,6 +189,7 @@ public:
     std::tuple<bool, bool, LexerTemplateString> ScanTemplateStringCpHelper(char32_t cp,
                                                                            LexerTemplateString templateStr);
     LexerTemplateString ScanTemplateString();
+    util::StringView ScanMultilineString();
     void ScanTemplateStringEnd();
     void PushTemplateContext(TemplateLiteralParserContext *ctx);
     void LogUnexpectedStrictModeReservedKeyword() const
@@ -235,6 +249,11 @@ public:
 
     util::StringView SourceView(size_t begin, size_t end) const;
 
+    lexer::SourcePosition GetPositionForDiagnostic() const
+    {
+        return GetToken().Start();
+    }
+
 protected:
     void NextToken(Keywords *kws);
     ArenaAllocator *Allocator();
@@ -279,7 +298,7 @@ protected:
     void ScanMinusPunctuator();
     void ScanSlashPunctuator();
     void ScanPercentPunctuator();
-    void ScanDotPunctuator();
+    void ScanDotPunctuator(KeywordsUtil &kwu);
     void ScanColonPunctuator();
     virtual bool ScanDollarPunctuator();
     void ScanAtPunctuator();
@@ -321,6 +340,7 @@ protected:
     void ScanDecimalLiteral();
     void ScanDecimalDigits(bool allowNumericSeparator);
     virtual void CheckNumberLiteralEnd();
+    virtual void CheckNumberLiteralEndForIdentifier();
     void CheckOctal();
 
     inline static uint32_t HexValue(char32_t ch);
@@ -343,7 +363,7 @@ private:
     const parser::ParserContext *parserContext_;
     util::StringView source_;
     LexerPosition pos_;
-    util::ErrorLogger *const errorLogger_;
+    util::DiagnosticEngine &diagnosticEngine_;
 };
 
 class TemplateLiteralParserContext {

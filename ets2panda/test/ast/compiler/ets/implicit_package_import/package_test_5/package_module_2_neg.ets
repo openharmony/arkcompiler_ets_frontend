@@ -1,0 +1,55 @@
+/*
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package mypack;
+
+let wont_exist: number = 8;
+
+this file will contain parse error, but compilation of 'package_module_1' is not aborted, file is just ignored
+
+/* @@? 20:1 Error TypeError: Cannot reference 'this' in this context. */
+/* @@? 20:6 Error SyntaxError: Unexpected token 'file'. */
+/* @@? 20:6 Error TypeError: Unresolved reference file */
+/* @@? 20:11 Error SyntaxError: Unexpected token 'will'. */
+/* @@? 20:11 Error TypeError: Unresolved reference will */
+/* @@? 20:16 Error SyntaxError: Unexpected token 'contain'. */
+/* @@? 20:16 Error TypeError: Unresolved reference contain */
+/* @@? 20:24 Error SyntaxError: Unexpected token 'parse'. */
+/* @@? 20:24 Error TypeError: Unresolved reference parse */
+/* @@? 20:30 Error SyntaxError: Unexpected token 'error'. */
+/* @@? 20:30 Error TypeError: Unresolved reference error */
+/* @@? 20:35 Error SyntaxError: Unexpected token ','. */
+/* @@? 20:35 Error SyntaxError: Unexpected token ','. */
+/* @@? 20:35 Error SyntaxError: Unexpected token ','. */
+/* @@? 20:37 Error TypeError: Unresolved reference but */
+/* @@? 20:41 Error SyntaxError: Unexpected token 'compilation'. */
+/* @@? 20:41 Error TypeError: Unresolved reference compilation */
+/* @@? 20:53 Error SyntaxError: Unexpected token 'of'. */
+/* @@? 20:53 Error TypeError: Unresolved reference of */
+/* @@? 20:56 Error SyntaxError: Unexpected token 'package_module_1'. */
+/* @@? 20:75 Error SyntaxError: Unexpected token 'is'. */
+/* @@? 20:75 Error TypeError: Unresolved reference is */
+/* @@? 20:78 Error SyntaxError: Unexpected token 'not'. */
+/* @@? 20:78 Error TypeError: Unresolved reference not */
+/* @@? 20:82 Error SyntaxError: Unexpected token 'aborted'. */
+/* @@? 20:82 Error TypeError: Unresolved reference aborted */
+/* @@? 20:89 Error SyntaxError: Unexpected token ','. */
+/* @@? 20:89 Error SyntaxError: Unexpected token ','. */
+/* @@? 20:89 Error SyntaxError: Unexpected token ','. */
+/* @@? 20:96 Error SyntaxError: Unexpected token 'is'. */
+/* @@? 20:99 Error SyntaxError: Unexpected token 'just'. */
+/* @@? 20:99 Error TypeError: Unresolved reference just */
+/* @@? 20:104 Error SyntaxError: Unexpected token 'ignored'. */
+/* @@? 20:104 Error TypeError: Unresolved reference ignored */

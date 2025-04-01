@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,17 +22,13 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-class VariableHasScope {
+class VariableHasScope : public RecursiveInvariant<VerifierInvariants::VARIABLE_HAS_SCOPE> {
 public:
-    explicit VariableHasScope(ArenaAllocator &allocator) : allocator_ {allocator} {}
+    template <VerifierInvariants ID>
+    friend class InvariantBase;
+    [[nodiscard]] CheckResult operator()(const ir::AstNode *ast);
 
-    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
-    static std::optional<varbinder::LocalVariable *> GetLocalScopeVariable(ArenaAllocator &allocator, CheckContext &ctx,
-                                                                           const ir::AstNode *ast);
-    bool ScopeEncloseVariable(CheckContext &ctx, const varbinder::LocalVariable *var);
-
-private:
-    ArenaAllocator &allocator_;
+    bool ScopeEncloseVariable(const varbinder::LocalVariable *var);
     bool CheckAstExceptions(const ir::AstNode *ast);
 };
 

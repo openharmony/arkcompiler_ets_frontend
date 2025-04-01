@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -41,7 +41,7 @@ namespace ark::es2panda::evaluate {
 class ScopedDebugInfoPlugin final {
 public:
     explicit ScopedDebugInfoPlugin(parser::Program *globalProgram, checker::ETSChecker *checker,
-                                   const CompilerOptions &options);
+                                   const util::Options &options);
 
     NO_COPY_SEMANTIC(ScopedDebugInfoPlugin);
     NO_MOVE_SEMANTIC(ScopedDebugInfoPlugin);
@@ -152,11 +152,6 @@ private:
     using PrologueEpilogueMap = ArenaUnorderedMap<ir::BlockStatement *, PrologueEpiloguePair>;
 
 private:
-    /**
-     * @brief Asserts correctness of input options.
-     */
-    void ValidateEvaluationOptions(const CompilerOptions &options);
-
     /**
      * @brief Creates `Program` instances for each input context .abc file.
      */

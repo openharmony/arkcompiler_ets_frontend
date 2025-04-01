@@ -11,16 +11,52 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "external_cyclic_constructor_check.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "external_cyclic_constructor_check.ets"
             }
           }
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "external_cyclic_constructor_check.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "external_cyclic_constructor_check.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "external_cyclic_constructor_check.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "external_cyclic_constructor_check.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",
@@ -31,11 +67,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +93,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +113,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +154,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "external_cyclic_constructor_check.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "external_cyclic_constructor_check.ets"
               }
             }
           },
@@ -125,11 +173,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "external_cyclic_constructor_check.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 14
+                  "column": 14,
+                  "program": "external_cyclic_constructor_check.ets"
                 }
               }
             },
@@ -149,11 +199,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 10
+                      "column": 10,
+                      "program": "external_cyclic_constructor_check.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 14
+                      "column": 14,
+                      "program": "external_cyclic_constructor_check.ets"
                     }
                   }
                 },
@@ -166,11 +218,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 18
+                      "column": 18,
+                      "program": "external_cyclic_constructor_check.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 21
+                      "column": 21,
+                      "program": "external_cyclic_constructor_check.ets"
                     }
                   }
                 },
@@ -189,11 +243,13 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 9
+                                "column": 9,
+                                "program": "external_cyclic_constructor_check.ets"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 10
+                                "column": 10,
+                                "program": "external_cyclic_constructor_check.ets"
                               }
                             }
                           },
@@ -210,33 +266,39 @@
                                   "loc": {
                                     "start": {
                                       "line": 17,
-                                      "column": 17
+                                      "column": 17,
+                                      "program": "external_cyclic_constructor_check.ets"
                                     },
                                     "end": {
                                       "line": 17,
-                                      "column": 28
+                                      "column": 28,
+                                      "program": "external_cyclic_constructor_check.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 17
+                                    "column": 17,
+                                    "program": "external_cyclic_constructor_check.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 29
+                                    "column": 29,
+                                    "program": "external_cyclic_constructor_check.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 17,
-                                  "column": 17
+                                  "column": 17,
+                                  "program": "external_cyclic_constructor_check.ets"
                                 },
                                 "end": {
                                   "line": 17,
-                                  "column": 29
+                                  "column": 29,
+                                  "program": "external_cyclic_constructor_check.ets"
                                 }
                               }
                             },
@@ -247,11 +309,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 29
+                                    "column": 29,
+                                    "program": "external_cyclic_constructor_check.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 30
+                                    "column": 30,
+                                    "program": "external_cyclic_constructor_check.ets"
                                   }
                                 }
                               }
@@ -259,22 +323,26 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 13
+                                "column": 13,
+                                "program": "external_cyclic_constructor_check.ets"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 32
+                                "column": 32,
+                                "program": "external_cyclic_constructor_check.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 9
+                              "column": 9,
+                              "program": "external_cyclic_constructor_check.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 32
+                              "column": 32,
+                              "program": "external_cyclic_constructor_check.ets"
                             }
                           }
                         }
@@ -283,11 +351,13 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 5
+                          "column": 5,
+                          "program": "external_cyclic_constructor_check.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 32
+                          "column": 32,
+                          "program": "external_cyclic_constructor_check.ets"
                         }
                       }
                     },
@@ -299,22 +369,26 @@
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 12
+                            "column": 12,
+                            "program": "external_cyclic_constructor_check.ets"
                           },
                           "end": {
                             "line": 18,
-                            "column": 13
+                            "column": 13,
+                            "program": "external_cyclic_constructor_check.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 5
+                          "column": 5,
+                          "program": "external_cyclic_constructor_check.ets"
                         },
                         "end": {
                           "line": 18,
-                          "column": 14
+                          "column": 14,
+                          "program": "external_cyclic_constructor_check.ets"
                         }
                       }
                     }
@@ -322,33 +396,39 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 22
+                      "column": 22,
+                      "program": "external_cyclic_constructor_check.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 2
+                      "column": 2,
+                      "program": "external_cyclic_constructor_check.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 10
+                    "column": 10,
+                    "program": "external_cyclic_constructor_check.ets"
                   },
                   "end": {
                     "line": 19,
-                    "column": 2
+                    "column": 2,
+                    "program": "external_cyclic_constructor_check.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 10
+                  "column": 10,
+                  "program": "external_cyclic_constructor_check.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 2
+                  "column": 2,
+                  "program": "external_cyclic_constructor_check.ets"
                 }
               }
             },
@@ -357,11 +437,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 1
+                "column": 1,
+                "program": "external_cyclic_constructor_check.ets"
               },
               "end": {
                 "line": 19,
-                "column": 2
+                "column": 2,
+                "program": "external_cyclic_constructor_check.ets"
               }
             }
           }
@@ -369,22 +451,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "external_cyclic_constructor_check.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "external_cyclic_constructor_check.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "external_cyclic_constructor_check.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "external_cyclic_constructor_check.ets"
         }
       }
     }
@@ -392,11 +478,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "external_cyclic_constructor_check.ets"
     },
     "end": {
       "line": 20,
-      "column": 1
+      "column": 1,
+      "program": "external_cyclic_constructor_check.ets"
     }
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,6 +32,12 @@ void ETSWildcardType::TransformChildren(const NodeTransformer &cb, std::string_v
             typeReference_ = transformedNode->AsETSTypeReference();
         }
     }
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void ETSWildcardType::Iterate(const NodeTraverser &cb) const
@@ -46,11 +52,15 @@ void ETSWildcardType::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ETSWildcardType"},
                  {"typeReference", AstDumper::Optional(typeReference_)},
                  {"in", AstDumper::Optional(IsIn())},
-                 {"out", AstDumper::Optional(IsOut())}});
+                 {"out", AstDumper::Optional(IsOut())},
+                 {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void ETSWildcardType::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("ETSWildcardType");
 }
 
@@ -74,9 +84,9 @@ checker::Type *ETSWildcardType::GetType([[maybe_unused]] checker::TSChecker *che
     return nullptr;
 }
 
-checker::Type *ETSWildcardType::Check(checker::ETSChecker *checker)
+checker::VerifiedType ETSWildcardType::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 checker::Type *ETSWildcardType::GetType([[maybe_unused]] checker::ETSChecker *checker)

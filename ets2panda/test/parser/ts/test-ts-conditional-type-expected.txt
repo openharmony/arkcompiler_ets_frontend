@@ -13,11 +13,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 17,
-                "column": 6
+                "column": 6,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           },
@@ -27,22 +29,26 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 9
+                "column": 9,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 17,
-                "column": 10
+                "column": 10,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 17,
-              "column": 5
+              "column": 5,
+              "program": "test-ts-conditional-type.ts"
             },
             "end": {
               "line": 17,
-              "column": 10
+              "column": 10,
+              "program": "test-ts-conditional-type.ts"
             }
           }
         }
@@ -51,11 +57,13 @@
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test-ts-conditional-type.ts"
         },
         "end": {
           "line": 17,
-          "column": 11
+          "column": 11,
+          "program": "test-ts-conditional-type.ts"
         }
       }
     },
@@ -68,11 +76,13 @@
         "loc": {
           "start": {
             "line": 18,
-            "column": 6
+            "column": 6,
+            "program": "test-ts-conditional-type.ts"
           },
           "end": {
             "line": 18,
-            "column": 7
+            "column": 7,
+            "program": "test-ts-conditional-type.ts"
           }
         }
       },
@@ -92,11 +102,13 @@
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 11
+                        "column": 11,
+                        "program": "test-ts-conditional-type.ts"
                       },
                       "end": {
                         "line": 18,
-                        "column": 17
+                        "column": 17,
+                        "program": "test-ts-conditional-type.ts"
                       }
                     }
                   },
@@ -108,11 +120,13 @@
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 20
+                            "column": 20,
+                            "program": "test-ts-conditional-type.ts"
                           },
                           "end": {
                             "line": 18,
-                            "column": 26
+                            "column": 26,
+                            "program": "test-ts-conditional-type.ts"
                           }
                         }
                       },
@@ -121,11 +135,13 @@
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 29
+                            "column": 29,
+                            "program": "test-ts-conditional-type.ts"
                           },
                           "end": {
                             "line": 18,
-                            "column": 36
+                            "column": 36,
+                            "program": "test-ts-conditional-type.ts"
                           }
                         }
                       }
@@ -133,11 +149,13 @@
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 20
+                        "column": 20,
+                        "program": "test-ts-conditional-type.ts"
                       },
                       "end": {
                         "line": 18,
-                        "column": 36
+                        "column": 36,
+                        "program": "test-ts-conditional-type.ts"
                       }
                     }
                   }
@@ -145,11 +163,13 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 11
+                    "column": 11,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 18,
-                    "column": 36
+                    "column": 36,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
@@ -158,11 +178,13 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 45
+                    "column": 45,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 18,
-                    "column": 52
+                    "column": 52,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
@@ -171,11 +193,13 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 55
+                    "column": 55,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 18,
-                    "column": 61
+                    "column": 61,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
@@ -184,44 +208,53 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 64
+                    "column": 64,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 18,
-                    "column": 70
+                    "column": 70,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 11
+                  "column": 11,
+                  "program": "test-ts-conditional-type.ts"
                 },
                 "end": {
                   "line": 18,
-                  "column": 70
+                  "column": 70,
+                  "program": "test-ts-conditional-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 18,
-                "column": 10
+                "column": 10,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 18,
-                "column": 71
+                "column": 71,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           },
+          "annotations": [],
           "loc": {
             "start": {
               "line": 18,
-              "column": 10
+              "column": 10,
+              "program": "test-ts-conditional-type.ts"
             },
             "end": {
               "line": 18,
-              "column": 73
+              "column": 73,
+              "program": "test-ts-conditional-type.ts"
             }
           }
         },
@@ -239,11 +272,13 @@
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 84
+                        "column": 84,
+                        "program": "test-ts-conditional-type.ts"
                       },
                       "end": {
                         "line": 18,
-                        "column": 91
+                        "column": 91,
+                        "program": "test-ts-conditional-type.ts"
                       }
                     }
                   },
@@ -255,11 +290,13 @@
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 102
+                            "column": 102,
+                            "program": "test-ts-conditional-type.ts"
                           },
                           "end": {
                             "line": 18,
-                            "column": 108
+                            "column": 108,
+                            "program": "test-ts-conditional-type.ts"
                           }
                         }
                       }
@@ -267,11 +304,13 @@
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 100
+                        "column": 100,
+                        "program": "test-ts-conditional-type.ts"
                       },
                       "end": {
                         "line": 18,
-                        "column": 108
+                        "column": 108,
+                        "program": "test-ts-conditional-type.ts"
                       }
                     }
                   },
@@ -284,22 +323,26 @@
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 118
+                          "column": 118,
+                          "program": "test-ts-conditional-type.ts"
                         },
                         "end": {
                           "line": 18,
-                          "column": 119
+                          "column": 119,
+                          "program": "test-ts-conditional-type.ts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 111
+                        "column": 111,
+                        "program": "test-ts-conditional-type.ts"
                       },
                       "end": {
                         "line": 18,
-                        "column": 119
+                        "column": 119,
+                        "program": "test-ts-conditional-type.ts"
                       }
                     }
                   },
@@ -308,33 +351,39 @@
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 122
+                        "column": 122,
+                        "program": "test-ts-conditional-type.ts"
                       },
                       "end": {
                         "line": 18,
-                        "column": 128
+                        "column": 128,
+                        "program": "test-ts-conditional-type.ts"
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 84
+                      "column": 84,
+                      "program": "test-ts-conditional-type.ts"
                     },
                     "end": {
                       "line": 18,
-                      "column": 128
+                      "column": 128,
+                      "program": "test-ts-conditional-type.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 83
+                    "column": 83,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 18,
-                    "column": 129
+                    "column": 129,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
@@ -343,11 +392,13 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 132
+                    "column": 132,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 18,
-                    "column": 138
+                    "column": 138,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               }
@@ -355,22 +406,26 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 83
+                "column": 83,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 18,
-                "column": 138
+                "column": 138,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 18,
-              "column": 82
+              "column": 82,
+              "program": "test-ts-conditional-type.ts"
             },
             "end": {
               "line": 18,
-              "column": 139
+              "column": 139,
+              "program": "test-ts-conditional-type.ts"
             }
           }
         },
@@ -384,11 +439,13 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 142
+                    "column": 142,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 18,
-                    "column": 148
+                    "column": 148,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
@@ -397,11 +454,13 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 151
+                    "column": 151,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 18,
-                    "column": 158
+                    "column": 158,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               }
@@ -409,11 +468,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 142
+                "column": 142,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 18,
-                "column": 158
+                "column": 158,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           },
@@ -422,11 +483,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 167
+                "column": 167,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 18,
-                "column": 173
+                "column": 173,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           },
@@ -435,11 +498,13 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 176
+                "column": 176,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 18,
-                "column": 182
+                "column": 182,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           },
@@ -448,22 +513,26 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 185
+                "column": 185,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 18,
-                "column": 191
+                "column": 191,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 18,
-              "column": 142
+              "column": 142,
+              "program": "test-ts-conditional-type.ts"
             },
             "end": {
               "line": 18,
-              "column": 191
+              "column": 191,
+              "program": "test-ts-conditional-type.ts"
             }
           }
         },
@@ -472,33 +541,39 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 194
+              "column": 194,
+              "program": "test-ts-conditional-type.ts"
             },
             "end": {
               "line": 18,
-              "column": 200
+              "column": 200,
+              "program": "test-ts-conditional-type.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 18,
-            "column": 10
+            "column": 10,
+            "program": "test-ts-conditional-type.ts"
           },
           "end": {
             "line": 18,
-            "column": 200
+            "column": 200,
+            "program": "test-ts-conditional-type.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 18,
-          "column": 1
+          "column": 1,
+          "program": "test-ts-conditional-type.ts"
         },
         "end": {
           "line": 18,
-          "column": 201
+          "column": 201,
+          "program": "test-ts-conditional-type.ts"
         }
       }
     },
@@ -507,11 +582,13 @@
       "loc": {
         "start": {
           "line": 18,
-          "column": 200
+          "column": 200,
+          "program": "test-ts-conditional-type.ts"
         },
         "end": {
           "line": 18,
-          "column": 201
+          "column": 201,
+          "program": "test-ts-conditional-type.ts"
         }
       }
     },
@@ -533,11 +610,13 @@
                     "loc": {
                       "start": {
                         "line": 20,
-                        "column": 8
+                        "column": 8,
+                        "program": "test-ts-conditional-type.ts"
                       },
                       "end": {
                         "line": 20,
-                        "column": 15
+                        "column": 15,
+                        "program": "test-ts-conditional-type.ts"
                       }
                     }
                   },
@@ -546,11 +625,13 @@
                     "loc": {
                       "start": {
                         "line": 20,
-                        "column": 18
+                        "column": 18,
+                        "program": "test-ts-conditional-type.ts"
                       },
                       "end": {
                         "line": 20,
-                        "column": 24
+                        "column": 24,
+                        "program": "test-ts-conditional-type.ts"
                       }
                     }
                   }
@@ -558,11 +639,13 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 8
+                    "column": 8,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 20,
-                    "column": 24
+                    "column": 24,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
@@ -575,22 +658,26 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 33
+                      "column": 33,
+                      "program": "test-ts-conditional-type.ts"
                     },
                     "end": {
                       "line": 20,
-                      "column": 34
+                      "column": 34,
+                      "program": "test-ts-conditional-type.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 33
+                    "column": 33,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 20,
-                    "column": 34
+                    "column": 34,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
@@ -599,11 +686,13 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 37
+                    "column": 37,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 20,
-                    "column": 43
+                    "column": 43,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
@@ -612,22 +701,26 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 46
+                    "column": 46,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 20,
-                    "column": 52
+                    "column": 52,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-ts-conditional-type.ts"
                 },
                 "end": {
                   "line": 20,
-                  "column": 52
+                  "column": 52,
+                  "program": "test-ts-conditional-type.ts"
                 }
               }
             },
@@ -635,11 +728,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 5
+                "column": 5,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 20,
-                "column": 6
+                "column": 6,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           },
@@ -647,11 +742,13 @@
           "loc": {
             "start": {
               "line": 20,
-              "column": 5
+              "column": 5,
+              "program": "test-ts-conditional-type.ts"
             },
             "end": {
               "line": 20,
-              "column": 6
+              "column": 6,
+              "program": "test-ts-conditional-type.ts"
             }
           }
         }
@@ -660,11 +757,13 @@
       "loc": {
         "start": {
           "line": 20,
-          "column": 1
+          "column": 1,
+          "program": "test-ts-conditional-type.ts"
         },
         "end": {
           "line": 20,
-          "column": 53
+          "column": 53,
+          "program": "test-ts-conditional-type.ts"
         }
       }
     },
@@ -690,22 +789,26 @@
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 8
+                          "column": 8,
+                          "program": "test-ts-conditional-type.ts"
                         },
                         "end": {
                           "line": 21,
-                          "column": 9
+                          "column": 9,
+                          "program": "test-ts-conditional-type.ts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 21,
-                        "column": 8
+                        "column": 8,
+                        "program": "test-ts-conditional-type.ts"
                       },
                       "end": {
                         "line": 21,
-                        "column": 9
+                        "column": 9,
+                        "program": "test-ts-conditional-type.ts"
                       }
                     }
                   },
@@ -714,11 +817,13 @@
                     "loc": {
                       "start": {
                         "line": 21,
-                        "column": 12
+                        "column": 12,
+                        "program": "test-ts-conditional-type.ts"
                       },
                       "end": {
                         "line": 21,
-                        "column": 18
+                        "column": 18,
+                        "program": "test-ts-conditional-type.ts"
                       }
                     }
                   }
@@ -726,11 +831,13 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 8
+                    "column": 8,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 21,
-                    "column": 18
+                    "column": 18,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
@@ -739,11 +846,13 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 27
+                    "column": 27,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 21,
-                    "column": 33
+                    "column": 33,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
@@ -752,11 +861,13 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 36
+                    "column": 36,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 21,
-                    "column": 42
+                    "column": 42,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
@@ -765,22 +876,26 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 45
+                    "column": 45,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 21,
-                    "column": 51
+                    "column": 51,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-ts-conditional-type.ts"
                 },
                 "end": {
                   "line": 21,
-                  "column": 51
+                  "column": 51,
+                  "program": "test-ts-conditional-type.ts"
                 }
               }
             },
@@ -788,11 +903,13 @@
             "loc": {
               "start": {
                 "line": 21,
-                "column": 5
+                "column": 5,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 21,
-                "column": 6
+                "column": 6,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           },
@@ -800,11 +917,13 @@
           "loc": {
             "start": {
               "line": 21,
-              "column": 5
+              "column": 5,
+              "program": "test-ts-conditional-type.ts"
             },
             "end": {
               "line": 21,
-              "column": 6
+              "column": 6,
+              "program": "test-ts-conditional-type.ts"
             }
           }
         }
@@ -813,11 +932,13 @@
       "loc": {
         "start": {
           "line": 21,
-          "column": 1
+          "column": 1,
+          "program": "test-ts-conditional-type.ts"
         },
         "end": {
           "line": 21,
-          "column": 52
+          "column": 52,
+          "program": "test-ts-conditional-type.ts"
         }
       }
     },
@@ -839,11 +960,13 @@
                     "loc": {
                       "start": {
                         "line": 22,
-                        "column": 8
+                        "column": 8,
+                        "program": "test-ts-conditional-type.ts"
                       },
                       "end": {
                         "line": 22,
-                        "column": 15
+                        "column": 15,
+                        "program": "test-ts-conditional-type.ts"
                       }
                     }
                   },
@@ -859,22 +982,26 @@
                           "loc": {
                             "start": {
                               "line": 22,
-                              "column": 18
+                              "column": 18,
+                              "program": "test-ts-conditional-type.ts"
                             },
                             "end": {
                               "line": 22,
-                              "column": 19
+                              "column": 19,
+                              "program": "test-ts-conditional-type.ts"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 22,
-                            "column": 18
+                            "column": 18,
+                            "program": "test-ts-conditional-type.ts"
                           },
                           "end": {
                             "line": 22,
-                            "column": 19
+                            "column": 19,
+                            "program": "test-ts-conditional-type.ts"
                           }
                         }
                       },
@@ -883,11 +1010,13 @@
                         "loc": {
                           "start": {
                             "line": 22,
-                            "column": 22
+                            "column": 22,
+                            "program": "test-ts-conditional-type.ts"
                           },
                           "end": {
                             "line": 22,
-                            "column": 28
+                            "column": 28,
+                            "program": "test-ts-conditional-type.ts"
                           }
                         }
                       }
@@ -895,11 +1024,13 @@
                     "loc": {
                       "start": {
                         "line": 22,
-                        "column": 18
+                        "column": 18,
+                        "program": "test-ts-conditional-type.ts"
                       },
                       "end": {
                         "line": 22,
-                        "column": 28
+                        "column": 28,
+                        "program": "test-ts-conditional-type.ts"
                       }
                     }
                   }
@@ -907,11 +1038,13 @@
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 8
+                    "column": 8,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 22,
-                    "column": 28
+                    "column": 28,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
@@ -920,11 +1053,13 @@
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 37
+                    "column": 37,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 22,
-                    "column": 43
+                    "column": 43,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
@@ -933,11 +1068,13 @@
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 46
+                    "column": 46,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 22,
-                    "column": 52
+                    "column": 52,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
@@ -946,22 +1083,26 @@
                 "loc": {
                   "start": {
                     "line": 22,
-                    "column": 55
+                    "column": 55,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 22,
-                    "column": 61
+                    "column": 61,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-ts-conditional-type.ts"
                 },
                 "end": {
                   "line": 22,
-                  "column": 61
+                  "column": 61,
+                  "program": "test-ts-conditional-type.ts"
                 }
               }
             },
@@ -969,11 +1110,13 @@
             "loc": {
               "start": {
                 "line": 22,
-                "column": 5
+                "column": 5,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 22,
-                "column": 6
+                "column": 6,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           },
@@ -981,11 +1124,13 @@
           "loc": {
             "start": {
               "line": 22,
-              "column": 5
+              "column": 5,
+              "program": "test-ts-conditional-type.ts"
             },
             "end": {
               "line": 22,
-              "column": 6
+              "column": 6,
+              "program": "test-ts-conditional-type.ts"
             }
           }
         }
@@ -994,11 +1139,13 @@
       "loc": {
         "start": {
           "line": 22,
-          "column": 1
+          "column": 1,
+          "program": "test-ts-conditional-type.ts"
         },
         "end": {
           "line": 22,
-          "column": 62
+          "column": 62,
+          "program": "test-ts-conditional-type.ts"
         }
       }
     },
@@ -1023,11 +1170,13 @@
                         "loc": {
                           "start": {
                             "line": 23,
-                            "column": 8
+                            "column": 8,
+                            "program": "test-ts-conditional-type.ts"
                           },
                           "end": {
                             "line": 23,
-                            "column": 15
+                            "column": 15,
+                            "program": "test-ts-conditional-type.ts"
                           }
                         }
                       },
@@ -1036,11 +1185,13 @@
                         "loc": {
                           "start": {
                             "line": 23,
-                            "column": 18
+                            "column": 18,
+                            "program": "test-ts-conditional-type.ts"
                           },
                           "end": {
                             "line": 23,
-                            "column": 24
+                            "column": 24,
+                            "program": "test-ts-conditional-type.ts"
                           }
                         }
                       }
@@ -1048,11 +1199,13 @@
                     "loc": {
                       "start": {
                         "line": 23,
-                        "column": 8
+                        "column": 8,
+                        "program": "test-ts-conditional-type.ts"
                       },
                       "end": {
                         "line": 23,
-                        "column": 24
+                        "column": 24,
+                        "program": "test-ts-conditional-type.ts"
                       }
                     }
                   },
@@ -1061,11 +1214,13 @@
                     "loc": {
                       "start": {
                         "line": 23,
-                        "column": 27
+                        "column": 27,
+                        "program": "test-ts-conditional-type.ts"
                       },
                       "end": {
                         "line": 23,
-                        "column": 33
+                        "column": 33,
+                        "program": "test-ts-conditional-type.ts"
                       }
                     }
                   }
@@ -1073,11 +1228,13 @@
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 8
+                    "column": 8,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 23,
-                    "column": 33
+                    "column": 33,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
@@ -1086,11 +1243,13 @@
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 42
+                    "column": 42,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 23,
-                    "column": 48
+                    "column": 48,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
@@ -1099,11 +1258,13 @@
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 51
+                    "column": 51,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 23,
-                    "column": 57
+                    "column": 57,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
@@ -1112,22 +1273,26 @@
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 60
+                    "column": 60,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 23,
-                    "column": 66
+                    "column": 66,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-ts-conditional-type.ts"
                 },
                 "end": {
                   "line": 23,
-                  "column": 66
+                  "column": 66,
+                  "program": "test-ts-conditional-type.ts"
                 }
               }
             },
@@ -1135,11 +1300,13 @@
             "loc": {
               "start": {
                 "line": 23,
-                "column": 5
+                "column": 5,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 23,
-                "column": 6
+                "column": 6,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           },
@@ -1147,11 +1314,13 @@
           "loc": {
             "start": {
               "line": 23,
-              "column": 5
+              "column": 5,
+              "program": "test-ts-conditional-type.ts"
             },
             "end": {
               "line": 23,
-              "column": 6
+              "column": 6,
+              "program": "test-ts-conditional-type.ts"
             }
           }
         }
@@ -1160,11 +1329,13 @@
       "loc": {
         "start": {
           "line": 23,
-          "column": 1
+          "column": 1,
+          "program": "test-ts-conditional-type.ts"
         },
         "end": {
           "line": 23,
-          "column": 67
+          "column": 67,
+          "program": "test-ts-conditional-type.ts"
         }
       }
     },
@@ -1177,11 +1348,13 @@
         "loc": {
           "start": {
             "line": 25,
-            "column": 6
+            "column": 6,
+            "program": "test-ts-conditional-type.ts"
           },
           "end": {
             "line": 25,
-            "column": 9
+            "column": 9,
+            "program": "test-ts-conditional-type.ts"
           }
         }
       },
@@ -1196,22 +1369,26 @@
             "loc": {
               "start": {
                 "line": 25,
-                "column": 15
+                "column": 15,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 25,
-                "column": 16
+                "column": 16,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 25,
-              "column": 15
+              "column": 15,
+              "program": "test-ts-conditional-type.ts"
             },
             "end": {
               "line": 25,
-              "column": 16
+              "column": 16,
+              "program": "test-ts-conditional-type.ts"
             }
           }
         },
@@ -1230,55 +1407,66 @@
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 32
+                      "column": 32,
+                      "program": "test-ts-conditional-type.ts"
                     },
                     "end": {
                       "line": 25,
-                      "column": 33
+                      "column": 33,
+                      "program": "test-ts-conditional-type.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 25,
-                    "column": 32
+                    "column": 32,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 25,
-                    "column": 34
+                    "column": 34,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 26
+                  "column": 26,
+                  "program": "test-ts-conditional-type.ts"
                 },
                 "end": {
                   "line": 25,
-                  "column": 34
+                  "column": 34,
+                  "program": "test-ts-conditional-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 25,
-                "column": 25
+                "column": 25,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 25,
-                "column": 34
+                "column": 34,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           },
+          "annotations": [],
           "loc": {
             "start": {
               "line": 25,
-              "column": 25
+              "column": 25,
+              "program": "test-ts-conditional-type.ts"
             },
             "end": {
               "line": 25,
-              "column": 36
+              "column": 36,
+              "program": "test-ts-conditional-type.ts"
             }
           }
         },
@@ -1291,22 +1479,26 @@
             "loc": {
               "start": {
                 "line": 26,
-                "column": 7
+                "column": 7,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 26,
-                "column": 8
+                "column": 8,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 26,
-              "column": 7
+              "column": 7,
+              "program": "test-ts-conditional-type.ts"
             },
             "end": {
               "line": 26,
-              "column": 8
+              "column": 8,
+              "program": "test-ts-conditional-type.ts"
             }
           }
         },
@@ -1321,22 +1513,26 @@
               "loc": {
                 "start": {
                   "line": 27,
-                  "column": 7
+                  "column": 7,
+                  "program": "test-ts-conditional-type.ts"
                 },
                 "end": {
                   "line": 27,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-ts-conditional-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 27,
-                "column": 7
+                "column": 7,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 27,
-                "column": 8
+                "column": 8,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           },
@@ -1355,22 +1551,27 @@
                       "loc": {
                         "start": {
                           "line": 27,
-                          "column": 27
+                          "column": 27,
+                          "program": "test-ts-conditional-type.ts"
                         },
                         "end": {
                           "line": 27,
-                          "column": 30
+                          "column": 30,
+                          "program": "test-ts-conditional-type.ts"
                         }
                       }
                     },
+                    "annotations": [],
                     "loc": {
                       "start": {
                         "line": 27,
-                        "column": 27
+                        "column": 27,
+                        "program": "test-ts-conditional-type.ts"
                       },
                       "end": {
                         "line": 27,
-                        "column": 32
+                        "column": 32,
+                        "program": "test-ts-conditional-type.ts"
                       }
                     }
                   },
@@ -1378,22 +1579,26 @@
                   "loc": {
                     "start": {
                       "line": 27,
-                      "column": 21
+                      "column": 21,
+                      "program": "test-ts-conditional-type.ts"
                     },
                     "end": {
                       "line": 27,
-                      "column": 25
+                      "column": 25,
+                      "program": "test-ts-conditional-type.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 27,
-                    "column": 18
+                    "column": 18,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 27,
-                    "column": 25
+                    "column": 25,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               }
@@ -1409,44 +1614,52 @@
                   "loc": {
                     "start": {
                       "line": 27,
-                      "column": 43
+                      "column": 43,
+                      "program": "test-ts-conditional-type.ts"
                     },
                     "end": {
                       "line": 27,
-                      "column": 44
+                      "column": 44,
+                      "program": "test-ts-conditional-type.ts"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 27,
-                    "column": 43
+                    "column": 43,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 28,
-                    "column": 6
+                    "column": 6,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 27,
-                  "column": 37
+                  "column": 37,
+                  "program": "test-ts-conditional-type.ts"
                 },
                 "end": {
                   "line": 28,
-                  "column": 6
+                  "column": 6,
+                  "program": "test-ts-conditional-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 27,
-                "column": 17
+                "column": 17,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 28,
-                "column": 6
+                "column": 6,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           },
@@ -1459,22 +1672,26 @@
               "loc": {
                 "start": {
                   "line": 28,
-                  "column": 7
+                  "column": 7,
+                  "program": "test-ts-conditional-type.ts"
                 },
                 "end": {
                   "line": 28,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-ts-conditional-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 28,
-                "column": 7
+                "column": 7,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 28,
-                "column": 8
+                "column": 8,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           },
@@ -1489,22 +1706,26 @@
                 "loc": {
                   "start": {
                     "line": 29,
-                    "column": 7
+                    "column": 7,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 29,
-                    "column": 8
+                    "column": 8,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 29,
-                  "column": 7
+                  "column": 7,
+                  "program": "test-ts-conditional-type.ts"
                 },
                 "end": {
                   "line": 29,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-ts-conditional-type.ts"
                 }
               }
             },
@@ -1517,11 +1738,13 @@
                 "loc": {
                   "start": {
                     "line": 29,
-                    "column": 17
+                    "column": 17,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 29,
-                    "column": 24
+                    "column": 24,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
@@ -1539,33 +1762,39 @@
                         "loc": {
                           "start": {
                             "line": 29,
-                            "column": 31
+                            "column": 31,
+                            "program": "test-ts-conditional-type.ts"
                           },
                           "end": {
                             "line": 29,
-                            "column": 32
+                            "column": 32,
+                            "program": "test-ts-conditional-type.ts"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 29,
-                          "column": 31
+                          "column": 31,
+                          "program": "test-ts-conditional-type.ts"
                         },
                         "end": {
                           "line": 29,
-                          "column": 33
+                          "column": 33,
+                          "program": "test-ts-conditional-type.ts"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 29,
-                        "column": 25
+                        "column": 25,
+                        "program": "test-ts-conditional-type.ts"
                       },
                       "end": {
                         "line": 29,
-                        "column": 33
+                        "column": 33,
+                        "program": "test-ts-conditional-type.ts"
                       }
                     }
                   }
@@ -1573,22 +1802,26 @@
                 "loc": {
                   "start": {
                     "line": 29,
-                    "column": 17
+                    "column": 17,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 29,
-                    "column": 33
+                    "column": 33,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 29,
-                  "column": 17
+                  "column": 17,
+                  "program": "test-ts-conditional-type.ts"
                 },
                 "end": {
                   "line": 29,
-                  "column": 24
+                  "column": 24,
+                  "program": "test-ts-conditional-type.ts"
                 }
               }
             },
@@ -1601,22 +1834,26 @@
                 "loc": {
                   "start": {
                     "line": 30,
-                    "column": 7
+                    "column": 7,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 30,
-                    "column": 8
+                    "column": 8,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 30,
-                  "column": 7
+                  "column": 7,
+                  "program": "test-ts-conditional-type.ts"
                 },
                 "end": {
                   "line": 30,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-ts-conditional-type.ts"
                 }
               }
             },
@@ -1629,55 +1866,65 @@
                 "loc": {
                   "start": {
                     "line": 31,
-                    "column": 7
+                    "column": 7,
+                    "program": "test-ts-conditional-type.ts"
                   },
                   "end": {
                     "line": 31,
-                    "column": 8
+                    "column": 8,
+                    "program": "test-ts-conditional-type.ts"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 31,
-                  "column": 7
+                  "column": 7,
+                  "program": "test-ts-conditional-type.ts"
                 },
                 "end": {
                   "line": 31,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-ts-conditional-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 29,
-                "column": 7
+                "column": 7,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 31,
-                "column": 8
+                "column": 8,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           },
           "loc": {
             "start": {
               "line": 27,
-              "column": 7
+              "column": 7,
+              "program": "test-ts-conditional-type.ts"
             },
             "end": {
               "line": 31,
-              "column": 8
+              "column": 8,
+              "program": "test-ts-conditional-type.ts"
             }
           }
         },
         "loc": {
           "start": {
             "line": 25,
-            "column": 15
+            "column": 15,
+            "program": "test-ts-conditional-type.ts"
           },
           "end": {
             "line": 31,
-            "column": 8
+            "column": 8,
+            "program": "test-ts-conditional-type.ts"
           }
         }
       },
@@ -1693,22 +1940,26 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 10
+                  "column": 10,
+                  "program": "test-ts-conditional-type.ts"
                 },
                 "end": {
                   "line": 25,
-                  "column": 11
+                  "column": 11,
+                  "program": "test-ts-conditional-type.ts"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 25,
-                "column": 10
+                "column": 10,
+                "program": "test-ts-conditional-type.ts"
               },
               "end": {
                 "line": 25,
-                "column": 12
+                "column": 12,
+                "program": "test-ts-conditional-type.ts"
               }
             }
           }
@@ -1716,22 +1967,26 @@
         "loc": {
           "start": {
             "line": 25,
-            "column": 9
+            "column": 9,
+            "program": "test-ts-conditional-type.ts"
           },
           "end": {
             "line": 25,
-            "column": 12
+            "column": 12,
+            "program": "test-ts-conditional-type.ts"
           }
         }
       },
       "loc": {
         "start": {
           "line": 25,
-          "column": 1
+          "column": 1,
+          "program": "test-ts-conditional-type.ts"
         },
         "end": {
           "line": 31,
-          "column": 9
+          "column": 9,
+          "program": "test-ts-conditional-type.ts"
         }
       }
     },
@@ -1740,11 +1995,13 @@
       "loc": {
         "start": {
           "line": 31,
-          "column": 8
+          "column": 8,
+          "program": "test-ts-conditional-type.ts"
         },
         "end": {
           "line": 31,
-          "column": 9
+          "column": 9,
+          "program": "test-ts-conditional-type.ts"
         }
       }
     }
@@ -1752,11 +2009,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-ts-conditional-type.ts"
     },
     "end": {
       "line": 31,
-      "column": 9
+      "column": 9,
+      "program": "test-ts-conditional-type.ts"
     }
   }
 }

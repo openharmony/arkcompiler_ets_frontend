@@ -20,17 +20,13 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-class VariableHasEnclosingScope {
-public:
-    explicit VariableHasEnclosingScope(ArenaAllocator &allocator) : allocator_ {allocator} {}
-    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
-
-private:
+class VariableHasEnclosingScope : public RecursiveInvariant<VerifierInvariants::VARIABLE_HAS_ENCLOSING_SCOPE> {
+    template <VerifierInvariants ID>
+    friend class InvariantBase;
+    [[nodiscard]] CheckResult operator()(const ir::AstNode *ast);
     bool CheckCatchClause(const ir::AstNode *ast, const ir::AstNode *node) const;
     bool CheckScopeNodeExceptions(const ir::AstNode *node) const;
     bool CheckAstExceptions(const ir::AstNode *ast) const;
-
-    ArenaAllocator &allocator_;
 };
 
 }  // namespace ark::es2panda::compiler::ast_verifier

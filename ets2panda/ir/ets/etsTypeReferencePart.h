@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,12 +23,15 @@ namespace ark::es2panda::ir {
 class ETSTypeReferencePart : public TypeNode {
 public:
     explicit ETSTypeReferencePart(ir::Expression *name, ir::TSTypeParameterInstantiation *typeParams,
-                                  ir::ETSTypeReferencePart *prev)
-        : TypeNode(AstNodeType::ETS_TYPE_REFERENCE_PART), name_(name), typeParams_(typeParams), prev_(prev)
+                                  ir::ETSTypeReferencePart *prev, ArenaAllocator *const allocator)
+        : TypeNode(AstNodeType::ETS_TYPE_REFERENCE_PART, allocator), name_(name), typeParams_(typeParams), prev_(prev)
     {
     }
 
-    explicit ETSTypeReferencePart(ir::Expression *name) : TypeNode(AstNodeType::ETS_TYPE_REFERENCE_PART), name_(name) {}
+    explicit ETSTypeReferencePart(ir::Expression *name, ArenaAllocator *const allocator)
+        : TypeNode(AstNodeType::ETS_TYPE_REFERENCE_PART, allocator), name_(name)
+    {
+    }
 
     ir::ETSTypeReferencePart *Previous()
     {
@@ -62,8 +65,9 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker) override;
+    ir::Identifier *GetIdent();
 
     void Accept(ASTVisitorT *v) override
     {
@@ -73,7 +77,9 @@ public:
     [[nodiscard]] ETSTypeReferencePart *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
 private:
-    checker::Type *HandleInternalTypes(checker::ETSChecker *checker, const Identifier *ident);
+    checker::Type *HandlePartialType(checker::ETSChecker *const checker, const Identifier *const ident);
+    checker::Type *HandleInternalTypes(checker::ETSChecker *checker);
+    checker::Type *HandleFixedArrayType(checker::ETSChecker *const checker);
 
     ir::Expression *name_;
     ir::TSTypeParameterInstantiation *typeParams_ {};

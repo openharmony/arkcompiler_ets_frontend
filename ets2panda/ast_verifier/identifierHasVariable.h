@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,14 +22,25 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-class IdentifierHasVariable {
+class IdentifierHasVariable : public RecursiveInvariant<VerifierInvariants::IDENTIFIER_HAS_VARIABLE> {
+    template <VerifierInvariants ID>
+    friend class InvariantBase;
+    class ExceptionsMatcher;
+    [[nodiscard]] CheckResult operator()(const ir::AstNode *ast);
+
+    auto UnionLoweringOccurred() const
+    {
+        return unionLoweringOccurred_;
+    }
+
 public:
-    explicit IdentifierHasVariable([[maybe_unused]] ArenaAllocator &allocator) {}
-    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
+    void SetUnionLoweringOccurred()
+    {
+        unionLoweringOccurred_ = true;
+    }
 
 private:
-    bool CheckMoreAstExceptions(const ir::Identifier *ast) const;
-    bool CheckAstExceptions(const ir::Identifier *ast) const;
+    bool unionLoweringOccurred_ {false};
 };
 
 }  // namespace ark::es2panda::compiler::ast_verifier

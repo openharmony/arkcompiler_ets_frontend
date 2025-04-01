@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -69,7 +69,7 @@ static void RestoreNestedBlockExpression(const ArenaVector<ir::Statement *> &sta
             }
         }
         // All nested block expressions should be restored
-        ASSERT(nestedBlckExprs.empty());
+        ES2PANDA_ASSERT(nestedBlckExprs.empty());
     }
 }
 
@@ -102,9 +102,70 @@ static void AllowRequiredTypeInstantiation(const ir::Expression *const loweringR
     }
 }
 
+static bool CheckReadonlyAndUpdateCtorArgs(const ir::Identifier *key, ir::Expression *value,
+                                           std::map<util::StringView, ir::Expression *> &ctorArgumentsMap)
+{
+    auto varType = (key->Variable() != nullptr) ? key->Variable()->TsType() : nullptr;
+    if (varType == nullptr || varType->HasTypeFlag(checker::TypeFlag::SETTER)) {
+        return false;
+    }
+
+    if (ctorArgumentsMap.find(key->Name()) == ctorArgumentsMap.end()) {
+        return false;
+    }
+
+    ctorArgumentsMap[key->Name()] = value;
+    return true;
+}
+
+static void PopulateCtorArgumentsFromMap(checker::ETSChecker *checker, ir::ObjectExpression *objExpr,
+                                         ArenaVector<ir::Expression *> &ctorArguments,
+                                         std::map<util::StringView, ir::Expression *> &ctorArgumentsMap)
+{
+    if (ctorArgumentsMap.empty()) {
+        return;
+    }
+    auto *const allocator = checker->Allocator();
+    auto *const classType = objExpr->TsType()->AsETSObjectType();
+
+    for (auto param : classType->ConstructSignatures().front()->Params()) {
+        auto ctorArgument = ctorArgumentsMap[param->Declaration()->Name()];
+        if (ctorArgument == nullptr && objExpr->PreferredType()->AsETSObjectType()->IsPartial()) {
+            ctorArguments.push_back(allocator->New<ir::UndefinedLiteral>());
+            continue;
+        }
+        ctorArguments.push_back(ctorArgument);
+    }
+}
+
+static void SetInstanceArguments(ArenaVector<ir::Statement *> &statements, ArenaVector<ir::Expression *> &ctorArguments)
+{
+    if (statements.empty() || ctorArguments.empty()) {
+        return;
+    }
+
+    const auto *const firstStatement = statements.front();
+    if (!firstStatement->IsVariableDeclaration()) {
+        return;
+    }
+
+    auto declarator = firstStatement->AsVariableDeclaration()->Declarators().front();
+    auto *initExpression = declarator->Init();
+    if (initExpression == nullptr || !initExpression->IsETSNewClassInstanceExpression()) {
+        return;
+    }
+
+    auto *instance = initExpression->AsETSNewClassInstanceExpression();
+    for (auto *arg : ctorArguments) {
+        arg->SetParent(instance);
+    }
+    instance->SetArguments(std::move(ctorArguments));
+}
+
 static void GenerateNewStatements(checker::ETSChecker *checker, ir::ObjectExpression *objExpr, std::stringstream &ss,
                                   std::vector<ir::AstNode *> &newStmts,
-                                  std::deque<ir::BlockExpression *> &nestedBlckExprs)
+                                  std::deque<ir::BlockExpression *> &nestedBlckExprs,
+                                  ArenaVector<ir::Expression *> &ctorArguments)
 {
     auto *const allocator = checker->Allocator();
 
@@ -117,20 +178,46 @@ static void GenerateNewStatements(checker::ETSChecker *checker, ir::ObjectExpres
 
     // Generating: let <genSym>: <TsType> = new <TsType>();
     auto *genSymIdent = Gensym(allocator);
-    auto *type = checker->AllocNode<ir::OpaqueTypeNode>(classType);
+    auto *type = checker->AllocNode<ir::OpaqueTypeNode>(classType, allocator);
     ss << "let @@I" << addNode(genSymIdent) << ": @@T" << addNode(type) << " = new @@T"
        << addNode(type->Clone(allocator, nullptr)) << "();" << std::endl;
 
     // Generating: <genSym>.key_i = value_i      ( i <= [0, object_literal.properties.size) )
+    bool isAnonymous = IsAnonymousClassType(classType);
+
+    std::map<util::StringView, ir::Expression *> ctorArgumentsMap;
+    if (isAnonymous) {
+        checker::Signature *sig = classType->ConstructSignatures().front();
+        for (auto param : sig->Params()) {
+            ES2PANDA_ASSERT(param->Declaration() != nullptr);
+            ctorArgumentsMap.emplace(param->Declaration()->Name(), nullptr);
+        }
+    }
+
     for (auto *propExpr : objExpr->Properties()) {
-        ASSERT(propExpr->IsProperty());
+        //  Skip possibly invalid properties:
+        if (!propExpr->IsProperty()) {
+            ES2PANDA_ASSERT(checker->IsAnyError());
+            continue;
+        }
+
         auto *prop = propExpr->AsProperty();
         ir::Expression *key = prop->Key();
         ir::Expression *value = prop->Value();
 
-        ir::Identifier *keyIdent = key->IsStringLiteral()
-                                       ? checker->AllocNode<ir::Identifier>(key->AsStringLiteral()->Str(), allocator)
-                                       : key->AsIdentifier();
+        //  Processing of possible invalid property key
+        ir::Identifier *keyIdent;
+        if (key->IsStringLiteral()) {
+            keyIdent = checker->AllocNode<ir::Identifier>(key->AsStringLiteral()->Str(), allocator);
+        } else if (key->IsIdentifier()) {
+            keyIdent = key->AsIdentifier();
+        } else {
+            continue;
+        }
+
+        if (isAnonymous && CheckReadonlyAndUpdateCtorArgs(keyIdent, value, ctorArgumentsMap)) {
+            continue;
+        }
 
         ss << "@@I" << addNode(genSymIdent->Clone(allocator, nullptr)) << ".@@I" << addNode(keyIdent);
 
@@ -145,6 +232,8 @@ static void GenerateNewStatements(checker::ETSChecker *checker, ir::ObjectExpres
             ss << " = @@E" << addNode(value) << ";" << std::endl;
         }
     }
+
+    PopulateCtorArgumentsFromMap(checker, objExpr, ctorArguments, ctorArgumentsMap);
 
     ss << "(@@I" << addNode(genSymIdent->Clone(allocator, nullptr)) << ");" << std::endl;
 }
@@ -169,14 +258,20 @@ static ir::AstNode *HandleObjectLiteralLowering(public_lib::Context *ctx, ir::Ob
     auto *const parser = ctx->parser->AsETSParser();
     auto *const varbinder = ctx->checker->VarBinder()->AsETSBinder();
 
+    checker->AsETSChecker()->CheckObjectLiteralKeys(objExpr->Properties());
+
     std::stringstream ss;
     // Double-ended queue for storing nested block expressions that have already been processed earlier
     std::deque<ir::BlockExpression *> nestedBlckExprs;
     std::vector<ir::AstNode *> newStmts;
+    ArenaVector<ir::Expression *> ctorArguments(checker->Allocator()->Adapter());
 
-    GenerateNewStatements(checker, objExpr, ss, newStmts, nestedBlckExprs);
+    GenerateNewStatements(checker, objExpr, ss, newStmts, nestedBlckExprs, ctorArguments);
 
     auto *loweringResult = parser->CreateFormattedExpression(ss.str(), newStmts);
+
+    SetInstanceArguments(loweringResult->AsBlockExpression()->Statements(), ctorArguments);
+
     loweringResult->SetParent(objExpr->Parent());
 
     MaybeAllowConstAssign(objExpr->TsType(), loweringResult->AsBlockExpression()->Statements());
@@ -198,25 +293,18 @@ static ir::AstNode *HandleObjectLiteralLowering(public_lib::Context *ctx, ir::Ob
     return loweringResult;
 }
 
-bool ObjectLiteralLowering::Perform(public_lib::Context *ctx, parser::Program *program)
+bool ObjectLiteralLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, extPrograms] : program->ExternalSources()) {
-            (void)_;
-            for (auto *extProg : extPrograms) {
-                Perform(ctx, extProg);
-            }
-        }
-    }
-
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style
         [ctx](ir::AstNode *ast) -> ir::AstNode * {
-            // Skip processing dynamic objects
-            if (ast->IsObjectExpression() && !ast->AsObjectExpression()->TsType()->AsETSObjectType()->HasObjectFlag(
-                                                 // CC-OFFNXT(G.FMT.14-CPP,G.FMT.06-CPP) project code style
-                                                 checker::ETSObjectFlags::DYNAMIC)) {
-                return HandleObjectLiteralLowering(ctx, ast->AsObjectExpression());
+            // Skip processing invalid and dynamic objects
+            if (ast->IsObjectExpression()) {
+                auto *exprType = ast->AsObjectExpression()->TsType();
+                if (exprType != nullptr && exprType->IsETSObjectType() &&
+                    !exprType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::DYNAMIC)) {
+                    return HandleObjectLiteralLowering(ctx, ast->AsObjectExpression());
+                }
             }
             return ast;
         },
@@ -225,26 +313,9 @@ bool ObjectLiteralLowering::Perform(public_lib::Context *ctx, parser::Program *p
     return true;
 }
 
-bool ObjectLiteralLowering::ExternalSourcesPostcondition(public_lib::Context *ctx, const parser::Program *program)
+bool ObjectLiteralLowering::PostconditionForModule([[maybe_unused]] public_lib::Context *ctx,
+                                                   const parser::Program *program)
 {
-    for (auto &[_, extPrograms] : program->ExternalSources()) {
-        (void)_;
-        for (auto *extProg : extPrograms) {
-            if (!Postcondition(ctx, extProg)) {
-                return false;
-            }
-        }
-    }
-    return true;
-}
-
-bool ObjectLiteralLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
-{
-    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB &&
-        !ExternalSourcesPostcondition(ctx, program)) {
-        return false;
-    }
-
     // In all object literal contexts (except dynamic) a substitution should take place
     return !program->Ast()->IsAnyChild([](const ir::AstNode *ast) -> bool {
         return ast->IsObjectExpression() &&

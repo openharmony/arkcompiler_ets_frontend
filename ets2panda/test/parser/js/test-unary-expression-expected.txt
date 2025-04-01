@@ -14,33 +14,39 @@
           "loc": {
             "start": {
               "line": 17,
-              "column": 2
+              "column": 2,
+              "program": "test-unary-expression.js"
             },
             "end": {
               "line": 17,
-              "column": 3
+              "column": 3,
+              "program": "test-unary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 17,
-            "column": 1
+            "column": 1,
+            "program": "test-unary-expression.js"
           },
           "end": {
             "line": 17,
-            "column": 3
+            "column": 3,
+            "program": "test-unary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 17,
-          "column": 1
+          "column": 1,
+          "program": "test-unary-expression.js"
         },
         "end": {
           "line": 17,
-          "column": 4
+          "column": 4,
+          "program": "test-unary-expression.js"
         }
       }
     },
@@ -57,33 +63,39 @@
           "loc": {
             "start": {
               "line": 18,
-              "column": 2
+              "column": 2,
+              "program": "test-unary-expression.js"
             },
             "end": {
               "line": 18,
-              "column": 3
+              "column": 3,
+              "program": "test-unary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 18,
-            "column": 1
+            "column": 1,
+            "program": "test-unary-expression.js"
           },
           "end": {
             "line": 18,
-            "column": 3
+            "column": 3,
+            "program": "test-unary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 18,
-          "column": 1
+          "column": 1,
+          "program": "test-unary-expression.js"
         },
         "end": {
           "line": 18,
-          "column": 4
+          "column": 4,
+          "program": "test-unary-expression.js"
         }
       }
     },
@@ -103,22 +115,26 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 2
+                "column": 2,
+                "program": "test-unary-expression.js"
               },
               "end": {
                 "line": 19,
-                "column": 3
+                "column": 3,
+                "program": "test-unary-expression.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 19,
-              "column": 1
+              "column": 1,
+              "program": "test-unary-expression.js"
             },
             "end": {
               "line": 19,
-              "column": 3
+              "column": 3,
+              "program": "test-unary-expression.js"
             }
           }
         },
@@ -129,33 +145,39 @@
           "loc": {
             "start": {
               "line": 20,
-              "column": 2
+              "column": 2,
+              "program": "test-unary-expression.js"
             },
             "end": {
               "line": 20,
-              "column": 3
+              "column": 3,
+              "program": "test-unary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 19,
-            "column": 1
+            "column": 1,
+            "program": "test-unary-expression.js"
           },
           "end": {
             "line": 20,
-            "column": 3
+            "column": 3,
+            "program": "test-unary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 19,
-          "column": 1
+          "column": 1,
+          "program": "test-unary-expression.js"
         },
         "end": {
           "line": 20,
-          "column": 4
+          "column": 4,
+          "program": "test-unary-expression.js"
         }
       }
     },
@@ -172,33 +194,39 @@
           "loc": {
             "start": {
               "line": 21,
-              "column": 2
+              "column": 2,
+              "program": "test-unary-expression.js"
             },
             "end": {
               "line": 21,
-              "column": 3
+              "column": 3,
+              "program": "test-unary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 21,
-            "column": 1
+            "column": 1,
+            "program": "test-unary-expression.js"
           },
           "end": {
             "line": 21,
-            "column": 3
+            "column": 3,
+            "program": "test-unary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 21,
-          "column": 1
+          "column": 1,
+          "program": "test-unary-expression.js"
         },
         "end": {
           "line": 21,
-          "column": 3
+          "column": 3,
+          "program": "test-unary-expression.js"
         }
       }
     },
@@ -213,33 +241,39 @@
           "loc": {
             "start": {
               "line": 22,
-              "column": 8
+              "column": 8,
+              "program": "test-unary-expression.js"
             },
             "end": {
               "line": 22,
-              "column": 9
+              "column": 9,
+              "program": "test-unary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 22,
-            "column": 1
+            "column": 1,
+            "program": "test-unary-expression.js"
           },
           "end": {
             "line": 22,
-            "column": 9
+            "column": 9,
+            "program": "test-unary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 22,
-          "column": 1
+          "column": 1,
+          "program": "test-unary-expression.js"
         },
         "end": {
           "line": 22,
-          "column": 9
+          "column": 9,
+          "program": "test-unary-expression.js"
         }
       }
     },
@@ -256,33 +290,39 @@
           "loc": {
             "start": {
               "line": 23,
-              "column": 6
+              "column": 6,
+              "program": "test-unary-expression.js"
             },
             "end": {
               "line": 23,
-              "column": 7
+              "column": 7,
+              "program": "test-unary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 23,
-            "column": 1
+            "column": 1,
+            "program": "test-unary-expression.js"
           },
           "end": {
             "line": 23,
-            "column": 7
+            "column": 7,
+            "program": "test-unary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 23,
-          "column": 1
+          "column": 1,
+          "program": "test-unary-expression.js"
         },
         "end": {
           "line": 23,
-          "column": 7
+          "column": 7,
+          "program": "test-unary-expression.js"
         }
       }
     },
@@ -298,33 +338,39 @@
           "loc": {
             "start": {
               "line": 24,
-              "column": 8
+              "column": 8,
+              "program": "test-unary-expression.js"
             },
             "end": {
               "line": 24,
-              "column": 10
+              "column": 10,
+              "program": "test-unary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 24,
-            "column": 1
+            "column": 1,
+            "program": "test-unary-expression.js"
           },
           "end": {
             "line": 24,
-            "column": 10
+            "column": 10,
+            "program": "test-unary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 24,
-          "column": 1
+          "column": 1,
+          "program": "test-unary-expression.js"
         },
         "end": {
           "line": 24,
-          "column": 10
+          "column": 10,
+          "program": "test-unary-expression.js"
         }
       }
     },
@@ -344,22 +390,26 @@
             "loc": {
               "start": {
                 "line": 25,
-                "column": 2
+                "column": 2,
+                "program": "test-unary-expression.js"
               },
               "end": {
                 "line": 25,
-                "column": 3
+                "column": 3,
+                "program": "test-unary-expression.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 25,
-              "column": 1
+              "column": 1,
+              "program": "test-unary-expression.js"
             },
             "end": {
               "line": 25,
-              "column": 3
+              "column": 3,
+              "program": "test-unary-expression.js"
             }
           }
         },
@@ -377,22 +427,26 @@
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 8
+                  "column": 8,
+                  "program": "test-unary-expression.js"
                 },
                 "end": {
                   "line": 25,
-                  "column": 9
+                  "column": 9,
+                  "program": "test-unary-expression.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 25,
-                "column": 7
+                "column": 7,
+                "program": "test-unary-expression.js"
               },
               "end": {
                 "line": 25,
-                "column": 9
+                "column": 9,
+                "program": "test-unary-expression.js"
               }
             }
           },
@@ -410,22 +464,26 @@
                 "loc": {
                   "start": {
                     "line": 25,
-                    "column": 14
+                    "column": 14,
+                    "program": "test-unary-expression.js"
                   },
                   "end": {
                     "line": 25,
-                    "column": 15
+                    "column": 15,
+                    "program": "test-unary-expression.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 13
+                  "column": 13,
+                  "program": "test-unary-expression.js"
                 },
                 "end": {
                   "line": 25,
-                  "column": 15
+                  "column": 15,
+                  "program": "test-unary-expression.js"
                 }
               }
             },
@@ -440,66 +498,78 @@
                 "loc": {
                   "start": {
                     "line": 25,
-                    "column": 19
+                    "column": 19,
+                    "program": "test-unary-expression.js"
                   },
                   "end": {
                     "line": 25,
-                    "column": 20
+                    "column": 20,
+                    "program": "test-unary-expression.js"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 25,
-                  "column": 18
+                  "column": 18,
+                  "program": "test-unary-expression.js"
                 },
                 "end": {
                   "line": 25,
-                  "column": 20
+                  "column": 20,
+                  "program": "test-unary-expression.js"
                 }
               }
             },
             "loc": {
               "start": {
                 "line": 25,
-                "column": 13
+                "column": 13,
+                "program": "test-unary-expression.js"
               },
               "end": {
                 "line": 25,
-                "column": 20
+                "column": 20,
+                "program": "test-unary-expression.js"
               }
             }
           },
           "loc": {
             "start": {
               "line": 25,
-              "column": 7
+              "column": 7,
+              "program": "test-unary-expression.js"
             },
             "end": {
               "line": 25,
-              "column": 20
+              "column": 20,
+              "program": "test-unary-expression.js"
             }
           }
         },
         "loc": {
           "start": {
             "line": 25,
-            "column": 1
+            "column": 1,
+            "program": "test-unary-expression.js"
           },
           "end": {
             "line": 25,
-            "column": 20
+            "column": 20,
+            "program": "test-unary-expression.js"
           }
         }
       },
       "loc": {
         "start": {
           "line": 25,
-          "column": 1
+          "column": 1,
+          "program": "test-unary-expression.js"
         },
         "end": {
           "line": 25,
-          "column": 20
+          "column": 20,
+          "program": "test-unary-expression.js"
         }
       }
     }
@@ -507,11 +577,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test-unary-expression.js"
     },
     "end": {
       "line": 25,
-      "column": 20
+      "column": 20,
+      "program": "test-unary-expression.js"
     }
   }
 }

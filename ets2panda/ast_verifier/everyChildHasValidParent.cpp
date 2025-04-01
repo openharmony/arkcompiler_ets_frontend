@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,15 +18,16 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-CheckResult EveryChildHasValidParent::operator()(CheckContext &ctx, const ir::AstNode *ast)
+CheckResult EveryChildHasValidParent::operator()(const ir::AstNode *ast)
 {
     auto result = std::make_tuple(CheckDecision::CORRECT, CheckAction::CONTINUE);
-    if (ast->IsETSScript()) {
+    if (ast->IsETSModule()) {
         return result;
     }
 
     auto maybeOverloadMethod = [](const ir::AstNode *root, const ir::AstNode *node) -> bool {
-        if (root->IsClassDefinition() && node->IsMethodDefinition() && node->Parent()->IsMethodDefinition()) {
+        if ((root->IsClassDefinition() || root->IsTSInterfaceBody()) && node->IsMethodDefinition() &&
+            node->Parent()->IsMethodDefinition()) {
             auto maybeBaseOverloadMethod = node->Parent()->AsMethodDefinition();
             auto overloads = maybeBaseOverloadMethod->Overloads();
             auto res =
@@ -36,14 +37,8 @@ CheckResult EveryChildHasValidParent::operator()(CheckContext &ctx, const ir::As
         return false;
     };
 
-    ast->Iterate([&](const ir::AstNode *node) {
+    ast->Iterate([this, ast, maybeOverloadMethod, &result](const ir::AstNode *node) {
         if (ir::AstNode const *parent = node->Parent(); ast != parent) {
-            //  NOTE: Temporary suppress.
-            //  Should be removed after new ENUMs support will be implemented: #14443
-            if (ast->IsClassDeclaration() && parent != nullptr && parent->IsETSNewClassInstanceExpression()) {
-                return;
-            }
-
             //  NOTE: Temporary suppress.
             //  Should be removed after proper overload method's parent setting
             //  For now there is no right decision who is parent of overload method:
@@ -52,7 +47,7 @@ CheckResult EveryChildHasValidParent::operator()(CheckContext &ctx, const ir::As
                 return;
             }
 
-            ctx.AddCheckMessage("INCORRECT_PARENT_REF", *node, node->Start());
+            AddCheckMessage("INCORRECT_PARENT_REF", *node);
             result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
     });

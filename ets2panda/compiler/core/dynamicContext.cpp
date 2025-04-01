@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -147,7 +147,7 @@ void IteratorContext::AbortContext([[maybe_unused]] ControlFlowChange cfc,
 
 void TryContext::InitFinalizer()
 {
-    ASSERT(tryStmt_);
+    ES2PANDA_ASSERT(tryStmt_);
 
     if (!hasFinalizer_ || (tryStmt_->FinallyBlock() == nullptr)) {
         return;
@@ -211,7 +211,7 @@ void ETSTryContext::EmitFinalizer(
     LabelPair trycatchLabelPair,
     const ArenaVector<std::pair<compiler::LabelPair, const ir::Statement *>> &finalizerInsertions)
 {
-    ASSERT(tryStmt_);
+    ES2PANDA_ASSERT(tryStmt_);
 
     if (!hasFinalizer_ || (tryStmt_->FinallyBlock() == nullptr)) {
         return;
@@ -244,7 +244,7 @@ void ETSTryContext::EmitFinalizerInsertion(ETSGen *etsg, compiler::LabelPair lab
 {
     etsg->SetLabel(tryStmt_, labelPair.Begin());
 
-    ASSERT(statement != nullptr);
+    ES2PANDA_ASSERT(statement != nullptr);
     bool isReturn = statement->IsReturnStatement();
 
     compiler::RegScope rs(etsg);
@@ -282,7 +282,7 @@ void ETSTryContext::EmitFinalizerInsertion(ETSGen *etsg, compiler::LabelPair lab
         compiler::Label *target = etsg->ControlFlowChangeContinue(statement->AsContinueStatement()->Ident());
         etsg->Branch(tryStmt_, target);
     } else {
-        UNREACHABLE();
+        ES2PANDA_UNREACHABLE();
     }
 }
 

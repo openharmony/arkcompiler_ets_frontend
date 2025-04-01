@@ -11,17 +11,159 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "test.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "test.ets"
             }
           }
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "test.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "test.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "test.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "test.ets"
+              }
+            }
+          }
+        ],
         "body": [
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1,
+                      "program": null
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1,
+                    "program": null
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": null
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "test.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "test.ets"
+              }
+            }
+          },
           {
             "type": "MethodDefinition",
             "key": {
@@ -31,11 +173,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +199,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +219,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +260,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "test.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "test.ets"
               }
             }
           },
@@ -125,11 +279,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 17
+                  "column": 17,
+                  "program": "test.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 19
+                  "column": 19,
+                  "program": "test.ets"
                 }
               }
             },
@@ -149,11 +305,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 17
+                      "column": 17,
+                      "program": "test.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 19
+                      "column": 19,
+                      "program": "test.ets"
                     }
                   }
                 },
@@ -167,33 +325,39 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 21
+                      "column": 21,
+                      "program": "test.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 23
+                      "column": 23,
+                      "program": "test.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 17
+                    "column": 17,
+                    "program": "test.ets"
                   },
                   "end": {
                     "line": 16,
-                    "column": 23
+                    "column": 23,
+                    "program": "test.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 17
+                  "column": 17,
+                  "program": "test.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 23
+                  "column": 23,
+                  "program": "test.ets"
                 }
               }
             },
@@ -202,11 +366,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 8
+                "column": 8,
+                "program": "test.ets"
               },
               "end": {
                 "line": 16,
-                "column": 23
+                "column": 23,
+                "program": "test.ets"
               }
             }
           }
@@ -214,22 +380,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "test.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "test.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "test.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "test.ets"
         }
       }
     }
@@ -237,11 +407,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "test.ets"
     },
     "end": {
       "line": 17,
-      "column": 1
+      "column": 1,
+      "program": "test.ets"
     }
   }
 }

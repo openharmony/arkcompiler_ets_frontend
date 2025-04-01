@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,39 +16,52 @@
 #include "etsNeverType.h"
 
 #include "checker/ETSchecker.h"
-#include "ir/astDump.h"
 
 namespace ark::es2panda::ir {
 void ETSNeverType::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
                                      [[maybe_unused]] std::string_view const transformationName)
 {
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
-void ETSNeverType::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
+void ETSNeverType::Iterate([[maybe_unused]] const NodeTraverser &cb) const
+{
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
+}
 
 void ETSNeverType::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ETSNeverType"}});
+    dumper->Add({{"type", "ETSNeverType"}, {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void ETSNeverType::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("never");
 }
 
 void ETSNeverType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 checker::Type *ETSNeverType::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
-checker::Type *ETSNeverType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType ETSNeverType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 checker::Type *ETSNeverType::GetType([[maybe_unused]] checker::ETSChecker *checker)
@@ -59,12 +72,21 @@ checker::Type *ETSNeverType::GetType([[maybe_unused]] checker::ETSChecker *check
 
 ETSNeverType *ETSNeverType::Clone(ArenaAllocator *allocator, AstNode *parent)
 {
-    if (auto *const clone = allocator->New<ir::ETSNeverType>(); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    auto *const clone = allocator->New<ir::ETSNeverType>(allocator);
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    return nullptr;
+
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    clone->SetRange(Range());
+    return clone;
 }
 }  // namespace ark::es2panda::ir

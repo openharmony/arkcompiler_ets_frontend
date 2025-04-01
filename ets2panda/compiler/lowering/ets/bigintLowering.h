@@ -20,10 +20,10 @@
 
 namespace ark::es2panda::compiler {
 
-class BigIntLowering : public Phase {
+class BigIntLowering : public PhaseForBodies {
 public:
     std::string_view Name() const override;
-    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
 };
 
 }  // namespace ark::es2panda::compiler

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,30 +21,31 @@
 namespace ark::es2panda::checker {
 class ETSWarningAnalyzer {
 public:
-    ETSWarningAnalyzer(const ir::AstNode *node, parser::Program *program, const ETSWarnings warning, bool etsWerror)
-        : program_(program), etsWerror_(etsWerror)
+    ETSWarningAnalyzer(const ir::AstNode *node, parser::Program *program, const ETSWarnings warning,
+                       util::DiagnosticEngine &diagnosticEngine)
+        : program_(program), diagnosticEngine_(diagnosticEngine)
     {
         if (node == nullptr) {
             return;
         }
 
         switch (warning) {
-            case ETSWarnings::SUGGEST_FINAL:
+            case ETSWarnings::ETS_SUGGEST_FINAL:
                 ETSWarningSuggestFinal(node);
                 break;
-            case ETSWarnings::PROHIBIT_TOP_LEVEL_STATEMENTS:
+            case ETSWarnings::ETS_PROHIBIT_TOP_LEVEL_STATEMENTS:
                 ETSWarningsProhibitTopLevelStatements(node);
                 break;
-            case ETSWarnings::BOOST_EQUALITY_STATEMENT:
+            case ETSWarnings::ETS_BOOST_EQUALITY_STATEMENT:
                 ETSWarningBoostEqualityStatement(node);
                 break;
-            case ETSWarnings::REMOVE_ASYNC_FUNCTIONS:
+            case ETSWarnings::ETS_REMOVE_ASYNC:
                 ETSWarningRemoveAsync(node);
                 break;
-            case ETSWarnings::REMOVE_LAMBDA:
+            case ETSWarnings::ETS_REMOVE_LAMBDA:
                 ETSWarningRemoveLambda(node);
                 break;
-            case ETSWarnings::IMPLICIT_BOXING_UNBOXING:
+            case ETSWarnings::ETS_IMPLICIT_BOXING_UNBOXING:
                 ETSWarningImplicitBoxingUnboxing(node);
                 break;
             default:
@@ -53,7 +54,10 @@ public:
     }
 
 private:
-    void ETSThrowWarning(const std::string &message, const lexer::SourcePosition &position);
+    void LogWarning(const std::string &message, const lexer::SourcePosition &position);
+    void LogWarning(const diagnostic::DiagnosticKind &diagnostic, util::DiagnosticMessageParams &diagnosticParams,
+                    const lexer::SourcePosition &position) const;
+    void LogWarning(const diagnostic::DiagnosticKind &diagnostic, const lexer::SourcePosition &position) const;
 
     void AnalyzeClassDefForFinalModifier(const ir::ClassDefinition *classDef);
     void AnalyzeClassMethodForFinalModifier(const ir::MethodDefinition *methodDef, const ir::ClassDefinition *classDef);
@@ -72,7 +76,7 @@ private:
     void ETSWarningImplicitBoxingUnboxing(const ir::AstNode *node);
 
     parser::Program *program_;
-    bool etsWerror_;
+    util::DiagnosticEngine &diagnosticEngine_;
 };
 }  // namespace ark::es2panda::checker
 

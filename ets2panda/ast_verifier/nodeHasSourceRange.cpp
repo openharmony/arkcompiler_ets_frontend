@@ -17,12 +17,12 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-CheckResult NodeHasSourceRange::operator()(CheckContext &ctx, const ir::AstNode *ast)
+CheckResult NodeHasSourceRange::operator()(const ir::AstNode *ast)
 {
     const auto hasRange =
         ast->Start().line != 0 || ast->Start().index != 0 || ast->End().line != 0 || ast->End().index != 0;
     if (!hasRange) {
-        ctx.AddCheckMessage("NULL_RANGE", *ast, ast->Start());
+        AddCheckMessage("NULL_RANGE", *ast);
         return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
     }
     return {CheckDecision::CORRECT, CheckAction::CONTINUE};

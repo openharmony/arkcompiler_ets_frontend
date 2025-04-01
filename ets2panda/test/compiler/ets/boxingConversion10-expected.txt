@@ -11,16 +11,52 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "boxingConversion10.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "boxingConversion10.ets"
             }
           }
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "boxingConversion10.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "boxingConversion10.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "boxingConversion10.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "boxingConversion10.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",
@@ -31,11 +67,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +93,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +113,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +154,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "boxingConversion10.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "boxingConversion10.ets"
               }
             }
           },
@@ -125,11 +173,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -149,11 +199,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -176,11 +228,13 @@
                           "loc": {
                             "start": {
                               "line": 16,
-                              "column": 5
+                              "column": 5,
+                              "program": "boxingConversion10.ets"
                             },
                             "end": {
                               "line": 16,
-                              "column": 6
+                              "column": 6,
+                              "program": "boxingConversion10.ets"
                             }
                           }
                         },
@@ -190,33 +244,39 @@
                           "loc": {
                             "start": {
                               "line": 16,
-                              "column": 16
+                              "column": 16,
+                              "program": "boxingConversion10.ets"
                             },
                             "end": {
                               "line": 16,
-                              "column": 17
+                              "column": 17,
+                              "program": "boxingConversion10.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 16,
-                            "column": 5
+                            "column": 5,
+                            "program": "boxingConversion10.ets"
                           },
                           "end": {
                             "line": 16,
-                            "column": 17
+                            "column": 17,
+                            "program": "boxingConversion10.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 16,
-                          "column": 5
+                          "column": 5,
+                          "program": "boxingConversion10.ets"
                         },
                         "end": {
                           "line": 16,
-                          "column": 17
+                          "column": 17,
+                          "program": "boxingConversion10.ets"
                         }
                       }
                     },
@@ -232,11 +292,13 @@
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 5
+                              "column": 5,
+                              "program": "boxingConversion10.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 6
+                              "column": 6,
+                              "program": "boxingConversion10.ets"
                             }
                           }
                         },
@@ -247,33 +309,39 @@
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 17
+                              "column": 17,
+                              "program": "boxingConversion10.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 18
+                              "column": 18,
+                              "program": "boxingConversion10.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 5
+                            "column": 5,
+                            "program": "boxingConversion10.ets"
                           },
                           "end": {
                             "line": 17,
-                            "column": 18
+                            "column": 18,
+                            "program": "boxingConversion10.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 5
+                          "column": 5,
+                          "program": "boxingConversion10.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 18
+                          "column": 18,
+                          "program": "boxingConversion10.ets"
                         }
                       }
                     }
@@ -281,33 +349,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -316,11 +390,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "boxingConversion10.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "boxingConversion10.ets"
               }
             }
           },
@@ -333,11 +409,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 5
+                  "column": 5,
+                  "program": "boxingConversion10.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 6
+                  "column": 6,
+                  "program": "boxingConversion10.ets"
                 }
               }
             },
@@ -352,11 +430,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 8
+                  "column": 8,
+                  "program": "boxingConversion10.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 13
+                  "column": 13,
+                  "program": "boxingConversion10.ets"
                 }
               }
             },
@@ -365,11 +445,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 5
+                "column": 5,
+                "program": "boxingConversion10.ets"
               },
               "end": {
                 "line": 16,
-                "column": 17
+                "column": 17,
+                "program": "boxingConversion10.ets"
               }
             }
           },
@@ -382,11 +464,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 5
+                  "column": 5,
+                  "program": "boxingConversion10.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 6
+                  "column": 6,
+                  "program": "boxingConversion10.ets"
                 }
               }
             },
@@ -407,33 +491,39 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 8
+                      "column": 8,
+                      "program": "boxingConversion10.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 14
+                      "column": 14,
+                      "program": "boxingConversion10.ets"
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 8
+                    "column": 8,
+                    "program": "boxingConversion10.ets"
                   },
                   "end": {
                     "line": 17,
-                    "column": 16
+                    "column": 16,
+                    "program": "boxingConversion10.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 8
+                  "column": 8,
+                  "program": "boxingConversion10.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 16
+                  "column": 16,
+                  "program": "boxingConversion10.ets"
                 }
               }
             },
@@ -442,11 +532,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "boxingConversion10.ets"
               },
               "end": {
                 "line": 17,
-                "column": 18
+                "column": 18,
+                "program": "boxingConversion10.ets"
               }
             }
           }
@@ -454,22 +546,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "boxingConversion10.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "boxingConversion10.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "boxingConversion10.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "boxingConversion10.ets"
         }
       }
     }
@@ -477,11 +573,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "boxingConversion10.ets"
     },
     "end": {
       "line": 18,
-      "column": 1
+      "column": 1,
+      "program": "boxingConversion10.ets"
     }
   }
 }

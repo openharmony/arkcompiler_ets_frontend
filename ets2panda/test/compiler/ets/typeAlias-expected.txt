@@ -11,16 +11,52 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "typeAlias.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "typeAlias.ets"
             }
           }
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "typeAlias.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "typeAlias.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "typeAlias.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "typeAlias.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",
@@ -31,11 +67,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +93,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +113,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +154,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "typeAlias.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "typeAlias.ets"
               }
             }
           },
@@ -125,11 +173,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -149,11 +199,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -176,11 +228,13 @@
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 5
+                              "column": 5,
+                              "program": "typeAlias.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 6
+                              "column": 6,
+                              "program": "typeAlias.ets"
                             }
                           }
                         },
@@ -195,11 +249,13 @@
                               "loc": {
                                 "start": {
                                   "line": 17,
-                                  "column": 9
+                                  "column": 9,
+                                  "program": "typeAlias.ets"
                                 },
                                 "end": {
                                   "line": 17,
-                                  "column": 15
+                                  "column": 15,
+                                  "program": "typeAlias.ets"
                                 }
                               }
                             },
@@ -210,11 +266,13 @@
                               "loc": {
                                 "start": {
                                   "line": 17,
-                                  "column": 16
+                                  "column": 16,
+                                  "program": "typeAlias.ets"
                                 },
                                 "end": {
                                   "line": 17,
-                                  "column": 25
+                                  "column": 25,
+                                  "program": "typeAlias.ets"
                                 }
                               }
                             },
@@ -223,11 +281,13 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 9
+                                "column": 9,
+                                "program": "typeAlias.ets"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 25
+                                "column": 25,
+                                "program": "typeAlias.ets"
                               }
                             }
                           },
@@ -238,11 +298,13 @@
                               "loc": {
                                 "start": {
                                   "line": 17,
-                                  "column": 26
+                                  "column": 26,
+                                  "program": "typeAlias.ets"
                                 },
                                 "end": {
                                   "line": 17,
-                                  "column": 27
+                                  "column": 27,
+                                  "program": "typeAlias.ets"
                                 }
                               }
                             }
@@ -251,33 +313,39 @@
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 9
+                              "column": 9,
+                              "program": "typeAlias.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 28
+                              "column": 28,
+                              "program": "typeAlias.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 5
+                            "column": 5,
+                            "program": "typeAlias.ets"
                           },
                           "end": {
                             "line": 17,
-                            "column": 28
+                            "column": 28,
+                            "program": "typeAlias.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 5
+                          "column": 5,
+                          "program": "typeAlias.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 28
+                          "column": 28,
+                          "program": "typeAlias.ets"
                         }
                       }
                     }
@@ -285,33 +353,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -320,11 +394,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "typeAlias.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "typeAlias.ets"
               }
             }
           },
@@ -337,11 +413,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 5
+                  "column": 5,
+                  "program": "typeAlias.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 6
+                  "column": 6,
+                  "program": "typeAlias.ets"
                 }
               }
             },
@@ -356,11 +434,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 9
+                      "column": 9,
+                      "program": "typeAlias.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 15
+                      "column": 15,
+                      "program": "typeAlias.ets"
                     }
                   }
                 },
@@ -371,11 +451,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 16
+                      "column": 16,
+                      "program": "typeAlias.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 25
+                      "column": 25,
+                      "program": "typeAlias.ets"
                     }
                   }
                 },
@@ -384,11 +466,13 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 9
+                    "column": 9,
+                    "program": "typeAlias.ets"
                   },
                   "end": {
                     "line": 17,
-                    "column": 25
+                    "column": 25,
+                    "program": "typeAlias.ets"
                   }
                 }
               },
@@ -399,11 +483,13 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 26
+                      "column": 26,
+                      "program": "typeAlias.ets"
                     },
                     "end": {
                       "line": 17,
-                      "column": 27
+                      "column": 27,
+                      "program": "typeAlias.ets"
                     }
                   }
                 }
@@ -412,11 +498,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 9
+                  "column": 9,
+                  "program": "typeAlias.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 28
+                  "column": 28,
+                  "program": "typeAlias.ets"
                 }
               }
             },
@@ -431,11 +519,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "typeAlias.ets"
               },
               "end": {
                 "line": 17,
-                "column": 28
+                "column": 28,
+                "program": "typeAlias.ets"
               }
             }
           }
@@ -443,22 +533,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "typeAlias.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "typeAlias.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "typeAlias.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "typeAlias.ets"
         }
       }
     }
@@ -466,11 +560,13 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "typeAlias.ets"
     },
     "end": {
       "line": 18,
-      "column": 1
+      "column": 1,
+      "program": "typeAlias.ets"
     }
   }
 }

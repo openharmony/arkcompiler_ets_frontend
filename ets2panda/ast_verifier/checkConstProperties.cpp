@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,17 +21,16 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-[[nodiscard]] CheckResult CheckConstProperties::operator()(CheckContext &ctx, const ir::AstNode *ast) const
+[[nodiscard]] CheckResult CheckConstProperties::operator()(const ir::AstNode *ast)
 {
     if (ast->IsClassProperty()) {
         auto parent = ast->Parent();
-        if (parent != nullptr && parent->IsClassDefinition() &&
-            parent->AsClassDefinition()->Ident()->Name() == "ETSGLOBAL") {
+        if (parent != nullptr && parent->IsClassDefinition() && parent->AsClassDefinition()->IsModule()) {
             return {CheckDecision::CORRECT, CheckAction::CONTINUE};
         }
         auto property = ast->AsClassProperty();
         if (property->IsConst()) {
-            ctx.AddCheckMessage("Class property cannot be const", *ast, ast->Start());
+            AddCheckMessage("Class property cannot be const", *ast);
             return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
     }

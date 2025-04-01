@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -26,6 +26,22 @@ module Enums
       dig(:flags) || []
     end
 
+    def all_flags_with_value
+      res = {}
+      dig(:flags)&.each_with_index do |flag, index|
+        if type == 'int'
+          res[flag] = index
+        else
+          res[flag] = 1 << (index - 1)
+        end
+      end
+
+      dig(:flag_unions)&.each do |union|
+        res[union.name] = union.flags.reduce(0) { |result, key| result | res[key] }
+      end
+      res
+    end
+
     def flag_unions
       res = {}
       dig(:flag_unions)&.each { |union| res[union.name] = union.flags }
@@ -33,7 +49,11 @@ module Enums
     end
 
     def namespace
-      dig(:namespace)
+      if Enums.change_namespace.include?(dig(:namespace))
+        return Enums.change_namespace[dig(:namespace)]
+      else
+        return dig(:namespace)
+      end
     end
 
     def parent_class_name
@@ -47,11 +67,17 @@ module Enums
     end
   end
 
-  @enums = {}
-
-  def enums
-    @enums
+  def get_astnodetype_value(class_name)
+    enums['AstNodeType'].all_flags_with_value[class_name]
   end
+
+  @enums = {}
+  @change_namespace = {
+    'ast_verifier' => 'compiler::ast_verifier', 'verifier_invariants' => 'util::gen::verifier_invariants'
+  }
+
+  attr_reader :change_namespace
+  attr_reader :enums
 
   def wrap_data(data)
     return unless data
@@ -66,19 +92,19 @@ module Enums
     data.macros&.each do |macros|
       case macros.name
       when 'AST_NODE_MAPPING'
-        node_type_enum_flags.concat(macros.values&.map { |x| x[0] })
+        node_type_enum_flags.concat(macros.values.map { |x| x[0] })
       when 'AST_NODE_REINTERPRET_MAPPING'
-        node_type_enum_flags.concat(macros.values&.map { |x| x[0..1] }&.flatten)
+        node_type_enum_flags.concat(macros.values.flat_map { |x| x[0..1] })
       when 'SCOPE_TYPES'
-        scope_type_enum_flags.concat(macros.values&.map { |x| x[0] })
+        scope_type_enum_flags.concat(macros.values.map { |x| x[0] })
       end
     end
     data.varbinder&.macros&.each do |macros|
       case macros.name
       when 'SCOPE_TYPES'
-        scope_type_enum_flags.concat(macros.values&.map { |x| x[0] })
+        scope_type_enum_flags.concat(macros.values.map { |x| x[0] })
       when 'DECLARATION_KINDS'
-        decl_type_enum_flags.concat(macros.values&.map { |x| x[0] })
+        decl_type_enum_flags.concat(macros.values.map { |x| x[0] })
       end
     end
 
@@ -98,7 +124,7 @@ module Enums
                                                        'namespace' => 'varbinder', 'name' => 'DeclType' }))
   end
 
-  module_function :wrap_data, :enums
+  module_function :wrap_data, :enums, :change_namespace, :get_astnodetype_value
 end
 
 def Gen.on_require(data)

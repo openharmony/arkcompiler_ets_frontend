@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,6 +33,14 @@ extern "C" {
 
 #define ES2PANDA_LIB_VERSION 1
 
+#ifndef CAPI_EXPORT
+#ifdef PANDA_TARGET_WINDOWS
+#define CAPI_EXPORT __declspec(dllexport)
+#else
+#define CAPI_EXPORT __attribute__((visibility("default")))
+#endif
+#endif
+
 typedef struct es2panda_Config es2panda_Config;
 typedef struct es2panda_Context es2panda_Context;
 
@@ -46,9 +54,9 @@ typedef struct es2panda_variantDoubleCharArrayBool {
 } es2panda_variantDoubleCharArrayBool;
 
 enum es2panda_variantIndex {
-    DOUBLE = 0,
-    CHAR = 1,
-    BOOL = 2,
+    CAPI_DOUBLE = 0,
+    CAPI_CHAR = 1,
+    CAPI_BOOL = 2,
 };
 
 typedef struct es2panda_Program es2panda_Program;
@@ -81,10 +89,17 @@ typedef struct es2panda_Declaration es2panda_Declaration;
 typedef struct es2panda_RecordTable es2panda_RecordTable;
 typedef struct es2panda_BoundContext es2panda_BoundContext;
 typedef struct es2panda_AstVisitor es2panda_AstVisitor;
+typedef struct es2panda_AstVerifier es2panda_AstVerifier;
+typedef struct es2panda_VerifierMessage es2panda_VerifierMessage;
 typedef struct es2panda_CodeGen es2panda_CodeGen;
 typedef struct es2panda_VReg es2panda_VReg;
 typedef struct es2panda_IRNode es2panda_IRNode;
 typedef struct es2panda_ErrorLogger es2panda_ErrorLogger;
+typedef struct es2panda_VerificationContext es2panda_VerificationContext;
+typedef struct es2panda_ImportPathManager es2panda_ImportPathManager;
+typedef struct es2panda_DiagnosticKind es2panda_DiagnosticKind;
+typedef struct es2panda_DiagnosticMessageParams es2panda_DiagnosticMessageParams;
+typedef struct es2panda_DiagnosticStorage es2panda_DiagnosticStorage;
 typedef void (*NodeTraverser)(es2panda_AstNode *);
 typedef es2panda_AstNode *(*NodeTransformer)(es2panda_AstNode *);
 typedef bool (*NodePredicate)(es2panda_AstNode *);
@@ -106,6 +121,7 @@ enum es2panda_ContextState {
     ES2PANDA_STATE_NEW,
     ES2PANDA_STATE_PARSED,
     ES2PANDA_STATE_SCOPE_INITED,
+    ES2PANDA_STATE_BOUND,
     ES2PANDA_STATE_CHECKED,
     ES2PANDA_STATE_LOWERED,
     ES2PANDA_STATE_ASM_GENERATED,
@@ -117,14 +133,14 @@ typedef enum es2panda_ContextState es2panda_ContextState;
 // CC-OFFNXT(G.INC.08) project code style
 #include "generated/es2panda_lib/es2panda_lib_enums.inc"
 
-struct es2panda_Impl {
+struct CAPI_EXPORT es2panda_Impl {
     int version;
 
-    es2panda_Config *(*CreateConfig)(int argc, char const **argv);
+    es2panda_Config *(*CreateConfig)(int argc, char const *const *argv);
     void (*DestroyConfig)(es2panda_Config *config);
 
     es2panda_Context *(*CreateContextFromFile)(es2panda_Config *config, char const *source_file_name);
-    es2panda_Context *(*CreateContextFromString)(es2panda_Config *config, char const *source, char const *file_name);
+    es2panda_Context *(*CreateContextFromString)(es2panda_Config *config, const char *source, char const *file_name);
     es2panda_Context *(*ProceedToState)(es2panda_Context *context, es2panda_ContextState state);  // context is consumed
     void (*DestroyContext)(es2panda_Context *context);
 
@@ -132,8 +148,6 @@ struct es2panda_Impl {
     char const *(*ContextErrorMessage)(es2panda_Context *context);
 
     es2panda_Program *(*ContextProgram)(es2panda_Context *context);
-    es2panda_AstNode *(*ProgramAst)(es2panda_Program *program);
-    es2panda_ExternalSource **(*ProgramExternalSources)(es2panda_Program *program, size_t *len_p);
     char const *(*ExternalSourceName)(es2panda_ExternalSource *e_source);
     es2panda_Program **(*ExternalSourcePrograms)(es2panda_ExternalSource *e_source, size_t *len_p);
     void (*AstNodeForEach)(es2panda_AstNode *ast, void (*func)(es2panda_AstNode *, void *), void *arg);
@@ -147,6 +161,17 @@ struct es2panda_Impl {
 
 #undef SET_NUMBER_LITERAL_DECL
 
+#define CREATE_UPDATE_NUMBER_LITERAL_IMPL(num, type)                                   \
+    es2panda_AstNode *(*CreateNumberLiteral##num)(es2panda_Context * ctx, type value); \
+    es2panda_AstNode *(*UpdateNumberLiteral##num)(es2panda_Context * ctx, es2panda_AstNode * original, type value)
+
+    CREATE_UPDATE_NUMBER_LITERAL_IMPL(, int32_t);
+    CREATE_UPDATE_NUMBER_LITERAL_IMPL(1, int64_t);
+    CREATE_UPDATE_NUMBER_LITERAL_IMPL(2, double);
+    CREATE_UPDATE_NUMBER_LITERAL_IMPL(3, float);
+
+#undef CREATE_UPDATE_NUMBER_LITERAL_IMPL
+
     void *(*AllocMemory)(es2panda_Context *context, size_t numberOfElements, size_t sizeOfElement);
     es2panda_SourcePosition *(*CreateSourcePosition)(es2panda_Context *context, size_t index, size_t line);
     es2panda_SourceRange *(*CreateSourceRange)(es2panda_Context *context, es2panda_SourcePosition *start,
@@ -155,12 +180,29 @@ struct es2panda_Impl {
     size_t (*SourcePositionLine)(es2panda_Context *context, es2panda_SourcePosition *position);
     es2panda_SourcePosition *(*SourceRangeStart)(es2panda_Context *context, es2panda_SourceRange *range);
     es2panda_SourcePosition *(*SourceRangeEnd)(es2panda_Context *context, es2panda_SourceRange *range);
+    const es2panda_DiagnosticKind *(*CreateDiagnosticKind)(es2panda_Context *context, const char *dmessage);
+    void (*LogDiagnostic)(es2panda_Context *context, const es2panda_DiagnosticKind *kind, const char **args,
+                          size_t argc, es2panda_SourcePosition *pos);
+    const es2panda_DiagnosticStorage *(*GetSemanticErrors)(es2panda_Context *context);
+    const es2panda_DiagnosticStorage *(*GetSyntaxErrors)(es2panda_Context *context);
+    const es2panda_DiagnosticStorage *(*GetPluginErrors)(es2panda_Context *context);
+    const es2panda_DiagnosticStorage *(*GetWarnings)(es2panda_Context *context);
+    es2panda_Scope *(*AstNodeFindNearestScope)(es2panda_Context *ctx, es2panda_AstNode *node);
+    es2panda_Scope *(*AstNodeRebind)(es2panda_Context *ctx, es2panda_AstNode *node);
+    void (*AstNodeRecheck)(es2panda_Context *ctx, es2panda_AstNode *node);
+    Es2pandaEnum (*Es2pandaEnumFromString)(es2panda_Context *ctx, const char *str);
+    char *(*Es2pandaEnumToString)(es2panda_Context *ctx, Es2pandaEnum id);
+    es2panda_AstNode *(*DeclarationFromIdentifier)(es2panda_Context *ctx, es2panda_AstNode *node);
+
+    int (*GenerateTsDeclarationsFromContext)(es2panda_Context *context, const char *outputDeclEts,
+                                             const char *outputEts, bool exportAll);
+    void (*InsertETSImportDeclarationAndParse)(es2panda_Context *context, es2panda_AstNode *importDeclaration);
 
 // CC-OFFNXT(G.INC.08) project code style
 #include "generated/es2panda_lib/es2panda_lib_decl.inc"
 };
 
-struct es2panda_Impl const *es2panda_GetImpl(int version);
+CAPI_EXPORT struct es2panda_Impl const *es2panda_GetImpl(int version);
 
 // NOLINTEND
 

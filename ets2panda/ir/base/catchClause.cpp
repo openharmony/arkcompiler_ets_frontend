@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,10 +18,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/expressions/identifier.h"
-#include "ir/statements/blockStatement.h"
 
 namespace ark::es2panda::ir {
 void CatchClause::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
@@ -55,7 +51,7 @@ void CatchClause::Dump(ir::AstDumper *dumper) const
 
 void CatchClause::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(body_ != nullptr);
+    ES2PANDA_ASSERT(body_ != nullptr);
     dumper->Add("(");
     if (param_ != nullptr) {
         param_->Dump(dumper);
@@ -75,7 +71,7 @@ void CatchClause::Dump(ir::SrcDumper *dumper) const
 
 bool CatchClause::IsDefaultCatchClause() const
 {
-    return param_->AsIdentifier()->TypeAnnotation() == nullptr;
+    return param_ != nullptr && param_->AsIdentifier()->TypeAnnotation() == nullptr;
 }
 
 void CatchClause::Compile(compiler::PandaGen *pg) const
@@ -93,8 +89,26 @@ checker::Type *CatchClause::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *CatchClause::Check(checker::ETSChecker *checker)
+checker::VerifiedType CatchClause::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
+
+CatchClause::CatchClause(CatchClause const &other, ArenaAllocator *allocator) : TypedStatement(other)
+{
+    param_ = other.param_ == nullptr ? nullptr : other.param_->Clone(allocator, this)->AsExpression();
+    body_ = other.body_ == nullptr ? nullptr : other.body_->Clone(allocator, this)->AsBlockStatement();
+}
+
+CatchClause *CatchClause::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const clone = allocator->New<CatchClause>(*this, allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    clone->SetRange(Range());
+    return clone;
+}
+
 }  // namespace ark::es2panda::ir

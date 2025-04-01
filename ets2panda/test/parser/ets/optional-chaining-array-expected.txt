@@ -11,16 +11,52 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "optional-chaining-array.ets"
             },
             "end": {
               "line": 1,
-              "column": 1
+              "column": 1,
+              "program": "optional-chaining-array.ets"
             }
           }
         },
         "superClass": null,
         "implements": [],
+        "annotations": [
+          {
+            "expr_": {
+              "type": "Identifier",
+              "name": "Module",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "optional-chaining-array.ets"
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1,
+                  "program": "optional-chaining-array.ets"
+                }
+              }
+            },
+            "properties": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1,
+                "program": "optional-chaining-array.ets"
+              },
+              "end": {
+                "line": 1,
+                "column": 1,
+                "program": "optional-chaining-array.ets"
+              }
+            }
+          }
+        ],
         "body": [
           {
             "type": "MethodDefinition",
@@ -31,11 +67,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -55,11 +93,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -73,33 +113,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -108,11 +154,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "optional-chaining-array.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "optional-chaining-array.ets"
               }
             }
           },
@@ -125,11 +173,13 @@
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -149,11 +199,13 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
@@ -176,11 +228,13 @@
                           "loc": {
                             "start": {
                               "line": 16,
-                              "column": 5
+                              "column": 5,
+                              "program": "optional-chaining-array.ets"
                             },
                             "end": {
                               "line": 16,
-                              "column": 8
+                              "column": 8,
+                              "program": "optional-chaining-array.ets"
                             }
                           }
                         },
@@ -195,11 +249,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 16,
-                                    "column": 26
+                                    "column": 26,
+                                    "program": "optional-chaining-array.ets"
                                   },
                                   "end": {
                                     "line": 16,
-                                    "column": 27
+                                    "column": 27,
+                                    "program": "optional-chaining-array.ets"
                                   }
                                 }
                               },
@@ -209,11 +265,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 16,
-                                    "column": 29
+                                    "column": 29,
+                                    "program": "optional-chaining-array.ets"
                                   },
                                   "end": {
                                     "line": 16,
-                                    "column": 30
+                                    "column": 30,
+                                    "program": "optional-chaining-array.ets"
                                   }
                                 }
                               },
@@ -223,11 +281,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 16,
-                                    "column": 32
+                                    "column": 32,
+                                    "program": "optional-chaining-array.ets"
                                   },
                                   "end": {
                                     "line": 16,
-                                    "column": 33
+                                    "column": 33,
+                                    "program": "optional-chaining-array.ets"
                                   }
                                 }
                               }
@@ -235,11 +295,13 @@
                             "loc": {
                               "start": {
                                 "line": 16,
-                                "column": 25
+                                "column": 25,
+                                "program": "optional-chaining-array.ets"
                               },
                               "end": {
                                 "line": 16,
-                                "column": 34
+                                "column": 34,
+                                "program": "optional-chaining-array.ets"
                               }
                             }
                           },
@@ -256,77 +318,92 @@
                                   "loc": {
                                     "start": {
                                       "line": 16,
-                                      "column": 38
+                                      "column": 38,
+                                      "program": "optional-chaining-array.ets"
                                     },
                                     "end": {
                                       "line": 16,
-                                      "column": 41
+                                      "column": 41,
+                                      "program": "optional-chaining-array.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 16,
-                                    "column": 38
+                                    "column": 38,
+                                    "program": "optional-chaining-array.ets"
                                   },
                                   "end": {
                                     "line": 16,
-                                    "column": 42
+                                    "column": 42,
+                                    "program": "optional-chaining-array.ets"
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 16,
-                                  "column": 38
+                                  "column": 38,
+                                  "program": "optional-chaining-array.ets"
                                 },
                                 "end": {
                                   "line": 16,
-                                  "column": 42
+                                  "column": 42,
+                                  "program": "optional-chaining-array.ets"
                                 }
                               }
                             },
+                            "annotations": [],
                             "loc": {
                               "start": {
                                 "line": 16,
-                                "column": 41
+                                "column": 41,
+                                "program": "optional-chaining-array.ets"
                               },
                               "end": {
                                 "line": 16,
-                                "column": 43
+                                "column": 43,
+                                "program": "optional-chaining-array.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 16,
-                              "column": 25
+                              "column": 25,
+                              "program": "optional-chaining-array.ets"
                             },
                             "end": {
                               "line": 16,
-                              "column": 34
+                              "column": 34,
+                              "program": "optional-chaining-array.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 16,
-                            "column": 5
+                            "column": 5,
+                            "program": "optional-chaining-array.ets"
                           },
                           "end": {
                             "line": 16,
-                            "column": 34
+                            "column": 34,
+                            "program": "optional-chaining-array.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 16,
-                          "column": 5
+                          "column": 5,
+                          "program": "optional-chaining-array.ets"
                         },
                         "end": {
                           "line": 16,
-                          "column": 34
+                          "column": 34,
+                          "program": "optional-chaining-array.ets"
                         }
                       }
                     },
@@ -342,11 +419,13 @@
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 5
+                              "column": 5,
+                              "program": "optional-chaining-array.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 9
+                              "column": 9,
+                              "program": "optional-chaining-array.ets"
                             }
                           }
                         },
@@ -363,16 +442,18 @@
                                     "type": "VariableDeclarator",
                                     "id": {
                                       "type": "Identifier",
-                                      "name": "gensym%%_4",
+                                      "name": "gensym%%_16",
                                       "decorators": [],
                                       "loc": {
                                         "start": {
                                           "line": 1,
-                                          "column": 3
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
                                         },
                                         "end": {
                                           "line": 1,
-                                          "column": 3
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
                                         }
                                       }
                                     },
@@ -383,22 +464,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 17,
-                                          "column": 12
+                                          "column": 12,
+                                          "program": "optional-chaining-array.ets"
                                         },
                                         "end": {
                                           "line": 17,
-                                          "column": 15
+                                          "column": 15,
+                                          "program": "optional-chaining-array.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
                                       },
                                       "end": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
                                       }
                                     }
                                   }
@@ -407,11 +492,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 12
+                                    "column": 12,
+                                    "program": "optional-chaining-array.ets"
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 33
+                                    "column": 33,
+                                    "program": "optional-chaining-array.ets"
                                   }
                                 }
                               },
@@ -424,16 +511,18 @@
                                     "operator": "==",
                                     "left": {
                                       "type": "Identifier",
-                                      "name": "gensym%%_4",
+                                      "name": "gensym%%_16",
                                       "decorators": [],
                                       "loc": {
                                         "start": {
                                           "line": 1,
-                                          "column": 3
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
                                         },
                                         "end": {
                                           "line": 1,
-                                          "column": 3
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
                                         }
                                       }
                                     },
@@ -443,22 +532,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 1,
-                                          "column": 3
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
                                         },
                                         "end": {
                                           "line": 1,
-                                          "column": 3
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
                                       },
                                       "end": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
                                       }
                                     }
                                   },
@@ -468,11 +561,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
                                       },
                                       "end": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
                                       }
                                     }
                                   },
@@ -480,16 +575,18 @@
                                     "type": "MemberExpression",
                                     "object": {
                                       "type": "Identifier",
-                                      "name": "gensym%%_4",
+                                      "name": "gensym%%_16",
                                       "decorators": [],
                                       "loc": {
                                         "start": {
                                           "line": 17,
-                                          "column": 12
+                                          "column": 12,
+                                          "program": "optional-chaining-array.ets"
                                         },
                                         "end": {
                                           "line": 17,
-                                          "column": 20
+                                          "column": 20,
+                                          "program": "optional-chaining-array.ets"
                                         }
                                       }
                                     },
@@ -499,11 +596,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 17,
-                                          "column": 18
+                                          "column": 18,
+                                          "program": "optional-chaining-array.ets"
                                         },
                                         "end": {
                                           "line": 17,
-                                          "column": 19
+                                          "column": 19,
+                                          "program": "optional-chaining-array.ets"
                                         }
                                       }
                                     },
@@ -512,33 +611,39 @@
                                     "loc": {
                                       "start": {
                                         "line": 17,
-                                        "column": 12
+                                        "column": 12,
+                                        "program": "optional-chaining-array.ets"
                                       },
                                       "end": {
                                         "line": 17,
-                                        "column": 20
+                                        "column": 20,
+                                        "program": "optional-chaining-array.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optional-chaining-array.ets"
                                     },
                                     "end": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optional-chaining-array.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 1,
-                                    "column": 3
+                                    "column": 3,
+                                    "program": "optional-chaining-array.ets"
                                   },
                                   "end": {
                                     "line": 1,
-                                    "column": 3
+                                    "column": 3,
+                                    "program": "optional-chaining-array.ets"
                                   }
                                 }
                               }
@@ -546,11 +651,13 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 12
+                                "column": 12,
+                                "program": "optional-chaining-array.ets"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 33
+                                "column": 33,
+                                "program": "optional-chaining-array.ets"
                               }
                             }
                           },
@@ -560,44 +667,52 @@
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 24
+                                "column": 24,
+                                "program": "optional-chaining-array.ets"
                               },
                               "end": {
                                 "line": 17,
-                                "column": 33
+                                "column": 33,
+                                "program": "optional-chaining-array.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 12
+                              "column": 12,
+                              "program": "optional-chaining-array.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 33
+                              "column": 33,
+                              "program": "optional-chaining-array.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 5
+                            "column": 5,
+                            "program": "optional-chaining-array.ets"
                           },
                           "end": {
                             "line": 17,
-                            "column": 33
+                            "column": 33,
+                            "program": "optional-chaining-array.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 5
+                          "column": 5,
+                          "program": "optional-chaining-array.ets"
                         },
                         "end": {
                           "line": 17,
-                          "column": 33
+                          "column": 33,
+                          "program": "optional-chaining-array.ets"
                         }
                       }
                     },
@@ -613,11 +728,13 @@
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 5
+                              "column": 5,
+                              "program": "optional-chaining-array.ets"
                             },
                             "end": {
                               "line": 20,
-                              "column": 10
+                              "column": 10,
+                              "program": "optional-chaining-array.ets"
                             }
                           }
                         },
@@ -634,16 +751,18 @@
                                     "type": "VariableDeclarator",
                                     "id": {
                                       "type": "Identifier",
-                                      "name": "gensym%%_5",
+                                      "name": "gensym%%_17",
                                       "decorators": [],
                                       "loc": {
                                         "start": {
                                           "line": 1,
-                                          "column": 3
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
                                         },
                                         "end": {
                                           "line": 1,
-                                          "column": 3
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
                                         }
                                       }
                                     },
@@ -654,22 +773,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 20,
-                                          "column": 13
+                                          "column": 13,
+                                          "program": "optional-chaining-array.ets"
                                         },
                                         "end": {
                                           "line": 20,
-                                          "column": 17
+                                          "column": 17,
+                                          "program": "optional-chaining-array.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
                                       },
                                       "end": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
                                       }
                                     }
                                   }
@@ -678,11 +801,13 @@
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 13
+                                    "column": 13,
+                                    "program": "optional-chaining-array.ets"
                                   },
                                   "end": {
                                     "line": 20,
-                                    "column": 38
+                                    "column": 38,
+                                    "program": "optional-chaining-array.ets"
                                   }
                                 }
                               },
@@ -695,16 +820,18 @@
                                     "operator": "==",
                                     "left": {
                                       "type": "Identifier",
-                                      "name": "gensym%%_5",
+                                      "name": "gensym%%_17",
                                       "decorators": [],
                                       "loc": {
                                         "start": {
                                           "line": 1,
-                                          "column": 3
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
                                         },
                                         "end": {
                                           "line": 1,
-                                          "column": 3
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
                                         }
                                       }
                                     },
@@ -714,22 +841,26 @@
                                       "loc": {
                                         "start": {
                                           "line": 1,
-                                          "column": 3
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
                                         },
                                         "end": {
                                           "line": 1,
-                                          "column": 3
+                                          "column": 3,
+                                          "program": "optional-chaining-array.ets"
                                         }
                                       }
                                     },
                                     "loc": {
                                       "start": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
                                       },
                                       "end": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
                                       }
                                     }
                                   },
@@ -739,11 +870,13 @@
                                     "loc": {
                                       "start": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
                                       },
                                       "end": {
                                         "line": 1,
-                                        "column": 3
+                                        "column": 3,
+                                        "program": "optional-chaining-array.ets"
                                       }
                                     }
                                   },
@@ -751,16 +884,18 @@
                                     "type": "MemberExpression",
                                     "object": {
                                       "type": "Identifier",
-                                      "name": "gensym%%_5",
+                                      "name": "gensym%%_17",
                                       "decorators": [],
                                       "loc": {
                                         "start": {
                                           "line": 20,
-                                          "column": 13
+                                          "column": 13,
+                                          "program": "optional-chaining-array.ets"
                                         },
                                         "end": {
                                           "line": 20,
-                                          "column": 24
+                                          "column": 24,
+                                          "program": "optional-chaining-array.ets"
                                         }
                                       }
                                     },
@@ -770,11 +905,13 @@
                                       "loc": {
                                         "start": {
                                           "line": 20,
-                                          "column": 20
+                                          "column": 20,
+                                          "program": "optional-chaining-array.ets"
                                         },
                                         "end": {
                                           "line": 20,
-                                          "column": 23
+                                          "column": 23,
+                                          "program": "optional-chaining-array.ets"
                                         }
                                       }
                                     },
@@ -783,33 +920,39 @@
                                     "loc": {
                                       "start": {
                                         "line": 20,
-                                        "column": 13
+                                        "column": 13,
+                                        "program": "optional-chaining-array.ets"
                                       },
                                       "end": {
                                         "line": 20,
-                                        "column": 24
+                                        "column": 24,
+                                        "program": "optional-chaining-array.ets"
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optional-chaining-array.ets"
                                     },
                                     "end": {
                                       "line": 1,
-                                      "column": 3
+                                      "column": 3,
+                                      "program": "optional-chaining-array.ets"
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 1,
-                                    "column": 3
+                                    "column": 3,
+                                    "program": "optional-chaining-array.ets"
                                   },
                                   "end": {
                                     "line": 1,
-                                    "column": 3
+                                    "column": 3,
+                                    "program": "optional-chaining-array.ets"
                                   }
                                 }
                               }
@@ -817,11 +960,13 @@
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 13
+                                "column": 13,
+                                "program": "optional-chaining-array.ets"
                               },
                               "end": {
                                 "line": 20,
-                                "column": 38
+                                "column": 38,
+                                "program": "optional-chaining-array.ets"
                               }
                             }
                           },
@@ -831,44 +976,52 @@
                             "loc": {
                               "start": {
                                 "line": 20,
-                                "column": 28
+                                "column": 28,
+                                "program": "optional-chaining-array.ets"
                               },
                               "end": {
                                 "line": 20,
-                                "column": 38
+                                "column": 38,
+                                "program": "optional-chaining-array.ets"
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 13
+                              "column": 13,
+                              "program": "optional-chaining-array.ets"
                             },
                             "end": {
                               "line": 20,
-                              "column": 38
+                              "column": 38,
+                              "program": "optional-chaining-array.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 5
+                            "column": 5,
+                            "program": "optional-chaining-array.ets"
                           },
                           "end": {
                             "line": 20,
-                            "column": 38
+                            "column": 38,
+                            "program": "optional-chaining-array.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 5
+                          "column": 5,
+                          "program": "optional-chaining-array.ets"
                         },
                         "end": {
                           "line": 20,
-                          "column": 38
+                          "column": 38,
+                          "program": "optional-chaining-array.ets"
                         }
                       }
                     }
@@ -876,33 +1029,39 @@
                   "loc": {
                     "start": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     },
                     "end": {
                       "line": 1,
-                      "column": 1
+                      "column": 1,
+                      "program": null
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   },
                   "end": {
                     "line": 1,
-                    "column": 1
+                    "column": 1,
+                    "program": null
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 },
                 "end": {
                   "line": 1,
-                  "column": 1
+                  "column": 1,
+                  "program": null
                 }
               }
             },
@@ -911,11 +1070,13 @@
             "loc": {
               "start": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "optional-chaining-array.ets"
               },
               "end": {
                 "line": 1,
-                "column": 1
+                "column": 1,
+                "program": "optional-chaining-array.ets"
               }
             }
           },
@@ -928,11 +1089,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 5
+                  "column": 5,
+                  "program": "optional-chaining-array.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 8
+                  "column": 8,
+                  "program": "optional-chaining-array.ets"
                 }
               }
             },
@@ -958,44 +1121,53 @@
                         "loc": {
                           "start": {
                             "line": 16,
-                            "column": 10
+                            "column": 10,
+                            "program": "optional-chaining-array.ets"
                           },
                           "end": {
                             "line": 16,
-                            "column": 13
+                            "column": 13,
+                            "program": "optional-chaining-array.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 16,
-                          "column": 10
+                          "column": 10,
+                          "program": "optional-chaining-array.ets"
                         },
                         "end": {
                           "line": 16,
-                          "column": 14
+                          "column": 14,
+                          "program": "optional-chaining-array.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 16,
-                        "column": 10
+                        "column": 10,
+                        "program": "optional-chaining-array.ets"
                       },
                       "end": {
                         "line": 16,
-                        "column": 14
+                        "column": 14,
+                        "program": "optional-chaining-array.ets"
                       }
                     }
                   },
+                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 13
+                      "column": 13,
+                      "program": "optional-chaining-array.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 15
+                      "column": 15,
+                      "program": "optional-chaining-array.ets"
                     }
                   }
                 },
@@ -1004,11 +1176,13 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 18
+                      "column": 18,
+                      "program": "optional-chaining-array.ets"
                     },
                     "end": {
                       "line": 16,
-                      "column": 22
+                      "column": 22,
+                      "program": "optional-chaining-array.ets"
                     }
                   }
                 }
@@ -1016,11 +1190,13 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 13
+                  "column": 13,
+                  "program": "optional-chaining-array.ets"
                 },
                 "end": {
                   "line": 16,
-                  "column": 22
+                  "column": 22,
+                  "program": "optional-chaining-array.ets"
                 }
               }
             },
@@ -1029,11 +1205,13 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 5
+                "column": 5,
+                "program": "optional-chaining-array.ets"
               },
               "end": {
                 "line": 16,
-                "column": 34
+                "column": 34,
+                "program": "optional-chaining-array.ets"
               }
             }
           },
@@ -1046,11 +1224,13 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 5
+                  "column": 5,
+                  "program": "optional-chaining-array.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 9
+                  "column": 9,
+                  "program": "optional-chaining-array.ets"
                 }
               }
             },
@@ -1067,16 +1247,18 @@
                         "type": "VariableDeclarator",
                         "id": {
                           "type": "Identifier",
-                          "name": "gensym%%_6",
+                          "name": "gensym%%_18",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 1,
-                              "column": 3
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
                             },
                             "end": {
                               "line": 1,
-                              "column": 3
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
                             }
                           }
                         },
@@ -1087,22 +1269,26 @@
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 12
+                              "column": 12,
+                              "program": "optional-chaining-array.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 15
+                              "column": 15,
+                              "program": "optional-chaining-array.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 1,
-                            "column": 3
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
                           },
                           "end": {
                             "line": 1,
-                            "column": 3
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
                           }
                         }
                       }
@@ -1111,11 +1297,13 @@
                     "loc": {
                       "start": {
                         "line": 17,
-                        "column": 12
+                        "column": 12,
+                        "program": "optional-chaining-array.ets"
                       },
                       "end": {
                         "line": 17,
-                        "column": 33
+                        "column": 33,
+                        "program": "optional-chaining-array.ets"
                       }
                     }
                   },
@@ -1128,16 +1316,18 @@
                         "operator": "==",
                         "left": {
                           "type": "Identifier",
-                          "name": "gensym%%_6",
+                          "name": "gensym%%_18",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 1,
-                              "column": 3
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
                             },
                             "end": {
                               "line": 1,
-                              "column": 3
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
                             }
                           }
                         },
@@ -1147,22 +1337,26 @@
                           "loc": {
                             "start": {
                               "line": 1,
-                              "column": 3
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
                             },
                             "end": {
                               "line": 1,
-                              "column": 3
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 1,
-                            "column": 3
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
                           },
                           "end": {
                             "line": 1,
-                            "column": 3
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
                           }
                         }
                       },
@@ -1172,11 +1366,13 @@
                         "loc": {
                           "start": {
                             "line": 1,
-                            "column": 3
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
                           },
                           "end": {
                             "line": 1,
-                            "column": 3
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
                           }
                         }
                       },
@@ -1184,16 +1380,18 @@
                         "type": "MemberExpression",
                         "object": {
                           "type": "Identifier",
-                          "name": "gensym%%_6",
+                          "name": "gensym%%_18",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 12
+                              "column": 12,
+                              "program": "optional-chaining-array.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 20
+                              "column": 20,
+                              "program": "optional-chaining-array.ets"
                             }
                           }
                         },
@@ -1203,11 +1401,13 @@
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 18
+                              "column": 18,
+                              "program": "optional-chaining-array.ets"
                             },
                             "end": {
                               "line": 17,
-                              "column": 19
+                              "column": 19,
+                              "program": "optional-chaining-array.ets"
                             }
                           }
                         },
@@ -1216,33 +1416,39 @@
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 12
+                            "column": 12,
+                            "program": "optional-chaining-array.ets"
                           },
                           "end": {
                             "line": 17,
-                            "column": 20
+                            "column": 20,
+                            "program": "optional-chaining-array.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 1,
-                          "column": 3
+                          "column": 3,
+                          "program": "optional-chaining-array.ets"
                         },
                         "end": {
                           "line": 1,
-                          "column": 3
+                          "column": 3,
+                          "program": "optional-chaining-array.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 1,
-                        "column": 3
+                        "column": 3,
+                        "program": "optional-chaining-array.ets"
                       },
                       "end": {
                         "line": 1,
-                        "column": 3
+                        "column": 3,
+                        "program": "optional-chaining-array.ets"
                       }
                     }
                   }
@@ -1250,11 +1456,13 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 12
+                    "column": 12,
+                    "program": "optional-chaining-array.ets"
                   },
                   "end": {
                     "line": 17,
-                    "column": 33
+                    "column": 33,
+                    "program": "optional-chaining-array.ets"
                   }
                 }
               },
@@ -1264,22 +1472,26 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 24
+                    "column": 24,
+                    "program": "optional-chaining-array.ets"
                   },
                   "end": {
                     "line": 17,
-                    "column": 33
+                    "column": 33,
+                    "program": "optional-chaining-array.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 12
+                  "column": 12,
+                  "program": "optional-chaining-array.ets"
                 },
                 "end": {
                   "line": 17,
-                  "column": 33
+                  "column": 33,
+                  "program": "optional-chaining-array.ets"
                 }
               }
             },
@@ -1294,11 +1506,13 @@
             "loc": {
               "start": {
                 "line": 17,
-                "column": 5
+                "column": 5,
+                "program": "optional-chaining-array.ets"
               },
               "end": {
                 "line": 17,
-                "column": 33
+                "column": 33,
+                "program": "optional-chaining-array.ets"
               }
             }
           },
@@ -1311,11 +1525,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 5
+                  "column": 5,
+                  "program": "optional-chaining-array.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 9
+                  "column": 9,
+                  "program": "optional-chaining-array.ets"
                 }
               }
             },
@@ -1341,44 +1557,53 @@
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 11
+                            "column": 11,
+                            "program": "optional-chaining-array.ets"
                           },
                           "end": {
                             "line": 19,
-                            "column": 17
+                            "column": 17,
+                            "program": "optional-chaining-array.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 11
+                          "column": 11,
+                          "program": "optional-chaining-array.ets"
                         },
                         "end": {
                           "line": 19,
-                          "column": 18
+                          "column": 18,
+                          "program": "optional-chaining-array.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 19,
-                        "column": 11
+                        "column": 11,
+                        "program": "optional-chaining-array.ets"
                       },
                       "end": {
                         "line": 19,
-                        "column": 18
+                        "column": 18,
+                        "program": "optional-chaining-array.ets"
                       }
                     }
                   },
+                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 17
+                      "column": 17,
+                      "program": "optional-chaining-array.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 19
+                      "column": 19,
+                      "program": "optional-chaining-array.ets"
                     }
                   }
                 },
@@ -1387,11 +1612,13 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 22
+                      "column": 22,
+                      "program": "optional-chaining-array.ets"
                     },
                     "end": {
                       "line": 19,
-                      "column": 26
+                      "column": 26,
+                      "program": "optional-chaining-array.ets"
                     }
                   }
                 }
@@ -1399,11 +1626,13 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 17
+                  "column": 17,
+                  "program": "optional-chaining-array.ets"
                 },
                 "end": {
                   "line": 19,
-                  "column": 26
+                  "column": 26,
+                  "program": "optional-chaining-array.ets"
                 }
               }
             },
@@ -1412,11 +1641,13 @@
             "loc": {
               "start": {
                 "line": 19,
-                "column": 5
+                "column": 5,
+                "program": "optional-chaining-array.ets"
               },
               "end": {
                 "line": 19,
-                "column": 9
+                "column": 9,
+                "program": "optional-chaining-array.ets"
               }
             }
           },
@@ -1429,11 +1660,13 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 5
+                  "column": 5,
+                  "program": "optional-chaining-array.ets"
                 },
                 "end": {
                   "line": 20,
-                  "column": 10
+                  "column": 10,
+                  "program": "optional-chaining-array.ets"
                 }
               }
             },
@@ -1450,16 +1683,18 @@
                         "type": "VariableDeclarator",
                         "id": {
                           "type": "Identifier",
-                          "name": "gensym%%_7",
+                          "name": "gensym%%_19",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 1,
-                              "column": 3
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
                             },
                             "end": {
                               "line": 1,
-                              "column": 3
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
                             }
                           }
                         },
@@ -1470,22 +1705,26 @@
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 13
+                              "column": 13,
+                              "program": "optional-chaining-array.ets"
                             },
                             "end": {
                               "line": 20,
-                              "column": 17
+                              "column": 17,
+                              "program": "optional-chaining-array.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 1,
-                            "column": 3
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
                           },
                           "end": {
                             "line": 1,
-                            "column": 3
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
                           }
                         }
                       }
@@ -1494,11 +1733,13 @@
                     "loc": {
                       "start": {
                         "line": 20,
-                        "column": 13
+                        "column": 13,
+                        "program": "optional-chaining-array.ets"
                       },
                       "end": {
                         "line": 20,
-                        "column": 38
+                        "column": 38,
+                        "program": "optional-chaining-array.ets"
                       }
                     }
                   },
@@ -1511,16 +1752,18 @@
                         "operator": "==",
                         "left": {
                           "type": "Identifier",
-                          "name": "gensym%%_7",
+                          "name": "gensym%%_19",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 1,
-                              "column": 3
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
                             },
                             "end": {
                               "line": 1,
-                              "column": 3
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
                             }
                           }
                         },
@@ -1530,22 +1773,26 @@
                           "loc": {
                             "start": {
                               "line": 1,
-                              "column": 3
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
                             },
                             "end": {
                               "line": 1,
-                              "column": 3
+                              "column": 3,
+                              "program": "optional-chaining-array.ets"
                             }
                           }
                         },
                         "loc": {
                           "start": {
                             "line": 1,
-                            "column": 3
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
                           },
                           "end": {
                             "line": 1,
-                            "column": 3
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
                           }
                         }
                       },
@@ -1555,11 +1802,13 @@
                         "loc": {
                           "start": {
                             "line": 1,
-                            "column": 3
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
                           },
                           "end": {
                             "line": 1,
-                            "column": 3
+                            "column": 3,
+                            "program": "optional-chaining-array.ets"
                           }
                         }
                       },
@@ -1567,16 +1816,18 @@
                         "type": "MemberExpression",
                         "object": {
                           "type": "Identifier",
-                          "name": "gensym%%_7",
+                          "name": "gensym%%_19",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 13
+                              "column": 13,
+                              "program": "optional-chaining-array.ets"
                             },
                             "end": {
                               "line": 20,
-                              "column": 24
+                              "column": 24,
+                              "program": "optional-chaining-array.ets"
                             }
                           }
                         },
@@ -1586,11 +1837,13 @@
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 20
+                              "column": 20,
+                              "program": "optional-chaining-array.ets"
                             },
                             "end": {
                               "line": 20,
-                              "column": 23
+                              "column": 23,
+                              "program": "optional-chaining-array.ets"
                             }
                           }
                         },
@@ -1599,33 +1852,39 @@
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 13
+                            "column": 13,
+                            "program": "optional-chaining-array.ets"
                           },
                           "end": {
                             "line": 20,
-                            "column": 24
+                            "column": 24,
+                            "program": "optional-chaining-array.ets"
                           }
                         }
                       },
                       "loc": {
                         "start": {
                           "line": 1,
-                          "column": 3
+                          "column": 3,
+                          "program": "optional-chaining-array.ets"
                         },
                         "end": {
                           "line": 1,
-                          "column": 3
+                          "column": 3,
+                          "program": "optional-chaining-array.ets"
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 1,
-                        "column": 3
+                        "column": 3,
+                        "program": "optional-chaining-array.ets"
                       },
                       "end": {
                         "line": 1,
-                        "column": 3
+                        "column": 3,
+                        "program": "optional-chaining-array.ets"
                       }
                     }
                   }
@@ -1633,11 +1892,13 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 13
+                    "column": 13,
+                    "program": "optional-chaining-array.ets"
                   },
                   "end": {
                     "line": 20,
-                    "column": 38
+                    "column": 38,
+                    "program": "optional-chaining-array.ets"
                   }
                 }
               },
@@ -1647,22 +1908,26 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 28
+                    "column": 28,
+                    "program": "optional-chaining-array.ets"
                   },
                   "end": {
                     "line": 20,
-                    "column": 38
+                    "column": 38,
+                    "program": "optional-chaining-array.ets"
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 13
+                  "column": 13,
+                  "program": "optional-chaining-array.ets"
                 },
                 "end": {
                   "line": 20,
-                  "column": 38
+                  "column": 38,
+                  "program": "optional-chaining-array.ets"
                 }
               }
             },
@@ -1677,11 +1942,13 @@
             "loc": {
               "start": {
                 "line": 20,
-                "column": 5
+                "column": 5,
+                "program": "optional-chaining-array.ets"
               },
               "end": {
                 "line": 20,
-                "column": 38
+                "column": 38,
+                "program": "optional-chaining-array.ets"
               }
             }
           }
@@ -1689,22 +1956,26 @@
         "loc": {
           "start": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "optional-chaining-array.ets"
           },
           "end": {
             "line": 1,
-            "column": 1
+            "column": 1,
+            "program": "optional-chaining-array.ets"
           }
         }
       },
       "loc": {
         "start": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "optional-chaining-array.ets"
         },
         "end": {
           "line": 1,
-          "column": 1
+          "column": 1,
+          "program": "optional-chaining-array.ets"
         }
       }
     }
@@ -1712,11 +1983,14 @@
   "loc": {
     "start": {
       "line": 1,
-      "column": 1
+      "column": 1,
+      "program": "optional-chaining-array.ets"
     },
     "end": {
       "line": 21,
-      "column": 1
+      "column": 1,
+      "program": "optional-chaining-array.ets"
     }
   }
 }
+Warning: Variable 'arr2' is used before being assigned. [optional-chaining-array.ets:20:13]

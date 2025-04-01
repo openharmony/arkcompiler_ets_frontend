@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -41,7 +41,7 @@ namespace ark::es2panda {
 TEST_F(UnionNormalizationTest, UnionWithObject)
 {
     // Test normalization: int | Object | string ==> Object
-    InitializeChecker("_.sts", "");
+    InitializeChecker("_.ets", "");
 
     auto checker = Checker();
     ASSERT(checker);
@@ -61,7 +61,7 @@ TEST_F(UnionNormalizationTest, UnionWithObject)
 TEST_F(UnionNormalizationTest, UnionWithIdenticalTypes1)
 {
     // Test normalization: number | Base | string | number ==> number | Base | string
-    InitializeChecker("_.sts", "class Base {}");
+    InitializeChecker("_.ets", "class Base {}");
 
     auto program = Program();
     ASSERT(program);
@@ -92,7 +92,7 @@ TEST_F(UnionNormalizationTest, UnionWithIdenticalTypes1)
 TEST_F(UnionNormalizationTest, DISABLED_UnionWithIdenticalTypes2)
 {
     // Test normalization: Base | int | Base | double | short | number ==> Base | number
-    InitializeChecker("_.sts", "class Base {}");
+    InitializeChecker("_.ets", "class Base {}");
 
     auto program = Program();
     ASSERT(program);
@@ -124,7 +124,7 @@ TEST_F(UnionNormalizationTest, DISABLED_UnionWithIdenticalTypes2)
 TEST_F(UnionNormalizationTest, DISABLED_UnionWithNumeric1)
 {
     // Test normalization: boolean | int | double | short ==> boolean | double
-    InitializeChecker("_.sts", "");
+    InitializeChecker("_.ets", "");
 
     auto checker = Checker();
     ASSERT(checker);
@@ -148,7 +148,7 @@ TEST_F(UnionNormalizationTest, DISABLED_UnionWithNumeric1)
 TEST_F(UnionNormalizationTest, DISABLED_UnionWithNumeric2)
 {
     // Test normalization: string | int | Base | double | short ==> string | Base | double
-    InitializeChecker("_.sts", "class Base {}");
+    InitializeChecker("_.ets", "class Base {}");
 
     auto program = Program();
     ASSERT(program);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -47,7 +47,6 @@ class FunctionDeclaration;
 class FunctionExpression;
 class Identifier;
 class IfStatement;
-class ImportSource;
 class ImportDeclaration;
 class LabelledStatement;
 class NewExpression;

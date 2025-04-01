@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -639,6 +639,9 @@ export class TsUtils {
     rhsExpr: ts.Expression,
     isStrict: boolean
   ): boolean {
+    if (this.needToDeduceStructuralIdentityHandleUnionsIsStrict(lhsType, rhsType, rhsExpr, isStrict)) {
+      return true;
+    }
     if (rhsType.isUnion()) {
       // Each Class/Interface of the RHS union type must be compatible with LHS type.
       for (const compType of rhsType.types) {
@@ -648,16 +651,38 @@ export class TsUtils {
       }
       return false;
     }
-    if (lhsType.isUnion()) {
+    if (lhsType.isUnion() && TsUtils.isTypeReference(rhsType)) {
+      let needDeduce = false;
       // RHS type needs to be compatible with at least one type of the LHS union.
       for (const compType of lhsType.types) {
-        if (!this.needToDeduceStructuralIdentity(compType, rhsType, rhsExpr, isStrict)) {
+        if (!TsUtils.isTypeReference(compType) && !TsUtils.isISendableInterface(compType)) {
+          continue;
+        }
+        if (this.needToDeduceStructuralIdentity(compType, rhsType, rhsExpr, isStrict)) {
+          needDeduce = true;
+        } else {
           return false;
         }
       }
-      return true;
+      return needDeduce;
     }
     // should be unreachable
+    return false;
+  }
+
+  needToDeduceStructuralIdentityHandleUnionsIsStrict(
+    lhsType: ts.Type,
+    rhsType: ts.Type,
+    rhsExpr: ts.Expression,
+    isStrict: boolean
+  ): boolean {
+    if (rhsType.isUnion() && lhsType.isUnion()) {
+      return rhsType.types.some((compRhsType) => {
+        return lhsType.types.every((compLhsType) => {
+          return this.needToDeduceStructuralIdentity(compLhsType, compRhsType, rhsExpr, isStrict);
+        });
+      });
+    }
     return false;
   }
 
@@ -695,6 +720,9 @@ export class TsUtils {
         // The 'arkts-sendable-obj-init' rule already exists. Wait for the new 'strict type' to be modified.
         return false;
       }
+      if (this.needToDeduceStructuralIdentityIsStrict(lhsType, rhsType, rhsExpr, isStrict)) {
+        return true;
+      }
       // eslint-disable-next-line no-param-reassign
       lhsType = TsUtils.reduceReference(lhsType);
       // eslint-disable-next-line no-param-reassign
@@ -705,6 +733,29 @@ export class TsUtils {
       rhsType.isClassOrInterface() &&
       !this.relatedByInheritanceOrIdentical(rhsType, lhsType)
     );
+  }
+
+  needToDeduceStructuralIdentityIsStrict(
+    lhsType: ts.Type,
+    rhsType: ts.Type,
+    rhsExpr: ts.Expression,
+    isStrict: boolean = false
+  ): boolean {
+    if (
+      TsUtils.reduceReference(lhsType) === TsUtils.reduceReference(rhsType) &&
+      TsUtils.isTypeReference(lhsType) &&
+      TsUtils.isTypeReference(rhsType)
+    ) {
+      const lhsArgs = lhsType.typeArguments;
+      const rhsArgs = rhsType.typeArguments;
+      if (lhsArgs && lhsArgs.length > 0) {
+        if (rhsArgs && rhsArgs.length > 0) {
+          return this.needToDeduceStructuralIdentity(lhsArgs[0], rhsArgs[0], rhsExpr, isStrict);
+        }
+        return this.needToDeduceStructuralIdentity(lhsArgs[0], rhsType, rhsExpr, isStrict);
+      }
+    }
+    return false;
   }
 
   private needToDeduceStructuralIdentityAdvancedClassChecks(lhsType: ts.Type, rhsType: ts.Type): boolean {
@@ -904,6 +955,23 @@ export class TsUtils {
       }
     }
 
+    return false;
+  }
+
+  isAbstractMethodInAbstractClass(node: ts.Node): boolean {
+    const type = this.tsTypeChecker.getTypeAtLocation(node);
+    const funcDeclParentType = this.tsTypeChecker.getTypeAtLocation(node.parent);
+    if (
+      TsUtils.isAbstractClass(funcDeclParentType) &&
+      type.symbol.declarations &&
+      type.symbol.declarations.length > 0
+    ) {
+      const declClass = type.symbol.declarations[0] as ts.MethodDeclaration;
+      const classMods = ts.getModifiers(declClass);
+      if (TsUtils.hasModifier(classMods, ts.SyntaxKind.AbstractKeyword)) {
+        return true;
+      }
+    }
     return false;
   }
 
@@ -1281,7 +1349,10 @@ export class TsUtils {
     [FaultID.ParameterProperties, TsUtils.getParameterPropertiesHighlightRange],
     [FaultID.SendableDefiniteAssignment, TsUtils.getSendableDefiniteAssignmentHighlightRange],
     [FaultID.ObjectTypeLiteral, TsUtils.getObjectTypeLiteralHighlightRange],
-    [FaultID.StructuralIdentity, TsUtils.getStructuralIdentityHighlightRange]
+    [FaultID.StructuralIdentity, TsUtils.getStructuralIdentityHighlightRange],
+    [FaultID.VoidOperator, TsUtils.getVoidOperatorHighlightRange],
+    [FaultID.ImportLazyIdentifier, TsUtils.getImportLazyHighlightRange],
+    [FaultID.IncompationbleFunctionType, TsUtils.getIncompationbleFunctionTypeHighlightRange]
   ]);
 
   static getKeywordHighlightRange(nodeOrComment: ts.Node | ts.CommentRange, keyword: string): [number, number] {
@@ -1433,6 +1504,29 @@ export class TsUtils {
     }
 
     return undefined;
+  }
+
+  static getIncompationbleFunctionTypeHighlightRange(
+    nodeOrComment: ts.Node | ts.CommentRange
+  ): [number, number] | undefined {
+    const node = nodeOrComment as ts.Node;
+    if (ts.isArrowFunction(node)) {
+      const parameters = node.parameters;
+      if (parameters.length > 0) {
+        const firstParamStart = parameters[0].getStart();
+        const lastParamEnd = parameters[parameters.length - 1].getEnd();
+        return [firstParamStart, lastParamEnd];
+      }
+    }
+    return [node.getStart(), node.getEnd()];
+  }
+
+  static getVoidOperatorHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
+    return this.getKeywordHighlightRange(nodeOrComment, 'void');
+  }
+
+  static getImportLazyHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
+    return this.getKeywordHighlightRange(nodeOrComment, 'lazy');
   }
 
   isStdRecordType(type: ts.Type): boolean {
@@ -1826,12 +1920,109 @@ export class TsUtils {
     );
   }
 
-  private static isFunctionalType(type: ts.Type): boolean {
+  isIncompatibleFunctionals(lhsTypeNode: ts.TypeNode, rhsExpr: ts.Expression): boolean {
+    if (ts.isUnionTypeNode(lhsTypeNode)) {
+      for (let i = 0; i < lhsTypeNode.types.length; i++) {
+        if (!this.isIncompatibleFunctional(lhsTypeNode.types[i], rhsExpr)) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return this.isIncompatibleFunctional(lhsTypeNode, rhsExpr);
+  }
+
+  private isIncompatibleFunctional(lhsTypeNode: ts.TypeNode, rhsExpr: ts.Expression): boolean {
+    const lhsType = this.tsTypeChecker.getTypeAtLocation(lhsTypeNode);
+    const rhsType = this.tsTypeChecker.getTypeAtLocation(rhsExpr);
+    const lhsParams = this.getLhsFunctionParameters(lhsTypeNode);
+    const rhsParams = this.getRhsFunctionParameters(rhsExpr);
+
+    if (lhsParams !== rhsParams) {
+      return false;
+    }
+
+    if (TsUtils.isFunctionalType(lhsType)) {
+      const lhsFunctionReturnType = this.getFunctionType(lhsTypeNode);
+      const rhsReturnType = this.getReturnTypeFromExpression(rhsType);
+      if (lhsFunctionReturnType && rhsReturnType) {
+        return TsUtils.isVoidType(lhsFunctionReturnType) && !TsUtils.isVoidType(rhsReturnType);
+      }
+    }
+    return false;
+  }
+
+  static isVoidType(tsType: ts.Type): boolean {
+    return (tsType.getFlags() & ts.TypeFlags.Void) !== 0;
+  }
+
+  private getRhsFunctionParameters(expr: ts.Expression): number {
+    const type = this.tsTypeChecker.getTypeAtLocation(expr);
+    const signatures = this.tsTypeChecker.getSignaturesOfType(type, ts.SignatureKind.Call);
+    if (signatures.length > 0) {
+      const signature = signatures[0];
+      return signature.parameters.length;
+    }
+    return 0;
+  }
+
+  private getLhsFunctionParameters(typeNode: ts.TypeNode): number {
+    let current: ts.TypeNode = typeNode;
+    while (ts.isTypeReferenceNode(current)) {
+      const symbol = this.tsTypeChecker.getSymbolAtLocation(current.typeName);
+      if (!symbol) {
+        break;
+      }
+
+      const declaration = symbol.declarations?.[0];
+      if (!declaration || !ts.isTypeAliasDeclaration(declaration)) {
+        break;
+      }
+
+      current = declaration.type;
+    }
+    if (ts.isFunctionTypeNode(current)) {
+      return current.parameters.length;
+    }
+    return 0;
+  }
+
+  private getFunctionType(typeNode: ts.TypeNode): ts.Type | undefined {
+    let current: ts.TypeNode = typeNode;
+    while (ts.isTypeReferenceNode(current)) {
+      const symbol = this.tsTypeChecker.getSymbolAtLocation(current.typeName);
+      if (!symbol) {
+        break;
+      }
+
+      const declaration = symbol.declarations?.[0];
+      if (!declaration || !ts.isTypeAliasDeclaration(declaration)) {
+        break;
+      }
+
+      current = declaration.type;
+    }
+    if (ts.isFunctionTypeNode(current)) {
+      return this.tsTypeChecker.getTypeAtLocation(current.type);
+    }
+    return undefined;
+  }
+
+  private getReturnTypeFromExpression(type: ts.Type): ts.Type | undefined {
+    const signatures = this.tsTypeChecker.getSignaturesOfType(type, ts.SignatureKind.Call);
+    if (signatures.length > 0) {
+      const returnType = this.tsTypeChecker.getReturnTypeOfSignature(signatures[0]);
+      return returnType;
+    }
+    return undefined;
+  }
+
+  static isFunctionalType(type: ts.Type): boolean {
     const callSigns = type.getCallSignatures();
     return callSigns && callSigns.length > 0;
   }
 
-  private isStdFunctionType(type: ts.Type): boolean {
+  isStdFunctionType(type: ts.Type): boolean {
     const sym = type.getSymbol();
     return !!sym && sym.getName() === 'Function' && this.isGlobalSymbol(sym);
   }
@@ -1898,7 +2089,10 @@ export class TsUtils {
       (!this.options.useRtLogic && TsUtils.hasModifier(modifiers, ts.SyntaxKind.ReadonlyKeyword) ||
         TsUtils.hasModifier(modifiers, ts.SyntaxKind.PublicKeyword) ||
         TsUtils.hasModifier(modifiers, ts.SyntaxKind.ProtectedKeyword) ||
-        TsUtils.hasModifier(modifiers, ts.SyntaxKind.PrivateKeyword))
+        TsUtils.hasModifier(modifiers, ts.SyntaxKind.PrivateKeyword) ||
+        !!this.options.arkts2 &&
+          (TsUtils.hasModifier(modifiers, ts.SyntaxKind.ReadonlyKeyword) ||
+            TsUtils.hasModifier(modifiers, ts.SyntaxKind.OverrideKeyword)))
     );
   }
 
@@ -2538,6 +2732,9 @@ export class TsUtils {
   }
 
   private static getIdentifierNameFromString(str: string): string | undefined {
+    if (str === '') {
+      return '__empty';
+    }
     let result: string = '';
 
     let offset = 0;
@@ -2584,7 +2781,8 @@ export class TsUtils {
       if (
         !ts.isPropertyDeclaration(propDecl) &&
         !ts.isPropertyAssignment(propDecl) &&
-        !ts.isPropertySignature(propDecl)
+        !ts.isPropertySignature(propDecl) &&
+        !ts.isEnumMember(propDecl)
       ) {
         return undefined;
       }
@@ -2604,11 +2802,15 @@ export class TsUtils {
     }
 
     for (const propDecl of symbol.declarations) {
-      if (!ts.isPropertyDeclaration(propDecl) && !ts.isPropertySignature(propDecl)) {
+      if (!ts.isPropertyDeclaration(propDecl) && !ts.isPropertySignature(propDecl) && !ts.isEnumMember(propDecl)) {
         return false;
       }
 
-      if (!ts.isClassDeclaration(propDecl.parent) && !ts.isInterfaceDeclaration(propDecl.parent)) {
+      if (
+        !ts.isClassDeclaration(propDecl.parent) &&
+        !ts.isInterfaceDeclaration(propDecl.parent) &&
+        !ts.isEnumDeclaration(propDecl.parent)
+      ) {
         return false;
       }
 
@@ -2753,9 +2955,9 @@ export class TsUtils {
   }
 
   static checkGeneralDeclaration(stmt: ts.Statement, name: string): boolean {
-    if (ts.isFunctionDeclaration(stmt)) {
+    if (ts.isFunctionDeclaration(stmt) && stmt.body !== undefined) {
       return (
-        stmt.body!.statements.some((innerStmt) => {
+        stmt.body.statements.some((innerStmt) => {
           return TsUtils.checkDeclarationInVariableStatement(innerStmt, name);
         }) ||
         stmt.name !== undefined && ts.isIdentifier(stmt.name) && stmt.name.text === name
@@ -3049,5 +3251,92 @@ export class TsUtils {
     /* CC-OFFNXT(no_explicit_any) std lib */
     // Ambient flag is not exposed, so we apply dirty hack to make it visible
     return !!(node.flags & (ts.NodeFlags as any).Ambient);
+  }
+
+  isValidSendableClassExtends(tsTypeExpr: ts.ExpressionWithTypeArguments): boolean {
+    const expr = tsTypeExpr.expression;
+    const sym = this.tsTypeChecker.getSymbolAtLocation(expr);
+    if (sym && (sym.flags & ts.SymbolFlags.Class) === 0) {
+      // handle non-class situation(local / import)
+      if ((sym.flags & ts.SymbolFlags.Alias) !== 0) {
+
+        /*
+         * Sendable class can not extends imported sendable class variable
+         * Sendable class can extends imported sendable class
+         */
+        const realSym = this.tsTypeChecker.getAliasedSymbol(sym);
+        if (realSym && (realSym.flags & ts.SymbolFlags.Class) === 0) {
+          return false;
+        }
+        return true;
+      }
+      return false;
+    }
+    return true;
+  }
+
+  isBuiltinClassHeritageClause(node: ts.HeritageClause): boolean {
+    const typeNode = node.types[0].expression;
+    if (!typeNode) {
+      return false;
+    }
+
+    const symbol = this.tsTypeChecker.getSymbolAtLocation(typeNode);
+    return !!symbol && !isStdLibrarySymbol(symbol);
+  }
+
+  isIntegerVariable(sym: ts.Symbol | undefined): boolean {
+    if (!sym) {
+      return false;
+    }
+    const decl = TsUtils.getDeclaration(sym);
+    if (!decl || !ts.isVariableDeclaration(decl) && !ts.isPropertyDeclaration(decl) || decl.type) {
+      return false;
+    }
+    const init = decl.initializer;
+    return !!init && ts.isNumericLiteral(init) && this.isIntegerConstantValue(init);
+  }
+
+  isIntegerValue(expr: ts.Expression): boolean {
+    if (ts.isParenthesizedExpression(expr)) {
+      return this.isIntegerValue(expr.expression);
+    } else if (ts.isBinaryExpression(expr) && TsUtils.isArithmeticOperator(expr.operatorToken)) {
+      return this.isIntegerValue(expr.left) && this.isIntegerValue(expr.right);
+    } else if (
+      (ts.isPrefixUnaryExpression(expr) || ts.isPostfixUnaryExpression(expr)) &&
+      TsUtils.isUnaryArithmeticOperator(expr.operator)
+    ) {
+      return this.isIntegerValue(expr.operand);
+    }
+
+    return (
+      ts.isNumericLiteral(expr) && this.isIntegerConstantValue(expr) ||
+      this.isIntegerVariable(this.tsTypeChecker.getSymbolAtLocation(expr))
+    );
+  }
+
+  static isArithmeticOperator(op: ts.BinaryOperatorToken): boolean {
+    switch (op.kind) {
+      case ts.SyntaxKind.PlusToken:
+      case ts.SyntaxKind.MinusToken:
+      case ts.SyntaxKind.AsteriskToken:
+      case ts.SyntaxKind.SlashToken:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  static isUnaryArithmeticOperator(op: ts.SyntaxKind): boolean {
+    switch (op) {
+      case ts.SyntaxKind.PlusToken:
+      case ts.SyntaxKind.MinusToken:
+      case ts.SyntaxKind.PlusPlusToken:
+      case ts.SyntaxKind.MinusMinusToken:
+      case ts.SyntaxKind.TildeToken:
+        return true;
+      default:
+        return false;
+    }
   }
 }

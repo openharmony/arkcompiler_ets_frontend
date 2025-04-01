@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,11 +15,8 @@
 
 #include "blockExpression.h"
 
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/ETSchecker.h"
-#include "ir/astNode.h"
 
 namespace ark::es2panda::ir {
 
@@ -42,13 +39,12 @@ BlockExpression::BlockExpression([[maybe_unused]] Tag const tag, BlockExpression
 
 BlockExpression *BlockExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<BlockExpression>(Tag {}, *this, allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    auto *const clone = allocator->New<BlockExpression>(Tag {}, *this, allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    clone->SetRange(Range());
+    return clone;
 }
 
 void BlockExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
@@ -87,7 +83,7 @@ void BlockExpression::Dump(ir::SrcDumper *dumper) const
 
 void BlockExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
 void BlockExpression::Compile(compiler::ETSGen *etsg) const
@@ -97,11 +93,11 @@ void BlockExpression::Compile(compiler::ETSGen *etsg) const
 
 checker::Type *BlockExpression::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    UNREACHABLE();
+    ES2PANDA_UNREACHABLE();
 }
 
-checker::Type *BlockExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType BlockExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

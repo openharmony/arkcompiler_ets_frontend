@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,26 +15,9 @@
 
 #include "objectExpression.h"
 
-#include "ir/base/decorator.h"
-#include "util/helpers.h"
-#include "compiler/base/literals.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
-#include "checker/TSchecker.h"
-#include "checker/ETSchecker.h"
-#include "checker/ets/typeRelationContext.h"
 #include "checker/ts/destructuringContext.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/typeNode.h"
-#include "ir/base/property.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/base/spreadElement.h"
-#include "ir/expressions/arrayExpression.h"
-#include "ir/expressions/assignmentExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/statements/variableDeclarator.h"
-#include "ir/validationInfo.h"
 
 namespace ark::es2panda::ir {
 ObjectExpression::ObjectExpression([[maybe_unused]] Tag const tag, ObjectExpression const &other,
@@ -59,13 +42,12 @@ ObjectExpression::ObjectExpression([[maybe_unused]] Tag const tag, ObjectExpress
 
 ObjectExpression *ObjectExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<ObjectExpression>(Tag {}, *this, allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    auto *const clone = allocator->New<ObjectExpression>(Tag {}, *this, allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    clone->SetRange(Range());
+    return clone;
 }
 
 static std::pair<ValidationInfo, bool> ValidateProperty(Property *prop, bool &foundProto)
@@ -193,14 +175,14 @@ void ObjectExpression::SetOptional(bool optional)
 
 void ObjectExpression::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    for (auto *&it : decorators_) {
+    for (auto *&it : VectorIterationGuard(decorators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsDecorator();
         }
     }
 
-    for (auto *&it : properties_) {
+    for (auto *&it : VectorIterationGuard(properties_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsExpression();
@@ -217,11 +199,11 @@ void ObjectExpression::TransformChildren(const NodeTransformer &cb, std::string_
 
 void ObjectExpression::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
         cb(it);
     }
 
-    for (auto *it : properties_) {
+    for (auto *it : VectorIterationGuard(properties_)) {
         cb(it);
     }
 
@@ -270,20 +252,20 @@ ObjectExpression::CheckPatternIsShorthand(CheckPatternIsShorthandArgs *args)
         switch (args->prop->Value()->Type()) {
             case ir::AstNodeType::IDENTIFIER: {
                 const ir::Identifier *ident = args->prop->Value()->AsIdentifier();
-                ASSERT(ident->Variable());
+                ES2PANDA_ASSERT(ident->Variable());
                 args->bindingVar = ident->Variable();
                 break;
             }
             case ir::AstNodeType::ASSIGNMENT_PATTERN: {
                 auto *assignmentPattern = args->prop->Value()->AsAssignmentPattern();
                 args->patternParamType = assignmentPattern->Right()->Check(args->checker);
-                ASSERT(assignmentPattern->Left()->AsIdentifier()->Variable());
+                ES2PANDA_ASSERT(assignmentPattern->Left()->AsIdentifier()->Variable());
                 args->bindingVar = assignmentPattern->Left()->AsIdentifier()->Variable();
                 args->isOptional = true;
                 break;
             }
             default: {
-                UNREACHABLE();
+                ES2PANDA_UNREACHABLE();
             }
         }
         return {args->isOptional, args->bindingVar, args->patternParamType, args->foundVar};
@@ -308,7 +290,7 @@ ObjectExpression::CheckPatternIsShorthand(CheckPatternIsShorthandArgs *args)
             break;
         }
         default: {
-            UNREACHABLE();
+            ES2PANDA_UNREACHABLE();
         }
     }
     return {args->isOptional, args->bindingVar, args->patternParamType, args->foundVar};
@@ -322,7 +304,7 @@ checker::Type *ObjectExpression::CheckPattern(checker::TSChecker *checker)
 
     for (auto it = properties_.rbegin(); it != properties_.rend(); it++) {
         if ((*it)->IsRestElement()) {
-            ASSERT((*it)->AsRestElement()->Argument()->IsIdentifier());
+            ES2PANDA_ASSERT((*it)->AsRestElement()->Argument()->IsIdentifier());
             util::StringView indexInfoName("x");
             auto *newIndexInfo =
                 checker->Allocator()->New<checker::IndexInfo>(checker->GlobalAnyType(), indexInfoName, false);
@@ -330,7 +312,7 @@ checker::Type *ObjectExpression::CheckPattern(checker::TSChecker *checker)
             continue;
         }
 
-        ASSERT((*it)->IsProperty());
+        ES2PANDA_ASSERT((*it)->IsProperty());
         auto *prop = (*it)->AsProperty();
 
         if (prop->IsComputed()) {
@@ -395,7 +377,7 @@ bool ObjectExpression::CheckAssignmentPattern(Property *prop, varbinder::Variabl
         return true;
     }
 
-    ASSERT(assignmentPattern->Left()->IsObjectPattern());
+    ES2PANDA_ASSERT(assignmentPattern->Left()->IsObjectPattern());
     auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
     auto destructuringContext = checker::ObjectDestructuringContext(
         {checker, assignmentPattern->Left()->AsObjectPattern(), false, true, nullptr, assignmentPattern->Right()});
@@ -420,8 +402,8 @@ void ObjectExpression::Compile(compiler::ETSGen *etsg) const
     etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ObjectExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType ObjectExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

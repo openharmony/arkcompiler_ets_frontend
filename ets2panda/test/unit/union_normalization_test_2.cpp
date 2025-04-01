@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -48,7 +48,7 @@ TEST_F(UnionNormalizationTest, UnionWithSubTypes)
         class Derived1 extends Base {}\
         class Derived2 extends Base {}\
         ";
-    InitializeChecker("_.sts", SRC);
+    InitializeChecker("_.ets", SRC);
 
     auto program = Program();
     ASSERT(program);
@@ -125,7 +125,7 @@ TEST_F(UnionNormalizationTest, DISABLED_UnionLinearization)
         type UT2 = int | UT | number\
         type UT3 = int | (Derived2 | Base) | Derived1 | (string | number | short) | (int | string)\
         ";
-    InitializeChecker("_.sts", SRC);
+    InitializeChecker("_.ets", SRC);
 
     auto program = Program();
     ASSERT(program);
@@ -173,7 +173,7 @@ TEST_F(UnionNormalizationTest, DISABLED_UnionLinearization)
 
 TEST_F(UnionNormalizationTest, UnionStringLiterals1)
 {
-    InitializeChecker("_.sts", "");
+    InitializeChecker("_.ets", "");
 
     auto checker = Checker();
     ASSERT(checker);
@@ -232,7 +232,7 @@ TEST_F(UnionNormalizationTest, UnionStringLiterals1)
 
 TEST_F(UnionNormalizationTest, UnionStringLiterals2)
 {
-    InitializeChecker("_.sts", "");
+    InitializeChecker("_.ets", "");
 
     auto checker = Checker();
     ASSERT(checker);
@@ -294,7 +294,7 @@ TEST_F(UnionNormalizationTest, UnionStringLiterals2)
 TEST_F(UnionNormalizationTest, DISABLED_UnionWithNever)
 {
     // Test normalization: int | never | number ==> number
-    InitializeChecker("_.sts", "");
+    InitializeChecker("_.ets", "");
 
     auto checker = Checker();
     ASSERT(checker);

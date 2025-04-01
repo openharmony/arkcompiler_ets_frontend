@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,8 @@
 #ifndef PANDA_UNION_NORMALISATION_TEST_H
 #define PANDA_UNION_NORMALISATION_TEST_H
 
+#include "util/options.h"
+
 namespace ark::es2panda::gtests {
 
 class UnionNormalizationTest : public testing::Test {
@@ -24,7 +26,7 @@ public:
         : allocator_(std::make_unique<ArenaAllocator>(SpaceType::SPACE_TYPE_COMPILER)),
           publicContext_ {std::make_unique<public_lib::Context>()},
           program_ {parser::Program::NewProgram<varbinder::ETSBinder>(Allocator())},
-          es2pandaPath_ {test::utils::PandaExecutablePathGetter {}.Get()}
+          checker_ {diagnosticEngine_}
     {
     }
 
@@ -32,7 +34,6 @@ public:
 
     static void SetUpTestCase()
     {
-        constexpr auto COMPILER_SIZE = operator""_MB(256ULL);
         mem::MemConfig::Initialize(0, 0, COMPILER_SIZE, 0, 0, 0);
         PoolManager::Initialize();
     }
@@ -54,13 +55,10 @@ public:
 
     void InitializeChecker(std::string_view fileName, std::string_view src)
     {
-        auto es2pandaPathPtr = es2pandaPath_.c_str();
-        ASSERT(es2pandaPathPtr);
-
         InitializeChecker<parser::ETSParser, varbinder::ETSBinder, checker::ETSChecker, checker::ETSAnalyzer,
                           compiler::ETSCompiler, compiler::ETSGen, compiler::StaticRegSpiller,
-                          compiler::ETSFunctionEmitter, compiler::ETSEmitter>(&es2pandaPathPtr, fileName, src,
-                                                                              &checker_, &program_);
+                          compiler::ETSFunctionEmitter, compiler::ETSEmitter>(
+            Span(test::utils::PandaExecutablePathGetter::Get()), fileName, src, &checker_, &program_);
     }
 
     template <typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter, typename AstCompiler>
@@ -78,27 +76,25 @@ public:
 
     template <typename Parser, typename VarBinder, typename Checker, typename Analyzer, typename AstCompiler,
               typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter>
-    void InitializeChecker(const char **argv, std::string_view fileName, std::string_view src,
+    void InitializeChecker(Span<const char *const> args, std::string_view fileName, std::string_view src,
                            checker::ETSChecker *checker, parser::Program *program)
     {
-        auto options = std::make_unique<ark::es2panda::util::Options>();
-        if (!options->Parse(1, argv)) {
-            std::cerr << options->ErrorMsg() << std::endl;
+        auto options = std::make_unique<ark::es2panda::util::Options>(args[0], diagnosticEngine_);
+        if (!options->Parse(args)) {
             return;
         }
 
         ark::Logger::ComponentMask mask {};
         mask.set(ark::Logger::Component::ES2PANDA);
-        ark::Logger::InitializeStdLogging(ark::Logger::LevelFromString(options->LogLevel()), mask);
+        ark::Logger::InitializeStdLogging(options->LogLevel(), mask);
 
-        Compiler compiler(options->Extension(), options->ThreadCount());
-        SourceFile input(fileName, src, options->ParseModule());
-        compiler::CompilationUnit unit {input, *options, 0, options->Extension()};
+        Compiler compiler(options->GetExtension(), options->GetThread());
+        SourceFile input(fileName, src, options->IsModule());
+        compiler::CompilationUnit unit {input, *options, 0, options->GetExtension(), diagnosticEngine_};
         auto getPhases = compiler::GetPhaseList(ScriptExtension::ETS);
 
-        program->MarkEntry();
         auto parser =
-            Parser(program, unit.options.CompilerOptions(), static_cast<parser::ParserStatus>(unit.rawParserStatus));
+            Parser(program, unit.options, diagnosticEngine_, static_cast<parser::ParserStatus>(unit.rawParserStatus));
         auto analyzer = Analyzer(checker);
         checker->SetAnalyzer(&analyzer);
 
@@ -119,8 +115,8 @@ public:
         publicContext_->analyzer = publicContext_->checker->GetAnalyzer();
         publicContext_->emitter = &emitter;
         publicContext_->parserProgram = program;
-
-        parser.ParseScript(unit.input, unit.options.CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB);
+        publicContext_->diagnosticEngine = &diagnosticEngine_;
+        parser.ParseScript(unit.input, unit.options.GetCompilationMode() == CompilationMode::GEN_STD_LIB);
         for (auto *phase : getPhases) {
             if (!phase->Apply(publicContext_.get(), program)) {
                 return;
@@ -143,7 +139,7 @@ public:
     static checker::Type *FindTypeAlias(checker::ETSChecker *checker, std::string_view aliasName)
     {
         auto *foundVar =
-            checker->Scope()->FindLocal(aliasName, varbinder::ResolveBindingOptions::TYPE_ALIASES)->AsLocalVariable();
+            checker->Scope()->FindLocal(aliasName, varbinder::ResolveBindingOptions::ALL)->AsLocalVariable();
         if (foundVar == nullptr) {
             return nullptr;
         }
@@ -164,7 +160,7 @@ private:
     std::unique_ptr<ArenaAllocator> allocator_;
     std::unique_ptr<public_lib::Context> publicContext_;
     parser::Program program_;
-    std::string es2pandaPath_;
+    util::DiagnosticEngine diagnosticEngine_;
     checker::ETSChecker checker_;
 };
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -96,7 +96,7 @@ void ETSLexer::CheckNumberLiteralEnd()
 bool ETSLexer::CheckUtf16Compatible(char32_t cp) const
 {
     if (cp >= util::StringView::Constants::CELESTIAL_OFFSET) {
-        // lexer_invalid_characters.sts
+        // lexer_invalid_characters.ets
         LogSyntaxError("Unsupported character literal");
         return false;
     }
@@ -174,14 +174,4 @@ void ETSLexer::ScanExclamationPunctuator()
     }
 }
 
-bool ETSLexer::ScanDollarPunctuator()
-{
-    if (Iterator().Peek() != LEX_CHAR_DOLLAR_SIGN) {
-        return false;
-    }
-
-    GetToken().type_ = TokenType::PUNCTUATOR_DOLLAR_DOLLAR;
-    Iterator().Forward(1);
-    return true;
-}
 }  // namespace ark::es2panda::lexer

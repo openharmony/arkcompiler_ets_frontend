@@ -14,5 +14,5 @@
  */
 
 
-var [...[b = 6, c = "foo", d]]: [number, number | string] = [1, 2];
-/* @@? 17:9 Error TypeError: Tuple type [number, number | string] of length 2 has no element at index 2.  */
+var [.../* @@ label */[b = 6, c = "foo", d]]: [number, number | string] = [1, 2];
+/* @@@ label Error TypeError: Tuple type [number, number | string] of length 2 has no element at index 2.  */
