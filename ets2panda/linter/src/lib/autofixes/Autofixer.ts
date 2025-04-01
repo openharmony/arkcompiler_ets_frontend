@@ -2174,18 +2174,6 @@ export class Autofixer {
 
   // to use special lib functions it's need to import it
   static SPECIAL_LIB_NAME = 'specialAutofixLib';
-  private hasSpecialLibImport: boolean = false;
-
-  private createSpecialLibImort(): Autofix {
-    // this fix is dummy, create actual after special lib be ready
-    const specialLibImport: Autofix = {
-      replacementText: '',
-      start: 0,
-      end: 0
-    };
-    this.hasSpecialLibImport = true;
-    return specialLibImport;
-  }
 
   // autofix for '**', '**=' operations and 'math.pow()' call
   fixExponent(exponentNode: ts.Node): Autofix[] | undefined {
@@ -2231,11 +2219,6 @@ export class Autofixer {
     }
 
     autofix = [replaceText];
-
-    if (!this.hasSpecialLibImport) {
-      autofix = [...autofix, this.createSpecialLibImort()];
-    }
-
     return autofix;
   }
 

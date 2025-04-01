@@ -69,11 +69,6 @@
                     "replacementText": "Math.pow(5, 2)",
                     "start": 656,
                     "end": 662
-                },
-                {
-                    "replacementText": "",
-                    "start": 0,
-                    "end": 0
                 }
             ],
             "suggest": "",
