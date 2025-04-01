@@ -683,32 +683,48 @@ Signature *ETSChecker::FindMostSpecificSignature(const ArenaVector<Signature *> 
                                                  const ArenaMultiMap<size_t, Signature *> &bestSignaturesForParameter,
                                                  size_t paramCount)
 {
-    Signature *mostSpecificSignature = nullptr;
-
-    for (auto *sig : signatures) {
-        bool mostSpecific = true;
-
+    auto isMostSpecificForAllParams = [&](const Signature *sig) {
         for (size_t paramIdx = 0; paramIdx < paramCount; ++paramIdx) {
-            const auto range = bestSignaturesForParameter.equal_range(paramIdx);
-            // Check if signature is most specific for i. parameter type.
-            mostSpecific = std::any_of(range.first, range.second, [&sig](auto entry) { return entry.second == sig; });
-            if (!mostSpecific) {
-                break;
+            const auto [begin, end] = bestSignaturesForParameter.equal_range(paramIdx);
+            if (std::none_of(begin, end, [sig](auto &entry) { return entry.second == sig; })) {
+                return false;
             }
         }
+        return true;
+    };
 
-        if (!mostSpecific) {
+    Signature *result = nullptr;
+    size_t currentMinLength = SIZE_MAX;
+
+    for (auto *candidate : signatures) {
+        if (!isMostSpecificForAllParams(candidate)) {
             continue;
         }
-        if (mostSpecificSignature == nullptr) {
-            mostSpecificSignature = sig;
+
+        const auto candidateLength = candidate->Function()->Params().size();
+        if (candidateLength > currentMinLength) {
             continue;
         }
-        if (mostSpecificSignature->Owner() == sig->Owner()) {
-            return nullptr;
+
+        if (result == nullptr) {
+            result = candidate;  // First valid candidate
+            currentMinLength = result->Function()->Params().size();
+            continue;
+        }
+
+        const auto currentLength = result->Function()->Params().size();
+        if (candidateLength < currentLength) {
+            result = candidate;  // Shorter parameter count wins
+            currentMinLength = result->Function()->Params().size();
+        } else if (candidateLength == currentLength) {
+            // Ambiguous resolution for same-length params
+            if (result->Owner() == candidate->Owner()) {
+                result = nullptr;
+            }
         }
     }
-    return mostSpecificSignature;
+
+    return result;
 }
 
 static Type *GetParatmeterTypeOrRestAtIdx(Signature *sig, const size_t idx)

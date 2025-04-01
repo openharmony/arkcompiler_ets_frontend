@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,12 +15,12 @@
 
 function main() : void
 {
-    foo(5);
+    assertEQ(foo(5), 5);
 }
 
-function foo(a : int, b : int = 10) : int
+function foo(a : int, ...b: int[]) : int
 {
-    return a + b;
+    return a + 2;
 }
 
 function foo(a : int) : int
@@ -28,4 +28,3 @@ function foo(a : int) : int
     return a;
 }
 
-/* @@? 18:5 Error TypeError: Reference to foo is ambiguous  */
