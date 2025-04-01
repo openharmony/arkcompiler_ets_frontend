@@ -56,7 +56,7 @@ static std::string originalSourceCode = R"(
 import { PI as PI } from "std/math"
 )";
 
-void UpdateImportDeclaration(es2panda_Context *context)
+bool UpdateImportDeclaration(es2panda_Context *context)
 {
     size_t sizeOfStatements = 0;
     auto *statements = impl->BlockStatementStatements(context, program, &sizeOfStatements);
@@ -76,12 +76,22 @@ void UpdateImportDeclaration(es2panda_Context *context)
     impl->IdentifierSetName(context, newLocal, memForName);
     impl->IdentifierSetName(context, newImported, memForName);
     auto newSpecifier = impl->CreateImportSpecifier(context, newLocal, newImported);
+    if (impl->ImportSpecifierIsRemovableConst(context, newSpecifier)) {
+        return false;
+    }
+    impl->ImportSpecifierSetRemovable(context, newSpecifier, true);
 
     impl->AstNodeSetParent(context, newLocal, newSpecifier);
     impl->AstNodeSetParent(context, newImported, newSpecifier);
 
     auto newNode = impl->UpdateImportDeclaration(context, importNode, newSource, &newSpecifier, 1,
                                                  Es2pandaImportKinds::IMPORT_KINDS_ALL);
+    if (newNode == nullptr) {
+        return false;
+    }
+    if (impl->ImportSpecifierIsRemovableConst(context, newSpecifier) == false) {
+        return false;
+    }
 
     impl->AstNodeSetParent(context, newSource, newNode);
     impl->AstNodeSetParent(context, newSpecifier, newNode);
@@ -95,6 +105,7 @@ void UpdateImportDeclaration(es2panda_Context *context)
 
     impl->BlockStatementSetStatements(context, program, newStatements, sizeOfStatements);
     impl->AstNodeSetParent(context, newNode, program);
+    return true;
 }
 
 int main(int argc, char **argv)
@@ -115,7 +126,9 @@ int main(int argc, char **argv)
     CheckForErrors("CHECKED", context);
 
     program = impl->ProgramAst(context, impl->ContextProgram(context));
-    UpdateImportDeclaration(context);
+    if (UpdateImportDeclaration(context) == false) {
+        return 1;
+    }
 
     const char *src = impl->AstNodeDumpEtsSrcConst(context, program);
     const char *expected = "import { E as E } from \"new/std/math\"";
