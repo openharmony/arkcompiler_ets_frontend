@@ -74,6 +74,7 @@ import {
   EventList,
   TimeAndMemTimeTracker,
   clearTimeAndMemPrinterData,
+  disablePrinterTimeAndMemConfig,
   initPerformanceTimeAndMemPrinter,
 } from './utils/PrinterTimeAndMemUtils';
 
@@ -89,9 +90,11 @@ export {
 } from './utils/PrinterUtils';
 export {
   EventList,
+  PerfMode,
   TimeAndMemTimeTracker,
-  enableTimeAndMemoryPrint,
   blockTimeAndMemPrinter,
+  configurePerformancePrinter,
+  enableTimeAndMemoryPrint,
 } from './utils/PrinterTimeAndMemUtils';
 import { Extension, type ProjectInfo, type FilePathObj } from './common/type';
 export { type HvigorErrorInfo } from './common/type';
@@ -111,7 +114,7 @@ export { separateUniversalReservedItem, containWildcards, wildcardTransformer } 
 export type { ReservedNameInfo } from './utils/TransformUtil';
 export type { ReseverdSetForArkguard } from './common/ApiReader';
 
-export { initObfuscationConfig, initPrinterTimeAndMemConfig, printerTimeAndMemConfig, printerTimeAndMemDataConfig } from './initialization/Initializer';
+export { initObfuscationConfig, printerTimeAndMemDataConfig } from './initialization/Initializer';
 export { nameCacheMap, unobfuscationNamesObj } from './initialization/CommonObject';
 export {
   collectResevedFileNameInIDEConfig, // For running unit test.
@@ -170,6 +173,7 @@ export function clearGlobalCaches(): void {
   clearUnobfuscationNamesObj();
   clearHistoryUnobfuscatedMap();
   clearTimeAndMemPrinterData();
+  disablePrinterTimeAndMemConfig();
   ApiExtractor.mConstructorPropertySet.clear();
   ApiExtractor.mEnumMemberSet.clear();
 }
@@ -360,9 +364,8 @@ export class ArkObfuscator {
     this.mTransformers = new TransformerManager(this.mCustomProfiles).getTransformers();
 
     initPerformancePrinter(this.mCustomProfiles);
-    
-    initPerformanceTimeAndMemPrinter(this.mCustomProfiles);
 
+    initPerformanceTimeAndMemPrinter();
     if (needReadApiInfo(this.mCustomProfiles)) {
       // if -enable-property-obfuscation or -enable-export-obfuscation, collect language reserved keywords.
       let languageSet: Set<string> = new Set();
