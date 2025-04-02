@@ -71,8 +71,12 @@ export class Config extends ArktsObject {
   }
 
   static create(
-    input: string[], fpath: string
+    input: string[], fpath: string, isEditingMode: boolean = false
   ): Config {
+    if (isEditingMode) {
+      let cfg = global.es2panda._CreateConfig(input.length, passStringArray(input))
+      return new Config(cfg, fpath)
+    }
     if (!global.configIsInitialized()) {
       let cfg = global.es2panda._CreateConfig(input.length, passStringArray(input))
       global.config = cfg
@@ -82,6 +86,26 @@ export class Config extends ArktsObject {
     } else {
       return new Config(global.config, fpath)
     }
+  }
+}
+
+export class EtsScript extends Node {
+  constructor(peer: KPtr) {
+    super(peer)
+  }
+
+  static fromContext(ctx: Context): EtsScript {
+    return new EtsScript(global.es2panda._ProgramAst(global.es2panda._ContextProgram(ctx.peer)))
+  }
+}
+
+export class Program extends ArktsObject {
+  constructor(peer: KPtr) {
+    super(peer)
+  }
+
+  get astNode(): EtsScript {
+    return new EtsScript(global.es2panda._ProgramAst(this.peer));
   }
 }
 
@@ -108,4 +132,106 @@ export class Context extends ArktsObject {
       )
     )
   }
+
+  static lspCreateFromString(
+    source: string, filePath: string, cfg: Config
+  ): Context {
+    if (cfg === undefined) {
+      throwError(`Config not initialized`)
+    }
+    return new Context(
+      global.es2panda._CreateContextFromString(
+        cfg.peer,
+        passString(source),
+        passString(filePath)
+      )
+    )
+  }
+  get program(): Program {
+    return new Program(global.es2panda._ContextProgram(this.peer));
+  }
+}
+
+// ProjectConfig begins
+export interface PluginsConfig {
+  [pluginName: string]: string;
+}
+
+export interface BuildBaseConfig {
+  buildType: 'build' | 'preview' | 'hotreload' | 'coldreload';
+  buildMode: 'Debug' | 'Release';
+  hasMainModule: boolean;
+  arkts: object;
+  arktsGlobal: object;
+}
+
+export interface ModuleConfig {
+  packageName: string;
+  moduleType: string;
+  moduleRootPath: string;
+  sourceRoots: string[];
+}
+
+export interface PathConfig {
+  loaderOutPath: string;
+  cachePath: string;
+  buildSdkPath: string;
+  pandaSdkPath?: string;  // path to panda sdk lib/bin, for local test
+  pandaStdlibPath?: string;  // path to panda sdk stdlib, for local test
+  abcLinkerPath?: string;
+}
+
+export interface DeclgenConfig {
+  enableDeclgenEts2Ts: boolean;
+  declgenV1OutPath?: string;
+  declgenBridgeCodePath?: string;
+}
+
+export interface LoggerConfig {
+  getHvigorConsoleLogger?: Function;
+}
+
+export interface DependentModuleConfig {
+  packageName: string;
+  moduleName: string;
+  moduleType: string;
+  modulePath: string;
+  sourceRoots: string[];
+  entryFile: string;
+  language: string,
+  declFilesPath?: string,
+  dependencies?: string[]
+}
+
+export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfig, ModuleConfig, PathConfig {
+  plugins: PluginsConfig;
+  compileFiles: string[];
+  dependentModuleList: DependentModuleConfig[];
+}
+// ProjectConfig ends
+
+export interface CompileFileInfo {
+  filePath: string,
+  dependentFiles: string[],
+  abcFilePath: string,
+  arktsConfigFile: string,
+  packageName: string,
+};
+
+export interface ModuleInfo {
+  isMainModule: boolean,
+  packageName: string,
+  moduleRootPath: string,
+  moduleType: string,
+  sourceRoots: string[],
+  entryFile: string,
+  arktsConfigFile: string,
+  compileFileInfos: CompileFileInfo[],
+  declgenV1OutPath: string | undefined,
+  declgenBridgeCodePath: string | undefined,
+  dependencies?: string[]
+  staticDepModuleInfos: Map<string, ModuleInfo>;
+  dynamicDepModuleInfos: Map<string, ModuleInfo>;
+  language?: string;
+  declFilesPath?: string;
 }

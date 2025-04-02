@@ -54,7 +54,13 @@ Initializer::~Initializer()
 
 ir::AstNode *GetTouchingToken(es2panda_Context *context, size_t pos, bool flagFindFirstMatch)
 {
+    if (context == nullptr) {
+        return nullptr;
+    }
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    if (ctx->parserProgram == nullptr || ctx->parserProgram->Ast() == nullptr) {
+        return nullptr;
+    }
     auto ast = reinterpret_cast<ir::AstNode *>(ctx->parserProgram->Ast());
     auto checkFunc = [&pos](ir::AstNode *node) { return pos >= node->Start().index && pos < node->End().index; };
     auto found = ast->FindChild(checkFunc);
@@ -132,9 +138,10 @@ FileDiagnostic CreateDiagnosticForNode(es2panda_AstNode *node, Diagnostic diagno
     return res;
 }
 
-void GetFileReferencesImpl(es2panda_Context *referenceFileContext, char const *searchFileName, bool isPackageModule,
-                           References *fileReferences)
+References GetFileReferencesImpl(es2panda_Context *referenceFileContext, char const *searchFileName,
+                                 bool isPackageModule)
 {
+    References result;
     auto ctx = reinterpret_cast<public_lib::Context *>(referenceFileContext);
     auto statements = ctx->parserProgram->Ast()->Statements();
     for (auto statement : statements) {
@@ -148,15 +155,15 @@ void GetFileReferencesImpl(es2panda_Context *referenceFileContext, char const *s
         }
         auto start = import->Source()->Start().index;
         auto end = import->Source()->End().index;
-        auto pos = std::string(searchFileName).rfind('/');
+        auto pos = std::string(searchFileName).rfind(util::PATH_DELIMITER);
         auto fileDirectory = std::string(searchFileName).substr(0, pos);
         if ((!isPackageModule && importFileName == searchFileName) ||
             (isPackageModule && importFileName == fileDirectory)) {
             auto fileName = ctx->sourceFileName;
-            auto fileRef = ReferenceInfo(fileName, start, end - start);
-            fileReferences->referenceInfos.push_back(fileRef);
+            result.referenceInfos.emplace_back(fileName, start, end - start);
         }
     }
+    return result;
 }
 
 bool IsToken(const ir::AstNode *node)
@@ -493,37 +500,6 @@ std::string GetOwnerId(ir::AstNode *node)
         return "";
     }
     return owner->DumpJSON();
-}
-
-void GetReferenceLocationAtPositionImpl(FileNodeInfo fileNodeInfo, es2panda_Context *referenceFileContext,
-                                        ReferenceLocationList *list)
-{
-    auto ctx = reinterpret_cast<public_lib::Context *>(referenceFileContext);
-    if (ctx == nullptr) {
-        return;
-    }
-    auto *parent = reinterpret_cast<ir::AstNode *>(ctx->parserProgram->Ast());
-    if (parent == nullptr) {
-        return;
-    }
-
-    auto cb = [list, &fileNodeInfo, ctx](ir::AstNode *node) {
-        auto nodeId = GetIdentifier(node);
-        if (nodeId == nullptr) {
-            return false;
-        }
-        auto nodeName = GetIdentifierName(nodeId);
-        if (nodeName != fileNodeInfo.tokenName) {
-            return false;
-        }
-        auto ownerId = GetOwnerId(node);
-        if (ownerId == fileNodeInfo.tokenId) {
-            SaveNode(nodeId, ctx, list);
-        }
-        return false;
-    };
-
-    parent->FindChild(cb);
 }
 
 // convert from es2panda error type to LSP severity

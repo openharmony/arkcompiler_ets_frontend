@@ -353,26 +353,6 @@
             "suggest": "",
             "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
             "severity": "ERROR"
-        },
-        {
-            "line": 30,
-            "column": 20,
-            "endLine": 30,
-            "endColumn": 26,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 48,
-            "column": 10,
-            "endLine": 48,
-            "endColumn": 14,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
         }
     ]
 }

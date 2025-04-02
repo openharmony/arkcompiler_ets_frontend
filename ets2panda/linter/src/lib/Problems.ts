@@ -157,6 +157,7 @@ export enum FaultID {
   DollarBindingNotSupported,
   ExtendDecoratorNotSupported,
   MethodOverridingField,
+  ExplicitFunctionType,
   ClassstaticInitialization,
   TaggedTemplates,
   IncompationbleFunctionType,

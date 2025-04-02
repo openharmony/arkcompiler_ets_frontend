@@ -34,10 +34,8 @@
 extern "C" {
 namespace ark::es2panda::lsp {
 
-DefinitionInfo GetDefinitionAtPosition(char const *fileName, size_t position)
+DefinitionInfo GetDefinitionAtPosition(es2panda_Context *context, size_t position)
 {
-    Initializer initializer = Initializer();
-    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
     auto declInfo = GetDefinitionAtPositionImpl(context, position);
     DefinitionInfo result {};
     auto node = declInfo.first;
@@ -53,50 +51,40 @@ DefinitionInfo GetDefinitionAtPosition(char const *fileName, size_t position)
         }
         node = node->Parent();
     }
-    initializer.DestroyContext(context);
     return result;
 }
 
-DefinitionInfo GetImplementationAtPosition(char const *fileName, size_t position)
+DefinitionInfo GetImplementationAtPosition(es2panda_Context *context, size_t position)
 {
-    return GetDefinitionAtPosition(fileName, position);
+    return GetDefinitionAtPosition(context, position);
 }
 
-References GetFileReferences(char const *fileName)
+bool IsPackageModule(es2panda_Context *context)
 {
-    Initializer initializer = Initializer();
-    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
-    bool isPackageModule = reinterpret_cast<public_lib::Context *>(context)->parserProgram->IsPackage();
-    auto options = reinterpret_cast<public_lib::Context *>(context)->config->options;
-    auto compilationList = FindProjectSources(options->ArkTSConfig());
-    initializer.DestroyContext(context);
+    return reinterpret_cast<public_lib::Context *>(context)->parserProgram->IsPackage();
+}
 
-    auto result = References();
-    for (auto const &referenceFile : compilationList) {
-        auto referenceContext = initializer.CreateContext(referenceFile.first.c_str(), ES2PANDA_STATE_CHECKED);
-        GetFileReferencesImpl(referenceContext, fileName, isPackageModule, &result);
-        initializer.DestroyContext(referenceContext);
+References GetFileReferences(char const *fileName, es2panda_Context *context, bool isPackageModule)
+{
+    return GetFileReferencesImpl(context, fileName, isPackageModule);
+}
+
+DeclInfo GetDeclInfo(es2panda_Context *context, size_t position)
+{
+    DeclInfo result;
+    if (context == nullptr) {
+        return result;
     }
-    return result;
-}
-
-References GetReferencesAtPosition(char const *fileName, size_t position)
-{
-    Initializer initializer = Initializer();
-    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
-    auto options = reinterpret_cast<public_lib::Context *>(context)->config->options;
-    auto compilationList = FindProjectSources(options->ArkTSConfig());
     auto astNode = GetTouchingToken(context, position, false);
-    auto declInfo = GetDeclInfo(astNode);
-    initializer.DestroyContext(context);
+    auto declInfo = GetDeclInfoImpl(astNode);
+    result.fileName = std::get<0>(declInfo);
+    result.fileText = std::get<1>(declInfo);
+    return result;
+}
 
-    References result;
-    for (auto const &file : compilationList) {
-        auto fileContext = initializer.CreateContext(file.first.c_str(), ES2PANDA_STATE_CHECKED);
-        GetReferencesAtPositionImpl(fileContext, declInfo, &result);
-        initializer.DestroyContext(fileContext);
-    }
-
+References GetReferencesAtPosition(es2panda_Context *context, DeclInfo *declInfo)
+{
+    auto result = GetReferencesAtPositionImpl(context, {declInfo->fileName, declInfo->fileText});
     auto compare = [](const ReferenceInfo &lhs, const ReferenceInfo &rhs) {
         if (lhs.fileName != rhs.fileName) {
             return lhs.fileName < rhs.fileName;
@@ -117,21 +105,15 @@ es2panda_AstNode *GetPrecedingToken(es2panda_Context *context, const size_t pos)
     return reinterpret_cast<es2panda_AstNode *>(FindPrecedingToken(pos, ast, ctx->allocator));
 }
 
-std::string GetCurrentTokenValue(char const *fileName, size_t position)
+std::string GetCurrentTokenValue(es2panda_Context *context, size_t position)
 {
-    Initializer initializer = Initializer();
-    auto ctx = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
-    auto result = GetCurrentTokenValueImpl(ctx, position);
-    initializer.DestroyContext(ctx);
+    auto result = GetCurrentTokenValueImpl(context, position);
     return result;
 }
 
-QuickInfo GetQuickInfoAtPosition(const char *fileName, size_t position)
+QuickInfo GetQuickInfoAtPosition(const char *fileName, es2panda_Context *context, size_t position)
 {
-    Initializer initializer = Initializer();
-    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
     auto res = GetQuickInfoAtPositionImpl(context, position, fileName);
-    initializer.DestroyContext(context);
     return res;
 }
 
@@ -147,31 +129,25 @@ TextSpan GetSpanOfEnclosingComment(char const *fileName, size_t pos, bool onlyMu
                : TextSpan(0, 0);
 }
 
-DiagnosticReferences GetSemanticDiagnostics(char const *fileName)
+DiagnosticReferences GetSemanticDiagnostics(es2panda_Context *context)
 {
-    Initializer initializer = Initializer();
-    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
     DiagnosticReferences result {};
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
     const auto &diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(util::DiagnosticType::SEMANTIC);
     for (const auto &diagnostic : diagnostics) {
         result.diagnostic.push_back(CreateDiagnosticForError(context, *diagnostic));
     }
-    initializer.DestroyContext(context);
     return result;
 }
 
-DiagnosticReferences GetSyntacticDiagnostics(char const *fileName)
+DiagnosticReferences GetSyntacticDiagnostics(es2panda_Context *context)
 {
-    Initializer initializer = Initializer();
-    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
     DiagnosticReferences result {};
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
     const auto &diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(util::DiagnosticType::SYNTAX);
     for (const auto &diagnostic : diagnostics) {
         result.diagnostic.push_back(CreateDiagnosticForError(context, *diagnostic));
     }
-    initializer.DestroyContext(context);
     return result;
 }
 
@@ -202,53 +178,10 @@ DiagnosticReferences GetCompilerOptionsDiagnostics(char const *fileName, Cancell
     return result;
 }
 
-ReferenceLocationList GetReferenceLocationAtPosition(char const *fileName, size_t pos,
-                                                     const std::vector<std::string> &autoGenerateFolders,
-                                                     CancellationToken cancellationToken)
+DocumentHighlightsReferences GetDocumentHighlights(es2panda_Context *context, size_t position)
 {
-    Initializer initializer = Initializer();
-    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
-    if (context == nullptr) {
-        return {};
-    }
-
-    auto options = reinterpret_cast<public_lib::Context *>(context)->config->options;
-
-    auto files = options->ArkTSConfig()->Files();
-    if (files.empty()) {
-        return {};
-    }
-
-    RemoveFromFiles(files, autoGenerateFolders);
-
-    auto node = GetTouchingToken(context, pos, false);
-    if (node == nullptr) {
-        return {};
-    }
-
-    auto tokenId = ark::es2panda::lsp::GetOwnerId(node);
-    auto tokenName = ark::es2panda::lsp::GetIdentifierName(node);
-    FileNodeInfo fileNameInfo(tokenName, tokenId);
-    auto list = ReferenceLocationList();
-    initializer.DestroyContext(context);
-    for (const std::string &file : files) {
-        if (cancellationToken.IsCancellationRequested()) {
-            return list;
-        }
-        auto ctx = initializer.CreateContext(file.c_str(), ES2PANDA_STATE_CHECKED);
-        ark::es2panda::lsp::GetReferenceLocationAtPositionImpl(fileNameInfo, ctx, &list);
-        initializer.DestroyContext(ctx);
-    }
-    return list;
-}
-
-DocumentHighlightsReferences GetDocumentHighlights(char const *fileName, size_t position)
-{
-    Initializer initializer = Initializer();
-    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
     DocumentHighlightsReferences result = {};
     result.documentHighlights_.push_back(GetDocumentHighlightsImpl(context, position));
-    initializer.DestroyContext(context);
     return result;
 }
 
@@ -296,10 +229,8 @@ std::vector<ark::es2panda::lsp::RenameLocation> FindRenameLocationsWithCancellat
     return res;
 }
 
-DiagnosticReferences GetSuggestionDiagnostics(const char *fileName)
+DiagnosticReferences GetSuggestionDiagnostics(es2panda_Context *context)
 {
-    Initializer initializer = Initializer();
-    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
     DiagnosticReferences res {};
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
     auto ast = ctx->parserProgram->Ast();
@@ -308,16 +239,12 @@ DiagnosticReferences GetSuggestionDiagnostics(const char *fileName)
     for (const auto &diag : vec) {
         res.diagnostic.push_back(diag.diagnostic);
     }
-    initializer.DestroyContext(context);
     return res;
 }
 
-ark::es2panda::lsp::CompletionInfo GetCompletionsAtPosition(char const *fileName, size_t position)
+ark::es2panda::lsp::CompletionInfo GetCompletionsAtPosition(es2panda_Context *context, size_t position)
 {
-    Initializer initializer = Initializer();
-    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
     auto result = CompletionInfo(GetCompletionsAtPositionImpl(context, position));
-    initializer.DestroyContext(context);
     return result;
 }
 
@@ -326,18 +253,17 @@ std::vector<Location> GetImplementationLocationAtPositionWrapper(es2panda_Contex
     return GetImplementationLocationAtPosition(context, position);
 }
 
-LineAndCharacter ToLineColumnOffsetWrapper(char const *fileName, size_t position)
+LineAndCharacter ToLineColumnOffsetWrapper(es2panda_Context *context, size_t position)
 {
-    Initializer initializer = Initializer();
-    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
     auto result = ToLineColumnOffset(context, position);
-    initializer.DestroyContext(context);
     return result;
 }
 
 LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetImplementationAtPosition,
+                    IsPackageModule,
                     GetFileReferences,
+                    GetDeclInfo,
                     GetReferencesAtPosition,
                     GetPrecedingToken,
                     GetCurrentTokenValue,
@@ -346,7 +272,6 @@ LSPAPI g_lspImpl = {GetDefinitionAtPosition,
                     GetSemanticDiagnostics,
                     GetSyntacticDiagnostics,
                     GetCompilerOptionsDiagnostics,
-                    GetReferenceLocationAtPosition,
                     GetDocumentHighlights,
                     FindRenameLocationsWrapper,
                     FindRenameLocationsWithCancellationWrapper,

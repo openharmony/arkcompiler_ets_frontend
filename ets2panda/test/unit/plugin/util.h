@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_TEST_UNIT_PLUGIN_UTIL_H
 #define ES2PANDA_TEST_UNIT_PLUGIN_UTIL_H
 
+#include <functional>
 #include <iostream>
 #include <string_view>
 
@@ -41,5 +42,8 @@ es2panda_AstNode *CreateIdentifierFromString(es2panda_Context *context, const st
 void AppendStatementToProgram(es2panda_Context *context, es2panda_AstNode *program, es2panda_AstNode *newStatement);
 
 void PrependStatementToProgram(es2panda_Context *context, es2panda_AstNode *program, es2panda_AstNode *newStatement);
+
+int Test(es2panda_Context *context, es2panda_Impl *impl, int stage,
+         std::function<bool(es2panda_Context *, es2panda_AstNode *)> handle);
 
 #endif

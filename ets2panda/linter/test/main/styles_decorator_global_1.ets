@@ -54,8 +54,8 @@ struct MyButton {
     @Require
     content: () => void;
 
-    build {
-        Button {
+    build() {
+        Button() {
             this.content()
         }
         .stateStyles({

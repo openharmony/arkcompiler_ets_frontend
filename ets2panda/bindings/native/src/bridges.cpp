@@ -70,3 +70,11 @@ KNativePointer impl_ContextErrorMessage(KNativePointer contextPtr)
     return new std::string(es2panda_GetImpl(ES2PANDA_LIB_VERSION)->ContextErrorMessage(context));
 }
 TS_INTEROP_1(ContextErrorMessage, KNativePointer, KNativePointer)
+
+KNativePointer impl_ProgramAst(KNativePointer programPtr)
+{
+    auto context = reinterpret_cast<es2panda_Context *>(programPtr);
+    auto program = reinterpret_cast<es2panda_Program *>(programPtr);
+    return es2panda_GetImpl(ES2PANDA_LIB_VERSION)->ProgramAst(context, program);
+}
+TS_INTEROP_1(ProgramAst, KNativePointer, KNativePointer)

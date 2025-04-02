@@ -45,11 +45,11 @@ export class InteropNativeModule {
     throw new Error("Not implemented")
   }
 
-  _getTypeOfVariant(ptr: KPtr): KUInt {
+  _getTypeOfVariant(ptr: KPtr): KInt {
     throw new Error("Not implemented")
   }
 
-  _getIntFromVariant(ptr: KPtr): KUInt {
+  _getIntFromVariant(ptr: KPtr): KInt {
     throw new Error("Not implemented")
   }
 

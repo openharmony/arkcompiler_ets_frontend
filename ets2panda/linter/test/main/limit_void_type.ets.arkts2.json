@@ -969,59 +969,9 @@
             "column": 3,
             "endLine": 177,
             "endColumn": 17,
-            "problem": "LimitedStdLibApi",
+            "problem": "ExplicitFunctionType",
             "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 31,
-            "column": 29,
-            "endLine": 31,
-            "endColumn": 36,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 85,
-            "column": 25,
-            "endLine": 85,
-            "endColumn": 31,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 88,
-            "column": 22,
-            "endLine": 88,
-            "endColumn": 31,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 117,
-            "column": 22,
-            "endLine": 117,
-            "endColumn": 28,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 177,
-            "column": 8,
-            "endLine": 177,
-            "endColumn": 16,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
             "severity": "ERROR"
         }
     ]

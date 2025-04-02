@@ -178,6 +178,7 @@ faultsAttrs[FaultID.StylesDecoratorNotSupported] = new FaultAttributes(256);
 faultsAttrs[FaultID.AnimatableExtendDecoratorTransform] = new FaultAttributes(257);
 faultsAttrs[FaultID.DataObservation] = new FaultAttributes(258);
 faultsAttrs[FaultID.UIInterfaceImport] = new FaultAttributes(259);
+faultsAttrs[FaultID.ExplicitFunctionType] = new FaultAttributes(300);
 faultsAttrs[FaultID.OhmUrlFullPath] = new FaultAttributes(301);
 faultsAttrs[FaultID.InteropCallObjectParam] = new FaultAttributes(302);
 faultsAttrs[FaultID.InteropCallReflect] = new FaultAttributes(303);

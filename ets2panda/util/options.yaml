@@ -90,6 +90,11 @@ options:
   default: false
   description: Dump debug info
 
+- name: with-export-table
+  type: bool
+  default: false
+  description: enable abc file with export table info
+
 - name: opt-level
   type: int
   default: 0

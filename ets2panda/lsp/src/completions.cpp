@@ -231,21 +231,24 @@ std::vector<CompletionEntry> GetPropertyCompletions(ir::AstNode *preNode, const 
 {
     std::vector<CompletionEntry> completions;
     if (preNode == nullptr || !preNode->IsIdentifier()) {
-        return {};
+        return completions;
     }
     auto decl = compiler::DeclarationFromIdentifier(preNode->AsIdentifier());
     if (decl == nullptr) {
-        return {};
+        return completions;
     }
     if (decl->IsClassProperty()) {
         decl = GetClassDefinitionFromClassProperty(decl);
     }
-    if (decl != nullptr && decl->IsClassDeclaration()) {
+    if (decl->IsClassDeclaration()) {
         decl = decl->AsClassDeclaration()->Definition();
     }
-    if (decl != nullptr && decl->IsClassDefinition()) {
+    if (decl->IsClassDefinition()) {
         // After enum refactoring, enum declaration is transformed to a class declaration
         if (compiler::ClassDefinitionIsEnumTransformed(decl)) {
+            if (decl->AsClassDefinition()->OrigEnumDecl() == nullptr) {
+                return completions;
+            }
             auto members = decl->AsClassDefinition()->OrigEnumDecl()->AsTSEnumDeclaration()->Members();
             auto qualifiedMembers = FilterFromEnumMember(members, triggerWord);
             completions = GetEntriesForEnumDeclaration(qualifiedMembers);
@@ -339,6 +342,9 @@ CompletionEntry InitEntry(const ir::AstNode *decl)
             return child->IsMethodDefinition() &&
                    child->AsMethodDefinition()->Key()->AsIdentifier()->Name() == compiler::Signatures::INIT_METHOD;
         });
+        if (initMethod == nullptr) {
+            return CompletionEntry(name, CompletionEntryKind::CONSTANT, std::string(sortText));
+        }
         auto found = initMethod->FindChild([&name](ir::AstNode *child) {
             return child->IsAssignmentExpression() && child->AsAssignmentExpression()->Left()->IsIdentifier() &&
                    child->AsAssignmentExpression()->Left()->AsIdentifier()->ToString() == name;
@@ -396,6 +402,9 @@ std::vector<CompletionEntry> GetGlobalCompletions(es2panda_Context *context, siz
 {
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
     auto allocator = ctx->allocator;
+    if (allocator == nullptr) {
+        return {};
+    }
     auto precedingToken = FindPrecedingToken(position, ctx->parserProgram->Ast(), allocator);
     if (precedingToken == nullptr) {
         return {};
@@ -450,12 +459,21 @@ CompletionEntry ProcessAutoImportForEntry(CompletionEntry &entry)
 
 std::vector<CompletionEntry> GetCompletionsAtPositionImpl(es2panda_Context *context, size_t pos)
 {
+    if (context == nullptr) {
+        return {};
+    }
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    if (ctx->parserProgram == nullptr || ctx->parserProgram->Ast() == nullptr) {
+        return {};
+    }
     auto allocator = ctx->allocator;
     std::string sourceCode(ctx->parserProgram->SourceCode());
     // Current GetPrecedingPosition cannot get token of "obj." with position.
     auto position = GetPrecedingTokenPosition(sourceCode, pos);
     auto precedingToken = FindPrecedingToken(position, ctx->parserProgram->Ast(), allocator);
+    if (precedingToken == nullptr) {
+        return {};
+    }
     auto triggerValue = sourceCode.substr(precedingToken->Start().index, pos);
     // Unsupported yet because of ast parsing problem
     if (IsEndWithValidPoint(triggerValue)) {

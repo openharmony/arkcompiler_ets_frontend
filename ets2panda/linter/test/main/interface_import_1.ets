@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { Row, Slider } from '@ohos.arkui.components';
+import { Row, Slider } from '@kits.ArkUI';
 
 @Entry
 @Component
@@ -88,5 +88,9 @@ function processImageFit(imageFit: ImageFit): void {
 }
 
 class MyClassA {
+
+}
+
+function Calendar() {
 
 }

@@ -505,7 +505,8 @@ static void CompileLogical(compiler::ETSGen *etsg, const ir::BinaryExpression *e
             ES2PANDA_ASSERT(expr->Result() == expr->Right());
             expr->Result()->Compile(etsg);
         }
-        etsg->ApplyConversion(expr->Result(), expr->TsType());
+        etsg->ApplyConversion(expr->Result(), expr->OperationType());
+        etsg->ApplyConversion(expr, expr->TsType());
         etsg->SetAccumulatorType(expr->TsType());
         ES2PANDA_ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
         return;

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { Row, Slider, Entry, Component, State, Column, Button, Text, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@ohos.arkui.components';
+import { Row, Slider, Entry, Component, State, Column, Button, Text, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kits.ArkUI';
 
 @Entry
 @Component

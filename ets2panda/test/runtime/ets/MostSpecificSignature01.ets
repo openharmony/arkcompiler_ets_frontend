@@ -13,10 +13,18 @@
  * limitations under the License.
  */
 
-export const DOUBLE_DOLLAR_IDENTIFIER = '$$';
-export const THIS_IDENTIFIER = 'this';
-export const ATTRIBUTE_SUFFIX = 'Attribute';
-export const INSTANCE_IDENTIFIER = 'instance';
-export const COMMON_METHOD_IDENTIFIER = 'CommonMethod';
-export const APPLY_STYLES_IDENTIFIER = 'applyStyles';
-export const STATE_STYLES = 'stateStyles';
+function main() : void
+{
+    assertEQ(foo(5), 5);
+}
+
+function foo(a : int, b : int = 10) : int
+{
+    return a + b;
+}
+
+function foo(a : int) : int
+{
+    return a;
+}
+

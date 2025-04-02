@@ -13,20 +13,18 @@
  * limitations under the License.
  */
 
-export enum DecoratorName {
-  Extend = 'Extend',
-  Styles = 'Styles',
-  AnimatableExtend = 'AnimatableExtend',
-  Memo = 'Memo',
-  State = 'State',
-  Prop = 'Prop',
-  Link = 'Link',
-  Provide = 'Provide',
-  Consume = 'Consume',
-  Observed = 'Observed',
-  LocalStorageProp = 'LocalStorageProp',
-  LocalStorageLink = 'LocalStorageLink',
-  StorageProp = 'StorageProp',
-  StorageLink = 'StorageLink',
-  Track = 'Track'
+function main() : void
+{
+    assertEQ(foo(5), 5);
 }
+
+function foo(a : int, ...b: int[]) : int
+{
+    return a + 2;
+}
+
+function foo(a : int) : int
+{
+    return a;
+}
+

@@ -13,16 +13,5 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "result": [
-        {
-            "line": 16,
-            "column": 11,
-            "endLine": 16,
-            "endColumn": 17,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
-        }
-    ]
+    "result": []
 }

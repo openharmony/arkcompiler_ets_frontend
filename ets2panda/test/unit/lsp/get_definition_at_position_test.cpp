@@ -17,6 +17,9 @@
 #include <cstddef>
 #include <string>
 #include "lsp_api_test.h"
+#include "lsp/include/internal_api.h"
+
+using ark::es2panda::lsp::Initializer;
 
 class LspGetDefTests : public LSPAPITests {};
 
@@ -34,7 +37,10 @@ A(1, 2);)"};
 
     LSPAPI const *lspApi = GetImpl();
     size_t const offset = 46;
-    auto result = lspApi->getDefinitionAtPosition(filePaths[1].c_str(), offset);
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[1].c_str(), ES2PANDA_STATE_CHECKED);
+    auto result = lspApi->getDefinitionAtPosition(ctx, offset);
+    initializer.DestroyContext(ctx);
     std::string expectedFileName = filePaths[0];
     size_t const expectedStart = 16;
     size_t const expectedLength = 1;
@@ -61,7 +67,10 @@ TEST_F(LspGetDefTests, GetDefinitionAtPosition2)
 
     LSPAPI const *lspApi = GetImpl();
     size_t const offset = 70;
-    auto result = lspApi->getDefinitionAtPosition(filePaths[0].c_str(), offset);
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    auto result = lspApi->getDefinitionAtPosition(ctx, offset);
+    initializer.DestroyContext(ctx);
     std::string expectedFileName = filePaths[0];
     size_t const expectedStart = 14;
     size_t const expectedLength = 1;
@@ -70,7 +79,9 @@ TEST_F(LspGetDefTests, GetDefinitionAtPosition2)
     ASSERT_EQ(result.length, expectedLength);
 
     size_t const offset1 = 134;
-    auto result1 = lspApi->getDefinitionAtPosition(filePaths[0].c_str(), offset1);
+    auto ctx1 = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    auto result1 = lspApi->getDefinitionAtPosition(ctx1, offset1);
+    initializer.DestroyContext(ctx1);
     std::string expectedFileName1 = filePaths[0];
     size_t const expectedStart1 = 92;
     size_t const expectedLength1 = 1;
@@ -93,7 +104,10 @@ All.A(1, 2);)"};
 
     LSPAPI const *lspApi = GetImpl();
     size_t const offset = 55;
-    auto result = lspApi->getDefinitionAtPosition(filePaths[1].c_str(), offset);
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[1].c_str(), ES2PANDA_STATE_CHECKED);
+    auto result = lspApi->getDefinitionAtPosition(ctx, offset);
+    initializer.DestroyContext(ctx);
     std::string expectedFileName = filePaths[0];
     size_t const expectedStart = 16;
     size_t const expectedLength = 1;
@@ -118,7 +132,10 @@ a.Foo(1, 2);)"};
 
     LSPAPI const *lspApi = GetImpl();
     size_t const offset = 74;
-    auto result = lspApi->getDefinitionAtPosition(filePaths[1].c_str(), offset);
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[1].c_str(), ES2PANDA_STATE_CHECKED);
+    auto result = lspApi->getDefinitionAtPosition(ctx, offset);
+    initializer.DestroyContext(ctx);
     std::string expectedFileName = filePaths[0];
     size_t const expectedStart = 17;
     size_t const expectedLength = 3;
@@ -141,7 +158,10 @@ All.A.a;)"};
 
     LSPAPI const *lspApi = GetImpl();
     size_t const offset = 57;
-    auto result = lspApi->getDefinitionAtPosition(filePaths[1].c_str(), offset);
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[1].c_str(), ES2PANDA_STATE_CHECKED);
+    auto result = lspApi->getDefinitionAtPosition(ctx, offset);
+    initializer.DestroyContext(ctx);
     std::string expectedFileName = filePaths[0];
     size_t const expectedStart = 16;
     size_t const expectedLength = 1;
@@ -167,7 +187,10 @@ a.Foo(1, 2);)"};
 
     LSPAPI const *lspApi = GetImpl();
     size_t const offset = 66;
-    auto result = lspApi->getDefinitionAtPosition(filePaths[1].c_str(), offset);
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[1].c_str(), ES2PANDA_STATE_CHECKED);
+    auto result = lspApi->getDefinitionAtPosition(ctx, offset);
+    initializer.DestroyContext(ctx);
     std::string expectedFileName = filePaths[0];
     size_t const expectedStart = 17;
     size_t const expectedLength = 3;
@@ -188,7 +211,10 @@ let b = a;)"};
 
     LSPAPI const *lspApi = GetImpl();
     size_t const offset = 55;
-    auto result = lspApi->getDefinitionAtPosition(filePaths[1].c_str(), offset);
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[1].c_str(), ES2PANDA_STATE_CHECKED);
+    auto result = lspApi->getDefinitionAtPosition(ctx, offset);
+    initializer.DestroyContext(ctx);
     std::string expectedFileName = filePaths[0];
     size_t const expectedStart = 11;
     size_t const expectedLength = 1;
@@ -210,7 +236,10 @@ class A implements All.I {};)"};
 
     LSPAPI const *lspApi = GetImpl();
     size_t const offset = 8;
-    auto result = lspApi->getDefinitionAtPosition(filePaths[1].c_str(), offset);
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[1].c_str(), ES2PANDA_STATE_CHECKED);
+    auto result = lspApi->getDefinitionAtPosition(ctx, offset);
+    initializer.DestroyContext(ctx);
     std::string expectedFileName = filePaths[0];
     size_t const expectedStart = 17;
     size_t const expectedLength = 1;
@@ -219,7 +248,9 @@ class A implements All.I {};)"};
     ASSERT_EQ(result.length, expectedLength);
 
     size_t const offset1 = 122;
-    result = lspApi->getDefinitionAtPosition(filePaths[1].c_str(), offset1);
+    ctx = initializer.CreateContext(filePaths[1].c_str(), ES2PANDA_STATE_CHECKED);
+    result = lspApi->getDefinitionAtPosition(ctx, offset1);
+    initializer.DestroyContext(ctx);
     ASSERT_EQ(result.fileName, expectedFileName);
     ASSERT_EQ(result.start, expectedStart);
     ASSERT_EQ(result.length, expectedLength);
@@ -241,7 +272,10 @@ a.Foo(1, 2);)"};
 
     LSPAPI const *lspApi = GetImpl();
     size_t const offset = 68;
-    auto result = lspApi->getDefinitionAtPosition(filePaths[1].c_str(), offset);
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[1].c_str(), ES2PANDA_STATE_CHECKED);
+    auto result = lspApi->getDefinitionAtPosition(ctx, offset);
+    initializer.DestroyContext(ctx);
     std::string expectedFileName = filePaths[0];
     size_t const expectedStart = 13;
     size_t const expectedLength = 3;
@@ -250,7 +284,9 @@ a.Foo(1, 2);)"};
     ASSERT_EQ(result.length, expectedLength);
 
     size_t const offset1 = 77;
-    auto result1 = lspApi->getDefinitionAtPosition(filePaths[1].c_str(), offset1);
+    ctx = initializer.CreateContext(filePaths[1].c_str(), ES2PANDA_STATE_CHECKED);
+    auto result1 = lspApi->getDefinitionAtPosition(ctx, offset1);
+    initializer.DestroyContext(ctx);
     std::string expectedFileName1 = filePaths[0];
     size_t const expectedStart1 = 19;
     size_t const expectedLength1 = 3;

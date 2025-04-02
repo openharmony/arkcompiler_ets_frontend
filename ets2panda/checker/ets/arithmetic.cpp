@@ -101,9 +101,6 @@ static Type *EffectiveTypeOfNumericOp(ETSChecker *checker, Type *left, Type *rig
     if (left->IsLongType() || right->IsLongType()) {
         return checker->GlobalLongType();
     }
-    if (left->IsCharType() && right->IsCharType()) {
-        return checker->GlobalCharType();
-    }
     return checker->GlobalIntType();
 }
 

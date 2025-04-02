@@ -72,8 +72,15 @@ import { DEFAULT_DECORATOR_WHITE_LIST } from './utils/consts/DefaultDecoratorWhi
 import { INVALID_IDENTIFIER_KEYWORDS } from './utils/consts/InValidIndentifierKeywords';
 import { WORKER_MODULES, WORKER_TEXT } from './utils/consts/WorkerAPI';
 import { ETS_PART, OH_MODULE_INDICATOR, PATH_SEPARATOR, VALID_OHM_URL_PART } from './utils/consts/OhmUrl';
-import { DOUBLE_DOLLAR_IDENTIFIER, THIS_IDENTIFIER, STATE_STYLES } from './utils/consts/AutofixConstants';
-import { DecoratorName } from './utils/consts/DecoratorName';
+import {
+  DOUBLE_DOLLAR_IDENTIFIER,
+  THIS_IDENTIFIER,
+  STATE_STYLES,
+  CustomDecoratorName,
+  observedDecoratorName,
+  skipImportDecoratorName
+} from './utils/consts/ArkuiConstants';
+import { arkuiImportList } from './utils/consts/ArkuiImportList';
 import { REFLECT_PROPERTIES, USE_STATIC } from './utils/consts/InteropAPI';
 
 export class TypeScriptLinter {
@@ -803,7 +810,6 @@ export class TypeScriptLinter {
 
   private handlePropertyAccessExpression(node: ts.Node): void {
     this.handleDoubleDollar(node);
-    this.handleInterfaceImport(node);
 
     this.checkUnionTypes(node as ts.PropertyAccessExpression);
     if (ts.isCallExpression(node.parent) && node === node.parent.expression) {
@@ -1690,7 +1696,7 @@ export class TypeScriptLinter {
       initializer && ts.isNewExpression(initializer) && initializer.expression.getText() === LIKE_FUNCTION;
 
     if (type && isFunctionLiteral || initializer && isNewFunctionConstructor) {
-      this.incrementCounters(node, FaultID.LimitedStdLibApi);
+      this.incrementCounters(node, FaultID.ExplicitFunctionType);
     }
   }
 
@@ -1991,18 +1997,42 @@ export class TypeScriptLinter {
       TypeScriptLinter.nameSpaceFunctionCache.set(nameSpace, new Set<string>());
     }
 
-    const functionNames = TypeScriptLinter.nameSpaceFunctionCache.get(nameSpace)!;
+    const nameSet = TypeScriptLinter.nameSpaceFunctionCache.get(nameSpace)!;
 
     for (const statement of moduleBlock.statements) {
-      if (ts.isFunctionDeclaration(statement) && statement.name) {
-        const functionName = statement.name.text;
-        if (functionNames.has(functionName)) {
+      const names = TypeScriptLinter.getDeclarationNames(statement);
+      for (const name of names) {
+        if (nameSet.has(name)) {
           this.incrementCounters(statement, FaultID.NoDuplicateFunctionName);
         } else {
-          functionNames.add(functionName);
+          nameSet.add(name);
         }
       }
     }
+  }
+
+  private static getDeclarationNames(statement: ts.Statement): Set<string> {
+    const names = new Set<string>();
+
+    if (
+      ts.isFunctionDeclaration(statement) && statement.name && statement.body ||
+      ts.isClassDeclaration(statement) && statement.name ||
+      ts.isInterfaceDeclaration(statement) && statement.name ||
+      ts.isEnumDeclaration(statement) && statement.name
+    ) {
+      names.add(statement.name.text);
+      return names;
+    }
+
+    if (ts.isVariableStatement(statement)) {
+      for (const decl of statement.declarationList.declarations) {
+        if (ts.isIdentifier(decl.name)) {
+          names.add(decl.name.text);
+        }
+      }
+    }
+
+    return names;
   }
 
   private handleModuleBlock(moduleBlock: ts.ModuleBlock): void {
@@ -2222,6 +2252,7 @@ export class TypeScriptLinter {
     if (!ts.isIdentifier(node)) {
       return;
     }
+    this.handleInterfaceImport(node);
     const tsIdentifier = node;
     const tsIdentSym = this.tsUtils.trueSymbolAtLocation(tsIdentifier);
     if (!tsIdentSym) {
@@ -2628,7 +2659,6 @@ export class TypeScriptLinter {
   }
 
   private handleCallExpression(node: ts.Node): void {
-    this.handleInterfaceImport(node);
     const tsCallExpr = node as ts.CallExpression;
     this.handleStateStyles(tsCallExpr);
 
@@ -3036,7 +3066,6 @@ export class TypeScriptLinter {
 
   private handleNewExpression(node: ts.Node): void {
     const tsNewExpr = node as ts.NewExpression;
-    this.handleInterfaceImport(tsNewExpr);
 
     if (this.options.advancedClassChecks || this.options.arkts2) {
       const calleeExpr = tsNewExpr.expression;
@@ -3113,8 +3142,6 @@ export class TypeScriptLinter {
   }
 
   private handleTypeReference(node: ts.Node): void {
-    this.handleInterfaceImport(node);
-
     const typeRef = node as ts.TypeReferenceNode;
 
     const isESObject = TsUtils.isEsObjectType(typeRef);
@@ -3767,7 +3794,6 @@ export class TypeScriptLinter {
 
   private handleDecorator(node: ts.Node): void {
     this.handleExtendDecorator(node);
-    this.handleInterfaceImport(node);
 
     const decorator: ts.Decorator = node as ts.Decorator;
     this.handleSendableDecorator(decorator);
@@ -4213,10 +4239,10 @@ export class TypeScriptLinter {
     }
 
     if (ts.isCallExpression(node.expression) && ts.isIdentifier(node.expression.expression)) {
-      if (node.expression.expression.text === DecoratorName.Extend) {
+      if (node.expression.expression.text === CustomDecoratorName.Extend) {
         const autofix = this.autofixer?.fixExtendDecorator(node, false, this.interfacesNeedToImport);
         this.incrementCounters(node.parent, FaultID.ExtendDecoratorNotSupported, autofix);
-      } else if (node.expression.expression.text === DecoratorName.AnimatableExtend) {
+      } else if (node.expression.expression.text === CustomDecoratorName.AnimatableExtend) {
         const autofix = this.autofixer?.fixExtendDecorator(node, true, this.interfacesNeedToImport);
         this.incrementCounters(node.parent, FaultID.AnimatableExtendDecoratorTransform, autofix);
       }
@@ -4322,7 +4348,8 @@ export class TypeScriptLinter {
       if (parent && parent.kind !== ts.SyntaxKind.ClassDeclaration) {
         return;
       }
-      this.incrementCounters(decorator, FaultID.LimitedStdLibApi);
+      const autofix = this.autofixer?.removeDecorator(decorator);
+      this.incrementCounters(decorator, FaultID.LimitedStdLibApi, autofix);
     }
   }
 
@@ -4335,7 +4362,8 @@ export class TypeScriptLinter {
       if (parent && parent.kind !== ts.SyntaxKind.FunctionDeclaration) {
         return;
       }
-      this.incrementCounters(decorator, FaultID.LimitedStdLibApi);
+      const autofix = this.autofixer?.removeDecorator(decorator);
+      this.incrementCounters(decorator, FaultID.LimitedStdLibApi, autofix);
     }
   }
 
@@ -4357,77 +4385,48 @@ export class TypeScriptLinter {
   interfacesNeedToImport: Set<string> = new Set<string>();
   importedInterfaces: Set<string> = new Set<string>();
 
-  private handleInterfaceImport(node: ts.Node): void {
+  private handleInterfaceImport(identifier: ts.Identifier): void {
     if (!this.options.arkts2) {
       return;
     }
 
-    if (!TypeScriptLinter.shouldProcessNode(node)) {
+    const name = identifier.getText();
+    if (this.shouldSkipIdentifier(identifier)) {
       return;
     }
 
-    const identifier = TypeScriptLinter.getIdentifierFromNode(node);
-    if (!identifier || this.shouldSkipIdentifier(identifier)) {
-      return;
-    }
-
-    const interfaceName = identifier.getText();
-    if (!this.interfacesNeedToImport.has(interfaceName) && !this.importedInterfaces.has(interfaceName)) {
-      this.interfaceIdentifiers.push(identifier);
-      this.interfacesNeedToImport.add(interfaceName);
-    }
-  }
-
-  private static shouldProcessNode(node: ts.Node): boolean {
-    return (
-      ts.isCallExpression(node) ||
-      ts.isPropertyAccessExpression(node) ||
-      ts.isDecorator(node) ||
-      ts.isTypeReferenceNode(node) ||
-      ts.isNewExpression(node)
-    );
-  }
-
-  private static getIdentifierFromNode(node: ts.Node): ts.Identifier | undefined {
-    if (ts.isTypeReferenceNode(node)) {
-      return ts.isIdentifier(node.typeName) ? node.typeName : undefined;
-    }
-
-    if (ts.isDecorator(node)) {
-      const expression = node.expression;
-      if (ts.isCallExpression(expression)) {
-        return ts.isIdentifier(expression.expression) ? expression.expression : undefined;
-      }
-    }
-
-    const identifier = (node as ts.CallExpression | ts.PropertyAccessExpression | ts.NewExpression).expression;
-    return ts.isIdentifier(identifier) ? identifier : undefined;
+    this.interfaceIdentifiers.push(identifier);
+    this.interfacesNeedToImport.add(name);
   }
 
   private shouldSkipIdentifier(identifier: ts.Identifier): boolean {
     const name = identifier.getText();
-    const skippedIdentifiers = new Set<string>([DecoratorName.Extend, DecoratorName.Styles]);
-    if (skippedIdentifiers.has(name)) {
+    if (!arkuiImportList.has(name)) {
       return true;
     }
 
-    const firstChar = name.charAt(0);
-    if (!firstChar.match(/[A-Z]/)) {
+    if (skipImportDecoratorName.has(name)) {
       return true;
+    }
+
+    const wrappedSkipComponents = new Set<string>([CustomDecoratorName.AnimatableExtend, CustomDecoratorName.Extend]);
+    const parent = identifier.parent;
+    if (ts.isCallExpression(parent)) {
+      const expr = parent.expression;
+      if (wrappedSkipComponents.has(expr.getText()) && name !== CustomDecoratorName.AnimatableExtend) {
+        return true;
+      }
     }
 
     const symbol = this.tsTypeChecker.getSymbolAtLocation(identifier);
     if (symbol) {
-      if (this.importedInterfaces.has(name)) {
-        return true;
-      }
       const decl = this.tsUtils.getDeclarationNode(identifier);
       if (decl?.getSourceFile() === identifier.getSourceFile()) {
         return true;
       }
     }
 
-    return false;
+    return this.interfacesNeedToImport.has(name) || this.importedInterfaces.has(name);
   }
 
   private processInterfacesToImport(): void {
@@ -4488,7 +4487,7 @@ export class TypeScriptLinter {
       return;
     }
 
-    if (!ts.isIdentifier(node.expression) || node.expression.text !== DecoratorName.Styles) {
+    if (!ts.isIdentifier(node.expression) || node.expression.text !== CustomDecoratorName.Styles) {
       return;
     }
 
@@ -4575,8 +4574,8 @@ export class TypeScriptLinter {
     } else if (ts.isCallExpression(decorator.expression)) {
       decoratorName = decorator.expression.expression.getText();
     }
-    const targetDecorators = Object.values(DecoratorName) as string[];
-    if (!targetDecorators.includes(decoratorName)) {
+
+    if (!observedDecoratorName.has(decoratorName)) {
       return;
     }
 
@@ -4624,7 +4623,7 @@ export class TypeScriptLinter {
 
     return (
       ts.getDecorators(classDecl)?.some((decorator) => {
-        return decorator.getText() === '@' + DecoratorName.Observed;
+        return decorator.getText() === '@' + CustomDecoratorName.Observed;
       }) ?? false
     );
   }

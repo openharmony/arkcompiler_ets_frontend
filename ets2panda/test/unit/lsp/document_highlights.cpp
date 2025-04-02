@@ -14,6 +14,9 @@
  */
 
 #include "lsp_api_test.h"
+#include "lsp/include/internal_api.h"
+
+using ark::es2panda::lsp::Initializer;
 
 class LspDocumentHighlights : public LSPAPITests {};
 
@@ -31,7 +34,10 @@ let ccc = bbb + aaa + 234;
 
     LSPAPI const *lspApi = GetImpl();
     auto const pos = 6;
-    auto result = lspApi->getDocumentHighlights(filePaths[0].c_str(), pos);
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    auto result = lspApi->getDocumentHighlights(ctx, pos);
+    initializer.DestroyContext(ctx);
     auto const expectedHighlightCount = 3;
     ASSERT_EQ(result.documentHighlights_[0].highlightSpans_.size(), expectedHighlightCount);
     ASSERT_EQ(result.documentHighlights_[0].fileName_, filePaths[0]);
@@ -59,15 +65,15 @@ let aaa = 123;
 let bbb = aaa + 111;
 let ccc = bbb + aaa + 234;
 function f1(aaa: number) {
-    return aaa + bbb;
-}
-)delimiter"};
+    return aaa + bbb;})delimiter"};
     auto filePaths = CreateTempFile(files, texts);
     int const expectedFileCount = 1;
     ASSERT_EQ(filePaths.size(), expectedFileCount);
     LSPAPI const *lspApi = GetImpl();
     auto const firstPos = 109;
-    auto firstResult = lspApi->getDocumentHighlights(filePaths[0].c_str(), firstPos);
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    auto firstResult = lspApi->getDocumentHighlights(ctx, firstPos);
     auto const firstExpectedHighlightCount = 3;
     ASSERT_EQ(firstResult.documentHighlights_[0].highlightSpans_.size(), firstExpectedHighlightCount);
     ASSERT_EQ(firstResult.documentHighlights_[0].fileName_, filePaths[0]);
@@ -87,7 +93,8 @@ function f1(aaa: number) {
     ASSERT_EQ(firstResult.documentHighlights_[0].highlightSpans_[1].kind_, HighlightSpanKind::REFERENCE);
     ASSERT_EQ(firstResult.documentHighlights_[0].highlightSpans_[secondIndex].kind_, HighlightSpanKind::REFERENCE);
     auto const secondPos = 77;
-    auto secondResult = lspApi->getDocumentHighlights(filePaths[0].c_str(), secondPos);
+    auto secondResult = lspApi->getDocumentHighlights(ctx, secondPos);
+    initializer.DestroyContext(ctx);
     auto const secondExpectedHighlightCount = 2;
     ASSERT_EQ(secondResult.documentHighlights_[0].highlightSpans_.size(), secondExpectedHighlightCount);
     ASSERT_EQ(secondResult.documentHighlights_[0].fileName_, filePaths[0]);
@@ -124,7 +131,10 @@ function f2() {
 
     LSPAPI const *lspApi = GetImpl();
     auto const pos = 8;
-    auto result = lspApi->getDocumentHighlights(filePaths[0].c_str(), pos);
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    auto result = lspApi->getDocumentHighlights(ctx, pos);
+    initializer.DestroyContext(ctx);
     auto const expectedHighlightCount = 3;
     ASSERT_EQ(result.documentHighlights_[0].highlightSpans_.size(), expectedHighlightCount);
     ASSERT_EQ(result.documentHighlights_[0].fileName_, filePaths[0]);
@@ -166,7 +176,10 @@ function f2() {
 
     LSPAPI const *lspApi = GetImpl();
     auto const pos = 18;
-    auto result = lspApi->getDocumentHighlights(filePaths[0].c_str(), pos);
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    auto result = lspApi->getDocumentHighlights(ctx, pos);
+    initializer.DestroyContext(ctx);
     auto const expectedHighlightCount = 4;
     ASSERT_EQ(result.documentHighlights_[0].highlightSpans_.size(), expectedHighlightCount);
     ASSERT_EQ(result.documentHighlights_[0].fileName_, filePaths[0]);
@@ -213,7 +226,10 @@ class Bar {
 
     LSPAPI const *lspApi = GetImpl();
     auto const pos = 11;
-    auto result = lspApi->getDocumentHighlights(filePaths[0].c_str(), pos);
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    auto result = lspApi->getDocumentHighlights(ctx, pos);
+    initializer.DestroyContext(ctx);
     auto const expectedHighlightCount = 3;
     ASSERT_EQ(result.documentHighlights_[0].highlightSpans_.size(), expectedHighlightCount);
     ASSERT_EQ(result.documentHighlights_[0].fileName_, filePaths[0]);
@@ -252,7 +268,10 @@ class ListNode<T> {
 
     LSPAPI const *lspApi = GetImpl();
     auto const pos = 49;
-    auto result = lspApi->getDocumentHighlights(filePaths[0].c_str(), pos);
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    auto result = lspApi->getDocumentHighlights(ctx, pos);
+    initializer.DestroyContext(ctx);
     auto const expectedHighlightCount = 2;
     ASSERT_EQ(result.documentHighlights_[0].highlightSpans_.size(), expectedHighlightCount);
     ASSERT_EQ(result.documentHighlights_[0].fileName_, filePaths[0]);
@@ -287,7 +306,10 @@ function fib(n: number) {
 
     LSPAPI const *lspApi = GetImpl();
     auto const pos = 125;
-    auto result = lspApi->getDocumentHighlights(filePaths[0].c_str(), pos);
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    auto result = lspApi->getDocumentHighlights(ctx, pos);
+    initializer.DestroyContext(ctx);
     auto const expectedHighlightCount = 3;
     ASSERT_EQ(result.documentHighlights_[0].highlightSpans_.size(), expectedHighlightCount);
     ASSERT_EQ(result.documentHighlights_[0].fileName_, filePaths[0]);
