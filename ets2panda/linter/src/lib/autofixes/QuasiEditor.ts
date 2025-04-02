@@ -18,17 +18,14 @@ import { Logger } from '../Logger';
 import type * as ts from 'typescript';
 import type { ProblemInfo } from '../ProblemInfo';
 import type { Autofix } from './Autofixer';
-import { faultsAttrs } from '../FaultAttrs';
-import { FaultID } from '../Problems';
 
 const BACKUP_AFFIX = '~';
 const EOL = '\n';
 export const MAX_AUTOFIX_PASSES = 10;
-const DEPENDENT_RULES_IN_AUTOFIX: Set<number> = new Set([faultsAttrs[FaultID.ObjectLiteralNoContextType].cookBookRef]);
 
 export class QuasiEditor {
-  private textBuffer;
-  private readonly dataBuffer;
+  private textBuffer: string;
+  private readonly dataBuffer: Buffer;
   private readonly srcFileName: string;
   wasError: boolean = false;
 
@@ -71,44 +68,109 @@ export class QuasiEditor {
     }
   }
 
-  private replaceAt(start: number, len: number, newText: string): void {
-    const head = this.textBuffer.slice(0, start);
-    const tail = this.textBuffer.slice(start + len);
-    this.textBuffer = head + newText + tail;
+  private static hasAnyAutofixes(problemInfos: ProblemInfo[]): boolean {
+    return problemInfos.some((problemInfo) => {
+      return problemInfo.autofix !== undefined;
+    });
   }
 
-  applyFixes(problemInfos: ProblemInfo[]): void {
-    let lastFixStart = this.textBuffer.length;
-    if (problemInfos.length === 0) {
+  fix(problemInfos: ProblemInfo[]): void {
+    if (!QuasiEditor.hasAnyAutofixes(problemInfos)) {
       return;
     }
-    for (let i = problemInfos.length - 1; i >= 0; i--) {
-      const pInfo = problemInfos[i];
-      if (!pInfo.autofix) {
-        continue;
-      }
-      for (let j = pInfo.autofix.length - 1; j >= 0; j--) {
-        if (pInfo.autofix[j].end >= lastFixStart || pInfo.autofix[j].start >= lastFixStart) {
-          Logger.error(`Error: ${this.srcFileName} (${lastFixStart}) fix intersectection ${pInfo.autofixTitle}`);
-          this.wasError = true;
-          continue;
-        }
-        if (DEPENDENT_RULES_IN_AUTOFIX.has(pInfo.ruleTag)) {
-          Logger.error(`Error: ${this.srcFileName} (${lastFixStart}) fix has dependent rule ${pInfo.autofixTitle}`);
-          this.wasError = true;
-          continue;
-        }
-        this.replaceAt(
-          lastFixStart = pInfo.autofix[j].start,
-          pInfo.autofix[j].end - pInfo.autofix[j].start,
-          pInfo.autofix[j].replacementText
-        );
-      }
-    }
+    const acceptedPatches = QuasiEditor.sortAndRemoveIntersections(problemInfos);
+    this.textBuffer = this.applyFixes(acceptedPatches);
     this.saveText();
   }
 
+  private applyFixes(autofixes: Autofix[]): string {
+    let output: string = '';
+    let lastPos = Number.NEGATIVE_INFINITY;
+
+    const doFix = (fix: Autofix): void => {
+      const { replacementText, start, end } = fix;
+
+      if (lastPos >= start || start > end) {
+        Logger.error(`Failed to apply autofix in range [${start}, ${end}] at ${this.srcFileName}`);
+        return;
+      }
+
+      output += this.textBuffer.slice(Math.max(0, lastPos), Math.max(0, start));
+      output += replacementText;
+      lastPos = end;
+    };
+
+    autofixes.forEach(doFix);
+    output += this.textBuffer.slice(Math.max(0, lastPos));
+
+    return output;
+  }
+
+  private static sortAndRemoveIntersections(problemInfos: ProblemInfo[]): Autofix[] {
+    let acceptedPatches: Autofix[] = [];
+
+    problemInfos.forEach((problemInfo) => {
+      if (!problemInfo.autofix) {
+        return;
+      }
+
+      const consideredAutofix = QuasiEditor.sortAutofixes(problemInfo.autofix);
+      if (QuasiEditor.intersect(consideredAutofix, acceptedPatches)) {
+        return;
+      }
+
+      acceptedPatches.push(...consideredAutofix);
+      acceptedPatches = QuasiEditor.sortAutofixes(acceptedPatches);
+    });
+
+    return acceptedPatches;
+  }
+
+  private static sortAutofixes(autofixes: Autofix[]): Autofix[] {
+    return autofixes.sort((a, b) => {
+      return a.start - b.start;
+    });
+  }
+
+  /**
+   * Determine if considered autofix can be accepted.
+   *
+   * @param consideredAutofix sorted patches of the considered autofix
+   * @param acceptedFixes sorted list of accepted autofixes
+   * @returns
+   */
+  private static intersect(consideredAutofix: readonly Autofix[], acceptedFixes: readonly Autofix[]): boolean {
+    const start = consideredAutofix[0].start;
+    const end = consideredAutofix[consideredAutofix.length - 1].end;
+
+    for (const acceptedFix of acceptedFixes) {
+      if (acceptedFix.start > end) {
+        break;
+      }
+
+      if (acceptedFix.end < start) {
+        continue;
+      }
+
+      for (const consideredFix of consideredAutofix) {
+        if (QuasiEditor.autofixesIntersect(acceptedFix, consideredFix)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   private static autofixesIntersect(lhs: Autofix, rhs: Autofix): boolean {
+
+    /*
+     * Ranges don't intersect if either
+     * [--]         (lhs)
+     *      [--]    (rhs)
+     * or
+     *      [--]    (lhs)
+     * [--]         (rhs)
+     */
     return !(lhs.end < rhs.start || rhs.end < lhs.start);
   }
 }
