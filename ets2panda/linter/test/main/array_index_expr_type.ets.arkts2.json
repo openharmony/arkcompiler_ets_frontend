@@ -353,6 +353,16 @@
             "suggest": "",
             "rule": "The index expression must be zero or positive value.(arkts-array-index-negative)",
             "severity": "ERROR"
+        },
+        {
+            "line": 73,
+            "column": 6,
+            "endLine": 73,
+            "endColumn": 9,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
         }
     ]
 }
