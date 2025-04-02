@@ -1488,7 +1488,7 @@ ir::Expression *ParserImpl::ParseTsTypeLiteralOrInterfaceMember()
     char32_t nextToken = lexer_->Lookahead();
     if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_READONLY && nextToken != LEX_CHAR_LEFT_PAREN &&
         nextToken != LEX_CHAR_COLON && nextToken != LEX_CHAR_COMMA && nextToken != LEX_CHAR_LESS_THAN &&
-        nextToken != LEX_CHAR_SEMICOLON) {
+        nextToken != LEX_CHAR_SEMICOLON && nextToken != LEX_CHAR_QUESTION) {
         readonly = true;
         lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);
     }
