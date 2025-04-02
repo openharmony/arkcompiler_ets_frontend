@@ -548,6 +548,216 @@
             "suggest": "",
             "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
+        },
+        {
+            "line": 115,
+            "column": 7,
+            "endLine": 115,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2493,
+                    "end": 2506,
+                    "replacementText": "test: number = Test.A"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 121,
+            "column": 3,
+            "endLine": 121,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2593,
+                    "end": 2609,
+                    "replacementText": "readonly c1: number = 1;"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 122,
+            "column": 3,
+            "endLine": 122,
+            "endColumn": 21,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2620,
+                    "end": 2638,
+                    "replacementText": "readonly c4: number = 1.7;"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 123,
+            "column": 3,
+            "endLine": 123,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2651,
+                    "end": 2671,
+                    "replacementText": "readonly c5: number = 0x123;"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 124,
+            "column": 3,
+            "endLine": 124,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2683,
+                    "end": 2703,
+                    "replacementText": "readonly c6: number = 0o123;"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 125,
+            "column": 3,
+            "endLine": 125,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2713,
+                    "end": 2733,
+                    "replacementText": "readonly c7: number = 0b101;"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 126,
+            "column": 3,
+            "endLine": 126,
+            "endColumn": 24,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2743,
+                    "end": 2764,
+                    "replacementText": "readonly c8: number[] = [1, 2, 3];"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 137,
+            "column": 7,
+            "endLine": 137,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2893,
+                    "end": 2899,
+                    "replacementText": "c1: number = 1"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 140,
+            "column": 3,
+            "endLine": 140,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2923,
+                    "end": 2939,
+                    "replacementText": "readonly a5: number = 4;"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 117,
+            "column": 2,
+            "endLine": 117,
+            "endColumn": 7,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 118,
+            "column": 2,
+            "endLine": 118,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 120,
+            "column": 4,
+            "endLine": 120,
+            "endColumn": 9,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 129,
+            "column": 5,
+            "endLine": 129,
+            "endColumn": 22,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 130,
+            "column": 7,
+            "endLine": 130,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 738,
+                    "end": 738,
+                    "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text } from '@kits.ArkUI';\n"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
         }
     ]
 }
