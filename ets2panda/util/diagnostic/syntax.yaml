@@ -438,7 +438,7 @@ syntax:
 
 - name: MODIFIERS_OF_GET_SET_LIMITED
   id: 107
-  message: "Modifiers of getter and setter are limited to ('abstract', 'static', 'final', 'override')."
+  message: "Modifiers of getter and setter are limited to ('abstract', 'static', 'final', 'override', 'native')."
 
 - name: ESCAPE_SEQUENCES_IN_AS
   id: 108

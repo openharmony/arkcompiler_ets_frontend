@@ -78,9 +78,9 @@ bool GetterSetterValidation::ValidateGetter(ir::MethodDefinition const *const me
         }
     }
 
-    // For non-abstract and non-ambient getters return statement should always exist
+    // For non-abstract, non-ambient and non-native getters return statement should always exist
     if (!function->HasReturnStatement() && !function->HasThrowStatement() && !function->IsAbstract() &&
-        !function->IsDeclare()) {
+        !function->IsDeclare() && !function->IsNative()) {
         report("MISSING RETURN STATEMENT IN GETTER METHOD");
     }
 
