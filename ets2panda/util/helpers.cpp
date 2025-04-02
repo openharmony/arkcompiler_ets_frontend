@@ -769,4 +769,10 @@ bool Helpers::IsAsyncMethod(ir::AstNode const *node)
     return method->Function()->IsAsyncFunc() && !method->Function()->IsProxy();
 }
 
+bool Helpers::IsGlobalVar(const ark::es2panda::varbinder::Variable *var)
+{
+    return var->Declaration()->Node()->IsClassDeclaration() &&
+           var->Declaration()->Node()->AsClassDeclaration()->Definition()->IsGlobal();
+}
+
 }  // namespace ark::es2panda::util

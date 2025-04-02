@@ -448,7 +448,8 @@ checker::Signature *GetMostSpecificSigFromExtensionFuncAndClassMethod(checker::E
     expr->Arguments().erase(expr->Arguments().begin());
 
     if (signature != nullptr) {
-        if (signature->Owner()->Name() == compiler::Signatures::ETS_GLOBAL) {
+        if (signature->Owner()->GetDeclNode()->IsClassDefinition() &&
+            signature->Owner()->GetDeclNode()->AsClassDefinition()->IsGlobal()) {
             SwitchMethodCallToFunctionCall(checker, expr, signature);
         } else {
             auto *var = type->ClassMethodType()->Variable();
@@ -463,8 +464,8 @@ checker::Signature *ResolveCallForETSExtensionFuncHelperType(checker::ETSExtensi
 {
     ES2PANDA_ASSERT(expr->Callee()->IsMemberExpression());
     auto *calleeObj = expr->Callee()->AsMemberExpression()->Object();
-    bool isCalleeObjETSGlobal =
-        calleeObj->IsIdentifier() && calleeObj->AsIdentifier()->Name() == compiler::Signatures::ETS_GLOBAL;
+    bool isCalleeObjETSGlobal = calleeObj->TsType()->AsETSObjectType()->GetDeclNode()->IsClassDefinition() &&
+                                calleeObj->TsType()->AsETSObjectType()->GetDeclNode()->AsClassDefinition()->IsGlobal();
     // for callExpr `a.foo`, there are 3 situations:
     // 1.`a.foo` is private method call of class A;
     // 2.`a.foo` is extension function of `A`(function with receiver `A`)
