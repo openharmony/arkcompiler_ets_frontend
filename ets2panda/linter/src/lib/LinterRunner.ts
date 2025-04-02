@@ -184,10 +184,15 @@ function lintFiles(srcFiles: ts.SourceFile[], linter: TypeScriptLinter | Interop
       nodeCounters[i] = linter.nodeCounters[i];
     }
     linter.lint(srcFile);
+    const problemsInfosBeforeMigrate = linter.problemsInfos;
     if (linter.options.migratorMode) {
       applyFixes(srcFile, linter);
     }
-    problemsInfos.set(path.normalize(srcFile.fileName), [...linter.problemsInfos]);
+    if (linter.options.ideInteractive) {
+      problemsInfos.set(path.normalize(srcFile.fileName), [...problemsInfosBeforeMigrate]);
+    } else {
+      problemsInfos.set(path.normalize(srcFile.fileName), [...linter.problemsInfos]);
+    }
     linter.problemsInfos.length = 0;
     problemFiles = countProblemFiles(
       nodeCounters,

@@ -29,7 +29,6 @@ import { Autofixer } from './autofixes/Autofixer';
 import { SYMBOL, SYMBOL_CONSTRUCTOR, TsUtils } from './utils/TsUtils';
 import { FUNCTION_HAS_NO_RETURN_ERROR_CODE } from './utils/consts/FunctionHasNoReturnErrorCode';
 import { LIMITED_STANDARD_UTILITY_TYPES } from './utils/consts/LimitedStandardUtilityTypes';
-import { arkts2Rules } from './utils/consts/ArkTS2Rules';
 import { LIKE_FUNCTION } from './utils/consts/LikeFunction';
 import {
   NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS,
@@ -335,9 +334,6 @@ export class TypeScriptLinter {
     const faultType = LinterConfig.tsSyntaxKindNames[node.kind];
 
     const cookBookMsgNum = faultsAttrs[faultId] ? faultsAttrs[faultId].cookBookRef : 0;
-    if (!arkts2Rules.includes(cookBookMsgNum) && this.options.arkts2) {
-      return;
-    }
     const cookBookTg = cookBookTag[cookBookMsgNum];
     const severity = faultsAttrs[faultId]?.severity ?? ProblemSeverity.ERROR;
     const isMsgNumValid = cookBookMsgNum > 0;
