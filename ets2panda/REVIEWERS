@@ -17,7 +17,7 @@
 /arkguard/ @zhangchen168
 /es2panda/ @gavin1012_hw
 /ets2panda/ @igelhaus @Prof1983
-/ets2panda/ast_verifier @mbolshov ^igelhaus ^Prof1983
+/ets2panda/ast_verifier @mbolshov @dkofanov ^igelhaus ^Prof1983
 /ets2panda/bindings ^igelhaus ^Prof1983 @dreamdoomwalker @Ascnbio ^muhammet-fevzi-bayiroglu @utkugursel
 /ets2panda/lexer @chernykhsergey @igelhaus ^zelentsovdmitry @Prof1983
 /ets2panda/lsp ^igelhaus ^Prof1983 @dreamdoomwalker @Ascnbio ^muhammet-fevzi-bayiroglu @utkugursel
@@ -56,6 +56,7 @@
 /ets2panda/checker/types/typeFlag.h ^vpukhov ^igelhaus ^Prof1983  @zelentsovdmitry
 /ets2panda/checker/types/typeRelation.* ^vpukhov ^igelhaus ^Prof1983  @zelentsovdmitry
 /ets2panda/compiler/core/ @zelentsovdmitry ^vpukhov ^igelhaus ^Prof1983
+/ets2panda/compiler/core/compilerImpl.cpp @dkofanov ^igelhaus ^Prof1983
 /ets2panda/test/test-lists/astchecker @chernykhsergey ^igelhaus ^Prof1983
 /ets2panda/test/test-lists/declgenets2ts @dreamdoomwalker ^hufeng20 ^igelhaus ^Prof1983
 /ets2panda/test/test-lists/parser @chernykhsergey ^igelhaus ^Prof1983
