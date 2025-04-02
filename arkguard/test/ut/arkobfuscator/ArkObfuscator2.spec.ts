@@ -67,6 +67,13 @@ import { SOURCE_FILE_PATHS, projectWhiteListManager } from '../../../src/utils/P
 import { FilePathObj } from '../../../src/common/type';
 import { historyAllUnobfuscatedNamesMap } from '../../../src/initialization/Initializer';
 import path from 'path';
+import { nameCache } from '../../../src/transformers/rename/RenameIdentifierTransformer';
+import { 
+  decodeSourcemap,
+  MappingsNameTypeForTest,
+  Source,
+  SourceMapLink
+} from '../../../src/utils/SourceMapMergingUtil';
 
 describe('Tester Cases for <ArkObfuscator>', function () {
   let obfuscator: ArkObfuscator;
@@ -521,6 +528,67 @@ export declare function findElement<T>(arr: T[], callback: (item: T) => boolean)
       };
       const result = obfuscator.isCurrentFileInKeepPathsForTest(customProfiles, 'some/file/path.js');
       expect(result).to.be.true;
+    });
+  });
+
+  describe('test for ArkObfuscator.convertLineBasedOnSourceMap', () => {
+    it('there is no location but the value is obfuscated, it should be recorded in nameacahe', () => {
+      const identifierCache = new Map<string, string>([  
+        ['#Person', 'Person'],
+        ['obfsucationValue:31:5:35:6', 'h'],
+        ['getName:75:5:77:6', 'getName']
+      ]);
+      nameCache.set('IdentifierCache', identifierCache);
+      const source: Source = new Source('utils.ets', null);
+      const previousStageSourceMap: RawSourceMap = {
+        version: 3,
+        file: 'utils.ets',
+        sourceRoot: '',
+        sources: [ 'entry/src/main/ets/pages/utils/utils.ets'],
+        names: [],
+        mappings: '',
+        sourcesContent: undefined,
+      }
+      const decodedSourceMap = decodeSourcemap(previousStageSourceMap as RawSourceMap);
+      const sourceMapLink: SourceMapLink = new SourceMapLink(decodedSourceMap as MappingsNameTypeForTest, [source]);
+
+      const result = obfuscator.convertLineBasedOnSourceMapForTest('IdentifierCache', sourceMapLink);
+      const expectedResult= {
+        '#Person': 'Person',
+        'obfsucationValue': 'h' 
+      };
+      const compareResult = JSON.stringify(result) === JSON.stringify(expectedResult);
+      expect(compareResult).to.be.true;
+    });
+    
+    it('there is start and end location, it should be recorded in nameacahe', () => {
+      const identifierCache = new Map<string, string>([  
+        ['#Person', 'Person'],
+        ['#foo:1:1:3:2', 'foo'],
+        ['getName:75:5:77:6', 'getName']
+      ]);
+      nameCache.set('IdentifierCache', identifierCache);
+      const source: Source = new Source('file.ts', null);
+      const previousStageSourceMap: RawSourceMap = {
+        "version": 3,
+        "file": "file.ts",
+        "sources": [
+          "entry/src/main/ets/pages/file.ts"
+        ],
+        "names": [],
+        "mappings": "AAAA,MAAM,UAAU,GAAG;IACjB,OAAO,CAAC,CAAC;AACX,CAAC",
+        "sourceRoot": ""
+      }
+      const decodedSourceMap = decodeSourcemap(previousStageSourceMap as RawSourceMap);
+      const sourceMapLink: SourceMapLink = new SourceMapLink(decodedSourceMap as MappingsNameTypeForTest, [source]);
+
+      const result = obfuscator.convertLineBasedOnSourceMapForTest('IdentifierCache', sourceMapLink);
+      const expectedResult= {
+        '#Person': 'Person',
+        '#foo:1:3': 'foo' 
+      };
+      const compareResult = JSON.stringify(result) === JSON.stringify(expectedResult);
+      expect(compareResult).to.be.true;
     });
   });
 

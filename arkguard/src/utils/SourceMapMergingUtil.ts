@@ -75,6 +75,11 @@ type MappingsNameType = { mappings: readonly SourceMapSegment[][]; names?: reado
 type TracedMappingsType = { mappings: SourceMapSegment[][]; names: string[]; sources: string[] };
 
 /**
+ * Type of the map parameter of the SourceMapLink class.
+ */
+export type MappingsNameTypeForTest = MappingsNameType;
+
+/**
  * Provide api tools related to sourcemap.
  */
 export class SourceMapLink implements BaseSource {

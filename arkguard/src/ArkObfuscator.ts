@@ -454,25 +454,42 @@ export class ArkObfuscator {
         updatedCache[newKey] = value;
         continue;
       }
+
+      const parts = scopeName.split('#');
+      // 1: Get the last word 'zz' in '#xx#yy#zz'.
+      const lastScopeName: string = parts[parts.length - 1];
+
       const startPosition: SourceMapSegmentObj | null = sourceMapLink.traceSegment(
         // 1: The line number in originalCache starts from 1 while in source map starts from 0.
         Number(oldStartLine) - 1, Number(oldStartColumn) - 1, ''); // Minus 1 to get the correct original position.
-      if (!startPosition) {
-        // Do not save methods that do not exist in the source code, e.g. 'build' in ArkUI.
+      if (!startPosition && lastScopeName === value) {
+        // Do not save methods that do not exist in the source code and not be obfuscated, e.g. 'build' in ArkUI.
         continue;
       }
       const endPosition: SourceMapSegmentObj | null = sourceMapLink.traceSegment(
         Number(oldEndLine) - 1, Number(oldEndColumn) - 1, ''); // 1: Same as above.
-      if (!endPosition) {
-        // Do not save methods that do not exist in the source code, e.g. 'build' in ArkUI.
+      if (!endPosition && lastScopeName === value) {
+        // Do not save methods that do not exist in the source code and not be obfuscated, e.g. 'build' in ArkUI.
         continue;
       }
-      const startLine = startPosition.line + 1; // 1: The final line number in updatedCache should starts from 1.
-      const endLine = endPosition.line + 1; // 1: Same as above.
-      newKey = `${scopeName}:${startLine}:${endLine}`;
-      updatedCache[newKey] = value;
+
+      if (!startPosition || !endPosition) {
+        updatedCache[scopeName] = value;
+      } else {
+        const startLine = startPosition.line + 1; // 1: The final line number in updatedCache should starts from 1.
+        const endLine = endPosition.line + 1; // 1: Same as above.
+        newKey = `${scopeName}:${startLine}:${endLine}`;
+        updatedCache[newKey] = value;
+      }
     }
     return updatedCache;
+  }
+
+  public convertLineBasedOnSourceMapForTest(
+    targetCache: string, 
+    sourceMapLink?: SourceMapLink
+  ): Map<string, string> {
+    return this.convertLineBasedOnSourceMap(targetCache, sourceMapLink);
   }
 
   /**
