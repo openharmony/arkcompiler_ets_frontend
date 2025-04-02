@@ -2557,17 +2557,21 @@ export class TypeScriptLinter {
   }
 
   private checkArrayIndexType(exprType: ts.Type, argType: ts.Type, expr: ts.ElementAccessExpression): void {
-    const argExpr = expr.argumentExpression;
-
     if (!this.options.arkts2 || !this.tsUtils.isOrDerivedFrom(exprType, this.tsUtils.isIndexableArray)) {
       return;
     }
+
+    const argExpr = TypeScriptLinter.getUnwrappedArgumentExpression(expr.argumentExpression);
 
     if (this.tsUtils.isNumberLikeType(argType)) {
       this.handleNumericArgument(argExpr);
     } else if (this.tsTypeChecker.typeToString(argType) !== 'int') {
       this.incrementCounters(argExpr, FaultID.ArrayIndexExprType);
     }
+  }
+
+  private static getUnwrappedArgumentExpression(argExpr: ts.Expression): ts.Expression {
+    return argExpr.kind === ts.SyntaxKind.AsExpression ? (argExpr as ts.AsExpression).expression : argExpr;
   }
 
   private handleNumericArgument(argExpr: ts.Expression): void {
