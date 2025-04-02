@@ -111,9 +111,10 @@ void GlobalClassHandler::SetupGlobalMethods(parser::Program *program, ArenaVecto
     }
 }
 
-void GlobalClassHandler::MergeNamespace(ArenaVector<ir::ETSModule *> &namespaces, parser::ETSParser *parser)
+void GlobalClassHandler::MergeNamespace(ArenaVector<ir::ETSModule *> &namespaces, parser::Program *program)
 {
-    ArenaUnorderedMap<util::StringView, ir::ETSModule *> nsMap {allocator_->Adapter()};
+    auto *parser = program->VarBinder()->GetContext()->parser->AsETSParser();
+    ArenaUnorderedMap<util::StringView, ir::ETSModule *> nsMap {program->Allocator()->Adapter()};
     for (auto it = namespaces.begin(); it != namespaces.end();) {
         auto *ns = *it;
         auto res = nsMap.find(ns->Ident()->Name());
@@ -142,7 +143,7 @@ ArenaVector<ir::ClassDeclaration *> GlobalClassHandler::TransformNamespaces(Aren
                                                                             parser::Program *program)
 {
     ArenaVector<ir::ClassDeclaration *> classDecls {allocator_->Adapter()};
-    MergeNamespace(namespaces, program->VarBinder()->GetContext()->parser->AsETSParser());
+    MergeNamespace(namespaces, program);
     for (auto ns : namespaces) {
         classDecls.emplace_back(TransformNamespace(ns, program));
     }
