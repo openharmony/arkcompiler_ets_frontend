@@ -272,6 +272,8 @@ private:
                                                       const ir::ClassElement *classElement);
     void InsertForeignBinding(ir::AstNode *specifier, const ir::ETSImportDeclaration *import,
                               const util::StringView &name, Variable *var);
+    void InsertOrAssignForeignBinding(ir::AstNode *specifier, const ir::ETSImportDeclaration *import,
+                                      const util::StringView &name, Variable *var);
     void ImportAllForeignBindings(ir::AstNode *specifier, const varbinder::Scope::VariableMap &globalBindings,
                                   const parser::Program *importProgram, const varbinder::GlobalScope *importGlobalScope,
                                   const ir::ETSImportDeclaration *import);
