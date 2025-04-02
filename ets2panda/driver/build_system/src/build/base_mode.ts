@@ -127,7 +127,20 @@ export abstract class BaseMode {
           fileInfo.filePath
       ]).peer;
       arktsGlobal.compilerContext = arkts.Context.createFromString(source);
-      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED);
+      PluginDriver.getInstance().getPluginContext().setArkTSProgram(arktsGlobal.compilerContext.program);
+
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED, true);
+
+      let ast = arkts.EtsScript.fromContext();
+      PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
+      PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
+
+      arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED, true);
+
+      ast = arkts.EtsScript.fromContext();
+      PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
+      PluginDriver.getInstance().runPluginHook(PluginHook.CHECKED);
+      
       arkts.generateTsDeclarationsFromContext(
         declEtsOutputPath,
         etsOutputPath,
