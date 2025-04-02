@@ -292,7 +292,8 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.HeritageClause, this.handleHeritageClause],
     [ts.SyntaxKind.TaggedTemplateExpression, this.handleTaggedTemplatesExpression],
     [ts.SyntaxKind.StructDeclaration, this.handleStructDeclaration],
-    [ts.SyntaxKind.TypeOfExpression, this.handleInterOpImportJsOnTypeOfNode]
+    [ts.SyntaxKind.TypeOfExpression, this.handleInterOpImportJsOnTypeOfNode],
+    [ts.SyntaxKind.AwaitExpression, this.handleAwaitExpression]
   ]);
 
   private getLineAndCharacterOfNode(node: ts.Node | ts.CommentRange): ts.LineAndCharacter {
@@ -6291,5 +6292,24 @@ export class TypeScriptLinter {
       return sourceFile.fileName.endsWith(EXTNAME_JS);
     }
     return false;
+  }
+  
+  private handleAwaitExpression(node: ts.Node): void {
+    if (!this.options.arkts2 || !this.useStatic) {
+      return
+    };
+    const awaitExpr = node as ts.AwaitExpression;
+    const checkAndReportJsImportAwait = (targetNode: ts.Node): boolean => {
+      if (ts.isIdentifier(targetNode) && this.tsUtils.isJsImport(targetNode)) {
+        this.incrementCounters(node, FaultID.NoJsImportAwait);
+        return true;
+      }
+      return false;
+    };
+    const expr = awaitExpr.expression;
+    checkAndReportJsImportAwait(expr);
+    if (ts.isCallExpression(expr)) {
+      checkAndReportJsImportAwait(expr.expression);
+    }
   }
 }

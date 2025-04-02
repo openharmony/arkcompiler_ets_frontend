@@ -197,3 +197,4 @@ faultDesc[FaultID.BinaryOperations] = 'Binary operations on js objects';
 faultDesc[FaultID.InterOpImportJsDataCompare] = 'NO js import data compare';
 faultDesc[FaultID.InteropEqualityJudgment] = 'Equality operator with JS objects';
 faultDesc[FaultID.InterOpImportJsIndex] = 'No js index import';
+faultDesc[FaultID.NoJsImportAwait] = 'No js import await';
