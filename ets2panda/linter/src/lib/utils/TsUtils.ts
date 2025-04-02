@@ -3517,4 +3517,17 @@ export class TsUtils {
     }
     return str;
   }
+
+  isJsImport(node: ts.Node): boolean {
+    const symbol = this.trueSymbolAtLocation(node);
+    if (symbol) {
+      const declaration = symbol.declarations?.[0];
+      if (declaration) {
+        const sourceFile = declaration.getSourceFile();
+        const isFromJs = sourceFile.fileName.endsWith(EXTNAME_JS);
+        return isFromJs;
+      }
+    }
+    return false;
+  }
 }

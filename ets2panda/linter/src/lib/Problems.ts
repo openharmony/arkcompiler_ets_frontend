@@ -198,6 +198,7 @@ export enum FaultID {
   InterOpImportJsDataCompare,
   InteropEqualityJudgment,
   InterOpImportJsIndex,
+  NoJsImportAwait,
   // this should always be last enum
   LAST_ID
 }
