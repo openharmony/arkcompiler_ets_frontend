@@ -38,3 +38,16 @@ class F {
 }
 
 const f = new F();
+
+@Entry
+@Component
+struct Index {
+  @State message: string = 'Hello World';
+  public static abc:string ;
+
+  build() {
+      Text(this.message)
+      .height('100%')
+      .width('100%')
+  }
+}

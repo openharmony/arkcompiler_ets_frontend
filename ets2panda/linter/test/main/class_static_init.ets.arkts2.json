@@ -53,6 +53,56 @@
             "suggest": "",
             "rule": "The static property has no initializer (arkts-class-static-initialization)",
             "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 3,
+            "endLine": 46,
+            "endColumn": 29,
+            "problem": "ClassstaticInitialization",
+            "suggest": "",
+            "rule": "The static property has no initializer (arkts-class-static-initialization)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 42,
+            "column": 2,
+            "endLine": 42,
+            "endColumn": 7,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
+            "column": 2,
+            "endLine": 43,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 4,
+            "endLine": 45,
+            "endColumn": 9,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 49,
+            "column": 7,
+            "endLine": 49,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
         }
     ]
 }
