@@ -26,6 +26,7 @@ import { Es2pandaNativeModule as GeneratedEs2pandaNativeModule } from './generat
 import { initInterop, InteropNativeModule, initPublicInterop } from './InteropNativeModule';
 import { Context } from './types';
 
+// CC-OFFNXT(G.NAM.01) project code style
 export class global {
   public static filePath: string = './examples/input/main.ets';
 
@@ -92,12 +93,16 @@ export class global {
   private static _interop: InteropNativeModule | undefined = undefined;
   private static _interopPublic: InteropNativeModule | undefined = undefined;
   public static get interop(): InteropNativeModule {
-    if (this._interop === undefined) this._interop = initInterop();
+    if (this._interop === undefined) {
+      this._interop = initInterop();
+    }
     return this._interop;
   }
 
   public static get interopPublic(): InteropNativeModule {
-    if (this._interopPublic === undefined) this._interopPublic = initPublicInterop();
+    if (this._interopPublic === undefined) {
+      this._interopPublic = initPublicInterop();
+    }
     return this._interopPublic;
   }
 }

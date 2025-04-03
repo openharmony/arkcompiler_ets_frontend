@@ -316,6 +316,14 @@ export class Es2pandaNativeModule {
     throw new Error('Not implemented');
   }
 
+  _getHighlightTextSpan(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
+  _getHighlightContextSpan(ptr: KNativePointer): KPtr {
+    throw new Error('Not implemented');
+  }
+
   _getHighlightFileName(ptr: KNativePointer): KPtr {
     throw new Error('Not implemented');
   }
@@ -459,7 +467,7 @@ export function initGeneratedEs2panda(): GeneratedEs2pandaNativeModule {
 
 export function initPublicEs2panda(): Es2pandaNativeModule {
   let libPath = process.env.BINDINGS_PATH;
-  if (libPath == undefined) {
+  if (libPath === undefined) {
     libPath = path.resolve(__dirname, '../public.node');
   } else {
     libPath = path.join(libPath, 'public.node');
@@ -475,7 +483,7 @@ export function initPublicEs2panda(): Es2pandaNativeModule {
 
 export function initPublicGeneratedEs2panda(): GeneratedEs2pandaNativeModule {
   let libPath = process.env.BINDINGS_PATH;
-  if (libPath == undefined) {
+  if (libPath === undefined) {
     libPath = path.resolve(__dirname, '../public.node');
   } else {
     libPath = path.join(libPath, 'public.node');

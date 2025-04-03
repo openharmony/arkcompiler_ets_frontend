@@ -53,7 +53,7 @@ export class Lsp {
     this.fileNameToArktsconfig = JSON.parse(fs.readFileSync(compileFileInfoPath, 'utf-8'));
     let buildConfigPath = path.join(projectPath, '.idea', '.deveco', 'lsp_build_config.json');
     this.moduleToBuildConfig = JSON.parse(fs.readFileSync(buildConfigPath, 'utf-8'));
-    this.getFileContent = getContentCallback || ((path) => fs.readFileSync(path, 'utf8'));
+    this.getFileContent = getContentCallback || ((path: string): string => fs.readFileSync(path, 'utf8'));
   }
 
   getDefinitionAtPosition(filename: String, offset: number): LspDefinitionData {
@@ -135,12 +135,12 @@ export class Lsp {
 
   getFileReferences(filename: String): LspReferenceData[] {
     let lspDriverHelper = new LspDriverHelper();
-    let filePath = path.resolve(filename.valueOf());
-    let arktsconfig = this.fileNameToArktsconfig[filePath];
+    let searchFilePath = path.resolve(filename.valueOf());
+    let arktsconfig = this.fileNameToArktsconfig[searchFilePath];
     let ets2pandaCmd = ['-', '--extension', 'ets', '--arktsconfig', arktsconfig];
-    let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath, this.pandaLibPath);
-    const source = this.getFileContent(filePath).replace(/\r\n/g, '\n');
-    let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg);
+    let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, searchFilePath, this.pandaLibPath);
+    const source = this.getFileContent(searchFilePath).replace(/\r\n/g, '\n');
+    let localCtx = lspDriverHelper.createCtx(source, searchFilePath, localCfg);
     PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx);
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
     PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
@@ -163,7 +163,7 @@ export class Lsp {
       lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED);
       PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
       lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_CHECKED);
-      let ptr = global.es2panda._getFileReferences(filePath, localCtx, isPackageModule);
+      let ptr = global.es2panda._getFileReferences(searchFilePath, localCtx, isPackageModule);
       let refs = new LspReferences(ptr);
       PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
       lspDriverHelper.destroyContext(localCtx);

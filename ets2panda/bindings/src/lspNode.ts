@@ -238,8 +238,8 @@ export class LspHighlightSpan extends LspNode {
   constructor(peer: KNativePointer) {
     super(peer);
     this.fileName = unpackString(global.es2panda._getHighlightFileName(peer));
-    this.textSpan = new LspTextSpan(global.es2panda._getTextSpan(peer));
-    this.contextSpan = new LspTextSpan(global.es2panda._getTextSpan(peer));
+    this.textSpan = new LspTextSpan(global.es2panda._getHighlightTextSpan(peer));
+    this.contextSpan = new LspTextSpan(global.es2panda._getHighlightContextSpan(peer));
     this.kind = global.es2panda._getHighlightKind(peer);
   }
   readonly fileName: String;

@@ -50,7 +50,7 @@ function parseJson5(filePath: string): Json5Object {
     return JSON5.parse(cleanedContent) as Json5Object;
   } catch (error) {
     console.error(`Error parsing ${filePath}:`, error);
-    process.exit(1);
+    return {} as Json5Object;
   }
 }
 

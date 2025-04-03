@@ -56,6 +56,7 @@ export abstract class ArrayDecoder<T> {
 // TODO: the semicolons after methods in these interfaces are to
 // workaround ArkTS compiler parser bug
 export interface CallbackRegistry {
+  // CC-OFFNXT(no_explicit_any) project code style
   registerCallback(callback: any, obj: any): KPointer;
 }
 
@@ -66,7 +67,9 @@ export interface PlatformDefinedData {
 }
 
 export function withStringResult(ptr: KPointer): string | undefined {
-  if (isNullPtr(ptr)) return undefined;
+  if (isNullPtr(ptr)) {
+    return undefined;
+  }
   let managedString = new NativeString(ptr);
   let result = managedString?.toString();
   managedString?.close();

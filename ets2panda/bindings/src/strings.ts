@@ -32,7 +32,7 @@ export class CustomTextEncoder {
   static readonly HeaderLen: int32 = Int32Array.BYTES_PER_ELEMENT;
 
   constructor(
-    encoder: SystemTextEncoder | undefined = typeof TextEncoder != 'undefined' ? new TextEncoder() : undefined
+    encoder: SystemTextEncoder | undefined = typeof TextEncoder !== 'undefined' ? new TextEncoder() : undefined
   ) {
     this.encoder = encoder;
   }
@@ -181,13 +181,13 @@ export class CustomTextDecoder {
       if (lead < 0x80) {
         count = 1;
         value = elem;
-      } else if (lead >> 5 == 0x6) {
+      } else if (lead >> 5 === 0x6) {
         value = ((elem << 6) & 0x7ff) + (input[index + 1] & 0x3f);
         count = 2;
-      } else if (lead >> 4 == 0xe) {
+      } else if (lead >> 4 === 0xe) {
         value = ((elem << 12) & 0xffff) + ((input[index + 1] << 6) & 0xfff) + (input[index + 2] & 0x3f);
         count = 3;
-      } else if (lead >> 3 == 0x1e) {
+      } else if (lead >> 3 === 0x1e) {
         value =
           ((elem << 18) & 0x1fffff) +
           ((input[index + 1] << 12) & 0x3ffff) +
@@ -196,7 +196,7 @@ export class CustomTextDecoder {
         count = 4;
       }
       codePoints[cpIndex++] = value;
-      if (cpIndex == cpSize) {
+      if (cpIndex === cpSize) {
         cpIndex = 0;
         result += String.fromCodePoint(...codePoints);
       }
