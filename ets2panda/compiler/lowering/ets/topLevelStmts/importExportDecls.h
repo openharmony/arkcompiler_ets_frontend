@@ -143,9 +143,10 @@ private:
     void UpdateExportMap()
     {
         auto &exportMap = imExDecl_->varbinder_->GetSelectiveExportAliasMultimap();
-        exportAliasMultimapPrev_ = exportMap.find(program_->SourceFilePath())->second;
-
-        exportMap.erase(program_->SourceFilePath());
+        if (auto it = exportMap.find(program_->SourceFilePath()); it != exportMap.end()) {
+            exportAliasMultimapPrev_ = it->second;
+            exportMap.erase(it);
+        }
 
         ArenaMap<util::StringView, std::pair<util::StringView, ir::AstNode const *>> newMap(
             program_->Allocator()->Adapter());
@@ -163,7 +164,12 @@ private:
     ArenaMap<util::StringView, std::pair<util::StringView, ir::AstNode const *>> SaveExportAliasMultimap()
     {
         auto &exportMap = imExDecl_->varbinder_->GetSelectiveExportAliasMultimap();
-        return exportMap.find(program_->SourceFilePath())->second;
+        const auto found = exportMap.find(program_->SourceFilePath());
+        if (found == exportMap.end()) {
+            return ArenaMap<util::StringView, std::pair<util::StringView, ir::AstNode const *>>(
+                program_->Allocator()->Adapter());
+        }
+        return found->second;
     }
 
 private:
