@@ -4254,8 +4254,54 @@ export class TypeScriptLinter {
       return;
     }
 
-    const autofix = this.autofixer?.fixBidirectionalDataBinding(node, this.interfacesNeedToImport);
-    this.incrementCounters(node, FaultID.DoubleExclaBindingNotSupported, autofix);
+    const statement = ts.findAncestor(node, ts.isExpressionStatement);
+    if (statement && this.isCustomComponent(statement)) {
+      let currentParam: ts.Identifier | undefined;
+      if (ts.isPropertyAccessExpression(node.expression.expression)) {
+        currentParam = node.expression.expression.name as ts.Identifier;
+      }
+
+      let customParam: ts.Identifier | undefined;
+      if (ts.isPropertyAssignment(node.parent)) {
+        customParam = node.parent.name as ts.Identifier;
+      }
+
+      if (!currentParam || !customParam) {
+        return;
+      }
+
+      const originalExpr = node.parent.parent;
+      if (!ts.isObjectLiteralExpression(originalExpr)) {
+        return;
+      }
+      const autofix = this.autofixer?.fixCustomBidirectionalBinding(originalExpr, currentParam, customParam);
+      this.incrementCounters(node, FaultID.DoubleExclaBindingNotSupported, autofix);
+    } else {
+      const autofix = this.autofixer?.fixNativeBidirectionalBinding(node, this.interfacesNeedToImport);
+      this.incrementCounters(node, FaultID.DoubleExclaBindingNotSupported, autofix);
+    }
+  }
+
+  private isCustomComponent(statement: ts.ExpressionStatement): boolean {
+    const callExpr = statement.expression;
+    if (!ts.isCallExpression(callExpr)) {
+      return false;
+    }
+
+    const identifier = callExpr.expression;
+    if (!ts.isIdentifier(identifier)) {
+      return false;
+    }
+
+    const symbol = this.tsTypeChecker.getSymbolAtLocation(identifier);
+    if (symbol) {
+      const decl = this.tsUtils.getDeclarationNode(identifier);
+      if (decl?.getSourceFile() === statement.getSourceFile()) {
+        return true;
+      }
+    }
+
+    return this.importedInterfaces.has(callExpr.expression.getText());
   }
 
   private handleDoubleDollar(node: ts.Node): void {

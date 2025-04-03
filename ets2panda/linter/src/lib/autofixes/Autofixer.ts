@@ -35,7 +35,8 @@ import {
   COMMON_METHOD_IDENTIFIER,
   APPLY_STYLES_IDENTIFIER,
   CustomDecoratorName,
-  ARKUI_PACKAGE_NAME
+  ARKUI_PACKAGE_NAME,
+  VALUE_IDENTIFIER
 } from '../utils/consts/ArkuiConstants';
 
 const UNDEFINED_NAME = 'undefined';
@@ -2227,19 +2228,66 @@ export class Autofixer {
     return autofix;
   }
 
-  fixBidirectionalDataBinding(
-    twoWayExpr: ts.NonNullExpression,
+  fixNativeBidirectionalBinding(
+    expr: ts.NonNullExpression,
     interfacesNeedToImport: Set<string>
   ): Autofix[] | undefined {
-    if (!ts.isNonNullExpression(twoWayExpr.expression)) {
+    if (!ts.isNonNullExpression(expr.expression)) {
       return undefined;
     }
-    const originalExpr = twoWayExpr.expression.expression;
+    const originalExpr = expr.expression.expression;
     const doubleDollarIdentifier = ts.factory.createIdentifier(DOUBLE_DOLLAR_IDENTIFIER);
     interfacesNeedToImport.add(DOUBLE_DOLLAR_IDENTIFIER);
     const callExpr = ts.factory.createCallExpression(doubleDollarIdentifier, undefined, [originalExpr]);
-    const text = this.printer.printNode(ts.EmitHint.Unspecified, callExpr, twoWayExpr.getSourceFile());
-    return [{ start: twoWayExpr.getStart(), end: twoWayExpr.getEnd(), replacementText: text }];
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, callExpr, expr.getSourceFile());
+    return [{ start: expr.getStart(), end: expr.getEnd(), replacementText: text }];
+  }
+
+  fixCustomBidirectionalBinding(
+    originalExpr: ts.ObjectLiteralExpression,
+    currentParam: ts.Identifier,
+    customParam: ts.Identifier
+  ): Autofix[] | undefined {
+    const assignment1 = ts.factory.createPropertyAssignment(
+      customParam,
+      ts.factory.createPropertyAccessExpression(ts.factory.createThis(), currentParam)
+    );
+    const value = ts.factory.createIdentifier(VALUE_IDENTIFIER);
+    const block = ts.factory.createBlock(
+      [
+        ts.factory.createExpressionStatement(
+          ts.factory.createBinaryExpression(
+            ts.factory.createPropertyAccessExpression(ts.factory.createThis(), currentParam),
+            ts.factory.createToken(ts.SyntaxKind.EqualsToken),
+            value
+          )
+        )
+      ],
+      true
+    );
+    const parameter = ts.factory.createParameterDeclaration(
+      undefined,
+      undefined,
+      value,
+      undefined,
+      undefined,
+      undefined
+    );
+    const arrowFunc = ts.factory.createArrowFunction(
+      undefined,
+      undefined,
+      [parameter],
+      undefined,
+      ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+      block
+    );
+    const assignment2 = ts.factory.createPropertyAssignment(
+      ts.factory.createIdentifier('$' + customParam.getText()),
+      arrowFunc
+    );
+    const newExpr = ts.factory.createObjectLiteralExpression([assignment1, assignment2], true);
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, newExpr, originalExpr.getSourceFile());
+    return [{ start: originalExpr.getStart(), end: originalExpr.getEnd(), replacementText: text }];
   }
 
   fixDoubleDollar(dollarExpr: ts.PropertyAccessExpression, interfacesNeedToImport: Set<string>): Autofix[] {

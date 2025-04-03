@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import { MyCard } from './'
+
 @Component
 struct Myomponent {
   @State value: number = 0;
@@ -68,6 +70,40 @@ struct Myomponent {
     Row() {
       Slider({
         value: this.value!!!!!
+      })
+    }
+  }
+}
+
+@Entry
+@ComponentV2
+struct Index {
+  @Local value: number = 0;
+  @Local str: string = '';
+
+  build() {
+    Column() {
+      Text(`${this.value}`)
+      Button(`change value`).onClick(() => {
+        this.value++;
+      })
+      Star({ value: this.value!! })
+      MyCard({ str: this.str!! })
+    }
+  }
+}
+
+
+@ComponentV2
+struct Star {
+  @Param value: number = 0;
+  @Event $value: (val: number) => void = (val: number) => {};
+
+  build() {
+    Column() {
+      Text(`${this.value}`)
+      Button(`change value `).onClick(() => {
+        this.$value(10);
       })
     }
   }
