@@ -126,6 +126,7 @@ options:
     - ets-boost-equality-statement       # Suggest boosting Equality Statements
     - ets-remove-lambda                  # Suggestions to replace lambda with regular functions
     - ets-implicit-boxing-unboxing       # Check if a program contains implicit boxing or unboxing
+    - ets-annotation-unused-generic-alias-warn # Check if type alias unused
     # Warinings that do not keep code in subset:
     subset_unaware:
     - ets-suggest-final           # Suggest final keyword warning

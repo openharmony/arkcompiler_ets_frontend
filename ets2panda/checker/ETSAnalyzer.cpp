@@ -3062,21 +3062,6 @@ checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
         }
     }
 
-    for (auto *const param : st->TypeParams()->Params()) {
-        const auto *const res = st->TypeAnnotation()->FindChild([&param](const ir::AstNode *const node) {
-            if (!node->IsIdentifier()) {
-                return false;
-            }
-
-            return param->Name()->AsIdentifier()->Variable() == node->AsIdentifier()->Variable();
-        });
-
-        if (res == nullptr) {
-            checker->LogError(diagnostic::ANNOTATION_UNUSED_GENERIC_ALIAS, {param->Name()->Name()}, param->Start());
-            return checker->GlobalTypeError();
-        }
-    }
-
     const checker::SavedTypeRelationFlagsContext savedFlagsCtx(checker->Relation(),
                                                                checker::TypeRelationFlag::NO_THROW_GENERIC_TYPEALIAS);
 
