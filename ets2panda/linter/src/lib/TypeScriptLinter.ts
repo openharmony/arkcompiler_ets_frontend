@@ -956,6 +956,7 @@ export class TypeScriptLinter {
     this.checkAssignmentNumericSemanticslyPro(node);
     this.handleInvalidIdentifier(node);
     this.handleExplicitFunctionType(node);
+    this.handleStructPropertyDecl(node);
   }
 
   private handleSendableClassProperty(node: ts.PropertyDeclaration): void {
@@ -1993,7 +1994,6 @@ export class TypeScriptLinter {
     }
 
     this.processClassStaticBlocks(tsClassDecl);
-    this.handleClassStaticPropInit(tsClassDecl);
     this.handleInvalidIdentifier(tsClassDecl);
   }
 
@@ -4399,22 +4399,15 @@ export class TypeScriptLinter {
     }
   }
 
-  private handleClassStaticPropInit(classDecl: ts.ClassDeclaration | ts.ClassExpression): void {
+  private handleStructPropertyDecl(propDecl: ts.PropertyDeclaration): void {
     if (!this.options.arkts2) {
       return;
     }
-    classDecl.members?.forEach((member) => {
-      if (
-        ts.isPropertyDeclaration(member) &&
-        member.modifiers?.some((modifier) => {
-          return modifier.kind === ts.SyntaxKind.StaticKeyword;
-        })
-      ) {
-        if (!member.initializer) {
-          this.incrementCounters(member, FaultID.ClassstaticInitialization);
-        }
-      }
-    });
+    const isStatic = TsUtils.hasModifier(propDecl.modifiers, ts.SyntaxKind.StaticKeyword);
+    const hasNoInitializer = !propDecl.initializer;
+    if (isStatic && hasNoInitializer) {
+      this.incrementCounters(propDecl, FaultID.ClassstaticInitialization);
+    }
   }
 
   private handleTaggedTemplatesExpression(node: ts.Node): void {

@@ -120,7 +120,7 @@ export class TsUtils {
     return !!(tsSymbol.flags & ts.SymbolFlags.Enum);
   }
 
-  static hasModifier(tsModifiers: readonly ts.Modifier[] | undefined, tsModifierKind: number): boolean {
+  static hasModifier(tsModifiers: readonly ts.Modifier[] | ts.NodeArray<ts.ModifierLike> | undefined, tsModifierKind: number): boolean {
     if (!tsModifiers) {
       return false;
     }
