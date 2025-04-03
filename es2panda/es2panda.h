@@ -124,6 +124,8 @@ struct CompilerOptions {
     std::string targetApiSubVersion;
     std::string moduleRecordFieldName;
     bool enableAnnotations;
+    // Ability to modify package names using bytecode
+    std::string modifiedPkgName {};
 };
 
 enum class ErrorType {
