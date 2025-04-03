@@ -35,16 +35,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 47,
-            "column": 4,
-            "endLine": 47,
-            "endColumn": 15,
-            "problem": "LimitedVoidType",
-            "suggest": "",
-            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
-            "severity": "ERROR"
-        },
-        {
             "line": 16,
             "column": 2,
             "endLine": 16,
