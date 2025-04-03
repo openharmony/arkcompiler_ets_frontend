@@ -44,7 +44,7 @@ public:
     }
 
     void ScanKeyword(char32_t cp) override {
-        ES2PANDA_ASSERT(cp >= 'a' && cp <= 'z');
+        ES2PANDA_ASSERT((cp >= 'a' && cp <= 'z') || (cp >= 'A' && cp <= 'Z'));
         switch(cp) {
 %   desc['all_word_starts'].each do |cp|
         case '<%=cp%>': Scan_<%=cp%>(); break;

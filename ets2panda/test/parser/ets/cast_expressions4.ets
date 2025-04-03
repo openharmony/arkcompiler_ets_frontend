@@ -18,5 +18,5 @@ function widening_array_test(): void {
   let objects: FixedArray<Object> = ints as FixedArray<Object>;
   let ints2: FixedArray<Int> = objects as FixedArray<Int>;
 
-  let object = ints2 as Object;
+  let obj = ints2 as Object;
 }

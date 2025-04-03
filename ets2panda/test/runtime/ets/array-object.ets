@@ -17,30 +17,30 @@ function main(): void {
   let arr1: FixedArray<Int> = [1,2,3,4,5];
   let arr2: FixedArray<int> = [1,2,3,4,5];
   let object_array: FixedArray<Object> = arr1 as FixedArray<Object>;
-  let object: Object = arr1 as Object;
+  let obj: Object = arr1 as Object;
 
 // TypeError: Cannot access property of non-object or non-enum type
 // arr1.toString();
 // arr2.toString();
 // object_array.toString();
 
-  object.toString();
+  obj.toString();
 
 //  TypeError: Cannot access property of non-object or non-enum type
 //  arr1.$_hashCode();
 //  arr2.$_hashCode();
 //  object_array.$_hashCode();
 
-  object.$_hashCode();
+  obj.$_hashCode();
 
   assertEQ(arr1, arr1)
   assertEQ(arr1, object_array)
-  assertEQ(arr1, object)
+  assertEQ(arr1, obj)
   assertNE(arr1, arr2)
 
 // Cannot cast type 'int[]' to 'Object[]'
 //  let object_array2: Object[] = arr2 as Object[];
-//  assertEQ(object.equals(arr2 as Object), false)
+//  assertEQ(obj.equals(arr2 as Object), false)
 
   assertEQ(arr2, arr2)
   assertNE(arr2, new int[5])

@@ -1531,24 +1531,15 @@ void Lexer::NextToken(Keywords *kws)
         }
         case LEX_CHAR_DOLLAR_SIGN:
         case LEX_CHAR_UPPERCASE_A:
-        case LEX_CHAR_UPPERCASE_B:
-        case LEX_CHAR_UPPERCASE_C:
-        case LEX_CHAR_UPPERCASE_D:
         case LEX_CHAR_UPPERCASE_E:
-        case LEX_CHAR_UPPERCASE_F:
         case LEX_CHAR_UPPERCASE_G:
         case LEX_CHAR_UPPERCASE_H:
-        case LEX_CHAR_UPPERCASE_I:
         case LEX_CHAR_UPPERCASE_J:
         case LEX_CHAR_UPPERCASE_K:
-        case LEX_CHAR_UPPERCASE_L:
         case LEX_CHAR_UPPERCASE_M:
-        case LEX_CHAR_UPPERCASE_N:
-        case LEX_CHAR_UPPERCASE_O:
         case LEX_CHAR_UPPERCASE_P:
         case LEX_CHAR_UPPERCASE_Q:
         case LEX_CHAR_UPPERCASE_R:
-        case LEX_CHAR_UPPERCASE_S:
         case LEX_CHAR_UPPERCASE_T:
         case LEX_CHAR_UPPERCASE_U:
         case LEX_CHAR_UPPERCASE_V:
@@ -1618,7 +1609,16 @@ void Lexer::NextToken(Keywords *kws)
         case LEX_CHAR_LOWERCASE_W:
         case LEX_CHAR_LOWERCASE_X:
         case LEX_CHAR_LOWERCASE_Y:
-        case LEX_CHAR_LOWERCASE_Z: {
+        case LEX_CHAR_LOWERCASE_Z:
+        case LEX_CHAR_UPPERCASE_B:
+        case LEX_CHAR_UPPERCASE_C:
+        case LEX_CHAR_UPPERCASE_D:
+        case LEX_CHAR_UPPERCASE_F:
+        case LEX_CHAR_UPPERCASE_I:
+        case LEX_CHAR_UPPERCASE_L:
+        case LEX_CHAR_UPPERCASE_N:
+        case LEX_CHAR_UPPERCASE_O:
+        case LEX_CHAR_UPPERCASE_S: {
             kws->ScanKeyword(cp);
             break;
         }
