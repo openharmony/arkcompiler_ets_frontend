@@ -75,4 +75,7 @@ bool Token::IsBinaryLvalueToken(TokenType type)
 %    genSwitch['type', Tokens::tokens, 'binary_lvalue']
 }
 
-
+bool Token::IsPredefinedType() const
+{
+%    genSwitch['keywordType_', Keywords::keywords, 'predefined_type']
+}

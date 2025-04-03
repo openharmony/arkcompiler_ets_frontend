@@ -247,3 +247,4 @@ flags:
   unary: Unary operation
   reserved_type_name: TypeScript reserved type name
   definable_type_name: Words which cannot be used as user-defined type names but are not otherwise restricted
+  predefined_type: Predefined types which are hard keywords, and cannot be used as identifiers

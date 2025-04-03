@@ -17,6 +17,5 @@ struct number{
   a : string = "15";
 }
 
-/* @@? 16:8 Error SyntaxError: Cannot be used as user-defined type. */
 /* @@? 16:1 Error TypeError: Structs are only used to define UI components, it should be translated at 'plugin after parser' phase. */
-/* @@? 1:3 Error TypeError: Variable 'number' is already defined with different type. */
+/* @@? 16:8 Error SyntaxError: number is a predefined type, cannot be used as an identifier */

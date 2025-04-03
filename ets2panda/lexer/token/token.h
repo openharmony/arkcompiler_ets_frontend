@@ -142,6 +142,7 @@ public:
     bool IsKeyword() const;
     bool IsReservedTypeName() const;
     bool IsDefinableTypeName() const;
+    bool IsPredefinedType() const;
 
     static bool IsBinaryToken(TokenType type);
     static bool IsBinaryLvalueToken(TokenType type);

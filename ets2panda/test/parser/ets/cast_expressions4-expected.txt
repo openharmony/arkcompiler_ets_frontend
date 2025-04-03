@@ -919,7 +919,7 @@
                           "type": "VariableDeclarator",
                           "id": {
                             "type": "Identifier",
-                            "name": "object",
+                            "name": "obj",
                             "decorators": [],
                             "loc": {
                               "start": {
@@ -929,7 +929,7 @@
                               },
                               "end": {
                                 "line": 21,
-                                "column": 13,
+                                "column": 10,
                                 "program": "cast_expressions4.ets"
                               }
                             }
@@ -943,12 +943,12 @@
                               "loc": {
                                 "start": {
                                   "line": 21,
-                                  "column": 16,
+                                  "column": 13,
                                   "program": "cast_expressions4.ets"
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 21,
+                                  "column": 18,
                                   "program": "cast_expressions4.ets"
                                 }
                               }
@@ -964,12 +964,12 @@
                                   "loc": {
                                     "start": {
                                       "line": 21,
-                                      "column": 25,
+                                      "column": 22,
                                       "program": "cast_expressions4.ets"
                                     },
                                     "end": {
                                       "line": 21,
-                                      "column": 31,
+                                      "column": 28,
                                       "program": "cast_expressions4.ets"
                                     }
                                   }
@@ -977,12 +977,12 @@
                                 "loc": {
                                   "start": {
                                     "line": 21,
-                                    "column": 25,
+                                    "column": 22,
                                     "program": "cast_expressions4.ets"
                                   },
                                   "end": {
                                     "line": 21,
-                                    "column": 32,
+                                    "column": 29,
                                     "program": "cast_expressions4.ets"
                                   }
                                 }
@@ -990,12 +990,12 @@
                               "loc": {
                                 "start": {
                                   "line": 21,
-                                  "column": 25,
+                                  "column": 22,
                                   "program": "cast_expressions4.ets"
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 32,
+                                  "column": 29,
                                   "program": "cast_expressions4.ets"
                                 }
                               }
@@ -1003,12 +1003,12 @@
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 16,
+                                "column": 13,
                                 "program": "cast_expressions4.ets"
                               },
                               "end": {
                                 "line": 21,
-                                "column": 21,
+                                "column": 18,
                                 "program": "cast_expressions4.ets"
                               }
                             }
@@ -1021,7 +1021,7 @@
                             },
                             "end": {
                               "line": 21,
-                              "column": 21,
+                              "column": 18,
                               "program": "cast_expressions4.ets"
                             }
                           }
@@ -1036,7 +1036,7 @@
                         },
                         "end": {
                           "line": 21,
-                          "column": 32,
+                          "column": 29,
                           "program": "cast_expressions4.ets"
                         }
                       }

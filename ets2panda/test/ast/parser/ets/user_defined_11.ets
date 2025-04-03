@@ -17,5 +17,4 @@ class /* @@ label */number{
   a : string = "15";
 }
 
-/* @@@ label Error SyntaxError: Cannot be used as user-defined type.  */
-/* @@? 1:3 Error TypeError: Variable 'number' is already defined with different type. */
+/* @@? 16:21 Error SyntaxError: number is a predefined type, cannot be used as an identifier */
