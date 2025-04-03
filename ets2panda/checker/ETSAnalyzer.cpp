@@ -142,10 +142,6 @@ static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinitio
             checker->LogError(diagnostic::NATIVE_WITHOUT_RETURN, {}, scriptFunc->Start());
             node->SetTsType(checker->GlobalTypeError());
         }
-        if (scriptFunc->IsGetter() || scriptFunc->IsSetter()) {
-            ES2PANDA_ASSERT(checker->IsAnyError());
-            return;
-        }
     }
 
     if (IsAsyncMethod(node)) {

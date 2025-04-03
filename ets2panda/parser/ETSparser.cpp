@@ -503,7 +503,7 @@ bool ETSParser::CheckAccessorDeclaration(ir::ModifierFlags memberModifiers)
     if (Lexer()->Lookahead() == lexer::LEX_CHAR_LEFT_PAREN || Lexer()->Lookahead() == lexer::LEX_CHAR_LESS_THAN) {
         return false;
     }
-    ir::ModifierFlags methodModifiersNotAccessorModifiers = ir::ModifierFlags::NATIVE | ir::ModifierFlags::ASYNC;
+    ir::ModifierFlags methodModifiersNotAccessorModifiers = ir::ModifierFlags::ASYNC;
     if ((memberModifiers & methodModifiersNotAccessorModifiers) != 0) {
         LogError(diagnostic::MODIFIERS_OF_GET_SET_LIMITED);
     }
