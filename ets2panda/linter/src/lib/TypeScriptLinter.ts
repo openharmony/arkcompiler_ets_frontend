@@ -72,7 +72,7 @@ import { BUILTIN_GENERIC_CONSTRUCTORS } from './utils/consts/BuiltinGenericConst
 import { DEFAULT_DECORATOR_WHITE_LIST } from './utils/consts/DefaultDecoratorWhitelist';
 import { INVALID_IDENTIFIER_KEYWORDS } from './utils/consts/InValidIndentifierKeywords';
 import { WORKER_MODULES, WORKER_TEXT } from './utils/consts/WorkerAPI';
-import { ETS_PART, OH_MODULE_INDICATOR, PATH_SEPARATOR, VALID_OHM_URL_PART } from './utils/consts/OhmUrl';
+import { ETS_PART, PATH_SEPARATOR } from './utils/consts/OhmUrl';
 import {
   DOUBLE_DOLLAR_IDENTIFIER,
   THIS_IDENTIFIER,
@@ -774,7 +774,7 @@ export class TypeScriptLinter {
       return;
     }
 
-    if (modulePath.includes(VALID_OHM_URL_PART) || !modulePath.includes(OH_MODULE_INDICATOR)) {
+    if (TsUtils.isValidOhModulePath(modulePath) || !TsUtils.isOhModule(modulePath)) {
       // Valid or paths that we do not check because they are not ohModules
       return;
     }
@@ -2443,7 +2443,7 @@ export class TypeScriptLinter {
 
     if (
       (tsIdentSym.flags & illegalValues) === 0 &&
-      !(this.options.arkts2 && this.isStdlibClassVarDecl(tsIdentifier, tsIdentSym)) ||
+        !(this.options.arkts2 && this.isStdlibClassVarDecl(tsIdentifier, tsIdentSym)) ||
       isStruct(tsIdentSym) ||
       !identiferUseInValueContext(tsIdentifier, tsIdentSym)
     ) {
@@ -2489,7 +2489,7 @@ export class TypeScriptLinter {
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdRecordType) ||
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStringType) ||
       !this.options.arkts2 &&
-      (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
+        (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
       TsUtils.isEnumType(type) ||
       // we allow EsObject here beacuse it is reported later using FaultId.EsObjectType
       TsUtils.isEsObjectType(typeNode)
@@ -3872,7 +3872,7 @@ export class TypeScriptLinter {
     if (
       this.compatibleSdkVersion > SENDBALE_FUNCTION_START_VERSION ||
       this.compatibleSdkVersion === SENDBALE_FUNCTION_START_VERSION &&
-      !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
+        !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
     ) {
       return true;
     }
