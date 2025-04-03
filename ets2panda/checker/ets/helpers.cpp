@@ -1154,6 +1154,11 @@ checker::Type *CheckerContext::GetUnionOfTypes(checker::Type *const type1, check
         return type1 == nullptr ? type2 : type1;
     }
 
+    const auto never = parent_->AsETSChecker()->GlobalETSNeverType();
+    if (type1 == never || type2 == never) {
+        return type1 == never ? type2 : type1;
+    }
+
     return parent_->AsETSChecker()->CreateETSUnionType({type1, type2});
 }
 
