@@ -42,6 +42,7 @@ import { isAssignmentOperator } from './functions/isAssignmentOperator';
 import { isIntrinsicObjectType } from './functions/isIntrinsicObjectType';
 import type { LinterOptions } from '../LinterOptions';
 import { ETS } from './consts/TsSuffix';
+import { STRINGLITERAL_NUMBER, STRINGLITERAL_NUMBER_ARRAY } from './consts/StringLiteral';
 
 export const SYMBOL = 'Symbol';
 export const SYMBOL_CONSTRUCTOR = 'SymbolConstructor';
@@ -963,7 +964,7 @@ export class TsUtils {
     const funcDeclParentType = this.tsTypeChecker.getTypeAtLocation(node.parent);
     if (
       TsUtils.isAbstractClass(funcDeclParentType) &&
-      type.symbol.declarations &&
+      type.symbol?.declarations &&
       type.symbol.declarations.length > 0
     ) {
       const declClass = type.symbol.declarations[0] as ts.MethodDeclaration;
@@ -3338,5 +3339,16 @@ export class TsUtils {
       default:
         return false;
     }
+  }
+
+  static isNumberLike(type: ts.Type, typeText: string, isEnum: boolean): boolean {
+    const typeFlags = type.flags;
+
+    const isNumberLike =
+      typeText === STRINGLITERAL_NUMBER ||
+      typeText === STRINGLITERAL_NUMBER_ARRAY ||
+      (typeFlags & ts.TypeFlags.NumberLiteral) !== 0 ||
+      isEnum;
+    return isNumberLike;
   }
 }

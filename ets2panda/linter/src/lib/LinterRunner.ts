@@ -152,7 +152,7 @@ function applyFixes(srcFile: ts.SourceFile, linter: TypeScriptLinter | InteropTy
     if (pass === 0) {
       qe.backupSrcFile();
     }
-    qe.applyFixes(linter.problemsInfos);
+    qe.fix(linter.problemsInfos);
     if (qe.wasError) {
       Logger.error(`Error: fix-all converged for (${srcFile.fileName}) on pass #${pass}`);
       break;

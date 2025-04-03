@@ -113,3 +113,29 @@ enum Test {
   B = 2   // 显式赋值为 2
 }
 const test = Test.A;
+
+@Entry
+@Component
+struct Index2 {
+  @State message: string = 'Hello World';
+  readonly c1 = 1; // int
+  readonly c4 = 1.7; // float
+  readonly c5 = 0x123; // 16进制
+  readonly c6 = 0o123; //8进制
+  readonly c7 = 0b101; //2进制
+  readonly c8 = [1,2,3]
+
+build() {
+    RelativeContainer() {
+      Text(this.message)
+        .onClick(() => {
+        })
+    }
+  }
+}
+
+const c1 = 1;
+
+export class G{
+  readonly a5 = 4;
+}

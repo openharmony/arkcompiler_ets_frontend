@@ -31,6 +31,7 @@ import { FUNCTION_HAS_NO_RETURN_ERROR_CODE } from './utils/consts/FunctionHasNoR
 import { LIMITED_STANDARD_UTILITY_TYPES } from './utils/consts/LimitedStandardUtilityTypes';
 import { arkts2Rules } from './utils/consts/ArkTS2Rules';
 import { LIKE_FUNCTION } from './utils/consts/LikeFunction';
+import { STRINGLITERAL_NUMBER, STRINGLITERAL_STRING, STRINGLITERAL_INT } from './utils/consts/StringLiteral';
 import {
   NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS,
   NON_INITIALIZABLE_PROPERTY_DECORATORS,
@@ -1478,16 +1479,9 @@ export class TypeScriptLinter {
 
     const type = this.tsTypeChecker.getTypeOfSymbolAtLocation(sym, name);
     const typeText = this.tsTypeChecker.typeToString(type);
-    const typeFlags = type.flags;
-
-    const isEnum = this.isEnumType(type);
-    if (isEnum) {
-      return;
-    }
-    const isNumberLike =
-      typeText === 'number' || typeText === 'number[]' || (typeFlags & ts.TypeFlags.NumberLiteral) !== 0;
-    if (isNumberLike) {
-      const autofix = this.autofixer?.fixVariableDeclaration(node);
+    const isEnum = this.isNumericEnumType(type);
+    if (TsUtils.isNumberLike(type, typeText, isEnum)) {
+      const autofix = this.autofixer?.fixVariableDeclaration(node, isEnum);
       this.incrementCounters(node, FaultID.NumericSemantics, autofix);
     }
   }
@@ -1510,7 +1504,27 @@ export class TypeScriptLinter {
         return this.isEnumType(t);
       });
     }
+    return false;
+  }
 
+  private isNumericEnumType(type: ts.Type): boolean {
+    if (!this.isEnumType(type)) {
+      return false;
+    }
+    const declarations = type.symbol?.getDeclarations() || [];
+    const enumMemberDecl = declarations.find(ts.isEnumMember);
+    if (enumMemberDecl) {
+      const value = this.tsTypeChecker.getConstantValue(enumMemberDecl);
+      return typeof value === STRINGLITERAL_NUMBER;
+    }
+
+    const enumDecl = declarations.find(ts.isEnumDeclaration);
+    if (enumDecl) {
+      return enumDecl.members.every((member) => {
+        const memberType = this.tsTypeChecker.getTypeAtLocation(member.name);
+        return (memberType.flags & ts.TypeFlags.NumberLike) !== 0;
+      });
+    }
     return false;
   }
 
@@ -1529,7 +1543,7 @@ export class TypeScriptLinter {
 
       const type = this.tsTypeChecker.getTypeOfSymbolAtLocation(sym, param.name);
       const typeText = this.tsTypeChecker.typeToString(type);
-      if (typeText === 'number') {
+      if (typeText === STRINGLITERAL_NUMBER) {
         const autofix = this.autofixer?.fixParameter(param);
         if (autofix) {
           this.incrementCounters(node, FaultID.NumericSemantics, autofix);
@@ -1557,23 +1571,62 @@ export class TypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
+
     const initializer = node.initializer;
     const name = node.name;
     if (node.type || !initializer || !ts.isIdentifier(name)) {
       return;
     }
 
+    const isNumberArray = ts.isArrayLiteralExpression(initializer) && TypeScriptLinter.isNumberArray(initializer);
+    const isNumber = !isNumberArray && TypeScriptLinter.isNumericInitializer(initializer);
+
     const sym = this.tsTypeChecker.getSymbolAtLocation(name);
     if (!sym) {
       return;
     }
 
+    if (!isNumber && !isNumberArray) {
+      return;
+    }
     const type = this.tsTypeChecker.getTypeOfSymbolAtLocation(sym, name);
     const typeText = this.tsTypeChecker.typeToString(type);
-    if (typeText === 'number') {
+    const typeFlags = type.flags;
+    if (isNumber && (typeText === STRINGLITERAL_NUMBER || (typeFlags & ts.TypeFlags.NumberLiteral) !== 0)) {
       const autofix = this.autofixer?.fixPropertyDeclaration(node);
       this.incrementCounters(node, FaultID.NumericSemantics, autofix);
     }
+    this.checkAssignmentNumericSemanticsArray(node, isNumberArray);
+  }
+
+  checkAssignmentNumericSemanticsArray(node: ts.PropertyDeclaration, isNumberArray: boolean): void {
+    if (isNumberArray) {
+      const autofix = this.autofixer?.fixPropertyDeclarationNumericSemanticsArray(node);
+      this.incrementCounters(node, FaultID.NumericSemantics, autofix);
+    }
+  }
+
+  private static isNumericInitializer(node: ts.Node): boolean {
+    if (ts.isNumericLiteral(node)) {
+      return true;
+    }
+    if (
+      ts.isPrefixUnaryExpression(node) &&
+      node.operator === ts.SyntaxKind.MinusToken &&
+      ts.isNumericLiteral(node.operand)
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  private static isNumberArray(arrayLiteral: ts.ArrayLiteralExpression): boolean {
+    return arrayLiteral.elements.every((element) => {
+      if (ts.isSpreadElement(element)) {
+        return false;
+      }
+      return TypeScriptLinter.isNumericInitializer(element);
+    });
   }
 
   private handleDestructuringAssignment(node: ts.Node, tsLhsExpr: ts.Expression, tsRhsExpr: ts.Expression): void {
@@ -2390,7 +2443,7 @@ export class TypeScriptLinter {
 
     if (
       (tsIdentSym.flags & illegalValues) === 0 &&
-        !(this.options.arkts2 && this.isStdlibClassVarDecl(tsIdentifier, tsIdentSym)) ||
+      !(this.options.arkts2 && this.isStdlibClassVarDecl(tsIdentifier, tsIdentSym)) ||
       isStruct(tsIdentSym) ||
       !identiferUseInValueContext(tsIdentifier, tsIdentSym)
     ) {
@@ -2436,7 +2489,7 @@ export class TypeScriptLinter {
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdRecordType) ||
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStringType) ||
       !this.options.arkts2 &&
-        (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
+      (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
       TsUtils.isEnumType(type) ||
       // we allow EsObject here beacuse it is reported later using FaultId.EsObjectType
       TsUtils.isEsObjectType(typeNode)
@@ -2486,17 +2539,21 @@ export class TypeScriptLinter {
   }
 
   private checkArrayIndexType(exprType: ts.Type, argType: ts.Type, expr: ts.ElementAccessExpression): void {
-    const argExpr = expr.argumentExpression;
-
     if (!this.options.arkts2 || !this.tsUtils.isOrDerivedFrom(exprType, this.tsUtils.isIndexableArray)) {
       return;
     }
 
+    const argExpr = TypeScriptLinter.getUnwrappedArgumentExpression(expr.argumentExpression);
+
     if (this.tsUtils.isNumberLikeType(argType)) {
       this.handleNumericArgument(argExpr);
-    } else if (this.tsTypeChecker.typeToString(argType) !== 'int') {
+    } else if (this.tsTypeChecker.typeToString(argType) !== STRINGLITERAL_INT) {
       this.incrementCounters(argExpr, FaultID.ArrayIndexExprType);
     }
+  }
+
+  private static getUnwrappedArgumentExpression(argExpr: ts.Expression): ts.Expression {
+    return argExpr.kind === ts.SyntaxKind.AsExpression ? (argExpr as ts.AsExpression).expression : argExpr;
   }
 
   private handleNumericArgument(argExpr: ts.Expression): void {
@@ -2567,17 +2624,17 @@ export class TypeScriptLinter {
      */
     if (
       constVal !== undefined &&
-      typeof constVal === 'string' &&
+      typeof constVal === STRINGLITERAL_STRING &&
       firstElewmVal !== undefined &&
-      typeof firstElewmVal === 'string'
+      typeof firstElewmVal === STRINGLITERAL_STRING
     ) {
       return;
     }
     if (
       constVal !== undefined &&
-      typeof constVal === 'number' &&
+      typeof constVal === STRINGLITERAL_NUMBER &&
       firstElewmVal !== undefined &&
-      typeof firstElewmVal === 'number'
+      typeof firstElewmVal === STRINGLITERAL_NUMBER
     ) {
       return;
     }
@@ -3137,7 +3194,9 @@ export class TypeScriptLinter {
       this.options.arkts2 &&
       this.tsUtils.needToDeduceStructuralIdentity(targetType, exprType, tsAsExpr.expression, true)
     ) {
-      this.incrementCounters(node, FaultID.StructuralIdentity);
+      if (!this.tsUtils.isObject(exprType)) {
+        this.incrementCounters(node, FaultID.StructuralIdentity);
+      }
     }
   }
 
@@ -3813,7 +3872,7 @@ export class TypeScriptLinter {
     if (
       this.compatibleSdkVersion > SENDBALE_FUNCTION_START_VERSION ||
       this.compatibleSdkVersion === SENDBALE_FUNCTION_START_VERSION &&
-        !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
+      !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
     ) {
       return true;
     }

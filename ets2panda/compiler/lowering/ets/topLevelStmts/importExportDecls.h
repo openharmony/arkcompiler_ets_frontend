@@ -24,6 +24,7 @@
 
 namespace ark::es2panda::compiler {
 
+class SavedImportExportDeclsContext;
 class ImportExportDecls : ir::visitor::EmptyAstVisitor {
     static constexpr std::string_view DEFAULT_IMPORT_SOURCE_FILE = "<default_import>.ets";
 
@@ -71,6 +72,8 @@ public:
                                         lexer::SourcePosition startLoc);
     void PopulateAliasMap(const ir::ExportNamedDeclaration *decl, const util::StringView &path);
     void PopulateAliasMap(const ir::TSTypeAliasDeclaration *decl, const util::StringView &path);
+    void VerifyCollectedExportName(const parser::Program *program);
+    void PreMergeNamespaces(parser::Program *program);
 
 private:
     void VisitFunctionDeclaration(ir::FunctionDeclaration *funcDecl) override;
@@ -93,6 +96,84 @@ private:
     std::map<util::StringView, util::StringView> importedSpecifiersForExportCheck_;
     lexer::SourcePosition lastExportErrorPos_ {};
     util::StringView exportDefaultName_;
+
+    friend class SavedImportExportDeclsContext;
+};
+
+class SavedImportExportDeclsContext {
+public:
+    explicit SavedImportExportDeclsContext(ImportExportDecls *imExDecl, parser::Program *program)
+        : imExDecl_(imExDecl),
+          program_(program),
+          fieldMapPrev_(imExDecl_->fieldMap_),
+          exportNameMapPrev_(imExDecl_->exportNameMap_),
+          exportedTypesPrev_(imExDecl_->exportedTypes_),
+          exportDefaultNamePrev_(imExDecl_->exportDefaultName_),
+          exportAliasMultimapPrev_(SaveExportAliasMultimap())
+    {
+        ClearImportExportDecls();
+        UpdateExportMap();
+    }
+
+    void RecoverExportAliasMultimap()
+    {
+        auto &exportMap = imExDecl_->varbinder_->GetSelectiveExportAliasMultimap();
+
+        exportMap.erase(program_->SourceFilePath());
+        exportMap.insert({program_->SourceFilePath(), exportAliasMultimapPrev_});
+    }
+
+    NO_COPY_SEMANTIC(SavedImportExportDeclsContext);
+    DEFAULT_MOVE_SEMANTIC(SavedImportExportDeclsContext);
+
+    ~SavedImportExportDeclsContext()
+    {
+        RestoreImportExportDecls();
+    }
+
+private:
+    void ClearImportExportDecls()
+    {
+        imExDecl_->fieldMap_.clear();
+        imExDecl_->exportNameMap_.clear();
+        imExDecl_->exportedTypes_.clear();
+        imExDecl_->exportDefaultName_ = nullptr;
+    }
+
+    void UpdateExportMap()
+    {
+        auto &exportMap = imExDecl_->varbinder_->GetSelectiveExportAliasMultimap();
+        exportAliasMultimapPrev_ = exportMap.find(program_->SourceFilePath())->second;
+
+        exportMap.erase(program_->SourceFilePath());
+
+        ArenaMap<util::StringView, std::pair<util::StringView, ir::AstNode const *>> newMap(
+            program_->Allocator()->Adapter());
+        exportMap.insert({program_->SourceFilePath(), newMap});
+    }
+
+    void RestoreImportExportDecls()
+    {
+        imExDecl_->fieldMap_ = fieldMapPrev_;
+        imExDecl_->exportNameMap_ = exportNameMapPrev_;
+        imExDecl_->exportedTypes_ = exportedTypesPrev_;
+        imExDecl_->exportDefaultName_ = exportDefaultNamePrev_;
+    }
+
+    ArenaMap<util::StringView, std::pair<util::StringView, ir::AstNode const *>> SaveExportAliasMultimap()
+    {
+        auto &exportMap = imExDecl_->varbinder_->GetSelectiveExportAliasMultimap();
+        return exportMap.find(program_->SourceFilePath())->second;
+    }
+
+private:
+    ImportExportDecls *imExDecl_;
+    parser::Program *program_;
+    std::map<util::StringView, ir::AstNode *> fieldMapPrev_;
+    std::map<util::StringView, lexer::SourcePosition> exportNameMapPrev_;
+    std::set<util::StringView> exportedTypesPrev_;
+    util::StringView exportDefaultNamePrev_;
+    ArenaMap<util::StringView, std::pair<util::StringView, ir::AstNode const *>> exportAliasMultimapPrev_;
 };
 }  // namespace ark::es2panda::compiler
 
