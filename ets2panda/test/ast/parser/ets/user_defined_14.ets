@@ -13,9 +13,6 @@
  * limitations under the License.
  */
 
-class /* @@ label */typeof{
+class typeof{
   a : string = "15";
 }
-
-/* @@@ label Error SyntaxError: Cannot be used as user-defined type.  */
-/* @@@ label Error SyntaxError: Identifier expected, got 'typeof'. */

@@ -592,12 +592,13 @@ ir::Expression *ParserImpl::ParseAssignmentExpression(ir::Expression *lhsExpress
             conditionalExpr->SetRange({lhsExpression->Start(), alternate->End()});
             return conditionalExpr;
         }
-        case lexer::TokenType::PUNCTUATOR_ARROW:
+        case lexer::TokenType::PUNCTUATOR_ARROW: {
             if (lexer_->GetToken().NewLine()) {
                 LogError(diagnostic::EXPECTED_EXPRESSION_GOT_ARROW);
             }
 
             return ParseArrowFunctionExpression(lhsExpression, nullptr, nullptr, false);
+        }
         case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {
             ValidateAssignmentTarget(flags, lhsExpression);
 
@@ -605,12 +606,17 @@ ir::Expression *ParserImpl::ParseAssignmentExpression(ir::Expression *lhsExpress
             ir::Expression *assignmentExpression = ParseExpression(CarryPatternFlags(flags));
             return CreateBinaryAssignmentExpression(assignmentExpression, lhsExpression, tokenType);
         }
-        case lexer::TokenType::KEYW_AS:
+        case lexer::TokenType::KEYW_AS: {
             if (auto asExpression = ParsePotentialAsExpression(lhsExpression); asExpression != nullptr) {
                 return ParseAssignmentExpression(asExpression);
             }
             break;
+        }
         default: {
+            if (tokenType == lexer::TokenType::LITERAL_IDENT &&
+                lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_INSTANCEOF) {
+                tokenType = lexer::TokenType::KEYW_INSTANCEOF;
+            }
             auto expression = ParseAssignmentBinaryExpression(tokenType, lhsExpression, flags);
             if (expression == nullptr) {
                 expression = ParseAssignmentEqualExpression(tokenType, lhsExpression, flags);
@@ -663,7 +669,7 @@ ir::Expression *ParserImpl::ParseAssignmentBinaryExpression(const lexer::TokenTy
         case lexer::TokenType::PUNCTUATOR_MOD:
         case lexer::TokenType::KEYW_INSTANCEOF:
         case lexer::TokenType::PUNCTUATOR_EXPONENTIATION: {
-            return ParseAssignmentExpression(ParseBinaryExpression(lhsExpression));
+            return ParseAssignmentExpression(ParseBinaryExpression(lhsExpression, tokenType));
         }
         default:
             break;
@@ -1295,9 +1301,8 @@ static ir::Expression *FindAndAmendChildExpression(ir::Expression *expression, c
     return shouldBeAmended ? expression : parentExpression;
 }
 
-ir::Expression *ParserImpl::ParseBinaryExpression(ir::Expression *left, ExpressionParseFlags flags)
+ir::Expression *ParserImpl::ParseBinaryExpression(ir::Expression *left, const lexer::TokenType operatorType)
 {
-    lexer::TokenType operatorType = lexer_->GetToken().Type();
     ES2PANDA_ASSERT(lexer::Token::IsBinaryToken(operatorType));
 
     if (operatorType == lexer::TokenType::PUNCTUATOR_EXPONENTIATION) {
@@ -1307,11 +1312,6 @@ ir::Expression *ParserImpl::ParseBinaryExpression(ir::Expression *left, Expressi
     }
 
     lexer_->NextToken();
-
-    ExpressionParseFlags newFlags = ExpressionParseFlags::DISALLOW_YIELD;
-    if ((operatorType == lexer::TokenType::KEYW_INSTANCEOF) || ((flags & ExpressionParseFlags::INSTANCEOF) != 0)) {
-        newFlags |= ExpressionParseFlags::INSTANCEOF;
-    }
 
     ir::Expression *rightExpr = ParseExpressionOrTypeAnnotation(operatorType, ExpressionParseFlags::DISALLOW_YIELD);
     ir::ConditionalExpression *conditionalExpr = nullptr;
