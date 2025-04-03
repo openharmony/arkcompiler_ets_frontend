@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-struct typeof{
+class instanceof{
   a : string = "15";
 }
-
-/* @@? 16:1 Error TypeError: Structs are only used to define UI components, it should be translated at 'plugin after parser' phase. */

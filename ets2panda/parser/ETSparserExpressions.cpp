@@ -125,6 +125,10 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
 {
     auto tokenFlags = lexer::NextTokenFlags::NONE;
     lexer::TokenType operatorType = Lexer()->GetToken().Type();
+    if (operatorType == lexer::TokenType::LITERAL_IDENT &&
+        Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPEOF) {
+        operatorType = lexer::TokenType::KEYW_TYPEOF;
+    }
 
     switch (operatorType) {
         case lexer::TokenType::PUNCTUATOR_MINUS:
@@ -161,8 +165,6 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
         }
     }
 
-    lexer::SourcePosition end = argument->End();
-
     ir::Expression *returnExpr = nullptr;
     if (lexer::Token::IsUpdateToken(operatorType)) {
         returnExpr = AllocNode<ir::UpdateExpression>(argument, operatorType, true);
@@ -174,7 +176,7 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
         returnExpr = AllocNode<ir::UnaryExpression>(argument, operatorType);
     }
 
-    returnExpr->SetRange({start, end});
+    returnExpr->SetRange({start, argument->End()});
 
     return returnExpr;
 }

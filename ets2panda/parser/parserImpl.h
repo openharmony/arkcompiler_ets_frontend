@@ -126,8 +126,7 @@ protected:
     // ExpressionParser.Cpp
 
     ir::Expression *ParseKeywordExpression();
-    ir::Expression *ParseBinaryExpression(ir::Expression *left,
-                                          ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
+    ir::Expression *ParseBinaryExpression(ir::Expression *left, const lexer::TokenType operatorType);
     void ValidateUpdateExpression(ir::Expression *returnExpression, bool isChainExpression);
     ir::Expression *ParseMemberExpression(bool ignoreCallExpression = false,
                                           ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
