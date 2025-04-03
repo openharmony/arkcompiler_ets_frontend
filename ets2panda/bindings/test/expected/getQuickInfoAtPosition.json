@@ -1,0 +1,107 @@
+{
+  "1": {
+    "kind": "",
+    "kindModifier": "static public readonly",
+    "textSpan": {
+      "start": 626,
+      "length": 1
+    },
+    "fileName": "getQuickInfoAtPosition1.ets",
+    "displayParts": [
+      {
+        "text": "MyStrings",
+        "kind": "enumName"
+      },
+      {
+        "text": ".",
+        "kind": "punctuation"
+      },
+      {
+        "text": "A",
+        "kind": "enumMember"
+      },
+      {
+        "text": " ",
+        "kind": "space"
+      },
+      {
+        "text": "=",
+        "kind": "operator"
+      },
+      {
+        "text": " ",
+        "kind": "space"
+      },
+      {
+        "text": "\"",
+        "kind": "punctuation"
+      },
+      {
+        "text": "hello",
+        "kind": "text"
+      },
+      {
+        "text": "\"",
+        "kind": "punctuation"
+      }
+    ]
+  },
+  "2": {
+    "kind": "class",
+    "kindModifier": "",
+    "textSpan": {
+      "start": 615,
+      "length": 7
+    },
+    "fileName": "getQuickInfoAtPosition2.ets",
+    "displayParts": [
+      {
+        "text": "class",
+        "kind": "keyword"
+      },
+      {
+        "text": " ",
+        "kind": "space"
+      },
+      {
+        "text": "MyClass",
+        "kind": "className"
+      }
+    ]
+  },
+  "3": {
+    "kind": "property",
+    "kindModifier": "public abstract",
+    "textSpan": {
+      "start": 661,
+      "length": 3
+    },
+    "fileName": "getQuickInfoAtPosition3.ets",
+    "displayParts": [
+      {
+        "text": "objI",
+        "kind": "interface"
+      },
+      {
+        "text": ".",
+        "kind": "punctuation"
+      },
+      {
+        "text": "key",
+        "kind": "property"
+      },
+      {
+        "text": ":",
+        "kind": "punctuation"
+      },
+      {
+        "text": " ",
+        "kind": "space"
+      },
+      {
+        "text": "string",
+        "kind": "returnType"
+      }
+    ]
+  }
+}

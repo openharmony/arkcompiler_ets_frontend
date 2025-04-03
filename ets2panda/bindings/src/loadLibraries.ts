@@ -18,23 +18,26 @@ import * as path from 'path';
 const nativeModuleLibraries: Map<string, string> = new Map();
 
 export function loadNativeLibrary(name: string): Record<string, object> {
+  // CC-OFFNXT(no_explicit_any) project code style
   if ((globalThis as any).requireNapi) {
+    // CC-OFFNXT(no_explicit_any) project code style
     return (globalThis as any).requireNapi(name, true);
   } else {
     const suffixedName = name.endsWith('.node') ? name : `${name}.node`;
     if (process.platform === 'win32') {
       return require(suffixedName);
     } else {
+      // CC-OFFNXT(no_eval) project code style
       return eval(`let exports = {}; process.dlopen({ exports }, require.resolve("${suffixedName}"), 2); exports`);
     }
   }
 }
 
-export function registerNativeModuleLibraryName(nativeModule: string, libraryName: string) {
+export function registerNativeModuleLibraryName(nativeModule: string, libraryName: string): void {
   nativeModuleLibraries.set(nativeModule, libraryName);
 }
 
-export function loadNativeModuleLibrary(moduleName: string, module?: object) {
+export function loadNativeModuleLibrary(moduleName: string, module?: object): void {
   if (!module) {
     throw new Error('<module> argument is required and optional only for compatibility with ArkTS');
   }
