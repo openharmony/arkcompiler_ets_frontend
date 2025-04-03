@@ -1346,3 +1346,7 @@ semantic:
 - name: READONLY_PROPERTY_REASSIGN
   id: 338
   message: "The 'Readonly' property cannot be reassigned."
+
+- name: PROPERTY_MAYBE_MISSING_INIT
+  id: 339
+  message: "Property '{}' might not have been initialized."

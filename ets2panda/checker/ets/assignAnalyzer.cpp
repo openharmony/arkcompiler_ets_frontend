@@ -1294,6 +1294,26 @@ varbinder::Variable *AssignAnalyzer::GetBoundVariable(const ir::AstNode *node)
     return ret;
 }
 
+static const ir::AstNode *CheckInterfaceProp(const ark::es2panda::ir::AstNode *const node,
+                                             const ir::ClassDefinition *classDef)
+{
+    util::StringView methodName = node->AsMethodDefinition()->Key()->AsIdentifier()->Name();
+    // the property from interface should start with <property> to distinguish from its getter/setter.
+    std::string interfaceProp = std::string("<property>") + std::string(methodName.Utf8());
+    for (const auto it : classDef->Body()) {
+        // Check if there is corresponding class property in the same class.
+        if (it->IsClassProperty() && !it->IsStatic()) {
+            const auto *prop = it->AsClassProperty();
+            auto *propIdentifier = prop->Key()->AsIdentifier();
+            if (propIdentifier->Name().Is(interfaceProp)) {
+                // Use property node as declNode to ensure obtaining NodeId and add it to inits.
+                return prop;
+            }
+        }
+    }
+    return nullptr;
+}
+
 const ir::AstNode *AssignAnalyzer::GetDeclaringNode(const ir::AstNode *node)
 {
     if (node->IsClassProperty() || node->IsVariableDeclarator()) {
@@ -1319,6 +1339,15 @@ const ir::AstNode *AssignAnalyzer::GetDeclaringNode(const ir::AstNode *node)
         if (ret->IsIdentifier() && ret->Parent()->IsVariableDeclarator() &&
             ret == ret->Parent()->AsVariableDeclarator()->Id()) {
             ret = ret->Parent();
+        }
+    }
+
+    if (ret != nullptr) {
+        // if declNode is a getter/setter method, actual node initialized should be a class proterty node.
+        if ((ret->Modifiers() & ir::ModifierFlags::GETTER_SETTER) != 0U) {
+            if (const auto *interfaceProp = CheckInterfaceProp(ret, classDef_); interfaceProp != nullptr) {
+                ret = interfaceProp;
+            }
         }
     }
 
@@ -1431,12 +1460,11 @@ void AssignAnalyzer::CheckInit(const ir::AstNode *node)
 
             std::stringstream ss;
             if (node->IsClassProperty()) {
-                ss << "Property '" << name << "' might not have been initialized.";
+                checker_->LogError(diagnostic::PROPERTY_MAYBE_MISSING_INIT, {name}, pos);
             } else {
                 ss << Capitalize(type) << " '" << name << "' is used before being assigned.";
+                Warning(ss.str(), pos);
             }
-
-            Warning(ss.str(), pos);
         }
     }
 }
