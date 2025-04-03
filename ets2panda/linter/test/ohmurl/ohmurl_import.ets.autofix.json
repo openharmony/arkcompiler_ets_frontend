@@ -24,7 +24,7 @@
                 {
                     "start": 636,
                     "end": 669,
-                    "replacementText": "library/src/main/ets/components/MainPage"
+                    "replacementText": "'library/src/main/ets/components/MainPage'"
                 }
             ],
             "suggest": "",

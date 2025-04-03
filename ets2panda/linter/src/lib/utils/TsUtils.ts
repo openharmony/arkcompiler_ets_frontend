@@ -41,6 +41,12 @@ import { isAssignmentOperator } from './functions/isAssignmentOperator';
 import { isIntrinsicObjectType } from './functions/isIntrinsicObjectType';
 import type { LinterOptions } from '../LinterOptions';
 import { STRINGLITERAL_NUMBER, STRINGLITERAL_NUMBER_ARRAY } from './consts/StringLiteral';
+import {
+  OH_COMPONENTS_MODULE,
+  OH_PAGES_MODULE,
+  VALID_OHM_COMPONENTS_MODULE_PATH,
+  VALID_OHM_PAGES_MODULE_PATH
+} from './consts/OhmUrl';
 
 export const SYMBOL = 'Symbol';
 export const SYMBOL_CONSTRUCTOR = 'SymbolConstructor';
@@ -3330,5 +3336,27 @@ export class TsUtils {
       (typeFlags & ts.TypeFlags.NumberLiteral) !== 0 ||
       isEnum;
     return isNumberLike;
+  }
+
+  static isOhModule(path: string): boolean {
+    if (path.includes(OH_COMPONENTS_MODULE)) {
+      return true;
+    }
+    if (path.includes(OH_PAGES_MODULE)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  static isValidOhModulePath(path: string): boolean {
+    if (path.includes(VALID_OHM_COMPONENTS_MODULE_PATH)) {
+      return true;
+    }
+    if (path.includes(VALID_OHM_PAGES_MODULE_PATH)) {
+      return true;
+    }
+
+    return false;
   }
 }
