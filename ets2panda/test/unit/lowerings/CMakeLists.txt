@@ -27,3 +27,6 @@ ets2panda_add_gtest(const_expression_test
 ets2panda_add_gtest(top_level_statements_test
     CPP_SOURCES top_level_statements.cpp
 )
+ets2panda_add_gtest(node_history_test
+    CPP_SOURCES node_history.cpp
+)
