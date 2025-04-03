@@ -208,9 +208,14 @@ PhaseManager *GetPhaseManager()
     return g_phaseManager;
 }
 
+void SetPhaseManager(PhaseManager *phaseManager)
+{
+    g_phaseManager = phaseManager;
+}
+
 bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
 {
-    g_phaseManager = ctx->phaseManager;
+    SetPhaseManager(ctx->phaseManager);
     GetPhaseManager()->SetCurrentPhaseId(id_);
 
 #ifndef NDEBUG
