@@ -102,7 +102,7 @@ export class ArkTSConfigGenerator {
           // fill path section with `"pathFromApi.subdir.fileName" = [${absolute_path_to_file}]`;
           // For arkui files under api dir,
           // fill path section with `"fileName" = [${absolute_path_to_file}]`.
-          const isCurrentDirExcluded = path.basename(currentDir) === 'api' && item === 'arkui';
+          const isCurrentDirExcluded = path.basename(currentDir) === 'arkui' && item === 'runtime-api';
           const newRelativePath = isCurrentDirExcluded ? '' : (relativePath ? `${relativePath}.${item}` : item);
           traverse(path.resolve(currentDir, item), newRelativePath, isCurrentDirExcluded || isExcludedDir);
         }

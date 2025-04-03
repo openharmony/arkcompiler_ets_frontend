@@ -18,7 +18,7 @@ import { global } from "./global"
 import { throwError } from "./utils"
 import { Es2pandaContextState } from "./generated/Es2pandaEnums"
 import { withStringResult } from "./Platform"
-import { KBoolean, KPointer } from "./InteropTypes"
+import { KBoolean, KNativePointer, KPointer } from "./InteropTypes"
 
 export class DriverHelper {
   constructor(filePath: string, cmd: string[]) {
@@ -87,31 +87,31 @@ export class LspDriverHelper {
     return Config.create(cmd, filePath, true)
   }
 
-  public createCtx(source: string, filePath: string, cfg: Config): Context {
+  public createCtx(source: string, filePath: string, cfg: Config): KNativePointer {
     return Context.lspCreateFromString(source, filePath, cfg)
   }
 
-  public proceedToState(ctx: Context, state: Es2pandaContextState) {
+  public proceedToState(ctx: KNativePointer, state: Es2pandaContextState) {
     if (ctx === undefined) {
       throwError("Trying to proceed to state while cts is undefined")
     }
-    if (state <= global.es2panda._ContextState(ctx.peer)) {
+    if (state <= global.es2panda._ContextState(ctx)) {
       return
     }
 
     try {
-      global.es2panda._ProceedToState(ctx.peer, state)
+      global.es2panda._ProceedToState(ctx, state)
     } catch (e) {
-      global.es2panda._DestroyContext(ctx.peer)
+      global.es2panda._DestroyContext(ctx)
       throw e
     }
   }
 
-  public destroyContext(ctx: Context) {
+  public destroyContext(ctx: KNativePointer) {
     if (ctx === undefined) {
       return
     }
-    global.es2panda._DestroyContext(ctx.peer)
+    global.es2panda._DestroyContext(ctx)
   }
 
   public destroyConfig(cfg: Config) {
