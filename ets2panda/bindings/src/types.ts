@@ -135,16 +135,14 @@ export class Context extends ArktsObject {
 
   static lspCreateFromString(
     source: string, filePath: string, cfg: Config
-  ): Context {
+  ): KPtr {
     if (cfg === undefined) {
       throwError(`Config not initialized`)
     }
-    return new Context(
-      global.es2panda._CreateContextFromString(
-        cfg.peer,
-        passString(source),
-        passString(filePath)
-      )
+    return global.es2panda._CreateContextFromString(
+      cfg.peer,
+      passString(source),
+      passString(filePath)
     )
   }
   get program(): Program {
