@@ -207,9 +207,15 @@ ir::Expression *ETSParser::ParsePropertyDefinition(ExpressionParseFlags flags)
     ir::Expression *value = ParsePropertyValue(&propertyKind, &methodStatus, flags);
     lexer::SourcePosition end = value->End();
 
-    auto *returnProperty =
-        AllocNode<ir::Property>(propertyKind, key, value, methodStatus != ParserStatus::NO_OPTS, isComputed);
-    returnProperty->SetRange({start, end});
+    ir::Expression *returnProperty = nullptr;
+    if (propertyKind == ir::PropertyKind::INIT) {
+        returnProperty =
+            AllocNode<ir::Property>(propertyKind, key, value, methodStatus != ParserStatus::NO_OPTS, isComputed);
+        returnProperty->SetRange({start, end});
+    } else {
+        returnProperty = AllocBrokenExpression(key->Start());
+        LogError(diagnostic::OBJECT_PATTER_CONTAIN_METHODS, {}, returnProperty->Start());
+    }
 
     return returnProperty;
 }

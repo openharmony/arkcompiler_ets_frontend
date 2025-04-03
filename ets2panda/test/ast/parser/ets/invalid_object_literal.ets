@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,11 +13,29 @@
  * limitations under the License.
  */
 
-let /* @@ label1 */a = {
-  get [/* @@ label2 */b/* @@ label3 */)(){},
-  ...a,
+class A {
+    public _num: number = 0;
+    get num(): number {
+        return this._num;
+    }
+
+    set num(n: number) {
+        this._num = n;
+    }
 }
 
-/* @@@ label1 Error TypeError: Cannot infer type for a because class composite needs an explicit target type */
+let a: A = /* @@ label1 */{
+    _num:0,
+
+    get /* @@ label2 */num(): number {
+        return this._num;
+    },
+    
+    set /* @@ label3 */num(n: number) {
+        this._num = n;
+    }
+}
+
+/* @@@ label1 Error TypeError: The object literal properties must be key-value pairs */
 /* @@@ label2 Error SyntaxError: Object pattern can't contain methods. */
-/* @@@ label3 Error SyntaxError: Unexpected token, expected ']'.  */
+/* @@@ label3 Error SyntaxError: Object pattern can't contain methods. */
