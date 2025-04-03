@@ -36,6 +36,9 @@ public:
             case ETSWarnings::ETS_PROHIBIT_TOP_LEVEL_STATEMENTS:
                 ETSWarningsProhibitTopLevelStatements(node);
                 break;
+            case ETSWarnings::ETS_ANNOTATION_UNUSED_GENERIC_ALIAS_WARN:
+                ETSWarningAnnotationUnusedGenericAliasWarn(node);
+                break;
             case ETSWarnings::ETS_BOOST_EQUALITY_STATEMENT:
                 ETSWarningBoostEqualityStatement(node);
                 break;
@@ -68,6 +71,7 @@ private:
     std::string GetBoxingUnboxingType(const ir::AstNode *node);
     void CheckTypeOfBoxingUnboxing(const ir::AstNode *node);
 
+    void ETSWarningAnnotationUnusedGenericAliasWarn(const ir::AstNode *node);
     void ETSWarningSuggestFinal(const ir::AstNode *node);
     void ETSWarningsProhibitTopLevelStatements(const ir::AstNode *node);
     void ETSWarningBoostEqualityStatement(const ir::AstNode *node);
