@@ -76,10 +76,25 @@ const y2 = -6-n
 const y3 = -6*m 
 const y4 = -6/2
 const y5 = -6/b
+const y6 = -6%5
 arr[y1]
 arr[y2]
 arr[y3]
 arr[y4]
 arr[y5]
+arr[y6]
 const y7 = -(-6/b)
 arr[y7]
+arr[-1 as string]
+arr[-1 as number]
+arr[-1 as Number]
+arr[NaN];
+arr[-NaN];
+enum E34 {
+  BLUE = -1,
+}
+let a34 = arr[E34.BLUE];
+let a35 = arr[-E34.BLUE];
+const num = -2;
+arr[(num + 1) as number];
+arr[num as number];
