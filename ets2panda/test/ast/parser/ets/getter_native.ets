@@ -20,5 +20,4 @@ class Door {
     }
 }
 
-/* @@@ label Error SyntaxError: Modifiers of getter and setter are limited to ('abstract', 'static', 'final', 'override'). */
 /* @@@ label1 Error TypeError: Native, Abstract and Declare methods cannot have body. */

@@ -150,7 +150,7 @@ ir::TypeNode *ArrowFunctionExpression::CreateTypeAnnotation(checker::ETSChecker 
     }
 
     ArenaVector<ir::Expression *> params {checker->Allocator()->Adapter()};
-    checker->CopyParams(Function()->Params(), params);
+    checker->CopyParams(Function()->Params(), params, nullptr);
 
     auto signature = ir::FunctionSignature(nullptr, std::move(params), returnNode);
     auto *funcType = checker->AllocNode<ir::ETSFunctionType>(std::move(signature), ir::ScriptFunctionFlags::NONE,

@@ -13,10 +13,11 @@
  * limitations under the License.
  */
 
-let a = {
-  get [b/* @@ label */)(){},
+let /* @@ label1 */a = {
+  get [/* @@ label2 */b/* @@ label3 */)(){},
   ...a,
 }
 
-/* @@@ label Error SyntaxError: Unexpected token, expected ']'.  */
-/* @@? 16:5 Error TypeError: Cannot infer type for a because class composite needs an explicit target type */
+/* @@@ label1 Error TypeError: Cannot infer type for a because class composite needs an explicit target type */
+/* @@@ label2 Error SyntaxError: Object pattern can't contain methods. */
+/* @@@ label3 Error SyntaxError: Unexpected token, expected ']'.  */

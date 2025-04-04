@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,12 +12,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-class Door {
-    private _width: int;
-    native /* @@ label */set width(w:int) /* @@ label1 */{
-        this._width = w;
-    }
-}
-
-/* @@@ label1 Error TypeError: Native, Abstract and Declare methods cannot have body. */
+ 
+export function MyDecorator() {}

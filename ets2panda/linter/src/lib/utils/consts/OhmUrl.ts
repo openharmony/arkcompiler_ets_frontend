@@ -13,8 +13,10 @@
  * limitations under the License.
  */
 
-export const VALID_OHM_URL_PART = 'src/main/ets/components';
+export const VALID_OHM_COMPONENTS_MODULE_PATH = 'src/main/ets/components';
+export const VALID_OHM_PAGES_MODULE_PATH = 'src/main/ets/pages';
 export const SRC_AND_MAIN = 'src/main';
-export const OH_MODULE_INDICATOR = 'ets/components';
+export const OH_COMPONENTS_MODULE = 'ets/components';
+export const OH_PAGES_MODULE = 'ets/pages';
 export const PATH_SEPARATOR = '/';
 export const ETS_PART = 'ets';

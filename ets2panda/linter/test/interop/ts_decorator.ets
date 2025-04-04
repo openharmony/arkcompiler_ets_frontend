@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,11 +13,22 @@
  * limitations under the License.
  */
 
-class Door {
-    private _width: int;
-    native /* @@ label */set width(w:int) /* @@ label1 */{
-        this._width = w;
-    }
-}
+import {MyClassDecorator, MyClassDecorator2} from "./oh_modules/ts_decorator"
+import { MyDecorator } from "./oh_modules/ets_decorator";
 
-/* @@@ label1 Error TypeError: Native, Abstract and Declare methods cannot have body. */
+@MyClassDecorator
+class K {}
+
+@Entry //legal
+class X {}
+
+@MyDecorator //legal
+class Y {}
+
+@MyClassDecorator2
+class Z {}
+
+class Example {
+  @MyClassDecorator2  //legal
+  doSomething() {}
+}

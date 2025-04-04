@@ -760,4 +760,13 @@ util::UString Helpers::EscapeHTMLString(ArenaAllocator *allocator, const std::st
     return replaced;
 }
 
+bool Helpers::IsAsyncMethod(ir::AstNode const *node)
+{
+    if (!node->IsMethodDefinition()) {
+        return false;
+    }
+    auto *method = node->AsMethodDefinition();
+    return method->Function()->IsAsyncFunc() && !method->Function()->IsProxy();
+}
+
 }  // namespace ark::es2panda::util

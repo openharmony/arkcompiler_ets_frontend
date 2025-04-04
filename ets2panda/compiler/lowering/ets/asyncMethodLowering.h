@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+/**
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,11 +13,19 @@
  * limitations under the License.
  */
 
-class Door {
-    private _width: int;
-    native /* @@ label */set width(w:int) /* @@ label1 */{
-        this._width = w;
-    }
-}
+#ifndef ES2PANDA_COMPILER_LOWERING_ASYNC_METHOD_LOWERING_H
+#define ES2PANDA_COMPILER_LOWERING_ASYNC_METHOD_LOWERING_H
 
-/* @@@ label1 Error TypeError: Native, Abstract and Declare methods cannot have body. */
+#include "compiler/lowering/phase.h"
+
+namespace ark::es2panda::compiler {
+
+class AsyncMethodLowering : public PhaseForBodies {
+public:
+    std::string_view Name() const override;
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
+};
+
+}  // namespace ark::es2panda::compiler
+
+#endif  // ES2PANDA_COMPILER_LOWERING_ASYNC_METHOD_LOWERING_H

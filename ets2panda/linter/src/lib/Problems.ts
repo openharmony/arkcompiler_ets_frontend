@@ -172,6 +172,7 @@ export enum FaultID {
   DataObservation,
   InteropCallReflect,
   InteropCallObjectParam,
+  InteropNoDecorators,
   // this should always be last enum
   LAST_ID
 }

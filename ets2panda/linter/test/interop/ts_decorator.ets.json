@@ -13,16 +13,5 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "result": [
-        {
-            "line": 90,
-            "column": 5,
-            "endLine": 90,
-            "endColumn": 17,
-            "problem": "TypeAssertion",
-            "suggest": "",
-            "rule": "Only \"as T\" syntax is supported for type casts (arkts-as-casts)",
-            "severity": "ERROR"
-        }
-    ]
+    "result": []
 }

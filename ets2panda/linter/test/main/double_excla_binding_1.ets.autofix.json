@@ -15,15 +15,15 @@
     ],
     "result": [
         {
-            "line": 22,
+            "line": 24,
             "column": 16,
-            "endLine": 22,
+            "endLine": 24,
             "endColumn": 28,
             "problem": "DoubleExclaBindingNotSupported",
             "autofix": [
                 {
-                    "start": 718,
-                    "end": 730,
+                    "start": 747,
+                    "end": 759,
                     "replacementText": "$$(this.value)"
                 }
             ],
@@ -32,15 +32,15 @@
             "severity": "ERROR"
         },
         {
-            "line": 33,
+            "line": 35,
             "column": 25,
-            "endLine": 33,
+            "endLine": 35,
             "endColumn": 39,
             "problem": "DoubleExclaBindingNotSupported",
             "autofix": [
                 {
-                    "start": 860,
-                    "end": 874,
+                    "start": 889,
+                    "end": 903,
                     "replacementText": "$$(this.checked)"
                 }
             ],
@@ -49,9 +49,43 @@
             "severity": "ERROR"
         },
         {
-            "line": 16,
+            "line": 90,
+            "column": 21,
+            "endLine": 90,
+            "endColumn": 33,
+            "problem": "DoubleExclaBindingNotSupported",
+            "autofix": [
+                {
+                    "start": 1653,
+                    "end": 1676,
+                    "replacementText": "{\n    value: this.value,\n    $value: value => {\n        this.value = value;\n    }\n}"
+                }
+            ],
+            "suggest": "",
+            "rule": "\"!!\" for bidirectional data binding is not supported (arkui-no-!!-bidirectional-data-binding)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 91,
+            "column": 21,
+            "endLine": 91,
+            "endColumn": 31,
+            "problem": "DoubleExclaBindingNotSupported",
+            "autofix": [
+                {
+                    "start": 1691,
+                    "end": 1710,
+                    "replacementText": "{\n    str: this.str,\n    $str: value => {\n        this.str = value;\n    }\n}"
+                }
+            ],
+            "suggest": "",
+            "rule": "\"!!\" for bidirectional data binding is not supported (arkui-no-!!-bidirectional-data-binding)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
             "column": 2,
-            "endLine": 16,
+            "endLine": 18,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -59,9 +93,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 18,
+            "line": 20,
             "column": 4,
-            "endLine": 18,
+            "endLine": 20,
             "endColumn": 9,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -69,9 +103,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
+            "line": 22,
             "column": 5,
-            "endLine": 20,
+            "endLine": 22,
             "endColumn": 8,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -79,30 +113,10 @@
             "severity": "ERROR"
         },
         {
-            "line": 21,
+            "line": 23,
             "column": 7,
-            "endLine": 21,
+            "endLine": 23,
             "endColumn": 13,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 33,
-            "column": 7,
-            "endLine": 33,
-            "endColumn": 15,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 34,
-            "column": 7,
-            "endLine": 34,
-            "endColumn": 12,
             "problem": "UIInterfaceImport",
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
@@ -112,13 +126,103 @@
             "line": 35,
             "column": 7,
             "endLine": 35,
+            "endColumn": 15,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 7,
+            "endLine": 36,
+            "endColumn": 12,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 7,
+            "endLine": 37,
             "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 78,
+            "column": 2,
+            "endLine": 78,
+            "endColumn": 7,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 79,
+            "column": 2,
+            "endLine": 79,
+            "endColumn": 13,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 81,
+            "column": 4,
+            "endLine": 81,
+            "endColumn": 9,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 85,
+            "column": 5,
+            "endLine": 85,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 87,
+            "column": 7,
+            "endLine": 87,
+            "endColumn": 13,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 99,
+            "column": 4,
+            "endLine": 99,
+            "endColumn": 9,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 100,
+            "column": 4,
+            "endLine": 100,
+            "endColumn": 9,
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text } from '@kits.ArkUI';"
+                    "replacementText": "\n\nimport { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kits.ArkUI';"
                 }
             ],
             "suggest": "",

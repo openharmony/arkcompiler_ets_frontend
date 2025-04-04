@@ -13,41 +13,29 @@
  * limitations under the License.
  */
 
-class A {}
+class A {
+    public _num: number = 0;
+    get num(): number {
+        return this._num;
+    }
 
-class G {}
-
-class B {
-  static a: A
+    set num(n: number) {
+        this._num = n;
+    }
 }
 
-class C {
-  static g: G
+let a: A = /* @@ label1 */{
+    _num:0,
+
+    get /* @@ label2 */num(): number {
+        return this._num;
+    },
+    
+    set /* @@ label3 */num(n: number) {
+        this._num = n;
+    }
 }
 
-const c = new C();
-
-class D {
-  static a: A | undefined = undefined
-  static g: G;
-}
-
-class F {
-  static a: A 
-  static g: G | undefined = undefined;
-}
-
-const f = new F();
-
-@Entry
-@Component
-struct Index {
-  @State message: string = 'Hello World';
-  public static abc:string ;
-
-  build() {
-      Text(this.message)
-      .height('100%')
-      .width('100%')
-  }
-}
+/* @@@ label1 Error TypeError: The object literal properties must be key-value pairs */
+/* @@@ label2 Error SyntaxError: Object pattern can't contain methods. */
+/* @@@ label3 Error SyntaxError: Object pattern can't contain methods. */
