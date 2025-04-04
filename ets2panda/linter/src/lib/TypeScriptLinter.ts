@@ -83,6 +83,7 @@ import {
 } from './utils/consts/ArkuiConstants';
 import { arkuiImportList } from './utils/consts/ArkuiImportList';
 import { REFLECT_PROPERTIES, USE_STATIC } from './utils/consts/InteropAPI';
+import { EXTNAME_TS } from './utils/consts/ExtensionName';
 
 export class TypeScriptLinter {
   totalVisitedNodes: number = 0;
@@ -3858,6 +3859,7 @@ export class TypeScriptLinter {
     this.handleSendableDecorator(decorator);
     this.handleConcurrentDecorator(decorator);
     this.handleStylesDecorator(decorator);
+    this.handleTypescriptDecorators(decorator);
     if (TsUtils.getDecoratorName(decorator) === SENDABLE_DECORATOR) {
       const parent: ts.Node = decorator.parent;
       if (!parent || !SENDABLE_DECORATOR_NODES.includes(parent.kind)) {
@@ -4462,6 +4464,31 @@ export class TypeScriptLinter {
       }
       const autofix = this.autofixer?.removeDecorator(decorator);
       this.incrementCounters(decorator, FaultID.LimitedStdLibApi, autofix);
+    }
+  }
+
+  private handleTypescriptDecorators(decorator: ts.Decorator): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    if (!ts.isClassDeclaration(decorator.parent)) {
+      return;
+    }
+
+    const decoratorExpression = decorator.expression;
+    const symbol = this.tsUtils.trueSymbolAtLocation(decoratorExpression);
+    if (!symbol) {
+      return;
+    }
+
+    const decl = TsUtils.getDeclaration(symbol);
+    if (!decl) {
+      return;
+    }
+
+    const sourceFile = decl.getSourceFile();
+    if (sourceFile.fileName.endsWith(EXTNAME_TS)) {
+      this.incrementCounters(decorator, FaultID.InteropNoDecorators);
     }
   }
 
