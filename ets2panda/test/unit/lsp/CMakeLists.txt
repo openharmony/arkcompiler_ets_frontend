@@ -83,3 +83,7 @@ ets2panda_add_gtest(lsp_api_test_inlay_hints CPP_SOURCES
 ets2panda_add_gtest(lsp_api_test_find_rename_locations CPP_SOURCES
     find_rename_locations_test.cpp
 )
+
+ets2panda_add_gtest(lsp_api_test_create_type_help_items CPP_SOURCES
+    create_type_help_items_test.cpp
+)
