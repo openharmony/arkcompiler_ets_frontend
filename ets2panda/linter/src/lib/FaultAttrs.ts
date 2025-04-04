@@ -184,3 +184,4 @@ faultsAttrs[FaultID.OhmUrlFullPath] = new FaultAttributes(301);
 faultsAttrs[FaultID.InteropCallObjectParam] = new FaultAttributes(302);
 faultsAttrs[FaultID.InteropCallReflect] = new FaultAttributes(303);
 faultsAttrs[FaultID.NoDuplicateFunctionName] = new FaultAttributes(304);
+faultsAttrs[FaultID.InteropNoDecorators] = new FaultAttributes(305);
