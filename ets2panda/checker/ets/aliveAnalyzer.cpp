@@ -251,7 +251,7 @@ void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
         isPromiseVoid = asAsync->GetPromiseTypeArg() == checker_->GlobalETSUndefinedType();
     }
 
-    if (status_ == LivenessStatus::ALIVE && !isVoid && !isPromiseVoid && !checker_->IsAsyncImplMethod(methodDef)) {
+    if (status_ == LivenessStatus::ALIVE && !isVoid && !isPromiseVoid && !util::Helpers::IsAsyncMethod(methodDef)) {
         if (!methodDef->Function()->HasReturnStatement()) {
             checker_->LogError(diagnostic::MISSING_RETURN_STMT, {}, func->Start());
             ClearPendingExits();

@@ -158,6 +158,7 @@ public:
     static void CheckDefaultImport(const ArenaVector<ir::ETSImportDeclaration *> &statements);
     static std::tuple<util::StringView, bool> ParamName(ArenaAllocator *allocator, const ir::Expression *param,
                                                         std::uint32_t index);
+    static bool IsAsyncMethod(ir::AstNode const *node);
 
     template <typename T, typename V>
     static ArenaVector<T *> ConvertVector(const ArenaVector<V *> &src)

@@ -194,29 +194,38 @@ void DoBodyTypeChecking(ETSChecker *checker, ir::MethodDefinition *node, ir::Scr
         CheckNativeConstructorBody(checker, node, scriptFunc);
     }
 
-    if (!scriptFunc->IsAsyncFunc() && scriptFunc->HasBody() &&
-        (!scriptFunc->IsExternal() || scriptFunc->IsExternalOverload())) {
-        checker::ScopeContext scopeCtx(checker, scriptFunc->Scope());
-        checker::SavedCheckerContext savedContext(checker, checker->Context().Status(),
-                                                  checker->Context().ContainingClass());
-        checker->Context().SetContainingSignature(checker->GetSignatureFromMethodDefinition(node));
+    if (!scriptFunc->HasBody() || (scriptFunc->IsExternal() && !scriptFunc->IsExternalOverload())) {
+        return;
+    }
 
-        if (node->IsStatic() && !node->IsConstructor() &&
-            !checker->Context().ContainingClass()->HasObjectFlag(checker::ETSObjectFlags::GLOBAL)) {
-            checker->AddStatus(checker::CheckerStatus::IN_STATIC_CONTEXT);
-        }
+    checker::ScopeContext scopeCtx(checker, scriptFunc->Scope());
+    checker::SavedCheckerContext savedContext(checker, checker->Context().Status(),
+                                              checker->Context().ContainingClass());
+    checker->Context().SetContainingSignature(checker->GetSignatureFromMethodDefinition(node));
 
-        if (node->IsConstructor()) {
-            checker->AddStatus(checker::CheckerStatus::IN_CONSTRUCTOR);
-        }
+    if (node->IsStatic() && !node->IsConstructor() &&
+        !checker->Context().ContainingClass()->HasObjectFlag(checker::ETSObjectFlags::GLOBAL)) {
+        checker->AddStatus(checker::CheckerStatus::IN_STATIC_CONTEXT);
+    }
 
-        if (node->IsExtensionMethod()) {
-            CheckExtensionMethod(checker, scriptFunc, node);
-        }
+    if (node->IsConstructor()) {
+        checker->AddStatus(checker::CheckerStatus::IN_CONSTRUCTOR);
+    }
 
-        scriptFunc->Body()->Check(checker);
+    if (node->IsExtensionMethod()) {
+        CheckExtensionMethod(checker, scriptFunc, node);
+    }
 
-        if (scriptFunc->ReturnTypeAnnotation() == nullptr) {
+    scriptFunc->Body()->Check(checker);
+
+    if (scriptFunc->ReturnTypeAnnotation() == nullptr) {
+        if (scriptFunc->IsAsyncFunc()) {
+            auto returnType = checker->CreateETSAsyncFuncReturnTypeFromBaseType(scriptFunc->Signature()->ReturnType());
+            scriptFunc->Signature()->SetReturnType(returnType->PromiseType());
+            for (auto &returnStatement : scriptFunc->ReturnStatements()) {
+                returnStatement->SetReturnType(checker, returnType);
+            }
+        } else {
             if (scriptFunc->IsAsyncImplFunc()) {
                 ComposeAsyncImplFuncReturnType(checker, scriptFunc);
             }
@@ -225,9 +234,9 @@ void DoBodyTypeChecking(ETSChecker *checker, ir::MethodDefinition *node, ir::Scr
                 returnStatement->SetReturnType(checker, scriptFunc->Signature()->ReturnType());
             }
         }
-
-        checker->Context().SetContainingSignature(nullptr);
     }
+
+    checker->Context().SetContainingSignature(nullptr);
 }
 
 void ComposeAsyncImplFuncReturnType(ETSChecker *checker, ir::ScriptFunction *scriptFunc)
@@ -246,30 +255,6 @@ void ComposeAsyncImplFuncReturnType(ETSChecker *checker, ir::ScriptFunction *scr
         checker->Allocator()->New<ETSAsyncFuncReturnType>(checker->Allocator(), checker->Relation(), promiseType));
     returnType->Check(checker);
     scriptFunc->Signature()->SetReturnType(returnType->TsType());
-}
-
-void ComposeAsyncImplMethod(ETSChecker *checker, ir::MethodDefinition *node)
-{
-    auto *classDef = checker->FindAncestorGivenByType(node, ir::AstNodeType::CLASS_DEFINITION)->AsClassDefinition();
-    auto *scriptFunc = node->Function();
-    ir::MethodDefinition *implMethod = checker->CreateAsyncProxy(node, classDef);
-
-    implMethod->Check(checker);
-    node->SetAsyncPairMethod(implMethod);
-
-    if (scriptFunc->Signature()->HasSignatureFlag(SignatureFlags::NEED_RETURN_TYPE)) {
-        node->Function()->Signature()->SetReturnType(
-            implMethod->Function()->Signature()->ReturnType()->AsETSAsyncFuncReturnType()->PromiseType());
-        scriptFunc->Signature()->RemoveSignatureFlag(SignatureFlags::NEED_RETURN_TYPE);
-    }
-
-    if (node->Function()->IsOverload()) {
-        auto *baseOverloadImplMethod = node->BaseOverloadMethod()->AsyncPairMethod();
-        implMethod->Function()->Id()->SetVariable(baseOverloadImplMethod->Function()->Id()->Variable());
-        baseOverloadImplMethod->AddOverload(implMethod);
-    } else {
-        classDef->Body().push_back(implMethod);
-    }
 }
 
 void CheckPredefinedMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scriptFunc)

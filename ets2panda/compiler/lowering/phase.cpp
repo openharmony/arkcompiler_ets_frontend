@@ -15,6 +15,7 @@
 
 #include "phase.h"
 #include "compiler/lowering/checkerPhase.h"
+#include "compiler/lowering/ets/asyncMethodLowering.h"
 #include "compiler/lowering/ets/bigintLowering.h"
 #include "compiler/lowering/ets/boxingForLocals.h"
 #include "compiler/lowering/ets/boxedTypeLowering.h"
@@ -106,6 +107,7 @@ static PartialExportClassGen g_partialExportClassGen;
 static PackageImplicitImport g_packageImplicitImport;
 static GenericBridgesPhase g_genericBridgesLowering;
 static BoxedTypeLowering g_boxedTypeLowering;
+static AsyncMethodLowering g_asyncMethodLowering;
 static PluginPhase g_pluginsAfterParse {"plugins-after-parse", ES2PANDA_STATE_PARSED, &util::Plugin::AfterParse};
 static PluginPhase g_pluginsAfterBind {"plugins-after-bind", ES2PANDA_STATE_BOUND, &util::Plugin::AfterBind};
 static PluginPhase g_pluginsAfterCheck {"plugins-after-check", ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck};
@@ -136,6 +138,7 @@ std::vector<Phase *> GetRecheckPhase()
     };
 }
 
+// CC-OFFNXT(huge_method[C++]) solid logic
 std::vector<Phase *> GetETSPhaseList()
 {
     // clang-format off
@@ -161,6 +164,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_cfgBuilderPhase,
         &g_checkerPhase,        // please DO NOT change order of these two phases: checkerPhase and pluginsAfterCheck
         &g_pluginsAfterCheck,   // pluginsAfterCheck has to go right after checkerPhase, nothing should be between them
+        &g_asyncMethodLowering,
         &g_declareOverloadLowering,
         &g_enumPostCheckLoweringPhase,
         &g_spreadConstructionPhase,

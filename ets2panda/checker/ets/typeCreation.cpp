@@ -15,6 +15,7 @@
 
 #include "checker/ETSchecker.h"
 
+#include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "checker/types/ets/etsEnumType.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
 #include "checker/types/globalTypesHolder.h"
@@ -475,6 +476,17 @@ Type *ETSChecker::CreateUnionFromKeyofType(ETSObjectType *const type)
     }
 
     return CreateETSUnionType(std::move(stringLiterals));
+}
+
+ETSAsyncFuncReturnType *ETSChecker::CreateETSAsyncFuncReturnTypeFromPromiseType(ETSObjectType *promiseType)
+{
+    return Allocator()->New<ETSAsyncFuncReturnType>(Allocator(), Relation(), promiseType);
+}
+
+ETSAsyncFuncReturnType *ETSChecker::CreateETSAsyncFuncReturnTypeFromBaseType(Type *baseType)
+{
+    auto const promiseType = CreatePromiseOf(MaybeBoxType(baseType));
+    return Allocator()->New<ETSAsyncFuncReturnType>(Allocator(), Relation(), promiseType);
 }
 
 }  // namespace ark::es2panda::checker

@@ -21,7 +21,7 @@
 #include "evaluate/scopedDebugInfoPlugin.h"
 #include "types/signature.h"
 #include "compiler/lowering/ets/setJumpTarget.h"
-
+#include "checker/types/ets/etsAsyncFuncReturnType.h"
 namespace ark::es2panda::checker {
 
 ETSChecker *ETSAnalyzer::GetETSChecker() const
@@ -144,7 +144,7 @@ static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinitio
         }
     }
 
-    if (IsAsyncMethod(node)) {
+    if (util::Helpers::IsAsyncMethod(node)) {
         if (scriptFunc->ReturnTypeAnnotation() != nullptr) {
             auto *asyncFuncReturnType = scriptFunc->Signature()->ReturnType();
 
@@ -154,10 +154,6 @@ static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinitio
                 scriptFunc->Signature()->SetReturnType(checker->GlobalTypeError());
                 return;
             }
-        }
-
-        if (node->Function()->HasBody() && !node->TsType()->IsTypeError() && !node->Function()->IsExternal()) {
-            ComposeAsyncImplMethod(checker, node);
         }
     }
 }
@@ -2581,9 +2577,20 @@ bool ETSAnalyzer::CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::S
         return false;
     }
 
-    funcReturnType = containingFunc->ReturnTypeAnnotation() != nullptr
-                         ? containingFunc->ReturnTypeAnnotation()->GetType(checker)
-                         : containingFunc->GetPreferredReturnType();
+    if (containingFunc->ReturnTypeAnnotation() != nullptr) {
+        if (containingFunc->IsAsyncFunc()) {
+            auto *promiseType = containingFunc->ReturnTypeAnnotation()->GetType(checker);
+            if (!promiseType->IsETSObjectType() || promiseType->AsETSObjectType()->TypeArguments().size() != 1) {
+                return false;
+            }
+            funcReturnType = checker->CreateETSAsyncFuncReturnTypeFromPromiseType(promiseType->AsETSObjectType());
+        } else {
+            funcReturnType = containingFunc->ReturnTypeAnnotation()->GetType(checker);
+        }
+    } else {
+        funcReturnType = containingFunc->GetPreferredReturnType();
+    }
+
     // Case when function's return type is defined explicitly:
     if (st->argument_ == nullptr) {
         if (!funcReturnType->IsETSVoidType() && funcReturnType != checker->GlobalVoidType() &&
