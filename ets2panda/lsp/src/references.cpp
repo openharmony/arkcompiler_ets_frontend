@@ -33,7 +33,7 @@ bool IsValidReference(ir::AstNode *astNode)
     }
 }
 
-DeclInfoType GetDeclInfo(ir::AstNode *astNode)
+DeclInfoType GetDeclInfoImpl(ir::AstNode *astNode)
 {
     if (astNode == nullptr || !astNode->IsIdentifier()) {
         return {};
@@ -50,18 +50,26 @@ DeclInfoType GetDeclInfo(ir::AstNode *astNode)
     return {};
 }
 
-void GetReferencesAtPositionImpl(es2panda_Context *context, const DeclInfoType &declInfo, References *result)
+References GetReferencesAtPositionImpl(es2panda_Context *context, const DeclInfoType &declInfo)
 {
+    References result;
+    if (context == nullptr) {
+        return result;
+    }
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    if (ctx->parserProgram == nullptr || ctx->parserProgram->Ast() == nullptr) {
+        return result;
+    }
     auto astNode = reinterpret_cast<ir::AstNode *>(ctx->parserProgram->Ast());
-    astNode->IterateRecursively([ctx, declInfo, result](ir::AstNode *child) {
-        auto info = GetDeclInfo(child);
+    astNode->IterateRecursively([ctx, declInfo, &result](ir::AstNode *child) {
+        auto info = GetDeclInfoImpl(child);
         if (info == declInfo) {
             size_t startPos = child->Start().index;
             size_t endPos = child->End().index;
-            result->referenceInfos.emplace_back(ctx->sourceFileName, startPos, endPos - startPos);
+            result.referenceInfos.emplace_back(ctx->sourceFileName, startPos, endPos - startPos);
         }
     });
+    return result;
 }
 
 }  // namespace ark::es2panda::lsp

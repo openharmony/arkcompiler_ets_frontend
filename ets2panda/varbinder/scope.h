@@ -245,6 +245,7 @@ public:
     Variable *PropagateBinding(ArenaAllocator *allocator, util::StringView name, Args &&...args);
 
     virtual InsertResult InsertBinding(const util::StringView &name, Variable *var);
+    virtual InsertResult InsertOrAssignBinding(const util::StringView &name, Variable *const var);
     virtual InsertResult TryInsertBinding(const util::StringView &name, Variable *var);
     virtual void MergeBindings(VariableMap const &bindings);
     virtual VariableMap::size_type EraseBinding(const util::StringView &name);
@@ -877,12 +878,14 @@ public:
     VariableMap::size_type EraseBinding(const util::StringView &name) override;
 
     InsertResult InsertForeignBinding(const util::StringView &name, Variable *var);
+    InsertResult InsertOrAssignForeignBinding(const util::StringView &name, Variable *var);
     [[nodiscard]] bool IsForeignBinding(const util::StringView &name) const;
 
     InsertResult InsertDynamicBinding(const util::StringView &name, Variable *var);
 
 private:
-    InsertResult InsertImpl(const util::StringView &name, Variable *var, bool isForeign, bool isDynamic);
+    enum class InsertBindingFlags : uint8_t { NONE = 0, FOREIGN = 1U << 0U, DYNAMIC = 1U << 1U, ASSIGN = 1U << 2U };
+    InsertResult InsertImpl(const util::StringView &name, Variable *var, InsertBindingFlags flags);
 
     ArenaUnorderedMap<util::StringView, bool> foreignBindings_;
 };
@@ -982,5 +985,13 @@ VariableType *Scope::CreateVar(ArenaAllocator *allocator, util::StringView name,
 }
 
 }  // namespace ark::es2panda::varbinder
+
+namespace enumbitops {
+
+template <>
+struct IsAllowedType<ark::es2panda::varbinder::GlobalScope::InsertBindingFlags> : std::true_type {
+};
+
+}  // namespace enumbitops
 
 #endif

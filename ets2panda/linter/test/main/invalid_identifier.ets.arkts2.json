@@ -623,36 +623,6 @@
             "suggest": "",
             "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
             "severity": "ERROR"
-        },
-        {
-            "line": 100,
-            "column": 16,
-            "endLine": 100,
-            "endColumn": 23,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 104,
-            "column": 15,
-            "endLine": 104,
-            "endColumn": 21,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 116,
-            "column": 15,
-            "endLine": 116,
-            "endColumn": 21,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
         }
     ]
 }

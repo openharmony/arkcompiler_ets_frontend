@@ -1,6 +1,6 @@
 {
     "copyright": [
-        "Copyright (c) 2024 Huawei Device Co., Ltd.",
+        "Copyright (c) 2025 Huawei Device Co., Ltd.",
         "Licensed under the Apache License, Version 2.0 (the 'License');",
         "you may not use this file except in compliance with the License.",
         "You may obtain a copy of the License at",
@@ -13,5 +13,23 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "commonArgs": "--no-check-ts-as-source"
+    "result": [
+        {
+            "line": 16,
+            "column": 1,
+            "endLine": 16,
+            "endColumn": 10,
+            "problem": "LimitedStdLibApi",
+            "autofix": [
+                {
+                    "start": 610,
+                    "end": 619,
+                    "replacementText": ""
+                }
+            ],
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "severity": "ERROR"
+        }
+    ]
 }

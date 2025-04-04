@@ -355,23 +355,13 @@
             "severity": "ERROR"
         },
         {
-            "line": 30,
-            "column": 20,
-            "endLine": 30,
-            "endColumn": 26,
-            "problem": "UIInterfaceImport",
+            "line": 73,
+            "column": 6,
+            "endLine": 73,
+            "endColumn": 9,
+            "problem": "ArrayIndexExprType",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 48,
-            "column": 10,
-            "endLine": 48,
-            "endColumn": 14,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
             "severity": "ERROR"
         }
     ]

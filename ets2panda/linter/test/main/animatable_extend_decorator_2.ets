@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-import { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@ohos.arkui.components';
+import { AnimatableExtend, Memo, TextAttribute, Entry, Component, State, Column, Text, Curve, Button } from '@kits.ArkUI';
 
 @AnimatableExtend
+@Memo
 function animatableWidth(this: TextAttribute, width: number): TextAttribute
 {
   this.width(width);

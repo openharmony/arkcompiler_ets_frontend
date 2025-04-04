@@ -14,11 +14,11 @@
  */
 
 #include "util.h"
-
+#include <algorithm>
 #include <cstddef>
+#include <functional>
 #include <ostream>
 #include <string>
-#include <algorithm>
 
 static es2panda_Impl *g_implPtr = nullptr;
 
@@ -98,4 +98,53 @@ void PrependStatementToProgram(es2panda_Context *context, es2panda_AstNode *prog
     newStatements[0] = newStatement;
     impl->BlockStatementSetStatements(context, program, newStatements, sizeOfStatements + 1);
     impl->AstNodeSetParent(context, newStatement, program);
+}
+
+int Test(es2panda_Context *context, es2panda_Impl *impl, int stage,
+         std::function<bool(es2panda_Context *, es2panda_AstNode *)> handle)
+{
+    impl->ProceedToState(context, ES2PANDA_STATE_PARSED);
+    CheckForErrors("PARSE", context);
+    es2panda_AstNode *ast = impl->ProgramAst(context, impl->ContextProgram(context));
+    if (!ast) {
+        return TEST_ERROR_CODE;
+    }
+    switch (stage) {
+        case ES2PANDA_STATE_PARSED: {
+            break;
+        }
+        case ES2PANDA_STATE_BOUND: {
+            impl->ProceedToState(context, ES2PANDA_STATE_BOUND);
+            CheckForErrors("BOUND", context);
+            break;
+        }
+        case ES2PANDA_STATE_CHECKED: {
+            impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
+            CheckForErrors("CHECKED", context);
+            break;
+        }
+        case ES2PANDA_STATE_LOWERED: {
+            impl->ProceedToState(context, ES2PANDA_STATE_LOWERED);
+            CheckForErrors("LOWERED", context);
+            break;
+        }
+    }
+    if (impl->ContextState(context) == ES2PANDA_STATE_ERROR) {
+        return PROCEED_ERROR_CODE;
+    }
+    if (!handle(context, ast)) {
+        return TEST_ERROR_CODE;
+    }
+    if (stage == ES2PANDA_STATE_BOUND) {
+        impl->AstNodeRebind(context, ast);
+    } else if (stage == ES2PANDA_STATE_CHECKED || stage == ES2PANDA_STATE_LOWERED) {
+        impl->AstNodeRecheck(context, ast);
+    }
+    impl->ProceedToState(context, ES2PANDA_STATE_BIN_GENERATED);
+    CheckForErrors("BIN", context);
+    if (impl->ContextState(context) == ES2PANDA_STATE_ERROR) {
+        return PROCEED_ERROR_CODE;
+    }
+    impl->DestroyContext(context);
+    return 0;
 }

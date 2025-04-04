@@ -13,18 +13,18 @@
  * limitations under the License.
  */
 
- /*
- * test case issue 17357
- * After change extention .sts to .ets got an errors #23897
- */
-
-import { C } from './classC';
-
-class D {
-    c?: C = undefined;
-
-    foo() {
-        this.c?.bar(0).then();          // No errors, method came from '.ts' file
-        this.c?.bar(undefined).then();  // Neither 'overload-error' nor 'object-is-possibly-undefined' errors
-    }
+function main() : void
+{
+    assertEQ(foo(5), 5);
 }
+
+function foo(a : int, b : int = 10) : int
+{
+    return a + b;
+}
+
+function foo(a : int) : int
+{
+    return a;
+}
+

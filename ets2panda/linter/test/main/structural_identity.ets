@@ -670,3 +670,17 @@ function test_10(): B_10 {
   let obj1: A_10 = new A_10();
   return obj1; // NOT OK
 }
+
+let task1: taskpool.Task = new taskpool.Task(funObject1);
+      taskpool.execute(task1).then((value:Object) => {
+        console.info("result test taskpool: " + JSON.stringify(value));
+        let aa = value as Array<string|number>;
+        expect(aa[0]).assertEqual('toString result: bb : cc')
+        expect(aa[1]).assertEqual(200)
+        expect(aa[2]).assertEqual('testtoString')
+      })
+function funObject1():Array<string|number>{
+  let aa:ObjectInfo1=new ObjectInfo1('bb','cc')
+  let ee:Array<string|number>=[aa.toString(),aa.toString(2),aa.toString('test')]
+  return ee;
+}

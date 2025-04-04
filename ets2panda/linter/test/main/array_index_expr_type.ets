@@ -70,3 +70,4 @@ arr1[+0];
 arr1[-0];
 arr1[+1];
 arr1[-1];
+arr1[1.1 as number];

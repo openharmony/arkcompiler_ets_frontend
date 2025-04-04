@@ -71,8 +71,8 @@ typedef struct TextSpan {
 } TextSpan;
 
 typedef struct Position {
-    unsigned int line_;       // Line number
-    unsigned int character_;  // Character position in the line
+    size_t line_;       // Line number
+    size_t character_;  // Character position in the line
 
     Position(unsigned int line_num = 0, unsigned int character_pos = 0) : line_(line_num), character_(character_pos) {}
 } Position;
@@ -338,23 +338,27 @@ typedef struct FileDiagnostic {
     }
 } FileDiagnostic;
 
+typedef struct DeclInfo {
+    std::string fileName;
+    std::string fileText;
+} DeclInfo;
+
 typedef struct LSPAPI {
-    DefinitionInfo (*getDefinitionAtPosition)(char const *fileName, size_t position);
-    DefinitionInfo (*getImplementationAtPosition)(char const *fileName, size_t position);
-    References (*getFileReferences)(char const *fileName);
-    References (*getReferencesAtPosition)(char const *fileName, size_t position);
+    DefinitionInfo (*getDefinitionAtPosition)(es2panda_Context *context, size_t position);
+    DefinitionInfo (*getImplementationAtPosition)(es2panda_Context *context, size_t position);
+    bool (*isPackageModule)(es2panda_Context *context);
+    References (*getFileReferences)(char const *fileName, es2panda_Context *context, bool isPackageModule);
+    DeclInfo (*getDeclInfo)(es2panda_Context *context, size_t position);
+    References (*getReferencesAtPosition)(es2panda_Context *context, DeclInfo *declInfo);
     es2panda_AstNode *(*getPrecedingToken)(es2panda_Context *context, const size_t pos);
-    std::string (*getCurrentTokenValue)(char const *fileName, size_t position);
-    QuickInfo (*getQuickInfoAtPosition)(const char *fileName, size_t position);
+    std::string (*getCurrentTokenValue)(es2panda_Context *context, size_t position);
+    QuickInfo (*getQuickInfoAtPosition)(const char *fileName, es2panda_Context *context, size_t position);
     TextSpan (*getSpanOfEnclosingComment)(char const *fileName, size_t pos, bool onlyMultiLine);
-    DiagnosticReferences (*getSemanticDiagnostics)(char const *fileName);
-    DiagnosticReferences (*getSyntacticDiagnostics)(char const *fileName);
+    DiagnosticReferences (*getSemanticDiagnostics)(es2panda_Context *context);
+    DiagnosticReferences (*getSyntacticDiagnostics)(es2panda_Context *context);
     DiagnosticReferences (*getCompilerOptionsDiagnostics)(char const *fileName,
                                                           ark::es2panda::lsp::CancellationToken cancellationToken);
-    ReferenceLocationList (*getReferenceLocationAtPosition)(char const *fileName, size_t pos,
-                                                            const std::vector<std::string> &autoGenerateFolders,
-                                                            ark::es2panda::lsp::CancellationToken cancellationToken);
-    DocumentHighlightsReferences (*getDocumentHighlights)(char const *fileName, size_t position);
+    DocumentHighlightsReferences (*getDocumentHighlights)(es2panda_Context *context, size_t position);
     std::vector<ark::es2panda::lsp::RenameLocation> (*findRenameLocations)(
         const std::vector<ark::es2panda::SourceFile> &files, const ark::es2panda::SourceFile &file, size_t position);
     std::vector<ark::es2panda::lsp::RenameLocation> (*findRenameLocationsWithCancellationToken)(
@@ -363,11 +367,11 @@ typedef struct LSPAPI {
     std::vector<ark::es2panda::lsp::ReferencedNode> (*findReferences)(
         ark::es2panda::lsp::CancellationToken *tkn, const std::vector<ark::es2panda::SourceFile> &srcFiles,
         const ark::es2panda::SourceFile &srcFile, size_t position);
-    DiagnosticReferences (*getSuggestionDiagnostics)(char const *fileName);
-    ark::es2panda::lsp::CompletionInfo (*getCompletionsAtPosition)(char const *fileName, size_t position);
+    DiagnosticReferences (*getSuggestionDiagnostics)(es2panda_Context *context);
+    ark::es2panda::lsp::CompletionInfo (*getCompletionsAtPosition)(es2panda_Context *context, size_t position);
     std::vector<TextSpan> (*getBraceMatchingAtPosition)(char const *fileName, size_t position);
     std::vector<Location> (*getImplementationLocationAtPosition)(es2panda_Context *context, int position);
-    ark::es2panda::lsp::LineAndCharacter (*toLineColumnOffset)(char const *fileName, size_t position);
+    ark::es2panda::lsp::LineAndCharacter (*toLineColumnOffset)(es2panda_Context *context, size_t position);
 } LSPAPI;
 
 CAPI_EXPORT LSPAPI const *GetImpl();

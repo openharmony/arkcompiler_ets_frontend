@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import * as path from 'path'
+
 const nativeModuleLibraries: Map<string, string> = new Map()
 
 export function loadNativeLibrary(name: string): Record<string, object> {
@@ -20,7 +22,8 @@ export function loadNativeLibrary(name: string): Record<string, object> {
     return (globalThis as any).requireNapi(name, true)
   else {
     const suffixedName = name.endsWith(".node") ? name : `${name}.node`
-    return eval(`let exports = {}; process.dlopen({ exports }, require.resolve("${suffixedName}"), 2); exports`)
+    const safePath = path.win32.resolve(process.cwd(), `${suffixedName}`).replace(/\\/g, '\\\\')
+    return eval(`let exports = {}; process.dlopen({ exports }, require.resolve("${safePath.replace(/ /g, '\\ ')}"), 2); exports`)
   }
 }
 

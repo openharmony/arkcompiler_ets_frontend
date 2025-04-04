@@ -69,11 +69,6 @@
                     "replacementText": "Math.pow(5, 2)",
                     "start": 656,
                     "end": 662
-                },
-                {
-                    "replacementText": "",
-                    "start": 0,
-                    "end": 0
                 }
             ],
             "suggest": "",
@@ -105,23 +100,6 @@
             "problem": "MathPow",
             "suggest": "",
             "rule": "function \"Math.pow()\" behavior for ArkTS differs from Typescript version (arkts-math-pow-standard-diff)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 16,
-            "column": 10,
-            "endLine": 16,
-            "endColumn": 14,
-            "problem": "UIInterfaceImport",
-            "autofix": [
-                {
-                    "start": 603,
-                    "end": 603,
-                    "replacementText": "\n\nimport { Math } from '@ohos.arkui.components';"
-                }
-            ],
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
             "severity": "ERROR"
         }
     ]

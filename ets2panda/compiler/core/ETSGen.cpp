@@ -2524,6 +2524,7 @@ void ETSGen::BinaryBitwiseArithmetic(const ir::AstNode *node, VReg lhs)
         }
         case checker::TypeFlag::BYTE:
         case checker::TypeFlag::SHORT:
+        case checker::TypeFlag::CHAR:
         case checker::TypeFlag::INT: {
             Ra().Emit<IntOp>(node, lhs);
             SetAccumulatorType(Checker()->GlobalIntType());
@@ -2532,11 +2533,6 @@ void ETSGen::BinaryBitwiseArithmetic(const ir::AstNode *node, VReg lhs)
         case checker::TypeFlag::ETS_BOOLEAN: {
             Ra().Emit<IntOp>(node, lhs);
             SetAccumulatorType(Checker()->GlobalETSBooleanType());
-            break;
-        }
-        case checker::TypeFlag::CHAR: {
-            Ra().Emit<IntOp>(node, lhs);
-            SetAccumulatorType(Checker()->GlobalCharType());
             break;
         }
         default: {

@@ -97,7 +97,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -107,7 +107,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -117,7 +117,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -127,7 +127,7 @@
             "endColumn": 16,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -137,7 +137,7 @@
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -147,7 +147,7 @@
             "endColumn": 27,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
@@ -160,11 +160,11 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, CommonMethod, Memo, Column, Text, BuilderParam, Require, Color, Button } from '@ohos.arkui.components';"
+                    "replacementText": "\n\nimport { Component, CommonMethod, Memo, Column, Text, BuilderParam, Require, Color, Button } from '@kits.ArkUI';"
                 }
             ],
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]

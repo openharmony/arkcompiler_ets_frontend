@@ -493,33 +493,42 @@ static void CreateLambdaClassConstructor(public_lib::Context *ctx, ir::ClassDefi
     ctor->SetParent(classDefinition);
 }
 
+// NOTE(vpukhov): requires the optimization based on the array type
 static ArenaVector<ark::es2panda::ir::Statement *> CreateRestArgumentsArrayReallocation(
     public_lib::Context *ctx, LambdaClassInvokeInfo const *lciInfo)
 {
+    if (!lciInfo->lambdaSignature->HasRestParameter()) {
+        return ArenaVector<ir::Statement *>(ctx->allocator->Adapter());
+    }
+
     auto *allocator = ctx->allocator;
     auto *parser = ctx->parser->AsETSParser();
     auto *checker = ctx->checker->AsETSChecker();
-    if (lciInfo->lambdaSignature->HasRestParameter()) {
-        auto *restParameterType = lciInfo->lambdaSignature->RestVar()->TsType();
-        auto *restParameterSubstituteType = restParameterType->Substitute(checker->Relation(), lciInfo->substitution);
-        auto *elementType = restParameterSubstituteType->AsETSArrayType()->ElementType();
-        auto restParameterIndex = GenName(allocator).View();
-        auto spreadArrIterator = GenName(allocator).View();
-        std::stringstream lengthString;
-        lengthString << "let @@I1:int = 0;"
-                     << "let @@I2:@@T3[] = new @@T4[@@I5.length];"
-                     << "for (let @@I6:@@T7 of @@I8){"
-                     << "@@I9[@@I10] = @@I11 as @@T12 as @@T13;"
-                     << "@@I14 = @@I15 + 1;"
-                     << "}";
-        auto *args = parser->CreateFormattedStatement(
-            lengthString.str(), restParameterIndex, lciInfo->restArgumentIdentifier, elementType, elementType,
-            lciInfo->restParameterIdentifier, spreadArrIterator, checker->GlobalETSNullishObjectType(),
-            lciInfo->restParameterIdentifier, lciInfo->restArgumentIdentifier, restParameterIndex, spreadArrIterator,
-            checker->MaybeBoxType(elementType), elementType, restParameterIndex, restParameterIndex);
-        return ArenaVector<ir::Statement *>(std::move(args->AsBlockStatement()->Statements()));
+
+    auto *restParameterType = lciInfo->lambdaSignature->RestVar()->TsType();
+    auto *restParameterSubstituteType = restParameterType->Substitute(checker->Relation(), lciInfo->substitution);
+    auto *elementType = restParameterSubstituteType->AsETSArrayType()->ElementType();
+    auto restParameterIndex = GenName(allocator).View();
+    auto spreadArrIterator = GenName(allocator).View();
+
+    std::stringstream statements;
+    statements << "let @@I1: int = 0;";
+    if (elementType->IsETSReferenceType()) {
+        // NOTE(vpukhov): this is a clear null-safety violation that should be rewitten with a runtime intrinsic
+        statements << "let @@I2: @@T3[] = (new (@@T4 | undefined)[@@I5.length]) as @@T6[];";
+    } else {
+        statements << "let @@I2: @@T3[] = (new (@@T4)[@@I5.length]) as @@T6[];";
     }
-    return ArenaVector<ir::Statement *>(allocator->Adapter());
+    statements << "for (let @@I7: @@T8 of @@I9){"
+               << "    @@I10[@@I11] = @@I12 as @@T13 as @@T14;"
+               << "    @@I15 = @@I16 + 1;"
+               << "}";
+    auto *args = parser->CreateFormattedStatement(
+        statements.str(), restParameterIndex, lciInfo->restArgumentIdentifier, elementType, elementType,
+        lciInfo->restParameterIdentifier, elementType, spreadArrIterator, checker->GlobalETSNullishObjectType(),
+        lciInfo->restParameterIdentifier, lciInfo->restArgumentIdentifier, restParameterIndex, spreadArrIterator,
+        checker->MaybeBoxType(elementType), elementType, restParameterIndex, restParameterIndex);
+    return ArenaVector<ir::Statement *>(std::move(args->AsBlockStatement()->Statements()));
 }
 
 static void CreateInvokeMethodRestParameter(public_lib::Context *ctx, LambdaClassInvokeInfo *lciInfo,
@@ -882,9 +891,7 @@ static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExp
     auto *allocator = ctx->allocator;
     auto *checker = ctx->checker->AsETSChecker();
 
-    if (lambda->Function()->Signature() == nullptr) {
-        lambda->Check(checker);
-    }
+    lambda->Check(checker);
     ES2PANDA_ASSERT(lambda->TsType()->IsETSFunctionType());
 
     LambdaInfo info;

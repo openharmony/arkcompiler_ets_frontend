@@ -45,7 +45,7 @@ using std::string;
 
 typedef void (*HoldT)(KInt);
 
-KUInt impl_getTypeOfVariant(KNativePointer varPtr)
+KInt impl_getTypeOfVariant(KNativePointer varPtr)
 {
     auto *var = reinterpret_cast<std::variant<int, std::string> *>(varPtr);
     if (std::get_if<int>(var) != nullptr) {
@@ -54,7 +54,7 @@ KUInt impl_getTypeOfVariant(KNativePointer varPtr)
         return 1;
     }
 }
-TS_INTEROP_1(getTypeOfVariant, KUInt, KNativePointer)
+TS_INTEROP_1(getTypeOfVariant, KInt, KNativePointer)
 
 KNativePointer impl_getStringFromVariant(KNativePointer varPtr)
 {

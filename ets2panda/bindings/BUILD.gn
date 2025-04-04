@@ -12,7 +12,11 @@
 # limitations under the License.
 
 import("//arkcompiler/runtime_core/static_core/ark_config.gni")
-import("//build/ohos.gni")
+if (ark_standalone_build) {
+  import("$build_root/ark.gni")
+} else {
+  import("//build/ohos.gni")
+}
 
 npm_path = "//prebuilts/build-tools/common/nodejs/current/bin/npm"
 
@@ -41,10 +45,6 @@ shared_library("ts_bindings") {
     "../lsp:libes2panda_lsp_static",
   ]
 
-  external_deps = [
-    "runtime_core:libarktsbytecodeopt_package",
-    sdk_libc_secshared_dep,
-  ]
   include_dirs = [
     "./node_modules/node-api-headers/include",
     "./native/include",
@@ -52,14 +52,30 @@ shared_library("ts_bindings") {
     rebase_path("$root_gen_dir/arkcompiler/ets_frontend/ets2panda/"),
   ]
 
+  if (ark_standalone_build) {
+    deps += [
+      "$ark_root/bytecode_optimizer:libarktsbytecodeopt_package",
+      "$ark_third_party_root/bounds_checking_function:libsec_shared",
+    ]
+    include_dirs += [ "//third_party/node/src" ]
+  } else {
+    external_deps = [
+      "runtime_core:libarktsbytecodeopt_package",
+      sdk_libc_secshared_dep,
+    ]
+  }
+
   defines = [
     "TS_INTEROP_MODULE=NativeModule",
     "INTEROP_LIBRARY_NAME=ts_bindings",
     "TS_USE_NODE_VM",
     "TS_NAPI",
   ]
-
-  configs -= [ "//build/config/compiler:compiler" ]
+  if (ark_standalone_build) {
+    configs -= [ "$build_root/config/compiler:compiler" ]
+  } else {
+    configs -= [ "//build/config/compiler:compiler" ]
+  }
 
   if (is_linux) {
     cflags_cc = [
@@ -85,6 +101,7 @@ shared_library("ts_bindings") {
       "-m64",
     ]
     output_extension = "node"
+    output_prefix_override = true
   } else if (is_mingw) {
     output_extension = "dll"
     cflags_cc = [

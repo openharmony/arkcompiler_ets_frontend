@@ -21,11 +21,15 @@ if (ark_standalone_build) {
 
 declare_args() {
   lsp_build_enable = false
+  bindings_build_enable = false
 }
 
 group("lsp_packages") {
   if (lsp_build_enable) {
     deps = [ ":libes2panda_lsp" ]
+  }
+  if (bindings_build_enable) {
+    deps = [ "../bindings:ts_bindings" ]
   }
 }
 

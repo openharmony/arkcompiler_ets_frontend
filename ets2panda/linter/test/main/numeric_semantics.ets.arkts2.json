@@ -355,23 +355,143 @@
             "severity": "ERROR"
         },
         {
-            "line": 65,
-            "column": 11,
-            "endLine": 65,
-            "endColumn": 17,
-            "problem": "UIInterfaceImport",
+            "line": 115,
+            "column": 7,
+            "endLine": 115,
+            "endColumn": 20,
+            "problem": "NumericSemantics",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
             "severity": "ERROR"
         },
         {
-            "line": 87,
-            "column": 11,
-            "endLine": 87,
-            "endColumn": 15,
+            "line": 121,
+            "column": 3,
+            "endLine": 121,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 122,
+            "column": 3,
+            "endLine": 122,
+            "endColumn": 21,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 123,
+            "column": 3,
+            "endLine": 123,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 124,
+            "column": 3,
+            "endLine": 124,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 125,
+            "column": 3,
+            "endLine": 125,
+            "endColumn": 23,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 126,
+            "column": 3,
+            "endLine": 126,
+            "endColumn": 24,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 137,
+            "column": 7,
+            "endLine": 137,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 140,
+            "column": 3,
+            "endLine": 140,
+            "endColumn": 19,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 117,
+            "column": 2,
+            "endLine": 117,
+            "endColumn": 7,
             "problem": "UIInterfaceImport",
             "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 118,
+            "column": 2,
+            "endLine": 118,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 120,
+            "column": 4,
+            "endLine": 120,
+            "endColumn": 9,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 129,
+            "column": 5,
+            "endLine": 129,
+            "endColumn": 22,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 130,
+            "column": 7,
+            "endLine": 130,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
         }
     ]

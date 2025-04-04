@@ -687,41 +687,60 @@ ir::AstNode *ConstantExpressionLowering::TryFoldTSAsExpressionForString(ir::TSAs
     return expr;
 }
 
+ir::AstNode *ConstantExpressionLowering::FoldTSAsExpressionToChar(ir::TSAsExpression *expr)
+{
+    auto *sourceLiteral = expr->Expr()->AsLiteral();
+    auto resChar = GetOperand<char16_t>(sourceLiteral);
+    ir::TypedAstNode *resNode = util::NodeAllocator::Alloc<ir::CharLiteral>(context_->allocator, resChar);
+    resNode->SetParent(expr->Parent());
+    resNode->SetRange(expr->Range());
+    return resNode;
+}
+
+ir::AstNode *ConstantExpressionLowering::FoldTSAsExpressionToBoolean(ir::TSAsExpression *expr)
+{
+    auto *sourceLiteral = expr->Expr()->AsLiteral();
+    auto resBool = GetOperand<bool>(sourceLiteral);
+    ir::TypedAstNode *resNode = util::NodeAllocator::Alloc<ir::BooleanLiteral>(context_->allocator, resBool);
+    resNode->SetParent(expr->Parent());
+    resNode->SetRange(expr->Range());
+    return resNode;
+}
+
 ir::AstNode *ConstantExpressionLowering::FoldTSAsExpression(ir::TSAsExpression *const expr)
 {
-    if (expr->Expr()->IsNumberLiteral() && expr->TypeAnnotation()->IsETSPrimitiveType()) {
-        auto *numLiteral = expr->Expr()->AsNumberLiteral();
+    if (expr->TypeAnnotation()->IsETSPrimitiveType()) {
+        auto *sourceLiteral = expr->Expr()->AsLiteral();
         lexer::Number resNum;
         switch (expr->TypeAnnotation()->AsETSPrimitiveType()->GetPrimitiveType()) {
             case ir::PrimitiveType::CHAR: {
-                auto resChar = GetOperand<char16_t>(numLiteral);
-                ir::TypedAstNode *resNode = util::NodeAllocator::Alloc<ir::CharLiteral>(context_->allocator, resChar);
-                resNode->SetParent(expr->Parent());
-                resNode->SetRange(expr->Range());
-                return resNode;
+                return FoldTSAsExpressionToChar(expr);
+            }
+            case ir::PrimitiveType::BOOLEAN: {
+                return FoldTSAsExpressionToBoolean(expr);
             }
             case ir::PrimitiveType::BYTE: {
-                resNum = lexer::Number(GetOperand<int8_t>(numLiteral));
+                resNum = lexer::Number(GetOperand<int8_t>(sourceLiteral));
                 break;
             }
             case ir::PrimitiveType::SHORT: {
-                resNum = lexer::Number(GetOperand<int16_t>(numLiteral));
+                resNum = lexer::Number(GetOperand<int16_t>(sourceLiteral));
                 break;
             }
             case ir::PrimitiveType::INT: {
-                resNum = lexer::Number(GetOperand<int32_t>(numLiteral));
+                resNum = lexer::Number(GetOperand<int32_t>(sourceLiteral));
                 break;
             }
             case ir::PrimitiveType::LONG: {
-                resNum = lexer::Number(GetOperand<int64_t>(numLiteral));
+                resNum = lexer::Number(GetOperand<int64_t>(sourceLiteral));
                 break;
             }
             case ir::PrimitiveType::FLOAT: {
-                resNum = lexer::Number(GetOperand<float>(numLiteral));
+                resNum = lexer::Number(GetOperand<float>(sourceLiteral));
                 break;
             }
             case ir::PrimitiveType::DOUBLE: {
-                resNum = lexer::Number(GetOperand<double>(numLiteral));
+                resNum = lexer::Number(GetOperand<double>(sourceLiteral));
                 break;
             }
             default: {
@@ -820,11 +839,21 @@ ir::AstNode *ConstantExpressionLowering::UnfoldConstIdentifier(ir::AstNode *node
         resNode = node->Parent()->AsVariableDeclarator()->Init()->Clone(context_->allocator, originNode->Parent());
         resNode->SetRange(originNode->Range());
     }
-    if (resNode != nullptr) {
+    if (resNode == nullptr) {
+        return node;
+    }
+    if (!resNode->IsIdentifier()) {
         return UnfoldConstIdentifiers(resNode);
     }
-
-    return node;
+    auto *ident = resNode->AsIdentifier();
+    auto *resolved = FindIdentifier(ident);
+    if (resolved == nullptr) {
+        return resNode;
+    }
+    if (!resolved->Declaration()->IsConstDecl()) {
+        return resNode;
+    }
+    return UnfoldConstIdentifier(resolved->Declaration()->Node(), resNode);
 }
 
 ir::AstNode *ConstantExpressionLowering::UnfoldConstIdentifiers(ir::AstNode *constantNode)

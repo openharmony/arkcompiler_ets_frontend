@@ -152,15 +152,14 @@ TEST_F(LspSuggestionTests, GetSuggestionDiagnostics)
 
 TEST_F(LspSuggestionTests, GetSuggestionDiagnostics2)
 {
-    std::vector<std::string> files = {"ds1.ets"};
-    std::vector<std::string> texts = {
-        "function fetchData(){\nreturn Promise.resolve(\"h\")\n;}\nfunction processData()"
-        "{\nreturn fetchData().finally();\n};\nprocessData();\n"};
-    auto filePaths = CreateTempFile(files, texts);
-    size_t const expectedFileCount = 1;
-    ASSERT_EQ(filePaths.size(), expectedFileCount);
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx =
+        initializer.CreateContext("ds1.ets", ES2PANDA_STATE_CHECKED,
+                                  "function fetchData(){\nreturn Promise.resolve(\"h\")\n;}\nfunction processData()"
+                                  "{\nreturn fetchData().finally();\n};\nprocessData();\n");
     LSPAPI const *lspApi = GetImpl();
-    auto diag = lspApi->getSuggestionDiagnostics(filePaths[0].c_str());
+    auto diag = lspApi->getSuggestionDiagnostics(ctx);
+    initializer.DestroyContext(ctx);
     const auto msg = "This_may_be_converted_to_an_async_function";
     auto severity = DiagnosticSeverity::Hint;
     int const startLine = 0;

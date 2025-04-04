@@ -53,26 +53,6 @@
             "suggest": "",
             "rule": "Literal types are restricted(arkts-limited-literal-types)",
             "severity": "ERROR"
-        },
-        {
-            "line": 36,
-            "column": 15,
-            "endLine": 36,
-            "endColumn": 21,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 36,
-            "column": 30,
-            "endLine": 36,
-            "endColumn": 44,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (akrui-modular-interface)",
-            "severity": "ERROR"
         }
     ]
 }

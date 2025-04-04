@@ -135,6 +135,7 @@ public:
     ETSObjectType *GlobalBuiltinErrorType() const;
     ETSObjectType *GlobalStringBuilderBuiltinType() const;
     ETSObjectType *GlobalBuiltinPromiseType() const;
+    ETSObjectType *GlobalBuiltinFunctionType() const;
     ETSObjectType *GlobalBuiltinJSRuntimeType() const;
     ETSObjectType *GlobalBuiltinJSValueType() const;
     ETSObjectType *GlobalBuiltinBoxType(Type *contents);
@@ -768,6 +769,7 @@ public:
 
     // Static invoke
     void CheckInvokeMethodsLegitimacy(ETSObjectType *classType);
+    bool IsClassStaticMethod(checker::ETSObjectType *objType, checker::Signature *signature);
 
     // Covariant and contravariant
     void CheckTypeParameterVariance(ir::ClassDefinition *classDef);

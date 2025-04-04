@@ -24,14 +24,19 @@ import { SymbolCache } from './SymbolCache';
 import { SENDABLE_DECORATOR } from '../utils/consts/SendableAPI';
 import { PATH_SEPARATOR, SRC_AND_MAIN } from '../utils/consts/OhmUrl';
 import {
+  STRINGLITERAL_NUMBER,
+  STRINGLITERAL_NUMBER_ARRAY
+} from '../utils/consts/StringLiteral';
+import {
   DOUBLE_DOLLAR_IDENTIFIER,
   THIS_IDENTIFIER,
   ATTRIBUTE_SUFFIX,
   INSTANCE_IDENTIFIER,
   COMMON_METHOD_IDENTIFIER,
-  APPLY_STYLES_IDENTIFIER
-} from '../utils/consts/AutofixConstants';
-import { DecoratorName } from '../utils/consts/DecoratorName';
+  APPLY_STYLES_IDENTIFIER,
+  CustomDecoratorName,
+  ARKUI_PACKAGE_NAME
+} from '../utils/consts/ArkuiConstants';
 
 const UNDEFINED_NAME = 'undefined';
 
@@ -2174,18 +2179,6 @@ export class Autofixer {
 
   // to use special lib functions it's need to import it
   static SPECIAL_LIB_NAME = 'specialAutofixLib';
-  private hasSpecialLibImport: boolean = false;
-
-  private createSpecialLibImort(): Autofix {
-    // this fix is dummy, create actual after special lib be ready
-    const specialLibImport: Autofix = {
-      replacementText: '',
-      start: 0,
-      end: 0
-    };
-    this.hasSpecialLibImport = true;
-    return specialLibImport;
-  }
 
   // autofix for '**', '**=' operations and 'math.pow()' call
   fixExponent(exponentNode: ts.Node): Autofix[] | undefined {
@@ -2231,11 +2224,6 @@ export class Autofixer {
     }
 
     autofix = [replaceText];
-
-    if (!this.hasSpecialLibImport) {
-      autofix = [...autofix, this.createSpecialLibImort()];
-    }
-
     return autofix;
   }
 
@@ -2303,7 +2291,7 @@ export class Autofixer {
     }
     const typeName = componentName + ATTRIBUTE_SUFFIX;
     interfacesNeedToImport.add(typeName);
-    interfacesNeedToImport.add(DecoratorName.Memo);
+    interfacesNeedToImport.add(CustomDecoratorName.Memo);
     const parameDecl = ts.factory.createParameterDeclaration(
       undefined,
       undefined,
@@ -2316,9 +2304,9 @@ export class Autofixer {
     const newFuncDecl = Autofixer.createFunctionDeclaration(funcDecl, undefined, parameDecl, returnType, newBlock);
     const newDecorators: ts.Decorator[] = [];
     if (preserveDecorator) {
-      newDecorators.push(ts.factory.createDecorator(ts.factory.createIdentifier(DecoratorName.AnimatableExtend)));
+      newDecorators.push(ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.AnimatableExtend)));
     }
-    newDecorators.push(ts.factory.createDecorator(ts.factory.createIdentifier(DecoratorName.Memo)));
+    newDecorators.push(ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Memo)));
     const text1 = this.printer.printList(
       ts.ListFormat.Decorators,
       ts.factory.createNodeArray(newDecorators),
@@ -2413,7 +2401,7 @@ export class Autofixer {
     }
   }
 
-  fixVariableDeclaration(node: ts.VariableDeclaration): Autofix[] | undefined {
+  fixVariableDeclaration(node: ts.VariableDeclaration, isEnum: boolean): Autofix[] | undefined {
     const initializer = node.initializer;
     const name = node.name;
     const sym = this.typeChecker.getSymbolAtLocation(name);
@@ -2424,17 +2412,15 @@ export class Autofixer {
     const type = this.typeChecker.getTypeOfSymbolAtLocation(sym, name);
     const typeText = this.typeChecker.typeToString(type);
     const typeFlags = type.flags;
-    const isNumberLike =
-      typeText === 'number' || typeText === 'number[]' || (typeFlags & ts.TypeFlags.NumberLiteral) !== 0;
 
-    if (!isNumberLike) {
+    if (!TsUtils.isNumberLike(type, typeText, isEnum)) {
       return undefined;
     }
 
     let typeNode: ts.TypeNode;
-    if (typeText === 'number' || (typeFlags & ts.TypeFlags.NumberLiteral) !== 0) {
+    if (typeText === STRINGLITERAL_NUMBER || (typeFlags & ts.TypeFlags.NumberLiteral) !== 0 || isEnum) {
       typeNode = ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
-    } else if (typeText === 'number[]') {
+    } else if (typeText === STRINGLITERAL_NUMBER_ARRAY) {
       typeNode = ts.factory.createArrayTypeNode(ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword));
     } else {
       return undefined;
@@ -2447,6 +2433,26 @@ export class Autofixer {
     }
     const text = this.printer.printNode(ts.EmitHint.Unspecified, newVarDecl, node.getSourceFile());
     return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];
+  }
+
+  fixPropertyDeclarationNumericSemanticsArray(node: ts.PropertyDeclaration): Autofix[] {
+    const newProperty = ts.factory.createPropertyDeclaration(
+      node.modifiers,
+      node.name,
+      undefined,
+      ts.factory.createArrayTypeNode(ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword)),
+      node.initializer
+    );
+
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, newProperty, node.getSourceFile());
+
+    return [
+      {
+        start: node.getStart(),
+        end: node.getEnd(),
+        replacementText: replacementText
+      }
+    ];
   }
 
   fixParameter(param: ts.ParameterDeclaration): Autofix[] {
@@ -2473,22 +2479,28 @@ export class Autofixer {
     if (initializer === undefined) {
       return undefined;
     }
-
     const propType = this.typeChecker.getTypeAtLocation(node);
-    const propTypeNode = this.typeChecker.typeToTypeNode(propType, undefined, ts.NodeBuilderFlags.None);
-    if (!propTypeNode || !this.utils.isSupportedType(propTypeNode)) {
-      return undefined;
+    let propTypeNode: ts.TypeNode;
+    if (propType.flags & ts.TypeFlags.NumberLike) {
+      propTypeNode = ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
+    } else {
+      const inferredTypeNode = this.typeChecker.typeToTypeNode(propType, undefined, ts.NodeBuilderFlags.None);
+
+      if (!inferredTypeNode || !this.utils.isSupportedType(inferredTypeNode)) {
+        return undefined;
+      }
+      propTypeNode = inferredTypeNode;
     }
 
-    const questionOrExclamationToken: ts.ExclamationToken | ts.QuestionToken | undefined =
-      node.questionToken ?? node.exclamationToken ?? undefined;
-    const newPropDecl: ts.PropertyDeclaration = ts.factory.createPropertyDeclaration(
+    const questionOrExclamationToken = node.questionToken ?? node.exclamationToken ?? undefined;
+    const newPropDecl = ts.factory.createPropertyDeclaration(
       node.modifiers,
       node.name,
       questionOrExclamationToken,
       propTypeNode,
       initializer
     );
+
     const text = this.printer.printNode(ts.EmitHint.Unspecified, newPropDecl, node.getSourceFile());
     return [{ start: node.getStart(), end: node.getEnd(), replacementText: text }];
   }
@@ -2581,11 +2593,10 @@ export class Autofixer {
       const identifier = ts.factory.createIdentifier(interfaceName);
       importSpecifiers.push(ts.factory.createImportSpecifier(false, undefined, identifier));
     });
-    const moduleName = '@ohos.arkui.components';
     const importDeclaration = ts.factory.createImportDeclaration(
       undefined,
       ts.factory.createImportClause(false, undefined, ts.factory.createNamedImports(importSpecifiers)),
-      ts.factory.createStringLiteral(moduleName, true),
+      ts.factory.createStringLiteral(ARKUI_PACKAGE_NAME, true),
       undefined
     );
 
@@ -2630,9 +2641,9 @@ export class Autofixer {
     );
     const returnType = ts.factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword);
     const newFuncDecl = Autofixer.createFunctionDeclaration(funcDecl, undefined, parameDecl, returnType, newBlock);
-    const MemoDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(DecoratorName.Memo));
+    const MemoDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Memo));
     needImport.add(COMMON_METHOD_IDENTIFIER);
-    needImport.add(DecoratorName.Memo);
+    needImport.add(CustomDecoratorName.Memo);
     const text1 = this.printer.printNode(ts.EmitHint.Unspecified, MemoDecorator, funcDecl.getSourceFile());
     const text2 = this.printer.printNode(ts.EmitHint.Unspecified, newFuncDecl, funcDecl.getSourceFile());
     const text = text1 + '\n' + text2;
@@ -2676,9 +2687,9 @@ export class Autofixer {
       ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
       newBlock
     );
-    const MemoDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(DecoratorName.Memo));
+    const MemoDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Memo));
     needImport.add(COMMON_METHOD_IDENTIFIER);
-    needImport.add(DecoratorName.Memo);
+    needImport.add(CustomDecoratorName.Memo);
     const text1 = this.printer.printNode(ts.EmitHint.Unspecified, methodDecl.name, methodDecl.getSourceFile());
     const text2 = this.printer.printNode(
       ts.EmitHint.Unspecified,
@@ -2749,7 +2760,7 @@ export class Autofixer {
       stateValues.push(values);
     }
     needImport.add(COMMON_METHOD_IDENTIFIER);
-    needImport.add(DecoratorName.Memo);
+    needImport.add(CustomDecoratorName.Memo);
     const text = this.createPropertyText(stateParams, stateValues, stateStyles);
     return [{ start: object.getStart(), end: object.getEnd(), replacementText: text }];
   }
@@ -2776,7 +2787,7 @@ export class Autofixer {
     );
     const voidToken = ts.factory.createToken(ts.SyntaxKind.VoidKeyword);
     const arrowToken = ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken);
-    const MemoDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(DecoratorName.Memo));
+    const MemoDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Memo));
     const propertyTexts: string[] = [];
     for (let i = 0; i < blocks.length; i++) {
       const arrowFunc = ts.factory.createArrowFunction(
@@ -2809,7 +2820,7 @@ export class Autofixer {
       return undefined;
     }
 
-    const observedDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(DecoratorName.Observed));
+    const observedDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Observed));
     const sourceFile = classDecl.getSourceFile();
     const text = this.printer.printNode(ts.EmitHint.Unspecified, observedDecorator, sourceFile) + '\n';
     return [{ start: classDecl.getStart(), end: classDecl.getStart(), replacementText: text }];
