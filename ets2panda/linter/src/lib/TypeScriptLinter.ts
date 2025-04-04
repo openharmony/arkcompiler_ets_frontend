@@ -4186,24 +4186,28 @@ export class TypeScriptLinter {
 
   private findVariableInitializationValue(identifier: ts.Identifier): number | null {
     const symbol = this.tsTypeChecker.getSymbolAtLocation(identifier);
-    if (symbol) {
-      if (this.constVariableInitCache.has(symbol)) {
-        return this.constVariableInitCache.get(symbol)!;
-      }
-      const declarations = symbol.getDeclarations();
-      if (declarations && declarations.length > 0) {
-        const declaration = declarations[0];
-        if (
-          ts.isVariableDeclaration(declaration) &&
-          declaration.initializer &&
-          (declaration.parent as ts.VariableDeclarationList).flags & ts.NodeFlags.Const
-        ) {
-          const res = this.evaluateNumericValue(declaration.initializer);
-          this.constVariableInitCache.set(symbol, res);
-          return res;
-        }
+    if (!symbol) {
+      return null;
+    }
+    if (this.constVariableInitCache.has(symbol)) {
+      return this.constVariableInitCache.get(symbol)!;
+    }
+    const declarations = symbol.getDeclarations();
+    if (declarations && declarations.length > 0) {
+      const declaration = declarations[0];
+
+      const isConditionOnEnumMember = ts.isEnumMember(declaration) && declaration.initializer;
+      const isConditionOnVariableDecl =
+        ts.isVariableDeclaration(declaration) &&
+        declaration.initializer &&
+        (declaration.parent as ts.VariableDeclarationList).flags & ts.NodeFlags.Const;
+      if (isConditionOnEnumMember || isConditionOnVariableDecl) {
+        const res = this.evaluateNumericValue(declaration.initializer);
+        this.constVariableInitCache.set(symbol, res);
+        return res;
       }
     }
+
     return null;
   }
 
@@ -4220,6 +4224,17 @@ export class TypeScriptLinter {
     return null;
   }
 
+  private evaluateNumericValueFromAsExpression(node: ts.AsExpression): number | null {
+    const typeNode = node.type;
+    if (
+      typeNode.kind === ts.SyntaxKind.NumberKeyword ||
+      ts.isTypeReferenceNode(typeNode) && typeNode.typeName.getText() === 'Number'
+    ) {
+      return this.evaluateNumericValue(node.expression);
+    }
+    return null;
+  }
+
   private evaluateNumericValue(node: ts.Expression): number | null {
     let result: number | null = null;
     if (ts.isNumericLiteral(node)) {
@@ -4229,12 +4244,16 @@ export class TypeScriptLinter {
     } else if (ts.isBinaryExpression(node)) {
       result = this.evaluateNumericValueFromBinaryExpression(node);
     } else if (ts.isPropertyAccessExpression(node)) {
-      result = TypeScriptLinter.evaluateNumericValueFromPropertyAccess(node);
+      result = this.evaluateNumericValueFromPropertyAccess(node);
     } else if (ts.isParenthesizedExpression(node)) {
       result = this.evaluateNumericValue(node.expression);
+    } else if (ts.isAsExpression(node)) {
+      result = this.evaluateNumericValueFromAsExpression(node);
     } else if (ts.isIdentifier(node)) {
       if (node.text === 'Infinity') {
         return Number.POSITIVE_INFINITY;
+      } else if (node.text === 'NaN') {
+        return Number.NaN;
       }
       const symbol = this.tsTypeChecker.getSymbolAtLocation(node);
       return symbol ? this.constVariableInitCache.get(symbol) || null : null;
@@ -4255,6 +4274,10 @@ export class TypeScriptLinter {
           return leftValue * rightValue;
         case ts.SyntaxKind.SlashToken:
           return leftValue / rightValue;
+        case ts.SyntaxKind.PercentToken:
+          return leftValue % rightValue;
+        case ts.SyntaxKind.AsteriskAsteriskToken:
+          return Math.pow(leftValue, rightValue);
         default:
           return null;
       }
@@ -4262,7 +4285,7 @@ export class TypeScriptLinter {
     return null;
   }
 
-  private static evaluateNumericValueFromPropertyAccess(node: ts.PropertyAccessExpression): number | null {
+  private evaluateNumericValueFromPropertyAccess(node: ts.PropertyAccessExpression): number | null {
     const numberProperties = ['MIN_SAFE_INTEGER', 'MAX_SAFE_INTEGER', 'NaN', 'NEGATIVE_INFINITY', 'POSITIVE_INFINITY'];
     if (
       ts.isIdentifier(node.expression) &&
@@ -4284,7 +4307,7 @@ export class TypeScriptLinter {
           return null;
       }
     }
-    return null;
+    return this.evaluateNumericValue(node.name);
   }
 
   private collectVariableNamesAndCache(node: ts.Node): void {
@@ -4307,7 +4330,7 @@ export class TypeScriptLinter {
       this.collectVariableNamesAndCache(indexNode);
       const indexValue = this.evaluateNumericValue(indexNode);
 
-      if (indexValue !== null && indexValue !== 0 && (indexValue < 0 || isNaN(indexValue))) {
+      if (indexValue !== null && (indexValue < 0 || isNaN(indexValue))) {
         this.incrementCounters(node, FaultID.IndexNegative);
       }
     }
