@@ -289,6 +289,8 @@ public:
         return CreateETSUnionType(Span<Type *const>(constituentTypes));
     }
     Type *CreateUnionFromKeyofType(ETSObjectType *const type);
+    ETSAsyncFuncReturnType *CreateETSAsyncFuncReturnTypeFromPromiseType(ETSObjectType *promiseType);
+    ETSAsyncFuncReturnType *CreateETSAsyncFuncReturnTypeFromBaseType(Type *baseType);
     ETSTypeAliasType *CreateETSTypeAliasType(util::StringView name, const ir::AstNode *declNode,
                                              bool isRecursive = false);
     ETSFunctionType *CreateETSArrowType(Signature *signature);
@@ -497,17 +499,15 @@ public:
     void CheckCapturedVariables();
     void CheckCapturedVariableInSubnodes(ir::AstNode *node, varbinder::Variable *var);
     void CheckCapturedVariable(ir::AstNode *node, varbinder::Variable *var);
-    void CreateAsyncProxyMethods(ir::ClassDefinition *classDef);
-    ir::MethodDefinition *CreateAsyncImplMethod(ir::MethodDefinition *asyncMethod, ir::ClassDefinition *classDef);
-    ir::MethodDefinition *CreateAsyncProxy(ir::MethodDefinition *asyncMethod, ir::ClassDefinition *classDef,
-                                           bool createDecl = true);
+
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     ir::MethodDefinition *CreateMethod(const util::StringView &name, ir::ModifierFlags modifiers,
                                        ir::ScriptFunctionFlags flags, ArenaVector<ir::Expression *> &&params,
                                        varbinder::FunctionParamScope *paramScope, ir::TypeNode *returnType,
                                        ir::AstNode *body);
-    varbinder::FunctionParamScope *CopyParams(const ArenaVector<ir::Expression *> &params,
-                                              ArenaVector<ir::Expression *> &outParams);
+    varbinder::FunctionParamScope *CopyParams(
+        const ArenaVector<ir::Expression *> &params, ArenaVector<ir::Expression *> &outParams,
+        ArenaUnorderedMap<varbinder::Variable *, varbinder::Variable *> *paramVarMap);
     void ReplaceScope(ir::AstNode *root, ir::AstNode *oldNode, varbinder::Scope *newScope);
 
     // Helpers

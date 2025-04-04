@@ -1764,131 +1764,6 @@ bool ETSChecker::IsAsyncImplMethod(ir::MethodDefinition const *method)
     return methodName.substr(methodName.size() - asyncSuffix.size()) == asyncSuffix;
 }
 
-ir::MethodDefinition *ETSChecker::CreateAsyncImplMethod(ir::MethodDefinition *asyncMethod,
-                                                        ir::ClassDefinition *classDef)
-{
-    util::UString implName(GetAsyncImplName(asyncMethod), Allocator());
-    ir::ModifierFlags modifiers = asyncMethod->Modifiers();
-    // clear ASYNC flag for implementation
-    modifiers &= ~ir::ModifierFlags::ASYNC;
-    ir::ScriptFunction *asyncFunc = asyncMethod->Function();
-    ir::ScriptFunctionFlags flags = ir::ScriptFunctionFlags::METHOD;
-
-    if (asyncFunc->IsProxy()) {
-        flags |= ir::ScriptFunctionFlags::PROXY;
-    }
-
-    if (asyncFunc->HasReturnStatement()) {
-        flags |= ir::ScriptFunctionFlags::HAS_RETURN;
-    }
-
-    asyncMethod->AddModifier(ir::ModifierFlags::NATIVE);
-    asyncFunc->AddModifier(ir::ModifierFlags::NATIVE);
-    // Create async_impl method copied from CreateInvokeFunction
-    auto scopeCtx =
-        varbinder::LexicalScope<varbinder::ClassScope>::Enter(VarBinder(), classDef->Scope()->AsClassScope());
-    auto *body = asyncFunc->Body();
-    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    varbinder::FunctionParamScope *paramScope = CopyParams(asyncFunc->Params(), params);
-
-    ir::ETSTypeReference *returnTypeAnn = nullptr;
-
-    if (!asyncFunc->Signature()->HasSignatureFlag(SignatureFlags::NEED_RETURN_TYPE)) {
-        // Set impl method return type "Object" because it may return Promise as well as Promise parameter's type
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *objectId = AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_OBJECT_CLASS, Allocator());
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        VarBinder()->AsETSBinder()->LookupTypeReference(objectId, false);
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        returnTypeAnn = AllocNode<ir::ETSTypeReference>(
-            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            AllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr, Allocator()), Allocator());
-        objectId->SetParent(returnTypeAnn->Part());
-        returnTypeAnn->Part()->SetParent(returnTypeAnn);
-        auto *asyncFuncRetTypeAnn = asyncFunc->ReturnTypeAnnotation();
-        auto *promiseType = [this](ir::TypeNode *type) {
-            if (type != nullptr) {
-                return type->GetType(this)->AsETSObjectType();
-            }
-
-            return GlobalBuiltinPromiseType()->AsETSObjectType();
-        }(asyncFuncRetTypeAnn);
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *retType = Allocator()->New<ETSAsyncFuncReturnType>(Allocator(), Relation(), promiseType);
-        returnTypeAnn->SetTsType(retType);
-    }  // NOTE(vpukhov): #19874 - returnTypeAnn is not set
-
-    ir::MethodDefinition *implMethod =
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        CreateMethod(implName.View(), modifiers, flags, std::move(params), paramScope, returnTypeAnn, body);
-    asyncFunc->SetBody(nullptr);
-
-    if (returnTypeAnn != nullptr) {
-        returnTypeAnn->SetParent(implMethod->Function());
-    }
-
-    implMethod->Function()->AddFlag(ir::ScriptFunctionFlags::ASYNC_IMPL);
-    implMethod->SetParent(asyncMethod->Parent());
-    return implMethod;
-}
-
-static void CreateFuncDecl(ETSChecker *checker, ir::MethodDefinition *func, varbinder::LocalScope *scope)
-{
-    auto *allocator = checker->Allocator();
-    auto *varBinder = checker->VarBinder();
-    // Add the function declarations to the lambda class scope
-    auto ctx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(varBinder, scope);
-    varbinder::Variable *var = scope->FindLocal(func->Id()->Name(), varbinder::ResolveBindingOptions::ALL_DECLARATION);
-    if (var == nullptr) {
-        var = std::get<1>(
-            varBinder->NewVarDecl<varbinder::FunctionDecl>(func->Id()->Start(), allocator, func->Id()->Name(), func));
-    }
-    var->AddFlag(varbinder::VariableFlags::METHOD);
-    var->SetScope(ctx.GetScope());
-    func->Function()->Id()->SetVariable(var);
-}
-
-ir::MethodDefinition *ETSChecker::CreateAsyncProxy(ir::MethodDefinition *asyncMethod, ir::ClassDefinition *classDef,
-                                                   bool createDecl)
-{
-    ir::ScriptFunction *asyncFunc = asyncMethod->Function();
-    if (!asyncFunc->IsExternal()) {
-        VarBinder()->AsETSBinder()->GetRecordTable()->Signatures().push_back(asyncFunc->Scope());
-    }
-
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    ir::MethodDefinition *implMethod = CreateAsyncImplMethod(asyncMethod, classDef);
-    varbinder::FunctionScope *implFuncScope = implMethod->Function()->Scope();
-    for (auto *decl : asyncFunc->Scope()->Decls()) {
-        auto res = asyncFunc->Scope()->Bindings().find(decl->Name());
-        ES2PANDA_ASSERT(res != asyncFunc->Scope()->Bindings().end());
-        auto *const var = std::get<1>(*res);
-        var->SetScope(implFuncScope);
-        implFuncScope->Decls().push_back(decl);
-        implFuncScope->InsertBinding(decl->Name(), var);
-    }
-
-    ReplaceScope(implMethod->Function()->Body(), asyncFunc, implFuncScope);
-
-    ArenaVector<varbinder::Variable *> captured(Allocator()->Adapter());
-
-    bool isStatic = asyncMethod->IsStatic();
-    if (createDecl) {
-        if (isStatic) {
-            CreateFuncDecl(this, implMethod, classDef->Scope()->AsClassScope()->StaticMethodScope());
-        } else {
-            CreateFuncDecl(this, implMethod, classDef->Scope()->AsClassScope()->InstanceMethodScope());
-        }
-        implMethod->Id()->SetVariable(implMethod->Function()->Id()->Variable());
-    }
-    VarBinder()->AsETSBinder()->BuildProxyMethod(implMethod->Function(), classDef->InternalName(),
-                                                 asyncFunc->IsExternal());
-    implMethod->SetParent(asyncMethod->Parent());
-
-    return implMethod;
-}
-
 ir::MethodDefinition *ETSChecker::CreateMethod(const util::StringView &name, ir::ModifierFlags modifiers,
                                                ir::ScriptFunctionFlags flags, ArenaVector<ir::Expression *> &&params,
                                                varbinder::FunctionParamScope *paramScope, ir::TypeNode *returnType,
@@ -1931,8 +1806,9 @@ ir::MethodDefinition *ETSChecker::CreateMethod(const util::StringView &name, ir:
     return method;
 }
 
-varbinder::FunctionParamScope *ETSChecker::CopyParams(const ArenaVector<ir::Expression *> &params,
-                                                      ArenaVector<ir::Expression *> &outParams)
+varbinder::FunctionParamScope *ETSChecker::CopyParams(
+    const ArenaVector<ir::Expression *> &params, ArenaVector<ir::Expression *> &outParams,
+    ArenaUnorderedMap<varbinder::Variable *, varbinder::Variable *> *paramVarMap)
 {
     auto paramCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>(VarBinder());
 
@@ -1954,6 +1830,9 @@ varbinder::FunctionParamScope *ETSChecker::CopyParams(const ArenaVector<ir::Expr
             compiler::InitScopesPhaseETS::RunExternalNode(newTypeAnno, VarBinder()->AsETSBinder());
         }
 
+        if (paramVarMap != nullptr) {
+            paramVarMap->insert({paramOld->Ident()->Variable(), var});
+        }
         outParams.emplace_back(paramNew);
     }
 
