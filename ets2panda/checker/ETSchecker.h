@@ -75,28 +75,12 @@ using ConstraintCheckRecord = std::tuple<const ArenaVector<Type *> *, const Subs
 // can't use util::DiagnosticWithParams because std::optional can't contain references
 using MaybeDiagnosticInfo =
     std::optional<std::pair<const diagnostic::DiagnosticKind, const util::DiagnosticMessageParams>>;
+using AstNodePtr = ir::AstNode *;
 
 class ETSChecker final : public Checker {
 public:
-    explicit ETSChecker(util::DiagnosticEngine &diagnosticEngine)
-        // NOLINTNEXTLINE(readability-redundant-member-init)
-        : Checker(diagnosticEngine),
-          arrayTypes_(Allocator()->Adapter()),
-          pendingConstraintCheckRecords_(Allocator()->Adapter()),
-          globalArraySignatures_(Allocator()->Adapter()),
-          cachedComputedAbstracts_(Allocator()->Adapter()),
-          dynamicIntrinsics_ {DynamicCallIntrinsicsMap {Allocator()->Adapter()},
-                              DynamicCallIntrinsicsMap {Allocator()->Adapter()}},
-          dynamicClasses_ {DynamicClassIntrinsicsMap(Allocator()->Adapter()),
-                           DynamicClassIntrinsicsMap(Allocator()->Adapter())},
-          dynamicLambdaSignatureCache_(Allocator()->Adapter()),
-          functionalInterfaceCache_(Allocator()->Adapter()),
-          apparentTypes_(Allocator()->Adapter()),
-          dynamicCallNames_ {
-              {DynamicCallNamesMap(Allocator()->Adapter()), DynamicCallNamesMap(Allocator()->Adapter())}},
-          overloadSigContainer_(Allocator()->Adapter())
-    {
-    }
+    explicit ETSChecker(util::DiagnosticEngine &diagnosticEngine);
+    explicit ETSChecker(util::DiagnosticEngine &diagnosticEngine, ArenaAllocator *programAllocator);
 
     ~ETSChecker() override = default;
 
@@ -408,16 +392,19 @@ public:
     bool CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction *lambda);
     bool CheckLambdaAssignableUnion(ir::AstNode *typeAnn, ir::ScriptFunction *lambda);
     bool IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typeArgument, const Substitution *substitution);
+
     Substitution *NewSubstitution()
     {
-        return Allocator()->New<Substitution>(Allocator()->Adapter());
+        return ProgramAllocator()->New<Substitution>(ProgramAllocator()->Adapter());
     }
+
     Substitution *CopySubstitution(const Substitution *src)
     {
-        return Allocator()->New<Substitution>(*src);
+        return ProgramAllocator()->New<Substitution>(*src);
     }
     bool ProcessUntypedParameter(ir::AstNode *declNode, size_t paramIndex, Signature *paramSig, Signature *argSig,
                                  Substitution *substitution);
+
     void EmplaceSubstituted(Substitution *substitution, ETSTypeParameter *tparam, Type *typeArg);
     [[nodiscard]] bool EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParams, Type *paramType,
                                                   Type *argumentType, Substitution *substitution);
@@ -831,6 +818,13 @@ public:
         return util::NodeAllocator::ForceSetParent<T>(Allocator(), std::forward<Args>(args)...);
     }
 
+    template <typename T, typename... Args>
+    T *ProgramAllocNode(Args &&...args)
+    {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        return util::NodeAllocator::ForceSetParent<T>(ProgramAllocator(), std::forward<Args>(args)...);
+    }
+
     ArenaVector<ConstraintCheckRecord> &PendingConstraintCheckRecords();
     size_t &ConstraintCheckScopesCount();
 
@@ -882,7 +876,7 @@ public:
         pendingConstraintCheckRecords_.clear();
         constraintCheckScopesCount_ = 0;
         globalArraySignatures_.clear();
-        cachedComputedAbstracts_.clear();
+        GetCachedComputedAbstracts()->clear();
         for (auto &dynamicCallIntrinsicsMap : dynamicIntrinsics_) {
             dynamicCallIntrinsicsMap.clear();
         }
@@ -904,6 +898,28 @@ public:
     // The result is stored in callSignatures of newly created ETSFunctionType
     checker::ETSFunctionType *IntersectSignatureSets(const checker::ETSFunctionType *left,
                                                      const checker::ETSFunctionType *right);
+
+    ComputedAbstracts *GetCachedComputedAbstracts()
+    {
+        if (cachedComputedAbstracts_ == nullptr) {
+            InitCachedComputedAbstracts();
+        }
+        return cachedComputedAbstracts_;
+    }
+
+    void SetCachedComputedAbstracts(ComputedAbstracts *cachedComputedAbstracts)
+    {
+        cachedComputedAbstracts_ = cachedComputedAbstracts;
+    }
+
+    void InitCachedComputedAbstracts()
+    {
+        // clang-format off
+        cachedComputedAbstracts_ = ProgramAllocator()->New<ArenaUnorderedMap<ETSObjectType *,
+            std::pair<ArenaVector<ETSFunctionType *>,
+            ArenaUnorderedSet<ETSObjectType *>>>>(ProgramAllocator()->Adapter());
+        // clang-format on
+    }
 
 private:
     std::pair<const ir::Identifier *, ir::TypeNode *> GetTargetIdentifierAndType(ir::Identifier *ident);
@@ -1001,6 +1017,10 @@ private:
     ArenaVector<ir::Expression *> ExtendArgumentsWithFakeLamda(ir::CallExpression *callExpr);
 
     // Static invoke
+    bool SetStaticInvokeValues(ir::Identifier *const ident, ir::Identifier *classId, ir::Identifier *methodId,
+                               varbinder::LocalVariable *instantiateMethod);
+    void CreateTransformedCallee(ir::Identifier *classId, ir::Identifier *methodId, ir::Identifier *const ident,
+                                 varbinder::LocalVariable *instantiateMethod);
     bool TryTransformingToStaticInvoke(ir::Identifier *ident, const Type *resolvedType);
 
     // Partial
@@ -1020,7 +1040,7 @@ private:
     ArenaVector<ConstraintCheckRecord> pendingConstraintCheckRecords_;
     size_t constraintCheckScopesCount_ {0};
     GlobalArraySignatureMap globalArraySignatures_;
-    ComputedAbstracts cachedComputedAbstracts_;
+    ComputedAbstracts *cachedComputedAbstracts_ {nullptr};
     // NOTE(aleksisch): Extract dynamic from checker to separate class
     std::array<DynamicCallIntrinsicsMap, 2U> dynamicIntrinsics_;
     std::array<DynamicClassIntrinsicsMap, 2U> dynamicClasses_;

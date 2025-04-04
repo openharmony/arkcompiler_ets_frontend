@@ -15,6 +15,8 @@
 
 #include "ETSparser.h"
 #include "ETSNolintParser.h"
+#include "program/program.h"
+#include "public/public.h"
 #include <utility>
 
 #include "util/es2pandaMacros.h"
@@ -190,8 +192,16 @@ void ETSParser::AddExternalSource(const std::vector<Program *> &programs)
         if (extSources.count(name) == 0) {
             extSources.try_emplace(name, Allocator()->Adapter());
         }
-
-        extSources.at(name).emplace_back(newProg);
+        bool found = false;
+        for (auto *prog : extSources.at(name)) {
+            if (prog->SourceFilePath() == newProg->SourceFilePath()) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            extSources.at(name).emplace_back(newProg);
+        }
     }
 }
 
@@ -208,7 +218,13 @@ ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseDefaultSources(std::stri
     auto statements = ParseImportDeclarations();
     GetContext().Status() &= ~ParserStatus::IN_DEFAULT_IMPORTS;
 
-    AddExternalSource(ParseSources());
+    std::vector<Program *> programs;
+    auto *ctx = GetProgram()->VarBinder()->GetContext();
+    if (ctx->compilingState != public_lib::CompilingState::MULTI_COMPILING_FOLLOW) {
+        programs = ParseSources();
+        AddExternalSource(programs);
+    }
+
     return statements;
 }
 
@@ -243,34 +259,35 @@ void ETSParser::ParseParseListElement(const util::ImportPathManager::ParseInfo &
     }
 }
 
-std::vector<Program *> ETSParser::ParseSources(bool firstSource)
+static bool SearchImportedExternalSources(ETSParser *parser, const std::string_view &path)
 {
-    std::vector<Program *> programs;
-
-    auto &parseList = importPathManager_->ParseList();
-
-    ArenaVector<util::StringView> directImportsFromMainSource(Allocator()->Adapter());
-
-    if (firstSource) {
-        for (auto pl : parseList) {
-            if (pl.isParsed) {
-                // Handle excluded files, which are already set to be parsed before parsing them
-                continue;
+    auto *ctx = parser->GetGlobalProgram()->VarBinder()->GetContext();
+    if (ctx->compilingState != public_lib::CompilingState::MULTI_COMPILING_FOLLOW) {
+        return false;
+    }
+    for (const auto &[moduleName, extPrograms] : ctx->externalSources) {
+        for (auto *const extProg : extPrograms) {
+            if (extProg->SourceFilePath() == path) {
+                return true;
             }
-            directImportsFromMainSource.emplace_back(pl.importData.resolvedSource);
         }
     }
+    return false;
+}
 
+// NOTE (mmartin): Need a more optimal solution here
+// This is needed, as during a parsing of a file, programs can be re-added to the parseList, which needs to be
+// re-parsed. This won't change the size of the list, so with only the 'for loop', there can be unparsed files
+// remained.
+// An example for this, is when a file is added as an implicit package import, but it's erroneous, so we just ignore
+// the file. But when the same file is also added with an explicit import declaration, then we need to re-parse it,
+// and throw the syntax error.
+std::vector<Program *> ETSParser::SearchForNotParsed(ArenaVector<util::ImportPathManager::ParseInfo> &parseList,
+                                                     ArenaVector<util::StringView> &directImportsFromMainSource)
+{
+    std::vector<Program *> programs;
     auto notParsedElement =
         std::find_if(parseList.begin(), parseList.end(), [](const auto &parseInfo) { return !parseInfo.isParsed; });
-
-    // NOTE (mmartin): Need a more optimal solution here
-    // This is needed, as during a parsing of a file, programs can be re-added to the parseList, which needs to be
-    // re-parsed. This won't change the size of the list, so with only the 'for loop', there can be unparsed files
-    // remained.
-    // An example for this, is when a file is added as an implicit package import, but it's erroneous, so we just ignore
-    // the file. But when the same file is also added with an explicit import declaration, then we need to re-parse it,
-    // and throw the syntax error.
     while (notParsedElement != parseList.end()) {
         // This parse list `paths` can grow in the meantime, so keep this index-based iteration
         // NOLINTNEXTLINE(modernize-loop-convert)
@@ -290,32 +307,46 @@ std::vector<Program *> ETSParser::ParseSources(bool firstSource)
                 importPathManager_->MarkAsParsed(data.resolvedSource);
                 return programs;
             }
-
             util::DiagnosticMessageParams diagParams = {std::string(parseCandidate)};
             std::ifstream inputStream {std::string(parseCandidate)};
             if (!inputStream) {
                 DiagnosticEngine().LogDiagnostic(diagnostic::OPEN_FAILED, diagParams);
                 return programs;  // Error processing.
             }
-
             std::stringstream ss;
             ss << inputStream.rdbuf();
             std::string externalSource = ss.str();
-
             auto preservedLang = GetContext().SetLanguage(data.lang);
             auto extSrc = Allocator()->New<util::UString>(externalSource, Allocator());
             importPathManager_->MarkAsParsed(data.resolvedSource);
-
             ParseParseListElement(parseList[idx], extSrc, directImportsFromMainSource, &programs);
-
             GetContext().SetLanguage(preservedLang);
         }
-
         notParsedElement =
             std::find_if(parseList.begin(), parseList.end(), [](const auto &parseInfo) { return !parseInfo.isParsed; });
     }
-
     return programs;
+}
+
+std::vector<Program *> ETSParser::ParseSources(bool firstSource)
+{
+    auto &parseList = importPathManager_->ParseList();
+    ArenaVector<util::StringView> directImportsFromMainSource(Allocator()->Adapter());
+    if (firstSource) {
+        // NOLINTNEXTLINE(modernize-loop-convert)
+        for (size_t idx = 0; idx < parseList.size(); idx++) {
+            if (parseList[idx].isParsed) {
+                // Handle excluded files, which are already set to be parsed before parsing them
+                continue;
+            }
+            if (SearchImportedExternalSources(this, parseList[idx].importData.resolvedSource)) {
+                parseList[idx].isParsed = true;
+                continue;
+            }
+            directImportsFromMainSource.emplace_back(parseList[idx].importData.resolvedSource);
+        }
+    }
+    return SearchForNotParsed(parseList, directImportsFromMainSource);
 }
 
 parser::Program *ETSParser::ParseSource(const SourceFile &sourceFile)

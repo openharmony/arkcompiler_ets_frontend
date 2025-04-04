@@ -55,7 +55,7 @@ public:
     NO_MOVE_SEMANTIC(CompilerImpl);
     ~CompilerImpl() = default;
 
-    pandasm::Program *Compile(const CompilationUnit &unit);
+    pandasm::Program *Compile(const CompilationUnit &unit, public_lib::Context *context);
 
     std::vector<util::Plugin> const &Plugins()
     {

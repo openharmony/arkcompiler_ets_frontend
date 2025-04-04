@@ -121,7 +121,10 @@ struct TupleTypeInfo {
 class TSChecker : public Checker {
 public:
     // NOLINTNEXTLINE(readability-redundant-member-init)
-    explicit TSChecker(util::DiagnosticEngine &diagnosticEngine) : Checker(diagnosticEngine) {}
+    explicit TSChecker(util::DiagnosticEngine &diagnosticEngine, [[maybe_unused]] ArenaAllocator *programAllocator)
+        : Checker(diagnosticEngine)
+    {
+    }
 
     Type *GlobalNumberType()
     {

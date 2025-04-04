@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,7 +24,7 @@ std::string_view ConstStringToCharLowering::Name() const
     return "ConstStringToCharLowering";
 }
 
-ir::AstNode *TryConvertToCharLiteral(checker::ETSChecker *checker, ir::AstNode *ast)
+ir::AstNode *TryConvertToCharLiteral(public_lib::Context *const ctx, ir::AstNode *ast)
 {
     if (!ast->HasBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOX_TO_CHAR) || !ast->IsExpression() ||
         ast->AsExpression()->TsType() == nullptr || !ast->AsExpression()->TsType()->IsETSStringType()) {
@@ -40,25 +40,27 @@ ir::AstNode *TryConvertToCharLiteral(checker::ETSChecker *checker, ir::AstNode *
     util::StringView::Iterator it(type->GetValue());
     auto value = static_cast<char16_t>(it.PeekCp());
 
-    auto newValue = checker->Allocator()->New<ir::CharLiteral>(value);
+    auto newValue = ctx->Allocator()->New<ir::CharLiteral>(value);
     newValue->SetParent(parent);
     newValue->SetRange(ast->Range());
     if (ast->HasBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOX_TO_CHAR)) {
         newValue->AddBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOX_TO_CHAR);
     }
 
-    newValue->Check(checker);
+    newValue->Check(ctx->checker->AsETSChecker());
     return newValue;
 }
 
 bool ConstStringToCharLowering::PerformForModule(public_lib::Context *const ctx, parser::Program *const program)
 {
-    auto *const checker = ctx->checker->AsETSChecker();
+    if (program->GetFlag(parser::ProgramFlags::AST_CONST_STRING_TO_CHAR_LOWERED)) {
+        return true;
+    }
 
+    (void)ctx;
     program->Ast()->TransformChildrenRecursively(
-        // CC-OFFNXT(G.FMT.14-CPP) project code style
-        [checker](ir::AstNode *ast) -> ir::AstNode * {
-            if (auto newValue = TryConvertToCharLiteral(checker, ast); newValue != nullptr) {
+        [ctx](checker::AstNodePtr ast) -> checker::AstNodePtr {
+            if (auto newValue = TryConvertToCharLiteral(ctx, ast); newValue != nullptr) {
                 return newValue;
             }
 
@@ -66,6 +68,7 @@ bool ConstStringToCharLowering::PerformForModule(public_lib::Context *const ctx,
         },
         Name());
 
+    program->SetFlag(parser::ProgramFlags::AST_CONST_STRING_TO_CHAR_LOWERED);
     return true;
 }
 

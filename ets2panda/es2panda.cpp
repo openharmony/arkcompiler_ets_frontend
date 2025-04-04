@@ -15,7 +15,11 @@
 
 #include "compiler/core/compilerImpl.h"
 #include "generated/diagnostic.h"
+#include "public/public.h"
 #include "util/diagnostic.h"
+#include "util/generateBin.h"
+
+#include "es2panda.h"
 
 namespace ark::es2panda {
 constexpr size_t DEFAULT_THREAD_COUNT = 2;
@@ -50,6 +54,10 @@ SourceFile::SourceFile(std::string_view fn, std::string_view s, bool m)
     : filePath(fn), fileFolder(DirName(fn)), source(s), isModule(m)
 {
 }
+SourceFile::SourceFile(std::string_view fn, std::string_view s, bool m, std::string_view d)
+    : filePath(fn), fileFolder(DirName(fn)), source(s), isModule(m), dest(d)
+{
+}
 
 SourceFile::SourceFile(std::string_view fn, std::string_view s, std::string_view rp, bool m, bool d)
     : filePath(fn),
@@ -78,12 +86,46 @@ Compiler::~Compiler()
 pandasm::Program *Compiler::Compile(const SourceFile &input, const util::Options &options,
                                     util::DiagnosticEngine &diagnosticEngine, uint32_t parseStatus)
 {
+    public_lib::Context context;
+    ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
+    context.allocator = &allocator;
+    context.compilingState = public_lib::CompilingState::SINGLE_COMPILING;
+
     try {
-        return compiler_->Compile(compiler::CompilationUnit {input, options, parseStatus, ext_, diagnosticEngine});
+        return compiler_->Compile(compiler::CompilationUnit {input, options, parseStatus, ext_, diagnosticEngine},
+                                  &context);
     } catch (const util::ThrowableDiagnostic &e) {
         error_ = e;
         return nullptr;
     }
+}
+
+unsigned int Compiler::CompileM(std::vector<SourceFile> &inputs, util::Options &options,
+                                util::DiagnosticEngine &diagnosticEngine, std::vector<pandasm::Program *> &result)
+{
+    public_lib::Context context;
+    context.transitionMemory =
+        new public_lib::TransitionMemory(new ArenaAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true));
+    context.allocator = context.transitionMemory->PermanentAllocator();
+
+    context.compilingState = public_lib::CompilingState::MULTI_COMPILING_INIT;
+    unsigned int overallRes = 0;
+    for (auto &input : inputs) {
+        try {
+            options.SetOutput(std::string(input.dest));
+            LOG_IF(options.IsListFiles(), INFO, ES2PANDA)
+                << "> es2panda: compiling from '" << input.filePath << "' to '" << input.dest << "'";
+            auto program =
+                compiler_->Compile(compiler::CompilationUnit {input, options, 0, ext_, diagnosticEngine}, &context);
+            result.push_back(program);
+        } catch (const util::ThrowableDiagnostic &err) {
+            overallRes |= 1U;
+            diagnosticEngine.Log(err);
+        }
+        context.compilingState = public_lib::CompilingState::MULTI_COMPILING_FOLLOW;
+    }
+    delete context.transitionMemory;
+    return overallRes;
 }
 
 std::string Compiler::GetPhasesList() const
@@ -97,4 +139,5 @@ void Compiler::DumpAsm(const pandasm::Program *prog)
 }
 
 util::DiagnosticEngine *g_diagnosticEngine = nullptr;
+
 }  // namespace ark::es2panda

@@ -317,7 +317,6 @@ static void CreateNewArrayElementsAssignStatement(public_lib::Context *ctx, ir::
  */
 static ir::BlockExpression *CreateLoweredExpressionForArray(public_lib::Context *ctx, ir::ArrayExpression *array)
 {
-    auto *const checker = ctx->checker->AsETSChecker();
     auto *const parser = ctx->parser->AsETSParser();
     auto *const allocator = ctx->allocator;
     ArenaVector<ir::Statement *> statements(allocator->Adapter());
@@ -335,7 +334,7 @@ static ir::BlockExpression *CreateLoweredExpressionForArray(public_lib::Context 
                                                  newArrayIndexId->Clone(allocator, nullptr)};
 
     CreateNewArrayElementsAssignStatement(ctx, array, spreadArrayIds, statements, newArrayAndIndex);
-    return checker->AllocNode<ir::BlockExpression>(std::move(statements));
+    return ctx->AllocNode<ir::BlockExpression>(std::move(statements));
 }
 
 /*

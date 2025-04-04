@@ -56,13 +56,13 @@ bool TopLevelStatements::Perform(public_lib::Context *ctx, parser::Program *prog
         // NOTE(vpukhov): enforce compilation failure
     }
 
-    GlobalClassHandler globalClass(ctx->parser->AsETSParser(), program->Allocator());
+    GlobalClassHandler globalClass(ctx->parser->AsETSParser(), ctx->Allocator());
     for (auto &[package, extPrograms] : program->ExternalSources()) {
         auto moduleDependencies = imports.HandleGlobalStmts(extPrograms);
         globalClass.SetupGlobalClass(extPrograms, &moduleDependencies);
     }
 
-    ArenaVector<parser::Program *> mainModule(program->Allocator()->Adapter());
+    ArenaVector<parser::Program *> mainModule(ctx->Allocator()->Adapter());
     mainModule.emplace_back(program);
     auto moduleDependencies = imports.HandleGlobalStmts(mainModule);
     globalClass.SetupGlobalClass(mainModule, &moduleDependencies);

@@ -402,7 +402,7 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
         return nullptr;
     }
 
-    ArenaVector<Expression *> arguments {checker->Allocator()->Adapter()};
+    ArenaVector<Expression *> arguments {checker->ProgramAllocator()->Adapter()};
     arguments.emplace_back(property_);
     if (isSetter) {
         //  Temporary change the parent of right assignment node to check if correct "$_set" function presents.

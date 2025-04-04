@@ -125,6 +125,11 @@ public:
         return parseList_;
     }
 
+    [[nodiscard]] ArenaVector<ParseInfo> &ParseList()
+    {
+        return parseList_;
+    }
+
     util::StringView FormModuleName(const util::Path &path, const lexer::SourcePosition &srcPos);
     ImportMetadata GatherImportMetadata(parser::Program *program, ImportFlags importFlags,
                                         ir::StringLiteral *importPath);

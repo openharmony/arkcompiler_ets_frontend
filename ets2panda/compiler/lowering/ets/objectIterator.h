@@ -30,8 +30,7 @@ public:
     bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
 
 private:
-    [[nodiscard]] ir::Statement *ProcessObjectIterator(parser::ETSParser *parser, checker::ETSChecker *checker,
-                                                       varbinder::ETSBinder *varbinder,
+    [[nodiscard]] ir::Statement *ProcessObjectIterator(public_lib::Context *ctx,
                                                        ir::ForOfStatement *forOfStatement) const;
 
     void TransferForOfLoopBody(ir::Statement *forBody, ir::BlockStatement *whileBody) const noexcept;

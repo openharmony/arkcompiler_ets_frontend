@@ -751,9 +751,8 @@ static checker::ETSObjectType *FunctionTypeToLambdaProviderType(checker::ETSChec
 static void CorrectTheTrueThisForExtensionLambda(public_lib::Context *ctx, ir::ClassDeclaration *lambdaClass,
                                                  size_t arity, bool hasRestParam)
 {
-    auto *checker = ctx->checker->AsETSChecker();
     auto *classScope = lambdaClass->Definition()->Scope();
-    ArenaVector<varbinder::Variable *> invokeFuncsOfLambda(checker->Allocator()->Adapter());
+    ArenaVector<varbinder::Variable *> invokeFuncsOfLambda(ctx->Allocator()->Adapter());
     auto invokeName = checker::FunctionalInterfaceInvokeName(arity, hasRestParam);
     invokeFuncsOfLambda.emplace_back(
         classScope->FindLocal(compiler::Signatures::LAMBDA_OBJECT_INVOKE, varbinder::ResolveBindingOptions::METHODS));

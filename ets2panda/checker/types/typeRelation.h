@@ -234,6 +234,11 @@ public:
         return checker_;
     }
 
+    void SetChecker(Checker *checker)
+    {
+        checker_ = checker;
+    }
+
     ir::Expression *GetNode() const
     {
         return node_;

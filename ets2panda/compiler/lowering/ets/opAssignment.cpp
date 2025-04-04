@@ -102,9 +102,10 @@ void AdjustBoxingUnboxingFlags(ir::Expression *loweringResult, const ir::Express
     }
 }
 
-static ir::OpaqueTypeNode *CreateProxyTypeNode(checker::ETSChecker *checker, ir::Expression *expr)
+static ir::OpaqueTypeNode *CreateProxyTypeNode(public_lib::Context *ctx, ir::Expression *expr)
 {
     auto *lcType = expr->TsType();
+    auto *checker = ctx->checker->AsETSChecker();
     if (checker->IsExtensionETSFunctionType(lcType) && expr->IsMemberExpression() &&
         expr->AsMemberExpression()->HasMemberKind(ir::MemberExpressionKind::EXTENSION_ACCESSOR)) {
         lcType = expr->AsMemberExpression()->ExtensionAccessorType();
@@ -112,7 +113,7 @@ static ir::OpaqueTypeNode *CreateProxyTypeNode(checker::ETSChecker *checker, ir:
     if (auto *lcTypeAsPrimitive = checker->MaybeUnboxInRelation(lcType); lcTypeAsPrimitive != nullptr) {
         lcType = lcTypeAsPrimitive;
     }
-    return checker->AllocNode<ir::OpaqueTypeNode>(lcType, checker->Allocator());
+    return ctx->AllocNode<ir::OpaqueTypeNode>(lcType, ctx->Allocator());
 }
 
 static std::string GenFormatForExpression(ir::Expression *expr, size_t ix1, size_t ix2)
@@ -254,7 +255,6 @@ static ir::Expression *ConstructOpAssignmentResult(public_lib::Context *ctx, ir:
 {
     auto *allocator = ctx->allocator;
     auto *parser = ctx->parser->AsETSParser();
-    auto *checker = ctx->checker->AsETSChecker();
 
     const auto opEqual = assignment->OperatorType();
     ES2PANDA_ASSERT(opEqual != lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
@@ -263,7 +263,7 @@ static ir::Expression *ConstructOpAssignmentResult(public_lib::Context *ctx, ir:
     auto *const right = assignment->Right();
     right->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
 
-    auto *exprType = CreateProxyTypeNode(checker, left);
+    auto *exprType = CreateProxyTypeNode(ctx, left);
     ir::Expression *retVal = nullptr;
 
     // Create temporary variable(s) if left hand of assignment is not defined by simple identifier[s]
@@ -408,11 +408,11 @@ static ir::Expression *ConstructUpdateResult(public_lib::Context *ctx, ir::Updat
 
 static ir::AstNode *HandleUpdate(public_lib::Context *ctx, ir::UpdateExpression *upd)
 {
-    auto *checker = ctx->checker->AsETSChecker();
-
     auto *const scope = NearestScope(upd);
 
     ir::Expression *loweringResult = ConstructUpdateResult(ctx, upd);
+
+    auto *checker = ctx->checker->AsETSChecker();
 
     auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
     checker::SavedCheckerContext scc {checker, checker::CheckerStatus::IGNORE_VISIBILITY, ContainingClass(upd)};
@@ -428,7 +428,8 @@ static ir::AstNode *HandleUpdate(public_lib::Context *ctx, ir::UpdateExpression 
             return node;
         },
         "");
-    InitScopesPhaseETS::RunExternalNode(loweringResult, ctx->checker->VarBinder());
+
+    InitScopesPhaseETS::RunExternalNode(loweringResult, checker->VarBinder());
 
     checker->VarBinder()->AsETSBinder()->ResolveReferencesForScopeWithContext(loweringResult,
                                                                               NearestScope(loweringResult));

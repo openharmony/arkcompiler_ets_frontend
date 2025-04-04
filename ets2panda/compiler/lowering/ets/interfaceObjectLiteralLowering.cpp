@@ -49,13 +49,13 @@ static ir::AstNode *CreateAnonClassImplCtor(public_lib::Context *ctx, ArenaVecto
     auto *const checker = ctx->checker->AsETSChecker();
     auto *const parser = ctx->parser->AsETSParser();
     checker::ETSChecker::ClassInitializerBuilder initBuilder =
-        [checker, parser, readonlyFields](ArenaVector<ir::Statement *> *statements,
-                                          ArenaVector<ir::Expression *> *params) {
+        [ctx, checker, parser, readonlyFields](ArenaVector<ir::Statement *> *statements,
+                                               ArenaVector<ir::Expression *> *params) {
             for (auto [anonClassFieldName, paramName, retType] : readonlyFields) {
                 ir::ETSParameterExpression *param =
-                    checker->AddParam(paramName, checker->AllocNode<ir::OpaqueTypeNode>(retType, checker->Allocator()));
+                    checker->AddParam(paramName, ctx->AllocNode<ir::OpaqueTypeNode>(retType, ctx->Allocator()));
                 params->push_back(param);
-                auto *paramIdent = checker->AllocNode<ir::Identifier>(paramName, checker->Allocator());
+                auto *paramIdent = ctx->AllocNode<ir::Identifier>(paramName, ctx->Allocator());
                 statements->push_back(
                     parser->CreateFormattedStatement("this.@@I1 = @@I2;", anonClassFieldName, paramIdent));
             }
@@ -142,7 +142,7 @@ static void FillClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode *> *
             continue;
         }
 
-        auto copyIfaceMethod = ifaceMethod->Clone(checker->Allocator(), nullptr);
+        auto copyIfaceMethod = ifaceMethod->Clone(ctx->Allocator(), nullptr);
         copyIfaceMethod->SetRange(ifaceMethod->Range());
         copyIfaceMethod->Function()->SetSignature(ifaceMethod->Function()->Signature());
 
@@ -205,12 +205,12 @@ static checker::Type *GenerateAnonClassTypeFromInterface(public_lib::Context *ct
         if (ifaceNode->TsType() == nullptr) {
             ifaceNode->Check(checker);
         }
-        ArenaVector<ReadonlyFieldHolder> readonlyFields(checker->Allocator()->Adapter());
+        ArenaVector<ReadonlyFieldHolder> readonlyFields(ctx->Allocator()->Adapter());
         FillAnonClassBody(ctx, classBody, ifaceNode, objExpr, readonlyFields);
         classBody->push_back(CreateAnonClassImplCtor(ctx, readonlyFields));
     };
 
-    auto anonClassName = GenName(checker->Allocator());
+    auto anonClassName = GenName(ctx->Allocator());
     auto *classDecl = checker->BuildClass(anonClassName.View(), classBodyBuilder);
     auto *classDef = classDecl->Definition();
     auto *classType = classDef->TsType()->AsETSObjectType();
@@ -221,7 +221,7 @@ static checker::Type *GenerateAnonClassTypeFromInterface(public_lib::Context *ct
 
     // Class type params
     if (ifaceNode->TypeParams() != nullptr) {
-        ArenaVector<checker::Type *> typeArgs(checker->Allocator()->Adapter());
+        ArenaVector<checker::Type *> typeArgs(ctx->Allocator()->Adapter());
         for (auto param : ifaceNode->TypeParams()->Params()) {
             auto *var = param->Name()->Variable();
             ES2PANDA_ASSERT(var && var->TsType()->IsETSTypeParameter());
@@ -231,8 +231,8 @@ static checker::Type *GenerateAnonClassTypeFromInterface(public_lib::Context *ct
     }
 
     // Class implements
-    auto *classImplements = checker->AllocNode<ir::TSClassImplements>(
-        checker->AllocNode<ir::OpaqueTypeNode>(ifaceNode->TsType(), checker->Allocator()));
+    auto *classImplements = ctx->AllocNode<ir::TSClassImplements>(
+        ctx->AllocNode<ir::OpaqueTypeNode>(ifaceNode->TsType(), ctx->Allocator()));
     classImplements->SetParent(classDef);
     classDef->Implements().emplace_back(classImplements);
     classType->RemoveObjectFlag(checker::ETSObjectFlags::RESOLVED_INTERFACES);
@@ -270,7 +270,7 @@ static checker::Type *GenerateAnonClassTypeFromAbstractClass(public_lib::Context
         }
     };
 
-    auto anonClassName = GenName(checker->Allocator());
+    auto anonClassName = GenName(ctx->Allocator());
     auto *classDecl = checker->BuildClass(anonClassName.View(), classBodyBuilder);
     auto *classDef = classDecl->Definition();
     auto *classType = classDef->TsType()->AsETSObjectType();
@@ -281,7 +281,7 @@ static checker::Type *GenerateAnonClassTypeFromAbstractClass(public_lib::Context
 
     // Class type params
     if (abstractClassNode->TypeParams() != nullptr) {
-        ArenaVector<checker::Type *> typeArgs(checker->Allocator()->Adapter());
+        ArenaVector<checker::Type *> typeArgs(ctx->Allocator()->Adapter());
         for (auto param : abstractClassNode->TypeParams()->Params()) {
             auto *var = param->Name()->Variable();
             ES2PANDA_ASSERT(var && var->TsType()->IsETSTypeParameter());

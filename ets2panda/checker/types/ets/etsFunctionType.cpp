@@ -22,8 +22,8 @@ ETSFunctionType::ETSFunctionType([[maybe_unused]] ETSChecker *checker, util::Str
                                  ArenaVector<Signature *> &&signatures)
     : Type(TypeFlag::FUNCTION | TypeFlag::ETS_METHOD),
       callSignatures_(std::move(signatures)),
-      extensionFunctionSigs_(ArenaVector<Signature *>(checker->Allocator()->Adapter())),
-      extensionAccessorSigs_(ArenaVector<Signature *>(checker->Allocator()->Adapter())),
+      extensionFunctionSigs_(ArenaVector<Signature *>(checker->ProgramAllocator()->Adapter())),
+      extensionAccessorSigs_(ArenaVector<Signature *>(checker->ProgramAllocator()->Adapter())),
       name_(name)
 {
     auto flag = TypeFlag::NONE;
@@ -41,9 +41,9 @@ ETSFunctionType::ETSFunctionType([[maybe_unused]] ETSChecker *checker, util::Str
 
 ETSFunctionType::ETSFunctionType(ETSChecker *checker, Signature *signature)
     : Type(TypeFlag::FUNCTION),
-      callSignatures_({{signature->ToArrowSignature(checker)}, checker->Allocator()->Adapter()}),
-      extensionFunctionSigs_(ArenaVector<Signature *>(checker->Allocator()->Adapter())),
-      extensionAccessorSigs_(ArenaVector<Signature *>(checker->Allocator()->Adapter())),
+      callSignatures_({{signature->ToArrowSignature(checker)}, checker->ProgramAllocator()->Adapter()}),
+      extensionFunctionSigs_(ArenaVector<Signature *>(checker->ProgramAllocator()->Adapter())),
+      extensionAccessorSigs_(ArenaVector<Signature *>(checker->ProgramAllocator()->Adapter())),
       name_(""),
       assemblerName_(checker->GlobalBuiltinFunctionType(signature->MinArgCount(), signature->HasRestParameter())
                          ->AsETSObjectType()
@@ -292,7 +292,7 @@ ETSFunctionType *ETSFunctionType::Substitute(TypeRelation *relation, const Subst
 {
     if (substitution != nullptr && !substitution->empty()) {
         auto *const checker = relation->GetChecker()->AsETSChecker();
-        auto *const allocator = checker->Allocator();
+        auto *const allocator = checker->ProgramAllocator();
 
         auto signatures = ArenaVector<Signature *>(allocator->Adapter());
         bool anyChange = false;

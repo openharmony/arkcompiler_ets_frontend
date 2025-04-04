@@ -27,8 +27,6 @@ std::string GenericBridgesPhase::CreateMethodDefinitionString(ir::ClassDefinitio
 {
     constexpr std::size_t SOURCE_CODE_LENGTH = 128U;
 
-    auto *checker = context_->checker->AsETSChecker();
-
     std::string str1 {};
     str1.reserve(2U * SOURCE_CODE_LENGTH);
 
@@ -54,21 +52,21 @@ std::string GenericBridgesPhase::CreateMethodDefinitionString(ir::ClassDefinitio
         auto const &parameterName = derivedParameter->Name().Utf8();
         str1 += parameterName;
         typeNodes.emplace_back(
-            checker->AllocNode<ir::OpaqueTypeNode>(baseParameters[i]->TsType(), checker->Allocator()));
+            context_->AllocNode<ir::OpaqueTypeNode>(baseParameters[i]->TsType(), context_->Allocator()));
         str1 += ": @@T" + std::to_string(typeNodes.size());
 
         str2 += parameterName;
         typeNodes.emplace_back(
-            checker->AllocNode<ir::OpaqueTypeNode>(derivedParameter->TsType(), checker->Allocator()));
+            context_->AllocNode<ir::OpaqueTypeNode>(derivedParameter->TsType(), context_->Allocator()));
         str2 += " as @@T" + std::to_string(typeNodes.size());
     }
 
-    typeNodes.emplace_back(checker->AllocNode<ir::OpaqueTypeNode>(
-        const_cast<checker::Type *>(derivedFunction->Signature()->ReturnType()), checker->Allocator()));
+    typeNodes.emplace_back(context_->AllocNode<ir::OpaqueTypeNode>(
+        const_cast<checker::Type *>(derivedFunction->Signature()->ReturnType()), context_->Allocator()));
     str1 += "): @@T" + std::to_string(typeNodes.size()) + ' ';
 
-    typeNodes.emplace_back(checker->AllocNode<ir::OpaqueTypeNode>(
-        const_cast<checker::Type *>(classDefinition->TsType()), checker->Allocator()));
+    typeNodes.emplace_back(context_->AllocNode<ir::OpaqueTypeNode>(
+        const_cast<checker::Type *>(classDefinition->TsType()), context_->Allocator()));
     str2 = "{ return (this as @@T" + std::to_string(typeNodes.size()) + str2 + "); }";
 
     str1 += str2;

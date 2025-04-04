@@ -47,6 +47,7 @@
 #include "generated/diagnostic.h"
 
 namespace ark::es2panda::checker {
+
 void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
 {
     auto const testType = expr->Check(this);
@@ -94,7 +95,7 @@ Type *ETSChecker::GetNonNullishType(Type *type)
         return type;
     }
     if (type->IsETSTypeParameter()) {
-        return Allocator()->New<ETSNonNullishType>(type->AsETSTypeParameter());
+        return ProgramAllocator()->New<ETSNonNullishType>(type->AsETSTypeParameter());
     }
     if (type->IsETSPartialTypeParameter()) {
         return type->AsETSPartialTypeParameter()->GetUnderlying();
@@ -103,7 +104,7 @@ Type *ETSChecker::GetNonNullishType(Type *type)
         return GetGlobalTypesHolder()->GlobalETSNeverType();
     }
 
-    ArenaVector<Type *> copied(Allocator()->Adapter());
+    ArenaVector<Type *> copied(ProgramAllocator()->Adapter());
     for (auto const &t : type->AsETSUnionType()->ConstituentTypes()) {
         if (t->IsETSNullType() || t->IsETSUndefinedType()) {
             continue;
@@ -129,7 +130,7 @@ Type *ETSChecker::RemoveNullType(Type *const type)
     }
 
     ES2PANDA_ASSERT(type->IsETSUnionType());
-    ArenaVector<Type *> copiedTypes(Allocator()->Adapter());
+    ArenaVector<Type *> copiedTypes(ProgramAllocator()->Adapter());
 
     for (auto *constituentType : type->AsETSUnionType()->ConstituentTypes()) {
         if (!constituentType->IsETSNullType()) {
@@ -157,7 +158,7 @@ Type *ETSChecker::RemoveUndefinedType(Type *const type)
     }
 
     ES2PANDA_ASSERT(type->IsETSUnionType());
-    ArenaVector<Type *> copiedTypes(Allocator()->Adapter());
+    ArenaVector<Type *> copiedTypes(ProgramAllocator()->Adapter());
 
     for (auto *constituentType : type->AsETSUnionType()->ConstituentTypes()) {
         if (!constituentType->IsETSUndefinedType()) {
@@ -177,7 +178,7 @@ std::pair<Type *, Type *> ETSChecker::RemoveNullishTypes(Type *type)
 
     if (type->IsETSTypeParameter()) {
         return {GetGlobalTypesHolder()->GlobalETSNullishType(),
-                Allocator()->New<ETSNonNullishType>(type->AsETSTypeParameter())};
+                ProgramAllocator()->New<ETSNonNullishType>(type->AsETSTypeParameter())};
     }
 
     if (type->IsETSUndefinedType() || type->IsETSNullType()) {
@@ -185,16 +186,17 @@ std::pair<Type *, Type *> ETSChecker::RemoveNullishTypes(Type *type)
     }
 
     ES2PANDA_ASSERT(type->IsETSUnionType());
-    ArenaVector<Type *> nullishTypes(Allocator()->Adapter());
-    ArenaVector<Type *> notNullishTypes(Allocator()->Adapter());
+    ArenaVector<Type *> nullishTypes(ProgramAllocator()->Adapter());
+    ArenaVector<Type *> notNullishTypes(ProgramAllocator()->Adapter());
 
     for (auto *constituentType : type->AsETSUnionType()->ConstituentTypes()) {
         if (constituentType->IsETSUndefinedType() || constituentType->IsETSNullType()) {
             nullishTypes.push_back(constituentType);
         } else {
-            notNullishTypes.push_back(!constituentType->IsETSTypeParameter()
-                                          ? constituentType
-                                          : Allocator()->New<ETSNonNullishType>(constituentType->AsETSTypeParameter()));
+            notNullishTypes.push_back(
+                !constituentType->IsETSTypeParameter()
+                    ? constituentType
+                    : ProgramAllocator()->New<ETSNonNullishType>(constituentType->AsETSTypeParameter()));
         }
     }
 
@@ -656,7 +658,7 @@ Type *ETSChecker::ResolveUnionUncheckedType(ArenaVector<checker::Type *> &&appar
 Type *ETSChecker::GuaranteedTypeForUnionFieldAccess(ir::MemberExpression *memberExpression, ETSUnionType *etsUnionType)
 {
     const auto &types = etsUnionType->ConstituentTypes();
-    ArenaVector<checker::Type *> apparentTypes {Allocator()->Adapter()};
+    ArenaVector<checker::Type *> apparentTypes {ProgramAllocator()->Adapter()};
     const auto &propertyName = memberExpression->Property()->AsIdentifier()->Name();
     for (auto *type : types) {
         auto searchFlags = PropertySearchFlags::SEARCH_FIELD | PropertySearchFlags::SEARCH_METHOD |
@@ -1101,7 +1103,7 @@ void ETSChecker::CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::Anno
     }
     auto singleField = annoDecl->Properties().at(0)->AsClassProperty();
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto clone = singleField->TypeAnnotation()->Clone(Allocator(), param);
+    auto clone = singleField->TypeAnnotation()->Clone(ProgramAllocator(), param);
     param->SetTypeAnnotation(clone);
     ScopeContext scopeCtx(this, st->Scope());
     param->Check(this);
@@ -1117,7 +1119,7 @@ void ETSChecker::ProcessRequiredFields(ArenaUnorderedMap<util::StringView, ir::C
             continue;
         }
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *clone = entry.second->Clone(checker->Allocator(), st);
+        auto *clone = entry.second->Clone(checker->ProgramAllocator(), st);
         st->AddProperty(clone);
     }
 }
@@ -1134,7 +1136,7 @@ void ETSChecker::CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, util
         }
 
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto clone = result->second->TypeAnnotation()->Clone(Allocator(), param);
+        auto clone = result->second->TypeAnnotation()->Clone(ProgramAllocator(), param);
         param->SetTypeAnnotation(clone);
         ScopeContext scopeCtx(this, st->Scope());
         param->Check(this);
@@ -1468,7 +1470,7 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
 
     // Preserve actual lambda types
     ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
-    ArenaVector<ir::TypeNode *> lambdaParamTypes {Allocator()->Adapter()};
+    ArenaVector<ir::TypeNode *> lambdaParamTypes {ProgramAllocator()->Adapter()};
     for (auto *const lambdaParam : lambda->Params()) {
         lambdaParamTypes.emplace_back(lambdaParam->AsETSParameterExpression()->Ident()->TypeAnnotation());
     }
@@ -1546,7 +1548,7 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
         } else if ((lambda->Signature() != nullptr) && !lambda->HasReturnStatement()) {
             //  Need to check void return type here if there are no return statement(s) in the body.
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            if (!AssignmentContext(Relation(), AllocNode<ir::Identifier>(Allocator()), GlobalVoidType(),
+            if (!AssignmentContext(Relation(), ProgramAllocNode<ir::Identifier>(ProgramAllocator()), GlobalVoidType(),
                                    lambda->Signature()->ReturnType(), lambda->Start(), std::nullopt,
                                    checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
                      .IsAssignable()) {  // CC-OFF(G.FMT.02-CPP) project code style
@@ -1604,4 +1606,5 @@ void ETSChecker::CheckExceptionClauseType(const std::vector<checker::ETSObjectTy
         }
     }
 }
+
 }  // namespace ark::es2panda::checker

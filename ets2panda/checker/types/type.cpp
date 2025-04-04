@@ -141,7 +141,7 @@ Type *Type::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unus
 
 Type *Type::Clone(Checker *const checker)
 {
-    return Instantiate(checker->Allocator(), checker->Relation(), checker->GetGlobalTypesHolder());
+    return Instantiate(checker->ProgramAllocator(), checker->Relation(), checker->GetGlobalTypesHolder());
 }
 
 Type *Type::Substitute([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] const Substitution *substitution)

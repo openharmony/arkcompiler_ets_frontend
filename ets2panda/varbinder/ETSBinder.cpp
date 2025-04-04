@@ -29,6 +29,7 @@ void ETSBinder::IdentifierAnalysis()
 
     recordTable_->SetProgram(Program());
     globalRecordTable_.SetClassDefinition(Program()->GlobalClass());
+
     BuildProgram();
 
     ES2PANDA_ASSERT(globalRecordTable_.ClassDefinition() == Program()->GlobalClass());
@@ -1195,7 +1196,10 @@ void ETSBinder::BuildProgram()
     for (auto &[_, extPrograms] : Program()->ExternalSources()) {
         (void)_;
         for (auto *extProg : extPrograms) {
-            BuildExternalProgram(extProg);
+            if (!extProg->GetFlag(parser::ProgramFlags::AST_IDENTIFIER_ANALYZED)) {
+                BuildExternalProgram(extProg);
+                extProg->SetFlag(parser::ProgramFlags::AST_IDENTIFIER_ANALYZED);
+            }
         }
     }
 

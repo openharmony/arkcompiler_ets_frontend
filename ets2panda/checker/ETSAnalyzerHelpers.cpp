@@ -109,15 +109,15 @@ static void ReplaceThisInExtensionMethod(checker::ETSChecker *checker, ir::Scrip
         auto *const thisTypeAnnotation =
             extensionFunc->Params()[0]->AsETSParameterExpression()->Ident()->TypeAnnotation();
         extensionFunc->Signature()->SetReturnType(thisType);
-        extensionFunc->SetReturnTypeAnnotation(thisTypeAnnotation->Clone(checker->Allocator(), extensionFunc));
+        extensionFunc->SetReturnTypeAnnotation(thisTypeAnnotation->Clone(checker->ProgramAllocator(), extensionFunc));
     }
 
     auto thisVariable = extensionFunc->Params()[0]->Variable();
     extensionFunc->Body()->TransformChildrenRecursively(
         [=](ir::AstNode *ast) {
             if (ast->IsThisExpression()) {
-                auto *thisParam = checker->Allocator()->New<ir::Identifier>(
-                    varbinder::TypedBinder::MANDATORY_PARAM_THIS, checker->Allocator());
+                auto *thisParam = checker->ProgramAllocator()->New<ir::Identifier>(
+                    varbinder::TypedBinder::MANDATORY_PARAM_THIS, checker->ProgramAllocator());
                 thisParam->SetRange(ast->Range());
                 thisParam->SetParent(ast->Parent());
                 thisParam->SetVariable(thisVariable);
@@ -147,8 +147,8 @@ void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *exte
             return;
         }
 
-        checker::SignatureInfo *originalExtensionSigInfo = checker->Allocator()->New<checker::SignatureInfo>(
-            extensionFunc->Signature()->GetSignatureInfo(), checker->Allocator());
+        checker::SignatureInfo *originalExtensionSigInfo = checker->ProgramAllocator()->New<checker::SignatureInfo>(
+            extensionFunc->Signature()->GetSignatureInfo(), checker->ProgramAllocator());
         originalExtensionSigInfo->minArgCount -= 1U;
         originalExtensionSigInfo->params.erase(originalExtensionSigInfo->params.begin());
         checker::Signature *originalExtensionSignature =
@@ -242,16 +242,16 @@ void ComposeAsyncImplFuncReturnType(ETSChecker *checker, ir::ScriptFunction *scr
 {
     auto const promiseType = checker->CreatePromiseOf(checker->MaybeBoxType(scriptFunc->Signature()->ReturnType()));
 
-    auto *objectId =
-        checker->AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_OBJECT_CLASS, checker->Allocator());
+    auto *objectId = checker->ProgramAllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_OBJECT_CLASS,
+                                                               checker->ProgramAllocator());
     checker->VarBinder()->AsETSBinder()->LookupTypeReference(objectId, false);
-    auto *returnType = checker->AllocNode<ir::ETSTypeReference>(
-        checker->AllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr, checker->Allocator()),
-        checker->Allocator());
+    auto *returnType = checker->ProgramAllocNode<ir::ETSTypeReference>(
+        checker->ProgramAllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr, checker->ProgramAllocator()),
+        checker->ProgramAllocator());
     objectId->SetParent(returnType->Part());
     returnType->Part()->SetParent(returnType);
-    returnType->SetTsType(
-        checker->Allocator()->New<ETSAsyncFuncReturnType>(checker->Allocator(), checker->Relation(), promiseType));
+    returnType->SetTsType(checker->ProgramAllocator()->New<ETSAsyncFuncReturnType>(checker->ProgramAllocator(),
+                                                                                   checker->Relation(), promiseType));
     returnType->Check(checker);
     scriptFunc->Signature()->SetReturnType(returnType->TsType());
 }
@@ -404,7 +404,7 @@ checker::Signature *GetMostSpecificSigFromExtensionFuncAndClassMethod(checker::E
     // So we temporarily transfer expr node from `a.foo(...)` to `a.foo(a, ...)`.
     // For allCallSignatures in ClassMethodType, temporarily insert the dummyReceiver into their signatureInfo,
     // otherwise we can't get the most suitable classMethod signature if all the extensionFunction signature mismatched.
-    ArenaVector<Signature *> signatures(checker->Allocator()->Adapter());
+    ArenaVector<Signature *> signatures(checker->ProgramAllocator()->Adapter());
     signatures.insert(signatures.end(), type->ClassMethodType()->CallSignatures().begin(),
                       type->ClassMethodType()->CallSignatures().end());
     signatures.insert(signatures.end(), type->ExtensionMethodType()->CallSignatures().begin(),
@@ -488,16 +488,16 @@ checker::Signature *ResolveCallForETSExtensionFuncHelperType(checker::ETSExtensi
 
 ArenaVector<checker::Signature *> GetUnionTypeSignatures(ETSChecker *checker, checker::ETSUnionType *etsUnionType)
 {
-    ArenaVector<checker::Signature *> callSignatures(checker->Allocator()->Adapter());
+    ArenaVector<checker::Signature *> callSignatures(checker->ProgramAllocator()->Adapter());
 
     for (auto *constituentType : etsUnionType->ConstituentTypes()) {
         if (constituentType->IsETSFunctionType()) {
-            ArenaVector<checker::Signature *> tmpCallSignatures(checker->Allocator()->Adapter());
+            ArenaVector<checker::Signature *> tmpCallSignatures(checker->ProgramAllocator()->Adapter());
             tmpCallSignatures = constituentType->AsETSFunctionType()->CallSignatures();
             callSignatures.insert(callSignatures.end(), tmpCallSignatures.begin(), tmpCallSignatures.end());
         }
         if (constituentType->IsETSUnionType()) {
-            ArenaVector<checker::Signature *> tmpCallSignatures(checker->Allocator()->Adapter());
+            ArenaVector<checker::Signature *> tmpCallSignatures(checker->ProgramAllocator()->Adapter());
             tmpCallSignatures = GetUnionTypeSignatures(checker, constituentType->AsETSUnionType());
             callSignatures.insert(callSignatures.end(), tmpCallSignatures.begin(), tmpCallSignatures.end());
         }
@@ -812,4 +812,5 @@ void CheckAllConstPropertyInitialized(checker::ETSChecker *checker, ir::ETSModul
         }
     }
 }
+
 }  // namespace ark::es2panda::checker

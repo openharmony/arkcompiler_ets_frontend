@@ -20,13 +20,14 @@
 #include "checker/types/ts/unionType.h"
 
 namespace ark::es2panda::checker {
-Checker::Checker(util::DiagnosticEngine &diagnosticEngine)
+Checker::Checker(util::DiagnosticEngine &diagnosticEngine, ArenaAllocator *programAllocator)
     : allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
+      programAllocator_(programAllocator),
       context_(this, CheckerStatus::NO_OPTS),
-      globalTypes_(allocator_.New<GlobalTypesHolder>(&allocator_)),
-      relation_(allocator_.New<TypeRelation>(this)),
       diagnosticEngine_(diagnosticEngine)
 {
+    relation_ = ProgramAllocator()->New<TypeRelation>(this);
+    globalTypes_ = ProgramAllocator()->New<GlobalTypesHolder>(ProgramAllocator());
 }
 
 void Checker::Initialize(varbinder::VarBinder *varbinder)
