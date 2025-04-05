@@ -178,6 +178,46 @@
             "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)",
             "severity": "ERROR",
             "exclusive": "SDK"
+        },
+        {
+            "line": 98,
+            "column": 15,
+            "endLine": 98,
+            "endColumn": 21,
+            "problem": "ParameterProperties",
+            "suggest": "",
+            "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 98,
+            "column": 34,
+            "endLine": 98,
+            "endColumn": 40,
+            "problem": "ParameterProperties",
+            "suggest": "",
+            "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 102,
+            "column": 15,
+            "endLine": 102,
+            "endColumn": 21,
+            "problem": "ParameterProperties",
+            "suggest": "",
+            "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 102,
+            "column": 34,
+            "endLine": 102,
+            "endColumn": 40,
+            "problem": "ParameterProperties",
+            "suggest": "",
+            "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)",
+            "severity": "ERROR"
         }
     ]
 }
