@@ -655,6 +655,46 @@
       "severity": "ERROR"
     },
     {
+      "line": 203,
+      "column": 6,
+      "endLine": 203,
+      "endColumn": 10,
+      "problem": "InvalidIdentifier",
+      "suggest": "",
+      "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 204,
+      "column": 3,
+      "endLine": 204,
+      "endColumn": 8,
+      "problem": "InvalidIdentifier",
+      "suggest": "",
+      "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 205,
+      "column": 3,
+      "endLine": 205,
+      "endColumn": 9,
+      "problem": "InvalidIdentifier",
+      "suggest": "",
+      "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 206,
+      "column": 3,
+      "endLine": 206,
+      "endColumn": 6,
+      "problem": "InvalidIdentifier",
+      "suggest": "",
+      "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
+      "severity": "ERROR"
+    },
+    {
       "line": 172,
       "column": 2,
       "endLine": 172,
