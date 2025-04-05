@@ -4054,17 +4054,17 @@ export class TypeScriptLinter {
     if (!expressionType) {
       return false;
     }
-    if (TypeScriptLinter.isSwitchAllowedType(expressionType)) {
+    if (this.isSwitchAllowedType(expressionType)) {
       return true;
     }
     if (expressionType.isUnion()) {
       const unionTypes = expressionType.types;
-      return unionTypes.every(TypeScriptLinter.isSwitchAllowedType);
+      return unionTypes.every(this.isSwitchAllowedType);
     }
     return false;
   }
 
-  private static isSwitchAllowedType(type: ts.Type): boolean {
+  private isSwitchAllowedType(type: ts.Type): boolean {
     if (type.flags & (ts.TypeFlags.StringLike | ts.TypeFlags.EnumLike)) {
       return true;
     }
@@ -4074,7 +4074,7 @@ export class TypeScriptLinter {
       return Number.isInteger(value);
     }
 
-    return false;
+    return this.tsTypeChecker.typeToString(type) === 'int';
   }
 
   private handleLimitedLiteralType(literalTypeNode: ts.LiteralTypeNode): void {
