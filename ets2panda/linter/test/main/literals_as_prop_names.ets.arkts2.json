@@ -237,8 +237,8 @@
         {
             "line": 78,
             "column": 7,
-            "endLine": 82,
-            "endColumn": 2,
+            "endLine": 78,
+            "endColumn": 10,
             "problem": "InvalidIdentifier",
             "suggest": "",
             "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",

@@ -223,7 +223,8 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.LiteralType, this.handleLimitedLiteralType],
     [ts.SyntaxKind.NonNullExpression, this.handleNonNullExpression],
     [ts.SyntaxKind.HeritageClause, this.checkExtendsExpression],
-    [ts.SyntaxKind.TaggedTemplateExpression, this.handleTaggedTemplatesExpression]
+    [ts.SyntaxKind.TaggedTemplateExpression, this.handleTaggedTemplatesExpression],
+    [ts.SyntaxKind.StructDeclaration, this.handleStructDeclaration]
   ]);
 
   private getLineAndCharacterOfNode(node: ts.Node | ts.CommentRange): ts.LineAndCharacter {
@@ -596,6 +597,13 @@ export class TypeScriptLinter {
     if (emptyContextTypeForArrayLiteral) {
       this.incrementCounters(node, FaultID.ArrayLiteralNoContextType);
     }
+  }
+
+  private handleStructDeclaration(node: ts.StructDeclaration): void {
+    if (!this.options.arkts2) {
+        return;
+    }
+    this.handleInvalidIdentifier(node);
   }
 
   private handleParameter(node: ts.Node): void {
@@ -4406,6 +4414,7 @@ export class TypeScriptLinter {
   private handleInvalidIdentifier(
     decl:
       | ts.TypeAliasDeclaration
+      | ts.StructDeclaration
       | ts.VariableDeclaration
       | ts.FunctionDeclaration
       | ts.MethodSignature
@@ -4421,9 +4430,10 @@ export class TypeScriptLinter {
     }
 
     const checkIdentifier = (identifier: ts.Identifier | undefined): void => {
-      if (identifier && INVALID_IDENTIFIER_KEYWORDS.includes(identifier.text)) {
-        this.incrementCounters(decl, FaultID.InvalidIdentifier);
-      }
+      const text = identifier && ts.isIdentifier(identifier) ? identifier.text : '';
+      if (identifier && text && INVALID_IDENTIFIER_KEYWORDS.includes(text)) {       
+        this.incrementCounters(identifier, FaultID.InvalidIdentifier);      
+      } 
     };
 
     if (ts.isImportDeclaration(decl)) {
@@ -4434,6 +4444,8 @@ export class TypeScriptLinter {
         });
       }
       checkIdentifier(importClause?.name);
+    } else if (isStructDeclaration(decl)) {
+      checkIdentifier((decl as ts.StructDeclaration).name); 
     } else {
       checkIdentifier(decl.name as ts.Identifier);
     }
