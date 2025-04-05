@@ -51,3 +51,7 @@ export function ensurePathExists(filePath: string): void {
     }
   }
 }
+
+export function isFileExistSync(filePath: string): boolean {
+  return fs.existsSync(filePath);
+}
