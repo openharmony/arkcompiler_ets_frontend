@@ -71,9 +71,11 @@ ir::MethodDefinition *MakeMethodDef(checker::ETSChecker *const checker, ir::Clas
 
 }  // namespace
 
-void EnumLoweringPhase::LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const
+void EnumLoweringPhase::LogError(const diagnostic::DiagnosticKind &diagnostic,
+                                 const util::DiagnosticMessageParams &diagnosticParams,
+                                 const lexer::SourcePosition &pos)
 {
-    context_->diagnosticEngine->LogSyntaxError(errorMessage, pos);
+    context_->diagnosticEngine->LogDiagnostic(diagnostic, diagnosticParams, pos);
 }
 
 template <typename TypeNode>
@@ -84,7 +86,7 @@ bool EnumLoweringPhase::CheckEnumMemberType(const ArenaVector<ir::AstNode *> &en
         auto *init = member->AsTSEnumMember()->Init();
         if constexpr (std::is_same_v<TypeNode, ir::NumberLiteral>) {
             if (!init->IsNumberLiteral() || !init->AsNumberLiteral()->Number().IsInteger()) {
-                LogSyntaxError("Invalid enum initialization value", init->Start());
+                LogError(diagnostic::ENUM_INVALID_INIT, {}, init->Start());
                 hasLoggedError = true;
                 continue;
             }
@@ -97,16 +99,16 @@ bool EnumLoweringPhase::CheckEnumMemberType(const ArenaVector<ir::AstNode *> &en
             // Invalid generated value.
             if (member->AsTSEnumMember()->IsGenerated() &&
                 init->AsNumberLiteral()->Number().GetLong() == std::numeric_limits<int64_t>::min()) {
-                LogSyntaxError("Invalid enum initialization value", init->Start());
+                LogError(diagnostic::ENUM_INVALID_INIT, {}, init->Start());
                 hasLoggedError = true;
             }
         } else if constexpr (std::is_same_v<TypeNode, ir::StringLiteral>) {
             if (!init->IsStringLiteral()) {
-                LogSyntaxError("Invalid enum initialization value", init->Start());
+                LogError(diagnostic::ENUM_INVALID_INIT, {}, init->Start());
                 hasLoggedError = true;
             }
             if (member->AsTSEnumMember()->IsGenerated()) {
-                LogSyntaxError("All items of string-type enumeration should be explicitly initialized.", init->Start());
+                LogError(diagnostic::ENUM_STRING_TYPE_ALL_ITEMS_INIT, {}, init->Start());
                 hasLoggedError = true;
             }
         } else {
@@ -485,7 +487,7 @@ bool EnumLoweringPhase::PerformForModule(public_lib::Context *ctx, parser::Progr
                     return CreateEnumStringClassFromEnumDeclaration(enumDecl, flags);
                 }
                 if (!hasLoggedError) {
-                    LogSyntaxError("Invalid enum initialization value", itemInit->Start());
+                    LogError(diagnostic::ENUM_INVALID_INIT, {}, itemInit->Start());
                     isPerformedSuccess = false;
                 } else {
                     isPerformedSuccess = false;

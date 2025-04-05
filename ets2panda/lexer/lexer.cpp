@@ -60,7 +60,7 @@ char32_t Lexer::ScanUnicodeCodePointEscape()
     char32_t code = 0;
     char32_t cp = Iterator().Peek();
     if (!IsHexDigit(cp)) {
-        LogSyntaxError("Hexadecimal digit expected.");
+        LogError(diagnostic::HEXADECIMAL_EXPECTED);
         code = UNICODE_INVALID_CP;
     }
 
@@ -70,7 +70,7 @@ char32_t Lexer::ScanUnicodeCodePointEscape()
         constexpr auto MULTIPLIER = 16;
         code = code * MULTIPLIER + HexValue(cp);
         if (code > UNICODE_CODE_POINT_MAX) {
-            LogSyntaxError("Invalid unicode escape sequence");
+            LogError(diagnostic::INVALID_UNICODE_ESCAPE);
             code = UNICODE_INVALID_CP;
             break;
         }
@@ -82,7 +82,7 @@ char32_t Lexer::ScanUnicodeCodePointEscape()
     }
 
     if (cp != LEX_CHAR_RIGHT_BRACE) {
-        LogSyntaxError("Invalid unicode escape sequence");
+        LogError(diagnostic::INVALID_UNICODE_ESCAPE);
         code = UNICODE_INVALID_CP;
     }
 
@@ -159,7 +159,7 @@ void Lexer::SkipMultiLineComment()
     while (true) {
         switch (Iterator().Next()) {
             case util::StringView::Iterator::INVALID_CP: {
-                LogSyntaxError("Unterminated multi-line comment");
+                LogError(diagnostic::UNTERMINATED_MULTI_LINE_COMMENT);
                 return;
             }
             case LEX_CHAR_CR: {
@@ -215,16 +215,21 @@ void Lexer::SkipSingleLineComment()
     }
 }
 
-void Lexer::LogSyntaxError(std::string_view const errorMessage) const
-{
-    diagnosticEngine_.LogSyntaxError(errorMessage,
-                                     SourcePosition(Iterator().Index(), pos_.line_, parserContext_->GetProgram()));
-}
-
 void Lexer::LogUnexpectedToken(lexer::TokenType const tokenType) const
 {
-    auto const str = std::string {parser::UNEXPECTED_TOKEN}.append(TokenToString(tokenType)).append("'.");
-    LogSyntaxError(str);
+    LogError(diagnostic::UNEXPECTED_TOKEN_PARAM, {TokenToString(tokenType)});
+}
+
+void Lexer::LogError(const diagnostic::DiagnosticKind &diagnostic,
+                     const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &pos) const
+{
+    diagnosticEngine_.LogDiagnostic(diagnostic, diagnosticParams, pos);
+}
+
+void Lexer::LogError(const diagnostic::DiagnosticKind &diagnostic,
+                     const util::DiagnosticMessageParams &diagnosticParams) const
+{
+    LogError(diagnostic, diagnosticParams, GetToken().Start());
 }
 
 void Lexer::CheckNumberLiteralEnd()
@@ -239,7 +244,7 @@ void Lexer::CheckNumberLiteralEnd()
 
     const auto nextCp = Iterator().PeekCp();
     if (IsDecimalDigit(nextCp)) {
-        LogSyntaxError("Invalid numeric literal");
+        LogError(diagnostic::INVALID_NUMERIC_LIT);
         return;
     }
     CheckNumberLiteralEndForIdentifier();
@@ -250,7 +255,7 @@ void Lexer::CheckNumberLiteralEndForIdentifier()
     // This check is needed only in Ecmascript
     const auto nextCp = Iterator().PeekCp();
     if (KeywordsUtil::IsIdentifierStart(nextCp)) {
-        LogSyntaxError("Invalid numeric literal");
+        LogError(diagnostic::INVALID_NUMERIC_LIT);
     }
 }
 
@@ -279,7 +284,7 @@ void Lexer::ScanDecimalNumbers()
 
                 if (Iterator().Peek() == LEX_CHAR_DOT || !allowNumericOnNext) {
                     Iterator().Forward(1);
-                    LogSyntaxError("Invalid numeric separator");
+                    LogError(diagnostic::INVALID_NUMERIC_SEP);
                 }
 
                 GetToken().flags_ |= TokenFlags::NUMBER_HAS_UNDERSCORE;
@@ -289,7 +294,7 @@ void Lexer::ScanDecimalNumbers()
             }
             default: {
                 if (!allowNumericOnNext) {
-                    LogSyntaxError("Numeric separators are not allowed at the end of numeric literals");
+                    LogError(diagnostic::INVALID_NUMERIC_SEP_AT_END_OF_NUM);
                 }
                 return;
             }
@@ -304,7 +309,7 @@ void Lexer::ConvertNumber([[maybe_unused]] NumberFlags flags)
     if (res == ConversionResult::SUCCESS) {
         GetToken().number_ = Number(GetToken().src_, static_cast<double>(temp));
     } else if (res == ConversionResult::INVALID_ARGUMENT) {
-        LogSyntaxError("Invalid number");
+        LogError(diagnostic::INVALID_NUM);
     } else if (res == ConversionResult::OUT_OF_RANGE) {
         GetToken().number_ = Number(GetToken().src_, std::numeric_limits<double>::infinity());
     }
@@ -344,7 +349,7 @@ void Lexer::ScanNumber(bool const leadingMinus, bool allowBigInt)
 
     if ((GetToken().flags_ & TokenFlags::NUMBER_BIGINT) != 0) {
         if (!allowBigInt) {
-            LogSyntaxError("Invalid BigInt number");
+            LogError(diagnostic::INVALID_BIGINT);
         }
 
         return;
@@ -384,7 +389,7 @@ std::optional<std::size_t> Lexer::ScanCharLex(bool const parseExponent, bool &al
             rc = ScanSignOfNumber();
 
             if (!IsDecimalDigit(Iterator().Peek())) {
-                LogSyntaxError("Invalid numeric literal");
+                LogError(diagnostic::INVALID_NUMERIC_LIT);
             }
             ScanDecimalNumbers();
         }
@@ -423,7 +428,7 @@ void Lexer::ScanTemplateStringEnd()
         SetTokenEnd();
         SkipWhiteSpaces();
     } else {
-        LogSyntaxError("Unexpected token, expected '`'");
+        LogError(diagnostic::UNEXPECTED_TOKEN_EXPECTED_PARAM, {TokenToString(TokenType::PUNCTUATOR_BACK_TICK)});
     }
 }
 
@@ -433,7 +438,7 @@ bool Lexer::CheckOctalDigit(char32_t const nextCp)
         Iterator().Forward(1);
 
         if (Iterator().Peek() != LEX_CHAR_BACK_TICK) {
-            LogSyntaxError("Octal escape sequences are not allowed in template strings");
+            LogError(diagnostic::OCTAL_ESCAPE_IN_TEMPLATE_STRINGS);
             return false;
         }
 
@@ -447,7 +452,7 @@ std::tuple<bool, bool, LexerTemplateString> Lexer::ScanTemplateStringCpHelper(ch
 {
     switch (cp) {
         case util::StringView::Iterator::INVALID_CP:
-            LogSyntaxError("Unexpected token, expected '${' or '`'");
+            LogError(diagnostic::UNEXPECTED_TOKEN_EXPECTED_BACKTICK_OR_DOLLAR_LBRACE);
             return {true, false, templateStr};
         case LEX_CHAR_BACK_TICK:
             templateStr.end = Iterator().Index();
@@ -537,7 +542,7 @@ util::StringView Lexer::ScanMultilineString()
         char32_t cp = Iterator().PeekCp(&cpSize);
         switch (cp) {
             case util::StringView::Iterator::INVALID_CP:
-                LogSyntaxError("Unexpected token, expected '`'");
+                LogError(diagnostic::UNEXPECTED_TOKEN_EXPECTED_PARAM, {TokenToString(TokenType::PUNCTUATOR_BACK_TICK)});
                 [[fallthrough]];
             case LEX_CHAR_BACK_TICK:
                 isreturn = true;
@@ -615,7 +620,7 @@ char32_t Lexer::ScanUnicodeCharacter()
 
     switch (cp) {
         case util::StringView::Iterator::INVALID_CP:
-            LogSyntaxError("Unterminated string");
+            LogError(diagnostic::UNTERMINATED_STRING);
             break;
         case LEX_CHAR_CR:
             Iterator().Forward(1);
@@ -659,7 +664,7 @@ char32_t Lexer::ScanUnicodeCharacter()
         }
         default:
             if (IsDecimalDigit(Iterator().Peek())) {
-                LogSyntaxError("Invalid character escape sequence");
+                LogError(diagnostic::INVALID_CHAR_ESCAPE);
                 cp = UNICODE_INVALID_CP;
             }
             break;
@@ -1085,7 +1090,7 @@ bool Lexer::ScanRegExpPattern()
             case LEX_CHAR_CR:
             case LEX_CHAR_LS:
             case LEX_CHAR_PS: {
-                LogSyntaxError("Unterminated RegExp");
+                LogError(diagnostic::UNTERMINATED_REGEX);
                 return false;
             }
             case LEX_CHAR_SLASH: {
@@ -1167,13 +1172,13 @@ RegExpFlags Lexer::ScanRegExpFlags()
                 return resultFlags;
             }
             default: {
-                LogSyntaxError("Invalid RegExp flag");
+                LogError(diagnostic::INVALID_REGEX_FLAG);
                 return resultFlags;
             }
         }
 
         if (flag == RegExpFlags::EMPTY || (resultFlags & flag) != 0) {
-            LogSyntaxError("Invalid RegExp flag");
+            LogError(diagnostic::INVALID_REGEX_FLAG);
         }
 
         resultFlags = resultFlags | flag;
@@ -1187,7 +1192,7 @@ void Lexer::CheckOctal()
     switch (Iterator().Peek()) {
         case LEX_CHAR_8:
         case LEX_CHAR_9: {
-            LogSyntaxError("Invalid octal digit");
+            LogError(diagnostic::INVALID_OCTAL_DIGIT);
             break;
         }
         default: {
@@ -1515,7 +1520,7 @@ void Lexer::NextToken(Keywords *kws)
             GetToken().flags_ |= TokenFlags::HAS_ESCAPE;
 
             if (Iterator().Peek() != LEX_CHAR_LOWERCASE_U) {
-                LogSyntaxError("Invalid character");
+                LogError(diagnostic::INVALID_CHAR);
                 break;
             }
 
@@ -1624,16 +1629,16 @@ void Lexer::ScanNumberLeadingZeroImplNonAllowedCases()
         case LEX_CHAR_5:
         case LEX_CHAR_6:
         case LEX_CHAR_7: {
-            LogSyntaxError("Implicit octal literal not allowed");
+            LogError(diagnostic::IMPLICIT_OCTAL_NOT_ALLOWED);
             break;
         }
         case LEX_CHAR_8:
         case LEX_CHAR_9: {
-            LogSyntaxError("NonOctalDecimalIntegerLiteral is not enabled in strict mode code");
+            LogError(diagnostic::NON_OCTAL_DECIAML_INTEGER_LIT_IN_STRICT_MODE);
             break;
         }
         case LEX_CHAR_UNDERSCORE: {
-            LogSyntaxError("Numeric separator '_' is not allowed in numbers that start with '0'.");
+            LogError(diagnostic::NUMERIC_SEP_UNDERSCORE_IN_NUMBER);
             break;
         }
         default: {

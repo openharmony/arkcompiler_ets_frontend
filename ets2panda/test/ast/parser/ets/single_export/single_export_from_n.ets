@@ -12,7 +12,7 @@
 
 export a /* @@ label */from /* @@ label1 */"./type"
 
-/* @@? 13:8 Error SyntaxError: Cannot find name 'a' to export */
+/* @@? 13:8 Error SyntaxError: Cannot find name 'a' to export. */
 /* @@? 13:24 Error SyntaxError: Unexpected token 'from'. */
 /* @@? 13:24 Error TypeError: Unresolved reference from */
 /* @@? 13:44 Error SyntaxError: Unexpected token './type'. */

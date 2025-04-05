@@ -20,6 +20,6 @@ enum InvalidInitTypeEnum {
 }
 
 
-/* @@? 19:7 Error SyntaxError: Only constant expression is expected in the field */
 /* @@? 18:11 Error SyntaxError: Invalid enum initialization value */
+/* @@? 19:7 Error SyntaxError: Only constant expression is expected in the field */
 /* @@? 19:7 Error SyntaxError: Invalid enum initialization value */

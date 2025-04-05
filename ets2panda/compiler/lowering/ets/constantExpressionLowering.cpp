@@ -23,9 +23,11 @@ namespace ark::es2panda::compiler {
 
 using AstNodePtr = ir::AstNode *;
 
-void ConstantExpressionLowering::LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const
+void ConstantExpressionLowering::LogError(const diagnostic::DiagnosticKind &diagnostic,
+                                          const util::DiagnosticMessageParams &diagnosticParams,
+                                          const lexer::SourcePosition &pos) const
 {
-    context_->diagnosticEngine->LogSyntaxError(errorMessage, pos);
+    context_->diagnosticEngine->LogDiagnostic(diagnostic, diagnosticParams, pos);
 }
 
 static bool IsSupportedLiteralForNumeric(ir::Literal *const node)
@@ -439,7 +441,7 @@ TargetType ConstantExpressionLowering::HandleArithmeticOperation(TargetType left
         }
         case lexer::TokenType::PUNCTUATOR_DIVIDE: {
             if (isForbiddenZeroDivision()) {
-                LogSyntaxError("Division by zero are not allowed in Enum or Annotation", expr->Start());
+                LogError(diagnostic::DIVISION_BY_ZERO, {}, expr->Start());
                 return rightNum;
             }
             return leftNum / rightNum;
@@ -449,7 +451,7 @@ TargetType ConstantExpressionLowering::HandleArithmeticOperation(TargetType left
         }
         case lexer::TokenType::PUNCTUATOR_MOD: {
             if (isForbiddenZeroDivision()) {
-                LogSyntaxError("Division by zero are not allowed in Enum or Annotation", expr->Start());
+                LogError(diagnostic::DIVISION_BY_ZERO, {}, expr->Start());
                 return rightNum;
             }
             if constexpr (std::is_integral_v<TargetType>) {
@@ -537,7 +539,7 @@ ir::AstNode *ConstantExpressionLowering::FoldBinaryNumericConstant(ir::BinaryExp
 ir::AstNode *ConstantExpressionLowering::FoldBinaryStringConstant(ir::BinaryExpression *const expr)
 {
     if (expr->OperatorType() != lexer::TokenType::PUNCTUATOR_PLUS) {
-        LogSyntaxError("Unsupported operator for String", expr->Left()->Start());
+        LogError(diagnostic::UNSUPPORTED_OPERATOR_FOR_STRING, {}, expr->Left()->Start());
         return expr;
     }
 
@@ -884,35 +886,35 @@ ir::AstNode *ConstantExpressionLowering::FoldConstant(ir::AstNode *constantNode)
             if (tmpLiteral->Expressions().empty()) {
                 return FoldMultilineString(tmpLiteral);
             }
-            LogSyntaxError("String Interpolation Expression is not constant expression", node->Start());
+            LogError(diagnostic::STRING_INTERPOLATION_NOT_CONSTANT, {}, node->Start());
         }
         if (node->IsTSAsExpression()) {
             auto tsAsExpr = node->AsTSAsExpression();
             if (IsSupportedLiteral(tsAsExpr->Expr())) {
                 return FoldTSAsExpression(tsAsExpr);
             }
-            LogSyntaxError("Only constant expression is expected in the field", node->Start());
+            LogError(diagnostic::ONLY_CONSTANT_EXPRESSION, {}, node->Start());
         }
         if (node->IsUnaryExpression()) {
             auto unaryOp = node->AsUnaryExpression();
             if (IsSupportedLiteral(unaryOp->Argument())) {
                 return FoldUnaryConstant(unaryOp);
             }
-            LogSyntaxError("Only constant expression is expected in the field", node->Start());
+            LogError(diagnostic::ONLY_CONSTANT_EXPRESSION, {}, node->Start());
         }
         if (node->IsBinaryExpression()) {
             auto binop = node->AsBinaryExpression();
             if (IsSupportedLiteral(binop->Left()) && IsSupportedLiteral(binop->Right())) {
                 return FoldBinaryConstant(binop);
             }
-            LogSyntaxError("Only constant expression is expected in the field", node->Start());
+            LogError(diagnostic::ONLY_CONSTANT_EXPRESSION, {}, node->Start());
         }
         if (node->IsConditionalExpression()) {
             auto condExp = node->AsConditionalExpression();
             if (IsSupportedLiteral(condExp->Test())) {
                 return FoldTernaryConstant(condExp);
             }
-            LogSyntaxError("Only constant expression is expected in the field", node->Start());
+            LogError(diagnostic::ONLY_CONSTANT_EXPRESSION, {}, node->Start());
         }
         return node;
     };

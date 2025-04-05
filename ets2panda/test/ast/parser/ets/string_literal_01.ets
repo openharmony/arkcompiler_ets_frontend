@@ -15,6 +15,6 @@
 
 let x = "\u{}";
 
-/* @@? 16:13 Error SyntaxError: Hexadecimal digit expected.  */
-/* @@? 16:14 Error SyntaxError: Invalid unicode escape sequence  */
-/* @@? 16:16 Error SyntaxError: Newline is not allowed in strings  */
+/* @@? 16:9 Error SyntaxError: Hexadecimal digit expected. */
+/* @@? 16:9 Error SyntaxError: Invalid Unicode escape. */
+/* @@? 16:9 Error SyntaxError: Newline is not allowed in strings */

@@ -70,9 +70,7 @@ void ImportExportDecls::PopulateAliasMap(const ir::ExportNamedDeclaration *decl,
 {
     for (auto spec : decl->Specifiers()) {
         if (!varbinder_->AddSelectiveExportAlias(path, spec->Local()->Name(), spec->Exported()->Name(), decl)) {
-            parser_->DiagnosticEngine().LogSyntaxError("The given name '" + spec->Local()->Name().Mutf8() +
-                                                           "' is already used in another export",
-                                                       lastExportErrorPos_);
+            parser_->LogError(diagnostic::DUPLICATE_EXPORT_NAME, {spec->Local()->Name().Mutf8()}, lastExportErrorPos_);
             lastExportErrorPos_ = lexer::SourcePosition();
         }
     }
@@ -84,8 +82,7 @@ void ImportExportDecls::AddExportFlags(ir::AstNode *node, util::StringView origi
     if ((node->Modifiers() & ir::ModifierFlags::EXPORTED) != 0) {
         // Note (oeotvos) Needs to be discussed, whether we would like to allow exporting the same program
         // element using its original name and also an alias, like: export {test_func, test_func as foo}.
-        parser_->DiagnosticEngine().LogSyntaxError(
-            "Cannot export '" + originalFieldName.Mutf8() + "', it was already exported", startLoc);
+        parser_->LogError(diagnostic::ALREADY_EXPORTED, {originalFieldName.Mutf8()}, startLoc);
     }
     if (originalFieldName == exportDefaultName_) {
         node->AddModifier(ir::ModifierFlags::DEFAULT_EXPORT);
@@ -100,9 +97,8 @@ void ImportExportDecls::PopulateAliasMap(const ir::TSTypeAliasDeclaration *decl,
 {
     if (!varbinder_->AddSelectiveExportAlias(path, decl->Id()->AsIdentifier()->Name(),
                                              decl->Id()->AsIdentifier()->Name(), decl)) {
-        parser_->DiagnosticEngine().LogSyntaxError("The given name '" + decl->Id()->AsIdentifier()->Name().Mutf8() +
-                                                       "' is already used in another export",
-                                                   lastExportErrorPos_);
+        parser_->LogError(diagnostic::DUPLICATE_EXPORT_NAME, {decl->Id()->AsIdentifier()->Name().Mutf8()},
+                          lastExportErrorPos_);
         lastExportErrorPos_ = lexer::SourcePosition();
     }
 }
@@ -140,8 +136,7 @@ void ImportExportDecls::HandleSelectiveExportWithAlias(util::StringView original
                     ((declarator->Modifiers() & ir::ModifierFlags::EXPORTED) != 0) && !declarator->HasExportAlias();
             }
             if (alreadyExported) {
-                parser_->DiagnosticEngine().LogSyntaxError(
-                    "The given name '" + exportName.Mutf8() + "' is already used in another export", startLoc);
+                parser_->LogError(diagnostic::DUPLICATE_EXPORT_NAME, {exportName.Mutf8()}, startLoc);
             }
         }
     }
@@ -209,8 +204,7 @@ void ImportExportDecls::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *
         }
         if (!exportNameMap_.emplace(local->Name(), local->Start()).second) {
             lastExportErrorPos_ = local->Start();
-            parser_->DiagnosticEngine().LogSyntaxError(
-                "The given name '" + local->Name().Mutf8() + "' is already used in another export", local->Start());
+            parser_->LogError(diagnostic::DUPLICATE_EXPORT_NAME, {local->Name().Mutf8()}, lastExportErrorPos_);
         }
     }
 }
@@ -242,12 +236,11 @@ void ImportExportDecls::HandleSimpleType(std::set<util::StringView> &exportedTyp
     }
 
     if (exportedStatements.find(name) != exportedStatements.end()) {
-        parser_->DiagnosticEngine().LogSyntaxError(
-            "Name '" + name.Mutf8() + "' cannot be exported and type exported at the same time.", pos);
+        parser_->LogError(diagnostic::NAME_CANNOT_BE_EXPORTED_AND_TYPE_EXPORTED, {name.Mutf8()}, pos);
     }
 
     if (exportedTypes.find(name) != exportedTypes.end()) {
-        parser_->DiagnosticEngine().LogSyntaxError("Cannot export the same '" + name.Mutf8() + "' type twice.", pos);
+        parser_->LogError(diagnostic::CANNOT_EXPORT_SAME_TYPE_TWICE, {name.Mutf8()}, pos);
     } else {
         exportedTypes.insert(name);
     }
@@ -293,7 +286,7 @@ void ImportExportDecls::VerifyType(ir::Statement *stmt, std::set<util::StringVie
     }
 
     if (!stmt->IsExportNamedDeclaration()) {
-        parser_->DiagnosticEngine().LogSyntaxError("Can only type export class or interface!", stmt->Start());
+        parser_->LogError(diagnostic::ONLY_EXPORT_CLASS_OR_INTERFACE, {}, stmt->Start());
         return;
     }
 
@@ -303,8 +296,7 @@ void ImportExportDecls::VerifyType(ir::Statement *stmt, std::set<util::StringVie
 
         auto element = typesMap.find(nameFind);
         if (element == typesMap.end()) {
-            parser_->DiagnosticEngine().LogSyntaxError("Can only type export class or interface!",
-                                                       spec->Local()->Start());
+            parser_->LogError(diagnostic::ONLY_EXPORT_CLASS_OR_INTERFACE, {}, spec->Local()->Start());
             continue;
         }
         if (!element->second->IsExportedType()) {
@@ -349,12 +341,10 @@ void ImportExportDecls::VerifyCollectedExportName(const parser::Program *program
         auto originalName = originNameIt != importedSpecifiersForExportCheck_.end() ? originNameIt->second : middleName;
         auto result = fieldMap_.find(originalName);
         if (result == fieldMap_.end() && !isType && originNameIt == importedSpecifiersForExportCheck_.end()) {
-            parser_->DiagnosticEngine().LogSyntaxError("Cannot find name '" + originalName.Mutf8() + "' to export",
-                                                       startLoc);
+            parser_->LogError(diagnostic::CAN_NOT_FIND_NAME_TO_EXPORT, {originalName}, startLoc);
         }
         if (result != fieldMap_.end() && result->second->IsAnnotationDeclaration() && exportName != originalName) {
-            parser_->DiagnosticEngine().LogSyntaxError(
-                "Can not rename annotation '" + originalName.Mutf8() + "' in export or import statements.", startLoc);
+            parser_->LogError(diagnostic::CAN_NOT_RENAME_ANNOTATION, {originalName}, startLoc);
         }
         if (!isType) {
             HandleSelectiveExportWithAlias(originalName, exportName, startLoc);

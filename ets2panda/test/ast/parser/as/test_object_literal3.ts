@@ -16,4 +16,4 @@
 
 let a = { b , a  /* @@ label */n )
 
-/* @@@ label Error SyntaxError: Unexpected token at  */
+/* @@@ label Error SyntaxError: Unexpected token.  */

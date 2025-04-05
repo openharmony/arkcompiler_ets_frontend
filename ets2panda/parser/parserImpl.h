@@ -62,9 +62,6 @@ enum class TypeAnnotationParsingOptions : uint32_t {
     ANNOTATION_NOT_ALLOW = 1U << 17U
 };
 
-// NOLINTNEXTLINE(modernize-avoid-c-arrays)
-inline constexpr char const UNEXPECTED_TOKEN[] = "Unexpected token '";
-
 class ParserImpl {
 public:
     explicit ParserImpl(Program *program, const util::Options *options, util::DiagnosticEngine &diagnosticEngine,
@@ -109,7 +106,8 @@ protected:
     static ExpressionParseFlags CarryExpressionParserFlag(ExpressionParseFlags origin, ExpressionParseFlags carry);
     static ExpressionParseFlags CarryPatternFlags(ExpressionParseFlags flags);
 
-    void LogIfPrivateIdent(ClassElementDescriptor *desc, const char *msg);
+    void LogIfPrivateIdent(ClassElementDescriptor *desc, const diagnostic::DiagnosticKind &diagnostic,
+                           const util::DiagnosticMessageParams &diagnosticParams = {});
     void ValidateClassKey(ClassElementDescriptor *desc);
     bool ValidatePrivateIdentifier();
 

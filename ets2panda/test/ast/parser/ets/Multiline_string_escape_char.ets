@@ -18,6 +18,6 @@ function main(){
               Test escape characters` | "X";
 }
 
-/* @@? 17:40 Error SyntaxError: Invalid character escape sequence  */
-/* @@? 17:43 Error SyntaxError: Invalid character escape sequence  */
-/* @@? 17:47 Error SyntaxError: Invalid unicode escape sequence  */
+/* @@? 17:15 Error SyntaxError: Invalid character escape sequence. */
+/* @@? 17:15 Error SyntaxError: Invalid character escape sequence. */
+/* @@? 17:15 Error SyntaxError: Invalid Unicode escape. */

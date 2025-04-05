@@ -17,4 +17,4 @@
 a = {
   a/* @@ label */"foo",
 }
-/* @@@ label Error SyntaxError: Unexpected token at  */
+/* @@@ label Error SyntaxError: Unexpected token.  */

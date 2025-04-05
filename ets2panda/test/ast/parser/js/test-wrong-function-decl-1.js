@@ -17,7 +17,7 @@
 function f/* @@ label */{/* @@ label1 */}
 
 /* @@@ label Error SyntaxError: Unexpected token, expected '('. */
-/* @@@ label1 Error SyntaxError: Unexpected token at */
+/* @@@ label1 Error SyntaxError: Unexpected token. */
 /* @@@ label1 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@@ label1 Error SyntaxError: Unexpected token, expected '{'. */
 /* @@@ label2 Error SyntaxError: Expected '}', got 'eos'. */

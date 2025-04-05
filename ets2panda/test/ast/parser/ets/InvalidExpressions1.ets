@@ -60,7 +60,7 @@ let a = [1, 2, 3);
 /* @@? 20:13 Error SyntaxError: Unexpected token ']'. */
 /* @@? 20:13 Error SyntaxError: Unexpected token ']'. */
 /* @@? 22:11 Error SyntaxError: Unexpected token '=>'. */
-/* @@? 22:11 Error SyntaxError: Unexpected token at */
+/* @@? 22:11 Error SyntaxError: Unexpected token. */
 /* @@? 24:5 Error TypeError: Variable 'a' has already been declared. */
 /* @@? 24:18 Error TypeError: The type of parameter 'y' cannot be inferred */
 /* @@? 24:18 Error TypeError: The type of parameter 'y' cannot be inferred */

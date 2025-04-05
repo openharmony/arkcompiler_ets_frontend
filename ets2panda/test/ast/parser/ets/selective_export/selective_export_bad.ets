@@ -19,4 +19,4 @@ function bar(): int {
     return 1;
 }
 
-/* @@@ label Error SyntaxError: Cannot find name 'foo' to export  */
+/* @@@ label Error SyntaxError: Cannot find name 'foo' to export.  */

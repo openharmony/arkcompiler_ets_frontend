@@ -23,7 +23,7 @@ enum B {
 }
 
 
-/* @@? 17:9 Error SyntaxError: Unsupported operator for String */
-/* @@? 22:9 Error SyntaxError: Only constant expression is expected in the field */
+/* @@? 17:9 Error SyntaxError: Unsupported operator for String. */
 /* @@? 17:9 Error SyntaxError: Invalid enum initialization value */
+/* @@? 22:9 Error SyntaxError: Only constant expression is expected in the field */
 /* @@? 22:9 Error SyntaxError: Invalid enum initialization value */

@@ -19,4 +19,4 @@ export {
   foo as /* @@ label */bar
 }
 
-/* @@@ label Error SyntaxError: Cannot export 'foo', it was already exported  */
+/* @@@ label Error SyntaxError: Cannot export 'foo', it was already exported.  */

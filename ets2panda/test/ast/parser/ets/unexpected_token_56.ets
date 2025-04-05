@@ -27,6 +27,8 @@ for (let i? : Number = 1;;)  { break; }
 /* @@? 16:87 Error SyntaxError: Unexpected token ')'. */
 /* @@? 16:87 Error SyntaxError: Unexpected token ')'. */
 /* @@? 16:87 Error SyntaxError: Unexpected token ')'. */
+/* @@? 16:87 Error SyntaxError: Unexpected token ')'. */
+/* @@? 16:87 Error SyntaxError: Unexpected token ')'. */
 /* @@? 17:5 Error TypeError: Unresolved reference result */
 /* @@? 17:23 Error TypeError: Unresolved reference p */
 /* @@? 17:23 Error TypeError: Indexed access is not supported for such expression type. */

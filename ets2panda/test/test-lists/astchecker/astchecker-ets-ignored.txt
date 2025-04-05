@@ -105,3 +105,6 @@ ast/parser/ets/lambdaWithWrongOptionalParameter.ets
 
 # Issue: #24253
 ast/compiler/ets/lambda_infer_type/lambda_param_type_cannot_be_determined.ets
+
+# Issue: #24605 incorrect column
+ast/parser/ets/named_types_2.ets

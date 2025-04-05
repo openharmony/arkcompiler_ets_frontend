@@ -26,7 +26,7 @@ enum EStrNotInit {
 }
 
 
-/* @@? 18:15 Error SyntaxError: Invalid enum initialization value  */
-/* @@? 19:12 Error SyntaxError: Invalid enum initialization value  */
-/* @@? 20:12 Error SyntaxError: Invalid enum initialization value  */
-/* @@? 25:9 Error SyntaxError: All items of string-type enumeration should be explicitly initialized.  */
+/* @@? 18:15 Error SyntaxError: Invalid enum initialization value */
+/* @@? 19:12 Error SyntaxError: Invalid enum initialization value */
+/* @@? 20:12 Error SyntaxError: Invalid enum initialization value */
+/* @@? 25:9 Error SyntaxError: All items of string-type enumeration should be explicitly initialized. */

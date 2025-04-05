@@ -179,7 +179,11 @@ void GlobalTypesHolder::AddEtsSpecificBuiltinTypes()
     builtinNameMappings_.emplace("DoubleBox", GlobalTypeId::ETS_DOUBLE_BOX_BUILTIN);
 }
 
-GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMappings_(allocator->Adapter())
+GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator)
+    : allocator_(allocator),
+      builtinNameMappings_(allocator->Adapter()),
+      extensionGetterMaps_(allocator->Adapter()),
+      extensionSetterMaps_(allocator->Adapter())
 {
     // TS specific types
     AddTSSpecificTypes(allocator);
@@ -697,7 +701,7 @@ void GlobalTypesHolder::InsertExtensionAccessorToMap(util::StringView name, ETSO
 {
     auto it = maps.find(name);
     if (it == maps.end()) {
-        std::unordered_map<ETSObjectType *, Signature *> newSigMap {};
+        ArenaUnorderedMap<ETSObjectType *, Signature *> newSigMap(allocator_->Adapter());
         newSigMap.emplace(type, sig);
         maps.emplace(name, newSigMap);
         return;

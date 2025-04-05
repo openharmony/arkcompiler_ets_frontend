@@ -19,5 +19,5 @@ class Foo {
 }
 
 /* @@? 18:11 Error SyntaxError: Unexpected token, expected ';'. */
-/* @@? 18:13 Error SyntaxError: Unexpected token at */
+/* @@? 18:13 Error SyntaxError: Unexpected token. */
 /* @@? 18:15 Error SyntaxError: Unexpected token, expected ';'. */

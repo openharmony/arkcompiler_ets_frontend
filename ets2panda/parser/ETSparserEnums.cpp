@@ -187,7 +187,7 @@ ir::Expression *ETSParser::ParseEnumExpression()
     auto endLoc = Lexer()->GetToken().Start();
     expression = ParseExpression();
     if (expression == nullptr) {
-        LogError(diagnostic::INVALID_ENUM_VALUE, {}, endLoc);
+        LogError(diagnostic::ENUM_INVALID_INIT, {}, endLoc);
         // Continue to parse the rest of Enum.
         return AllocNode<ir::NumberLiteral>(lexer::Number(0));
     }

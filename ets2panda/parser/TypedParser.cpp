@@ -1508,7 +1508,7 @@ ParserStatus TypedParser::ValidateArrowParameter(ir::Expression *expr, bool *see
         default:
             break;
     }
-    LogError(diagnostic::INSUFFICIENT_PARAMS_ARROW_FUN);
+    LogError(diagnostic::INSUFFICIENT_PARAM_IN_ARROW_FUN);
     return ParserStatus::NO_OPTS;
 }
 

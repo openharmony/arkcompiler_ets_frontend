@@ -91,7 +91,7 @@ async (x = await 7) /* @@ label56 */=> expression;
 /* @@@ label18 Error SyntaxError: Unexpected token '}'.  */
 /* @@@ label19 Error SyntaxError: Insufficient formal parameter in arrow function.  */
 /* @@@ label20 Error SyntaxError: Unexpected token '1'.  */
-/* @@@ label20 Error SyntaxError: Unexpected token at  */
+/* @@@ label20 Error SyntaxError: Unexpected token.  */
 /* @@@ label20 Error SyntaxError: Expected ')', got 'number literal'.  */
 /* @@@ label21 Error SyntaxError: Unexpected token ')'.  */
 /* @@@ label21 Error SyntaxError: Unexpected token ')'.  */
@@ -111,11 +111,11 @@ async (x = await 7) /* @@ label56 */=> expression;
 /* @@@ label30 Error SyntaxError: Unexpected token, expected ':'.  */
 /* @@@ label31 Error SyntaxError: Getter must not have formal parameters.  */
 /* @@@ label32 Error SyntaxError: Setter must have exactly one formal parameter.  */
-/* @@@ label33 Error SyntaxError: Unexpected token at  */
+/* @@@ label33 Error SyntaxError: Unexpected token.  */
 /* @@@ label34 Error SyntaxError: Unexpected token, expected ':'.  */
 /* @@@ label34 Error SyntaxError: Unexpected identifier.  */
-/* @@@ label35 Error SyntaxError: Unexpected token at  */
-/* @@@ label36 Error SyntaxError: Unexpected token at  */
+/* @@@ label35 Error SyntaxError: Unexpected token.  */
+/* @@@ label36 Error SyntaxError: Unexpected token.  */
 /* @@@ label37 Error SyntaxError: Missing initializer in destructuring declaration.  */
 /* @@@ label38 Error SyntaxError: Invalid left-hand side in array destructuring pattern.  */
 /* @@@ label39 Error SyntaxError: Object pattern can't contain methods.  */
@@ -144,7 +144,7 @@ async (x = await 7) /* @@ label56 */=> expression;
 /* @@@ label51 Error SyntaxError: Unexpected token ')'.  */
 /* @@@ label52 Error SyntaxError: Unexpected token '=>'.  */
 /* @@@ label53 Error SyntaxError: Unexpected token, expected '=>'.  */
-/* @@@ label54 Error SyntaxError: Unexpected token at  */
+/* @@@ label54 Error SyntaxError: Unexpected token.  */
 /* @@@ label55 Error SyntaxError: Invalid rest element.  */
 /* @@@ label55 Error SyntaxError: Unexpected ArrowParameter element.  */
 /* @@@ label56 Error SyntaxError: await is not allowed in arrow function parameters.  */

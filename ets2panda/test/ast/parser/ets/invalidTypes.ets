@@ -85,6 +85,8 @@ let var6: [a0: , a1: ];
 /* @@? 32:25 Error SyntaxError: Unexpected token ']'. */
 /* @@? 32:25 Error SyntaxError: Unexpected token ']'. */
 /* @@? 32:25 Error SyntaxError: Unexpected token ']'. */
+/* @@? 32:25 Error SyntaxError: Unexpected token ']'. */
+/* @@? 32:25 Error SyntaxError: Unexpected token ']'. */
 /* @@? 35:21 Error SyntaxError: A 'this' type is available only as return type in a non-static method of a class or struct and extension functions. */
 /* @@? 38:12 Error TypeError: Cannot find type 'a0'. */
 /* @@? 38:14 Error SyntaxError: Unexpected token, expected ',' or ']'. */

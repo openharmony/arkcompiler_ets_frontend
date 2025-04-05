@@ -15,4 +15,4 @@
 
 namespace MySpace{
 
-/* @@? 19:1 Error SyntaxError: Unexpected token at  */
+/* @@? 19:1 Error SyntaxError: Unexpected token.  */

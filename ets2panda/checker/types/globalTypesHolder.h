@@ -191,7 +191,7 @@ enum class GlobalTypeId : std::size_t {
 };
 
 using ExtensionAccessorMap =
-    std::unordered_map<util::StringView, std::unordered_map<checker::ETSObjectType *, Signature *>>;
+    ArenaUnorderedMap<util::StringView, ArenaUnorderedMap<checker::ETSObjectType *, Signature *>>;
 
 class GlobalTypesHolder {
 public:
@@ -356,9 +356,10 @@ private:
                                       ExtensionAccessorMap &maps);
 
     Holder globalTypes_ {};
+    ArenaAllocator *allocator_;
     ArenaMap<util::StringView, GlobalTypeId> builtinNameMappings_;
-    ExtensionAccessorMap extensionGetterMaps_ {};
-    ExtensionAccessorMap extensionSetterMaps_ {};
+    ExtensionAccessorMap extensionGetterMaps_;
+    ExtensionAccessorMap extensionSetterMaps_;
 };
 }  // namespace ark::es2panda::checker
 

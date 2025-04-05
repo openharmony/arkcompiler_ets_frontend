@@ -19,6 +19,6 @@ flags: [module]
 
 import(import /* @@ label */)
 
-/* @@? 20:29 Error SyntaxError: Expected '(', got ')'. */
-/* @@? 20:29 Error SyntaxError: Unexpected token ')'. */
+/* @@@ label Error SyntaxError: Expected '(', got ')'. */
+/* @@@ label Error SyntaxError: Unexpected token ')'. */
 /* @@? 25:1 Error SyntaxError: Expected ')', got 'eos'. */

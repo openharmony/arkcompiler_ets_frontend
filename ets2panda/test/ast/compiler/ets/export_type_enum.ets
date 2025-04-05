@@ -17,4 +17,4 @@ enum E { A = 5, B = 5 }
 
 export type {/* @@ label */E}
 
-/* @@@ label Error SyntaxError: Can only type export class or interface!  */
+/* @@@ label Error SyntaxError: Can only type export class or interface.  */

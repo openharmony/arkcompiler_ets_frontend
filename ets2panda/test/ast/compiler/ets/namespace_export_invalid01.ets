@@ -21,5 +21,5 @@ NS.baz();
 
 
 /* @@? 17:12 Error SyntaxError: Export declarations are not permitted in a namespace. */
-/* @@? 17:14 Error SyntaxError: Cannot find name 'baz' to export */
+/* @@? 17:14 Error SyntaxError: Cannot find name 'baz' to export. */
 /* @@? 20:4 Error TypeError: Property 'baz' does not exist on type 'NS' */

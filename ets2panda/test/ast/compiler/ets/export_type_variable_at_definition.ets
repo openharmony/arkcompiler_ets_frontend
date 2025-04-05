@@ -16,4 +16,4 @@
 export type /* @@ label */let a = 5;
 
 /* @@@ label Error SyntaxError: Can only type export class or interface.  */
-/* @@@ label Error SyntaxError: Can only type export class or interface!  */
+/* @@@ label Error SyntaxError: Can only type export class or interface.  */
