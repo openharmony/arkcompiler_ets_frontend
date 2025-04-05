@@ -59,6 +59,7 @@ public:
     void AddDirectImportsToDirectExternalSources(const ArenaVector<util::StringView> &directImportsFromMainSource,
                                                  parser::Program *newProg) const;
     ArenaVector<ir::ETSImportDeclaration *> ParseDefaultSources(std::string_view srcFile, std::string_view importSrc);
+    lexer::LexerPosition HandleJsDocLikeComments();
 
 public:
     //============================================================================================//
@@ -259,6 +260,7 @@ private:
     ir::Identifier *ParseIdentifierFormatPlaceholder(std::optional<NodeFormatType> nodeFormat) override;
     ir::TypeNode *ParseTypeFormatPlaceholder(std::optional<NodeFormatType> nodeFormat = std::nullopt);
     ir::AstNode *ParseTypeParametersFormatPlaceholder() override;
+    void ApplyJsDocInfoToSpecificNodeType(ir::AstNode *node, ArenaVector<ir::JsDocInfo> &&jsDocInformation);
     void ApplyAnnotationsToArrayType(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
                                      lexer::SourcePosition pos);
     void ApplyAnnotationsToSpecificNodeType(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
@@ -319,6 +321,7 @@ private:
 
     void *ApplyAnnotationsToClassElement(ir::AstNode *property, ArenaVector<ir::AnnotationUsage *> &&annotations,
                                          lexer::SourcePosition pos);
+    void ApplyJsDocInfoToClassElement(ir::AstNode *property, ArenaVector<ir::JsDocInfo> &&jsDocInformation);
     ir::MethodDefinition *ParseClassGetterSetterMethod(const ArenaVector<ir::AstNode *> &properties,
                                                        ir::ClassDefinitionModifiers modifiers,
                                                        ir::ModifierFlags memberModifiers, bool isDefault);
@@ -401,6 +404,7 @@ private:
     ir::VariableDeclarator *ParseVariableDeclaratorInitializer(ir::Expression *init, VariableParsingFlags flags,
                                                                const lexer::SourcePosition &startLoc) override;
     ir::AstNode *ParseTypeLiteralOrInterfaceMember() override;
+    ir::AstNode *ParseJsDocInfoInInterfaceBody();
     ir::AstNode *ParseAnnotationsInInterfaceBody();
     void ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, bool isReExport = false);
     bool CheckModuleAsModifier();
@@ -437,6 +441,10 @@ private:
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Statement *ParseStructStatement(StatementParsingFlags flags, ir::ClassDefinitionModifiers modifiers,
                                         ir::ModifierFlags modFlags = ir::ModifierFlags::NONE) override;
+    ir::AstNode *ParseClassElementHelper(
+        const ArenaVector<ir::AstNode *> &properties,
+        std::tuple<ir::ClassDefinitionModifiers, ir::ModifierFlags, ir::ModifierFlags> modifierInfo,
+        std::tuple<bool, bool, bool> elementFlag, std::tuple<lexer::SourcePosition, lexer::LexerPosition> posInfo);
     ir::AstNode *ParseClassElement(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
                                    ir::ModifierFlags flags) override;
     std::tuple<bool, bool, bool> HandleClassElementModifiers(ArenaVector<ir::AnnotationUsage *> &annotations,
@@ -546,6 +554,12 @@ private:
     void ParseTrailingBlock([[maybe_unused]] ir::CallExpression *callExpr) override;
 
     void CheckDeclare();
+
+    void ExcludeInvalidStart();
+    std::tuple<util::StringView, util::StringView> ParseJsDocInfoItemValue();
+    std::string ParseJsDocInfoItemParam();
+    ir::JsDocInfo ParseJsDocInfo();
+    ArenaVector<ir::JsDocInfo> ParseJsDocInfos();
 
     friend class ExternalSourceParser;
     friend class InnerSourceParser;

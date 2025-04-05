@@ -21,6 +21,7 @@
 #include "ir/annotationAllowed.h"
 #include "ir/astNode.h"
 #include "ir/expressions/identifier.h"
+#include "ir/jsDocAllowed.h"
 #include "ir/srcDump.h"
 #include "ir/statements/annotationUsage.h"
 #include "ir/statements/classDeclaration.h"
@@ -68,7 +69,7 @@ struct enumbitops::IsAllowedType<ark::es2panda::ir::ClassDefinitionModifiers> : 
 
 namespace ark::es2panda::ir {
 
-class ClassDefinition : public AnnotationAllowed<TypedAstNode> {
+class ClassDefinition : public JsDocAllowed<AnnotationAllowed<TypedAstNode>> {
 public:
     ClassDefinition() = delete;
     ~ClassDefinition() override = default;
@@ -81,8 +82,9 @@ public:
                              ArenaVector<TSClassImplements *> &&implements, MethodDefinition *ctor,
                              Expression *superClass, ArenaVector<AstNode *> &&body, ClassDefinitionModifiers modifiers,
                              ModifierFlags flags, Language lang)
-        : AnnotationAllowed<TypedAstNode>(AstNodeType::CLASS_DEFINITION, flags,
-                                          ArenaVector<AnnotationUsage *>(body.get_allocator())),
+        : JsDocAllowed<AnnotationAllowed<TypedAstNode>>(AstNodeType::CLASS_DEFINITION, flags,
+                                                        ArenaVector<AnnotationUsage *>(body.get_allocator()),
+                                                        ArenaVector<JsDocInfo>(body.get_allocator())),
           ident_(ident),
           typeParams_(typeParams),
           superTypeParams_(superTypeParams),
@@ -102,7 +104,7 @@ public:
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     explicit ClassDefinition(ArenaAllocator *allocator, Identifier *ident, ArenaVector<AstNode *> &&body,
                              ClassDefinitionModifiers modifiers, ModifierFlags flags, Language lang)
-        : AnnotationAllowed<TypedAstNode>(AstNodeType::CLASS_DEFINITION, flags, allocator),
+        : JsDocAllowed<AnnotationAllowed<TypedAstNode>>(AstNodeType::CLASS_DEFINITION, flags, allocator),
           ident_(ident),
           implements_(allocator->Adapter()),
           body_(std::move(body)),
@@ -118,7 +120,7 @@ public:
 
     explicit ClassDefinition(ArenaAllocator *allocator, Identifier *ident, ClassDefinitionModifiers modifiers,
                              ModifierFlags flags, Language lang)
-        : AnnotationAllowed<TypedAstNode>(AstNodeType::CLASS_DEFINITION, flags, allocator),
+        : JsDocAllowed<AnnotationAllowed<TypedAstNode>>(AstNodeType::CLASS_DEFINITION, flags, allocator),
           ident_(ident),
           implements_(allocator->Adapter()),
           body_(allocator->Adapter()),

@@ -823,6 +823,10 @@ ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers mo
 
             util::ErrorRecursionGuard infiniteLoopBlocker(Lexer());
             ir::AstNode *property = ParseClassElement(properties, modifiers, flags);
+            if (property == nullptr) {
+                continue;
+            }
+
             if (property->IsBrokenStatement()) {  // Error processing.
                 continue;
             }

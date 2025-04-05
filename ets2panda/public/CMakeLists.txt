@@ -267,6 +267,7 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/ir/statements/annotationDeclaration.h
     ${ES2PANDA_ROOT}/ir/statements/annotationUsage.h
     ${ES2PANDA_ROOT}/ir/annotationAllowed.h
+    ${ES2PANDA_ROOT}/ir/jsDocAllowed.h
     ${ES2PANDA_ROOT}/ir/base/scriptFunctionSignature.h
     ${ES2PANDA_ROOT}/ir/expressions/yieldExpression.h
     ${ES2PANDA_ROOT}/ir/ets/etsNewMultiDimArrayInstanceExpression.h
@@ -302,6 +303,7 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/varbinder/variableFlags.yaml
     ${LIBGEN_DIR}/gen/headers/ir/typed.yaml
     ${LIBGEN_DIR}/gen/headers/ir/annotationAllowed.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/jsDocAllowed.yaml
     ${LIBGEN_DIR}/gen/headers/es2panda.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/labelledStatement.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/unknownType.yaml

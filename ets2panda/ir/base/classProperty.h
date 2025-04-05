@@ -19,6 +19,7 @@
 #include "ir/base/classElement.h"
 #include "ir/statements/annotationUsage.h"
 #include "ir/annotationAllowed.h"
+#include "ir/jsDocAllowed.h"
 
 namespace ark::es2panda::checker {
 class ETSAnalyzer;
@@ -28,7 +29,7 @@ namespace ark::es2panda::ir {
 class Expression;
 class TypeNode;
 
-class ClassProperty : public AnnotationAllowed<ClassElement> {
+class ClassProperty : public JsDocAllowed<AnnotationAllowed<ClassElement>> {
 public:
     ClassProperty() = delete;
     ~ClassProperty() override = default;
@@ -38,7 +39,8 @@ public:
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     explicit ClassProperty(Expression *const key, Expression *const value, TypeNode *const typeAnnotation,
                            ModifierFlags const modifiers, ArenaAllocator *const allocator, bool const isComputed)
-        : AnnotationAllowed<ClassElement>(AstNodeType::CLASS_PROPERTY, key, value, modifiers, allocator, isComputed),
+        : JsDocAllowed<AnnotationAllowed<ClassElement>>(AstNodeType::CLASS_PROPERTY, key, value, modifiers, allocator,
+                                                        isComputed),
           typeAnnotation_(typeAnnotation)
     {
     }

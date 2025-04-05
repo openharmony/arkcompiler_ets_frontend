@@ -97,7 +97,9 @@ ir::ETSModule *ETSParser::ParseNamespaceImp(ir::ModifierFlags flags)
             continue;
         }
         auto st = ParseTopLevelStatement();
-        statements.emplace_back(st);
+        if (st != nullptr) {
+            statements.emplace_back(st);
+        }
     }
     Lexer()->NextToken();
     if (child != nullptr) {

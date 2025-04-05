@@ -485,6 +485,7 @@ set(ES2PANDA_LIB_SRC
   parser/ETSparserClasses.cpp
   parser/ETSparserEnums.cpp
   parser/ETSparserExpressions.cpp
+  parser/ETSparserJsDocInfo.cpp
   parser/ETSparserNamespaces.cpp
   parser/ETSparserStatements.cpp
   parser/ETSparserTypes.cpp

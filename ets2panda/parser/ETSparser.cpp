@@ -100,7 +100,9 @@ bool ETSParser::IsETSParser() const noexcept
 std::unique_ptr<lexer::Lexer> ETSParser::InitLexer(const SourceFile &sourceFile)
 {
     GetProgram()->SetSource(sourceFile);
+    GetContext().Status() |= ParserStatus::ALLOW_JS_DOC_START;
     auto lexer = std::make_unique<lexer::ETSLexer>(&GetContext(), DiagnosticEngine());
+    GetContext().Status() ^= ParserStatus::ALLOW_JS_DOC_START;
     SetLexer(lexer.get());
     return lexer;
 }
@@ -160,6 +162,10 @@ ir::ETSModule *ETSParser::ParseImportsOnly(lexer::SourcePosition startLoc, Arena
     ETSNolintParser etsnolintParser(this);
     etsnolintParser.CollectETSNolints();
 
+    if (Lexer()->TryEatTokenType(lexer::TokenType::JS_DOC_START)) {
+        // Note: Not Support JS_DOC for Import declaration now, just go on;
+        ParseJsDocInfos();
+    }
     auto imports = ParseImportDeclarations();
     statements.insert(statements.end(), imports.begin(), imports.end());
     etsnolintParser.ApplyETSNolintsToStatements(statements);
@@ -1009,6 +1015,11 @@ ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::Modifi
 ir::ETSPackageDeclaration *ETSParser::ParsePackageDeclaration()
 {
     auto startLoc = Lexer()->GetToken().Start();
+    auto savedPos = Lexer()->Save();
+    if (Lexer()->TryEatTokenType(lexer::TokenType::JS_DOC_START)) {
+        // Note: Not Support JS_DOC for Package declaration now, just go on;
+        ParseJsDocInfos();
+    }
 
     if (!Lexer()->TryEatTokenType(lexer::TokenType::KEYW_PACKAGE)) {
         // NOTE(vpukhov): the *unnamed* modules are to be removed entirely
@@ -1016,6 +1027,7 @@ ir::ETSPackageDeclaration *ETSParser::ParsePackageDeclaration()
         util::StringView moduleName =
             isUnnamed ? "" : importPathManager_->FormModuleName(GetProgram()->SourceFile(), startLoc);
         GetProgram()->SetPackageInfo(moduleName, util::ModuleKind::MODULE);
+        Lexer()->Rewind(savedPos);
         return nullptr;
     }
 
@@ -1073,11 +1085,20 @@ ir::ETSImportDeclaration *ETSParser::BuildImportDeclaration(ir::ImportKinds impo
                                                std::move(specifiers), importKind);
 }
 
+lexer::LexerPosition ETSParser::HandleJsDocLikeComments()
+{
+    auto savedPos = Lexer()->Save();
+    if (Lexer()->TryEatTokenType(lexer::TokenType::JS_DOC_START)) {
+        ParseJsDocInfos();
+    }
+    return savedPos;
+}
+
 ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseImportDeclarations()
 {
+    auto savedPos = HandleJsDocLikeComments();
     std::vector<std::string> userPaths;
     ArenaVector<ir::ETSImportDeclaration *> statements(Allocator()->Adapter());
-
     while (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_IMPORT) {
         auto startLoc = Lexer()->GetToken().Start();
         Lexer()->NextToken();  // eat import
@@ -1115,8 +1136,11 @@ ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseImportDeclarations()
                 statements.push_back(importDeclDefault->AsETSImportDeclaration());
             }
         }
+
+        savedPos = HandleJsDocLikeComments();
     }
 
+    Lexer()->Rewind(savedPos);
     std::sort(statements.begin(), statements.end(), [](const auto *s1, const auto *s2) -> bool {
         return s1->Specifiers()[0]->IsImportNamespaceSpecifier() && !s2->Specifiers()[0]->IsImportNamespaceSpecifier();
     });
@@ -1872,7 +1896,7 @@ ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous
 
     ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_FUNCTION);
     Lexer()->NextToken();
-    auto newStatus = ParserStatus::NEED_RETURN_TYPE | ParserStatus::ALLOW_SUPER;
+    auto newStatus = ParserStatus::NEED_RETURN_TYPE | ParserStatus::ALLOW_SUPER | ParserStatus::ALLOW_JS_DOC_START;
 
     if ((modifiers & ir::ModifierFlags::ASYNC) != 0) {
         newStatus |= ParserStatus::ASYNC_FUNCTION;

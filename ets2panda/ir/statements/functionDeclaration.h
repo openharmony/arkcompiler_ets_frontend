@@ -17,6 +17,7 @@
 #define ES2PANDA_IR_STATEMENT_FUNCTION_DECLARATION_H
 
 #include "ir/annotationAllowed.h"
+#include "ir/jsDocAllowed.h"
 #include "ir/statement.h"
 #include "ir/statements/annotationUsage.h"
 #include "ir/base/scriptFunction.h"
@@ -25,11 +26,12 @@ namespace ark::es2panda::ir {
 class ScriptFunction;
 class AnnotationUsage;
 
-class FunctionDeclaration : public AnnotationAllowed<Statement> {
+class FunctionDeclaration : public JsDocAllowed<AnnotationAllowed<Statement>> {
 public:
     explicit FunctionDeclaration(ArenaAllocator *allocator, ScriptFunction *func,
                                  ArenaVector<AnnotationUsage *> &&annotations, bool isAnonymous = false)
-        : AnnotationAllowed<Statement>(AstNodeType::FUNCTION_DECLARATION, std::move(annotations)),
+        : JsDocAllowed<AnnotationAllowed<Statement>>(allocator, AstNodeType::FUNCTION_DECLARATION,
+                                                     std::move(annotations)),
           decorators_(allocator->Adapter()),
           func_(func),
           isAnonymous_(isAnonymous)
@@ -38,7 +40,7 @@ public:
     }
 
     explicit FunctionDeclaration(ArenaAllocator *allocator, ScriptFunction *func, bool isAnonymous = false)
-        : AnnotationAllowed<Statement>(AstNodeType::FUNCTION_DECLARATION, allocator),
+        : JsDocAllowed<AnnotationAllowed<Statement>>(AstNodeType::FUNCTION_DECLARATION, allocator),
           decorators_(allocator->Adapter()),
           func_(func),
           isAnonymous_(isAnonymous)
