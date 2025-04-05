@@ -97,6 +97,10 @@ public:
         needInitInStaticBlock_ = needInitInStaticBlock;
     }
 
+protected:
+    ClassProperty *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
     void DumpPrefix(ir::SrcDumper *dumper) const;
     TypeNode *typeAnnotation_;

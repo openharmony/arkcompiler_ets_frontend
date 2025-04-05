@@ -100,6 +100,9 @@ public:
 
     [[nodiscard]] VariableDeclaration *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
+    VariableDeclaration *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
     VariableDeclarationKind kind_;
     ArenaVector<Decorator *> decorators_;

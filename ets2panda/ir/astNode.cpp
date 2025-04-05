@@ -257,4 +257,61 @@ void AstNode::CleanUp()
         this->AsTyped()->SetTsType(nullptr);
     }
 }
+
+bool AstNode::IsReadonly() const noexcept
+{
+    return (flags_ & ModifierFlags::READONLY) != 0;
+}
+
+// NOTE: For readonly parameter type
+bool AstNode::IsReadonlyType() const noexcept
+{
+    return (flags_ & ModifierFlags::READONLY_PARAMETER) != 0;
+}
+
+bool AstNode::IsOptionalDeclaration() const noexcept
+{
+    return (flags_ & ModifierFlags::OPTIONAL) != 0;
+}
+
+bool AstNode::IsDefinite() const noexcept
+{
+    return (flags_ & ModifierFlags::DEFINITE) != 0;
+}
+
+bool AstNode::IsConstructor() const noexcept
+{
+    return (flags_ & ModifierFlags::CONSTRUCTOR) != 0;
+}
+
+bool AstNode::IsOverride() const noexcept
+{
+    return (flags_ & ModifierFlags::OVERRIDE) != 0;
+}
+
+AstNode *AstNode::ShallowClone(ArenaAllocator *allocator)
+{
+    auto clone = Construct(allocator);
+    CopyTo(clone);
+    return clone;
+}
+
+void AstNode::CopyTo(AstNode *other) const
+{
+    ES2PANDA_ASSERT(other->type_ == type_);
+
+    other->parent_ = parent_;
+    other->range_ = range_;
+    other->flags_ = flags_;
+    other->astNodeFlags_ = astNodeFlags_;
+    other->boxingUnboxingFlags_ = boxingUnboxingFlags_;
+    other->variable_ = variable_;
+    other->originalNode_ = originalNode_;
+    other->transformedNode_ = transformedNode_;
+}
+
+AstNode *AstNode::Construct([[maybe_unused]] ArenaAllocator *allocator)
+{
+    ES2PANDA_UNREACHABLE();
+}
 }  // namespace ark::es2panda::ir

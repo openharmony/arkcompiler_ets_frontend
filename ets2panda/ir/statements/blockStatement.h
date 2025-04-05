@@ -111,6 +111,9 @@ public:
         v->Accept(this);
     }
 
+    BlockStatement *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
     varbinder::Scope *scope_ {};
     ArenaVector<Statement *> statements_;

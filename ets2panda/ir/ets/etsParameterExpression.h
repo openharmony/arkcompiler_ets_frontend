@@ -117,6 +117,9 @@ public:
         v->Accept(this);
     }
 
+    ETSParameterExpression *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
     Identifier *ident_;
     Expression *initializer_ = nullptr;

@@ -20,8 +20,25 @@
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
+#include <type_traits>
 
 namespace ark::es2panda::ir {
+
+ClassDeclaration *ClassDeclaration::Construct(ArenaAllocator *allocator)
+{
+    return allocator->New<ClassDeclaration>(nullptr, allocator);
+}
+
+void ClassDeclaration::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsClassDeclaration();
+
+    otherImpl->def_ = def_;
+    otherImpl->decorators_ = decorators_;
+
+    Statement::CopyTo(other);
+}
+
 void ClassDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     for (auto *&it : VectorIterationGuard(decorators_)) {

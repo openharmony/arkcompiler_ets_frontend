@@ -102,6 +102,9 @@ public:
         v->Accept(this);
     }
 
+    ETSModule *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
     Identifier *ident_;
     ModuleFlag flag_;

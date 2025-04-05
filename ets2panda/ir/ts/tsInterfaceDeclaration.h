@@ -197,6 +197,9 @@ public:
         v->Accept(this);
     }
 
+    TSInterfaceDeclaration *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
     ArenaVector<Decorator *> decorators_;
     varbinder::LocalScope *scope_ {nullptr};

@@ -35,6 +35,7 @@ namespace ark::es2panda::ir {
 class TSTypeParameterDeclaration;
 class TypeNode;
 class AnnotationUsage;
+class FunctionSignature;
 
 class ScriptFunction : public JsDocAllowed<AnnotationAllowed<AstNode>> {
 public:
@@ -365,6 +366,10 @@ public:
         signature_ = nullptr;
         preferredReturnType_ = nullptr;
     }
+
+protected:
+    ScriptFunction *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
 
 private:
     Identifier *id_ {};

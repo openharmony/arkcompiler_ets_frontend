@@ -66,8 +66,6 @@ public:
           baseOverloadMethod_(nullptr),
           asyncPairMethod_(nullptr)
     {
-        ES2PANDA_ASSERT(key_ != nullptr);
-        ES2PANDA_ASSERT(value != nullptr);
     }
 
     // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
@@ -202,6 +200,10 @@ public:
     }
 
     void CleanUp() override;
+
+protected:
+    MethodDefinition *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
 
 private:
     void DumpPrefix(ir::SrcDumper *dumper) const;

@@ -73,6 +73,9 @@ public:
         return importKinds_ == ImportKinds::TYPES;
     }
 
+    ImportDeclaration *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
     StringLiteral *source_;
     ArenaVector<AstNode *> specifiers_;

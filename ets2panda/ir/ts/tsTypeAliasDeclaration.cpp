@@ -138,4 +138,22 @@ checker::VerifiedType TSTypeAliasDeclaration::Check([[maybe_unused]] checker::ET
     return {this, checker->GetAnalyzer()->Check(this)};
 }
 
+TSTypeAliasDeclaration *TSTypeAliasDeclaration::Construct(ArenaAllocator *allocator)
+{
+    return allocator->New<TSTypeAliasDeclaration>(allocator, nullptr, nullptr, nullptr);
+}
+
+void TSTypeAliasDeclaration::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsTSTypeAliasDeclaration();
+
+    otherImpl->decorators_ = decorators_;
+    otherImpl->annotations_ = annotations_;
+    otherImpl->id_ = id_;
+    otherImpl->typeParams_ = typeParams_;
+    otherImpl->typeParamTypes_ = typeParamTypes_;
+
+    AnnotatedStatement::CopyTo(other);
+}
+
 }  // namespace ark::es2panda::ir

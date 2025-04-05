@@ -92,6 +92,9 @@ public:
         v->Accept(this);
     }
 
+    TSTypeParameter *Construct(ArenaAllocator *allocator) override;
+    void CopyTo(AstNode *other) const override;
+
 private:
     Identifier *name_;
     TypeNode *constraint_;

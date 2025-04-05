@@ -339,36 +339,18 @@ public:
         return false;
     }
 
-    [[nodiscard]] bool IsReadonly() const noexcept
-    {
-        return (flags_ & ModifierFlags::READONLY) != 0;
-    }
+    [[nodiscard]] bool IsReadonly() const noexcept;
 
     // NOTE: For readonly parameter type
-    [[nodiscard]] bool IsReadonlyType() const noexcept
-    {
-        return (flags_ & ModifierFlags::READONLY_PARAMETER) != 0;
-    }
+    [[nodiscard]] bool IsReadonlyType() const noexcept;
 
-    [[nodiscard]] bool IsOptionalDeclaration() const noexcept
-    {
-        return (flags_ & ModifierFlags::OPTIONAL) != 0;
-    }
+    [[nodiscard]] bool IsOptionalDeclaration() const noexcept;
 
-    [[nodiscard]] bool IsDefinite() const noexcept
-    {
-        return (flags_ & ModifierFlags::DEFINITE) != 0;
-    }
+    [[nodiscard]] bool IsDefinite() const noexcept;
 
-    [[nodiscard]] bool IsConstructor() const noexcept
-    {
-        return (flags_ & ModifierFlags::CONSTRUCTOR) != 0;
-    }
+    [[nodiscard]] bool IsConstructor() const noexcept;
 
-    [[nodiscard]] bool IsOverride() const noexcept
-    {
-        return (flags_ & ModifierFlags::OVERRIDE) != 0;
-    }
+    [[nodiscard]] bool IsOverride() const noexcept;
 
     void SetOverride() noexcept
     {
@@ -566,8 +548,14 @@ public:
 
     virtual void CleanUp();
 
+    AstNode *ShallowClone(ArenaAllocator *allocator);
+
 protected:
     AstNode(AstNode const &other);
+
+    virtual AstNode *Construct([[maybe_unused]] ArenaAllocator *allocator);
+
+    virtual void CopyTo(AstNode *other) const;
 
     void SetType(AstNodeType const type) noexcept
     {
@@ -609,6 +597,15 @@ public:
     void SetTsTypeAnnotation(TypeNode *const typeAnnotation) noexcept
     {
         typeAnnotation_ = typeAnnotation;
+    }
+
+    void CopyTo(AstNode *other) const override
+    {
+        auto otherImpl = reinterpret_cast<Annotated<T> *>(other);
+
+        otherImpl->typeAnnotation_ = typeAnnotation_;
+
+        T::CopyTo(other);
     }
 
 protected:
