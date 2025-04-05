@@ -942,7 +942,6 @@ export class TypeScriptLinter {
     this.handleSendableClassProperty(node);
     this.checkAssignmentNumericSemanticslyPro(node);
     this.handleInvalidIdentifier(node);
-    this.handleExplicitFunctionType(node);
     this.handleStructPropertyDecl(node);
   }
 
@@ -1031,7 +1030,6 @@ export class TypeScriptLinter {
     }
     this.handleSendableInterfaceProperty(node);
     this.handleInvalidIdentifier(node);
-    this.handleExplicitFunctionType(node);
   }
 
   private handleInterfaceProperty(node: ts.PropertySignature): void {
@@ -1731,28 +1729,8 @@ export class TypeScriptLinter {
     this.handleDeclarationInferredType(tsVarDecl);
     this.handleDefiniteAssignmentAssertion(tsVarDecl);
     this.handleLimitedVoidType(tsVarDecl);
-    this.handleExplicitFunctionType(tsVarDecl);
     this.handleInvalidIdentifier(tsVarDecl);
     this.checkAssignmentNumericSemanticsly(tsVarDecl);
-  }
-
-  private handleExplicitFunctionType(
-    node: ts.VariableDeclaration | ts.PropertyDeclaration | ts.PropertySignature
-  ): void {
-    if (!this.options.arkts2) {
-      return;
-    }
-    const type = node.type;
-    const initializer = node.initializer;
-    const isFunctionLiteral =
-      type?.kind === ts.SyntaxKind.TypeReference &&
-      (type as ts.TypeReferenceNode).typeName?.getText() === LIKE_FUNCTION;
-    const isNewFunctionConstructor =
-      initializer && ts.isNewExpression(initializer) && initializer.expression.getText() === LIKE_FUNCTION;
-
-    if (type && isFunctionLiteral || initializer && isNewFunctionConstructor) {
-      this.incrementCounters(node, FaultID.ExplicitFunctionType);
-    }
   }
 
   private handleDeclarationDestructuring(decl: ts.VariableDeclaration | ts.ParameterDeclaration): void {
@@ -2335,6 +2313,9 @@ export class TypeScriptLinter {
 
     if (isArkTs2) {
       this.checkWorkerSymbol(tsIdentSym, node);
+    }
+    if (isArkTs2 && tsIdentifier.text === LIKE_FUNCTION && isStdLibrarySymbol(tsIdentSym)) {
+      this.incrementCounters(node, FaultID.ExplicitFunctionType);
     }
   }
 

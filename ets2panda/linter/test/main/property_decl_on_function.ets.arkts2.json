@@ -196,9 +196,9 @@
         },
         {
             "line": 48,
-            "column": 7,
-            "endLine": 50,
-            "endColumn": 2,
+            "column": 16,
+            "endLine": 48,
+            "endColumn": 24,
             "problem": "ExplicitFunctionType",
             "suggest": "",
             "rule": "The function type should be explicit (arkts-no-ts-like-function)",

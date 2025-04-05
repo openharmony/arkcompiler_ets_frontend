@@ -33,6 +33,16 @@
       "suggest": "",
       "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
       "severity": "ERROR"
+    },
+    {
+      "line": 154,
+      "column": 9,
+      "endLine": 154,
+      "endColumn": 31,
+      "problem": "AnyType",
+      "suggest": "",
+      "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+      "severity": "ERROR"
     }
   ]
 }

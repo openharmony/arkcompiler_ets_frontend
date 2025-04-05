@@ -1,118 +1,538 @@
 {
-    "copyright": [
-        "Copyright (c) 2024-2025 Huawei Device Co., Ltd.",
-        "Licensed under the Apache License, Version 2.0 (the 'License');",
-        "you may not use this file except in compliance with the License.",
-        "You may obtain a copy of the License at",
-        "",
-        "http://www.apache.org/licenses/LICENSE-2.0",
-        "",
-        "Unless required by applicable law or agreed to in writing, software",
-        "distributed under the License is distributed on an 'AS IS' BASIS,",
-        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
-        "See the License for the specific language governing permissions and",
-        "limitations under the License."
-    ],
-    "result": [
-        {
-            "line": 15,
-            "column": 5,
-            "endLine": 15,
-            "endColumn": 28,
-            "problem": "ExplicitFunctionType",
-            "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 16,
-            "column": 5,
-            "endLine": 16,
-            "endColumn": 33,
-            "problem": "ExplicitFunctionType",
-            "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 16,
-            "column": 20,
-            "endLine": 16,
-            "endColumn": 33,
-            "problem": "FunctionExpression",
-            "suggest": "",
-            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 17,
-            "column": 5,
-            "endLine": 17,
-            "endColumn": 45,
-            "problem": "ExplicitFunctionType",
-            "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 10,
-            "endLine": 18,
-            "endColumn": 23,
-            "problem": "FunctionExpression",
-            "suggest": "",
-            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 19,
-            "column": 5,
-            "endLine": 19,
-            "endColumn": 35,
-            "problem": "ExplicitFunctionType",
-            "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 37,
-            "column": 3,
-            "endLine": 37,
-            "endColumn": 15,
-            "problem": "ExplicitFunctionType",
-            "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 41,
-            "column": 3,
-            "endLine": 41,
-            "endColumn": 29,
-            "problem": "ExplicitFunctionType",
-            "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 45,
-            "column": 3,
-            "endLine": 45,
-            "endColumn": 26,
-            "problem": "ExplicitFunctionType",
-            "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 53,
-            "column": 3,
-            "endLine": 53,
-            "endColumn": 26,
-            "problem": "ExplicitFunctionType",
-            "suggest": "",
-            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-            "severity": "ERROR"
-        }
-    ]
+  "copyright": [
+    "Copyright (c) 2024-2025 Huawei Device Co., Ltd.",
+    "Licensed under the Apache License, Version 2.0 (the 'License');",
+    "you may not use this file except in compliance with the License.",
+    "You may obtain a copy of the License at",
+    "",
+    "http://www.apache.org/licenses/LICENSE-2.0",
+    "",
+    "Unless required by applicable law or agreed to in writing, software",
+    "distributed under the License is distributed on an 'AS IS' BASIS,",
+    "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+    "See the License for the specific language governing permissions and",
+    "limitations under the License."
+  ],
+  "result": [
+    {
+      "line": 15,
+      "column": 9,
+      "endLine": 15,
+      "endColumn": 17,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 16,
+      "column": 9,
+      "endLine": 16,
+      "endColumn": 17,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 16,
+      "column": 20,
+      "endLine": 16,
+      "endColumn": 33,
+      "problem": "FunctionExpression",
+      "suggest": "",
+      "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 17,
+      "column": 9,
+      "endLine": 17,
+      "endColumn": 17,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 17,
+      "column": 24,
+      "endLine": 17,
+      "endColumn": 32,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 18,
+      "column": 10,
+      "endLine": 18,
+      "endColumn": 23,
+      "problem": "FunctionExpression",
+      "suggest": "",
+      "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 19,
+      "column": 14,
+      "endLine": 19,
+      "endColumn": 22,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 37,
+      "column": 7,
+      "endLine": 37,
+      "endColumn": 15,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 41,
+      "column": 10,
+      "endLine": 41,
+      "endColumn": 18,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 45,
+      "column": 7,
+      "endLine": 45,
+      "endColumn": 15,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 53,
+      "column": 7,
+      "endLine": 53,
+      "endColumn": 15,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 56,
+      "column": 19,
+      "endLine": 56,
+      "endColumn": 27,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 60,
+      "column": 26,
+      "endLine": 60,
+      "endColumn": 34,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 65,
+      "column": 17,
+      "endLine": 65,
+      "endColumn": 25,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 69,
+      "column": 25,
+      "endLine": 69,
+      "endColumn": 33,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 70,
+      "column": 12,
+      "endLine": 70,
+      "endColumn": 20,
+      "problem": "ClassAsObjectError",
+      "suggest": "",
+      "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 70,
+      "column": 12,
+      "endLine": 70,
+      "endColumn": 20,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 75,
+      "column": 20,
+      "endLine": 75,
+      "endColumn": 28,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 79,
+      "column": 11,
+      "endLine": 79,
+      "endColumn": 19,
+      "problem": "ClassAsObjectError",
+      "suggest": "",
+      "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 79,
+      "column": 11,
+      "endLine": 79,
+      "endColumn": 19,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 87,
+      "column": 12,
+      "endLine": 87,
+      "endColumn": 20,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 96,
+      "column": 21,
+      "endLine": 96,
+      "endColumn": 29,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 101,
+      "column": 22,
+      "endLine": 101,
+      "endColumn": 30,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 101,
+      "column": 38,
+      "endLine": 101,
+      "endColumn": 46,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 101,
+      "column": 56,
+      "endLine": 101,
+      "endColumn": 64,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 105,
+      "column": 23,
+      "endLine": 105,
+      "endColumn": 31,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 109,
+      "column": 27,
+      "endLine": 109,
+      "endColumn": 35,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 114,
+      "column": 80,
+      "endLine": 114,
+      "endColumn": 88,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 118,
+      "column": 16,
+      "endLine": 118,
+      "endColumn": 24,
+      "problem": "ClassAsObjectError",
+      "suggest": "",
+      "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 118,
+      "column": 16,
+      "endLine": 118,
+      "endColumn": 24,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 121,
+      "column": 3,
+      "endLine": 121,
+      "endColumn": 10,
+      "problem": "TsOverload",
+      "suggest": "",
+      "rule": "Class TS overloading is not supported(arkts-no-ts-overload)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 122,
+      "column": 3,
+      "endLine": 122,
+      "endColumn": 35,
+      "problem": "TsOverload",
+      "suggest": "",
+      "rule": "Class TS overloading is not supported(arkts-no-ts-overload)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 122,
+      "column": 12,
+      "endLine": 122,
+      "endColumn": 20,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 123,
+      "column": 3,
+      "endLine": 125,
+      "endColumn": 4,
+      "problem": "TsOverload",
+      "suggest": "",
+      "rule": "Class TS overloading is not supported(arkts-no-ts-overload)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 123,
+      "column": 13,
+      "endLine": 123,
+      "endColumn": 21,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 128,
+      "column": 21,
+      "endLine": 128,
+      "endColumn": 29,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 128,
+      "column": 31,
+      "endLine": 128,
+      "endColumn": 32,
+      "problem": "LimitedLiteralType",
+      "suggest": "",
+      "rule": "Literal types are restricted(arkts-limited-literal-types)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 128,
+      "column": 33,
+      "endLine": 128,
+      "endColumn": 37,
+      "problem": "LimitedLiteralType",
+      "suggest": "",
+      "rule": "Literal types are restricted(arkts-limited-literal-types)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 128,
+      "column": 39,
+      "endLine": 128,
+      "endColumn": 44,
+      "problem": "LimitedLiteralType",
+      "suggest": "",
+      "rule": "Literal types are restricted(arkts-limited-literal-types)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 128,
+      "column": 57,
+      "endLine": 128,
+      "endColumn": 65,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 138,
+      "column": 34,
+      "endLine": 138,
+      "endColumn": 42,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 142,
+      "column": 11,
+      "endLine": 142,
+      "endColumn": 19,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 143,
+      "column": 36,
+      "endLine": 143,
+      "endColumn": 44,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 150,
+      "column": 16,
+      "endLine": 150,
+      "endColumn": 21,
+      "problem": "LimitedReturnTypeInference",
+      "suggest": "",
+      "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 151,
+      "column": 14,
+      "endLine": 151,
+      "endColumn": 22,
+      "problem": "DynamicCtorCall",
+      "suggest": "",
+      "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 153,
+      "column": 20,
+      "endLine": 153,
+      "endColumn": 28,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 154,
+      "column": 9,
+      "endLine": 154,
+      "endColumn": 31,
+      "problem": "AnyType",
+      "suggest": "",
+      "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 155,
+      "column": 17,
+      "endLine": 155,
+      "endColumn": 25,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 159,
+      "column": 28,
+      "endLine": 159,
+      "endColumn": 36,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 159,
+      "column": 41,
+      "endLine": 159,
+      "endColumn": 49,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 160,
+      "column": 47,
+      "endLine": 160,
+      "endColumn": 55,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    },
+    {
+      "line": 160,
+      "column": 85,
+      "endLine": 160,
+      "endColumn": 93,
+      "problem": "ExplicitFunctionType",
+      "suggest": "",
+      "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+      "severity": "ERROR"
+    }
+  ]
 }
