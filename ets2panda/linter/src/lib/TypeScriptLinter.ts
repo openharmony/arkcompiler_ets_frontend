@@ -4523,7 +4523,12 @@ export class TypeScriptLinter {
         return;
       }
       const sourceFile = decl.getSourceFile();
-      if (WORKER_MODULES.includes(path.basename(sourceFile.fileName).toLowerCase())) {
+      const fileName = path.basename(sourceFile.fileName);
+      if (
+        WORKER_MODULES.some((moduleName) => {
+          return fileName.startsWith(moduleName);
+        })
+      ) {
         this.incrementCounters(node, FaultID.LimitedStdLibApi);
       }
     }
