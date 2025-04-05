@@ -181,6 +181,35 @@ void Condition::CompileInstanceofExpr(ETSGen *etsg, const ir::BinaryExpression *
     etsg->BranchIfFalse(binExpr, falseLabel);
 }
 
+void Condition::CompileLogical(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel)
+{
+    ES2PANDA_ASSERT(binExpr->IsLogicalExtended());
+
+    // If the Result is given, we can optimize the process.
+    if (binExpr->Result() != nullptr) {
+        if (binExpr->Result() != binExpr->Left()) {
+            ES2PANDA_ASSERT(binExpr->Result() == binExpr->Right());
+            etsg->CompileAndCheck(binExpr->Left());
+        }
+        Compile(etsg, binExpr->Result(), falseLabel);
+        return;
+    }
+
+    compiler::RegScope rs(etsg);
+    auto *endLabel = etsg->AllocLabel();
+
+    if (binExpr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
+        Compile(etsg, binExpr->Left(), falseLabel);
+    } else {
+        ES2PANDA_ASSERT(binExpr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_OR);
+        etsg->CompileAndCheck(binExpr->Left());
+        etsg->BranchConditionalIfTrue(binExpr->Left(), endLabel);
+    }
+
+    Compile(etsg, binExpr->Right(), falseLabel);
+    etsg->SetLabel(binExpr, endLabel);
+}
+
 bool Condition::CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel)
 {
     if (CompileBinaryExprForBigInt(etsg, binExpr, falseLabel)) {
@@ -205,8 +234,7 @@ bool Condition::CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *binE
         }
         case lexer::TokenType::PUNCTUATOR_LOGICAL_OR:
         case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
-            etsg->CompileAndCheck(binExpr);
-            etsg->BranchConditionalIfFalse(binExpr, falseLabel);
+            CompileLogical(etsg, binExpr, falseLabel);
             return true;
         }
         case lexer::TokenType::KEYW_INSTANCEOF: {

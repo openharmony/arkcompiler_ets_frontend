@@ -40,7 +40,7 @@ public:
 private:
     static bool CompileBinaryExpr(PandaGen *pg, const ir::BinaryExpression *binExpr, Label *falseLabel);
     static bool CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel);
-    static void CompileLogicalExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel);
+    static void CompileLogical(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel);
     static bool CompileBinaryExprForBigInt(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel);
     static void CompileInstanceofExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel);
 };
