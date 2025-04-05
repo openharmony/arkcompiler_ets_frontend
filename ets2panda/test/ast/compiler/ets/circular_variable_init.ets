@@ -33,13 +33,21 @@ let globala = globalb
 let globalc = globald
 let globald = globalc
 
+const consta = constb;
+const constb = consta;
+
 function main() {
     let maina = mainb;
+
+    let mainc = maind;
+    let maind = mainc;
 }
 
+/* @@? 18:12 Error TypeError: Circular dependency detected for identifier: b */
+/* @@? 23:19 Error TypeError: Circular dependency detected for identifier: b */
 /* @@? 31:15 Error TypeError: Unresolved reference globalb */
-/* @@? 33:15 Error TypeError: Circular dependency detected for identifier: globalc */
-/* @@? 31:15 Error TypeError: Unresolved reference globalb */
-/* @@? 37:17 Error TypeError: Unresolved reference mainb */
-/* @@? 17:16 Error TypeError: Circular dependency detected for identifier: a */
-/* @@? 22:23 Error TypeError: Circular dependency detected for identifier: a */
+/* @@? 33:5 Error TypeError: Circular dependency detected for identifier: globalc */
+/* @@? 37:7 Error TypeError: Circular dependency detected for identifier: constb */
+/* @@? 40:17 Error TypeError: Unresolved reference mainb */
+/* @@? 42:17 Error TypeError: Variable 'maind' is accessed before it's initialization. */
+/* @@? 43:9 Error TypeError: Circular dependency detected for identifier: maind */
