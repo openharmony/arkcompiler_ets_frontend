@@ -37,4 +37,3 @@ function main() {
     assertEQ(a, 42)
     assertEQ(b, "string2")
 }
-

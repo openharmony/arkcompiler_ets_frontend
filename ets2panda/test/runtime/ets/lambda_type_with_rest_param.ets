@@ -22,8 +22,8 @@ function foo(a:(...args:number[])=>string){
 }
 
 function main(){
-    assert a(1,2,3) == 1
+    assertEQ(a(1,2,3), 1)
     let func:A = (...args:number[]):string=>{ return "abc"}
-    assert foo(func) == "abc"
+    assertEQ(foo(func), "abc")
 }
 

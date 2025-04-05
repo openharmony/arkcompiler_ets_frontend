@@ -27,6 +27,6 @@ let fob:(...args:number[])=>number = (...args:number[]):number =>{
 
 
 function main(){
-    assert foa("1") == "c"
-    assert fob(1, 2, 3, 4) == 10
+    assertEQ(foa("1"), "c")
+    assertEQ(fob(1, 2, 3, 4), 10)
 }

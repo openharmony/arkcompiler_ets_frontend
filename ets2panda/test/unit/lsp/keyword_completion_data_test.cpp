@@ -24,8 +24,7 @@ TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithA)
     std::string input = "a";
     ark::es2panda::lsp::Request result = ark::es2panda::lsp::KeywordCompletionData(input);
 
-    std::vector<std::string> expected = {"abstract", "any",     "anyref", "arguments", "as",
-                                         "assert",   "asserts", "async",  "await"};
+    std::vector<std::string> expected = {"abstract", "any", "anyref", "arguments", "as", "asserts", "async", "await"};
 
     std::vector<std::string> actual;
     for (const auto &entry : result.keywordCompletions) {
@@ -38,7 +37,7 @@ TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithAs)
 {
     std::string input = "as";
 
-    std::vector<std::string> expected = {"as", "assert", "asserts", "async"};
+    std::vector<std::string> expected = {"as", "asserts", "async"};
     ark::es2panda::lsp::Request result = ark::es2panda::lsp::KeywordCompletionData(input);
 
     std::vector<std::string> actual;
@@ -53,7 +52,7 @@ TEST_F(LspKeywordCompletionTests, GetKeywordCompletionsStartWithAs2)
     std::string input = "asse";
     ark::es2panda::lsp::Request result = ark::es2panda::lsp::KeywordCompletionData(input);
 
-    std::vector<std::string> expected = {"assert", "asserts"};
+    std::vector<std::string> expected = {"asserts"};
 
     std::vector<std::string> actual;
     for (const auto &entry : result.keywordCompletions) {

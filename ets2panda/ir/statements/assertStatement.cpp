@@ -26,50 +26,25 @@
 #include "ir/expression.h"
 
 namespace ark::es2panda::ir {
-void AssertStatement::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
+void AssertStatement::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
+                                        [[maybe_unused]] std::string_view const transformationName)
 {
-    if (auto *transformedNode = cb(test_); test_ != transformedNode) {
-        test_->SetTransformedNode(transformationName, transformedNode);
-        test_ = transformedNode->AsExpression();
-    }
-
-    if (second_ != nullptr) {
-        if (auto *transformedNode = cb(second_); second_ != transformedNode) {
-            second_->SetTransformedNode(transformationName, transformedNode);
-            second_ = transformedNode->AsExpression();
-        }
-    }
+    ES2PANDA_UNREACHABLE();
 }
 
-void AssertStatement::Iterate(const NodeTraverser &cb) const
+void AssertStatement::Iterate([[maybe_unused]] const NodeTraverser &cb) const
 {
-    cb(test_);
-
-    if (second_ != nullptr) {
-        cb(second_);
-    }
+    ES2PANDA_UNREACHABLE();
 }
 
-void AssertStatement::Dump(ir::AstDumper *dumper) const
+void AssertStatement::Dump([[maybe_unused]] ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "AssertStatement"}, {"test", test_}, {"second", AstDumper::Nullish(second_)}});
+    ES2PANDA_UNREACHABLE();
 }
 
-void AssertStatement::Dump(ir::SrcDumper *dumper) const
+void AssertStatement::Dump([[maybe_unused]] ir::SrcDumper *dumper) const
 {
-    ES2PANDA_ASSERT(test_);
-    dumper->Add("assert(");
-    test_->Dump(dumper);
-    dumper->Add(")");
-
-    if (second_ != nullptr) {
-        dumper->Add(": ");
-        second_->Dump(dumper);
-    }
-
-    if (parent_->IsStatement()) {
-        dumper->Add(";");
-    }
+    ES2PANDA_UNREACHABLE();
 }
 
 void AssertStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
@@ -92,21 +67,9 @@ checker::VerifiedType AssertStatement::Check([[maybe_unused]] checker::ETSChecke
     return {this, checker->GetAnalyzer()->Check(this)};
 }
 
-AssertStatement *AssertStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+AssertStatement *AssertStatement::Clone([[maybe_unused]] ArenaAllocator *const allocator,
+                                        [[maybe_unused]] AstNode *const parent)
 {
-    ir::AssertStatement *clone = allocator->New<ir::AssertStatement>(test_, second_);
-    if (clone == nullptr) {
-        LOG(FATAL, ES2PANDA) << "Failed to allocate memory for AssertStatement node";
-    }
-
-    clone->SetParent(parent);
-    if (test_ != nullptr) {
-        clone->test_ = test_->Clone(allocator, clone)->AsExpression();
-    }
-    if (second_ != nullptr) {
-        clone->second_ = second_->Clone(allocator, clone)->AsExpression();
-    }
-    clone->SetRange(Range());
-    return clone;
+    ES2PANDA_UNREACHABLE();
 }
 }  // namespace ark::es2panda::ir

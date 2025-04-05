@@ -62,7 +62,6 @@
 #include "ir/module/importSpecifier.h"
 #include "ir/module/exportSpecifier.h"
 #include "ir/module/exportNamedDeclaration.h"
-#include "ir/statements/assertStatement.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/ifStatement.h"
 #include "ir/statements/labelledStatement.h"

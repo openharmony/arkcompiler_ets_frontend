@@ -64,7 +64,7 @@ class A {
 }
 let a = new A();
 a.foo();
-assert(a.x == 2);
+assertEQ(a.x, 2);
 )";
 
 static es2panda_Impl *impl = nullptr;

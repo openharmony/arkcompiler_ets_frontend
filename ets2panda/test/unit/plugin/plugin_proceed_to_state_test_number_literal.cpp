@@ -24,14 +24,14 @@
 
 static es2panda_Impl *impl = nullptr;
 
-static auto source = std::string("function main() { assert(5 == 10); }");
+static auto source = std::string("function main() { assertEQ(5, 10); }");
 
 static es2panda_AstNode *assertStatement = nullptr;
 static es2panda_Context *ctx = nullptr;
 
 static void FindAssert(es2panda_AstNode *ast)
 {
-    if (!impl->IsAssertStatement(ast)) {
+    if (!IsAssertCall(ast)) {
         impl->AstNodeIterateConst(ctx, ast, FindAssert);
         return;
     }
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
     if (assertStatement == nullptr) {
         return TEST_ERROR_CODE;
     }
-    auto binExpr = impl->AssertStatementTest(context, assertStatement);
+    auto binExpr = AssertStatementTest(context, assertStatement);
     auto newNumLiteral = impl->CreateNumberLiteral(context, 10);
     impl->BinaryExpressionSetLeft(context, binExpr, newNumLiteral);
     impl->AstNodeSetParent(context, newNumLiteral, binExpr);
