@@ -150,8 +150,7 @@ public:
                                       const ir::ETSImportDeclaration *const import);
     void BuildETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *classInstance);
     [[nodiscard]] bool DetectNameConflict(const util::StringView localName, Variable *const var,
-                                          Variable *const otherVar, const ir::StringLiteral *const importPath,
-                                          bool overloadAllowed);
+                                          Variable *const otherVar, const ir::StringLiteral *const importPath);
     [[nodiscard]] ArenaVector<parser::Program *> GetExternalProgram(util::StringView sourceName,
                                                                     const ir::StringLiteral *importPath);
 
