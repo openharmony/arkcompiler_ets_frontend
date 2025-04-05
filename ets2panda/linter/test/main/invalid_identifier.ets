@@ -205,3 +205,7 @@ enum char {
   number = 2,
   int = 3,
 }
+
+namespace char {
+    let number : number
+}

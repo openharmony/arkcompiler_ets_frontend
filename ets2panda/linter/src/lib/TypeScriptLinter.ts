@@ -2001,6 +2001,10 @@ export class TypeScriptLinter {
 
     this.countDeclarationsWithDuplicateName(tsModuleDecl.name, tsModuleDecl);
 
+    if (this.options.arkts2) {
+      this.handleInvalidIdentifier(tsModuleDecl);
+    }
+
     const tsModuleBody = tsModuleDecl.body;
     const tsModifiers = ts.getModifiers(tsModuleDecl);
     if (tsModuleBody) {
@@ -4413,6 +4417,7 @@ export class TypeScriptLinter {
       | ts.ImportDeclaration
       | ts.EnumDeclaration
       | ts.EnumMember
+      | ts.ModuleDeclaration
   ): void {
     if (!this.options.arkts2) {
       return;
