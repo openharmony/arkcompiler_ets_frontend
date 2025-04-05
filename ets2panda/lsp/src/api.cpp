@@ -43,10 +43,11 @@ DefinitionInfo GetDefinitionAtPosition(es2panda_Context *context, size_t positio
         if (node->IsETSModule()) {
             auto name = std::string(node->AsETSModule()->Program()->SourceFilePath());
             auto targetNode = declInfo.first->FindChild([&declInfo](ir::AstNode *childNode) {
-                return childNode->IsIdentifier() && childNode->AsIdentifier()->Name() == declInfo.second &&
-                       childNode->Parent()->Type() == declInfo.first->Type();
+                return childNode->IsIdentifier() && childNode->AsIdentifier()->Name() == declInfo.second;
             });
-            result = {name, targetNode->Start().index, targetNode->End().index - targetNode->Start().index};
+            if (targetNode != nullptr) {
+                result = {name, targetNode->Start().index, targetNode->End().index - targetNode->Start().index};
+            }
             break;
         }
         node = node->Parent();
