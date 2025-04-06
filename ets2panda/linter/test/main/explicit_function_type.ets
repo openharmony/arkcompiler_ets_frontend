@@ -52,3 +52,113 @@ interface C5 {
 class D5 implements C5 {
   a5: Function = () => {}  // NOK
 }
+
+function run6(fn: Function) {
+  fn();
+}
+
+function getFunction8(): Function {
+  return () => {};
+}
+
+abstract class F17 {
+  abstract f17: Function;
+}
+
+class H23 {
+  async foo1(): Promise<Function> {
+    return Function;
+  }
+}
+
+class I24 {
+  constructor(par: Function, par1?: string) {}
+}
+class I24_1 extends I24 {
+  constructor() {
+    super(Function)
+  }
+}
+
+
+class I25 {
+  constructor(par: number, par1?: string) {}
+
+  foo3(fn: Function) {
+    console.log("this is Arkts1")
+  }
+}
+class I25_1 extends I25 {
+  constructor() {
+    super(2)
+  }
+
+  override foo3(fn: Function): void {
+    console.log("this is Arkts2")
+  }
+}
+
+function foo30(par1: Function, par2: Function[], par3: Function) {
+  console.log("ArkTs foo30")
+}
+
+function foo31(par1?: Function) {
+  console.log("ArkTs foo31")
+}
+
+function push32(...items: Function[]) {
+  items.forEach(item => {
+  });
+}
+
+function foo33(par1: number, par2: boolean, par3: string, par4: [string, Array<Function>]) {
+  console.log("ArkTs foo33")
+}
+
+let array34 = [Function, 1, 2, 3];
+
+class L36 {
+  foo1();
+  foo1(par:Function, par1:string);
+  foo1(par?:Function, par1?:string){
+    console.log('arkts36')
+  }
+}
+
+let tup38:[['arkts'|Function, 1|true, false], string[], Function] = [['arkts', 1, false], ['arkts1', 'arkts2'], tup38_1];
+
+//枚举
+enum E39 {
+  Function,
+  BLUE = 1,
+  YELLOW
+}
+
+//回调参数不明确
+function handleEvent41(callback: Function) {
+  callback("event", Date.now());
+}
+
+let fn43: Function = (x: number) => x + 1;
+function process43(input: number): Function {
+  if (typeof input === "string") return fn43;
+  if (typeof input === "number") return fn43;
+  return fn43;
+}
+
+//as
+async function fetch(url: string) {
+  return new Animal42();
+}
+const fetchData44: Function = async (url: string) => {
+  const res = await fetch(url);
+  return res as Function;
+};
+
+//高阶函数
+function compose45(...fns: Function[]): Function {
+  return fns.reduce((prev, curr) => (...args: Function[]) => curr(prev(...args)) as Function);
+}
+
+export let add: (a: number, b: number) => number;
+export let add1: (a: string) => object;
