@@ -1126,3 +1126,19 @@ semantic:
 - name: NOT_ALLOWED_THIS_IN_ARRAY_TYPE
   id: 283
   message: "A 'this' cannot be used as type of array."
+
+- name: TYPE_FROM_UNION_TYPE_UNSUPPORTED
+  id: 284
+  message: "Acquiring types for union types is not supported."
+
+- name: TYPE_FROM_UNRESOLVABLE_TYPE
+  id: 285
+  message: "Unable to resolve type."
+
+- name: TYPE_FROM_TUPLE_TYPE_UNSUPPORTED
+  id: 286
+  message: "Acquiring types for tuple types is not supported."
+
+- name: TYPE_FROM_STRING_LITERAL_TYPE_UNSUPPORTED
+  id: 287
+  message: "Acquiring types for string literal types is not supported."

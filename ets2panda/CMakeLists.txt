@@ -286,6 +286,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/stringComparison.cpp
   compiler/lowering/ets/stringConstantsLowering.cpp
   compiler/lowering/ets/stringConstructorLowering.cpp
+  compiler/lowering/ets/typeFromLowering.cpp
   compiler/lowering/ets/enumLowering.cpp
   compiler/lowering/ets/enumPostCheckLowering.cpp
   compiler/lowering/ets/setJumpTarget.cpp

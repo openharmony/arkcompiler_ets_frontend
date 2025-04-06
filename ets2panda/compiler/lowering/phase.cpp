@@ -55,6 +55,7 @@
 #include "compiler/lowering/ets/stringConstructorLowering.h"
 #include "compiler/lowering/ets/topLevelStmts/topLevelStmts.h"
 #include "compiler/lowering/ets/unionLowering.h"
+#include "compiler/lowering/ets/typeFromLowering.h"
 #include "compiler/lowering/plugin_phase.h"
 #include "compiler/lowering/resolveIdentifiers.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
@@ -108,6 +109,7 @@ static PackageImplicitImport g_packageImplicitImport;
 static GenericBridgesPhase g_genericBridgesLowering;
 static BoxedTypeLowering g_boxedTypeLowering;
 static AsyncMethodLowering g_asyncMethodLowering;
+static TypeFromLowering g_typeFromLowering;
 static PluginPhase g_pluginsAfterParse {"plugins-after-parse", ES2PANDA_STATE_PARSED, &util::Plugin::AfterParse};
 static PluginPhase g_pluginsAfterBind {"plugins-after-bind", ES2PANDA_STATE_BOUND, &util::Plugin::AfterBind};
 static PluginPhase g_pluginsAfterCheck {"plugins-after-check", ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck};
@@ -172,6 +174,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_partialExportClassGen,
         &g_optionalArgumentsLowering, // #22952 could be moved to earlier phase
         &g_genericBridgesLowering,
+        &g_typeFromLowering,
         &g_pluginsAfterLowerings,  // pluginsAfterLowerings has to come at the very end, nothing should go after it
     };
     // NOLINTEND
