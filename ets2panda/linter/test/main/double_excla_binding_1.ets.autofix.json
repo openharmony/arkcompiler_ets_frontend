@@ -58,7 +58,7 @@
                 {
                     "start": 1653,
                     "end": 1676,
-                    "replacementText": "{\n    value: this.value,\n    $value: value => {\n        this.value = value;\n    }\n}"
+                    "replacementText": "{\n        value: this.value,\n        $value: value => {\n            this.value = value;\n        }\n      }"
                 }
             ],
             "suggest": "",
@@ -75,7 +75,7 @@
                 {
                     "start": 1691,
                     "end": 1710,
-                    "replacementText": "{\n    str: this.str,\n    $str: value => {\n        this.str = value;\n    }\n}"
+                    "replacementText": "{\n        str: this.str,\n        $str: value => {\n            this.str = value;\n        }\n      }"
                 }
             ],
             "suggest": "",

@@ -30,6 +30,33 @@ struct MyCard1 {
 }
 
 @Component
+struct MyCard2 {
+  @Styles
+  cardStyle2() {
+    .border({
+      color: this.getColor(),
+      width: this.getWidth()
+    })
+    .backgroundColor('#ffffff')
+  }
+  
+  private getColor(): Color {
+    return Color.Red
+  }
+  
+  private getWidth(): number {
+    return 10
+  }
+
+  build() {
+    Column() {
+      Text('Card')
+    }
+    .cardStyle2()
+  }
+}
+
+@Component
 struct MyButton {
   @BuilderParam
   @Require
@@ -54,4 +81,56 @@ struct MyButton {
       pressed: this.PressedStyles()
     })
   }
+}
+
+@Component
+struct imageTest {
+  private mediaItem: MediaItem | undefined;
+  private previewUri: string | undefined;
+  private DragBuilder: CustomBuilder | undefined;
+
+  @Styles
+  imageStyle() {
+    .draggable(this.isShowLongPressMenu() && this.isPC())
+    .onDragStart(() => {
+      console.info(TAG, 'onDragStart');
+      this.touchVibrate(VibrateType.DRAG);
+      if (this.mediaItem?.path) {
+        this.previewUri =
+          this.getPreviewUri(this.mediaItem?.path, this.mediaItem?.getDateModified?.(), false, true);
+      }
+      return this.DragBuilder;
+    })
+    .accessibilityText(this.isOpenTouchGuide ? this.getImageItemGridAccessibilityText() : '')
+  }
+
+  private isShowLongPressMenu(): boolean {
+    return true;
+  }
+
+  private isPC(): boolean {
+    return true;
+  }
+
+  private touchVibrate(type: VibrateType): void {
+
+  }
+
+  private isOpenTouchGuide: boolean = true;
+
+  private getImageItemGridAccessibilityText(): string {
+    return ''
+  }
+
+  private getPreviewUri(path: string, date: string, isOk: boolean, ready: boolean): string {
+    return ''
+  }
+
+  build() {
+
+  }
+}
+
+enum VibrateType {
+  DRAG
 }

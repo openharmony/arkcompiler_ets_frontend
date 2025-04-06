@@ -24,7 +24,7 @@
                 {
                     "start": 640,
                     "end": 835,
-                    "replacementText": "@Memo\nfunction cardStyle1(instance: CommonMethod): void {\n    instance.backgroundColor(mycolor);\n    instance.borderColor(Color.Red);\n    instance.borderRadius(8);\n    instance.padding(8);\n    instance.backgroundImagePosition({\n        x: 0,\n        y: 0\n    });\n}"
+                    "replacementText": "function cardStyle1(instance: CommonMethod): void {\n    instance.backgroundColor(mycolor);\n    instance.borderColor(Color.Red);\n    instance.borderRadius(8);\n    instance.padding(8);\n    instance.backgroundImagePosition({\n        x: 0,\n        y: 0\n    });\n}"
                 },
                 {
                     "start": 918,
@@ -46,7 +46,7 @@
                 {
                     "start": 940,
                     "end": 1007,
-                    "replacementText": "@Memo\nfunction NormalStyles(instance: CommonMethod): void {\n    instance.backgroundColor(\"#ffffff\");\n}"
+                    "replacementText": "function NormalStyles(instance: CommonMethod): void {\n    instance.backgroundColor(\"#ffffff\");\n}"
                 }
             ],
             "suggest": "",
@@ -63,7 +63,7 @@
                 {
                     "start": 1009,
                     "end": 1077,
-                    "replacementText": "@Memo\nfunction PressedStyles(instance: CommonMethod): void {\n    instance.backgroundColor(\"#ffffff\");\n}"
+                    "replacementText": "function PressedStyles(instance: CommonMethod): void {\n    instance.backgroundColor(\"#ffffff\");\n}"
                 }
             ],
             "suggest": "",
@@ -130,7 +130,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { CommonMethod, Memo, Color, Component, Column, BuilderParam, Require, Button } from '@kits.ArkUI';"
+                    "replacementText": "\n\nimport { CommonMethod, Color, Component, Column, BuilderParam, Require, Button } from '@kits.ArkUI';"
                 }
             ],
             "suggest": "",

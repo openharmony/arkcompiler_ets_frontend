@@ -22,6 +22,7 @@ export const APPLY_STYLES_IDENTIFIER = 'applyStyles';
 export const STATE_STYLES = 'stateStyles';
 export const ARKUI_PACKAGE_NAME = '@kits.ArkUI';
 export const VALUE_IDENTIFIER = 'value';
+export const INDENT_STEP = 2;
 
 export enum CustomDecoratorName {
   Extend = 'Extend',

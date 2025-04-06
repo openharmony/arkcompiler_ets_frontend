@@ -25,11 +25,11 @@ struct TestStateStyle {
       this.content
     }
     .stateStyles({
-      normal: @Memo (instance: CommonMethod): void => {
+      normal: (instance: CommonMethod): void => {
         instance.backgroundColor("#00ffff");
         instance.borderWidth(8);
       },
-      pressed: @Memo (instance: CommonMethod): void => {
+      pressed: (instance: CommonMethod): void => {
         instance.backgroundColor(Color.Red);
         instance.backgroundImagePosition({
           x: 0,

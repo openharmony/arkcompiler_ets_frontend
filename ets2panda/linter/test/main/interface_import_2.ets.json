@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 64,
+            "line": 61,
             "column": 3,
-            "endLine": 64,
+            "endLine": 61,
             "endColumn": 7,
             "problem": "FunctionContainsThis",
             "suggest": "",
@@ -25,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 65,
+            "line": 62,
             "column": 10,
-            "endLine": 65,
+            "endLine": 62,
             "endColumn": 14,
             "problem": "FunctionContainsThis",
             "suggest": "",
@@ -35,9 +35,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 69,
+            "line": 66,
             "column": 10,
-            "endLine": 69,
+            "endLine": 66,
             "endColumn": 25,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
@@ -45,9 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 70,
+            "line": 67,
             "column": 3,
-            "endLine": 70,
+            "endLine": 67,
             "endColumn": 7,
             "problem": "FunctionContainsThis",
             "suggest": "",
@@ -55,9 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 71,
+            "line": 68,
             "column": 10,
-            "endLine": 71,
+            "endLine": 68,
             "endColumn": 14,
             "problem": "FunctionContainsThis",
             "suggest": "",

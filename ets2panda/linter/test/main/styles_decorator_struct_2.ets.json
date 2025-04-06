@@ -15,43 +15,13 @@
     ],
     "result": [
         {
-            "line": 18,
-            "column": 3,
-            "endLine": 18,
-            "endColumn": 15,
-            "problem": "AnyType",
+            "line": 89,
+            "column": 26,
+            "endLine": 97,
+            "endColumn": 6,
+            "problem": "LimitedReturnTypeInference",
             "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 37,
-            "column": 3,
-            "endLine": 37,
-            "endColumn": 17,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 46,
-            "endLine": 18,
-            "endColumn": 46,
-            "problem": "StrictDiagnostic",
-            "suggest": "Property '(Missing)' has no initializer and is not definitely assigned in the constructor.",
-            "rule": "Property '(Missing)' has no initializer and is not definitely assigned in the constructor.",
-            "severity": "ERROR"
-        },
-        {
-            "line": 37,
-            "column": 48,
-            "endLine": 37,
-            "endColumn": 48,
-            "problem": "StrictDiagnostic",
-            "suggest": "Property '(Missing)' has no initializer and is not definitely assigned in the constructor.",
-            "rule": "Property '(Missing)' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
             "severity": "ERROR"
         }
     ]

@@ -30,9 +30,6 @@ struct Test {
       Circle() {
         
       }
-      .stateStyles({
-
-      })
 
       MyComponent() {
 
@@ -64,7 +61,7 @@ struct MyComponent {
 @Extend(Text)
 function cardStyle()
 {
-  .backgroundColor1(Color.Green)
+  .backgroundColor(Color.Green)
 }
 
 @AnimatableExtend(Column)
