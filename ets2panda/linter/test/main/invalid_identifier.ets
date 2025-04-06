@@ -129,9 +129,7 @@ const Short: number = 32767;
 
 const char: string = "a";
 
-const Char: string = "a";
-
-const Long: number = 123456789;
+const string: string = "hello";
 
 const void: void = undefined;
 
@@ -171,7 +169,33 @@ interface Test3 {
     string: string;
 }
 
-let Awaited: number = 42;
+@Entry
+@Component
+struct Char {
+  @State message: string = 'Hello World';
+  abstract:number = 123;
+  async:number = 123;
+  internal:number = 123;
 
-type string = number;
+  build() {
+    RelativeContainer() {
+      Text(this.message)
+        .onClick(() => {
+        })
+    }
+  }
+  char(){
+  }
+  func(){
+  }
+}
 
+struct Long {
+  @State message: string = 'Hello World';
+
+  build() {
+    RelativeContainer() {
+      Text(this.message)
+    }
+  }
+}

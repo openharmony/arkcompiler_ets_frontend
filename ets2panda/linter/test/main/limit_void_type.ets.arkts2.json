@@ -418,7 +418,7 @@
             "line": 85,
             "column": 19,
             "endLine": 85,
-            "endColumn": 31,
+            "endColumn": 23,
             "problem": "InvalidIdentifier",
             "suggest": "",
             "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
