@@ -1187,4 +1187,5 @@
     }
   }
 }
-TypeError: Bad operand type, the types of the operands must be same type. [dynamic_instanceof_error.ets:24:11]
+TypeError: Using the "instance of" operator with non-object type "a" [dynamic_instanceof_error.ets:24:11]
+TypeError: Right-hand side of instanceof expression must represent a type. [dynamic_instanceof_error.ets:24:11]

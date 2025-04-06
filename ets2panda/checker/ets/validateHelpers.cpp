@@ -129,7 +129,7 @@ bool ETSChecker::ValidateBinaryExpressionIdentifier(ir::Identifier *const ident,
 {
     const auto *const binaryExpr = ident->Parent()->AsBinaryExpression();
     bool isFinished = false;
-    if (binaryExpr->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF && binaryExpr->Right() == ident) {
+    if (binaryExpr->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF && binaryExpr->Left() == ident) {
         if (!IsReferenceType(type)) {
             std::ignore = TypeError(ident->Variable(),
                                     {R"(Using the "instance of" operator with non-object type ")", ident->Name(), "\""},
