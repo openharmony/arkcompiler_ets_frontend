@@ -284,7 +284,17 @@ export class Lsp {
     let arktsconfig = this.fileNameToArktsconfig[filePath]
     let ets2pandaCmd = ['-', '--extension', 'ets', '--arktsconfig', arktsconfig]
     let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath)
-    const source = fs.readFileSync(filePath, 'utf8').toString().replace(/\r\n/g, '\n');
+    let source = fs.readFileSync(filePath, 'utf8').toString().replace(/\r\n/g, '\n');
+    // This is a temporary solution to support "obj." with wildcard for better solution in internal issue.
+    if (source[offset - 1] === '.') {
+      const wildcard = "_WILDCARD";
+      if (offset < source.length + 1) {
+        source = source.slice(0, offset) + wildcard + source.slice(offset);
+      } else {
+        source += wildcard;
+      }
+      offset += wildcard.length - 1;
+    }
     let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg)
     PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx)
     lspDriverHelper.proceedToState(localCtx, Es2pandaContextState.ES2PANDA_STATE_PARSED)
