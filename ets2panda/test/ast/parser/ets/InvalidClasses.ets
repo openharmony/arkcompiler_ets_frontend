@@ -78,7 +78,7 @@ interface I1 {
     x: number =
 }
 
-/* @@? 16:9 Error TypeError: A is not abstract and does not override abstract method f5(): Promise<undefined> in A */
+/* @@? 16:9 Error TypeError: A is not abstract and does not override abstract method f5(): Promise<void> in A */
 /* @@? 17:12 Error SyntaxError: Duplicated modifier is not allowed. */
 /* @@? 17:20 Error TypeError: Only abstract or native methods can't have body. */
 /* @@? 18:12 Error SyntaxError: Duplicated modifier is not allowed. */
