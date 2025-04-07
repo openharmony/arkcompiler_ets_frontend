@@ -26,6 +26,9 @@ import { parseCommandLine } from './CommandLineParser';
 import { compileLintOptions } from './Compiler';
 import type { LinterConfig } from '../lib/LinterConfig';
 import { arkts2Rules } from '../lib/utils/consts/ArkTS2Rules';
+import type { ProblemInfo as HomeCheckProblemInfo } from 'homecheck';
+import { MigrationTool } from 'homecheck';
+import { getHomeCheckConfigInfo } from '../lib/HomeCheck';
 
 export function run(): void {
   const commandLineArgs = process.argv.slice(2);
@@ -52,14 +55,38 @@ export function run(): void {
 async function runMigrationCliMode(cmdOptions: CommandLineOptions): Promise<void> {
   const compileOptions = compileLintOptions(cmdOptions);
   const result = lint(compileOptions, getEtsLoaderPath(compileOptions));
+  const mergedProblems = new Map<string, HomeCheckProblemInfo[]>();
+
+  if (cmdOptions.homecheck === true) {
+    const { ruleConfigInfo, projectConfigInfo } = getHomeCheckConfigInfo(cmdOptions);
+    const migrationTool = new MigrationTool(ruleConfigInfo, projectConfigInfo);
+    await migrationTool.buildCheckEntry();
+    const homeCheckResult = await migrationTool.start();
+
+    for (const [filePath, problems] of homeCheckResult) {
+      if (!mergedProblems.has(filePath)) {
+        mergedProblems.set(filePath, []);
+      }
+      mergedProblems.get(filePath)!.push(...problems);
+    }
+  }
+
   for (const [filePath, problems] of result.problemsInfos) {
+    if (!mergedProblems.has(filePath)) {
+      mergedProblems.set(filePath, []);
+    }
+
     const filteredProblems = problems.filter((problem) => {
       return arkts2Rules.includes(problem.ruleTag);
     });
+    mergedProblems.get(filePath)!.push(...filteredProblems);
+  }
+
+  for (const [filePath, problems] of mergedProblems) {
     await processSyncOut(
       JSON.stringify({
         filePath,
-        problems: filteredProblems
+        problems
       }) + '\n'
     );
   }

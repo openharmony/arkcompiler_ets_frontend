@@ -9,6 +9,8 @@
     "legacy_bin": "*",
     "merge_abc": "*",
     "ets2panda/public/headers_parser": "*",
+    "ets2panda/linter/arkanalyzer": "*",
+    "ets2panda/linter/homecheck": "*",
     "*": ["G.CMT.03", "G.FMT.11", "G.NAM.03", "huge_headerfile", "huge_non_headerfile", "bc-30001"]
 }
 

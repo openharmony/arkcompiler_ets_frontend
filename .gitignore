@@ -17,6 +17,8 @@ ets2panda/linter*/test_rules/**/results
 ets2panda/linter*/test_regression/**/results
 ets2panda/linter*/test_extended_features/**/results
 ets2panda/linter*/**/package-lock.json
+ets2panda/linter*/arkanalyzer/**/lib
+ets2panda/linter*/homecheck/**/lib
 **/compile_commands.json
 .cache
 .vscode
