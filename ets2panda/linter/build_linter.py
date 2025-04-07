@@ -39,7 +39,7 @@ def run_cmd(cmd, execution_path=None):
                            stdin=subprocess.PIPE,
                            stderr=subprocess.PIPE,
                            cwd=execution_path)
-    stdout, stderr = proc.communicate(timeout=300)
+    stdout, stderr = proc.communicate(timeout=600)
     if proc.returncode != 0:
         raise Exception(stderr.decode())
 
@@ -74,6 +74,69 @@ def install_typescript(options):
     run_cmd(cmd, options.source_path)
 
 
+def find_files_by_prefix_suffix(directory, prefix, suffix):
+    matched_files = []
+    for filename in os.listdir(directory):
+        if filename.startswith(prefix) and filename.endswith(suffix):
+            matched_files.append(os.path.join(directory, filename))
+    return sorted(matched_files, key=os.path.getctime, reverse=True)
+
+
+def clean_old_packages(directory, prefix, suffix):
+    res = True
+    matched_files = find_files_by_prefix_suffix(directory, prefix, suffix)
+    if (matched_files):
+        for file in matched_files:
+            try:
+                os.remove(file)
+            except Exception:
+                res = False
+    return res
+
+
+def pack_arkanalyzer(options):
+    aa_path = os.path.join(options.source_path, 'arkanalyzer')
+    pack_prefix = 'arkanalyzer-'
+    pack_suffix = '.tgz'
+    clean_old_packages(aa_path, pack_prefix, pack_suffix)
+
+    ts_install_cmd = [options.npm, 'install', options.typescript]
+    compile_cmd = [options.npm, 'run', 'compile']
+    pack_cmd = [options.npm, 'pack']
+    run_cmd(ts_install_cmd, aa_path)
+    run_cmd(compile_cmd, aa_path)
+    run_cmd(pack_cmd, aa_path)
+
+
+def install_homecheck(options):
+    pack_arkanalyzer(options)
+    aa_path = os.path.join(options.source_path, 'arkanalyzer')
+    hc_path = os.path.join(options.source_path, 'homecheck')
+    aa_pack_prefix = 'arkanalyzer-'
+    hc_pack_prefix = 'homecheck-'
+    pack_suffix = '.tgz'
+    exist_aa_packs = find_files_by_prefix_suffix(aa_path, aa_pack_prefix, pack_suffix)
+    if (exist_aa_packs):
+        aa_install_cmd = [options.npm, 'install', exist_aa_packs[0]]
+        run_cmd(aa_install_cmd, hc_path)
+    else:
+        raise Exception('Failed to find arkanalyzer npm package')
+
+    clean_old_packages(hc_path, hc_pack_prefix, pack_suffix)
+    ts_install_cmd = [options.npm, 'install', '--no-save', options.typescript]
+    pack_cmd = [options.npm, 'pack']
+    compile_cmd = [options.npm, 'run', 'compile']
+    run_cmd(ts_install_cmd, hc_path)
+    run_cmd(compile_cmd, hc_path)
+    run_cmd(pack_cmd, hc_path)
+    exist_hc_packs = find_files_by_prefix_suffix(hc_path, hc_pack_prefix, pack_suffix)
+    if (exist_hc_packs):
+        hc_install_cmd = [options.npm, 'install', exist_hc_packs[0]]
+        run_cmd(hc_install_cmd, options.source_path)
+    else:
+        raise Exception('Failed to find homecheck npm package')
+
+
 def extract(package_path, dest_path, package_name):
     try:
         with tarfile.open(package_path, 'r:gz') as tar:
@@ -100,6 +163,7 @@ def parse_args():
 
 def main():
     options = parse_args()
+    install_homecheck(options)
     install_typescript(options)
     node_modules_path = os.path.join(options.source_path, "node_modules")
     extract(options.typescript, node_modules_path, "typescript")

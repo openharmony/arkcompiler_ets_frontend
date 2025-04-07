@@ -1,0 +1,33 @@
+{
+  "name": "arkanalyzer",
+  "version": "1.0.8",
+  "files": [
+    "docs",
+    "lib",
+    "config"
+  ],
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "compile": "tsc -p ./tsconfig.prod.json",
+    "test": "npm run copyCollectionDefintion && vitest",
+    "testonce": "npm run copyCollectionDefintion && vitest --no-color run",
+    "coverage": "npm run copyCollectionDefintion && vitest run --coverage",
+    "heapdump": "npm run build && node --expose-gc out/tests/HeapDumpTest.js",
+    "gendoc": "npx typedoc",
+    "copyCollectionDefintion": "ts-node script/typescriptCollectionDefinitionCopy.ts"
+  },
+  "dependencies": {
+    "commander": "11.0.0",
+    "log4js": "6.7.1"
+  },
+  "bundleDependencies": [
+    "ohos-typescript"
+  ],
+  "devDependencies": {
+    "@vitest/coverage-v8": "^1.5.0",
+    "ts-node": "^10.9.1",
+    "typedoc": "^0.25.13",
+    "vitest": "^1.5.0"
+  }
+}

@@ -34,7 +34,9 @@ export default tseslint.config(
       'third_party/**/*',
       'test/**/*',
       '**/**.json',
-      '**/**.js'
+      '**/**.js',
+      'arkanalyzer/*',
+      'homecheck/*'
     ]
   },
   {
