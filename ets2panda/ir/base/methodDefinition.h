@@ -104,6 +104,16 @@ public:
         return kind_ == MethodDefinitionKind::SET;
     }
 
+    [[nodiscard]] bool IsDefaultAccessModifier() const noexcept
+    {
+        return isDefault_;
+    }
+
+    void SetDefaultAccessModifier(bool isDefault)
+    {
+        isDefault_ = isDefault;
+    }
+
     [[nodiscard]] const OverloadsT &Overloads() const noexcept
     {
         return overloads_;
@@ -197,6 +207,7 @@ private:
     void DumpPrefix(ir::SrcDumper *dumper) const;
     void ResetOverloads();
 
+    bool isDefault_ = false;
     MethodDefinitionKind kind_;
     // Overloads are stored like in an 1:N fashion.
     // The very firstly processed method becomes the base(1) and the others tied into it as overloads(N).

@@ -472,7 +472,7 @@ ir::AstNode *ETSParser::ParseInnerTypeDeclaration(ir::ModifierFlags memberModifi
 }
 
 ir::AstNode *ETSParser::ParseInnerConstructorDeclaration(ir::ModifierFlags memberModifiers,
-                                                         const lexer::SourcePosition &startLoc)
+                                                         const lexer::SourcePosition &startLoc, bool isDefault)
 {
     if ((memberModifiers & (~(ir::ModifierFlags::ACCESS | ir::ModifierFlags::DECLARE | ir::ModifierFlags::NATIVE))) !=
         0) {
@@ -481,7 +481,7 @@ ir::AstNode *ETSParser::ParseInnerConstructorDeclaration(ir::ModifierFlags membe
     auto *memberName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
     memberModifiers |= ir::ModifierFlags::CONSTRUCTOR;
     Lexer()->NextToken();
-    auto *classMethod = ParseClassMethodDefinition(memberName, memberModifiers);
+    auto *classMethod = ParseClassMethodDefinition(memberName, memberModifiers, isDefault);
     classMethod->SetStart(startLoc);
 
     return classMethod;
@@ -513,10 +513,10 @@ bool ETSParser::CheckAccessorDeclaration(ir::ModifierFlags memberModifiers)
 
 ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &properties,
                                        ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags memberModifiers,
-                                       const lexer::SourcePosition &startLoc)
+                                       const lexer::SourcePosition &startLoc, bool isDefault)
 {
     if (CheckAccessorDeclaration(memberModifiers)) {
-        return ParseClassGetterSetterMethod(properties, modifiers, memberModifiers);
+        return ParseClassGetterSetterMethod(properties, modifiers, memberModifiers, isDefault);
     }
 
     if ((GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0) {
@@ -527,8 +527,8 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
         }
     }
 
-    auto parseClassMethod = [&memberModifiers, &startLoc, this](ir::Identifier *methodName) {
-        auto *classMethod = ParseClassMethodDefinition(methodName, memberModifiers);
+    auto parseClassMethod = [&memberModifiers, &startLoc, isDefault, this](ir::Identifier *methodName) {
+        auto *classMethod = ParseClassMethodDefinition(methodName, memberModifiers, isDefault);
         classMethod->SetStart(startLoc);
         return classMethod;
     };
@@ -555,7 +555,7 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
 
     ArenaVector<ir::AstNode *> fieldDeclarations(Allocator()->Adapter());
     auto *placeholder = AllocNode<ir::TSInterfaceBody>(std::move(fieldDeclarations));
-    ParseClassFieldDefinition(memberName, memberModifiers, placeholder->BodyPtr());
+    ParseClassFieldDefinition(memberName, memberModifiers, placeholder->BodyPtr(), isDefault);
     return placeholder;
 }
 
