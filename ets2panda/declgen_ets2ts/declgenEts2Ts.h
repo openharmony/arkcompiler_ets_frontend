@@ -84,6 +84,8 @@ private:
 
     void GenType(const checker::Type *checkerType);
     void GenFunctionType(const checker::ETSFunctionType *functionType, const ir::MethodDefinition *methodDef = nullptr);
+    void ProcessFunctionReturnType(const checker::Signature *sig);
+    void ProcessFunctionReturnTypeRef(const checker::Signature *sig, const ir::ETSTypeReference *expr);
     void GenObjectType(const checker::ETSObjectType *objectType);
     void GenUnionType(const checker::ETSUnionType *unionType);
     void GenTupleType(const checker::ETSTupleType *tupleType);
@@ -134,7 +136,10 @@ private:
     void CollectIndirectExportDependencies();
     void ProcessTypeAliasDependencies(const ir::TSTypeAliasDeclaration *typeAliasDecl);
     void ProcessClassDependencies(const ir::ClassDeclaration *classDecl);
+    void ProcessClassPropDependencies(const ir::AstNode *prop);
+    void ProcessClassMethodDependencies(const ir::MethodDefinition *methodDef);
     void AddSuperType(const ir::Expression *super);
+    void AddSuperType(const checker::Type *tsType);
     void ProcessInterfacesDependencies(const ArenaVector<checker::ETSObjectType *> &interfaces);
     void AddObjectDependencies(const util::StringView &typeName, const std::string &alias = "");
     void GenDeclarations();
