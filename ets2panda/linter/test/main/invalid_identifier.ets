@@ -199,3 +199,9 @@ struct Long {
     }
   }
 }
+
+enum char {
+  short,
+  number = 2,
+  int = 3,
+}

@@ -117,7 +117,6 @@ export class TypeScriptLinter {
     TypeScriptLinter.nameSpaceFunctionCache = new Map<string, Set<string>>();
   }
 
-
   private initEtsHandlers(): void {
 
     /*
@@ -626,6 +625,9 @@ export class TypeScriptLinter {
     const enumDecls = enumSymbol.getDeclarations();
     if (!enumDecls) {
       return;
+    }
+    if (this.options.arkts2) {
+      this.handleInvalidIdentifier(enumNode);
     }
 
     /*
@@ -2590,8 +2592,11 @@ export class TypeScriptLinter {
     const tsEnumMemberType = this.tsTypeChecker.getTypeAtLocation(tsEnumMember);
     const constVal = this.tsTypeChecker.getConstantValue(tsEnumMember);
     const tsEnumMemberName = tsEnumMember.name;
-    if (this.options.arkts2 && ts.isStringLiteral(tsEnumMemberName)) {
-      this.handleStringLiteralEnumMember(tsEnumMember, tsEnumMemberName, node);
+    if (this.options.arkts2) {
+      this.handleInvalidIdentifier(tsEnumMember);
+      if (ts.isStringLiteral(tsEnumMemberName)) {
+        this.handleStringLiteralEnumMember(tsEnumMember, tsEnumMemberName, node);
+      }
     }
 
     if (tsEnumMember.initializer && !this.tsUtils.isValidEnumMemberInit(tsEnumMember.initializer)) {
@@ -4406,6 +4411,8 @@ export class TypeScriptLinter {
       | ts.ParameterDeclaration
       | ts.PropertySignature
       | ts.ImportDeclaration
+      | ts.EnumDeclaration
+      | ts.EnumMember
   ): void {
     if (!this.options.arkts2) {
       return;
