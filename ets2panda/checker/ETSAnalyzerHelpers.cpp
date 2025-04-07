@@ -562,12 +562,7 @@ void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr,
                 break;
             }
 
-            if (operandType->HasTypeFlag(checker::TypeFlag::CONSTANT)) {
-                expr->SetTsType(checker->BitwiseNegateNumericType(operandType, expr));
-                break;
-            }
-
-            expr->SetTsType(checker->SelectGlobalIntegerTypeForNumeric(operandType));
+            expr->Argument()->SetTsType(expr->SetTsType(checker->SelectGlobalIntegerTypeForNumeric(operandType)));
             break;
         }
         case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
@@ -576,7 +571,6 @@ void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr,
         }
         default: {
             ES2PANDA_UNREACHABLE();
-            break;
         }
     }
 }

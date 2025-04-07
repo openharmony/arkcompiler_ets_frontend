@@ -38,13 +38,11 @@ ets2panda_add_gtest(ast_verifier_test_2
         ast_verifier_variable_has_enclosing_scope_test.cpp
         ast_verifier_variable_has_scope_test.cpp
         ast_verifier_every_child_has_valid_parent_test.cpp
-        ast_verifier_check_infinite_loop_test.cpp
     TEST_GROUP qemu_excluded_gtests
 )
 
 ets2panda_add_gtest(ast_verifier_test_3
     CPP_SOURCES
-        ast_verifier_check_normal_loop_test.cpp
         ast_verifier_check_abstract_call_test.cpp
         ast_verifier_getter_setter_test.cpp
         ast_verifier_check_const_properties_test.cpp

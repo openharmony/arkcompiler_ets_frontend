@@ -186,54 +186,6 @@ Type *ETSChecker::NegateNumericType(Type *type, ir::Expression *node)
     return result;
 }
 
-Type *ETSChecker::BitwiseNegateNumericType(Type *type, ir::Expression *node)
-{
-    ES2PANDA_ASSERT(type->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_INTEGRAL));
-
-    TypeFlag typeKind = ETSType(type);
-
-    Type *result = nullptr;
-
-    switch (typeKind) {
-        case TypeFlag::BYTE: {
-            result = CreateByteType(static_cast<int8_t>(~static_cast<uint8_t>(type->AsByteType()->GetValue())));
-            break;
-        }
-        case TypeFlag::CHAR: {
-            result = CreateCharType(~(type->AsCharType()->GetValue()));
-            break;
-        }
-        case TypeFlag::SHORT: {
-            result = CreateShortType(static_cast<int16_t>(~static_cast<uint16_t>(type->AsShortType()->GetValue())));
-            break;
-        }
-        case TypeFlag::INT: {
-            result = CreateIntType(static_cast<int32_t>(~static_cast<uint32_t>(type->AsIntType()->GetValue())));
-            break;
-        }
-        case TypeFlag::LONG: {
-            result = CreateLongType(static_cast<int64_t>(~static_cast<uint64_t>(type->AsLongType()->GetValue())));
-            break;
-        }
-        case TypeFlag::FLOAT: {
-            result = CreateIntType(
-                ~static_cast<uint32_t>(CastFloatToInt<FloatType::UType, int32_t>(type->AsFloatType()->GetValue())));
-            break;
-        }
-        case TypeFlag::DOUBLE: {
-            result = CreateLongType(
-                ~static_cast<uint64_t>(CastFloatToInt<DoubleType::UType, int64_t>(type->AsDoubleType()->GetValue())));
-            break;
-        }
-        default: {
-            ES2PANDA_UNREACHABLE();
-        }
-    }
-
-    node->SetTsType(result);
-    return result;
-}
-
 Type *ETSChecker::HandleRelationOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType)
 {
     ES2PANDA_ASSERT(left->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
@@ -808,7 +760,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(ir::Expres
         return {GlobalETSBooleanType(), leftType};
     }
 
-    auto const [promotedType, bothConst] = BinaryCoerceToPrimitives(this, unboxedL, unboxedR, !isEqualOp);
+    auto *const promotedType = std::get<0>(BinaryCoerceToPrimitives(this, unboxedL, unboxedR, !isEqualOp));
     FlagExpressionWithUnboxing(leftType, unboxedL, left);
     FlagExpressionWithUnboxing(rightType, unboxedR, right);
 
@@ -822,17 +774,10 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(ir::Expres
     }
 
     if (promotedType == nullptr) {
-        if (NonNumericTypesAreAppropriateForComparison(this, leftType, rightType)) {
-            return {GlobalETSBooleanType(), GlobalETSBooleanType()};
+        if (!NonNumericTypesAreAppropriateForComparison(this, leftType, rightType)) {
+            LogError(diagnostic::BINOP_INCOMPARABLE, {}, pos);
         }
-
-        LogError(diagnostic::BINOP_INCOMPARABLE, {}, pos);
         return {GlobalETSBooleanType(), GlobalETSBooleanType()};
-    }
-
-    if (bothConst) {
-        checker::Type *tsType = HandleRelationOperationOnTypes(leftType, rightType, operationType);
-        return {tsType, tsType};
     }
 
     return {GlobalETSBooleanType(), promotedType};

@@ -99,33 +99,6 @@ void Condition::Compile(PandaGen *pg, const ir::Expression *expr, Label *falseLa
     pg->BranchIfFalse(expr, falseLabel);
 }
 
-Condition::Result Condition::CheckConstantExpr(ETSGen *etsg, const ir::Expression *expr)
-{
-    const auto resultingExpression = [](const ir::Expression *e) {
-        if (e->IsBinaryExpression() && e->AsBinaryExpression()->IsLogicalExtended()) {
-            return e->AsBinaryExpression()->Result();
-        }
-        if (e->IsAssignmentExpression() && e->AsAssignmentExpression()->IsLogicalExtended()) {
-            return e->AsAssignmentExpression()->Result();
-        }
-        return e;
-    }(expr);
-    if (resultingExpression == nullptr) {
-        return Result::UNKNOWN;
-    }
-
-    if (etsg->Checker()->IsNullLikeOrVoidExpression(resultingExpression)) {
-        return Result::CONST_FALSE;
-    }
-
-    auto exprRes = resultingExpression->TsType()->ResolveConditionExpr();
-    if (std::get<0>(exprRes)) {
-        return std::get<1>(exprRes) ? Result::CONST_TRUE : Result::CONST_FALSE;
-    }
-
-    return Result::UNKNOWN;
-}
-
 bool Condition::CompileBinaryExprForBigInt(ETSGen *etsg, const ir::BinaryExpression *expr, Label *falseLabel)
 {
     if ((expr->Left()->TsType() == nullptr) || (expr->Right()->TsType() == nullptr)) {

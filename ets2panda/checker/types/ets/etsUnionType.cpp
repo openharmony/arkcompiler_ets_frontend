@@ -405,6 +405,9 @@ checker::Type *ETSUnionType::GetAssignableType(checker::ETSChecker *checker, che
                 return type;
             }
         }
+        if (sourceType->IsConstantType() && !numericTypes.empty()) {
+            return numericTypes.begin()->second;
+        }
     }
 
     for (auto *constituentType : constituentTypes_) {

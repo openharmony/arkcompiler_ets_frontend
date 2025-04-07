@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_ETS_NARROWING_CONVERTER_H
 #define ES2PANDA_COMPILER_CHECKER_ETS_NARROWING_CONVERTER_H
 
-#include "checker/ets/typeConverter.h"
 #include "checker/ETSchecker.h"
+#include "checker/ets/typeConverter.h"
 #include "util/helpers.h"
 
 namespace ark::es2panda::checker {
@@ -185,9 +185,6 @@ private:
             }
 
             if (Relation()->InCastingContext() || util::Helpers::IsTargetFitInSourceRange<TType, SType>(value)) {
-                auto narrowedValue = CalculateNarrowedValue<TType, SType>(Target(), Source(), value);
-                TargetType *newType = Checker()->Allocator()->New<TargetType>(narrowedValue);
-                Relation()->GetNode()->SetTsType(newType);
                 Relation()->Result(true);
                 return;
             }

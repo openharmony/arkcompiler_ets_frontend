@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_ETS_BOXING_CONVERTER_H
 #define ES2PANDA_COMPILER_CHECKER_ETS_BOXING_CONVERTER_H
 
-#include "checker/ets/typeConverter.h"
 #include "checker/types/ets/etsObjectType.h"
+#include "checker/ets/typeConverter.h"
 
 namespace ark::es2panda::checker {
 class BoxingConverter : public TypeConverter {

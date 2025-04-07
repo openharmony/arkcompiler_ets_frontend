@@ -103,7 +103,6 @@ public:
     void Update(const ir::AstNode *node, lexer::TokenType op);
     void UpdateBigInt(const ir::Expression *node, VReg arg, lexer::TokenType op);
 
-    bool TryLoadConstantExpression(const ir::Expression *node);
     void Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs, Label *ifFalse);
 
     template <typename CondCompare, bool BEFORE_LOGICAL_NOT>

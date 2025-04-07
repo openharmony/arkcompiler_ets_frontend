@@ -266,6 +266,8 @@ public:
     ETSObjectType *GetClosestCommonAncestor(ETSObjectType *source, ETSObjectType *target);
     bool HasETSFunctionType(ir::TypeNode *typeAnnotation);
 
+    void VariableTypeFromInitializer(varbinder::Variable *variable, Type *annotationType, Type *initType);
+
     // Type creation
     ByteType *CreateByteType(int8_t value);
     ETSBooleanType *CreateETSBooleanType(bool value);
@@ -317,7 +319,6 @@ public:
 
     // Arithmetic
     Type *NegateNumericType(Type *type, ir::Expression *node);
-    Type *BitwiseNegateNumericType(Type *type, ir::Expression *node);
     bool CheckBinaryOperatorForBigInt(Type *left, Type *right, lexer::TokenType op);
     [[nodiscard]] bool CheckBinaryPlusMultDivOperandsForUnionType(const Type *leftType, const Type *rightType,
                                                                   const ir::Expression *left,
