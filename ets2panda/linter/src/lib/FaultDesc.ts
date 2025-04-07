@@ -192,3 +192,4 @@ faultDesc[FaultID.CallJSFunction] = 'Call JS Function';
 faultDesc[FaultID.InteropObjectProperty] = 'Interop property access';
 faultDesc[FaultID.InterOpConvertImport] = 'No import number from js file';
 faultDesc[FaultID.InterOpImportJsForTypeOf] = 'TypeOf import from JS';
+faultDesc[FaultID.InteropNoHaveNum] = 'Interop obj with "num" property';

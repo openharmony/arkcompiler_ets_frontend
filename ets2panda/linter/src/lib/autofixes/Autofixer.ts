@@ -3354,4 +3354,27 @@ export class Autofixer {
     const replacementText = `${processed}.typeOf()`;
     return replacementText ? [{ start, end, replacementText }] : undefined;
   }
+  
+  fixInteropInterfaceConvertNum(express: ts.PrefixUnaryExpression): Autofix[] | undefined {
+    let text = '';
+    if (ts.isPropertyAccessExpression(express.operand)) {
+      const states = ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(
+          ts.factory.createCallExpression(
+            ts.factory.createPropertyAccessExpression(
+              ts.factory.createIdentifier(express.operand.expression.getText()),
+              ts.factory.createIdentifier('getPropertyByName')
+            ),
+            undefined,
+            [ts.factory.createStringLiteral(express.operand.name.getText())]
+          ),
+          ts.factory.createIdentifier('toNumber')
+        ),
+        undefined,
+        []
+      );
+      text = this.printer.printNode(ts.EmitHint.Unspecified, states, express.getSourceFile());
+    }
+    return [{ start: express.operand.getStart(), end: express.operand.getEnd(), replacementText: text }];
+  }
 }
