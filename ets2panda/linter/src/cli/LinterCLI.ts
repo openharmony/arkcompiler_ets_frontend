@@ -25,6 +25,7 @@ import { TypeScriptLinter } from '../lib/TypeScriptLinter';
 import { parseCommandLine } from './CommandLineParser';
 import { compileLintOptions } from './Compiler';
 import type { LinterConfig } from '../lib/LinterConfig';
+import { arkts2Rules } from '../lib/utils/consts/ArkTS2Rules';
 
 export function run(): void {
   const commandLineArgs = process.argv.slice(2);
@@ -52,15 +53,18 @@ async function runMigrationCliMode(cmdOptions: CommandLineOptions): Promise<void
   const compileOptions = compileLintOptions(cmdOptions);
   const result = lint(compileOptions, getEtsLoaderPath(compileOptions));
   for (const [filePath, problems] of result.problemsInfos) {
+    const filteredProblems = problems.filter((problem) => {
+      return arkts2Rules.includes(problem.ruleTag);
+    });
     await processSyncOut(
       JSON.stringify({
         filePath,
-        problems
+        problems: filteredProblems
       }) + '\n'
     );
   }
   await processSyncErr('{"content":"report finish","messageType":1,"indictor":1}\n');
-  process.exit(result.errorNodes > 0 ? 1 : 0);
+  process.exit(0);
 }
 
 async function processSyncOut(message: string): Promise<void> {
