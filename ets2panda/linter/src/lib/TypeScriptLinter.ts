@@ -1539,8 +1539,39 @@ export class TypeScriptLinter {
     return isNumberLike || isAllowedNumericType;
   }
 
+  private handleInteropOperand(tsUnaryArithm: ts.PrefixUnaryExpression): void {
+    if (ts.isPropertyAccessExpression(tsUnaryArithm.operand)) {
+      const exprSym = this.tsUtils.trueSymbolAtLocation(tsUnaryArithm.operand);
+      const declaration = exprSym?.declarations?.[0];
+      this.checkAndProcessDeclaration(declaration, tsUnaryArithm);
+    }
+  }
+
+  private checkAndProcessDeclaration(
+    declaration: ts.Declaration | undefined,
+    tsUnaryArithm: ts.PrefixUnaryExpression
+  ): void {
+    if (declaration?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
+      if (
+        [
+          ts.SyntaxKind.PlusToken,
+          ts.SyntaxKind.ExclamationToken,
+          ts.SyntaxKind.TildeToken,
+          ts.SyntaxKind.MinusToken
+        ].includes(tsUnaryArithm.operator)
+      ) {
+        const autofix = this.autofixer?.fixInteropInterfaceConvertNum(tsUnaryArithm);
+        this.incrementCounters(tsUnaryArithm, FaultID.InteropNoHaveNum, autofix);
+      }
+    }
+  }
+
   private handlePrefixUnaryExpression(node: ts.Node): void {
     const tsUnaryArithm = node as ts.PrefixUnaryExpression;
+    if (this.useStatic && this.options.arkts2) {
+      const tsUnaryArithm = node as ts.PrefixUnaryExpression;
+      this.handleInteropOperand(tsUnaryArithm);
+    }
     const tsUnaryOp = tsUnaryArithm.operator;
     const tsUnaryOperand = tsUnaryArithm.operand;
     if (

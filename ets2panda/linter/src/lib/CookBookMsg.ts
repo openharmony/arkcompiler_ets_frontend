@@ -295,3 +295,4 @@ cookBookTag[331] = 'ArkTS directly call JS functions or parameters is not suppor
 cookBookTag[332] = 'Properties of interop objects can\'t be accessed directly (arkts-no-js-obj-property)';
 cookBookTag[333] = 'Casting interop JS objects to "number" type is not allowed (arkts-no-js-number-cast)'
 cookBookTag[334] = 'The "typeof" expression can\'t be used with interop JS objects (arkts-interop-js-typeof)';
+cookBookTag[335] = 'Interop object does not have property num (arkts-interop-does-not-have-num)';
