@@ -16,7 +16,7 @@
 export const cookBookMsg: string[] = [];
 export const cookBookTag: string[] = [];
 
-for (let i = 0; i <= 316; i++) {
+for (let i = 0; i <= 319; i++) {
   cookBookMsg[i] = '';
 }
 
@@ -290,3 +290,4 @@ cookBookTag[315] =
 cookBookTag[316] = 'Using typeof as a type is not allowed in this API (arkts-sdk-Type-Query)';
 cookBookTag[319] = 'Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)';
 cookBookTag[321] = 'Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)';
+cookBookTag[330] = 'Importing directly from "JS" module is not supported (arkts-no-js-import)';

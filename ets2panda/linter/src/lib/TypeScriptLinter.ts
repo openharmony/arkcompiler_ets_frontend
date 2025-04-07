@@ -93,7 +93,7 @@ import {
 } from './utils/consts/ArkuiConstants';
 import { arkuiImportList } from './utils/consts/ArkuiImportList';
 import { REFLECT_PROPERTIES, USE_STATIC } from './utils/consts/InteropAPI';
-import { EXTNAME_TS, EXTNAME_D_TS } from './utils/consts/ExtensionName';
+import { EXTNAME_TS, EXTNAME_D_TS, EXTNAME_JS } from './utils/consts/ExtensionName';
 import { ARKTS_IGNORE_DIRS_OH_MODULES } from './utils/consts/ArktsIgnorePaths';
 import type { ApiInfo, ApiListItem } from './utils/consts/SdkWhitelist';
 import { ApiList } from './utils/consts/SdkWhitelist';
@@ -131,6 +131,7 @@ export class TypeScriptLinter {
   private fileExportDeclCaches: Set<ts.Node> | undefined;
 
   private sourceFile?: ts.SourceFile;
+  private useStatic?: boolean;
   private readonly compatibleSdkVersion: number;
   private readonly compatibleSdkVersionStage: string;
   private static sharedModulesCache: Map<string, boolean>;
@@ -854,6 +855,7 @@ export class TypeScriptLinter {
     this.handleInvalidIdentifier(importDeclNode);
     this.checkWorkerImport(importDeclNode);
     this.checkStdLibConcurrencyImport(importDeclNode);
+    this.handleInterOpImportJs(importDeclNode);
   }
 
   private handleSdkSendable(tsStringLiteral: ts.StringLiteral): void {
@@ -4327,6 +4329,7 @@ export class TypeScriptLinter {
     }
 
     this.sourceFile = sourceFile;
+    this.useStatic = TsUtils.isArkts12File(sourceFile);
     this.fileExportDeclCaches = undefined;
     this.extractImportedNames(this.sourceFile);
     this.visitSourceFile(this.sourceFile);
@@ -5932,6 +5935,54 @@ export class TypeScriptLinter {
         if (expectedImports.includes(name)) {
           this.incrementCounters(importDeclaration, FaultID.LimitedStdLibNoImportConcurrency);
         }
+      }
+    }
+  }
+
+  private handleInterOpImportJs(importDecl: ts.ImportDeclaration): void {
+    if (!this.options.arkts2 || !importDecl || !this.useStatic) {
+      return;
+    }
+    const importClause = importDecl.importClause;
+    if (!importClause) {
+      return;
+    }
+    const namedBindings = importClause.namedBindings;
+    let symbol: ts.Symbol | undefined;
+    let defaultSymbol: ts.Symbol | undefined;
+    if (importClause.name) {
+      defaultSymbol = this.tsUtils.trueSymbolAtLocation(importClause.name);
+    }
+    if (namedBindings) {
+      if (ts.isNamedImports(namedBindings)) {
+        symbol = this.tsUtils.trueSymbolAtLocation(namedBindings.elements[0].name);
+      } else if (ts.isNamespaceImport(namedBindings)) {
+        symbol = this.tsUtils.trueSymbolAtLocation(namedBindings.name);
+      }
+    }
+    const symbolToUse = defaultSymbol || symbol;
+    if (symbolToUse) {
+      this.tryAutoFixInterOpImportJs(importDecl, importClause, symbolToUse, defaultSymbol);
+    }
+  }
+
+  private tryAutoFixInterOpImportJs(
+    importDecl: ts.ImportDeclaration,
+    importClause: ts.ImportClause,
+    symbolToUse: ts.Symbol,
+    defaultSymbol?: ts.Symbol
+  ): void {
+    const declaration = symbolToUse.declarations?.[0];
+    if (declaration) {
+      const sourceFile = declaration.getSourceFile();
+      if (sourceFile.fileName.endsWith(EXTNAME_JS)) {
+        const autofix = this.autofixer?.fixInterOpImportJs(
+          importDecl,
+          importClause,
+          TsUtils.removeOrReplaceQuotes(importDecl.moduleSpecifier.getText(this.sourceFile), false),
+          defaultSymbol
+        );
+        this.incrementCounters(importDecl, FaultID.InterOpImportJs, autofix);
       }
     }
   }

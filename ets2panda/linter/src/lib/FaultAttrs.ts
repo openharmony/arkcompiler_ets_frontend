@@ -199,3 +199,4 @@ faultsAttrs[FaultID.ApiPathChanged] = new FaultAttributes(315);
 faultsAttrs[FaultID.SdkTypeQuery] = new FaultAttributes(316);
 faultsAttrs[FaultID.InteropJsObjectUsage] = new FaultAttributes(319);
 faultsAttrs[FaultID.LimitedStdLibNoImportConcurrency] = new FaultAttributes(321);
+faultsAttrs[FaultID.InterOpImportJs] = new FaultAttributes(330);
