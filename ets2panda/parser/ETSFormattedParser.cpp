@@ -494,7 +494,7 @@ ir::MethodDefinition *ETSParser::CreateConstructorDefinition(ir::ModifierFlags m
     modifiers |= ir::ModifierFlags::CONSTRUCTOR;
     Lexer()->NextToken();
 
-    auto *const methodDefinition = ParseClassMethodDefinition(memberName, modifiers);
+    auto *const methodDefinition = ParseClassMethodDefinition(memberName, modifiers, true);
     methodDefinition->SetStart(startLoc);
 
     return methodDefinition;

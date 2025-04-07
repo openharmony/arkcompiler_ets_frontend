@@ -16,6 +16,7 @@
 #include "ETSparser.h"
 #include "ETSNolintParser.h"
 #include <utility>
+#include <tuple>
 #include "util/es2pandaMacros.h"
 #include "parser/parserFlags.h"
 #include "parser/parserStatusContext.h"
@@ -190,15 +191,15 @@ void ETSParser::ReportAccessModifierError(const lexer::Token &token)
     }
 }
 
-std::tuple<ir::ModifierFlags, bool> ETSParser::ParseClassMemberAccessModifiers()
+std::tuple<ir::ModifierFlags, bool, bool> ETSParser::ParseClassMemberAccessModifiers()
 {
     if (!IsClassMemberAccessModifier(Lexer()->GetToken().Type())) {
-        return {ir::ModifierFlags::PUBLIC, false};
+        return {ir::ModifierFlags::PUBLIC, false, true};
     }
 
     char32_t nextCp = Lexer()->Lookahead();
     if (nextCp == lexer::LEX_CHAR_EQUALS || nextCp == lexer::LEX_CHAR_COLON || nextCp == lexer::LEX_CHAR_LEFT_PAREN) {
-        return {ir::ModifierFlags::NONE, false};
+        return {ir::ModifierFlags::NONE, false, false};
     }
 
     lexer::TokenFlags tokenFlags = Lexer()->GetToken().Flags();
@@ -227,7 +228,7 @@ std::tuple<ir::ModifierFlags, bool> ETSParser::ParseClassMemberAccessModifiers()
             Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
             if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_PROTECTED) {
                 ReportAccessModifierError(token);
-                return {ir::ModifierFlags::INTERNAL, true};
+                return {ir::ModifierFlags::INTERNAL, true, false};
             }
             accessFlag = ir::ModifierFlags::INTERNAL_PROTECTED;
             break;
@@ -246,7 +247,7 @@ std::tuple<ir::ModifierFlags, bool> ETSParser::ParseClassMemberAccessModifiers()
     }
 
     Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
-    return {accessFlag, true};
+    return {accessFlag, true, false};
 }
 
 static bool IsClassFieldModifier(lexer::TokenType type)
@@ -457,7 +458,7 @@ ir::TypeNode *ETSParser::ConvertToOptionalUnionType(ir::TypeNode *typeAnno)
 
 // NOLINTNEXTLINE(google-default-arguments)
 void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::ModifierFlags modifiers,
-                                          ArenaVector<ir::AstNode *> *declarations)
+                                          ArenaVector<ir::AstNode *> *declarations, bool isDefault)
 {
     lexer::SourcePosition endLoc = fieldName->End();
     ir::TypeNode *typeAnnotation = nullptr;
@@ -488,12 +489,14 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
     }
 
     auto *field = AllocNode<ir::ClassProperty>(fieldName, initializer, typeAnnotation, modifiers, Allocator(), false);
+    field->SetDefaultAccessModifier(isDefault);
     field->SetRange({fieldName->Start(), initializer != nullptr ? initializer->End() : endLoc});
 
     declarations->push_back(field);
 }
 
-ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *methodName, ir::ModifierFlags modifiers)
+ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *methodName, ir::ModifierFlags modifiers,
+                                                            bool isDefault)
 {
     auto newStatus = ParserStatus::NEED_RETURN_TYPE | ParserStatus::ALLOW_SUPER;
     auto methodKind = ir::MethodDefinitionKind::METHOD;
@@ -519,6 +522,7 @@ ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *meth
 
     auto *method = AllocNode<ir::MethodDefinition>(methodKind, methodName->Clone(Allocator(), nullptr)->AsExpression(),
                                                    funcExpr, modifiers, Allocator(), false);
+    method->SetDefaultAccessModifier(isDefault);
     method->SetRange(funcExpr->Range());
     return method;
 }
@@ -580,10 +584,10 @@ void ETSParser::UpdateMemberModifiers(ir::ModifierFlags &memberModifiers, bool &
     }
 }
 
-std::pair<bool, bool> ETSParser::HandleClassElementModifiers(ArenaVector<ir::AnnotationUsage *> &annotations,
-                                                             ir::ModifierFlags &memberModifiers)
+std::tuple<bool, bool, bool> ETSParser::HandleClassElementModifiers(ArenaVector<ir::AnnotationUsage *> &annotations,
+                                                                    ir::ModifierFlags &memberModifiers)
 {
-    auto [modifierFlags, isStepToken] = ParseClassMemberAccessModifiers();
+    auto [modifierFlags, isStepToken, isDefault] = ParseClassMemberAccessModifiers();
     memberModifiers |= modifierFlags;
 
     bool seenStatic = false;
@@ -593,7 +597,7 @@ std::pair<bool, bool> ETSParser::HandleClassElementModifiers(ArenaVector<ir::Ann
         LogError(diagnostic::ANNOTATION_ABSTRACT, {}, Lexer()->GetToken().Start());
     }
 
-    return {seenStatic, isStepToken};
+    return {seenStatic, isStepToken, isDefault};
 }
 
 ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &properties,
@@ -615,7 +619,7 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
         return ParseClassStaticBlock();
     }
 
-    auto [seenStatic, isStepToken] = HandleClassElementModifiers(annotations, memberModifiers);
+    auto [seenStatic, isStepToken, isDefault] = HandleClassElementModifiers(annotations, memberModifiers);
 
     ir::AstNode *result = nullptr;
     auto delcStartLoc = Lexer()->GetToken().Start();
@@ -631,12 +635,12 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
             } else if (IsNamespaceDecl()) {
                 result = ParseNamespace(flags);
             } else {
-                result = ParseInnerRest(properties, modifiers, memberModifiers, startLoc);
+                result = ParseInnerRest(properties, modifiers, memberModifiers, startLoc, isDefault);
             }
             break;
         }
         case lexer::TokenType::KEYW_CONSTRUCTOR:
-            result = ParseInnerConstructorDeclaration(memberModifiers, startLoc);
+            result = ParseInnerConstructorDeclaration(memberModifiers, startLoc, isDefault);
             break;
         case lexer::TokenType::KEYW_PUBLIC:
         case lexer::TokenType::KEYW_PRIVATE:
@@ -646,7 +650,7 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
             return AllocBrokenStatement(delcStartLoc);
         }
         default: {
-            result = ParseInnerRest(properties, modifiers, memberModifiers, startLoc);
+            result = ParseInnerRest(properties, modifiers, memberModifiers, startLoc, isDefault);
             break;
         }
     }
@@ -682,7 +686,7 @@ void *ETSParser::ApplyAnnotationsToClassElement(ir::AstNode *property, ArenaVect
 
 ir::MethodDefinition *ETSParser::ParseClassGetterSetterMethod(const ArenaVector<ir::AstNode *> &properties,
                                                               const ir::ClassDefinitionModifiers modifiers,
-                                                              const ir::ModifierFlags memberModifiers)
+                                                              const ir::ModifierFlags memberModifiers, bool isDefault)
 {
     ClassElementDescriptor desc(Allocator());
     desc.methodKind = Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_GET ? ir::MethodDefinitionKind::GET
@@ -702,6 +706,7 @@ ir::MethodDefinition *ETSParser::ParseClassGetterSetterMethod(const ArenaVector<
 
     lexer::SourcePosition propEnd = methodName->End();
     ir::MethodDefinition *method = ParseClassMethod(&desc, properties, methodName, &propEnd);
+    method->SetDefaultAccessModifier(isDefault);
     method->Function()->AddModifier(desc.modifiers);
     method->SetRange({desc.propStart, propEnd});
     if (desc.methodKind == ir::MethodDefinitionKind::GET) {
@@ -887,7 +892,7 @@ ir::AstNode *ETSParser::ParseInterfaceField()
     auto *name = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
 
     auto parseClassMethod = [&fieldModifiers, &startLoc, this](ir::Identifier *methodName) {
-        auto *classMethod = ParseClassMethodDefinition(methodName, fieldModifiers);
+        auto *classMethod = ParseClassMethodDefinition(methodName, fieldModifiers, false);
         classMethod->SetStart(startLoc);
         return classMethod;
     };

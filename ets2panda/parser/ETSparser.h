@@ -321,7 +321,7 @@ private:
                                          lexer::SourcePosition pos);
     ir::MethodDefinition *ParseClassGetterSetterMethod(const ArenaVector<ir::AstNode *> &properties,
                                                        ir::ClassDefinitionModifiers modifiers,
-                                                       ir::ModifierFlags memberModifiers);
+                                                       ir::ModifierFlags memberModifiers, bool isDefault);
     ir::MethodDefinition *ParseInterfaceGetterSetterMethod(const ir::ModifierFlags modifiers);
     ir::Statement *ParseIdentKeyword();
     ir::Statement *ParseTypeDeclaration(bool allowStatic = false);
@@ -331,11 +331,12 @@ private:
     ir::AstNode *ParseInterfaceField();
     ir::MethodDefinition *ParseInterfaceMethod(ir::ModifierFlags flags, ir::MethodDefinitionKind methodKind);
     void ReportAccessModifierError(const lexer::Token &token);
-    std::tuple<ir::ModifierFlags, bool> ParseClassMemberAccessModifiers();
+    std::tuple<ir::ModifierFlags, bool, bool> ParseClassMemberAccessModifiers();
     ir::ModifierFlags ParseClassFieldModifiers(bool seenStatic);
     ir::ModifierFlags ParseClassMethodModifierFlag();
     ir::ModifierFlags ParseClassMethodModifiers(bool seenStatic);
-    ir::MethodDefinition *ParseClassMethodDefinition(ir::Identifier *methodName, ir::ModifierFlags modifiers);
+    ir::MethodDefinition *ParseClassMethodDefinition(ir::Identifier *methodName, ir::ModifierFlags modifiers,
+                                                     bool isDefault);
     ir::ScriptFunction *ParseFunction(ParserStatus newStatus);
     ir::MethodDefinition *ParseClassMethod(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
                                            ir::Expression *propName, lexer::SourcePosition *propEnd) override;
@@ -347,7 +348,7 @@ private:
     ir::TypeNode *ConvertToOptionalUnionType(ir::TypeNode *typeAnno);
     // NOLINTNEXTLINE(google-default-arguments)
     void ParseClassFieldDefinition(ir::Identifier *fieldName, ir::ModifierFlags modifiers,
-                                   ArenaVector<ir::AstNode *> *declarations);
+                                   ArenaVector<ir::AstNode *> *declarations, bool isDefault);
     std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParseTypeReferencePart(
         TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseTypeReference(TypeAnnotationParsingOptions *options);
@@ -438,8 +439,8 @@ private:
                                         ir::ModifierFlags modFlags = ir::ModifierFlags::NONE) override;
     ir::AstNode *ParseClassElement(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
                                    ir::ModifierFlags flags) override;
-    std::pair<bool, bool> HandleClassElementModifiers(ArenaVector<ir::AnnotationUsage *> &annotations,
-                                                      ir::ModifierFlags &memberModifiers);
+    std::tuple<bool, bool, bool> HandleClassElementModifiers(ArenaVector<ir::AnnotationUsage *> &annotations,
+                                                             ir::ModifierFlags &memberModifiers);
     void UpdateMemberModifiers(ir::ModifierFlags &memberModifiers, bool &seenStatic);
     ir::ModifierFlags ParseMemberAccessModifiers();
     template <bool IS_USAGE>
@@ -457,9 +458,10 @@ private:
     ir::AstNode *ParseInnerTypeDeclaration(ir::ModifierFlags memberModifiers, lexer::LexerPosition savedPos,
                                            bool isStepToken, bool seenStatic);
     ir::AstNode *ParseInnerConstructorDeclaration(ir::ModifierFlags memberModifiers,
-                                                  const lexer::SourcePosition &startLoc);
+                                                  const lexer::SourcePosition &startLoc, bool isDefault);
     ir::AstNode *ParseInnerRest(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
-                                ir::ModifierFlags memberModifiers, const lexer::SourcePosition &startLoc);
+                                ir::ModifierFlags memberModifiers, const lexer::SourcePosition &startLoc,
+                                bool isDefault);
     bool CheckAccessorDeclaration(ir::ModifierFlags memberModifiers);
 
     ir::AstNode *ParseAmbientSignature(const lexer::SourcePosition &startPosAmbient);

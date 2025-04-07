@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -43,6 +43,16 @@ public:
     {
     }
 
+    [[nodiscard]] bool IsDefaultAccessModifier() const noexcept
+    {
+        return isDefault_;
+    }
+
+    void SetDefaultAccessModifier(bool isDefault)
+    {
+        isDefault_ = isDefault;
+    }
+
     [[nodiscard]] TypeNode *TypeAnnotation() const noexcept
     {
         return typeAnnotation_;
@@ -77,6 +87,7 @@ public:
 
 private:
     TypeNode *typeAnnotation_;
+    bool isDefault_ = false;
 };
 }  // namespace ark::es2panda::ir
 
