@@ -24,6 +24,7 @@ export interface BuildBaseConfig {
   hasMainModule: boolean;
   arkts: object;
   arktsGlobal: object;
+  maxWorkers?: number;
 }
 
 export interface ModuleConfig {
@@ -96,3 +97,9 @@ export interface ModuleInfo {
   language?: string;
   declFilesPath?: string;
 }
+
+export type SetupClusterOptions = {
+  clearExitListeners?: boolean;
+  execPath?: string;
+  execArgs?: string[];
+};
