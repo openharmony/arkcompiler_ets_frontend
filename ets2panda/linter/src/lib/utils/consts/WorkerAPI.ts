@@ -14,4 +14,4 @@
  */
 
 export const WORKER_TEXT = 'worker';
-export const WORKER_MODULES = ['@ohos.worker.d.ts', '@kit.ArkTS.d.ts'];
+export const WORKER_MODULES = ['@ohos.worker', '@kit.ArkTS'];
