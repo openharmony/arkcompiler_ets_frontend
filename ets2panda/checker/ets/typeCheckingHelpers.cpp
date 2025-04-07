@@ -1434,8 +1434,10 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
 
         arrowFuncExpr->SetTsType(nullptr);
 
-        auto const *const param = signature->Function()->Params()[index]->AsETSParameterExpression()->Ident();
-        ir::AstNode *typeAnn = param->TypeAnnotation();
+        // Note: If the signatures are from lambdas, then they have no `Function`.
+        auto const *const param =
+            signature->GetSignatureInfo()->params[index]->Declaration()->Node()->AsETSParameterExpression();
+        ir::AstNode *typeAnn = param->Ident()->TypeAnnotation();
         Type *const parameterType = signature->Params()[index]->TsType();
 
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)

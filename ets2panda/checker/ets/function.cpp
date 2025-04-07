@@ -320,8 +320,10 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
         if (argTypeInferenceRequired[index]) {
             ES2PANDA_ASSERT(argument->IsArrowFunctionExpression());
             auto *const arrowFuncExpr = argument->AsArrowFunctionExpression();
+            // Note: If the signatures are from lambdas, then they have no `Function`.
             ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
-            if (CheckLambdaAssignable(substitutedSig->Function()->Params()[index], lambda)) {
+            auto targetParm = substitutedSig->GetSignatureInfo()->params[index]->Declaration()->Node();
+            if (CheckLambdaAssignable(targetParm->AsETSParameterExpression(), lambda)) {
                 continue;
             }
             return false;
