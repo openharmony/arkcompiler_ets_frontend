@@ -2769,8 +2769,9 @@ ir::ClassProperty *GetImplementationClassProp(ETSChecker *checker, ir::ClassProp
     return classProp;
 }
 
-static void SetupGetterSetterFlags(ir::ClassProperty *originalProp, ETSObjectType *classType,
-                                   ir::MethodDefinition *getter, ir::MethodDefinition *setter, const bool inExternal)
+void ETSChecker::SetupGetterSetterFlags(ir::ClassProperty *originalProp, ETSObjectType *classType,
+                                        ir::MethodDefinition *getter, ir::MethodDefinition *setter,
+                                        const bool inExternal)
 {
     auto *const classDef = classType->GetDeclNode()->AsClassDefinition();
     for (auto &method : {getter, setter}) {
@@ -2795,7 +2796,7 @@ static void SetupGetterSetterFlags(ir::ClassProperty *originalProp, ETSObjectTyp
             method->AddModifier(ir::ModifierFlags::DECLARE);
             method->Function()->AddModifier(ir::ModifierFlags::DECLARE);
         }
-
+        this->CheckOverride(method->Function()->Signature());
         method->SetParent(classDef);
         classType->AddProperty<checker::PropertyType::INSTANCE_METHOD>(method->Variable()->AsLocalVariable());
     }
