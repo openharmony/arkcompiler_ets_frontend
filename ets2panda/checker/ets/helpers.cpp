@@ -1042,7 +1042,7 @@ std::pair<Type *, Type *> ETSChecker::CheckTestObjectCondition(ETSArrayType *tes
         auto *const arrayType = actualType->AsETSArrayType();
 
         if (Relation()->IsIdenticalTo(arrayType, testedType)) {
-            return {testedType, GetGlobalTypesHolder()->GlobalNeverType()};
+            return {testedType, GetGlobalTypesHolder()->GlobalETSNeverType()};
         }
 
         if (Relation()->IsSupertypeOf(arrayType, testedType)) {
@@ -1056,7 +1056,7 @@ std::pair<Type *, Type *> ETSChecker::CheckTestObjectCondition(ETSArrayType *tes
         return {testedType, actualType};
     }
 
-    return {GetGlobalTypesHolder()->GlobalNeverType(), actualType};
+    return {GetGlobalTypesHolder()->GlobalETSNeverType(), actualType};
 }
 
 // Auxiliary method to reduce the size of common 'CheckTestSmartCastConditions' function.
@@ -1074,7 +1074,7 @@ std::pair<Type *, Type *> ETSChecker::CheckTestObjectCondition(ETSObjectType *te
 
         if (Relation()->IsIdenticalTo(objectType, testedType) ||
             objectType->AssemblerName() == testedType->AssemblerName()) {
-            return {testedType, strict ? GetGlobalTypesHolder()->GlobalNeverType() : actualType};
+            return {testedType, strict ? GetGlobalTypesHolder()->GlobalETSNeverType() : actualType};
         }
 
         if (Relation()->IsSupertypeOf(objectType, testedType)) {
@@ -1085,7 +1085,7 @@ std::pair<Type *, Type *> ETSChecker::CheckTestObjectCondition(ETSObjectType *te
             return {testedType, actualType};
         }
 
-        return {GetGlobalTypesHolder()->GlobalNeverType(), actualType};
+        return {GetGlobalTypesHolder()->GlobalETSNeverType(), actualType};
     }
 
     return {testedType, actualType};
