@@ -561,7 +561,7 @@ ir::ClassElement *ParserImpl::ParseClassStaticBlock()
 
     lexer_->NextToken();  // eat 'static'
 
-    SavedParserContext context(this, ParserStatus::ALLOW_SUPER);
+    SavedParserContext context(this, ParserStatus::ALLOW_SUPER | ParserStatus::STATIC_BLOCK);
     context_.Status() &= ~(ParserStatus::ASYNC_FUNCTION | ParserStatus::GENERATOR_FUNCTION);
 
     lexer_->NextToken();  // eat '{'
