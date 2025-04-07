@@ -192,6 +192,7 @@ export enum FaultID {
   CallJSFunction,
   InteropObjectProperty,
   InterOpConvertImport,
+  InterOpImportJsForTypeOf,
   // this should always be last enum
   LAST_ID
 }

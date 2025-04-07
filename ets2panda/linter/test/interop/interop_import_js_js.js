@@ -17,5 +17,18 @@ export default function aaa() {
     return "Hello Default Export";
 }
 export class ClassA {}
-export function Dog(a){}
-export let Wiki = {name: "123"}
+export function Dog(a) { }
+export let Wiki = { name: "123" }
+export class Person {
+    name = ""
+    age = 0
+    location = ""
+    getName() {
+        return this.name;
+    }
+    setAge(age) {
+        this.age = age;
+    }
+}
+
+export let aaa = 1

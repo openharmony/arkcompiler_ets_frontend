@@ -3200,6 +3200,32 @@ export class Autofixer {
     }
     return '';
   }
+  
+  private static fixInterOpImportJsWrapArgs(args: ts.NodeArray<ts.Expression>): string {
+    return args.
+      map((arg) => {
+        return `ESObject.wrap(${arg.getText()})`;
+      }).
+      join(', ');
+  }
+
+  private fixInterOpImportJsProcessNode(node: ts.Node): string {
+    if (ts.isIdentifier(node)) {
+      return node.text;
+    } else if (ts.isCallExpression(node)) {
+      const callee = this.fixInterOpImportJsProcessNode(node.expression);
+      const args = Autofixer.fixInterOpImportJsWrapArgs(node.arguments);
+      return `${callee}.invoke(${args})`;
+    } else if (ts.isPropertyAccessExpression(node)) {
+      const base = this.fixInterOpImportJsProcessNode(node.expression);
+      const propName = node.name.text;
+      return `${base}.getPropertyByName('${propName}')`;
+    } else if (ts.isNewExpression(node)) {
+      const constructor = this.fixInterOpImportJsProcessNode(node.expression);
+      return `${constructor}.instantiate()`;
+    }
+    return '';
+  }
 
   fixInterOpImportJs(
     importDecl: ts.ImportDeclaration,
@@ -3318,5 +3344,14 @@ export class Autofixer {
     );
     const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, statements, express.getSourceFile());
     return [{ start: express.getStart(), end: express.getEnd(), replacementText: replacementText }];
+  }
+
+  fixInterOpImportJsOnTypeOf(typeofExpress: ts.TypeOfExpression): Autofix[] | undefined {
+    const node = typeofExpress.expression;
+    const start = typeofExpress.getStart();
+    const end = typeofExpress.getEnd();
+    const processed = this.fixInterOpImportJsProcessNode(node);
+    const replacementText = `${processed}.typeOf()`;
+    return replacementText ? [{ start, end, replacementText }] : undefined;
   }
 }
