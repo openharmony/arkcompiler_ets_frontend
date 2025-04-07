@@ -30,7 +30,8 @@ import {
 } from '../pre_define';
 import {
   changeFileExtension,
-  ensurePathExists
+  ensurePathExists,
+  isFileExistSync
 } from '../utils';
 import {
   PluginDriver,
@@ -72,6 +73,7 @@ export abstract class BaseMode {
   declgenV1OutPath: string | undefined;
   declgenBridgeCodePath: string | undefined;
   hasMainModule: boolean;
+  abcFiles: Set<string>;
 
   constructor(buildConfig: BuildConfig) {
     this.buildConfig = buildConfig;
@@ -87,6 +89,7 @@ export abstract class BaseMode {
     this.dependentModuleList = buildConfig.dependentModuleList;
     this.isDebug = buildConfig.buildMode as string === BUILD_MODE.DEBUG;
     this.hasMainModule = buildConfig.hasMainModule;
+    this.abcFiles = new Set<string>();
 
     this.enableDeclgenEts2Ts = buildConfig.enableDeclgenEts2Ts as boolean;
     this.declgenV1OutPath = buildConfig.declgenV1OutPath as string | undefined;
@@ -223,11 +226,9 @@ export abstract class BaseMode {
   public mergeAbcFiles(): void {
     let linkerInputFile: string = path.join(this.cacheDir, LINKER_INPUT_FILE);
     let linkerInputContent: string = '';
-    this.moduleInfos.forEach((moduleInfo) => {
-      moduleInfo.compileFileInfos.forEach((fileInfo) => {
-        linkerInputContent += fileInfo.abcFilePath + os.EOL;
-      });
-    });
+    this.abcFiles.forEach((abcFile: string) => {
+      linkerInputContent += abcFile + os.EOL;
+    })
     fs.writeFileSync(linkerInputFile, linkerInputContent);
 
     this.abcLinkerCmd.push('--output');
@@ -353,6 +354,17 @@ export abstract class BaseMode {
     this.collectDepModuleInfos();
   }
 
+  private isFileChanged(etsFilePath: string, abcFilePath: string): boolean {
+    if (isFileExistSync(abcFilePath)) {
+      const etsFileLastModified: number = fs.statSync(etsFilePath).mtimeMs;
+      const abcFileLastModified: number = fs.statSync(abcFilePath).mtimeMs;
+      if (etsFileLastModified < abcFileLastModified) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   private collectCompileFiles(): void {
     this.entryFiles.forEach((file: string) => {
       for (const [packageName, moduleInfo] of this.moduleInfos) {
@@ -362,6 +374,10 @@ export abstract class BaseMode {
         let filePathFromModuleRoot: string = path.relative(moduleInfo.moduleRootPath, file);
         let filePathInCache: string = path.join(this.cacheDir, moduleInfo.packageName, filePathFromModuleRoot);
         let abcFilePath: string = path.resolve(changeFileExtension(filePathInCache, ABC_SUFFIX));
+        this.abcFiles.add(abcFilePath);
+        if (!this.isFileChanged(file, abcFilePath)) {
+          return;
+        }
 
         let fileInfo: CompileFileInfo = {
           filePath: file,
