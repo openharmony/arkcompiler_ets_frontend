@@ -290,7 +290,8 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.NonNullExpression, this.handleNonNullExpression],
     [ts.SyntaxKind.HeritageClause, this.handleHeritageClause],
     [ts.SyntaxKind.TaggedTemplateExpression, this.handleTaggedTemplatesExpression],
-    [ts.SyntaxKind.StructDeclaration, this.handleStructDeclaration]
+    [ts.SyntaxKind.StructDeclaration, this.handleStructDeclaration],
+    [ts.SyntaxKind.TypeOfExpression, this.handleInterOpImportJsOnTypeOfNode]
   ]);
 
   private getLineAndCharacterOfNode(node: ts.Node | ts.CommentRange): ts.LineAndCharacter {
@@ -5847,6 +5848,75 @@ export class TypeScriptLinter {
     }
   }
 
+  private getOriginalSymbol(node: ts.Node): ts.Symbol | undefined {
+    if (ts.isIdentifier(node)) {
+      const variableDeclaration = this.findVariableDeclaration(node);
+      if (variableDeclaration?.initializer) {
+        return this.getOriginalSymbol(variableDeclaration.initializer);
+      }
+    } else if (ts.isNewExpression(node)) {
+      const constructor = node.expression;
+      if (ts.isIdentifier(constructor)) {
+        return this.tsUtils.trueSymbolAtLocation(constructor);
+      }
+    } else if (ts.isCallExpression(node)) {
+      const callee = node.expression;
+      if (ts.isIdentifier(callee)) {
+        return this.tsUtils.trueSymbolAtLocation(callee);
+      } else if (ts.isPropertyAccessExpression(callee)) {
+        return this.getOriginalSymbol(callee.expression);
+      }
+    } else if (ts.isPropertyAccessExpression(node)) {
+      return this.getOriginalSymbol(node.expression);
+    }
+    return this.tsUtils.trueSymbolAtLocation(node);
+  }
+
+  private static isFromJsImport(symbol: ts.Symbol): boolean {
+    const declaration = symbol.declarations?.[0];
+    if (declaration) {
+      const sourceFile = declaration.getSourceFile();
+      return sourceFile.fileName.endsWith(EXTNAME_JS);
+    }
+    return false;
+  }
+
+  private hasLocalAssignment(node: ts.Node): boolean {
+    if (ts.isIdentifier(node)) {
+      const variableDeclaration = this.findVariableDeclaration(node);
+      return !!variableDeclaration?.initializer;
+    }
+    return false;
+  }
+
+  private isLocalCall(node: ts.Node): boolean {
+    if (ts.isCallExpression(node)) {
+      const callee = node.expression;
+      if (ts.isIdentifier(callee)) {
+        return this.hasLocalAssignment(callee);
+      } else if (ts.isPropertyAccessExpression(callee)) {
+        const objectNode = callee.expression;
+        return this.hasLocalAssignment(objectNode);
+      }
+    }
+    return false;
+  }
+
+  private handleInterOpImportJsOnTypeOfNode(typeofExpress: ts.TypeOfExpression): void {
+    if (!this.options.arkts2 || !typeofExpress || !this.useStatic) {
+      return;
+    }
+    const targetNode = typeofExpress.expression;
+    if (this.hasLocalAssignment(targetNode) || this.isLocalCall(targetNode)) {
+      return;
+    }
+    const targetSymbol = this.getOriginalSymbol(targetNode);
+    if (targetSymbol && TypeScriptLinter.isFromJsImport(targetSymbol)) {
+      const autofix = this.autofixer?.fixInterOpImportJsOnTypeOf(typeofExpress);
+      this.incrementCounters(typeofExpress, FaultID.InterOpImportJsForTypeOf, autofix);
+    }
+  }
+
   private handleSdkTypeQuery(decl: ts.PropertyAccessExpression): void {
     if (!this.options.arkts2 || !ts.isPropertyAccessExpression(decl)) {
       return;
@@ -6042,5 +6112,18 @@ export class TypeScriptLinter {
         this.incrementCounters(importDecl, FaultID.InterOpImportJs, autofix);
       }
     }
+  }
+  
+  private findVariableDeclaration(identifier: ts.Identifier): ts.VariableDeclaration | undefined {
+    const sym = this.tsUtils.trueSymbolAtLocation(identifier);
+    const decl = TsUtils.getDeclaration(sym);
+    if (
+      decl &&
+      ts.isVariableDeclaration(decl) &&
+      decl.getSourceFile().fileName === identifier.getSourceFile().fileName
+    ) {
+      return decl;
+    }
+    return undefined;
   }
 }

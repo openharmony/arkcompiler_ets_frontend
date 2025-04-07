@@ -16,7 +16,7 @@
 export const cookBookMsg: string[] = [];
 export const cookBookTag: string[] = [];
 
-for (let i = 0; i <= 319; i++) {
+for (let i = 0; i <= 320; i++) {
   cookBookMsg[i] = '';
 }
 
@@ -294,3 +294,4 @@ cookBookTag[330] = 'Importing directly from "JS" module is not supported (arkts-
 cookBookTag[331] = 'ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)';
 cookBookTag[332] = 'Properties of interop objects can\'t be accessed directly (arkts-no-js-obj-property)';
 cookBookTag[333] = 'Casting interop JS objects to "number" type is not allowed (arkts-no-js-number-cast)'
+cookBookTag[334] = 'The "typeof" expression can\'t be used with interop JS objects (arkts-interop-js-typeof)';
