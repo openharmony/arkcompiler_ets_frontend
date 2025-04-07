@@ -189,6 +189,7 @@ public:
     void ValidateImplementedInterface(ETSObjectType *type, Type *interface, std::unordered_set<Type *> *extendsSet,
                                       const lexer::SourcePosition &pos);
     void ResolveDeclaredMembersOfObject(const Type *type);
+    lexer::Number ExtractNumericValue(Type const *const indexType);
     std::optional<std::size_t> GetTupleElementAccessValue(const Type *type);
     bool ValidateArrayIndex(ir::Expression *expr, bool relaxed = false);
     bool ValidateTupleIndex(const ETSTupleType *tuple, ir::MemberExpression *expr, bool reportError = true);
