@@ -216,11 +216,12 @@ void GenericBridgesPhase::CreateGenericBridges(ir::ClassDefinition const *const 
                 continue;
             }
 
-            //  Check if the derived class has any possible overrides of this method
-            auto it = std::find_if(
-                classBody.cbegin(), classBody.end(), [&name = method->Id()->Name()](ir::AstNode const *node) -> bool {
-                    return node->IsMethodDefinition() && node->AsMethodDefinition()->Id()->Name() == name;
-                });
+            // Check if the derived class has any possible overrides of this method
+            auto isOverridePred = [&name = method->Id()->Name()](ir::AstNode const *node) -> bool {
+                return node->IsMethodDefinition() && !node->IsStatic() &&
+                       node->AsMethodDefinition()->Id()->Name() == name;
+            };
+            auto it = std::find_if(classBody.cbegin(), classBody.end(), isOverridePred);
             if (it != classBody.cend()) {
                 MaybeAddGenericBridges(classDefinition, method, (*it)->AsMethodDefinition(), substitutions);
             }
