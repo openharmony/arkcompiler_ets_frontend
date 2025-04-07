@@ -108,7 +108,10 @@ TSAsExpression *TSAsExpression::Clone(ArenaAllocator *const allocator, AstNode *
         typeAnnotation->SetParent(clone);
     }
 
-    clone->SetTsType(TsType());
+    if (Start().Program()->Extension() != ScriptExtension::ETS) {
+        clone->SetTsType(TsType());
+    }
+
     if (parent != nullptr) {
         clone->SetParent(parent);
     }
