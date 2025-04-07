@@ -78,5 +78,6 @@ export const arkts2Rules: number[] = [
   314,
   315,
   316,
-  321
+  321,
+  330
 ];

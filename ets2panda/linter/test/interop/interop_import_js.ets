@@ -12,23 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export const USE_STATIC = '\'use static\'';
-
-export const REFLECT_PROPERTIES = [
-  'get',
-  'set',
-  'has',
-  'ownKeys',
-  'getOwnPropertyDescriptor',
-  'defineProperty',
-  'deleteProperty',
-  'apply',
-  'construct',
-  'getPrototypeOf',
-  'setPrototypeOf',
-  'isExtensible',
-  'preventExtensions'
-];
-export const LOAD = 'load';
-export const GET_PROPERTY_BY_NAME = 'getPropertyByName';
+ 
+'use static'
+import { Cjs } from '../main/js_lib';
+import { fjs } from '../main/js_lib';
+import { CPreview,bar,foo } from "./jsfiles/preview_import_js";
+import myAaa from "./interop_import_js_js";
+import myAaa,{ClassA,Dog} from "./interop_import_js_js";
+import * as namespace from "./interop_import_js_js";
+import { Wiki, Dog as Doge } from './interop_import_js_js'

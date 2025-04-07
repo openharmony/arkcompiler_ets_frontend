@@ -42,6 +42,8 @@ import {
   PROVIDE_ALIAS_PROPERTY_NAME,
   PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME
 } from '../utils/consts/ArkuiConstants';
+import { ES_OBJECT } from '../utils/consts/ESObject';
+import { LOAD, GET_PROPERTY_BY_NAME } from '../utils/consts/InteropAPI';
 
 const UNDEFINED_NAME = 'undefined';
 
@@ -56,6 +58,10 @@ const GENERATED_DESTRUCT_OBJECT_TRESHOLD = 1000;
 
 const GENERATED_DESTRUCT_ARRAY_NAME = 'GeneratedDestructArray_';
 const GENERATED_DESTRUCT_ARRAY_TRESHOLD = 1000;
+
+const GENERATED_IMPORT_VARIABLE_NAME = 'GeneratedImportVar_';
+const GENERATED_IMPORT_VARIABLE_TRESHOLD = 1000;
+
 const SPECIAL_LIB_NAME = 'specialAutofixLib';
 
 export interface Autofix {
@@ -96,6 +102,14 @@ export class Autofixer {
     GENERATED_OBJECT_LITERAL_INTERFACE_NAME,
     GENERATED_OBJECT_LITERAL_INTERFACE_TRESHOLD
   );
+
+  private readonly importVarNameGenerator = new NameGenerator(
+    GENERATED_IMPORT_VARIABLE_NAME,
+    GENERATED_IMPORT_VARIABLE_TRESHOLD
+  );
+
+  private modVarName: string = '';
+  private readonly lastImportEndMap = new Map<string, number>();
 
   private readonly symbolCache: SymbolCache;
 
@@ -3134,5 +3148,131 @@ export class Autofixer {
       node = node.parent;
     }
     return undefined;
+  }
+
+  private static createVariableForInteropImport(
+    newVarName: string,
+    interopObject: string,
+    interopMethod: string,
+    interopPropertyOrModule: string
+  ): ts.VariableStatement {
+    const newVarDecl = ts.factory.createVariableStatement(
+      undefined,
+      ts.factory.createVariableDeclarationList(
+        [
+          ts.factory.createVariableDeclaration(
+            ts.factory.createIdentifier(newVarName),
+            undefined,
+            undefined,
+            ts.factory.createCallExpression(
+              ts.factory.createPropertyAccessExpression(
+                ts.factory.createIdentifier(interopObject),
+                ts.factory.createIdentifier(interopMethod)
+              ),
+              undefined,
+              [ts.factory.createStringLiteral(interopPropertyOrModule)]
+            )
+          )
+        ],
+        ts.NodeFlags.Let
+      )
+    );
+    return newVarDecl;
+  }
+
+  private static getOriginalNameAtSymbol(symbolName: string, symbol?: ts.Symbol): string {
+    if (symbol) {
+      const originalDeclaration = symbol.declarations?.[0];
+      let originalName = '';
+      if (originalDeclaration) {
+        const isReturnNameOnSomeCase =
+          ts.isFunctionDeclaration(originalDeclaration) ||
+          ts.isClassDeclaration(originalDeclaration) ||
+          ts.isInterfaceDeclaration(originalDeclaration) ||
+          ts.isEnumDeclaration(originalDeclaration);
+        if (isReturnNameOnSomeCase) {
+          originalName = originalDeclaration.name?.text || symbolName;
+        } else if (ts.isVariableDeclaration(originalDeclaration)) {
+          originalName = originalDeclaration.name.getText();
+        }
+      }
+      return originalName;
+    }
+    return '';
+  }
+
+  fixInterOpImportJs(
+    importDecl: ts.ImportDeclaration,
+    importClause: ts.ImportClause,
+    moduleSpecifier: string,
+    defaultSymbol?: ts.Symbol
+  ): Autofix[] | undefined {
+    let statements: string[] = [];
+    statements = this.constructAndSaveimportDecl2Arrays(importDecl, moduleSpecifier, undefined, statements, true);
+    if (importClause.name) {
+      const symbolName = importClause.name.text;
+      const originalName = Autofixer.getOriginalNameAtSymbol(symbolName, defaultSymbol);
+      statements = this.constructAndSaveimportDecl2Arrays(importDecl, symbolName, originalName, statements, false);
+    }
+    const namedBindings = importClause.namedBindings;
+    if (namedBindings && ts.isNamedImports(namedBindings)) {
+      namedBindings.elements.map((element) => {
+        const symbolName = element.name.text;
+        const originalName = element.propertyName ? element.propertyName.text : symbolName;
+        statements = this.constructAndSaveimportDecl2Arrays(importDecl, symbolName, originalName, statements, false);
+        return statements;
+      });
+    }
+    if (statements.length <= 0) {
+      return undefined;
+    }
+    let lastImportEnd = this.lastImportEndMap.get(this.sourceFile.fileName);
+    if (!lastImportEnd) {
+      lastImportEnd = this.getLastImportEnd();
+      this.lastImportEndMap.set(this.sourceFile.fileName, lastImportEnd);
+    }
+    return [
+      { start: importDecl.getStart(), end: importDecl.getEnd(), replacementText: '' },
+      { start: lastImportEnd, end: lastImportEnd, replacementText: statements.join('\n') }
+    ];
+  }
+
+  private constructAndSaveimportDecl2Arrays(
+    importDecl: ts.ImportDeclaration,
+    symbolName: string,
+    originalName: string | undefined,
+    statements: string[],
+    isLoad: boolean
+  ): string[] {
+    if (isLoad) {
+      const newVarName = TsUtils.generateUniqueName(this.importVarNameGenerator, this.sourceFile);
+      if (!newVarName) {
+        return [];
+      }
+      this.modVarName = newVarName;
+    }
+    const propertyName = originalName || symbolName;
+    const constructDeclInfo: string[] = isLoad ?
+      [this.modVarName, ES_OBJECT, LOAD] :
+      [symbolName, this.modVarName, GET_PROPERTY_BY_NAME];
+    const newVarDecl = Autofixer.createVariableForInteropImport(
+      constructDeclInfo[0],
+      constructDeclInfo[1],
+      constructDeclInfo[2],
+      propertyName
+    );
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, newVarDecl, importDecl.getSourceFile());
+    statements.push(TsUtils.removeOrReplaceQuotes(text, true));
+    return statements;
+  }
+
+  private getLastImportEnd(): number {
+    let lastImportEnd = 0;
+    this.sourceFile.statements.forEach((statement) => {
+      if (ts.isImportDeclaration(statement)) {
+        lastImportEnd = statement.getEnd();
+      }
+    });
+    return lastImportEnd;
   }
 }

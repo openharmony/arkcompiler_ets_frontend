@@ -45,6 +45,7 @@ import { ETS } from './consts/TsSuffix';
 import { STRINGLITERAL_NUMBER, STRINGLITERAL_NUMBER_ARRAY } from './consts/StringLiteral';
 import { ETS_MODULE, VALID_OHM_COMPONENTS_MODULE_PATH } from './consts/OhmUrl';
 import { EXTNAME_JS } from './consts/ExtensionName';
+import { USE_STATIC } from './consts/InteropAPI';
 
 export const SYMBOL = 'Symbol';
 export const SYMBOL_CONSTRUCTOR = 'SymbolConstructor';
@@ -3489,5 +3490,31 @@ export class TsUtils {
     }
 
     return undefined;
+  }
+
+  static isArkts12File(sourceFile: ts.SourceFile): boolean {
+    if (!sourceFile) {
+      return false;
+    }
+    const statements = sourceFile.statements;
+    return (
+      ts.isExpressionStatement(statements[0]) &&
+      ts.isStringLiteral(statements[0].expression) &&
+      statements[0].expression.getText() === USE_STATIC
+    );
+  }
+
+  static removeOrReplaceQuotes(str: string, isReplace: boolean): string {
+    if (isReplace) {
+      const charArray = new Array(str.length);
+      for (let i = 0; i < str.length; i++) {
+        charArray[i] = str[i] === '"' ? '\'' : str[i];
+      }
+      return charArray.join('');
+    }
+    if (str.startsWith('\'') && str.endsWith('\'') || str.startsWith('"') && str.endsWith('"')) {
+      return str.slice(1, -1);
+    }
+    return str;
   }
 }
