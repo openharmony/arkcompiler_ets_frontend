@@ -282,7 +282,7 @@ void FunctionEmitter::GenFunctionCatchTables(pandasm::Function *func)
 
 void FunctionEmitter::GenSourceFileDebugInfo(pandasm::Function *func)
 {
-    func->sourceFile = std::string {cg_->VarBinder()->Program()->SourceFile().GetAbsolutePath()};
+    func->sourceFile = std::string {cg_->VarBinder()->Program()->RelativeFilePath()};
 
     if (!cg_->IsDebug()) {
         return;

@@ -18,6 +18,7 @@
 
 #include "util/arktsconfig.h"
 #include "util/importPathManager.h"
+#include "innerSourceParser.h"
 #include "TypedParser.h"
 #include "ir/base/classDefinition.h"
 #include "ir/module/importDeclaration.h"
@@ -573,25 +574,6 @@ private:
     Program *savedProgram_;
     lexer::Lexer *savedLexer_;
     varbinder::GlobalScope *savedTopScope_;
-};
-
-class InnerSourceParser {
-public:
-    explicit InnerSourceParser(ETSParser *parser);
-    NO_COPY_SEMANTIC(InnerSourceParser);
-    NO_MOVE_SEMANTIC(InnerSourceParser);
-
-    ~InnerSourceParser();
-
-    void *operator new(size_t) = delete;
-    void *operator new[](size_t) = delete;
-
-private:
-    ETSParser *parser_;
-    lexer::Lexer *savedLexer_;
-    util::StringView savedSourceCode_ {};
-    util::StringView savedSourceFile_ {};
-    util::StringView savedSourceFilePath_ {};
 };
 
 class SavedFormattingFileName {
