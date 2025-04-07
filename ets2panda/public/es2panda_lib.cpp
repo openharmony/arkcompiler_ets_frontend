@@ -573,7 +573,7 @@ extern "C" void AstNodeForEach(es2panda_AstNode *ast, void (*func)(es2panda_AstN
 }
 
 #define SET_NUMBER_LITERAL_IMPL(name, type)                                        \
-    extern "C" bool SetNumberLiteral##name(es2panda_AstNode *node, type new_value) \
+    extern "C" bool NumberLiteralSet##name(es2panda_AstNode *node, type new_value) \
     {                                                                              \
         auto &n = reinterpret_cast<ir::NumberLiteral *>(node)->Number();           \
         if (!n.Is##name()) {                                                       \
@@ -818,10 +818,10 @@ es2panda_Impl g_impl = {
     ExternalSourceName,
     ExternalSourcePrograms,
     AstNodeForEach,
-    SetNumberLiteralInt,
-    SetNumberLiteralLong,
-    SetNumberLiteralDouble,
-    SetNumberLiteralFloat,
+    NumberLiteralSetInt,
+    NumberLiteralSetLong,
+    NumberLiteralSetDouble,
+    NumberLiteralSetFloat,
     CreateNumberLiteral<int32_t>,
     UpdateNumberLiteral<int32_t>,
     CreateNumberLiteral<int64_t>,

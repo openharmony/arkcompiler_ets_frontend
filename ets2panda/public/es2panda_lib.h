@@ -164,14 +164,14 @@ struct CAPI_EXPORT es2panda_Impl {
     es2panda_Program **(*ExternalSourcePrograms)(es2panda_ExternalSource *e_source, size_t *len_p);
     void (*AstNodeForEach)(es2panda_AstNode *ast, void (*func)(es2panda_AstNode *, void *), void *arg);
 
-#define SET_NUMBER_LITERAL_DECL(name, type) bool (*SetNumberLiteral##name)(es2panda_AstNode * node, type new_value)
+#define NUMBER_LITERAL_SET_DECL(name, type) bool (*NumberLiteralSet##name)(es2panda_AstNode * node, type new_value)
 
-    SET_NUMBER_LITERAL_DECL(Int, int32_t);
-    SET_NUMBER_LITERAL_DECL(Long, int64_t);
-    SET_NUMBER_LITERAL_DECL(Double, double);
-    SET_NUMBER_LITERAL_DECL(Float, float);
+    NUMBER_LITERAL_SET_DECL(Int, int32_t);
+    NUMBER_LITERAL_SET_DECL(Long, int64_t);
+    NUMBER_LITERAL_SET_DECL(Double, double);
+    NUMBER_LITERAL_SET_DECL(Float, float);
 
-#undef SET_NUMBER_LITERAL_DECL
+#undef NUMBER_LITERAL_SET_DECL
 
 #define CREATE_UPDATE_NUMBER_LITERAL_IMPL(num, type)                                   \
     es2panda_AstNode *(*CreateNumberLiteral##num)(es2panda_Context * ctx, type value); \

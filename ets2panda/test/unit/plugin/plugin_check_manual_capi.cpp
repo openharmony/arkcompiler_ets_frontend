@@ -40,10 +40,10 @@
  *   es2panda_AstNode *(*UpdateNumberLiteral1)(es2panda_Context *ctx, es2panda_AstNode *original, int64_t value);
  *   es2panda_AstNode *(*UpdateNumberLiteral2)(es2panda_Context *ctx, es2panda_AstNode *original, double value);
  *   es2panda_AstNode *(*UpdateNumberLiteral3)(es2panda_Context *ctx, es2panda_AstNode *original, float value);
- *   bool(*SetNumberLiteralInt)(es2panda_AstNode *node, int32_t new_value);
- *   bool(*SetNumberLiteralLong)(es2panda_AstNode *node, int64_t new_value);
- *   bool(*SetNumberLiteralDouble)(es2panda_AstNode *node, double new_value);
- *   bool(*SetNumberLiteralFloat)(es2panda_AstNode *node, float new_value);
+ *   bool(*NumberLiteralSetInt)(es2panda_AstNode *node, int32_t new_value);
+ *   bool(*NumberLiteralSetLong)(es2panda_AstNode *node, int64_t new_value);
+ *   bool(*NumberLiteralSetDouble)(es2panda_AstNode *node, double new_value);
+ *   bool(*NumberLiteralSetFloat)(es2panda_AstNode *node, float new_value);
  *   char *(*)(es2panda_Context *, Es2pandaEnum);
  *   Es2pandaEnum (*)(es2panda_Context *, const char *);
  *   void(*DestroyContext)(es2panda_Context *context);
@@ -142,10 +142,10 @@ bool CheckNumberLiteral(es2panda_Context *ctx)
         return false;
     }
 
-    bool setInt32Result = g_impl->SetNumberLiteralInt(updatedInt32AstNode, 8);
-    bool setInt64Result = g_impl->SetNumberLiteralLong(updatedInt64AstNode, 9);
-    bool setDoubleResult = g_impl->SetNumberLiteralDouble(updatedDoubleAstNode, 10.0);
-    bool setFloatResult = g_impl->SetNumberLiteralFloat(updatedFloatAstNode, 11.0);
+    bool setInt32Result = g_impl->NumberLiteralSetInt(updatedInt32AstNode, 8);
+    bool setInt64Result = g_impl->NumberLiteralSetLong(updatedInt64AstNode, 9);
+    bool setDoubleResult = g_impl->NumberLiteralSetDouble(updatedDoubleAstNode, 10.0);
+    bool setFloatResult = g_impl->NumberLiteralSetFloat(updatedFloatAstNode, 11.0);
     return setInt32Result && setInt64Result && setDoubleResult && setFloatResult;
 }
 
