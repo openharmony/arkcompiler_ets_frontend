@@ -3911,6 +3911,10 @@ export class TypeScriptLinter {
       return;
     }
 
+    if (ts.isPropertyAccessExpression(node.parent)) {
+      return;
+    }
+
     const signature = this.tsTypeChecker.getResolvedSignature(node);
     if (signature) {
       const returnType = this.tsTypeChecker.getReturnTypeOfSignature(signature);
