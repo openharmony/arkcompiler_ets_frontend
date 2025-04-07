@@ -179,6 +179,7 @@ runtime/ets/import_self_head_tests/B/test.d.ets
 runtime/ets/exportDefault_1.ets
 runtime/ets/exportDefault_2.ets
 runtime/ets/declareExport.ets
+runtime/ets/implicit_stringliteral_init.ets
 
 # #21051 should be log warnings, but there aren't
 ast/compiler/ets/not_initialized_variable/import_types.ets
