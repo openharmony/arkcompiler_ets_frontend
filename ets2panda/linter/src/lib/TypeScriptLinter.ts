@@ -3093,9 +3093,10 @@ export class TypeScriptLinter {
          */
         if (isOhModulesEts && errorType !== DiagnosticCheckerErrorType.UNKNOW) {
           diagnostic.category = ts.DiagnosticCategory.Warning;
-        } else {
-          deleteDiagnostics.add(diagnostic);
+          return false;
         }
+        deleteDiagnostics.add(diagnostic);
+        return true;
       }
     );
 
