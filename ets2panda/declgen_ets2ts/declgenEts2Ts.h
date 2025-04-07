@@ -43,6 +43,7 @@ public:
           diagnosticEngine_(checker->DiagnosticEngine()),
           allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
           indirectDependencyObjects_(allocator_.Adapter()),
+          importSet_(allocator_.Adapter()),
           typeAliasMap_(allocator_.Adapter()),
           paramDefaultMap_(allocator_.Adapter())
     {
@@ -59,6 +60,7 @@ public:
     }
 
     void Generate();
+    void GenImportDeclarations();
 
     std::string GetDtsOutput() const
     {
@@ -68,6 +70,16 @@ public:
     std::string GetTsOutput() const
     {
         return outputTs_.str();
+    }
+
+    void ResetDtsOutput()
+    {
+        outputDts_.str("");
+    }
+
+    void ResetTsOutput()
+    {
+        outputTs_.str("");
     }
 
     static constexpr std::string_view INDENT = "    ";
@@ -129,6 +141,8 @@ private:
     void ProcessParamDefaultToMap(const ir::Statement *stmt);
     void ProcessFuncParameter(varbinder::LocalVariable *param);
     void ProcessFuncParameters(const checker::Signature *sig);
+    void ProcessParameterTypeAnnotation(const ir::ETSParameterExpression *expr, const checker::Type *paramType);
+    std::vector<ir::AstNode *> FilterValidImportSpecifiers(const ArenaVector<ir::AstNode *> &specifiers);
     std::string ReplaceETSGLOBAL(const std::string &typeName);
     std::string GetIndent() const;
     std::string RemoveModuleExtensionName(const std::string &filepath);
@@ -138,6 +152,7 @@ private:
     void GenGlobalDescriptor();
     void CollectIndirectExportDependencies();
     void ProcessTypeAliasDependencies(const ir::TSTypeAliasDeclaration *typeAliasDecl);
+    void ProcessTypeAnnotationDependencies(const ir::TypeNode *typeAnnotation);
     void ProcessClassDependencies(const ir::ClassDeclaration *classDecl);
     void ProcessClassPropDependencies(const ir::AstNode *prop);
     void ProcessClassMethodDependencies(const ir::MethodDefinition *methodDef);
@@ -198,6 +213,12 @@ private:
         state_ = GenState();
     }
 
+    void ResetClassNode()
+    {
+        classNode_.isStruct = false;
+        classNode_.isIndirect = false;
+    }
+
     struct GenState {
         const ir::Expression *super {nullptr};
         bool inInterface {false};
@@ -230,6 +251,7 @@ private:
     util::DiagnosticEngine &diagnosticEngine_;
     ArenaAllocator allocator_;
     ArenaSet<std::string> indirectDependencyObjects_;
+    ArenaSet<std::string> importSet_;
     DeclgenOptions declgenOptions_ {};
     std::string globalDesc_;
     ArenaMap<std::string, std::string> typeAliasMap_;

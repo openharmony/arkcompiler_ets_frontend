@@ -86,6 +86,36 @@ void TSDeclGen::ProcessTypeAliasDependencies(const ir::TSTypeAliasDeclaration *t
         auto typeName = objectType->Name();
         AddObjectDependencies(typeName, name);
     }
+    ProcessTypeAnnotationDependencies(typeAliasDecl->TypeAnnotation());
+}
+
+void TSDeclGen::ProcessTypeAnnotationDependencies(const ir::TypeNode *typeAnnotation)
+{
+    if (!typeAnnotation->IsETSTypeReference() ||
+        !typeAnnotation->AsETSTypeReference()->Part()->Name()->IsIdentifier()) {
+        return;
+    }
+
+    const auto part = typeAnnotation->AsETSTypeReference()->Part();
+    const auto partParams = part->TypeParams();
+    if (partParams == nullptr) {
+        return;
+    }
+
+    const auto typeParams = partParams->AsTSTypeParameterInstantiation();
+    if (typeParams == nullptr) {
+        return;
+    }
+
+    GenSeparated(
+        typeParams->Params(),
+        [this](ir::TypeNode *param) {
+            if (param->IsETSTypeReference()) {
+                const auto paramName = param->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name().Mutf8();
+                indirectDependencyObjects_.insert(paramName);
+            }
+        },
+        "");
 }
 
 void TSDeclGen::ProcessClassDependencies(const ir::ClassDeclaration *classDecl)
@@ -181,9 +211,8 @@ void TSDeclGen::GenDeclarations()
 {
     for (auto *globalStatement : program_->Ast()->Statements()) {
         ResetState();
-        if (globalStatement->IsETSImportDeclaration()) {
-            GenImportDeclaration(globalStatement->AsETSImportDeclaration());
-        } else if (globalStatement->IsClassDeclaration()) {
+        ResetClassNode();
+        if (globalStatement->IsClassDeclaration()) {
             GenClassDeclaration(globalStatement->AsClassDeclaration());
         } else if (globalStatement->IsTSInterfaceDeclaration()) {
             GenInterfaceDeclaration(globalStatement->AsTSInterfaceDeclaration());
@@ -191,6 +220,15 @@ void TSDeclGen::GenDeclarations()
             GenTypeAliasDeclaration(globalStatement->AsTSTypeAliasDeclaration());
         } else if (globalStatement->IsETSReExportDeclaration()) {
             GenReExportDeclaration(globalStatement->AsETSReExportDeclaration());
+        }
+    }
+}
+
+void TSDeclGen::GenImportDeclarations()
+{
+    for (auto *globalStatement : program_->Ast()->Statements()) {
+        if (globalStatement->IsETSImportDeclaration()) {
+            GenImportDeclaration(globalStatement->AsETSImportDeclaration());
         }
     }
 }
@@ -254,6 +292,8 @@ void TSDeclGen::GenType(const checker::Type *checkerType)
     const auto var_name = checkerType->Variable() == nullptr ? "" : checkerType->Variable()->Name().Mutf8();
     DebugPrint(std::string("  Converting type: ") + GetDebugTypeName(checkerType) + " (" + var_name + ")");
 #endif
+
+    importSet_.insert(checkerType->ToString());
 
     if (HandleBasicTypes(checkerType)) {
         return;
@@ -400,6 +440,7 @@ void TSDeclGen::GenLiteral(const ir::Literal *literal)
         LogError(diagnostic::UNEXPECTED_NUMBER_LITERAL_TYPE, {}, literal->Start());
     } else if (literal->IsStringLiteral()) {
         const auto string = literal->AsStringLiteral()->ToString();
+        importSet_.insert(string);
         OutDts("\"" + string + "\"");
         OutTs("\"" + string + "\"");
     } else if (literal->IsBooleanLiteral()) {
@@ -472,10 +513,19 @@ void TSDeclGen::ProcessFuncParameter(varbinder::LocalVariable *param)
     const auto *expr = paramDeclNode->AsETSParameterExpression();
     OutDts(expr->IsOptional() ? "?" : "");
     OutDts(": ");
+    ProcessParameterTypeAnnotation(expr, paramType);
+}
 
+void TSDeclGen::ProcessParameterTypeAnnotation(const ir::ETSParameterExpression *expr, const checker::Type *paramType)
+{
     const auto *typeAnnotation = expr->TypeAnnotation();
     if (typeAnnotation == nullptr) {
         GenType(paramType);
+        return;
+    }
+
+    if (expr->IsOptional()) {
+        GenType(typeAnnotation->TsType());
         return;
     }
 
@@ -490,12 +540,11 @@ void TSDeclGen::ProcessFuncParameter(varbinder::LocalVariable *param)
             auto leftName = qualifiedName->Left()->AsIdentifier()->Name();
             auto rightName = qualifiedName->Right()->AsIdentifier()->Name();
             indirectDependencyObjects_.insert(leftName.Mutf8());
+            importSet_.insert(leftName.Mutf8());
             OutDts(leftName, ".", rightName);
         } else {
             GenType(paramType);
         }
-    } else if (expr->IsOptional()) {
-        GenType(typeAnnotation->TsType());
     } else {
         GenType(paramType);
     }
@@ -583,6 +632,7 @@ void TSDeclGen::ProcessFunctionReturnTypeRef(const checker::Signature *sig, cons
         auto rightName = qualiFiedName->Right()->AsIdentifier()->Name();
         OutDts(leftName, ".", rightName);
         indirectDependencyObjects_.insert(leftName.Mutf8());
+        importSet_.insert(leftName.Mutf8());
     } else {
         GenType(sig->ReturnType());
     }
@@ -661,6 +711,7 @@ void TSDeclGen::HandleTypeArgument(checker::Type *arg, const std::string &typeSt
         if (!state_.currentTypeAliasName.empty() && !arg->HasTypeFlag(checker::TypeFlag::ETS_TYPE_PARAMETER)) {
             OutDts(state_.currentTypeAliasName);
             if (state_.currentTypeParams != nullptr) {
+                importSet_.insert(state_.currentTypeParams->Params()[0]->Name()->Name().Mutf8());
                 OutDts("<");
                 OutDts(state_.currentTypeParams->Params()[0]->Name()->Name());
                 OutDts(">");
@@ -733,6 +784,7 @@ void TSDeclGen::GenTypeParameters(const ir::TSTypeParameterInstantiation *typePa
             } else if (paramName == "NullPointerError") {
                 OutDts("Error");
             } else {
+                importSet_.insert(paramName);
                 OutDts(paramName);
             }
         } else {
@@ -911,13 +963,20 @@ void TSDeclGen::GenImportDeclaration(const ir::ETSImportDeclaration *importDecla
     const auto specifierFirst = specifiers[0];
     if (specifierFirst->IsImportNamespaceSpecifier()) {
         const auto local = specifierFirst->AsImportNamespaceSpecifier()->Local()->Name();
+        if (importSet_.find(local.Mutf8()) == importSet_.end()) {
+            return;
+        }
         OutDts("import * as ", local, " from \"", source, "\";");
         OutTs("import * as ", local, " from \"", source, "\";");
     } else if (specifierFirst->IsImportSpecifier()) {
+        auto importSpecifiers = FilterValidImportSpecifiers(specifiers);
+        if (importSpecifiers.empty()) {
+            return;
+        }
         OutDts("import { ");
         OutTs("import { ");
         GenSeparated(
-            specifiers,
+            importSpecifiers,
             [this, &importDeclaration](ir::AstNode *specifier) {
                 if (!specifier->IsImportSpecifier()) {
                     LogError(diagnostic::IMPORT_SPECIFIERS_SUPPORT, {}, importDeclaration->Start());
@@ -938,6 +997,18 @@ void TSDeclGen::GenImportDeclaration(const ir::ETSImportDeclaration *importDecla
     }
     OutEndlDts();
     OutEndlTs();
+}
+
+std::vector<ir::AstNode *> TSDeclGen::FilterValidImportSpecifiers(const ArenaVector<ir::AstNode *> &specifiers)
+{
+    std::vector<ir::AstNode *> importSpecifiers;
+    for (std::size_t i = 0; i < specifiers.size(); i++) {
+        const auto local = specifiers[i]->AsImportSpecifier()->Local()->Name().Mutf8();
+        if (importSet_.find(local) != importSet_.end()) {
+            importSpecifiers.push_back(specifiers[i]);
+        }
+    }
+    return importSpecifiers;
 }
 
 void TSDeclGen::GenReExportDeclaration(const ir::ETSReExportDeclaration *reExportDeclaration)
@@ -966,6 +1037,7 @@ void TSDeclGen::GenReExportDeclaration(const ir::ETSReExportDeclaration *reExpor
             if (specifier->IsImportSpecifier()) {
                 const auto local = specifier->AsImportSpecifier()->Local()->Name().Mutf8();
                 const auto imported = specifier->AsImportSpecifier()->Imported()->Name().Mutf8();
+                importSet_.insert(local);
                 if (local != imported) {
                     OutDts(imported, " as ", local);
                     OutTs(imported, " as ", local);
@@ -975,6 +1047,7 @@ void TSDeclGen::GenReExportDeclaration(const ir::ETSReExportDeclaration *reExpor
                 }
             } else if (specifier->IsImportNamespaceSpecifier()) {
                 const auto local = specifier->AsImportNamespaceSpecifier()->Local()->Name();
+                importSet_.insert(local.Mutf8());
                 OutDts(local);
                 OutTs(local);
             } else {
@@ -1025,12 +1098,14 @@ void TSDeclGen::GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAl
     if (typeAnnotation->IsETSTypeReference() && typeAnnotation->AsETSTypeReference()->Part()->Name()->IsIdentifier()) {
         const auto part = typeAnnotation->AsETSTypeReference()->Part();
         const auto partName = part->Name()->AsIdentifier()->Name();
+        importSet_.insert(partName.Mutf8());
         OutDts(partName.Is("Exception") ? "Error" : partName);
         const auto partParams = part->TypeParams();
         if (partParams != nullptr) {
             GenTypeParameters(partParams->AsTSTypeParameterInstantiation());
         }
     } else if (typeAnnotation->IsETSStringLiteralType()) {
+        importSet_.insert(aliasedType->ToString());
         OutDts(aliasedType->ToString());
     } else {
         GenType(aliasedType);
@@ -1551,11 +1626,13 @@ void TSDeclGen::GenGlobalVarDeclaration(const ir::ClassProperty *globalVar)
     OutDts(isConst ? "export declare const " : "export declare let ", varName, ": ");
     if (globalVar->TypeAnnotation() != nullptr && globalVar->TypeAnnotation()->IsETSStringLiteralType()) {
         const auto *aliasedType = globalVar->TypeAnnotation()->GetType(checker_);
+        importSet_.insert(aliasedType->ToString());
         OutDts(aliasedType->ToString());
     } else if (globalVar->TypeAnnotation() != nullptr && globalVar->TypeAnnotation()->IsETSTypeReference()) {
         const auto part = globalVar->TypeAnnotation()->AsETSTypeReference()->Part();
         if (part->Name()->IsIdentifier()) {
             auto partName = part->Name()->AsIdentifier()->Name().Mutf8();
+            importSet_.insert(partName);
             GenPartName(partName);
             indirectDependencyObjects_.insert(partName);
             OutDts(partName);
@@ -1601,16 +1678,30 @@ bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::p
 
     declBuilder.Generate();
 
+    std::string outputEts = declBuilder.GetTsOutput();
+    std::string outputDEts = declBuilder.GetDtsOutput();
+
+    declBuilder.ResetTsOutput();
+    declBuilder.ResetDtsOutput();
+
+    declBuilder.GenImportDeclarations();
+
+    std::string importOutputEts = declBuilder.GetTsOutput();
+    std::string importOutputDEts = declBuilder.GetDtsOutput();
+
+    std::string combineEts = importOutputEts + outputEts;
+    std::string combinedDEts = importOutputDEts + outputDEts;
+
     if (!declBuilder.GetDeclgenOptions().outputDeclEts.empty()) {
         auto outDtsPath = declBuilder.GetDeclgenOptions().outputDeclEts;
-        if (!WriteToFile(outDtsPath, declBuilder.GetDtsOutput(), checker)) {
+        if (!WriteToFile(outDtsPath, combinedDEts, checker)) {
             return false;
         }
     }
 
     if (!declBuilder.GetDeclgenOptions().outputEts.empty()) {
         auto outTsPath = declBuilder.GetDeclgenOptions().outputEts;
-        if (!WriteToFile(outTsPath, declBuilder.GetTsOutput(), checker)) {
+        if (!WriteToFile(outTsPath, combineEts, checker)) {
             return false;
         }
     }
