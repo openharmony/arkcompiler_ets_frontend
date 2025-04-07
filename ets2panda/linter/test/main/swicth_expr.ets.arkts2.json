@@ -153,6 +153,56 @@
             "suggest": "",
             "rule": "The switch expression type must be of type number,string or enum (arkts-switch-expr)",
             "severity": "ERROR"
+        },
+        {
+            "line": 139,
+            "column": 1,
+            "endLine": 139,
+            "endColumn": 9,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 163,
+            "column": 5,
+            "endLine": 163,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 187,
+            "column": 5,
+            "endLine": 187,
+            "endColumn": 13,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 197,
+            "column": 5,
+            "endLine": 197,
+            "endColumn": 17,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 206,
+            "column": 7,
+            "endLine": 206,
+            "endColumn": 22,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
         }
     ]
 }

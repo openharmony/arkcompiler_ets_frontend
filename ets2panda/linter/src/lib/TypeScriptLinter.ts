@@ -4043,29 +4043,82 @@ export class TypeScriptLinter {
     if (!expressionType) {
       return false;
     }
-    if (this.isSwitchAllowedType(expressionType)) {
+    if (this.isSwitchAllowedType(expressionType, switchStatement.expression)) {
       return true;
     }
     if (expressionType.isUnion()) {
       const unionTypes = expressionType.types;
-      return unionTypes.every(this.isSwitchAllowedType);
+      return unionTypes.every((t) => {
+        return this.isSwitchAllowedType(t, switchStatement.expression);
+      });
     }
     return false;
   }
 
-  private isSwitchAllowedType(type: ts.Type): boolean {
+  private isSwitchAllowedType(type: ts.Type, node: ts.Node): boolean {
     if (type.flags & (ts.TypeFlags.StringLike | ts.TypeFlags.EnumLike)) {
       return true;
     }
 
-    if (type.flags & ts.TypeFlags.NumberLiteral) {
-      const value = (type as ts.NumberLiteralType).value;
-      return Number.isInteger(value);
+    if (type.flags & (ts.TypeFlags.Number | ts.TypeFlags.NumberLiteral)) {
+      if (type.isNumberLiteral()) {
+        const value = type.value;
+        return TypeScriptLinter.isValidNumber(value);
+      }
+      if (ts.isIdentifier(node)) {
+        const refValue = this.getNumberReferenceValue(node);
+        if (refValue !== null && !TypeScriptLinter.isValidNumber(refValue)) {
+          return false;
+        }
+      }
+      return true;
     }
 
-    return this.tsTypeChecker.typeToString(type) === 'int';
+    const typeString = this.tsTypeChecker.typeToString(type);
+    return (typeString === 'String' || typeString === 'int');
   }
 
+  private static isValidNumber(value: number): boolean {
+    const forbiddenValues = [
+      Number.NaN,
+      Number.POSITIVE_INFINITY,
+      Number.NEGATIVE_INFINITY,
+      Number.MAX_VALUE,
+      Number.MIN_VALUE
+    ];
+
+    return !forbiddenValues.includes(value) && Number.isInteger(value);
+  }
+
+  private getNumberReferenceValue(node: ts.Identifier): number | null {
+    const symbol = this.tsTypeChecker.getSymbolAtLocation(node);
+    if (!symbol) {
+      return null;
+    }
+
+    for (const decl of symbol.getDeclarations() || []) {
+      if (!ts.isVariableDeclaration(decl) || !decl.initializer) {
+        continue;
+      }
+      if (ts.isPropertyAccessExpression(decl.initializer)) {
+        const propName = decl.initializer.name.text;
+        const numberProps: Record<string, number> = {
+          NaN: Number.NaN,
+          POSITIVE_INFINITY: Number.POSITIVE_INFINITY,
+          NEGATIVE_INFINITY: Number.NEGATIVE_INFINITY,
+          MAX_VALUE: Number.MAX_VALUE,
+          MIN_VALUE: Number.MIN_VALUE
+        };
+        if (propName in numberProps) {
+          return numberProps[propName];
+        }
+      } else if (ts.isNumericLiteral(decl.initializer)) {
+        return Number(decl.initializer.text);
+      }
+    }
+    return null;
+  }
+  
   private handleLimitedLiteralType(literalTypeNode: ts.LiteralTypeNode): void {
     if (!this.options.arkts2 || !literalTypeNode) {
       return;
