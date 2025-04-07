@@ -941,7 +941,7 @@ export class TypeScriptLinter {
     this.handleTsInterop(propertyAccessNode, () => {
       this.checkInteropForPropertyAccess(propertyAccessNode);
     });
-
+    this.propertyAccessExpressionForInterop(exprSym, propertyAccessNode);
     if (this.isPrototypePropertyAccess(propertyAccessNode, exprSym, baseExprSym, baseExprType)) {
       this.incrementCounters(propertyAccessNode.name, FaultID.Prototype);
     }
@@ -969,6 +969,27 @@ export class TypeScriptLinter {
     this.checkFunctionProperty(propertyAccessNode, baseExprSym, baseExprType);
     this.handleSdkForConstructorFuncs(propertyAccessNode);
     this.fixJsImportPropertyAccessExpression(node);
+  }
+
+  propertyAccessExpressionForInterop(
+    exprSym: ts.Symbol | undefined,
+    propertyAccessNode: ts.PropertyAccessExpression
+  ): void {
+    if (this.useStatic && this.options.arkts2) {
+      const declaration = exprSym?.declarations?.[0];
+      if (declaration?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
+        if (
+          ts.isBinaryExpression(propertyAccessNode.parent) &&
+          propertyAccessNode.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken
+        ) {
+          const autofix = this.autofixer?.fixInteropBinaryExpression(propertyAccessNode.parent);
+          this.incrementCounters(propertyAccessNode.parent, FaultID.InteropObjectProperty, autofix);
+        } else {
+          const autofix = this.autofixer?.fixInteropPropertyAccessExpression(propertyAccessNode);
+          this.incrementCounters(propertyAccessNode, FaultID.InteropObjectProperty, autofix);
+        }
+      }
+    }
   }
 
   checkFunctionProperty(

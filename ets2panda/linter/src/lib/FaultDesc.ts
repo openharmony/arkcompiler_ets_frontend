@@ -189,3 +189,4 @@ faultDesc[FaultID.SdkTypeQuery] = 'NO typeof as a type in API';
 faultDesc[FaultID.LimitedStdLibNoImportConcurrency] = 'Import Concurrency Deprecated';
 faultDesc[FaultID.InterOpImportJs] = 'No JS import';
 faultDesc[FaultID.CallJSFunction] = 'Call JS Function';
+faultDesc[FaultID.InteropObjectProperty] = 'Interop property access';

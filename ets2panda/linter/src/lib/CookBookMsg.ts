@@ -292,3 +292,4 @@ cookBookTag[319] = 'Direct usage of interop JS objects is not supported (arkts-i
 cookBookTag[321] = 'Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)';
 cookBookTag[330] = 'Importing directly from "JS" module is not supported (arkts-no-js-import)';
 cookBookTag[331] = 'ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)';
+cookBookTag[332] = 'Properties of interop objects can\'t be accessed directly (arkts-no-js-obj-property)';
