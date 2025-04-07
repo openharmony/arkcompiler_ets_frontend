@@ -3275,4 +3275,48 @@ export class Autofixer {
     });
     return lastImportEnd;
   }
+  
+  fixInteropPropertyAccessExpression(express: ts.PropertyAccessExpression): Autofix[] | undefined {
+    let text: string = '';
+    const statements = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(express.expression, ts.factory.createIdentifier('getPropertyByName')),
+      undefined,
+      [ts.factory.createStringLiteral(express.name.getText())]
+    );
+    text = this.printer.printNode(ts.EmitHint.Unspecified, statements, express.getSourceFile());
+    return [{ start: express.getStart(), end: express.getEnd(), replacementText: text }];
+  }
+
+  fixInteropBinaryExpression(express: ts.BinaryExpression): Autofix[] | undefined {
+    const left = express.left;
+    const right = express.right;
+    let objectName = '';
+    let propertyName = '';
+    if (ts.isPropertyAccessExpression(left)) {
+      objectName = left.expression.getText();
+      propertyName = left.name.text;
+    } else {
+      return undefined;
+    }
+    const statements = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(objectName),
+        ts.factory.createIdentifier('setPropertyByName')
+      ),
+      undefined,
+      [
+        ts.factory.createStringLiteral(propertyName),
+        ts.factory.createCallExpression(
+          ts.factory.createPropertyAccessExpression(
+            ts.factory.createIdentifier(ES_OBJECT),
+            ts.factory.createIdentifier('wrap')
+          ),
+          undefined,
+          [ts.factory.createIdentifier(right.getText())]
+        )
+      ]
+    );
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, statements, express.getSourceFile());
+    return [{ start: express.getStart(), end: express.getEnd(), replacementText: replacementText }];
+  }
 }
