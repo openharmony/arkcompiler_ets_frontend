@@ -1505,6 +1505,23 @@ void TSDeclGen::EmitClassGlueCode(const ir::ClassDefinition *classDef, const std
     }
 }
 
+void TSDeclGen::ProcessMethodsFromInterfaces(const std::unordered_set<std::string> &processedMethods,
+                                             const ir::ClassDefinition *classDef)
+{
+    const auto &interfaces = classDef->TsType()->AsETSObjectType()->Interfaces();
+    for (const auto &interface : interfaces) {
+        auto methods = interface->Methods();
+        for (const auto &method : methods) {
+            if ((method->Flags() & (varbinder::VariableFlags::PUBLIC)) != 0U &&
+                (method->Flags() & (varbinder::VariableFlags::STATIC)) == 0U &&
+                processedMethods.find(method->Name().Mutf8()) == processedMethods.end()) {
+                GenMethodDeclaration(
+                    method->AsLocalVariable()->Declaration()->AsFunctionDecl()->Node()->AsMethodDefinition());
+            }
+        }
+    }
+}
+
 void TSDeclGen::ProcessClassBody(const ir::ClassDefinition *classDef)
 {
     std::unordered_set<std::string> processedMethods;
@@ -1544,6 +1561,7 @@ void TSDeclGen::ProcessClassBody(const ir::ClassDefinition *classDef)
             GenClassDeclaration(prop->AsClassDeclaration());
         }
     }
+    ProcessMethodsFromInterfaces(processedMethods, classDef);
 }
 
 void TSDeclGen::CloseClassBlock(const bool isDts)
