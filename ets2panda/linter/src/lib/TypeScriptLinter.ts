@@ -3592,6 +3592,7 @@ export class TypeScriptLinter {
     if (this.tsUtils.isSendableClassOrInterface(typeNameType)) {
       this.checkSendableTypeArguments(typeRef);
     }
+    this.handleQuotedHyphenPropsDeprecated(typeRef);
   }
 
   private checkPartialType(node: ts.Node): void {
@@ -5404,6 +5405,77 @@ export class TypeScriptLinter {
       if (propertyName === sdkInfo.api_name) {
         this.incrementCounters(node.name, FaultID.ConstructorTypesDeprecated);
       }
+    }
+  }
+
+  private handleQuotedHyphenPropsDeprecated(typeRef: ts.TypeReferenceNode): void {
+    if (!this.options.arkts2 || !ts.isQualifiedName(typeRef.typeName)) {
+      return;
+    }
+    const qualNode = typeRef.typeName;
+    const parent = typeRef.parent;
+    const sdkInfos = this.interfaceMap.get(qualNode.left.getText());
+    if (!sdkInfos || sdkInfos.size === 0) {
+      return;
+    }
+
+    for (const sdkInfo of sdkInfos) {
+      this.processQuotedHyphenPropsDeprecated(parent, sdkInfo.api_name);
+    }
+  }
+
+  private processQuotedHyphenPropsDeprecated(node: ts.Node, apiName: string): void {
+    if (ts.isVariableDeclaration(node)) {
+      this.handleQuotedHyphenPropsDeprecatedOnVarDecl(node, apiName);
+    } else if (ts.isFunctionDeclaration(node)) {
+      this.handleQuotedHyphenPropsDeprecatedOnFunDecl(node, apiName);
+    }
+  }
+
+  private handleQuotedHyphenPropsDeprecatedOnVarDecl(node: ts.VariableDeclaration, apiName: string): void {
+    const initializer = node.initializer;
+    if (initializer && ts.isObjectLiteralExpression(initializer)) {
+      initializer.properties.forEach((property) => {
+        if (ts.isPropertyAssignment(property)) {
+          const propertyName = property.name.getText();
+          if (propertyName === apiName) {
+            this.incrementCounters(property.name, FaultID.QuotedHyphenPropsDeprecated);
+          }
+        }
+      });
+    }
+  }
+
+  private handleQuotedHyphenPropsDeprecatedOnFunDecl(node: ts.FunctionDeclaration, apiName: string): void {
+    const body = node.body;
+    if (!body || !ts.isBlock(body)) {
+      return;
+    }
+
+    body.statements.forEach(this.processStatement.bind(this, apiName));
+  }
+
+  private processStatement(apiName: string, statement: ts.Statement): void {
+    if (!ts.isReturnStatement(statement)) {
+      return;
+    }
+
+    const returnValue = statement.expression;
+    if (!returnValue || !ts.isObjectLiteralExpression(returnValue)) {
+      return;
+    }
+
+    returnValue.properties.forEach(this.processProperty.bind(this, apiName));
+  }
+
+  private processProperty(apiName: string, property: ts.ObjectLiteralElementLike): void {
+    if (!ts.isPropertyAssignment(property)) {
+      return;
+    }
+
+    const isMatch = property.name.getText() === apiName;
+    if (isMatch) {
+      this.incrementCounters(property.name, FaultID.QuotedHyphenPropsDeprecated);
     }
   }
 }

@@ -401,6 +401,156 @@
           "methd_return_type": "DatabaseQuery<T>",
           "codeKind": 264
       }
+    },
+    {
+      "import_path": [
+        "@hms.collaboration.rcp.d.ts",
+        "@kit.RemoteCommunicationKit"
+      ],
+      "file_path": ["api/@hms.collaboration.rcp.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "LiteralAsPropertyName",
+        "api_name": "'authorization'",
+        "api_type": "PropertySignature",
+        "api_optional": true,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+          {
+            "api_name": "RequestHeaders",
+            "api_type": "TypeAliasDeclaration"
+          },
+          {
+            "api_name": "rcp",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "string",
+        "codeKind": 170
+      }
+    },
+    {
+      "import_path": [
+        "@hms.collaboration.rcp.d.ts",
+        "@kit.RemoteCommunicationKit"
+      ],
+      "file_path": ["api/@hms.collaboration.rcp.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "LiteralAsPropertyName",
+        "api_name": "'content-type'",
+        "api_type": "PropertySignature",
+        "api_optional": true,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+          {
+            "api_name": "RequestHeaders",
+            "api_type": "TypeAliasDeclaration"
+          },
+          {
+            "api_name": "rcp",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "string",
+        "codeKind": 170
+      }
+    },
+    {
+      "import_path": [
+        "@hms.collaboration.rcp.d.ts",
+        "@kit.RemoteCommunicationKit"
+      ],
+      "file_path": ["api/@hms.collaboration.rcp.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "LiteralAsPropertyName",
+        "api_name": "'accept'",
+        "api_type": "PropertySignature",
+        "api_optional": true,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+          {
+            "api_name": "RequestHeaders",
+            "api_type": "TypeAliasDeclaration"
+          },
+          {
+            "api_name": "rcp",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "ContentType | ContentType[]",
+        "codeKind": 170
+      }
+    },
+    {
+      "import_path": [
+        "@hms.collaboration.rcp.d.ts",
+        "@kit.RemoteCommunicationKit"
+      ],
+      "file_path": ["api/@hms.collaboration.rcp.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "LiteralAsPropertyName",
+        "api_name": "'cache-control'",
+        "api_type": "PropertySignature",
+        "api_optional": true,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+          {
+            "api_name": "RequestHeaders",
+            "api_type": "TypeAliasDeclaration"
+          },
+          {
+            "api_name": "rcp",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "string | string[]",
+        "codeKind": 170
+      }
+    },
+    {
+      "import_path": [
+        "@hms.collaboration.rcp.d.ts",
+        "@kit.RemoteCommunicationKit"
+      ],
+      "file_path": ["api/@hms.collaboration.rcp.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "LiteralAsPropertyName",
+        "api_name": "'user-agent'",
+        "api_type": "PropertySignature",
+        "api_optional": true,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+          {
+            "api_name": "RequestHeaders",
+            "api_type": "TypeAliasDeclaration"
+          },
+          {
+            "api_name": "rcp",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "string",
+        "codeKind": 170
+      }
     }
   ]
 }

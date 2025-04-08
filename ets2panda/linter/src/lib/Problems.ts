@@ -183,6 +183,7 @@ export enum FaultID {
   ConstructorIfaceFromSdk,
   PropertyAccessByIndexFromSdk,
   ConstructorTypesDeprecated,
+  QuotedHyphenPropsDeprecated,
   // this should always be last enum
   LAST_ID
 }

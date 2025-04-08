@@ -194,3 +194,4 @@ faultsAttrs[FaultID.SendablePropTypeFromSdk] = new FaultAttributes(312);
 faultsAttrs[FaultID.ConstructorIfaceFromSdk] = new FaultAttributes(313);
 faultsAttrs[FaultID.PropertyAccessByIndexFromSdk] = new FaultAttributes(314);
 faultsAttrs[FaultID.ConstructorTypesDeprecated] = new FaultAttributes(325);
+faultsAttrs[FaultID.QuotedHyphenPropsDeprecated] = new FaultAttributes(324);

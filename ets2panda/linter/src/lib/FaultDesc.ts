@@ -182,3 +182,4 @@ faultDesc[FaultID.SendablePropTypeFromSdk] = 'ISendable is no longer supported';
 faultDesc[FaultID.ConstructorIfaceFromSdk] = 'Construct signatures are not supported in interfaces from sdk';
 faultDesc[FaultID.PropertyAccessByIndexFromSdk] = 'property access by index from sdk';
 faultDesc[FaultID.ConstructorTypesDeprecated] = 'Constructor funcs';
+faultDesc[FaultID.QuotedHyphenPropsDeprecated] = 'Quoted hyphen props deprecated';

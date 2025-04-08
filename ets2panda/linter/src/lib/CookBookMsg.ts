@@ -283,3 +283,5 @@ cookBookTag[312] =
 cookBookTag[313] = 'Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)';
 cookBookTag[314] = 'Indexed access is not supported for fields (sdk-no-props-by-index)';
 cookBookTag[325] = 'Constructor types are not supported - use lambda functions instead. (sdk-constructor-funcs)';
+cookBookTag[324] =
+  'Object property names must be valid identifiers.Single-quoted and hyphenated properties are not supported. (sdk-no-literal-as-property-name)';
