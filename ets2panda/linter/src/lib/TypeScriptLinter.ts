@@ -118,7 +118,6 @@ export class TypeScriptLinter {
     TypeScriptLinter.nameSpaceFunctionCache = new Map<string, Set<string>>();
   }
 
-
   private initEtsHandlers(): void {
 
     /*
@@ -601,7 +600,7 @@ export class TypeScriptLinter {
 
   private handleStructDeclaration(node: ts.StructDeclaration): void {
     if (!this.options.arkts2) {
-        return;
+      return;
     }
     this.handleInvalidIdentifier(node);
   }
@@ -792,7 +791,8 @@ export class TypeScriptLinter {
     const etsIdx = pathParts.indexOf(ETS_PART);
 
     if (etsIdx === 0) {
-      this.incrementCounters(importDeclNode, FaultID.OhmUrlFullPath);
+      const autofix = Autofixer.addDefaultModuleToPath(pathParts, importDeclNode);
+      this.incrementCounters(importDeclNode, FaultID.OhmUrlFullPath, autofix);
       return;
     }
 
@@ -4412,9 +4412,9 @@ export class TypeScriptLinter {
 
     const checkIdentifier = (identifier: ts.Identifier | undefined): void => {
       const text = identifier && ts.isIdentifier(identifier) ? identifier.text : '';
-      if (identifier && text && INVALID_IDENTIFIER_KEYWORDS.includes(text)) {       
-        this.incrementCounters(identifier, FaultID.InvalidIdentifier);      
-      } 
+      if (identifier && text && INVALID_IDENTIFIER_KEYWORDS.includes(text)) {
+        this.incrementCounters(identifier, FaultID.InvalidIdentifier);
+      }
     };
 
     if (ts.isImportDeclaration(decl)) {
@@ -4426,7 +4426,7 @@ export class TypeScriptLinter {
       }
       checkIdentifier(importClause?.name);
     } else if (isStructDeclaration(decl)) {
-      checkIdentifier((decl as ts.StructDeclaration).name); 
+      checkIdentifier((decl as ts.StructDeclaration).name);
     } else {
       checkIdentifier(decl.name as ts.Identifier);
     }

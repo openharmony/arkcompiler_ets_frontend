@@ -33,6 +33,36 @@
             "suggest": "",
             "rule": "Importing from \"oh module\" requires specifying full path (arkts-ohmurl-full-path)",
             "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 2,
+            "endLine": 21,
+            "endColumn": 45,
+            "problem": "OhmUrlFullPath",
+            "suggest": "",
+            "rule": "Importing from \"oh module\" requires specifying full path (arkts-ohmurl-full-path)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 2,
+            "endLine": 22,
+            "endColumn": 52,
+            "problem": "OhmUrlFullPath",
+            "suggest": "",
+            "rule": "Importing from \"oh module\" requires specifying full path (arkts-ohmurl-full-path)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 2,
+            "endLine": 23,
+            "endColumn": 48,
+            "problem": "OhmUrlFullPath",
+            "suggest": "",
+            "rule": "Importing from \"oh module\" requires specifying full path (arkts-ohmurl-full-path)",
+            "severity": "ERROR"
         }
     ]
 }

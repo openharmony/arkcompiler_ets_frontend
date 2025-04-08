@@ -14,8 +14,10 @@
  */
 
  import { MainPage } from "library/ets/components/MainPage" // Should fail on ArkTS 1.2
- import { Something1 } from "library/ets/src/main/components/Something1" // Valid
- import { Something2 } from "ets/components/Something2" // Should Fail but no auto complete
+ import { Something1 } from "library/src/main/ets/components/Something1" // Valid
+ import { Something2 } from "ets/components/Something2" // Should Fail
  import { Valid } from "normal/path/to/import/MainPage" // Valid
  import { RelativeImport } from "../components/MainPage" // Valid
-
+ import { Something } from "ets/pages/test1" //should fail
+ import { SomethingElse } from "ets/pages/testing"; //should fail
+ import { Test } from "module/ets/random/test"; //should fail
