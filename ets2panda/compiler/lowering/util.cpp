@@ -151,7 +151,7 @@ static void ClearHelper(parser::Program *prog)
 }
 
 // Rerun varbinder on the node. (First clear typesVariables and scopes)
-varbinder::Scope *Rebind(varbinder::ETSBinder *varBinder, ir::AstNode *node)
+varbinder::Scope *Rebind(PhaseManager *phaseManager, varbinder::ETSBinder *varBinder, ir::AstNode *node)
 {
     if (node->IsProgram()) {
         auto program = node->AsETSModule()->Program();
@@ -168,7 +168,7 @@ varbinder::Scope *Rebind(varbinder::ETSBinder *varBinder, ir::AstNode *node)
         ClearHelper(program);
 
         varBinder->CleanUp();
-        for (auto *phase : GetRebindPhase()) {
+        for (auto *phase : phaseManager->RebindPhases()) {
             phase->Apply(varBinder->GetContext(), program);
         }
 
@@ -186,7 +186,8 @@ varbinder::Scope *Rebind(varbinder::ETSBinder *varBinder, ir::AstNode *node)
 }
 
 // Rerun varbinder and checker on the node.
-void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node)
+void Recheck(PhaseManager *phaseManager, varbinder::ETSBinder *varBinder, checker::ETSChecker *checker,
+             ir::AstNode *node)
 {
     if (node->IsProgram()) {
         auto program = node->AsETSModule()->Program();
@@ -205,13 +206,13 @@ void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::
         varBinder->CleanUp();
         varBinder->GetContext()->checker->CleanUp();
 
-        for (auto *phase : GetRecheckPhase()) {
+        for (auto *phase : phaseManager->RecheckPhases()) {
             phase->Apply(varBinder->GetContext(), program);
         }
         return;
     }
 
-    auto *scope = Rebind(varBinder, node);
+    auto *scope = Rebind(phaseManager, varBinder, node);
 
     // NOTE(gogabr: should determine checker status more finely.
     auto *containingClass = ContainingClass(node);

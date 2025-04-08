@@ -20,6 +20,8 @@
 
 namespace ark::es2panda::compiler {
 
+class PhaseManager;
+
 inline constexpr std::string_view const GENSYM_CORE = "gensym%%_";
 inline constexpr std::string_view const DUMMY_ID = "_";
 
@@ -32,9 +34,10 @@ ArenaSet<varbinder::Variable *> FindCaptured(ArenaAllocator *allocator, ir::AstN
 void SetSourceRangesRecursively(ir::AstNode *node, const lexer::SourceRange &range);
 
 // Rerun varbinder on the node.
-varbinder::Scope *Rebind(varbinder::ETSBinder *varBinder, ir::AstNode *node);
+varbinder::Scope *Rebind(PhaseManager *phaseManager, varbinder::ETSBinder *varBinder, ir::AstNode *node);
 // Rerun varbinder and checker on the node.
-void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node);
+void Recheck(PhaseManager *phaseManager, varbinder::ETSBinder *varBinder, checker::ETSChecker *checker,
+             ir::AstNode *node);
 
 // NOTE: used to get the declaration from identifier in Plugin API and LSP
 ir::AstNode *DeclarationFromIdentifier(ir::Identifier *node);

@@ -89,7 +89,7 @@ void BuildOverloadHelperFunction(public_lib::Context *ctx, ir::MethodDefinition 
     helperOverload->SetParent(method);
 
     checker::SavedCheckerContext scc(checker, checker->Context().Status(), method->Function()->Signature()->Owner());
-    Rebind(varBinder, helperOverload);
+    Rebind(ctx->phaseManager, varBinder, helperOverload);
     helperOverload->Function()->AddFlag((ir::ScriptFunctionFlags::OVERLOAD));
     auto funcScope = helperOverload->Function()->Scope();
     funcScope->BindName(method->Function()->Scope()->Name());

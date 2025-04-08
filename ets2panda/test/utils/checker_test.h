@@ -99,8 +99,6 @@ public:
         ark::es2panda::Compiler compiler(options->GetExtension(), options->GetThread());
         ark::es2panda::SourceFile input(fileName, src, options->IsModule());
         compiler_alias::CompilationUnit unit {input, *options, 0, options->GetExtension(), diagnosticEngine_};
-        auto getPhases = compiler_alias::GetPhaseList(ark::es2panda::ScriptExtension::ETS);
-
         auto parser = Parser(program, unit.options, diagnosticEngine_,
                              static_cast<parser_alias::ParserStatus>(unit.rawParserStatus));
         auto analyzer = Analyzer(checker);
@@ -112,6 +110,7 @@ public:
         varbinder->SetContext(publicContext_.get());
 
         auto emitter = Emitter(publicContext_.get());
+        auto phaseManager = compiler_alias::PhaseManager(unit.ext, allocator_.get());
 
         auto config = plib_alias::ConfigImpl {};
         publicContext_->config = &config;
@@ -124,10 +123,10 @@ public:
         publicContext_->emitter = &emitter;
         publicContext_->parserProgram = program;
         publicContext_->diagnosticEngine = &diagnosticEngine_;
-
+        publicContext_->phaseManager = &phaseManager;
         parser.ParseScript(unit.input,
                            unit.options.GetCompilationMode() == ark::es2panda::CompilationMode::GEN_STD_LIB);
-        for (auto *phase : getPhases) {
+        while (auto phase = publicContext_->phaseManager->NextPhase()) {
             if (!phase->Apply(publicContext_.get(), program)) {
                 return;
             }

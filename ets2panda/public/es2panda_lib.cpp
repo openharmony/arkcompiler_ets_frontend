@@ -272,8 +272,7 @@ __attribute__((unused)) static es2panda_Context *CreateContext(es2panda_Config *
 
     varbinder->SetContext(res);
     res->codeGenCb = CompileJob;
-    res->phases = compiler::GetPhaseList(ScriptExtension::ETS);
-    res->currentPhase = 0;
+    res->phaseManager = new compiler::PhaseManager(ScriptExtension::ETS, res->allocator);
     res->emitter = new compiler::ETSEmitter(res);
     res->program = nullptr;
     res->state = ES2PANDA_STATE_NEW;
@@ -317,6 +316,7 @@ __attribute__((unused)) static Context *Parse(Context *ctx)
         return ctx;
     }
 
+    ctx->phaseManager->Restart();
     ctx->parser->ParseScript(*ctx->sourceFile,
                              ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB);
     ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_PARSED : ES2PANDA_STATE_ERROR;
@@ -334,12 +334,12 @@ __attribute__((unused)) static Context *Bind(Context *ctx)
     }
 
     ES2PANDA_ASSERT(ctx->state == ES2PANDA_STATE_PARSED);
-    do {
-        if (ctx->currentPhase >= ctx->phases.size()) {
+    while (auto phase = ctx->phaseManager->NextPhase()) {
+        phase->Apply(ctx, ctx->parserProgram);
+        if (phase->Name() == compiler::ResolveIdentifiers::NAME) {
             break;
         }
-        ctx->phases[ctx->currentPhase]->Apply(ctx, ctx->parserProgram);
-    } while (ctx->phases[ctx->currentPhase++]->Name() != compiler::ResolveIdentifiers::NAME);
+    }
     ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_BOUND : ES2PANDA_STATE_ERROR;
     return ctx;
 }
@@ -355,14 +355,12 @@ __attribute__((unused)) static Context *Check(Context *ctx)
     }
 
     ES2PANDA_ASSERT(ctx->state >= ES2PANDA_STATE_PARSED && ctx->state < ES2PANDA_STATE_CHECKED);
-
-    do {
-        if (ctx->currentPhase >= ctx->phases.size()) {
+    while (auto phase = ctx->phaseManager->NextPhase()) {
+        phase->Apply(ctx, ctx->parserProgram);
+        if (phase->Name() == compiler::CheckerPhase::NAME) {
             break;
         }
-
-        ctx->phases[ctx->currentPhase]->Apply(ctx, ctx->parserProgram);
-    } while (ctx->phases[ctx->currentPhase++]->Name() != compiler::CheckerPhase::NAME);
+    }
     ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_CHECKED : ES2PANDA_STATE_ERROR;
     return ctx;
 }
@@ -378,8 +376,8 @@ __attribute__((unused)) static Context *Lower(Context *ctx)
     }
 
     ES2PANDA_ASSERT(ctx->state == ES2PANDA_STATE_CHECKED);
-    while (ctx->currentPhase < ctx->phases.size()) {
-        ctx->phases[ctx->currentPhase++]->Apply(ctx, ctx->parserProgram);
+    while (auto phase = ctx->phaseManager->NextPhase()) {
+        phase->Apply(ctx, ctx->parserProgram);
     }
     ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_LOWERED : ES2PANDA_STATE_ERROR;
     return ctx;
@@ -484,6 +482,7 @@ extern "C" __attribute__((unused)) void DestroyContext(es2panda_Context *context
     delete ctx->queue;
     delete ctx->allocator;
     delete ctx->sourceFile;
+    delete ctx->phaseManager;
     delete ctx;
 }
 
@@ -692,13 +691,14 @@ extern "C" es2panda_Scope *AstNodeRebind(es2panda_Context *ctx, es2panda_AstNode
     auto E2pNode = reinterpret_cast<ir::AstNode *>(node);
     auto context = reinterpret_cast<Context *>(ctx);
     auto varbinder = context->parserProgram->VarBinder()->AsETSBinder();
+    auto phaseManager = context->phaseManager;
     if (E2pNode->IsScriptFunction() ||
         E2pNode->FindChild([](ir::AstNode *n) { return n->IsScriptFunction(); }) != nullptr) {
         while (!E2pNode->IsProgram()) {
             E2pNode = E2pNode->Parent();
         }
     }
-    return reinterpret_cast<es2panda_Scope *>(compiler::Rebind(varbinder, E2pNode));
+    return reinterpret_cast<es2panda_Scope *>(compiler::Rebind(phaseManager, varbinder, E2pNode));
 }
 
 extern "C" void AstNodeRecheck(es2panda_Context *ctx, es2panda_AstNode *node)
@@ -707,13 +707,14 @@ extern "C" void AstNodeRecheck(es2panda_Context *ctx, es2panda_AstNode *node)
     auto context = reinterpret_cast<Context *>(ctx);
     auto varbinder = context->parserProgram->VarBinder()->AsETSBinder();
     auto checker = context->checker->AsETSChecker();
+    auto phaseManager = context->phaseManager;
     if (E2pNode->IsScriptFunction() ||
         E2pNode->FindChild([](ir::AstNode *n) { return n->IsScriptFunction(); }) != nullptr) {
         while (!E2pNode->IsProgram()) {
             E2pNode = E2pNode->Parent();
         }
     }
-    compiler::Recheck(varbinder, checker, E2pNode);
+    compiler::Recheck(phaseManager, varbinder, checker, E2pNode);
     context->state = !context->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_CHECKED : ES2PANDA_STATE_ERROR;
     return;
 }

@@ -31,7 +31,7 @@ class Options;
 }  // namespace ark::es2panda::util
 
 namespace ark::es2panda::compiler {
-class Phase;
+class PhaseManager;
 }  // namespace ark::es2panda::compiler
 
 namespace ark::es2panda::public_lib {
@@ -52,10 +52,9 @@ struct Context {
     ArenaAllocator *allocator = nullptr;
     compiler::CompileQueue *queue = nullptr;
     std::vector<util::Plugin> const *plugins = nullptr;
-    std::vector<compiler::Phase *> phases;
     std::vector<compiler::LiteralBuffer> contextLiterals;
     CodeGenCb codeGenCb;
-    size_t currentPhase = 0;
+    compiler::PhaseManager *phaseManager = nullptr;
 
     parser::Program *parserProgram = nullptr;
     parser::ParserImpl *parser = nullptr;

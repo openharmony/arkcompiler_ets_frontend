@@ -91,7 +91,6 @@ public:
         Compiler compiler(options->GetExtension(), options->GetThread());
         SourceFile input(fileName, src, options->IsModule());
         compiler::CompilationUnit unit {input, *options, 0, options->GetExtension(), diagnosticEngine_};
-        auto getPhases = compiler::GetPhaseList(ScriptExtension::ETS);
 
         auto parser =
             Parser(program, unit.options, diagnosticEngine_, static_cast<parser::ParserStatus>(unit.rawParserStatus));
@@ -104,6 +103,7 @@ public:
         varbinder->SetContext(publicContext_.get());
 
         auto emitter = Emitter(publicContext_.get());
+        auto phaseManager = compiler::PhaseManager(unit.ext, allocator_.get());
 
         auto config = public_lib::ConfigImpl {};
         publicContext_->config = &config;
@@ -116,8 +116,9 @@ public:
         publicContext_->emitter = &emitter;
         publicContext_->parserProgram = program;
         publicContext_->diagnosticEngine = &diagnosticEngine_;
+        publicContext_->phaseManager = &phaseManager;
         parser.ParseScript(unit.input, unit.options.GetCompilationMode() == CompilationMode::GEN_STD_LIB);
-        for (auto *phase : getPhases) {
+        while (auto phase = publicContext_->phaseManager->NextPhase()) {
             if (!phase->Apply(publicContext_.get(), program)) {
                 return;
             }
