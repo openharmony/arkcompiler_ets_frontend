@@ -55,3 +55,8 @@ abstract class absClass {
       /* ... */
     }
 }
+function func(){
+  console.log("ArkTs foo4")
+}
+
+func.val = "0xff";
