@@ -177,4 +177,4 @@ faultDesc[FaultID.InteropTSFunctionInvoke] = 'TS Function Invoke';
 faultDesc[FaultID.LimitedVoidTypeFromSdk] = 'Limited void type from sdk';
 faultDesc[FaultID.EntryAnnotation] = '"@Entry" decorator parameter';
 faultDesc[FaultID.ProvideAnnotation] = '"@Provide" decorator parameter';
-
+faultDesc[FaultID.OptionalMethodFromSdk] = 'Optional method from sdk';

@@ -49,6 +49,85 @@
         "methd_return_type": "void | Promise<void>",
         "codeKind": 115
       }
+    },
+    {
+      "import_path": ["@hms.collaboration.rcp", "@kit.RemoteCommunicationKit"],
+      "file_path": ["api/@hms.collaboration.rcp.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "LimitiedVoidType",
+        "api_name": "IncomingDataCallback",
+        "api_type": "TypeAliasDeclaration",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [{ "name": "incomingData", "type": "ArrayBuffer", "is_optional": false, "hasDefault": false }],
+        "parent_api": [
+          {
+            "api_name": "rcp",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "void | Promise<void>",
+        "codeKind": 115
+      }
+    },
+    {
+      "import_path": ["@ohos.web.webview", "@kit.ArkWeb"],
+      "file_path": ["api/@ohos.web.webview.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "OptionalMethod",
+        "api_name": "resumePlayer",
+        "api_type": "MethodSignature",
+        "api_optional": true,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+          {
+            "api_name": "NativeMediaPlayerBridge",
+            "api_type": "InterfaceDeclaration"
+          },
+          {
+            "api_name": "webview",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "void",
+        "codeKind": 173
+      }
+    },
+    {
+      "import_path": ["@ohos.web.webview", "@kit.ArkWeb"],
+      "file_path": ["api/@ohos.web.webview.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "OptionalMethod",
+        "api_name": "suspendPlayer",
+        "api_type": "MethodSignature",
+        "api_optional": true,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [
+          { "name": "type", "type": "SuspendType", "is_optional": false, "hasDefault": false }
+        ],
+        "parent_api": [
+          {
+            "api_name": "NativeMediaPlayerBridge",
+            "api_type": "InterfaceDeclaration"
+          },
+          {
+            "api_name": "webview",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "void",
+        "codeKind": 173
+      }
     }
   ]
 }

@@ -14,6 +14,45 @@
         "limitations under the License."
     ],
     "result": [
-        
+        {
+            "line": 59,
+            "column": 3,
+            "endLine": 61,
+            "endColumn": 4,
+            "problem": "OptionalMethodFromSdk",
+            "suggest": "",
+            "rule": "API no longer supports optional methods (sdk-optional-methods)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 63,
+            "column": 3,
+            "endLine": 65,
+            "endColumn": 4,
+            "problem": "OptionalMethodFromSdk",
+            "suggest": "",
+            "rule": "API no longer supports optional methods (sdk-optional-methods)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 59,
+            "column": 15,
+            "endLine": 59,
+            "endColumn": 16,
+            "problem": "OptionalMethod",
+            "suggest": "",
+            "rule": "Optional methods are not supported (arkts-optional-methods)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 63,
+            "column": 16,
+            "endLine": 63,
+            "endColumn": 17,
+            "problem": "OptionalMethod",
+            "suggest": "",
+            "rule": "Optional methods are not supported (arkts-optional-methods)",
+            "severity": "ERROR"
+        }
     ]
 }

@@ -16,7 +16,7 @@
 export const cookBookMsg: string[] = [];
 export const cookBookTag: string[] = [];
 
-for (let i = 0; i <= 308; i++) {
+for (let i = 0; i <= 309; i++) {
   cookBookMsg[i] = '';
 }
 
@@ -277,3 +277,4 @@ cookBookTag[305] = 'Typescript class decorators are not allowed (arkts-interop-n
 cookBookTag[306] = 'Cannot access typescript types directly (arkts-interop-access-ts-types)';
 cookBookTag[307] = 'Cannot invoke functions implemented in TypeScript (arkts-interop-ts-function)';
 cookBookTag[308] = 'Type "void" has no instances.(arkts-sdk-limited-void-type)';
+cookBookTag[309] = 'API no longer supports optional methods (sdk-optional-methods)';

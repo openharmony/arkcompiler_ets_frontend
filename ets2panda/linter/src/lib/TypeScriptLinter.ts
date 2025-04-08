@@ -1871,6 +1871,27 @@ export class TypeScriptLinter {
     this.handleLimitedVoidType(tsVarDecl);
     this.handleInvalidIdentifier(tsVarDecl);
     this.checkAssignmentNumericSemanticsly(tsVarDecl);
+    this.checkTypeFromSdk(tsVarDecl.type);
+  }
+
+  private checkTypeFromSdk(type: ts.TypeNode | undefined): void {
+    if (!this.options.arkts2 || !type) {
+      return;
+    }
+
+    const fullTypeName = type.getText();
+    const nameArr = fullTypeName.split('.');
+    const sdkInfos = this.interfaceMap.get(nameArr[0]);
+    if (!sdkInfos || sdkInfos.size === 0) {
+      return;
+    }
+
+    for (const sdkInfo of sdkInfos) {
+      if (nameArr.includes(sdkInfo.api_name)) {
+        this.incrementCounters(type, FaultID.LimitedVoidTypeFromSdk);
+        return;
+      }
+    }
   }
 
   private handleDeclarationDestructuring(decl: ts.VariableDeclaration | ts.ParameterDeclaration): void {
@@ -2097,9 +2118,13 @@ export class TypeScriptLinter {
       }
 
       const memberName = member.name?.getText();
-      if (sdkInfo.api_name === memberName && sdkInfo.api_func_args.length === member.parameters.length) {
+
+      if (sdkInfo.api_name === memberName) {
         if (TypeScriptLinter.areParametersEqual(sdkInfo.api_func_args, member.parameters)) {
-          this.incrementCounters(member, FaultID.LimitedVoidTypeFromSdk);
+          this.incrementCounters(
+            member,
+            sdkInfo.problem === 'OptionalMethod' ? FaultID.OptionalMethodFromSdk : FaultID.LimitedVoidTypeFromSdk
+          );
         }
       }
     }
@@ -2109,8 +2134,15 @@ export class TypeScriptLinter {
     sdkFuncArgs: { name: string; type: string }[],
     memberParams: ts.NodeArray<ts.ParameterDeclaration>
   ): boolean {
-    for (let i = 0; i < sdkFuncArgs.length; i++) {
-      if (sdkFuncArgs[i].type !== memberParams[i].type?.getText()) {
+    const apiParamCout = sdkFuncArgs.length;
+    const memberParamCout = memberParams.length;
+    if (apiParamCout > memberParamCout && sdkFuncArgs[memberParamCout + 1]) {
+      return false;
+    }
+
+    for (let i = 0; i < apiParamCout; i++) {
+      const typeName = memberParams[i].type?.getText();
+      if (!typeName?.match(sdkFuncArgs[i].type)) {
         return false;
       }
     }
