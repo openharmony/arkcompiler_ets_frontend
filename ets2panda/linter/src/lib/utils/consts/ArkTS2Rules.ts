@@ -20,6 +20,7 @@ export const arkts2Rules: number[] = [
   34,
   37,
   29,
+  111,
   137,
   139,
   140,
