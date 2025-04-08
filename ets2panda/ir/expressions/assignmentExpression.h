@@ -110,8 +110,10 @@ public:
 
     void SetResult(Expression *expr) noexcept
     {
-        left_ = expr;
-        SetStart(left_->Start());
+        result_ = expr;
+        if (result_ != nullptr) {
+            result_->SetParent(this);
+        }
     }
 
     [[nodiscard]] bool IsLogicalExtended() const noexcept
