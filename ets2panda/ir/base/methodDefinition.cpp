@@ -20,6 +20,7 @@
 #include "compiler/core/pandagen.h"
 #include "classDefinition.h"
 #include "ir/ts/tsInterfaceBody.h"
+#include "compiler/lowering/util.h"
 
 namespace ark::es2panda::ir {
 
@@ -160,6 +161,11 @@ void MethodDefinition::Dump(ir::AstDumper *dumper) const
 
 void MethodDefinition::DumpPrefix(ir::SrcDumper *dumper) const
 {
+    if (compiler::HasGlobalClassParent(this)) {
+        dumper->Add("function ");
+        return;
+    }
+
     if (Parent() != nullptr && Parent()->IsClassDefinition() && !Parent()->AsClassDefinition()->IsLocal()) {
         if (IsPrivate()) {
             dumper->Add("private ");
@@ -205,6 +211,11 @@ void MethodDefinition::DumpPrefix(ir::SrcDumper *dumper) const
 
 void MethodDefinition::Dump(ir::SrcDumper *dumper) const
 {
+    if (compiler::HasGlobalClassParent(this) && Id()->Name().Is(compiler::Signatures::INIT_METHOD)) {
+        Function()->Body()->Dump(dumper);
+        return;
+    }
+
     for (auto method : overloads_) {
         method->Dump(dumper);
         dumper->Endl();

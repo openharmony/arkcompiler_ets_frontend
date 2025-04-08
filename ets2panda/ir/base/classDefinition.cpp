@@ -184,6 +184,23 @@ void ClassDefinition::Dump(ir::AstDumper *dumper) const
                  {"body", body_, propFilter}});
 }
 
+void ClassDefinition::DumpGlobalClass(ir::SrcDumper *dumper) const
+{
+    ES2PANDA_ASSERT(IsGlobal());
+    for (auto elem : body_) {
+        if (elem->IsClassProperty()) {
+            elem->Dump(dumper);
+            dumper->Endl();
+        }
+    }
+    for (auto elem : body_) {
+        if (elem->IsMethodDefinition()) {
+            elem->Dump(dumper);
+            dumper->Endl();
+        }
+    }
+}
+
 // This method is needed by OHOS CI code checker
 void ClassDefinition::DumpBody(ir::SrcDumper *dumper) const
 {
@@ -208,6 +225,12 @@ void ClassDefinition::Dump(ir::SrcDumper *dumper) const
     if ((ident_->Name().StartsWith("$dynmodule")) || (ident_->Name().StartsWith("$jscall"))) {
         return;
     }
+
+    if (IsGlobal()) {
+        DumpGlobalClass(dumper);
+        return;
+    }
+
     for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }
