@@ -53,7 +53,8 @@ set(PLUGIN_TESTS
     "plugin_proceed_to_state_find_import_declaration compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     # See #22753.
     # "plugin_proceed_to_state_test_number_literal compile.ets ${RUNTIME_MODE} cpp ${EXECUTABLE_PLUGIN}"
-    # "plugin_proceed_to_state_rerun_scopes_after_check compile.ets ${RUNTIME_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_rerun_scopes_after_check compile.ets ${RUNTIME_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_rerun_scopes_on_import import.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     # "plugin_proceed_to_state_rerun_scopes_after_lowered compile.ets ${RUNTIME_MODE} cpp ${EXECUTABLE_PLUGIN}"
     # "plugin_proceed_to_state_run_verifier compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_ast_node_check compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"

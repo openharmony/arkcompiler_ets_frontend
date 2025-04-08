@@ -39,7 +39,7 @@ es2panda_Impl *GetImpl()
     auto library = std::move(libraryRes.Value());
     auto getImpl = ark::os::library_loader::ResolveSymbol(library, "es2panda_GetImpl");
     if (!getImpl.HasValue()) {
-        std::cout << "Error in load func get impl" << std::endl;
+        std::cout << "Error in load func get g_implPtr" << std::endl;
         return nullptr;
     }
 
@@ -98,6 +98,106 @@ void PrependStatementToProgram(es2panda_Context *context, es2panda_AstNode *prog
     newStatements[0] = newStatement;
     impl->BlockStatementSetStatements(context, program, newStatements, sizeOfStatements + 1);
     impl->AstNodeSetParent(context, newStatement, program);
+}
+
+static const char *GetPhaseName(es2panda_ContextState state)
+{
+    switch (state) {
+        case ES2PANDA_STATE_NEW:
+            return "NEW";
+        case ES2PANDA_STATE_PARSED:
+            return "PARSE";
+        case ES2PANDA_STATE_SCOPE_INITED:
+            return "SCOPE_INITED";
+        case ES2PANDA_STATE_BOUND:
+            return "BOUND";
+        case ES2PANDA_STATE_CHECKED:
+            return "CHECKED";
+        case ES2PANDA_STATE_LOWERED:
+            return "LOWERED";
+        case ES2PANDA_STATE_ASM_GENERATED:
+            return "ASM";
+        case ES2PANDA_STATE_BIN_GENERATED:
+            return "BIN";
+        case ES2PANDA_STATE_ERROR:
+            return "ERROR";
+        default:
+            return "NON_VALID_STATE";
+    }
+}
+
+static bool IsAllowedStage(es2panda_ContextState state)
+{
+    switch (state) {
+        case ES2PANDA_STATE_NEW:
+            return false;
+        case ES2PANDA_STATE_SCOPE_INITED:
+            return false;
+        case ES2PANDA_STATE_ERROR:
+            return false;
+        default:
+            return true;
+    }
+}
+
+static void DestroyTest(es2panda_Context *context, es2panda_Config *config)
+{
+    g_implPtr->DestroyContext(context);
+    g_implPtr->DestroyConfig(config);
+}
+
+int RunAllStagesWithTestFunction(ProccedToStatePluginTestData &data)
+{
+    if (data.argc < MIN_ARGC) {
+        return INVALID_ARGC_ERROR_CODE;
+    }
+
+    if (GetImpl() == nullptr) {
+        return NULLPTR_IMPL_ERROR_CODE;
+    }
+    *data.impl = GetImpl();
+    std::cout << "LOAD SUCCESS" << std::endl;
+    const char **args = const_cast<const char **>(&(data.argv[1]));
+    auto config = g_implPtr->CreateConfig(data.argc - 1, args);
+    es2panda_Context *context = nullptr;
+    if (data.fromSource) {
+        context = g_implPtr->CreateContextFromString(config, data.source.data(), data.argv[data.argc - 1]);
+    } else {
+        context = g_implPtr->CreateContextFromFile(config, data.argv[data.argc - 1]);
+    }
+    if (context == nullptr) {
+        std::cerr << "FAILED TO CREATE CONTEXT" << std::endl;
+        return NULLPTR_CONTEXT_ERROR_CODE;
+    }
+
+    for (auto [testStage, _] : data.testFunctions) {
+        if (!IsAllowedStage(testStage)) {
+            DestroyTest(context, config);
+            return TEST_ERROR_CODE;
+        }
+    }
+
+    for (auto state = ES2PANDA_STATE_PARSED; state <= ES2PANDA_STATE_BIN_GENERATED;
+         state = static_cast<es2panda_ContextState>(state + 1)) {
+        if (!IsAllowedStage(state)) {
+            continue;
+        }
+        g_implPtr->ProceedToState(context, state);
+        CheckForErrors(GetPhaseName(state), context);
+        for (auto testFunc : data.testFunctions[state]) {
+            if (!testFunc(context)) {
+                DestroyTest(context, config);
+                return TEST_ERROR_CODE;
+            }
+        }
+    }
+
+    if (g_implPtr->ContextState(context) == ES2PANDA_STATE_ERROR) {
+        DestroyTest(context, config);
+        return PROCEED_ERROR_CODE;
+    }
+    DestroyTest(context, config);
+    return 0;
 }
 
 int Test(es2panda_Context *context, es2panda_Impl *impl, int stage,
