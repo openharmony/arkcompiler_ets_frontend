@@ -108,6 +108,9 @@ private:
 
     template <class T>
     void GenAnnotations(const T *node);
+    void GenAnnotationProperties(const ir::AnnotationUsage *anno);
+    void GenAnnotationPropertyValue(ir::Expression *value);
+
     void GenTypeParameters(const ir::TSTypeParameterDeclaration *typeParams);
     void GenTypeParameters(const ir::TSTypeParameterInstantiation *typeParams);
     void GenExport(const ir::Identifier *symbol);

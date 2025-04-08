@@ -402,6 +402,8 @@ void TSDeclGen::GenLiteral(const ir::Literal *literal)
         const auto string = literal->AsStringLiteral()->ToString();
         OutDts("\"" + string + "\"");
         OutTs("\"" + string + "\"");
+    } else if (literal->IsBooleanLiteral()) {
+        OutDts(literal->AsBooleanLiteral()->ToString());
     } else {
         LogError(diagnostic::UNSUPPORTED_LITERAL_TYPE, {}, literal->Start());
     }
@@ -836,10 +838,62 @@ void TSDeclGen::GenAnnotations(const T *node)
     GenSeparated(
         node->Annotations(),
         [this](ir::AnnotationUsage *anno) {
+            if (anno->GetBaseName()->Name() == compiler::Signatures::MODULE_ANNOTATION) {
+                return;
+            }
             OutDts("@", anno->GetBaseName()->Name());
+            GenAnnotationProperties(anno);
             OutEndlDts();
         },
         "");
+}
+
+void TSDeclGen::GenAnnotationProperties(const ir::AnnotationUsage *anno)
+{
+    if (anno->Properties().empty()) {
+        return;
+    }
+
+    const auto properties = anno->Properties();
+    if (properties.size() == 1 &&
+        properties.at(0)->AsClassProperty()->Id()->Name() == compiler::Signatures::ANNOTATION_KEY_VALUE) {
+        OutDts("(");
+        if (properties.at(0)->AsClassProperty()->Value() != nullptr) {
+            GenAnnotationPropertyValue(properties.at(0)->AsClassProperty()->Value());
+        }
+        OutDts(")");
+        return;
+    }
+
+    OutDts("({");
+    OutEndlDts();
+    for (auto *prop : properties) {
+        ProcessIndent();
+        OutDts(prop->AsClassProperty()->Id()->Name());
+        OutDts(": ");
+        if (prop->AsClassProperty()->Value() != nullptr) {
+            GenAnnotationPropertyValue(prop->AsClassProperty()->Value());
+        }
+        if (prop != properties.back()) {
+            OutDts(",");
+        }
+        OutEndlDts();
+    }
+    OutDts("})");
+}
+
+void TSDeclGen::GenAnnotationPropertyValue(ir::Expression *propValue)
+{
+    if (propValue->IsLiteral()) {
+        GenLiteral(propValue->AsLiteral());
+    } else if (propValue->IsArrayExpression()) {
+        OutDts("[");
+        GenSeparated(propValue->AsArrayExpression()->Elements(),
+                     [this](ir::Expression *element) { GenAnnotationPropertyValue(element); });
+        OutDts("]");
+    } else {
+        GenType(propValue->Check(checker_));
+    }
 }
 
 void TSDeclGen::GenImportDeclaration(const ir::ETSImportDeclaration *importDeclaration)
@@ -1419,8 +1473,7 @@ void TSDeclGen::GenPropDeclaration(const ir::ClassProperty *classProp)
     DebugPrint("  GenPropDeclaration: " + propName);
 
     ProcessIndent();
-
-    if ((!state_.inInterface && !state_.inNamespace && !classNode_.isStruct && !state_.isClassInNamespace)) {
+    if (!state_.inInterface && (!state_.inNamespace || state_.isClassInNamespace) && !classNode_.isStruct) {
         GenPropAccessor(classProp, "get ");
         if (!classProp->IsReadonly()) {
             ProcessIndent();
@@ -1494,6 +1547,7 @@ void TSDeclGen::GenGlobalVarDeclaration(const ir::ClassProperty *globalVar)
     const bool isConst = globalVar->IsConst();
     DebugPrint("GenGlobalVarDeclaration: " + varName);
 
+    GenAnnotations(globalVar);
     OutDts(isConst ? "export declare const " : "export declare let ", varName, ": ");
     if (globalVar->TypeAnnotation() != nullptr && globalVar->TypeAnnotation()->IsETSStringLiteralType()) {
         const auto *aliasedType = globalVar->TypeAnnotation()->GetType(checker_);
