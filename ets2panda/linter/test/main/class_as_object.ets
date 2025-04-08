@@ -186,3 +186,21 @@ const sym = Symbol('symbol1');
 const syntaxErr = SyntaxError('message');
 const typeErr = TypeError('message');
 const uriErr = URIError('message');
+
+let aaa4 = typeof DataView;
+
+let obj = new Object();
+switch (obj) {
+  case Object:
+    console.log('A');
+    break;
+  default:
+    console.log('F');
+}
+
+function parse(type: "number" | "boolean", value: string): number | boolean {
+  return type === "number" ? Number(value) : value === "true";
+}
+function format(input: string | number): string[] | number[] {
+  return typeof input === "string" ? input.split("") : input.toString().split("").map(Number);
+}

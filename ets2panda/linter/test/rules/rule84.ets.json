@@ -23,6 +23,16 @@
             "suggest": "",
             "rule": "\"with\" statement is not supported (arkts-no-with)",
             "severity": "ERROR"
+        },
+        {
+            "line": 16,
+            "column": 7,
+            "endLine": 16,
+            "endColumn": 11,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
         }
     ]
 }
