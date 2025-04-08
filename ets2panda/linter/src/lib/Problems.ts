@@ -182,6 +182,7 @@ export enum FaultID {
   SendablePropTypeFromSdk,
   ConstructorIfaceFromSdk,
   PropertyAccessByIndexFromSdk,
+  ConstructorTypesDeprecated,
   // this should always be last enum
   LAST_ID
 }

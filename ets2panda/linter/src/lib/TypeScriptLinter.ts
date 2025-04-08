@@ -947,6 +947,7 @@ export class TypeScriptLinter {
       this.incrementCounters(propertyAccessNode, FaultID.SendableFunctionProperty);
     }
     this.checkFunctionProperty(propertyAccessNode, baseExprSym, baseExprType);
+    this.handleSdkForConstructorFuncs(propertyAccessNode);
   }
 
   checkFunctionProperty(
@@ -2146,7 +2147,6 @@ export class TypeScriptLinter {
       }
 
       const memberName = member.name?.getText();
-
       if (sdkInfo.api_name === memberName) {
         if (TypeScriptLinter.areParametersEqual(sdkInfo.api_func_args, member.parameters)) {
           this.incrementCounters(
@@ -5361,5 +5361,22 @@ export class TypeScriptLinter {
     node: ts.Node
   ): node is ts.FunctionDeclaration | ts.MethodDeclaration | ts.FunctionExpression {
     return ts.isFunctionDeclaration(node) || ts.isMethodDeclaration(node) || ts.isFunctionExpression(node);
+  }
+
+  private handleSdkForConstructorFuncs(node: ts.PropertyAccessExpression): void {
+    if (!this.options.arkts2 || !node) {
+      return;
+    }
+    const sdkInfos = this.interfaceMap.get(node.expression.getText());
+    if (!sdkInfos || sdkInfos.size === 0) {
+      return;
+    }
+
+    for (const sdkInfo of sdkInfos) {
+      const propertyName = node.name.getText();
+      if (propertyName === sdkInfo.api_name) {
+        this.incrementCounters(node.name, FaultID.ConstructorTypesDeprecated);
+      }
+    }
   }
 }
