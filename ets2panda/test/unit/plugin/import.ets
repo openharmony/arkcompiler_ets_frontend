@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import {A, foo} from "./export.ets"
+import {A, B, foo} from "./export.ets"
 
 function main() {
     let a: A = new A();
