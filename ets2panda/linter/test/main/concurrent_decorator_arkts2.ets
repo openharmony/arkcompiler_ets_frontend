@@ -15,3 +15,13 @@
 
 @Concurrent // ERROR
 function func() {}
+
+@Concurrent
+type a2 = number
+let n18: a2 = 10;
+
+@Concurrent
+type funtType1 = () => void
+
+@Concurrent
+type funtType2 = () => void | number
