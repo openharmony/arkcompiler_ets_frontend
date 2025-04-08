@@ -26,6 +26,7 @@
 #include "compiler/lowering/ets/cfgBuilderPhase.h"
 #include "compiler/lowering/ets/defaultParametersInConstructorLowering.h"
 #include "compiler/lowering/ets/defaultParametersLowering.h"
+#include "compiler/lowering/ets/dynamicImportLowering.h"
 #include "compiler/lowering/ets/enumLowering.h"
 #include "compiler/lowering/ets/enumPostCheckLowering.h"
 #include "compiler/lowering/ets/expandBrackets.h"
@@ -119,6 +120,7 @@ static InitScopesPhaseAS g_initScopesPhaseAs;
 static InitScopesPhaseTs g_initScopesPhaseTs;
 static InitScopesPhaseJs g_initScopesPhaseJs;
 // NOLINTEND(fuchsia-statically-constructed-objects)
+static DynamicImportLowering g_dynamicImportLowering;
 
 std::vector<Phase *> GetRebindPhase()
 {
@@ -164,6 +166,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_cfgBuilderPhase,
         &g_checkerPhase,        // please DO NOT change order of these two phases: checkerPhase and pluginsAfterCheck
         &g_pluginsAfterCheck,   // pluginsAfterCheck has to go right after checkerPhase, nothing should be between them
+        &g_dynamicImportLowering,
         &g_asyncMethodLowering,
         &g_declareOverloadLowering,
         &g_enumPostCheckLoweringPhase,
