@@ -366,6 +366,41 @@
         "methd_return_type": "Promise<ElementAttributeValues[T]>",
         "codeKind": 173
       }
+    },
+    {
+      "import_path": [
+          "@hms.core.deviceCloudGateway.cloudDatabase",
+          "@kit.CloudFoundationKit"
+      ],
+      "file_path": [
+          "api/@hms.core.deviceCloudGateway.cloudDatabase.d.ts"
+      ],
+      "is_global": false,
+      "api_info": {
+          "problem": "ConstructorFuncs",
+          "api_name": "DatabaseQuery",
+          "api_type": "ClassDeclaration",
+          "api_optional": false,
+          "api_auto_fix": false,
+          "api_auto_fix_context": "",
+          "target_type": "",
+          "api_func_args": [
+              {
+                  "name": "entityClass",
+                  "type": "new () => T",
+                  "is_optional": false,
+                  "hasDefault": false
+              }
+          ],
+          "parent_api": [
+              {
+                  "api_name": "cloudDatabase",
+                  "api_type": "ModuleDeclaration"
+              }
+          ],
+          "methd_return_type": "DatabaseQuery<T>",
+          "codeKind": 264
+      }
     }
   ]
 }

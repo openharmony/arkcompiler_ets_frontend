@@ -16,7 +16,7 @@
 export const cookBookMsg: string[] = [];
 export const cookBookTag: string[] = [];
 
-for (let i = 0; i <= 314; i++) {
+for (let i = 0; i <= 325; i++) {
   cookBookMsg[i] = '';
 }
 
@@ -282,3 +282,4 @@ cookBookTag[312] =
   'Properties in "Sendable" classes and interfaces must have a Sendable data type (sdk-no-sendable-prop-types)';
 cookBookTag[313] = 'Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)';
 cookBookTag[314] = 'Indexed access is not supported for fields (sdk-no-props-by-index)';
+cookBookTag[325] = 'Constructor types are not supported - use lambda functions instead. (sdk-constructor-funcs)';

@@ -70,5 +70,6 @@ export const arkts2Rules: number[] = [
   306,
   307,
   308,
-  309
+  309,
+  325
 ];
