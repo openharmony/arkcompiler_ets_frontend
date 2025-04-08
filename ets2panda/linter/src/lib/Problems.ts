@@ -173,6 +173,8 @@ export enum FaultID {
   InteropCallReflect,
   InteropCallObjectParam,
   InteropNoDecorators,
+  InteropDirectAccessToTSTypes,
+  InteropTSFunctionInvoke,
   // this should always be last enum
   LAST_ID
 }

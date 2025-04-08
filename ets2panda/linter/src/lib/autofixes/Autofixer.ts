@@ -2871,4 +2871,16 @@ export class Autofixer {
     const text = this.printer.printNode(ts.EmitHint.Unspecified, observedDecorator, sourceFile) + '\n';
     return [{ start: classDecl.getStart(), end: classDecl.getStart(), replacementText: text }];
   }
+
+  static fixInteropTsType(
+    binaryExpr: ts.BinaryExpression,
+    lhs: ts.PropertyAccessExpression,
+    rhs: ts.Expression
+  ): Autofix[] | undefined {
+    const base = lhs.expression.getText();
+    const prop = lhs.name.text;
+    const replacementText = `${base}.setPropertyByName('${prop}',ESObject.wrap(${rhs.getText()}))`;
+
+    return [{ start: binaryExpr.getStart(), end: binaryExpr.getEnd(), replacementText }];
+  }
 }

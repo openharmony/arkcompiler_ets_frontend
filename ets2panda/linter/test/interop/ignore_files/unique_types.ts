@@ -4,7 +4,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,57 +13,22 @@
  * limitations under the License.
  */
 
-export const arkts2Rules: number[] = [
-  1,
-  25,
-  30,
-  34,
-  37,
-  29,
-  137,
-  139,
-  140,
-  144,
-  149,
-  183,
-  184,
-  189,
-  190,
-  192,
-  193,
-  198,
-  202,
-  203,
-  206,
-  207,
-  208,
-  209,
-  210,
-  211,
-  212,
-  222,
-  232,
-  233,
-  234,
-  235,
-  236,
-  237,
-  238,
-  239,
-  251,
-  252,
-  253,
-  254,
-  255,
-  256,
-  257,
-  258,
-  259,
-  301,
-  302,
-  303,
-  304,
-  305,
-  306,
-  307
-];
+type SomeType = {
+    name: string,
+}
+
+enum X {
+    a = 0,
+    b = '1',
+}
+
+type UnionString = "A" | "B";
+type TemplateLiteralType = `${UnionString}_id`;
+
+export let objectLiteralType: SomeType;
+export let mixedEnumType: X;
+export let intersectionType: SomeType & X;
+export let templateLiteralType: TemplateLiteralType;
+
+export function tsFunction() {};
+export let stringType: string;
