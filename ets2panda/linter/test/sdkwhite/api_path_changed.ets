@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,65 +13,12 @@
  * limitations under the License.
  */
 
-export const arkts2Rules: number[] = [
-  1,
-  25,
-  30,
-  34,
-  37,
-  29,
-  111,
-  137,
-  139,
-  140,
-  144,
-  149,
-  183,
-  184,
-  189,
-  190,
-  192,
-  193,
-  198,
-  202,
-  203,
-  206,
-  207,
-  208,
-  209,
-  210,
-  211,
-  212,
-  222,
-  232,
-  233,
-  234,
-  235,
-  236,
-  237,
-  238,
-  239,
-  251,
-  252,
-  253,
-  254,
-  255,
-  256,
-  257,
-  258,
-  259,
-  260,
-  263,
-  301,
-  302,
-  303,
-  304,
-  305,
-  306,
-  307,
-  308,
-  309,
-  325,
-  324,
-  320
-];
+@Entry
+@Component
+struct Index {
+  fontStyleAttr1: TextStyle = new TextStyle({fontColor: Color.Blue});
+  fontStyleAttr2: TextStyle;
+  build() {
+    Text();
+  }
+}

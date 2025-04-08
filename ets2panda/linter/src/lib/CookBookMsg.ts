@@ -285,3 +285,4 @@ cookBookTag[314] = 'Indexed access is not supported for fields (sdk-no-props-by-
 cookBookTag[325] = 'Constructor types are not supported - use lambda functions instead. (sdk-constructor-funcs)';
 cookBookTag[324] =
   'Object property names must be valid identifiers.Single-quoted and hyphenated properties are not supported. (sdk-no-literal-as-property-name)';
+cookBookTag[320] = 'API path have changed - please update your imports accordingly (arkts-sdk-no-decl-with-duplicate-name)';
