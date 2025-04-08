@@ -183,3 +183,4 @@ faultDesc[FaultID.ConstructorIfaceFromSdk] = 'Construct signatures are not suppo
 faultDesc[FaultID.PropertyAccessByIndexFromSdk] = 'property access by index from sdk';
 faultDesc[FaultID.ConstructorTypesDeprecated] = 'Constructor funcs';
 faultDesc[FaultID.QuotedHyphenPropsDeprecated] = 'Quoted hyphen props deprecated';
+faultDesc[FaultID.ApiPathChanged] = 'API path have changed';

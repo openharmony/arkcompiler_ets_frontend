@@ -95,7 +95,7 @@ import { ARKTS_IGNORE_DIRS_OH_MODULES } from './utils/consts/ArktsIgnorePaths';
 import type { ApiInfo, ApiListItem } from './utils/consts/SdkWhitelist';
 import { ApiList } from './utils/consts/SdkWhitelist';
 import * as apiWhiteList from './data/SdkWhitelist.json';
-import { SdkProblem } from './utils/consts/WhiteListProblemType';
+import { SdkProblem, ARKTS_WHITE_API_PATH_TEXTSTYLE } from './utils/consts/WhiteListProblemType';
 
 export class TypeScriptLinter {
   totalVisitedNodes: number = 0;
@@ -1086,6 +1086,7 @@ export class TypeScriptLinter {
     this.checkAssignmentNumericSemanticslyPro(node);
     this.handleInvalidIdentifier(node);
     this.handleStructPropertyDecl(node);
+    this.handleApipathChanged(node);
   }
 
   private handleSendableClassProperty(node: ts.PropertyDeclaration): void {
@@ -5476,6 +5477,36 @@ export class TypeScriptLinter {
     const isMatch = property.name.getText() === apiName;
     if (isMatch) {
       this.incrementCounters(property.name, FaultID.QuotedHyphenPropsDeprecated);
+    }
+  }
+
+  private handleApipathChanged(node: ts.PropertyDeclaration): void {
+    if (!this.options.arkts2 || !ts.isPropertyDeclaration(node)) {
+      return;
+    }
+    const processApiNode = (apiName: string, errorNode: ts.Node): void => {
+      const sdkInfos = TypeScriptLinter.pathMap.get(`'${ARKTS_WHITE_API_PATH_TEXTSTYLE}'`);
+      if (!sdkInfos) {
+        return;
+      }
+      const matchedApi = [...sdkInfos].find((sdkInfo) => {
+        return sdkInfo.api_name === apiName;
+      });
+      if (matchedApi) {
+        this.incrementCounters(errorNode, FaultID.ApiPathChanged);
+      }
+    };
+    if (node.type && ts.isTypeReferenceNode(node.type)) {
+      const typeName = node.type.typeName;
+      if (ts.isIdentifier(typeName)) {
+        processApiNode(typeName.text, node.type);
+      }
+    }
+    if (node.initializer && ts.isNewExpression(node.initializer)) {
+      const expression = node.initializer.expression;
+      if (ts.isIdentifier(expression)) {
+        processApiNode(expression.text, expression);
+      }
     }
   }
 }

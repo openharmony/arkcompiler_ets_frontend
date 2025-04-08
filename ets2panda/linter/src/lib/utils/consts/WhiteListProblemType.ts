@@ -27,3 +27,6 @@ export enum SdkProblem {
   DeclWithDuplicateName = 'DeclWithDuplicateName',
   ComputedPropertyName = 'ComputedPropertyName'
 }
+
+
+export const ARKTS_WHITE_API_PATH_TEXTSTYLE = 'component/styled_string.d.ts';
