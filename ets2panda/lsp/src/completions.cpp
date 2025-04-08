@@ -77,6 +77,15 @@ bool IsEndWithToken(ir::AstNode *preNode, std::string str)
     return str.back() != '.' && preNode->IsIdentifier() && preNode->AsIdentifier()->Name() != "*ERROR_LITERAL*";
 }
 
+bool IsEndWithWildcard(ir::AstNode *preNode, const std::string &str)
+{
+    const std::string wildcardStr = "_WILDCARD";
+    if (str == wildcardStr) {
+        return preNode->IsIdentifier() && preNode->AsIdentifier()->Name() != "*ERROR_LITERAL*";
+    }
+    return false;
+}
+
 size_t GetPrecedingTokenPosition(std::string sourceCode, size_t pos)
 {
     while (pos > 0) {
@@ -139,6 +148,22 @@ std::vector<ir::AstNode *> FilterFromEnumMember(const ark::ArenaVector<ir::AstNo
     return res;
 }
 
+std::vector<ir::AstNode *> FilterFromInterfaceBody(const ark::ArenaVector<ir::AstNode *> &members,
+                                                   const std::string &triggerWord)
+{
+    std::vector<ir::AstNode *> res;
+    if (members.empty()) {
+        return res;
+    }
+    for (auto member : members) {
+        if (member->IsMethodDefinition() &&
+            IsWordPartOfIdentifierName(member->AsMethodDefinition()->Key(), triggerWord)) {
+            res.emplace_back(member);
+        }
+    }
+    return res;
+}
+
 std::string GetClassPropertyName(ir::AstNode *node)
 {
     // property in class
@@ -171,6 +196,18 @@ std::string GetEnumMemberName(ir::AstNode *node)
     return std::string(id->AsIdentifier()->Name());
 }
 
+std::string GetInterfaceBodyName(ir::AstNode *node)
+{
+    if (!node->IsMethodDefinition()) {
+        return "";
+    }
+    auto key = node->AsMethodDefinition()->Key();
+    if (key == nullptr || !key->IsIdentifier()) {
+        return "";
+    }
+    return std::string(key->AsIdentifier()->Name());
+}
+
 ir::AstNode *GetClassDefinitionFromClassProperty(ir::AstNode *node)
 {
     if (!node->IsClassProperty()) {
@@ -181,7 +218,21 @@ ir::AstNode *GetClassDefinitionFromClassProperty(ir::AstNode *node)
         value->AsETSNewClassInstanceExpression()->GetTypeRef() != nullptr &&
         value->AsETSNewClassInstanceExpression()->GetTypeRef()->IsETSTypeReference()) {
         auto typeReferencePart = value->AsETSNewClassInstanceExpression()->GetTypeRef()->AsETSTypeReference()->Part();
+        if (typeReferencePart == nullptr) {
+            return nullptr;
+        }
         auto id = typeReferencePart->Name();
+        if (id != nullptr && id->IsIdentifier()) {
+            return compiler::DeclarationFromIdentifier(id->AsIdentifier());
+        }
+    }
+    auto type = node->AsClassProperty()->TypeAnnotation();
+    if (type != nullptr && type->IsETSTypeReference()) {
+        auto typeRefPart = type->AsETSTypeReference()->Part();
+        if (typeRefPart == nullptr) {
+            return nullptr;
+        }
+        auto id = typeRefPart->Name();
         if (id != nullptr && id->IsIdentifier()) {
             return compiler::DeclarationFromIdentifier(id->AsIdentifier());
         }
@@ -207,6 +258,21 @@ std::vector<CompletionEntry> GetEntriesForClassDeclaration(
                 lsp::CompletionEntry(GetClassPropertyName(node), CompletionEntryKind::CLASS,
                                      std::string(sort_text::MEMBER_DECLARED_BY_SPREAD_ASSIGNMENT)));
         }
+    }
+    return completions;
+}
+
+std::vector<CompletionEntry> GetEntriesForTSInterfaceDeclaration(
+    const std::vector<ark::es2panda::ir::AstNode *> &propertyNodes)
+{
+    if (propertyNodes.empty()) {
+        return {};
+    }
+    std::vector<CompletionEntry> completions;
+    completions.reserve(propertyNodes.size());
+    for (auto node : propertyNodes) {
+        completions.emplace_back(lsp::CompletionEntry(GetInterfaceBodyName(node), CompletionEntryKind::METHOD,
+                                                      std::string(sort_text::CLASS_MEMBER_SNIPPETS)));
     }
     return completions;
 }
@@ -242,6 +308,18 @@ std::vector<CompletionEntry> GetPropertyCompletions(ir::AstNode *preNode, const 
     }
     if (decl->IsClassDeclaration()) {
         decl = decl->AsClassDeclaration()->Definition();
+    }
+    if (decl == nullptr) {
+        return completions;
+    }
+    if (decl->IsTSInterfaceDeclaration()) {
+        auto body = decl->AsTSInterfaceDeclaration()->Body();
+        if (body == nullptr) {
+            return completions;
+        }
+        auto bodies = body->Body();
+        auto qualifiedBodies = FilterFromInterfaceBody(bodies, triggerWord);
+        return GetEntriesForTSInterfaceDeclaration(qualifiedBodies);
     }
     if (decl->IsClassDefinition()) {
         // After enum refactoring, enum declaration is transformed to a class declaration
@@ -474,12 +552,23 @@ std::vector<CompletionEntry> GetCompletionsAtPositionImpl(es2panda_Context *cont
     if (precedingToken == nullptr) {
         return {};
     }
-    auto triggerValue = sourceCode.substr(precedingToken->Start().index, pos);
+    auto triggerValue = sourceCode.substr(precedingToken->Start().index, pos - precedingToken->Start().index + 1);
     // Unsupported yet because of ast parsing problem
     if (IsEndWithValidPoint(triggerValue)) {
         return GetPropertyCompletions(precedingToken, "");
     }
     auto memberExpr = precedingToken->Parent();
+    // This is a temporary solution to support "obj." with wildcard for better solution in internal issue.
+    if (IsEndWithWildcard(precedingToken, triggerValue) && memberExpr != nullptr) {
+        if (memberExpr->IsMemberExpression()) {
+            precedingToken = memberExpr->AsMemberExpression()->Object();
+            return GetPropertyCompletions(precedingToken, "");
+        }
+        if (memberExpr->IsTSQualifiedName()) {
+            precedingToken = memberExpr->AsTSQualifiedName()->Left();
+            return GetPropertyCompletions(precedingToken, "");
+        }
+    }
     if (IsEndWithToken(precedingToken, triggerValue) && memberExpr != nullptr) {
         if (memberExpr->IsMemberExpression()) {
             precedingToken = memberExpr->AsMemberExpression()->Object();
