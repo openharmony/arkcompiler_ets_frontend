@@ -194,8 +194,10 @@ export function generateBuildConfigs(buildSdkPath: string, projectRoot: string, 
 
         allBuildConfigs[module.name] = buildConfig;
     }
-
     const outputPath = path.join(cacheDir, 'lsp_build_config.json');
+    if (!fs.existsSync(cacheDir)) { 
+        fs.mkdirSync(cacheDir, { recursive: true });
+    }
     fs.writeFileSync(outputPath, JSON.stringify(allBuildConfigs, null, 4));
     return allBuildConfigs;
 }
