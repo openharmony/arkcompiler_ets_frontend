@@ -178,6 +178,7 @@ export enum FaultID {
   LimitedVoidTypeFromSdk,
   EntryAnnotation,
   ProvideAnnotation,
+  OptionalMethodFromSdk,
   // this should always be last enum
   LAST_ID
 }
