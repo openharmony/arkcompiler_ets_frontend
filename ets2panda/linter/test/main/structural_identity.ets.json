@@ -643,6 +643,16 @@
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)",
             "severity": "ERROR"
+        },
+        {
+            "line": 688,
+            "column": 24,
+            "endLine": 688,
+            "endColumn": 25,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
         }
     ]
 }

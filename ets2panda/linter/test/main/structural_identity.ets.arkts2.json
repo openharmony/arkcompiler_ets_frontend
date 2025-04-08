@@ -1555,23 +1555,23 @@
             "severity": "ERROR"
         },
         {
-            "line": 674,
-            "column": 32,
-            "endLine": 674,
-            "endColumn": 45,
-            "problem": "DynamicCtorCall",
+            "line": 688,
+            "column": 6,
+            "endLine": 695,
+            "endColumn": 3,
+            "problem": "StructuralIdentity",
             "suggest": "",
-            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)",
             "severity": "ERROR"
         },
         {
-            "line": 683,
-            "column": 26,
-            "endLine": 683,
-            "endColumn": 37,
-            "problem": "DynamicCtorCall",
+            "line": 688,
+            "column": 24,
+            "endLine": 688,
+            "endColumn": 25,
+            "problem": "ObjectLiteralNoContextType",
             "suggest": "",
-            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
             "severity": "ERROR"
         }
     ]
