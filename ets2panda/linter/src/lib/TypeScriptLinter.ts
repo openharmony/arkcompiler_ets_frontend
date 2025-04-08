@@ -97,6 +97,15 @@ import { ApiList } from './utils/consts/SdkWhitelist';
 import * as apiWhiteList from './data/SdkWhitelist.json';
 import { SdkProblem, ARKTS_WHITE_API_PATH_TEXTSTYLE } from './utils/consts/WhiteListProblemType';
 
+interface InterfaceSymbolTypeResult {
+  propNames: string[];
+  typeNames: string[];
+  allProps: Map<string, string>;
+}
+interface InterfaceSymbolTypePropertyNames {
+  propertyNames: string[];
+  typeNames: string[];
+}
 export class TypeScriptLinter {
   totalVisitedNodes: number = 0;
   nodeCounters: number[] = [];
@@ -1895,6 +1904,7 @@ export class TypeScriptLinter {
     this.handleInvalidIdentifier(tsVarDecl);
     this.checkAssignmentNumericSemanticsly(tsVarDecl);
     this.checkTypeFromSdk(tsVarDecl.type);
+    this.handleNoStructuralTyping(tsVarDecl);
   }
 
   private checkTypeFromSdk(type: ts.TypeNode | undefined): void {
@@ -1915,6 +1925,194 @@ export class TypeScriptLinter {
         return;
       }
     }
+  }
+
+  private static extractUsedObjectType(tsVarDecl: ts.VariableDeclaration): InterfaceSymbolTypePropertyNames | null {
+    const result = {
+      propertyNames: [] as string[],
+      typeNames: [] as string[]
+    };
+
+    if (!this.isObjectLiteralWithProperties(tsVarDecl)) {
+      return null;
+    }
+
+    this.processObjectLiteralProperties(tsVarDecl.initializer as ts.ObjectLiteralExpression, result);
+    return result.propertyNames.length > 0 ? result : null;
+  }
+
+  private static isObjectLiteralWithProperties(tsVarDecl: ts.VariableDeclaration): boolean {
+    return (
+      tsVarDecl.initializer !== undefined &&
+      ts.isObjectLiteralExpression(tsVarDecl.initializer) &&
+      tsVarDecl.initializer.properties.length > 0
+    );
+  }
+
+  private static processObjectLiteralProperties(
+    objectLiteral: ts.ObjectLiteralExpression,
+    result: { propertyNames: string[]; typeNames: string[] }
+  ): void {
+    objectLiteral.properties.forEach((property) => {
+      if (!ts.isPropertyAssignment(property)) {
+        return;
+      }
+
+      const propertyName = property.name.getText();
+      result.propertyNames.push(propertyName);
+
+      if (ts.isNewExpression(property.initializer)) {
+        const typeName = property.initializer.expression.getText();
+        result.typeNames.push(typeName);
+      }
+    });
+  }
+
+  private interfaceSymbolType(tsVarDecl: ts.VariableDeclaration): InterfaceSymbolTypeResult | null {
+    if (!tsVarDecl.type) {
+      return null;
+    }
+
+    const typeSymbol = this.getTypeSymbol(tsVarDecl);
+    if (!typeSymbol) {
+      return null;
+    }
+
+    const interfaceType = this.getInterfaceType(tsVarDecl);
+    if (!interfaceType) {
+      return null;
+    }
+
+    return this.collectInterfaceProperties(interfaceType, tsVarDecl);
+  }
+
+  private getTypeSymbol(tsVarDecl: ts.VariableDeclaration): ts.Symbol | null {
+    const typeNode = ts.isTypeReferenceNode(tsVarDecl.type!) ? tsVarDecl.type.typeName : tsVarDecl.type;
+    return this.tsTypeChecker.getSymbolAtLocation(typeNode!) ?? null;
+  }
+
+  private getInterfaceType(tsVarDecl: ts.VariableDeclaration): ts.InterfaceType | null {
+    const type = this.tsTypeChecker.getTypeAtLocation(tsVarDecl.type!);
+    return type && (type as ts.ObjectType).objectFlags & ts.ObjectFlags.Interface ? (type as ts.InterfaceType) : null;
+  }
+
+  private collectInterfaceProperties(
+    interfaceType: ts.InterfaceType,
+    tsVarDecl: ts.VariableDeclaration
+  ): InterfaceSymbolTypeResult {
+    const result = {
+      propNames: [] as string[],
+      typeNames: [] as string[],
+      allProps: new Map<string, string>()
+    };
+
+    this.collectPropertiesRecursive(interfaceType, result, tsVarDecl);
+    return result;
+  }
+
+  private collectPropertiesRecursive(
+    type: ts.Type,
+    result: {
+      propNames: string[];
+      typeNames: string[];
+      allProps: Map<string, string>;
+    },
+    tsVarDecl: ts.VariableDeclaration
+  ): void {
+    type.getProperties().forEach((property) => {
+      this.collectProperty(property, result, tsVarDecl);
+    });
+
+    if ('getBaseTypes' in type) {
+      type.getBaseTypes()?.forEach((baseType) => {
+        this.collectPropertiesRecursive(baseType, result, tsVarDecl);
+      });
+    }
+  }
+
+  private collectProperty(
+    property: ts.Symbol,
+    result: {
+      propNames: string[];
+      typeNames: string[];
+      allProps: Map<string, string>;
+    },
+    tsVarDecl: ts.VariableDeclaration
+  ): void {
+    const propName = property.getName();
+    const propType = this.tsTypeChecker.getTypeOfSymbolAtLocation(
+      property,
+      property.valueDeclaration || tsVarDecl.type!
+    );
+    const typeString = this.tsTypeChecker.typeToString(propType);
+
+    if (!result.allProps.has(propName)) {
+      result.propNames.push(propName);
+      result.typeNames.push(typeString);
+      result.allProps.set(propName, typeString);
+    }
+  }
+
+  handleNoStructuralTyping(tsVarDecl: ts.VariableDeclaration): void {
+    const { interfaceInfo, actualUsage } = this.getTypeComparisonData(tsVarDecl);
+    if (!interfaceInfo || !actualUsage) {
+      return;
+    }
+    if (!this.options.arkts2) {
+      return;
+    }
+    const actualMap = TypeScriptLinter.createActualTypeMap(actualUsage);
+    const hasMismatch = TypeScriptLinter.checkTypeMismatches(interfaceInfo, actualMap);
+
+    if (hasMismatch) {
+      this.incrementCounters(tsVarDecl, FaultID.StructuralIdentity);
+    }
+  }
+
+  private getTypeComparisonData(tsVarDecl: ts.VariableDeclaration): {
+    interfaceInfo: { propNames: string[]; typeNames: string[]; allProps: Map<string, string> } | null;
+    actualUsage: {
+      propertyNames: string[];
+      typeNames: string[];
+    } | null;
+  } {
+    return {
+      interfaceInfo: this.interfaceSymbolType(tsVarDecl),
+      actualUsage: TypeScriptLinter.extractUsedObjectType(tsVarDecl)
+    };
+  }
+
+  private static createActualTypeMap(actualUsage: {
+    propertyNames: string[];
+    typeNames: string[];
+  }): Map<string, string> {
+    const actualMap = new Map<string, string>();
+    actualUsage.propertyNames.forEach((prop, index) => {
+      if (actualUsage.typeNames[index]) {
+        actualMap.set(prop, actualUsage.typeNames[index]);
+      }
+    });
+    return actualMap;
+  }
+
+  private static checkTypeMismatches(
+    interfaceInfo: { allProps: Map<string, string> },
+    actualMap: Map<string, string>
+  ): boolean {
+    let hasMismatch = false;
+
+    interfaceInfo.allProps.forEach((expectedType, prop) => {
+      if (!actualMap.has(prop)) {
+        return;
+      }
+
+      const actualType = actualMap.get(prop)!;
+      if (expectedType !== actualType) {
+        hasMismatch = true;
+      }
+    });
+
+    return hasMismatch;
   }
 
   private handleDeclarationDestructuring(decl: ts.VariableDeclaration | ts.ParameterDeclaration): void {
