@@ -57,7 +57,7 @@ const std::string SOURCE_CODE =
 
 const std::string EXPECTED_CLASS_DEFINITION = "class A {\n  public constructor() {}\n  \n}\n";
 
-const std::string EXPECTED_METHOD_DEFINITION = "public static foo(): void {}\n";
+const std::string EXPECTED_METHOD_DEFINITION = "function foo(): void {}\n";
 
 int CheckLiteralValues(ark::es2panda::public_lib::Context *ctx, const ark::pandasm::Program &prog)
 {

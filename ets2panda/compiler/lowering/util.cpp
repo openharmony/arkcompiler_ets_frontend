@@ -22,6 +22,12 @@
 
 namespace ark::es2panda::compiler {
 
+bool HasGlobalClassParent(const ir::AstNode *node)
+{
+    auto parentClass = util::Helpers::FindAncestorGivenByType(node, ir::AstNodeType::CLASS_DEFINITION);
+    return parentClass != nullptr && parentClass->AsClassDefinition()->IsGlobal();
+}
+
 varbinder::Scope *NearestScope(const ir::AstNode *ast)
 {
     while (ast != nullptr && !ast->IsScopeBearer()) {
@@ -33,10 +39,7 @@ varbinder::Scope *NearestScope(const ir::AstNode *ast)
 
 checker::ETSObjectType const *ContainingClass(const ir::AstNode *ast)
 {
-    while (ast != nullptr && !ast->IsClassDefinition()) {
-        ast = ast->Parent();
-    }
-
+    ast = util::Helpers::FindAncestorGivenByType(ast, ir::AstNodeType::CLASS_DEFINITION);
     return ast == nullptr ? nullptr : ast->AsClassDefinition()->TsType()->AsETSObjectType();
 }
 
@@ -228,7 +231,7 @@ void Recheck(PhaseManager *phaseManager, varbinder::ETSBinder *varBinder, checke
 }
 
 // NOTE: used to get the declaration from identifier in Plugin API and LSP
-ir::AstNode *DeclarationFromIdentifier(ir::Identifier *node)
+ir::AstNode *DeclarationFromIdentifier(const ir::Identifier *node)
 {
     auto idVar = node->Variable();
     if (idVar == nullptr) {

@@ -25,6 +25,7 @@ class PhaseManager;
 inline constexpr std::string_view const GENSYM_CORE = "gensym%%_";
 inline constexpr std::string_view const DUMMY_ID = "_";
 
+bool HasGlobalClassParent(const ir::AstNode *node);
 varbinder::Scope *NearestScope(const ir::AstNode *ast);
 checker::ETSObjectType const *ContainingClass(const ir::AstNode *ast);
 ir::Identifier *Gensym(ArenaAllocator *allocator);
@@ -40,7 +41,7 @@ void Recheck(PhaseManager *phaseManager, varbinder::ETSBinder *varBinder, checke
              ir::AstNode *node);
 
 // NOTE: used to get the declaration from identifier in Plugin API and LSP
-ir::AstNode *DeclarationFromIdentifier(ir::Identifier *node);
+ir::AstNode *DeclarationFromIdentifier(const ir::Identifier *node);
 
 // Note: run varbinder and checker on the new node generated in lowering phases
 void CheckLoweredNode(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node);
