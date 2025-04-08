@@ -80,6 +80,7 @@ ir::FunctionSignature InterfacePropertyDeclarationsPhase::GenerateGetterOrSetter
         paramIdent->SetTsTypeAnnotation(field->TypeAnnotation()->Clone(checker->Allocator(), nullptr));
         paramIdent->TypeAnnotation()->SetParent(paramIdent);
 
+        ClearTypesVariablesAndScopes(paramIdent);
         auto classCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder, paramScope);
         InitScopesPhaseETS::RunExternalNode(paramIdent, varbinder);
 
