@@ -198,16 +198,16 @@ function main(): void {
 /* @@? 52:12 Error TypeError: Unresolved reference q */
 /* @@? 52:23 Error TypeError: Unresolved reference p */
 /* @@? 63:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
-/* @@? 67:7 Error TypeError: Variable 'A' has already been declared. */
+/* @@? 67:7 Error TypeError: Variable 'A' has already been declared. Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
 /* @@? 68:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
-/* @@? 73:7 Error TypeError: Variable 'A' has already been declared. */
+/* @@? 73:7 Error TypeError: Variable 'A' has already been declared. Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
 /* @@? 74:11 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
 /* @@? 77:20 Error TypeError: Interface expected here. */
 /* @@? 77:22 Error TypeError: 'I' type does not exist. */
 /* @@? 78:22 Error TypeError: Method fee(): int in B not overriding any method */
-/* @@? 83:7 Error TypeError: Variable 'A' has already been declared. */
+/* @@? 83:7 Error TypeError: Variable 'A' has already been declared. Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
 /* @@? 84:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
-/* @@? 92:7 Error TypeError: Variable 'A' has already been declared. */
+/* @@? 92:7 Error TypeError: Variable 'A' has already been declared. Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase! */
 /* @@? 93:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
 /* @@? 115:26 Error SyntaxError: Unexpected token 'case'. */
 /* @@? 115:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */

@@ -36,15 +36,29 @@ Variable *VarBinder::AddParamDecl(ir::Expression *param)
     ES2PANDA_ASSERT(var != nullptr);
 
     if (node != nullptr) {
-        ThrowRedeclaration(node->Start(), var->Name());
+        ThrowRedeclaration(node->Start(), var->Name(), var->Declaration()->Type());
     }
 
     return var;
 }
 
-void VarBinder::ThrowRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name) const
+void VarBinder::ThrowRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name,
+                                   DeclType declType) const
 {
-    auto const str = std::string {"Variable '"}.append(name.Utf8()).append("' has already been declared.");
+    auto str = std::string {"Variable '"}.append(name.Utf8()).append("' has already been declared.");
+
+    switch (declType) {
+        case DeclType::CLASS:
+        case DeclType::INTERFACE:
+        case DeclType::ENUM:
+            str.append(
+                " Merging declarations is not supported, please keep all definitions of classes, interfaces and enums "
+                "compact in the codebase!");
+            break;
+        default:
+            break;
+    }
+
     ThrowError(pos, str);
 }
 
@@ -123,7 +137,7 @@ bool VarBinder::InstantiateArgumentsImpl(Scope **scope, Scope *iter, const ir::A
     auto [argumentsVariable, exists] =
         (*scope)->AddDecl<ConstDecl, LocalVariable>(Allocator(), FUNCTION_ARGUMENTS, VariableFlags::INITIALIZED);
     if (exists && Extension() != ScriptExtension::JS) {
-        ThrowRedeclaration(node->Start(), FUNCTION_ARGUMENTS);
+        ThrowRedeclaration(node->Start(), FUNCTION_ARGUMENTS, argumentsVariable->Declaration()->Type());
     } else if (iter->IsFunctionParamScope()) {
         *scope = iter->AsFunctionParamScope()->GetFunctionScope();
         (*scope)->InsertBinding(argumentsVariable->Name(), argumentsVariable);

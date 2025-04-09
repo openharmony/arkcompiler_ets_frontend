@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,12 +13,11 @@
  * limitations under the License.
  */
 
-namespace ConflictedSpace {
-    export let InnerSpace = 123;
-
-    export namespace InnerSpace {
-        export let value = 456;
-    }
+class Point {
+    x: number = 0
+    y: number = 0
 }
+let p: Point = {x: 1, y: 2}
+console.log(p["x"])
 
-/* @@? 19:22 Error TypeError: Variable 'InnerSpace' has already been declared. Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase!  */
+/* @@? 21:13 Error TypeError: Indexed signatures are not allowed. Use arrays instead! */

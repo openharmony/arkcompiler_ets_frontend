@@ -184,6 +184,9 @@ ir::Statement *ParserImpl::ParseStatementBasedOnTokenType(StatementParsingFlags 
         case lexer::TokenType::KEYW_DEBUGGER:
             return ParseDebuggerStatement();
         case lexer::TokenType::LITERAL_IDENT:
+            if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_VAR) {
+                return ParseVarStatement();
+            }
             return ParseStatementLiteralIdentHelper(flags);
         case lexer::TokenType::KEYW_WITH:
             LogError(diagnostic::WITH_DEPRECATED);

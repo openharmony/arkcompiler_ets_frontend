@@ -26,12 +26,13 @@ enum D {
 }
 
 
-/* @@? 17:9 Error SyntaxError: Invalid enum initialization value */
+/* @@? 17:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
 /* @@? 17:10 Error SyntaxError: Unexpected token ')'. */
 /* @@? 21:9 Error SyntaxError: Unexpected token ')'. */
 /* @@? 21:9 Error SyntaxError: Unexpected token, expected ',' or '}'. */
-/* @@? 21:9 Error SyntaxError: Invalid enum initialization value */
+/* @@? 21:9 Error SyntaxError: Unexpected token ')'. */
+/* @@? 21:9 Error TypeError: Enumeration members can be initialized only by compile-time expressions and initializers must be of the same type. */
 /* @@? 22:1 Error SyntaxError: Unexpected token '}'. */
 /* @@? 26:1 Error SyntaxError: Unexpected token, expected ':'. */
-/* @@? 38:1 Error SyntaxError: Unexpected token 'eos'. */
-/* @@? 38:1 Error SyntaxError: Unexpected token, expected ',' or '}'. */
+/* @@? 39:1 Error SyntaxError: Unexpected token 'eos'. */
+/* @@? 39:1 Error SyntaxError: Unexpected token, expected ',' or '}'. */

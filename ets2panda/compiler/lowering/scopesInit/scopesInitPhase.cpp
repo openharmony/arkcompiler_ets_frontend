@@ -487,7 +487,7 @@ std::tuple<varbinder::Decl *, varbinder::Variable *> ScopesInitPhase::AddOrGetVa
         name = compiler::GenName(Allocator()).View();
     } else if (VarBinder()->IsETSBinder()) {
         if (auto var = scope->FindLocal(name, varbinder::ResolveBindingOptions::ALL_VARIABLES); var != nullptr) {
-            VarBinder()->ThrowRedeclaration(id->Start(), name);
+            VarBinder()->ThrowRedeclaration(id->Start(), name, var->Declaration()->Type());
             return {var->Declaration(), var};
         }
     }
@@ -617,7 +617,7 @@ void ScopeInitTyped::VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *int
         LogSemanticError("Interface redeclaration is not allowed", interfDecl->Start());
         return;
     } else if (!res->second->Declaration()->IsInterfaceDecl()) {
-        VarBinder()->ThrowRedeclaration(ident->Start(), ident->Name());
+        VarBinder()->ThrowRedeclaration(ident->Start(), ident->Name(), res->second->Declaration()->Type());
         return;
     } else {
         decl = res->second->Declaration()->AsInterfaceDecl();
@@ -677,7 +677,8 @@ void ScopeInitTyped::VisitTSEnumDeclaration(ir::TSEnumDeclaration *enumDecl)
     } else {
         if (!res->second->Declaration()->IsEnumLiteralDecl() ||
             (enumDecl->IsConst() ^ res->second->Declaration()->AsEnumLiteralDecl()->IsConst()) != 0) {
-            VarBinder()->ThrowRedeclaration(enumDecl->Key()->Start(), enumDecl->Key()->Name());
+            VarBinder()->ThrowRedeclaration(enumDecl->Key()->Start(), enumDecl->Key()->Name(),
+                                            res->second->Declaration()->Type());
             return;
         }
         decl = res->second->Declaration()->AsEnumLiteralDecl();
@@ -763,7 +764,7 @@ void InitScopesPhaseTs::CreateFuncDecl(ir::ScriptFunction *func)
 
         if (!currentDecl->IsFunctionDecl() ||
             !currentDecl->AsFunctionDecl()->Node()->AsScriptFunction()->IsOverload()) {
-            VarBinder()->ThrowRedeclaration(startLoc, currentDecl->Name());
+            VarBinder()->ThrowRedeclaration(startLoc, currentDecl->Name(), currentDecl->Type());
             return;
         }
         decl = currentDecl->AsFunctionDecl();
@@ -969,8 +970,9 @@ void InitScopesPhaseETS::DeclareClassMethod(ir::MethodDefinition *method)
         method->IsStatic()
             ? varbinder::ResolveBindingOptions::STATIC_VARIABLES | varbinder::ResolveBindingOptions::STATIC_DECLARATION
             : varbinder::ResolveBindingOptions::VARIABLES | varbinder::ResolveBindingOptions::DECLARATION;
-    if (clsScope->FindLocal(methodName->Name(), options) != nullptr) {
-        VarBinder()->ThrowRedeclaration(methodName->Start(), methodName->Name());
+    auto variable = clsScope->FindLocal(methodName->Name(), options);
+    if (variable != nullptr) {
+        VarBinder()->ThrowRedeclaration(methodName->Start(), methodName->Name(), variable->Declaration()->Type());
     }
 
     varbinder::LocalScope *targetScope {};
@@ -1073,7 +1075,7 @@ void InitScopesPhaseETS::VisitTSEnumMember(ir::TSEnumMember *enumMember)
         var->AddFlag(varbinder::VariableFlags::STATIC);
         decl->BindNode(enumMember);
     } else {
-        VarBinder()->ThrowRedeclaration(ident->Start(), name);
+        VarBinder()->ThrowRedeclaration(ident->Start(), name, var->Declaration()->Type());
     }
 
     ident->SetVariable(var);
@@ -1092,7 +1094,7 @@ void InitScopesPhaseETS::VisitMethodDefinition(ir::MethodDefinition *method)
         curScope->Find(methodName->Name(), method->IsStatic() ? varbinder::ResolveBindingOptions::ALL_STATIC
                                                               : varbinder::ResolveBindingOptions::ALL_NON_STATIC);
     if (res.variable != nullptr && !res.variable->Declaration()->IsFunctionDecl() && res.scope == curScope) {
-        VarBinder()->ThrowRedeclaration(methodName->Start(), res.name);
+        VarBinder()->ThrowRedeclaration(methodName->Start(), res.name, varbinder::DeclType::METHOD);
     }
 
     auto result = curScope->FindLocal(methodName->Name(), varbinder::ResolveBindingOptions::ALL_DECLARATION);

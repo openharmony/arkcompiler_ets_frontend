@@ -2687,7 +2687,7 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
 
     auto [paramVar, node] = paramScope->AddParamDecl(ProgramAllocator(), paramExpression);
     if (node != nullptr) {
-        VarBinder()->ThrowRedeclaration(node->Start(), paramVar->Name());
+        VarBinder()->ThrowRedeclaration(node->Start(), paramVar->Name(), paramVar->Declaration()->Type());
     }
 
     paramIdent->SetVariable(paramVar);

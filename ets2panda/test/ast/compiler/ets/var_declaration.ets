@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,12 +13,7 @@
  * limitations under the License.
  */
 
-namespace ConflictedSpace {
-    export let InnerSpace = 123;
+// (arkts-no-var)
+ var x = 42;
 
-    export namespace InnerSpace {
-        export let value = 456;
-    }
-}
-
-/* @@? 19:22 Error TypeError: Variable 'InnerSpace' has already been declared. Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase!  */
+ /* @@? 17:6 Error SyntaxError: 'var' keyword is not supported. Use 'let' instead. */

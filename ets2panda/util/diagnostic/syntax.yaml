@@ -1187,6 +1187,7 @@ syntax:
 - name: MISSING_INIT_FOR_CONST_PACKAGE_PROP
   id: 294
   message: "Missing initialization for const package property"
+
 - name: PREDEFINED_TYPE_AS_IDENTIFIER
   id: 295
   message: "{} is a predefined type, cannot be used as an identifier"
@@ -1194,3 +1195,15 @@ syntax:
 - name: EXPORT_WITHOUT_DECLARE_IN_DECL_MODULE
   id: 296
   message: "Export keyword without declare shouldn't be used in declaration module."
+
+- name: ERROR_ARKTS_NO_VAR
+  id: 297
+  message: "'var' keyword is not supported. Use 'let' instead."
+
+- name: ERROR_ARKTS_NO_PRIVATE_IDENTIFIERS
+  id: 298
+  message: "Use 'private' keyword to declare an identifier as private."
+
+- name: ERROR_ARKTS_NO_DEBUGGER_STATEMENT
+  id: 299
+  message: "Debugger statement is not supported!"

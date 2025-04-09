@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,12 +13,18 @@
  * limitations under the License.
  */
 
-namespace ConflictedSpace {
-    export let InnerSpace = 123;
+// (arkts-no-untyped-obj-literals)
+class C {
+  field: int = 0;
 
-    export namespace InnerSpace {
-        export let value = 456;
-    }
+  constructor(f: int){
+    this.field = f;
+  }
 }
 
-/* @@? 19:22 Error TypeError: Variable 'InnerSpace' has already been declared. Merging declarations is not supported, please keep all definitions of classes, interfaces and enums compact in the codebase!  */
+function main(): void {
+  let c: C = { field: 42 }
+}
+
+
+ /* @@? 26:14 Error TypeError: Type C has no parameterless constructor. Initialization with literals is not supported if the type has no parameterless constructor. Declare the parameterless constructor explicitly or remove parametered constructors! */
