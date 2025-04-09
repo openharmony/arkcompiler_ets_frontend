@@ -316,6 +316,11 @@ describe('test Cases for <PrinterTimAndMemUtils>.', function () {
 
   describe('Tester Cases for <writeTimeAndMemoryPerformanceData>', () => {
     it('Write file error', () => {
+      const projectConfig = {
+        obfuscationOptions: {
+          obfuscationCacheDir: 'test/',
+        },
+      };
       const data = [
         {
           'name': 'BreakpointConstants.ts',
@@ -324,6 +329,7 @@ describe('test Cases for <PrinterTimAndMemUtils>.', function () {
         },
       ];
       const fileName = '';
+      getObfuscationCacheDir(projectConfig);
       expect(writeTimeAndMemoryPerformanceData(data, fileName)).to.be.throw;
     });
   });
