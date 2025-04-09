@@ -111,12 +111,13 @@ bool DiagnosticEngine::IsError(DiagnosticType type) const
         case DiagnosticType::FATAL:
         case DiagnosticType::SYNTAX:
         case DiagnosticType::SEMANTIC:
-        case DiagnosticType::PLUGIN:
+        case DiagnosticType::PLUGIN_ERROR:
         case DiagnosticType::DECLGEN_ETS2TS_ERROR:
         case DiagnosticType::ARKTS_CONFIG_ERROR:
             return true;
         case DiagnosticType::WARNING:
         case DiagnosticType::DECLGEN_ETS2TS_WARNING:
+        case DiagnosticType::PLUGIN_WARNING:
             return wError_;
         default:
             ES2PANDA_UNREACHABLE();

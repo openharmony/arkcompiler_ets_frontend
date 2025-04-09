@@ -606,11 +606,16 @@ extern "C" es2panda_SourceRange *CreateSourceRange(es2panda_Context *context, es
     return reinterpret_cast<es2panda_SourceRange *>(allocator->New<lexer::SourceRange>(startE2p, endE2p));
 }
 
-extern "C" const es2panda_DiagnosticKind *CreateDiagnosticKind(es2panda_Context *context, const char *dmessage)
+extern "C" const es2panda_DiagnosticKind *CreateDiagnosticKind(es2panda_Context *context, const char *dmessage,
+                                                               es2panda_PluginDiagnosticType etype)
 {
     auto ctx = reinterpret_cast<Context *>(context);
     auto id = ctx->config->diagnosticKindStorage.size() + 1;
-    ctx->config->diagnosticKindStorage.emplace_back(util::DiagnosticType::PLUGIN, id, dmessage);
+    auto type = util::DiagnosticType::PLUGIN_ERROR;
+    if (etype == ES2PANDA_PLUGIN_WARNING) {
+        type = util::DiagnosticType::PLUGIN_WARNING;
+    }
+    ctx->config->diagnosticKindStorage.emplace_back(type, id, dmessage);
     return reinterpret_cast<const es2panda_DiagnosticKind *>(&ctx->config->diagnosticKindStorage.back());
 }
 
@@ -646,7 +651,12 @@ extern "C" const es2panda_DiagnosticStorage *GetSyntaxErrors(es2panda_Context *c
 
 extern "C" const es2panda_DiagnosticStorage *GetPluginErrors(es2panda_Context *context)
 {
-    return GetDiagnostics(context, util::DiagnosticType::PLUGIN);
+    return GetDiagnostics(context, util::DiagnosticType::PLUGIN_ERROR);
+}
+
+extern "C" const es2panda_DiagnosticStorage *GetPluginWarnings(es2panda_Context *context)
+{
+    return GetDiagnostics(context, util::DiagnosticType::PLUGIN_WARNING);
 }
 
 extern "C" const es2panda_DiagnosticStorage *GetWarnings(es2panda_Context *context)

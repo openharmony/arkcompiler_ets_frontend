@@ -156,7 +156,9 @@ const char *DiagnosticTypeToString(DiagnosticType type)
             return "TypeError";
         case DiagnosticType::WARNING:
             return "Warning";
-        case DiagnosticType::PLUGIN:
+        case DiagnosticType::PLUGIN_WARNING:
+            return "Plugin warning";
+        case DiagnosticType::PLUGIN_ERROR:
             return "Plugin error";
         case DiagnosticType::DECLGEN_ETS2TS_ERROR:
             return "Declgen ets2ts error";
