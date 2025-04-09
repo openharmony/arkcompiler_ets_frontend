@@ -44,6 +44,7 @@ import {
 } from '../utils/consts/ArkuiConstants';
 import { ES_OBJECT } from '../utils/consts/ESObject';
 import { LOAD, GET_PROPERTY_BY_NAME, ARE_EQUAL, ARE_STRICTLY_EQUAL } from '../utils/consts/InteropAPI';
+import { WRAP, INSTANTIATE } from '../utils/consts/InteropAPI';
 
 const UNDEFINED_NAME = 'undefined';
 
@@ -2686,6 +2687,39 @@ export class Autofixer {
         replacementText: replacementText
       }
     ];
+  }
+
+  fixInteropInstantiateExpression(
+    express: ts.NewExpression,
+    args: ts.NodeArray<ts.Expression> | undefined
+  ): Autofix[] | undefined {
+    const statements = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(express.expression.getText()),
+        ts.factory.createIdentifier(INSTANTIATE)
+      ),
+      undefined,
+      this.createArgs(args)
+    );
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, statements, express.getSourceFile());
+    return [{ start: express.getStart(), end: express.getEnd(), replacementText: replacementText }];
+  }
+
+  createArgs(args: ts.NodeArray<ts.Expression> | undefined): ts.Expression[] | undefined {
+    void this;
+    if (args && args.length > 0) {
+      return args.map((arg) => {
+        return ts.factory.createCallExpression(
+          ts.factory.createPropertyAccessExpression(
+            ts.factory.createIdentifier(ES_OBJECT),
+            ts.factory.createIdentifier(WRAP)
+          ),
+          undefined,
+          [ts.factory.createIdentifier(arg.getText())]
+        );
+      });
+    }
+    return undefined;
   }
 
   fixParameter(param: ts.ParameterDeclaration): Autofix[] {

@@ -303,3 +303,4 @@ cookBookTag[338] =
   '"JS" objects can\'t be used directly as operands of the equality operators (arkts-js-equality-judgment)';
 cookBookTag[339] = 'Interop objects can\'t be indexed directly (arkts-no-js-index)';
 cookBookTag[340] = '"Await" operator can\'t be used with interop objects (arkts-no-js-await)';
+cookBookTag[341] = 'ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)';
