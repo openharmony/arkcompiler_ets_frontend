@@ -109,12 +109,16 @@ function do_checkout() {
     popd >/dev/null 2>&1 || exit 1
 }
 
-GIT_URL=https://gitee.com/rri_opensource/koala_projects.git
-DEST="${DEST:-koala-sig}"
+SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
+source "${SCRIPT_DIR}"/arkui.properties
 
-do_checkout "${GIT_URL}" panda_rev_7 "${DEST}"
+ARKUI_DEV_REPO="${ARKUI_DEV_REPO:-https://gitee.com/rri_opensource/koala_projects.git}"
+ARKUI_DEV_BRANCH="${ARKUI_DEV_BRANCH:-master}"
+ARKUI_DEST="${ARKUI_DEST:-koala-sig}"
 
-cd "${DEST}" || exit 1
+do_checkout "${ARKUI_DEV_REPO}" "${ARKUI_DEV_BRANCH}" "${ARKUI_DEST}"
+
+cd "${ARKUI_DEST}" || exit 1
 
 npm config set package-lock false
 npm config set strict-ssl false
