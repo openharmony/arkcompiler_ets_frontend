@@ -180,6 +180,7 @@ export enum FaultID {
   ProvideAnnotation,
   OptionalMethodFromSdk,
   SendablePropTypeFromSdk,
+  ConstructorIfaceFromSdk,
   // this should always be last enum
   LAST_ID
 }

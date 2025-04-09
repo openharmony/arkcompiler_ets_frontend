@@ -270,6 +270,36 @@
         "methd_return_type": "",
         "codeKind": 170
       }
+    },
+    {
+      "import_path": [
+        "@hms.collaboration.rcp",
+        "@kit.RemoteCommunicationKit"
+      ],
+      "file_path": ["api/@hms.collaboration.rcp.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "ConstructorIface",
+        "api_name": "",
+        "api_type": "ConstructSignature",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+          {
+            "api_name": "NetworkOutputQueueConstructor",
+            "api_type": "InterfaceDeclaration"
+          },
+          {
+            "api_name": "rcp",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "INetworkOutputQueue",
+        "codeKind": 180
+      }
     }
   ]
 }

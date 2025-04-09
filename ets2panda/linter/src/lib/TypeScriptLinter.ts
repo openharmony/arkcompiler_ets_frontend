@@ -3493,8 +3493,33 @@ export class TypeScriptLinter {
     }
   }
 
+  private handleSdkConstructorIface(typeRef: ts.TypeReferenceNode): void {
+    if (!this.options.arkts2 && typeRef?.typeName === undefined && !ts.isQualifiedName(typeRef.typeName)) {
+      return;
+    }
+    const qualifiedName = typeRef.typeName as ts.QualifiedName;
+    // tsc version diff
+    const topName = qualifiedName.left?.getText();
+    const sdkInfos = this.interfaceMap.get(topName);
+    if (!sdkInfos) {
+      return;
+    }
+    for (const sdkInfo of sdkInfos) {
+      if (sdkInfo.api_type !== 'ConstructSignature') {
+        continue;
+      }
+      // sdk api from json has 3 overload. need consider these case.
+      if (sdkInfo.parent_api[0].api_name === qualifiedName.right.getText()) {
+        this.incrementCounters(typeRef, FaultID.ConstructorIfaceFromSdk);
+        break;
+      }
+    }
+  }
+
   private handleTypeReference(node: ts.Node): void {
     const typeRef = node as ts.TypeReferenceNode;
+
+    this.handleSdkConstructorIface(typeRef);
 
     const isESObject = TsUtils.isEsObjectType(typeRef);
     const isPossiblyValidContext = TsUtils.isEsObjectPossiblyAllowed(typeRef);
