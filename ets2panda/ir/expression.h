@@ -113,6 +113,7 @@ protected:
     }
 
 private:
+    friend class SizeOfNodeTest;
     bool grouped_ {};
 };
 

@@ -84,6 +84,7 @@ private:
     checker::Type *HandleInternalTypes(checker::ETSChecker *checker);
     checker::Type *HandleFixedArrayType(checker::ETSChecker *const checker);
 
+    friend class SizeOfNodeTest;
     ir::Expression *name_;
     ir::TSTypeParameterInstantiation *typeParams_ {};
     ir::ETSTypeReferencePart *prev_ {};

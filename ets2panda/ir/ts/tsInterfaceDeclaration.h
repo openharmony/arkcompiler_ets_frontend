@@ -201,6 +201,7 @@ public:
     void CopyTo(AstNode *other) const override;
 
 private:
+    friend class SizeOfNodeTest;
     ArenaVector<Decorator *> decorators_;
     varbinder::LocalScope *scope_ {nullptr};
     Identifier *id_;

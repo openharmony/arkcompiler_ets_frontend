@@ -345,6 +345,7 @@ void MethodDefinition::CopyTo(AstNode *other) const
 {
     auto otherImpl = other->AsMethodDefinition();
 
+    otherImpl->isDefault_ = isDefault_;
     otherImpl->kind_ = kind_;
     otherImpl->overloads_ = overloads_;
     otherImpl->baseOverloadMethod_ = baseOverloadMethod_;

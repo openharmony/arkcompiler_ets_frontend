@@ -223,8 +223,10 @@ void ClassProperty::CopyTo(AstNode *other) const
     auto otherImpl = other->AsClassProperty();
 
     otherImpl->typeAnnotation_ = typeAnnotation_;
+    otherImpl->isDefault_ = isDefault_;
+    otherImpl->needInitInStaticBlock_ = needInitInStaticBlock_;
 
-    AnnotationAllowed<ClassElement>::CopyTo(other);
+    JsDocAllowed<AnnotationAllowed<ClassElement>>::CopyTo(other);
 }
 
 }  // namespace ark::es2panda::ir

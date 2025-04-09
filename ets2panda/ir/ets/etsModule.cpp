@@ -68,7 +68,7 @@ void ETSModule::CopyTo(AstNode *other) const
     otherImpl->flag_ = flag_;
     otherImpl->program_ = program_;
 
-    AnnotationAllowed<BlockStatement>::CopyTo(other);
+    JsDocAllowed<AnnotationAllowed<BlockStatement>>::CopyTo(other);
 }
 
 }  // namespace ark::es2panda::ir

@@ -104,6 +104,7 @@ public:
     void CopyTo(AstNode *other) const override;
 
 private:
+    friend class SizeOfNodeTest;
     VariableDeclarationKind kind_;
     ArenaVector<Decorator *> decorators_;
     ArenaVector<VariableDeclarator *> declarators_;

@@ -153,7 +153,7 @@ void TSTypeAliasDeclaration::CopyTo(AstNode *other) const
     otherImpl->typeParams_ = typeParams_;
     otherImpl->typeParamTypes_ = typeParamTypes_;
 
-    AnnotatedStatement::CopyTo(other);
+    JsDocAllowed<AnnotatedStatement>::CopyTo(other);
 }
 
 }  // namespace ark::es2panda::ir

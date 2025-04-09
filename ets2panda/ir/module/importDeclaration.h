@@ -77,6 +77,7 @@ public:
     void CopyTo(AstNode *other) const override;
 
 private:
+    friend class SizeOfNodeTest;
     StringLiteral *source_;
     ArenaVector<AstNode *> specifiers_;
     ImportKinds importKinds_;

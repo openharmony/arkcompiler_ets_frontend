@@ -118,7 +118,15 @@ protected:
     {
     }
 
+    void CopyTo(AstNode *other) const override
+    {
+        auto otherImpl = static_cast<JsDocAllowed<T> *>(other);
+        otherImpl->jsDocInformation_ = jsDocInformation_;
+        T::CopyTo(other);
+    }
+
 private:
+    friend class SizeOfNodeTest;
     ArenaVector<JsDocInfo> jsDocInformation_;
 };
 }  // namespace ark::es2panda::ir

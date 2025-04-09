@@ -257,7 +257,7 @@ void ScriptFunction::CopyTo(AstNode *other) const
     otherImpl->lang_ = lang_;
     otherImpl->returnStatements_ = returnStatements_;
 
-    AnnotationAllowed<AstNode>::CopyTo(other);
+    JsDocAllowed<AnnotationAllowed<AstNode>>::CopyTo(other);
 }
 
 }  // namespace ark::es2panda::ir

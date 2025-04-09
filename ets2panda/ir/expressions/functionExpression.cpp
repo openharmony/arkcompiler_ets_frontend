@@ -74,4 +74,19 @@ FunctionExpression *FunctionExpression::Clone(ArenaAllocator *const allocator, A
     clone->SetRange(Range());
     return clone;
 }
+
+AstNode *FunctionExpression::Construct(ArenaAllocator *allocator)
+{
+    return allocator->New<FunctionExpression>(nullptr);
+}
+
+void FunctionExpression::CopyTo(AstNode *other) const
+{
+    auto otherImpl = other->AsFunctionExpression();
+
+    otherImpl->func_ = func_;
+    otherImpl->exprName_ = exprName_;
+
+    Expression::CopyTo(other);
+}
 }  // namespace ark::es2panda::ir

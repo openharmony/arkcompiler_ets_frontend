@@ -499,6 +499,7 @@ private:
     void DumpBody(ir::SrcDumper *dumper) const;
     void DumpGlobalClass(ir::SrcDumper *dumper) const;
 
+    friend class SizeOfNodeTest;
     varbinder::LocalScope *scope_ {nullptr};
     util::StringView internalName_ {};
     Identifier *ident_ {};

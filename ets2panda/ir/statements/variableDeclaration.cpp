@@ -191,7 +191,7 @@ void VariableDeclaration::CopyTo(AstNode *other) const
     otherImpl->decorators_ = decorators_;
     otherImpl->declarators_ = declarators_;
 
-    AnnotationAllowed<Statement>::CopyTo(other);
+    JsDocAllowed<AnnotationAllowed<Statement>>::CopyTo(other);
 }
 
 }  // namespace ark::es2panda::ir

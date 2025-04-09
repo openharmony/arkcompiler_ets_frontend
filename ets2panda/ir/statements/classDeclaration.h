@@ -82,6 +82,7 @@ protected:
     void CopyTo(AstNode *other) const override;
 
 private:
+    friend class SizeOfNodeTest;
     ClassDefinition *def_;
     ArenaVector<Decorator *> decorators_;
 };
