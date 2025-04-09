@@ -48,3 +48,6 @@ declgen_ets2ts_error:
   id: 9
   message: Imports with local bindings are not supported.
 
+- name: UNSUPPORTED_ENCODING_SPECIFICATIONS
+  id: 10
+  message: The source file does not comply with the encoding specifications. For details, please see the following error information.
