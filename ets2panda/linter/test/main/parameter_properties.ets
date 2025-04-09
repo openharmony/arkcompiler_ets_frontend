@@ -89,3 +89,15 @@ class F4 extends E {
     let f5: number = 1;
   }
 }
+
+class G {
+  constructor(a?: number) {}
+}
+
+class G1 {
+  constructor(public a?: number, public b: number) {}
+}
+
+class G2 {
+  constructor(public a?: number, public b?: number) {}
+}

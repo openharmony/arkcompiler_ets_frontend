@@ -1502,7 +1502,7 @@ export class Autofixer {
       const newFieldNode = ts.factory.createPropertyDeclaration(
         paramModifiers,
         propIdent,
-        undefined,
+        param.questionToken,
         paramType,
         undefined
       );
