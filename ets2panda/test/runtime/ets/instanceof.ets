@@ -63,6 +63,8 @@ function main(): void {
 
   assertTrue(f instanceof (() => void))
 
+  assertTrue(bar instanceof (() => void))
+
   return;
 }
 
