@@ -1274,12 +1274,18 @@ ir::AstNode *TypedParser::ParseTypeParameterInstantiationImpl(TypeAnnotationPars
                 Lexer()->NextToken();
                 continue;
             }
+            case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL:
             case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT: {
                 Lexer()->BackwardToken(lexer::TokenType::PUNCTUATOR_GREATER_THAN, 1);
                 break;
             }
+            case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT_EQUAL:
             case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT: {
                 Lexer()->BackwardToken(lexer::TokenType::PUNCTUATOR_GREATER_THAN, 2U);
+                break;
+            }
+            case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT_EQUAL: {
+                Lexer()->BackwardToken(lexer::TokenType::PUNCTUATOR_GREATER_THAN, 3U);
                 break;
             }
             case lexer::TokenType::PUNCTUATOR_GREATER_THAN: {
