@@ -913,7 +913,7 @@ export class TypeScriptLinter {
 
   private handlePropertyAccessExpression(node: ts.Node): void {
     this.handleDoubleDollar(node);
-
+    this.handleSdkTypeQuery(node as ts.PropertyAccessExpression);
     this.checkUnionTypes(node as ts.PropertyAccessExpression);
     if (ts.isCallExpression(node.parent) && node === node.parent.expression) {
       return;
@@ -2988,9 +2988,10 @@ export class TypeScriptLinter {
         if (!(ts.isMethodSignature(declaration) && ts.isInterfaceDeclaration(interfaceDecl))) {
           return false;
         }
-        const isSameSdkFilePath = path.
-          normalize(interfaceDecl.getSourceFile().fileName).
-          endsWith(indexedTypeSdkInfo.file_path[0]);
+        const declFileFromJson = path.normalize(interfaceDecl.getSourceFile().fileName);
+        const declFileFromSdk =
+          indexedTypeSdkInfo.file_path.length > 0 ? path.normalize(indexedTypeSdkInfo.file_path[0]) : '';
+        const isSameSdkFilePath = declFileFromJson.endsWith(declFileFromSdk);
         const interfaceNameData = indexedTypeSdkInfo.api_info.parent_api[0].api_name;
         const isSameInterfaceName = interfaceDecl.name.getText() === interfaceNameData;
         return isSameSdkFilePath && isSameInterfaceName;
@@ -5435,16 +5436,18 @@ export class TypeScriptLinter {
 
   private handleQuotedHyphenPropsDeprecatedOnVarDecl(node: ts.VariableDeclaration, apiName: string): void {
     const initializer = node.initializer;
-    if (initializer && ts.isObjectLiteralExpression(initializer)) {
-      initializer.properties.forEach((property) => {
-        if (ts.isPropertyAssignment(property)) {
-          const propertyName = property.name.getText();
-          if (propertyName === apiName) {
-            this.incrementCounters(property.name, FaultID.QuotedHyphenPropsDeprecated);
-          }
-        }
-      });
+    if (!(initializer && ts.isObjectLiteralExpression(initializer))) {
+      return;
     }
+    initializer.properties.forEach((property) => {
+      if (!ts.isPropertyAssignment(property)) {
+        return;
+      }
+      const propertyName = property.name.getText();
+      if (propertyName === apiName) {
+        this.incrementCounters(property.name, FaultID.QuotedHyphenPropsDeprecated);
+      }
+    });
   }
 
   private handleQuotedHyphenPropsDeprecatedOnFunDecl(node: ts.FunctionDeclaration, apiName: string): void {
@@ -5506,6 +5509,26 @@ export class TypeScriptLinter {
       const expression = node.initializer.expression;
       if (ts.isIdentifier(expression)) {
         processApiNode(expression.text, expression);
+      }
+    }
+  }
+
+  private handleSdkTypeQuery(decl: ts.PropertyAccessExpression): void {
+    if (!this.options.arkts2 || !ts.isPropertyAccessExpression(decl)) {
+      return;
+    }
+    if (ts.isPropertyAccessExpression(decl.expression)) {
+      const importApiName = ts.isIdentifier(decl.expression.expression) && decl.expression.expression.text || '';
+      const sdkInfos = importApiName && this.interfaceMap.get(importApiName);
+      if (!sdkInfos) {
+        return;
+      }
+      const apiName = ts.isIdentifier(decl.name) && decl.name.text || '';
+      const matchedApi = [...sdkInfos].find((sdkInfo) => {
+        return sdkInfo.api_name === apiName;
+      });
+      if (matchedApi) {
+        this.incrementCounters(decl.name, FaultID.SdkTypeQuery);
       }
     }
   }

@@ -576,6 +576,32 @@
         "methd_return_type": "TextStyle",
         "codeKind": 264
       }
+    },
+    {
+      "import_path": [
+        "@ohos.worker.d.ts",
+        "@kit.ArkTS"
+      ],
+      "file_path": ["api/@ohos.worker.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "TypeQuery",
+        "api_name": "self",
+        "api_type": "PropertySignature",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+          {
+            "api_name": "DedicatedWorkerGlobalScope",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "methd_return_type": "WorkerGlobalScope & typeof globalThis",
+        "codeKind": 170
+      }
     }
   ]
 }

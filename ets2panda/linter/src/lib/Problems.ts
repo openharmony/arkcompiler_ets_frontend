@@ -185,6 +185,7 @@ export enum FaultID {
   ConstructorTypesDeprecated,
   QuotedHyphenPropsDeprecated,
   ApiPathChanged,
+  SdkTypeQuery,
   // this should always be last enum
   LAST_ID
 }

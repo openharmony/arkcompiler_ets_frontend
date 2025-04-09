@@ -184,3 +184,4 @@ faultDesc[FaultID.PropertyAccessByIndexFromSdk] = 'property access by index from
 faultDesc[FaultID.ConstructorTypesDeprecated] = 'Constructor funcs';
 faultDesc[FaultID.QuotedHyphenPropsDeprecated] = 'Quoted hyphen props deprecated';
 faultDesc[FaultID.ApiPathChanged] = 'API path have changed';
+faultDesc[FaultID.SdkTypeQuery] = 'NO typeof as a type in API';
