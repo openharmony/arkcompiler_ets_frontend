@@ -180,3 +180,4 @@ faultDesc[FaultID.ProvideAnnotation] = '"@Provide" decorator parameter';
 faultDesc[FaultID.OptionalMethodFromSdk] = 'Optional method from sdk';
 faultDesc[FaultID.SendablePropTypeFromSdk] = 'ISendable is no longer supported';
 faultDesc[FaultID.ConstructorIfaceFromSdk] = 'Construct signatures are not supported in interfaces from sdk';
+faultDesc[FaultID.PropertyAccessByIndexFromSdk] = 'property access by index from sdk';

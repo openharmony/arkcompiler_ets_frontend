@@ -92,9 +92,10 @@ import { arkuiImportList } from './utils/consts/ArkuiImportList';
 import { REFLECT_PROPERTIES, USE_STATIC } from './utils/consts/InteropAPI';
 import { EXTNAME_TS, EXTNAME_D_TS } from './utils/consts/ExtensionName';
 import { ARKTS_IGNORE_DIRS_OH_MODULES } from './utils/consts/ArktsIgnorePaths';
-import type { ApiInfo } from './utils/consts/SdkWhitelist';
+import type { ApiInfo, ApiListItem } from './utils/consts/SdkWhitelist';
 import { ApiList } from './utils/consts/SdkWhitelist';
 import * as apiWhiteList from './data/SdkWhitelist.json';
+import { SdkProblem } from './utils/consts/WhiteListProblemType';
 
 export class TypeScriptLinter {
   totalVisitedNodes: number = 0;
@@ -126,6 +127,7 @@ export class TypeScriptLinter {
   private funcMap: Map<string, Set<ApiInfo>> = new Map<string, Set<ApiInfo>>();
   private interfaceMap: Map<string, Set<ApiInfo>> = new Map<string, Set<ApiInfo>>();
   static pathMap: Map<string, Set<ApiInfo>>;
+  static indexedTypeSet: Set<ApiListItem>;
 
   static initGlobals(): void {
     TypeScriptLinter.sharedModulesCache = new Map<string, boolean>();
@@ -157,7 +159,14 @@ export class TypeScriptLinter {
     }
   }
 
+  private static addSdkIndexedTypeSetData(item: ApiListItem): void {
+    if (item.api_info.problem === SdkProblem.IndexedAccessType) {
+      TypeScriptLinter.indexedTypeSet.add(item);
+    }
+  }
+
   private static initSdkWhitelist(): void {
+    TypeScriptLinter.indexedTypeSet = new Set<ApiListItem>();
     const list: ApiList = new ApiList(apiWhiteList);
     if (list?.api_list?.length > 0) {
       for (const item of list.api_list) {
@@ -167,6 +176,7 @@ export class TypeScriptLinter {
         item.import_path.forEach((path) => {
           TypeScriptLinter.addOrUpdateData(TypeScriptLinter.pathMap, `'${path}'`, item.api_info);
         });
+        TypeScriptLinter.addSdkIndexedTypeSetData(item);
       }
     }
   }
@@ -2957,9 +2967,46 @@ export class TypeScriptLinter {
     }
   }
 
+  private handleSdkPropertyAccessByIndex(tsCallExpr: ts.CallExpression): void {
+    const propertyAccessNode = tsCallExpr.expression as ts.PropertyAccessExpression;
+    if (!ts.isPropertyAccessExpression(propertyAccessNode)) {
+      return;
+    }
+
+    const funcName = propertyAccessNode.name;
+    const indexedTypeSdkInfos = Array.from(TypeScriptLinter.indexedTypeSet);
+    const isCallInDeprecatedApi = indexedTypeSdkInfos.some((indexedTypeSdkInfo) => {
+      const isApiNameMismatch = funcName?.getText() !== indexedTypeSdkInfo.api_info.api_name;
+      if (isApiNameMismatch) {
+        return false;
+      }
+
+      const funcDecls = this.tsTypeChecker.getTypeAtLocation(funcName).symbol?.declarations;
+      return funcDecls?.some((declaration) => {
+        const interfaceDecl = declaration.parent as ts.InterfaceDeclaration;
+        if (!(ts.isMethodSignature(declaration) && ts.isInterfaceDeclaration(interfaceDecl))) {
+          return false;
+        }
+        const isSameSdkFilePath = path.
+          normalize(interfaceDecl.getSourceFile().fileName).
+          endsWith(indexedTypeSdkInfo.file_path[0]);
+        const interfaceNameData = indexedTypeSdkInfo.api_info.parent_api[0].api_name;
+        const isSameInterfaceName = interfaceDecl.name.getText() === interfaceNameData;
+        return isSameSdkFilePath && isSameInterfaceName;
+      });
+    });
+    if (isCallInDeprecatedApi) {
+      this.incrementCounters(tsCallExpr.expression, FaultID.PropertyAccessByIndexFromSdk);
+    }
+  }
+
   private handleCallExpression(node: ts.Node): void {
     const tsCallExpr = node as ts.CallExpression;
     this.handleStateStyles(tsCallExpr);
+
+    if (this.options.arkts2 && tsCallExpr.typeArguments !== undefined) {
+      this.handleSdkPropertyAccessByIndex(tsCallExpr);
+    }
 
     this.handleTsInterop(tsCallExpr.expression, () => {
       this.checkInteropFunctionCall(tsCallExpr);

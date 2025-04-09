@@ -300,6 +300,72 @@
         "methd_return_type": "INetworkOutputQueue",
         "codeKind": 180
       }
+    },
+    {
+      "import_path": [
+        "@ohos.application.AccessibilityExtensionAbility",
+        "@kit.AccessibilityKit"
+      ],
+      "file_path": ["api/application/AccessibilityExtensionContext.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "IndexedAccessType",
+        "api_name": "attributeValue",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [
+          {
+            "name": "attributeName",
+            "type": "T",
+            "is_optional": false,
+            "hasDefault": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "AccessibilityElement",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "methd_return_type": "Promise<ElementAttributeValues[T]>",
+        "codeKind": 173
+      }
+    },
+    {
+      "import_path": [
+        "@ohos.application.AccessibilityExtensionAbility",
+        "@kit.AccessibilityKit"
+      ],
+      "file_path": ["api/application/AccessibilityExtensionContext.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "IndexedAccessType",
+        "api_name": "attributeValue",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [
+          {
+            "name": "attributeName",
+            "type": "T",
+            "is_optional": false,
+            "hasDefault": false
+          }
+        ],
+        "parent_api": [
+          {
+            "api_name": "AccessibilityElement",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "methd_return_type": "Promise<ElementAttributeValues[T]>",
+        "codeKind": 173
+      }
     }
   ]
 }

@@ -16,7 +16,7 @@
 export const cookBookMsg: string[] = [];
 export const cookBookTag: string[] = [];
 
-for (let i = 0; i <= 312; i++) {
+for (let i = 0; i <= 314; i++) {
   cookBookMsg[i] = '';
 }
 
@@ -281,3 +281,4 @@ cookBookTag[309] = 'API no longer supports optional methods (sdk-optional-method
 cookBookTag[312] =
   'Properties in "Sendable" classes and interfaces must have a Sendable data type (sdk-no-sendable-prop-types)';
 cookBookTag[313] = 'Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)';
+cookBookTag[314] = 'Indexed access is not supported for fields (sdk-no-props-by-index)';
