@@ -503,8 +503,7 @@ public:
     [[nodiscard]] bool AreOverrideEquivalent(Signature *s1, Signature *s2);
     [[nodiscard]] bool IsReturnTypeSubstitutable(Signature *s1, Signature *s2);
     bool NeedToVerifySignatureVisibility(Signature *signature, const lexer::SourcePosition &pos);
-    void ValidateSignatureAccessibility(ETSObjectType *callee, const ir::CallExpression *callExpr, Signature *signature,
-                                        const lexer::SourcePosition &pos,
+    void ValidateSignatureAccessibility(ETSObjectType *callee, Signature *signature, const lexer::SourcePosition &pos,
                                         const MaybeDiagnosticInfo &maybeErrorInfo = std::nullopt);
     void CheckCapturedVariables();
     void CheckCapturedVariableInSubnodes(ir::AstNode *node, varbinder::Variable *var);

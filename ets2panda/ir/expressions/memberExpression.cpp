@@ -346,6 +346,42 @@ bool MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
     return true;
 }
 
+checker::Type *MemberExpression::ResolveReturnTypeFromSignature(checker::ETSChecker *checker, bool isSetter,
+                                                                ArenaVector<ir::Expression *> &arguments,
+                                                                ArenaVector<checker::Signature *> &signatures,
+                                                                std::string_view const methodName)
+{
+    auto flags = checker::TypeRelationFlag::NONE;
+    checker::Signature *signature =
+        checker->ValidateSignatures(signatures, nullptr, arguments, Start(), "indexing", flags);
+    if (signature == nullptr) {
+        if (isSetter) {
+            Parent()->AsAssignmentExpression()->Right()->SetParent(Parent());
+        }
+        checker->LogError(diagnostic::MISSING_INDEX_ACCESSOR_WITH_SIG, {}, Property()->Start());
+        return nullptr;
+    }
+    checker->ValidateSignatureAccessibility(objType_, signature, Start());
+
+    ES2PANDA_ASSERT(signature->Function() != nullptr);
+
+    if (isSetter) {
+        if (checker->IsClassStaticMethod(objType_, signature)) {
+            checker->LogError(diagnostic::PROP_IS_STATIC, {methodName, objType_->Name()}, Property()->Start());
+        }
+        // Restore the right assignment node's parent to keep AST invariant valid.
+        Parent()->AsAssignmentExpression()->Right()->SetParent(Parent());
+        return signature->Params()[1]->TsType();
+    }
+
+    // #24301: requires enum refactoring
+    if (!signature->Owner()->IsETSEnumType() && checker->IsClassStaticMethod(objType_, signature)) {
+        checker->LogError(diagnostic::PROP_IS_STATIC, {methodName, objType_->Name()}, Property()->Start());
+        return nullptr;
+    }
+    return signature->ReturnType();
+}
+
 checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *checker)
 {
     checker::PropertySearchFlags searchFlag = checker::PropertySearchFlags::SEARCH_METHOD;
@@ -385,8 +421,7 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
         checker->LogError(diagnostic::MISSING_INDEX_ACCESSOR_WITH_SIG, {}, Property()->Start());
         return nullptr;
     }
-    checker->ValidateSignatureAccessibility(objType_, nullptr, signature, Start(),
-                                            {{diagnostic::INVISIBLE_INDEX_ACCESSOR, {}}});
+    checker->ValidateSignatureAccessibility(objType_, signature, Start(), {{diagnostic::INVISIBLE_INDEX_ACCESSOR, {}}});
 
     ES2PANDA_ASSERT(signature->Function() != nullptr);
 

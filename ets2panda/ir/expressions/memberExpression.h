@@ -253,6 +253,11 @@ private:
     bool CheckArrayIndexValue(checker::ETSChecker *checker) const;
     checker::Type *CheckIndexAccessMethod(checker::ETSChecker *checker);
 
+    checker::Type *ResolveReturnTypeFromSignature(checker::ETSChecker *checker, bool isSetter,
+                                                  ArenaVector<ir::Expression *> &arguments,
+                                                  ArenaVector<checker::Signature *> &signatures,
+                                                  std::string_view const methodName);
+
     void LoadRhs(compiler::PandaGen *pg) const;
 
     Expression *object_ = nullptr;
