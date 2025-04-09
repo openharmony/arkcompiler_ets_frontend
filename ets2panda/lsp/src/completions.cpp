@@ -98,6 +98,13 @@ size_t GetPrecedingTokenPosition(std::string sourceCode, size_t pos)
     return pos;
 }
 
+bool IsIgnoredName(const std::string &name)
+{
+    static const std::unordered_set<std::string> IGNORED_NAMES = {"constructor", "_$init$_",
+                                                                  "_$initializerBlockInit$_"};
+    return IGNORED_NAMES.find(name) != IGNORED_NAMES.end();
+}
+
 bool IsWordPartOfIdentifierName(ir::AstNode *node, std::string triggerWord)
 {
     if (node == nullptr || !node->IsIdentifier()) {
@@ -109,7 +116,7 @@ bool IsWordPartOfIdentifierName(ir::AstNode *node, std::string triggerWord)
     std::transform(lowerTrigger.begin(), lowerTrigger.end(), lowerTrigger.begin(), ::tolower);
     std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), ::tolower);
 
-    return lowerName.find(lowerTrigger) != std::string::npos;
+    return lowerName.find(lowerTrigger) != std::string::npos && !IsIgnoredName(name);
 }
 
 std::vector<ir::AstNode *> FilterFromBody(const ark::ArenaVector<ir::AstNode *> &bodyNodes,
@@ -128,6 +135,9 @@ std::vector<ir::AstNode *> FilterFromBody(const ark::ArenaVector<ir::AstNode *> 
             if (def != nullptr && def->Ident() != nullptr && IsWordPartOfIdentifierName(def->Ident(), triggerWord)) {
                 res.emplace_back(node);
             }
+        }
+        if (node->IsMethodDefinition() && IsWordPartOfIdentifierName(node->AsMethodDefinition()->Key(), triggerWord)) {
+            res.emplace_back(node);
         }
     }
     return res;
@@ -196,7 +206,7 @@ std::string GetEnumMemberName(ir::AstNode *node)
     return std::string(id->AsIdentifier()->Name());
 }
 
-std::string GetInterfaceBodyName(ir::AstNode *node)
+std::string GetMethodDefinitionName(ir::AstNode *node)
 {
     if (!node->IsMethodDefinition()) {
         return "";
@@ -258,6 +268,10 @@ std::vector<CompletionEntry> GetEntriesForClassDeclaration(
                 lsp::CompletionEntry(GetClassPropertyName(node), CompletionEntryKind::CLASS,
                                      std::string(sort_text::MEMBER_DECLARED_BY_SPREAD_ASSIGNMENT)));
         }
+        if (node->IsMethodDefinition()) {
+            completions.emplace_back(lsp::CompletionEntry(GetMethodDefinitionName(node), CompletionEntryKind::METHOD,
+                                                          std::string(sort_text::CLASS_MEMBER_SNIPPETS)));
+        }
     }
     return completions;
 }
@@ -271,8 +285,10 @@ std::vector<CompletionEntry> GetEntriesForTSInterfaceDeclaration(
     std::vector<CompletionEntry> completions;
     completions.reserve(propertyNodes.size());
     for (auto node : propertyNodes) {
-        completions.emplace_back(lsp::CompletionEntry(GetInterfaceBodyName(node), CompletionEntryKind::METHOD,
-                                                      std::string(sort_text::CLASS_MEMBER_SNIPPETS)));
+        if (node->IsMethodDefinition()) {
+            completions.emplace_back(lsp::CompletionEntry(GetMethodDefinitionName(node), CompletionEntryKind::METHOD,
+                                                          std::string(sort_text::CLASS_MEMBER_SNIPPETS)));
+        }
     }
     return completions;
 }

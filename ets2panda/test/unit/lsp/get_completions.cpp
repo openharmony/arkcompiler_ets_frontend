@@ -59,6 +59,33 @@ void AssertCompletionsContainAndNotContainEntries(const std::vector<CompletionEn
     }
 }
 
+TEST_F(LSPCompletionsTests, getCompletionsAtPosition12)
+{
+    std::vector<std::string> files = {"getCompletionsAtPosition13.ets"};
+    std::vector<std::string> texts = {R"delimiter(
+class JSON {
+  public static stringify(d: byte): String {
+    return StringBuilder.toString(d)
+  }
+}
+let j = new JSON()
+let res = j._WILDCARD
+)delimiter"};
+    auto filePaths = CreateTempFile(files, texts);
+    int const expectedFileCount = 1;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+
+    LSPAPI const *lspApi = GetImpl();
+    size_t const offset = 141;  // after 'j._WILDCARD'
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    auto res = lspApi->getCompletionsAtPosition(ctx, offset);
+    auto expectedEntries = std::vector<CompletionEntry> {CompletionEntry(
+        "stringify", ark::es2panda::lsp::CompletionEntryKind::METHOD, std::string(CLASS_MEMBER_SNIPPETS))};
+    AssertCompletionsContainAndNotContainEntries(res.GetEntries(), expectedEntries, {});
+    initializer.DestroyContext(ctx);
+}
+
 TEST_F(LSPCompletionsTests, getCompletionsAtPosition11)
 {
     std::vector<std::string> files = {"getCompletionsAtPosition12.ets"};
