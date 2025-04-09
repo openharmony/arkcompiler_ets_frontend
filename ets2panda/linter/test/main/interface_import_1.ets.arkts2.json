@@ -25,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 64,
+            "line": 61,
             "column": 1,
-            "endLine": 68,
+            "endLine": 65,
             "endColumn": 2,
             "problem": "ExtendDecoratorNotSupported",
             "suggest": "",
@@ -35,9 +35,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 70,
+            "line": 67,
             "column": 1,
-            "endLine": 73,
+            "endLine": 70,
             "endColumn": 2,
             "problem": "AnimatableExtendDecoratorTransform",
             "suggest": "",
@@ -45,9 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 81,
+            "line": 78,
             "column": 16,
-            "endLine": 81,
+            "endLine": 78,
             "endColumn": 28,
             "problem": "DoubleDollarBindingNotSupported",
             "suggest": "",
@@ -105,9 +105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 41,
+            "line": 38,
             "column": 7,
-            "endLine": 41,
+            "endLine": 38,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -115,9 +115,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 70,
+            "line": 67,
             "column": 2,
-            "endLine": 70,
+            "endLine": 67,
             "endColumn": 18,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -125,9 +125,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 87,
+            "line": 84,
             "column": 36,
-            "endLine": 87,
+            "endLine": 84,
             "endColumn": 44,
             "problem": "UIInterfaceImport",
             "suggest": "",

@@ -15,20 +15,10 @@
     ],
     "result": [
         {
-            "line": 64,
+            "line": 61,
             "column": 3,
-            "endLine": 64,
+            "endLine": 61,
             "endColumn": 7,
-            "problem": "FunctionContainsThis",
-            "suggest": "",
-            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 65,
-            "column": 10,
-            "endLine": 65,
-            "endColumn": 14,
             "problem": "FunctionContainsThis",
             "suggest": "",
             "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
@@ -36,28 +26,8 @@
         },
         {
             "line": 62,
-            "column": 20,
-            "endLine": 62,
-            "endColumn": 24,
-            "problem": "InvalidIdentifier",
-            "suggest": "",
-            "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 70,
-            "column": 3,
-            "endLine": 70,
-            "endColumn": 7,
-            "problem": "FunctionContainsThis",
-            "suggest": "",
-            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 71,
             "column": 10,
-            "endLine": 71,
+            "endLine": 62,
             "endColumn": 14,
             "problem": "FunctionContainsThis",
             "suggest": "",
@@ -65,9 +35,39 @@
             "severity": "ERROR"
         },
         {
-            "line": 69,
+            "line": 59,
+            "column": 20,
+            "endLine": 59,
+            "endColumn": 24,
+            "problem": "InvalidIdentifier",
+            "suggest": "",
+            "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 67,
+            "column": 3,
+            "endLine": 67,
+            "endColumn": 7,
+            "problem": "FunctionContainsThis",
+            "suggest": "",
+            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 68,
+            "column": 10,
+            "endLine": 68,
+            "endColumn": 14,
+            "problem": "FunctionContainsThis",
+            "suggest": "",
+            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 66,
             "column": 26,
-            "endLine": 69,
+            "endLine": 66,
             "endColumn": 30,
             "problem": "InvalidIdentifier",
             "suggest": "",

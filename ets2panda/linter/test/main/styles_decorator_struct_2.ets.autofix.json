@@ -15,90 +15,33 @@
     ],
     "result": [
         {
-            "line": 18,
-            "column": 3,
-            "endLine": 18,
-            "endColumn": 15,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 48,
-            "endLine": 18,
-            "endColumn": 52,
+            "line": 75,
+            "column": 15,
+            "endLine": 75,
+            "endColumn": 34,
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
             "severity": "ERROR"
         },
         {
-            "line": 18,
+            "line": 76,
             "column": 16,
-            "endLine": 18,
-            "endColumn": 46,
-            "problem": "DecoratorsNotSupported",
-            "suggest": "",
-            "rule": "Decorators are not supported(arkts-no-ts-decorators)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 37,
-            "column": 3,
-            "endLine": 37,
-            "endColumn": 17,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 37,
-            "column": 50,
-            "endLine": 37,
-            "endColumn": 54,
+            "endLine": 76,
+            "endColumn": 36,
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
             "severity": "ERROR"
         },
         {
-            "line": 37,
-            "column": 18,
-            "endLine": 37,
-            "endColumn": 48,
-            "problem": "DecoratorsNotSupported",
+            "line": 89,
+            "column": 26,
+            "endLine": 97,
+            "endColumn": 6,
+            "problem": "LimitedReturnTypeInference",
             "suggest": "",
-            "rule": "Decorators are not supported(arkts-no-ts-decorators)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 41,
-            "column": 19,
-            "endLine": 41,
-            "endColumn": 49,
-            "problem": "DecoratorsNotSupported",
-            "suggest": "",
-            "rule": "Decorators are not supported(arkts-no-ts-decorators)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 41,
-            "column": 51,
-            "endLine": 41,
-            "endColumn": 55,
-            "problem": "VoidOperator",
-            "autofix": [
-                {
-                    "start": 1089,
-                    "end": 1093,
-                    "replacementText": "(() => {\n    ;\n    return undefined;\n})()"
-                }
-            ],
-            "suggest": "",
-            "rule": "\"void\" operator is not supported (arkts-no-void-operator)",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
             "severity": "ERROR"
         },
         {
@@ -113,19 +56,9 @@
         },
         {
             "line": 18,
-            "column": 17,
+            "column": 27,
             "endLine": 18,
-            "endColumn": 21,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 33,
-            "endLine": 18,
-            "endColumn": 45,
+            "endColumn": 39,
             "problem": "UIInterfaceImport",
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
@@ -152,9 +85,19 @@
             "severity": "ERROR"
         },
         {
-            "line": 33,
+            "line": 40,
+            "column": 23,
+            "endLine": 40,
+            "endColumn": 28,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 58,
             "column": 4,
-            "endLine": 33,
+            "endLine": 58,
             "endColumn": 16,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -162,9 +105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 34,
+            "line": 59,
             "column": 4,
-            "endLine": 34,
+            "endLine": 59,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -172,50 +115,30 @@
             "severity": "ERROR"
         },
         {
-            "line": 38,
-            "column": 30,
-            "endLine": 38,
-            "endColumn": 35,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 46,
+            "line": 71,
             "column": 5,
-            "endLine": 46,
+            "endLine": 71,
             "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 85,
+            "column": 24,
+            "endLine": 85,
+            "endColumn": 37,
             "problem": "UIInterfaceImport",
             "autofix": [
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, Memo, CommonMethod, Column, Text, BuilderParam, Require, Color, Button } from '@kits.ArkUI';"
+                    "replacementText": "\n\nimport { Component, CommonMethod, Column, Text, Color, BuilderParam, Require, Button, CustomBuilder } from '@kits.ArkUI';"
                 }
             ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 18,
-            "column": 46,
-            "endLine": 18,
-            "endColumn": 46,
-            "problem": "StrictDiagnostic",
-            "suggest": "Property '(Missing)' has no initializer and is not definitely assigned in the constructor.",
-            "rule": "Property '(Missing)' has no initializer and is not definitely assigned in the constructor.",
-            "severity": "ERROR"
-        },
-        {
-            "line": 37,
-            "column": 48,
-            "endLine": 37,
-            "endColumn": 48,
-            "problem": "StrictDiagnostic",
-            "suggest": "Property '(Missing)' has no initializer and is not definitely assigned in the constructor.",
-            "rule": "Property '(Missing)' has no initializer and is not definitely assigned in the constructor.",
             "severity": "ERROR"
         }
     ]

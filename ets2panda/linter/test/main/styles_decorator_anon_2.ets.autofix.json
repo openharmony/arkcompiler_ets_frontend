@@ -15,60 +15,6 @@
     ],
     "result": [
         {
-            "line": 28,
-            "column": 15,
-            "endLine": 28,
-            "endColumn": 45,
-            "problem": "DecoratorsNotSupported",
-            "suggest": "",
-            "rule": "Decorators are not supported(arkts-no-ts-decorators)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 28,
-            "column": 47,
-            "endLine": 28,
-            "endColumn": 51,
-            "problem": "VoidOperator",
-            "autofix": [
-                {
-                    "start": 815,
-                    "end": 819,
-                    "replacementText": "(() => {\n    ;\n    return undefined;\n})()"
-                }
-            ],
-            "suggest": "",
-            "rule": "\"void\" operator is not supported (arkts-no-void-operator)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 32,
-            "column": 16,
-            "endLine": 32,
-            "endColumn": 46,
-            "problem": "DecoratorsNotSupported",
-            "suggest": "",
-            "rule": "Decorators are not supported(arkts-no-ts-decorators)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 32,
-            "column": 48,
-            "endLine": 32,
-            "endColumn": 52,
-            "problem": "VoidOperator",
-            "autofix": [
-                {
-                    "start": 959,
-                    "end": 963,
-                    "replacementText": "(() => {\n    ;\n    return undefined;\n})()"
-                }
-            ],
-            "suggest": "",
-            "rule": "\"void\" operator is not supported (arkts-no-void-operator)",
-            "severity": "ERROR"
-        },
-        {
             "line": 16,
             "column": 2,
             "endLine": 16,
@@ -120,19 +66,9 @@
         },
         {
             "line": 28,
-            "column": 16,
+            "column": 26,
             "endLine": 28,
-            "endColumn": 20,
-            "problem": "UIInterfaceImport",
-            "suggest": "",
-            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 28,
-            "column": 32,
-            "endLine": 28,
-            "endColumn": 44,
+            "endColumn": 38,
             "problem": "UIInterfaceImport",
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
@@ -148,7 +84,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, BuilderParam, Require, Button, Memo, CommonMethod, Color } from '@kits.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, BuilderParam, Require, Button, CommonMethod, Color } from '@kits.ArkUI';"
                 }
             ],
             "suggest": "",

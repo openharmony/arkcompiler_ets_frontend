@@ -28,9 +28,6 @@ struct Test {
       Circle() {
         
       }
-      .stateStyles({
-
-      })
 
       MyComponent() {
 
@@ -61,7 +58,7 @@ struct MyComponent {
 
 function cardStyle(this: TextAttribute): TextAttribute
 {
-  this.backgroundColor1('#ffffff');
+  this.backgroundColor('#ffffff');
   return this;
 }
 

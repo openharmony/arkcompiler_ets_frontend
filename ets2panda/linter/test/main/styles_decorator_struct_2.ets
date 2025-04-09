@@ -15,10 +15,10 @@
 
 @Component
 struct MyCard1 {
-  cardStyle1 = @Memo (instance: CommonMethod): void => {
+  cardStyle1 = (instance: CommonMethod): void => {
     instance.backgroundColor('#ffffff');
     instance.borderRadius(8);
-  }
+  };
 
   build() {
     Column() {
@@ -29,16 +29,41 @@ struct MyCard1 {
 }
 
 @Component
+struct MyCard2 {
+  cardStyle2 = (instance: CommonMethod): void => {
+    instance.border({
+      color: this.getColor(),
+      width: this.getWidth()
+    });
+  };
+  
+  private getColor(): Color {
+    return Color.Red
+  }
+  
+  private getWidth(): number {
+    return 10
+  }
+
+  build() {
+    Column() {
+      Text('Card')
+    }
+    .cardStyle2()
+  }
+}
+
+@Component
 struct MyButton {
   @BuilderParam
   @Require
   content: () => void;
 
-  NormalStyles = @Memo (instance: CommonMethod): void => {
+  NormalStyles = (instance: CommonMethod): void => {
     instance.backgroundColor(Color.Red);
   }
 
-  PressedStyles = @Memo (instance: CommonMethod): void => {
+  PressedStyles = (instance: CommonMethod): void => {
     instance.backgroundColor(Color.Green);
   }
 
@@ -51,4 +76,55 @@ struct MyButton {
       pressed: this.PressedStyles()
     })
   }
+}
+
+@Component
+struct imageTest {
+  private mediaItem: MediaItem | undefined;
+  private previewUri: string | undefined;
+  private DragBuilder: CustomBuilder | undefined;
+
+  imageStyle = (instance: CommonMethod): void => {
+    instance.draggable(this.isShowLongPressMenu() && this.isPC());
+    instance.onDragStart(() => {
+      console.info(TAG, 'onDragStart');
+      this.touchVibrate(VibrateType.DRAG);
+      if (this.mediaItem?.path) {
+        this.previewUri =
+          this.getPreviewUri(this.mediaItem?.path, this.mediaItem?.getDateModified?.(), false, true);
+      }
+      return this.DragBuilder;
+    });
+    instance.accessibilityText(this.isOpenTouchGuide ? this.getImageItemGridAccessibilityText() : '');
+  };
+
+  private isShowLongPressMenu(): boolean {
+    return true;
+  }
+
+  private isPC(): boolean {
+    return true;
+  }
+
+  private touchVibrate(type: VibrateType): void {
+
+  }
+
+  private isOpenTouchGuide: boolean = true;
+
+  private getImageItemGridAccessibilityText(): string {
+    return ''
+  }
+
+  private getPreviewUri(path: string, date: string, isOk: boolean, ready: boolean): string {
+    return ''
+  }
+
+  build() {
+
+  }
+}
+
+enum VibrateType {
+  DRAG
 }

@@ -24,7 +24,7 @@
                 {
                     "start": 605,
                     "end": 688,
-                    "replacementText": "@AnimatableExtend\n@Memo\nfunction animatableWidth(this: TextAttribute, width: number): this {\n    this.width(width);\n    return this;\n}"
+                    "replacementText": "@AnimatableExtend\nfunction animatableWidth(this: TextAttribute, width: number): this {\n    this.width(width);\n    return this;\n}"
                 }
             ],
             "suggest": "",
@@ -111,7 +111,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { TextAttribute, Memo, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kits.ArkUI';"
+                    "replacementText": "\n\nimport { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kits.ArkUI';"
                 }
             ],
             "suggest": "",

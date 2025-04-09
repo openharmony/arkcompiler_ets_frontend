@@ -15,6 +15,16 @@
     ],
     "result": [
         {
+            "line": 31,
+            "column": 3,
+            "endLine": 31,
+            "endColumn": 7,
+            "problem": "FunctionContainsThis",
+            "suggest": "",
+            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
+            "severity": "ERROR"
+        },
+        {
             "line": 32,
             "column": 3,
             "endLine": 32,
@@ -85,19 +95,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 39,
-            "column": 3,
-            "endLine": 39,
-            "endColumn": 7,
-            "problem": "FunctionContainsThis",
-            "suggest": "",
-            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 43,
+            "line": 42,
             "column": 10,
-            "endLine": 43,
+            "endLine": 42,
             "endColumn": 14,
             "problem": "FunctionContainsThis",
             "suggest": "",
@@ -105,9 +105,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 31,
+            "line": 30,
             "column": 44,
-            "endLine": 31,
+            "endLine": 30,
             "endColumn": 48,
             "problem": "ThisType",
             "suggest": "",
@@ -115,9 +115,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 47,
+            "line": 45,
             "column": 61,
-            "endLine": 47,
+            "endLine": 45,
             "endColumn": 65,
             "problem": "ThisType",
             "suggest": "",

@@ -24,7 +24,7 @@
                 {
                     "start": 767,
                     "end": 1035,
-                    "replacementText": "{\n    normal: @Memo (instance: CommonMethod): void => {\n        instance.backgroundColor(\"#00ffff\");\n        instance.borderWidth(8);\n    },\n    pressed: @Memo (instance: CommonMethod): void => {\n        instance.backgroundColor(Color.Red);\n        instance.backgroundImagePosition({\n            x: 0,\n            y: 0\n        });\n        instance.backgroundColor(\"#ffff00\");\n    }\n}"
+                    "replacementText": "{\n      normal: (instance: CommonMethod): void => {\n          instance.backgroundColor(\"#00ffff\");\n          instance.borderWidth(8);\n      },\n      pressed: (instance: CommonMethod): void => {\n          instance.backgroundColor(Color.Red);\n          instance.backgroundImagePosition({\n              x: 0,\n              y: 0\n          });\n          instance.backgroundColor(\"#ffff00\");\n      }\n    }"
                 }
             ],
             "suggest": "",
@@ -91,7 +91,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Entry, Component, BuilderParam, Require, Button, CommonMethod, Memo, Color } from '@kits.ArkUI';"
+                    "replacementText": "\n\nimport { Entry, Component, BuilderParam, Require, Button, CommonMethod, Color } from '@kits.ArkUI';"
                 }
             ],
             "suggest": "",

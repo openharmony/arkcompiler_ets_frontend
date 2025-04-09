@@ -33,7 +33,8 @@ import {
   APPLY_STYLES_IDENTIFIER,
   CustomDecoratorName,
   ARKUI_PACKAGE_NAME,
-  VALUE_IDENTIFIER
+  VALUE_IDENTIFIER,
+  INDENT_STEP
 } from '../utils/consts/ArkuiConstants';
 
 const UNDEFINED_NAME = 'undefined';
@@ -2284,7 +2285,9 @@ export class Autofixer {
       arrowFunc
     );
     const newExpr = ts.factory.createObjectLiteralExpression([assignment1, assignment2], true);
-    const text = this.printer.printNode(ts.EmitHint.Unspecified, newExpr, originalExpr.getSourceFile());
+    let text = this.printer.printNode(ts.EmitHint.Unspecified, newExpr, originalExpr.getSourceFile());
+    const startPos = this.sourceFile.getLineAndCharacterOfPosition(originalExpr.parent.getStart()).character;
+    text = Autofixer.adjustIndentation(text, startPos);
     return [{ start: originalExpr.getStart(), end: originalExpr.getEnd(), replacementText: text }];
   }
 
@@ -2328,7 +2331,7 @@ export class Autofixer {
     const parameters: ts.MemberName[] = [];
     const values: ts.Expression[][] = [];
     const statements = block?.statements;
-    this.getParamsAndValues(statements, parameters, values);
+    Autofixer.getParamsAndValues(statements, parameters, values);
     const returnStatement = ts.factory.createReturnStatement(ts.factory.createThis());
     const newBlock = Autofixer.createBlock(parameters, values, ts.factory.createThis(), returnStatement);
     const componentName = extendDecorator.expression.arguments[0]?.getText();
@@ -2337,7 +2340,6 @@ export class Autofixer {
     }
     const typeName = componentName + ATTRIBUTE_SUFFIX;
     interfacesNeedToImport.add(typeName);
-    interfacesNeedToImport.add(CustomDecoratorName.Memo);
     const parameDecl = ts.factory.createParameterDeclaration(
       undefined,
       undefined,
@@ -2348,18 +2350,10 @@ export class Autofixer {
     );
     const returnType = ts.factory.createTypeReferenceNode(ts.factory.createIdentifier(THIS_IDENTIFIER), undefined);
     const newFuncDecl = Autofixer.createFunctionDeclaration(funcDecl, undefined, parameDecl, returnType, newBlock);
-    const newDecorators: ts.Decorator[] = [];
+    let text = this.printer.printNode(ts.EmitHint.Unspecified, newFuncDecl, funcDecl.getSourceFile());
     if (preserveDecorator) {
-      newDecorators.push(ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.AnimatableExtend)));
+      text = '@' + CustomDecoratorName.AnimatableExtend + '\n' + text;
     }
-    newDecorators.push(ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Memo)));
-    const text1 = this.printer.printList(
-      ts.ListFormat.Decorators,
-      ts.factory.createNodeArray(newDecorators),
-      funcDecl.getSourceFile()
-    );
-    const text2 = this.printer.printNode(ts.EmitHint.Unspecified, newFuncDecl, funcDecl.getSourceFile());
-    const text = text1 + text2;
     return [{ start: funcDecl.getStart(), end: funcDecl.getEnd(), replacementText: text }];
   }
 
@@ -2403,23 +2397,56 @@ export class Autofixer {
     return block;
   }
 
-  traverseNodes(node: ts.Node, parameters: ts.MemberName[], values: ts.Expression[][]): void {
-    if (ts.isCallExpression(node)) {
-      if (ts.isPropertyAccessExpression(node.expression)) {
-        const propertyAccess = node.expression;
+  private static traverseNodes(node: ts.Node, parameters: ts.MemberName[], values: ts.Expression[][]): void {
+    const callExpressions: ts.CallExpression[] = Autofixer.extractCallExpressions(node);
+    callExpressions.forEach((callExpression) => {
+      if (ts.isPropertyAccessExpression(callExpression.expression)) {
+        const propertyAccess = callExpression.expression;
         parameters.push(propertyAccess.name);
-      } else if (ts.isIdentifier(node.expression)) {
-        parameters.push(node.expression);
+      } else if (ts.isIdentifier(callExpression.expression)) {
+        parameters.push(callExpression.expression);
       }
-      values.push(Array.from(node.arguments));
-    }
-
-    ts.forEachChild(node, (child) => {
-      this.traverseNodes(child, parameters, values);
+      values.push(Array.from(callExpression.arguments));
     });
   }
 
-  getParamsAndValues(
+  private static extractCallExpressions(node: ts.Node): ts.CallExpression[] {
+    const callExpressions: ts.CallExpression[] = [];
+    let current: ts.Node | undefined;
+    if (ts.isExpressionStatement(node)) {
+      if (ts.isCallExpression(node.expression)) {
+        current = node.expression;
+      }
+    }
+
+    if (ts.isPropertyAssignment(node)) {
+      if (ts.isCallExpression(node.initializer)) {
+        current = node.initializer;
+      }
+    }
+
+    while (current) {
+      if (ts.isCallExpression(current)) {
+        if (
+          (ts.isPropertyAccessExpression(current.parent) ||
+            ts.isExpressionStatement(current.parent) ||
+            ts.isPropertyAssignment(current.parent)) &&
+          (ts.isPropertyAccessExpression(current.expression) || ts.isIdentifier(current.expression))
+        ) {
+          callExpressions.push(current);
+        }
+      }
+
+      if (ts.isCallExpression(current) || ts.isPropertyAccessExpression(current)) {
+        current = current.expression;
+      } else {
+        break;
+      }
+    }
+    return callExpressions;
+  }
+
+  private static getParamsAndValues(
     statements: ts.NodeArray<ts.Statement> | undefined,
     parameters: ts.MemberName[],
     values: ts.Expression[][]
@@ -2431,7 +2458,7 @@ export class Autofixer {
       const statement = statements[i];
       const tempParas: ts.MemberName[] = [];
       const tempVals: ts.Expression[][] = [];
-      this.traverseNodes(statement, tempParas, tempVals);
+      Autofixer.traverseNodes(statement, tempParas, tempVals);
       if (
         ts.isExpressionStatement(statement) &&
         ts.isCallExpression(statement.expression) &&
@@ -2675,7 +2702,7 @@ export class Autofixer {
     const parameters: ts.MemberName[] = [];
     const values: ts.Expression[][] = [];
     const statements = block?.statements;
-    this.getParamsAndValues(statements, parameters, values);
+    Autofixer.getParamsAndValues(statements, parameters, values);
     const newBlock = Autofixer.createBlock(parameters, values, ts.factory.createIdentifier(INSTANCE_IDENTIFIER));
     const parameDecl = ts.factory.createParameterDeclaration(
       undefined,
@@ -2687,22 +2714,10 @@ export class Autofixer {
     );
     const returnType = ts.factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword);
     const newFuncDecl = Autofixer.createFunctionDeclaration(funcDecl, undefined, parameDecl, returnType, newBlock);
-    const MemoDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Memo));
     needImport.add(COMMON_METHOD_IDENTIFIER);
-    needImport.add(CustomDecoratorName.Memo);
-    const text1 = this.printer.printNode(ts.EmitHint.Unspecified, MemoDecorator, funcDecl.getSourceFile());
-    const text2 = this.printer.printNode(ts.EmitHint.Unspecified, newFuncDecl, funcDecl.getSourceFile());
-    const text = text1 + '\n' + text2;
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, newFuncDecl, funcDecl.getSourceFile());
     const autofix = [{ start: funcDecl.getStart(), end: funcDecl.getEnd(), replacementText: text }];
-    calls.forEach((call) => {
-      const callExpr = ts.factory.createCallExpression(
-        ts.factory.createIdentifier(APPLY_STYLES_IDENTIFIER),
-        undefined,
-        [funcDecl.name as ts.Identifier]
-      );
-      const text = this.printer.printNode(ts.EmitHint.Unspecified, callExpr, call.getSourceFile());
-      autofix.push({ start: call.getStart(), end: call.getEnd(), replacementText: text });
-    });
+    this.addAutofixFromCalls(calls, autofix, funcDecl.name as ts.Identifier);
     return autofix;
   }
 
@@ -2715,7 +2730,7 @@ export class Autofixer {
     const parameters: ts.MemberName[] = [];
     const values: ts.Expression[][] = [];
     const statements = block?.statements;
-    this.getParamsAndValues(statements, parameters, values);
+    Autofixer.getParamsAndValues(statements, parameters, values);
     const newBlock = Autofixer.createBlock(parameters, values, ts.factory.createIdentifier(INSTANCE_IDENTIFIER));
     const parameDecl = ts.factory.createParameterDeclaration(
       undefined,
@@ -2733,29 +2748,48 @@ export class Autofixer {
       ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
       newBlock
     );
-    const MemoDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Memo));
+    const expr = ts.factory.createPropertyDeclaration(undefined, methodDecl.name, undefined, undefined, arrowFunc);
     needImport.add(COMMON_METHOD_IDENTIFIER);
-    needImport.add(CustomDecoratorName.Memo);
-    const text1 = this.printer.printNode(ts.EmitHint.Unspecified, methodDecl.name, methodDecl.getSourceFile());
-    const text2 = this.printer.printNode(
-      ts.EmitHint.Unspecified,
-      ts.factory.createToken(ts.SyntaxKind.EqualsToken),
-      methodDecl.getSourceFile()
-    );
-    const text3 = this.printer.printNode(ts.EmitHint.Unspecified, MemoDecorator, methodDecl.getSourceFile());
-    const text4 = this.printer.printNode(ts.EmitHint.Unspecified, arrowFunc, methodDecl.getSourceFile());
-    const text = text1 + ' ' + text2 + ' ' + text3 + ' ' + text4;
+    let text = this.printer.printNode(ts.EmitHint.Unspecified, expr, methodDecl.getSourceFile());
+    const startPos = this.sourceFile.getLineAndCharacterOfPosition(methodDecl.getStart()).character;
+    text = Autofixer.adjustIndentation(text, startPos);
     const autofix = [{ start: methodDecl.getStart(), end: methodDecl.getEnd(), replacementText: text }];
-    this.addAutofixFromCalls(calls, autofix, methodDecl.name as ts.Identifier);
+    const argument = ts.factory.createPropertyAccessExpression(
+      ts.factory.createThis(),
+      methodDecl.name as ts.Identifier
+    );
+    this.addAutofixFromCalls(calls, autofix, argument);
     return autofix;
   }
 
-  private addAutofixFromCalls(calls: ts.CallExpression[], autofix: Autofix[], methodDeclName: ts.Identifier): void {
+  private static adjustIndentation(text: string, startPos: number): string {
+    const lines = text.split('\n');
+    if (lines.length <= 1) {
+      return text;
+    }
+
+    const firstLine = lines[0];
+    const secondLine = lines[1];
+    const currentIndent = secondLine.match(/^\s*/)?.[0].length || 0;
+    const indentBase = startPos - (currentIndent - INDENT_STEP);
+
+    const middleLines = lines.slice(1, -1).map((line) => {
+      if (indentBase > 0) {
+        return ' '.repeat(indentBase) + line;
+      }
+      return line;
+    });
+
+    const lastLine = ' '.repeat(startPos) + lines[lines.length - 1];
+    return [firstLine, ...middleLines, lastLine].join('\n');
+  }
+
+  private addAutofixFromCalls(calls: ts.CallExpression[], autofix: Autofix[], argument: ts.Expression): void {
     calls.forEach((call) => {
       const callExpr = ts.factory.createCallExpression(
         ts.factory.createIdentifier(APPLY_STYLES_IDENTIFIER),
         undefined,
-        [ts.factory.createPropertyAccessExpression(ts.factory.createThis(), methodDeclName)]
+        [argument]
       );
       const text = this.printer.printNode(ts.EmitHint.Unspecified, callExpr, call.getSourceFile());
       autofix.push({ start: call.getStart(), end: call.getEnd(), replacementText: text });
@@ -2773,21 +2807,17 @@ export class Autofixer {
       if (stateStyle && ts.isIdentifier(stateStyle)) {
         stateStyles.push(stateStyle);
       }
-      if (!ts.isPropertyAssignment(property)) {
+      if (!ts.isPropertyAssignment(property) || !ts.isObjectLiteralExpression(property.initializer)) {
         return [];
       }
-      const object = property.initializer;
-      if (!ts.isObjectLiteralExpression(object)) {
-        return [];
-      }
-      const propAssignments = object.properties;
+      const propAssignments = property.initializer.properties;
       const parameters: ts.MemberName[] = [];
       const values: ts.Expression[][] = [];
       for (let j = 0; j < propAssignments.length; j++) {
         const propAssignment = propAssignments[j];
         const tempParas: ts.MemberName[] = [];
         const tempVals: ts.Expression[][] = [];
-        this.traverseNodes(propAssignment, tempParas, tempVals);
+        Autofixer.traverseNodes(propAssignment, tempParas, tempVals);
         if (
           ts.isPropertyAssignment(propAssignment) &&
           ts.isCallExpression(propAssignment.initializer) &&
@@ -2806,16 +2836,21 @@ export class Autofixer {
       stateValues.push(values);
     }
     needImport.add(COMMON_METHOD_IDENTIFIER);
-    needImport.add(CustomDecoratorName.Memo);
-    const text = this.createPropertyText(stateParams, stateValues, stateStyles);
+    const newExpr = ts.factory.createObjectLiteralExpression(
+      Autofixer.createPropertyAssignments(stateParams, stateValues, stateStyles),
+      true
+    );
+    let text = this.printer.printNode(ts.EmitHint.Unspecified, newExpr, object.getSourceFile());
+    const startPos = this.sourceFile.getLineAndCharacterOfPosition(object.parent.getStart()).character - 1;
+    text = Autofixer.adjustIndentation(text, startPos);
     return [{ start: object.getStart(), end: object.getEnd(), replacementText: text }];
   }
 
-  private createPropertyText(
+  private static createPropertyAssignments(
     stateParams: ts.MemberName[][],
     sateValues: ts.Expression[][][],
     stateStyles: ts.Identifier[]
-  ): string {
+  ): ts.PropertyAssignment[] {
     const blocks: ts.Block[] = [];
     for (let i = 0; i < stateParams.length; i++) {
       const parameters = stateParams[i];
@@ -2823,6 +2858,7 @@ export class Autofixer {
       const block = Autofixer.createBlock(parameters, values, ts.factory.createIdentifier(INSTANCE_IDENTIFIER));
       blocks.push(block);
     }
+
     const parameterDecl = ts.factory.createParameterDeclaration(
       undefined,
       undefined,
@@ -2833,32 +2869,15 @@ export class Autofixer {
     );
     const voidToken = ts.factory.createToken(ts.SyntaxKind.VoidKeyword);
     const arrowToken = ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken);
-    const MemoDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Memo));
-    const propertyTexts: string[] = [];
+    const newProperties: ts.PropertyAssignment[] = [];
     for (let i = 0; i < blocks.length; i++) {
-      const arrowFunc = ts.factory.createArrowFunction(
-        undefined,
-        undefined,
-        [parameterDecl],
-        voidToken,
-        arrowToken,
-        blocks[i]
+      const property = ts.factory.createPropertyAssignment(
+        stateStyles[i],
+        ts.factory.createArrowFunction(undefined, undefined, [parameterDecl], voidToken, arrowToken, blocks[i])
       );
-      const sourceFile = stateStyles[i].getSourceFile();
-      const text1 = this.printer.printNode(ts.EmitHint.Unspecified, stateStyles[i], sourceFile);
-      const text2 = this.printer.printNode(ts.EmitHint.Unspecified, MemoDecorator, sourceFile);
-      const text3 = this.printer.printNode(ts.EmitHint.Unspecified, arrowFunc, sourceFile);
-      const propertyText = text1 + ': ' + text2 + ' ' + text3;
-      propertyTexts.push(propertyText);
+      newProperties.push(property);
     }
-    let innerText = propertyTexts.join(',\n');
-    innerText = innerText.
-      split('\n').
-      map((line) => {
-        return '    ' + line;
-      }).
-      join('\n');
-    return '{\n' + innerText + '\n}';
+    return newProperties;
   }
 
   fixDataObservation(classDecl: ts.ClassDeclaration | undefined): Autofix[] | undefined {

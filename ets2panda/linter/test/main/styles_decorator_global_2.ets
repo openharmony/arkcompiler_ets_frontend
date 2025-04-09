@@ -15,7 +15,6 @@
 
 const mycolor: string = "#ffff00"
 
-@Memo
 function cardStyle1(instance: CommonMethod): void {
     instance.backgroundColor(mycolor);
     instance.borderColor(Color.Red);
@@ -37,12 +36,10 @@ struct MyCard1 {
     }
 }
 
-@Memo
 function NormalStyles(instance: CommonMethod): void {
     instance.backgroundColor("#ffffff");
 }
 
-@Memo
 function PressedStyles(instance: CommonMethod): void {
     instance.backgroundColor("#ffffff");
 }

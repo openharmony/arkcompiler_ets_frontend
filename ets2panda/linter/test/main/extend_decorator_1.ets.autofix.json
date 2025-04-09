@@ -23,8 +23,8 @@
             "autofix": [
                 {
                     "start": 743,
-                    "end": 1015,
-                    "replacementText": "@Memo\nfunction cardStyle(this: RowAttribute): this {\n    this.backgroundColor(\"#ffff00\");\n    this.backgroundColor(\"#00ffff\");\n    this.backgroundColor(\"#ff00ff\");\n    this.backgroundColor(mycolor);\n    this.backgroundColor(Color.Red);\n    this.borderRadius(8);\n    this.padding(8);\n    this.backgroundImagePosition({\n        x: 0,\n        y: 0\n    });\n    return this;\n}"
+                    "end": 1018,
+                    "replacementText": "function cardStyle(this: ColumnAttribute): this {\n    this.backgroundColor(\"#ffff00\");\n    this.backgroundColor(\"#00ffff\");\n    this.backgroundColor(\"#ff00ff\");\n    this.backgroundColor(mycolor);\n    this.backgroundColor(Color.Red);\n    this.borderRadius(8);\n    this.padding(8);\n    this.backgroundImagePosition({\n        x: 0,\n        y: 0\n    });\n    return this;\n}"
                 }
             ],
             "suggest": "",
@@ -39,9 +39,9 @@
             "problem": "ExtendDecoratorNotSupported",
             "autofix": [
                 {
-                    "start": 1017,
-                    "end": 1102,
-                    "replacementText": "@Memo\nfunction superCard(this: ColumnAttribute, padding: number): this {\n    this.cardStyle();\n    this.padding(10);\n    return this;\n}"
+                    "start": 1020,
+                    "end": 1105,
+                    "replacementText": "function superCard(this: ColumnAttribute, padding: number): this {\n    this.cardStyle();\n    this.padding(10);\n    return this;\n}"
                 }
             ],
             "suggest": "",
@@ -88,7 +88,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, Column, Text, RowAttribute, Memo, Color, ColumnAttribute } from '@kits.ArkUI';"
+                    "replacementText": "\n\nimport { Component, Column, Text, ColumnAttribute, Color } from '@kits.ArkUI';"
                 }
             ],
             "suggest": "",
