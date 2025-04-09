@@ -117,7 +117,7 @@ const MEMORY_PERFORMANCE_FILE_NAME = 'memoryPerformanceData.json'; // Memory per
 export const eventListTimeAndMemValues = new Set<string>(Object.values(EventList));
 
 export class TimeAndMemTimeTracker {
-  static obfuscationCacheDir: string = ''; // Obtain the directory of the obfuscated output file
+  static obfuscationCacheDir: string | undefined = ''; // Obtain the directory of the obfuscated output file
   private eventStack: Array<{ eventName: string; data: TimeAndMemInfo }> = [];
   timeDataArr: TimeInfo[] = [];
   memoryDataArr: MemInfo[] = [];
@@ -251,7 +251,7 @@ export function clearTimeAndMemPrinterData(): void {
 /**
  * Initialize the configuration of the TimeAndMem performance printer
  */
-export function initPrinterTimeAndMemConfig() {
+export function initPrinterTimeAndMemConfig(): void {
   printerTimeAndMemDataConfig.mTimeAndMemPrinter = true;
 }
 
@@ -315,11 +315,13 @@ export function printMemoryPerformanceData(): void {
  * Write data of timeAndMemoryPerformance
  */
 export async function writeTimeAndMemoryPerformanceData(data: (TimeInfo | MemInfo)[], fileName: string): Promise<void> {
-  const filePath: string = path.join(TimeAndMemTimeTracker.obfuscationCacheDir, fileName);
-  try {
-    await fs.promises.writeFile(filePath, JSON.stringify(data, null, INDENTATION_SPACES));
-  } catch (error) {
-    throw new Error('Failed to write file: ' + error.message.toString());
+  if (TimeAndMemTimeTracker.obfuscationCacheDir) {
+    const filePath: string = path.join(TimeAndMemTimeTracker.obfuscationCacheDir, fileName);
+    try {
+      await fs.promises.writeFile(filePath, JSON.stringify(data, null, INDENTATION_SPACES));
+    } catch (error) {
+      throw new Error('Failed to write file: ' + error.message.toString());
+    }
   }
 }
 
