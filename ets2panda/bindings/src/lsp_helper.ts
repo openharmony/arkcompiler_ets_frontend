@@ -24,17 +24,26 @@ import { PluginDriver, PluginHook } from './ui_plugins_driver'
 import * as fs from "fs"
 import * as path from 'path'
 
+function initBuildEnv(): void {
+  const currentPath: string | undefined = process.env.PATH;
+  let pandaLibPath: string = path.resolve(__dirname, '../../ets2panda/lib');
+  process.env.PATH = `${currentPath}${path.delimiter}${pandaLibPath}`;
+}
+
 export class Lsp {
   private pandaLibPath: string
   private fileNameToArktsconfig: any // Map<fileName, arktsconfig.json>
   private moduleToBuildConfig: any // Map<moduleName, build_config.json>
+  private getFileContent: (filePath: string) => string;
 
-  constructor(projectPath: string) {
+  constructor(projectPath: string, getContentCallback?: (filePath: string) => string) {
+    initBuildEnv()
     this.pandaLibPath = path.resolve(__dirname, '../../ets2panda/lib');
     let compileFileInfoPath = path.join(projectPath, '.idea', '.deveco', 'lsp_compileFileInfos.json')
     this.fileNameToArktsconfig = JSON.parse(fs.readFileSync(compileFileInfoPath, 'utf-8'))
     let buildConfigPath = path.join(projectPath, '.idea', '.deveco', 'lsp_build_config.json')
     this.moduleToBuildConfig = JSON.parse(fs.readFileSync(buildConfigPath, 'utf-8'))
+    this.getFileContent = getContentCallback || ((path) => fs.readFileSync(path, 'utf8'));
   }
 
   getDefinitionAtPosition(filename: String, offset: number): LspDefinitionData {
@@ -280,7 +289,7 @@ export class Lsp {
     let arktsconfig = this.fileNameToArktsconfig[filePath]
     let ets2pandaCmd = ['-', '--extension', 'ets', '--arktsconfig', arktsconfig]
     let localCfg = lspDriverHelper.createCfg(ets2pandaCmd, filePath, this.pandaLibPath)
-    let source = fs.readFileSync(filePath, 'utf8').toString().replace(/\r\n/g, '\n');
+    let source = this.getFileContent(filePath).replace(/\r\n/g, '\n');
     // This is a temporary solution to support "obj." with wildcard for better solution in internal issue.
     if (source[offset - 1] === '.') {
       const wildcard = "_WILDCARD";
