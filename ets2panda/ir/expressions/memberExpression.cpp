@@ -362,7 +362,7 @@ checker::Type *MemberExpression::ResolveReturnTypeFromSignature(checker::ETSChec
         checker->LogError(diagnostic::MISSING_INDEX_ACCESSOR_WITH_SIG, {}, Property()->Start());
         return nullptr;
     }
-    checker->ValidateSignatureAccessibility(objType_, nullptr, signature, Start());
+    checker->ValidateSignatureAccessibility(objType_, signature, Start());
 
     ES2PANDA_ASSERT(signature->Function() != nullptr);
 

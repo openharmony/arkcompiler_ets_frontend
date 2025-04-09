@@ -1676,8 +1676,8 @@ bool ETSChecker::NeedToVerifySignatureVisibility(Signature *signature, const lex
             signature->HasSignatureFlag(SignatureFlags::PROTECTED));
 }
 
-void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, const ir::CallExpression *callExpr,
-                                                Signature *signature, const lexer::SourcePosition &pos,
+void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, Signature *signature,
+                                                const lexer::SourcePosition &pos,
                                                 const MaybeDiagnosticInfo &maybeErrorInfo)
 {
     if (!NeedToVerifySignatureVisibility(signature, pos)) {
@@ -1689,14 +1689,6 @@ void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, const ir:
     ES2PANDA_ASSERT(declNode && (declNode->IsClassDefinition() || declNode->IsTSInterfaceDeclaration()));
 
     if (declNode->IsTSInterfaceDeclaration()) {
-        const auto *enclosingFunc =
-            util::Helpers::FindAncestorGivenByType(callExpr, ir::AstNodeType::SCRIPT_FUNCTION)->AsScriptFunction();
-        if (callExpr->Callee()->IsMemberExpression() &&
-            callExpr->Callee()->AsMemberExpression()->Object()->IsThisExpression() &&
-            signature->Function()->IsPrivate() && !enclosingFunc->IsPrivate()) {
-            LogError(diagnostic::THIS_OUTSIDE_METHOD_CTX, {}, enclosingFunc->Start());
-        }
-
         if (containingClass == declNode->AsTSInterfaceDeclaration()->TsType() && isContainingSignatureInherited) {
             return;
         }
