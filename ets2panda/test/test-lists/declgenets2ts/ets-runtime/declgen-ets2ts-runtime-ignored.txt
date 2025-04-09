@@ -1,15 +1,15 @@
-#FailKind.SEGFAULT_FAIL - 7 tests:
+#FailKind.SEGFAULT_FAIL - 1 tests:
+lambda_with_receiver/lambda_with_receiver_generics_return_this.ets
+#FailKind.DECLGEN_ETS2TS_FAIL - 6 tests:
 StringFasta.ets
 conditionalExpressionGenericLUB.ets
 funcRefWithRestArguments.ets
-lambda_with_receiver/lambda_with_receiver_generics_return_this.ets
 struct-identifier.ets
 struct-init2.ets
 type_param_in_union.ets
-#FailKind.ABORT_FAIL - 1 tests:
-ArrowFunctionWithNestedNameSpace.ets
-#FailKind.TSC_FAIL - 69 tests:
+#FailKind.TSC_FAIL - 71 tests:
 AliasClass.ets
+ArrowFunctionWithNestedNameSpace.ets
 ClassNewInstance.ets
 Enum7.ets
 GenericBridges_01.ets
@@ -74,6 +74,7 @@ namespace_tests/namespace_execution_statements_test02.ets
 namespace_tests/namespace_with_annotations.ets
 override_for_partial_01.ets
 override_for_partial_02.ets
+qualified-type-name.ets
 readonly_simple_form_pos.ets
 simple_form_pos.ets
 static-invoke.ets

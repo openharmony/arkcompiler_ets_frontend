@@ -44,21 +44,30 @@ static void DebugPrint([[maybe_unused]] const std::string &msg)
 #endif
 }
 
-void TSDeclGen::Generate()
+bool TSDeclGen::Generate()
 {
-    GenGlobalDescriptor();
+    if (!GenGlobalDescriptor()) {
+        return false;
+    }
     CollectIndirectExportDependencies();
     GenDeclarations();
+    return true;
 }
 
-void TSDeclGen::GenGlobalDescriptor()
+bool TSDeclGen::GenGlobalDescriptor()
 {
+    if (program_->GlobalClass() == nullptr) {
+        const auto loc = lexer::SourcePosition();
+        LogError(diagnostic::UNSUPPORTED_ENCODING_SPECIFICATIONS, {}, loc);
+        return false;
+    }
     globalDesc_ =
         checker::ETSObjectType::NameToDescriptor(program_->GlobalClass()->TsType()->AsETSObjectType()->AssemblerName());
     OutTs("let ETSGLOBAL = (globalThis as any).Panda.getClass('", globalDesc_, "');");
     OutEndlTs();
     OutTs("ETSGLOBAL.", compiler::Signatures::INIT_METHOD, "();");
     OutEndlTs();
+    return true;
 }
 
 void TSDeclGen::CollectIndirectExportDependencies()
@@ -532,11 +541,12 @@ void TSDeclGen::ProcessParameterTypeAnnotation(const ir::ETSParameterExpression 
 
     if (typeAnnotation->IsETSTypeReference()) {
         auto etsTypeRef = typeAnnotation->AsETSTypeReference();
-        if (paramType->IsETSFunctionType()) {
+        if (paramType->IsETSFunctionType() && etsTypeRef->Part()->Name()->IsIdentifier()) {
             auto name = etsTypeRef->Part()->Name()->AsIdentifier()->Name();
             indirectDependencyObjects_.insert(name.Mutf8());
             OutDts(name);
-        } else if (etsTypeRef->Part()->Name()->IsTSQualifiedName()) {
+        } else if (etsTypeRef->Part()->Name()->IsTSQualifiedName() &&
+                   etsTypeRef->Part()->Name()->AsTSQualifiedName()->Left()->IsIdentifier()) {
             auto qualifiedName = etsTypeRef->Part()->Name()->AsTSQualifiedName();
             auto leftName = qualifiedName->Left()->AsIdentifier()->Name();
             auto rightName = qualifiedName->Right()->AsIdentifier()->Name();
@@ -1680,7 +1690,9 @@ bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::p
         return false;
     }
 
-    declBuilder.Generate();
+    if (!declBuilder.Generate()) {
+        return false;
+    }
 
     std::string outputEts = declBuilder.GetTsOutput();
     std::string outputDEts = declBuilder.GetDtsOutput();
