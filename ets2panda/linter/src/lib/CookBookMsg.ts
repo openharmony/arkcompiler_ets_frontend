@@ -280,3 +280,4 @@ cookBookTag[308] = 'Type "void" has no instances.(arkts-sdk-limited-void-type)';
 cookBookTag[309] = 'API no longer supports optional methods (sdk-optional-methods)';
 cookBookTag[312] =
   'Properties in "Sendable" classes and interfaces must have a Sendable data type (sdk-no-sendable-prop-types)';
+cookBookTag[313] = 'Construct signatures are not supported in interfaces.(sdk-ctor-signatures-iface)';
