@@ -35,7 +35,15 @@
       ],
       "stringProperties": [
         "test9"
-      ]
+      ],
+      "arkUIKeepInfo": {
+        "propertyNames": [
+          "test112"
+        ],
+        "globalNames": [
+          "test111"
+        ]
+      }
     },
     "fileReservedInfo": {
       "enumProperties": [
@@ -64,7 +72,11 @@
         ]
       },
       "enumProperties": [],
-      "stringProperties": []
+      "stringProperties": [],
+      "arkUIKeepInfo": {
+        "propertyNames": [],
+        "globalNames": []
+      }
     },
     "fileReservedInfo": {
       "enumProperties": [],
@@ -108,7 +120,15 @@
       ],
       "stringProperties": [
         "test9"
-      ]
+      ],
+      "arkUIKeepInfo": {
+        "propertyNames": [
+          "test123"
+        ],
+        "globalNames": [
+          "test122"
+        ]
+      }
     },
     "fileReservedInfo": {
       "enumProperties": [

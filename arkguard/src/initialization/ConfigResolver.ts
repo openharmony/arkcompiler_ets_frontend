@@ -37,7 +37,7 @@ import {
 import { isDebug, isFileExist, sortAndDeduplicateStringArr, mergeSet, convertSetToArray } from './utils';
 import { nameCacheMap, yellow, unobfuscationNamesObj } from './CommonObject';
 import { clearHistoryUnobfuscatedMap, historyAllUnobfuscatedNamesMap, historyUnobfuscatedPropMap } from './Initializer';
-import { AtKeepCollections, LocalVariableCollections, UnobfuscationCollections } from '../utils/CommonCollections';
+import { AtIntentCollections, AtKeepCollections, LocalVariableCollections, UnobfuscationCollections } from '../utils/CommonCollections';
 import { INameObfuscationOption } from '../configs/INameObfuscationOption';
 import { WhitelistType } from '../utils/TransformUtil';
 import { endFilesEvent, startFilesEvent } from '../utils/PrinterUtils';
@@ -1210,6 +1210,11 @@ export function printWhitelist(obfuscationOptions: ObOptions, nameOptions: IName
     addToSet(atKeepSet, AtKeepCollections.keepSymbol.propertyNames);
     whitelistObj.conf.push(...atKeepSet);
   }
+
+  let atIndentSet: Set<string> = new Set();
+  addToSet(atIndentSet, AtIntentCollections.propertyNames);
+  addToSet(atIndentSet, AtIntentCollections.globalNames);
+  whitelistObj.conf.push(...atIndentSet);
 
   let enumSet: Set<string>;
   if (enableProperty) {
