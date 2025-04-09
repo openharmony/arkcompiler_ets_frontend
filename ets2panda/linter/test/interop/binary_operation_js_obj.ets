@@ -12,78 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export const arkts2Rules: number[] = [
-  1,
-  25,
-  30,
-  34,
-  37,
-  29,
-  111,
-  137,
-  139,
-  140,
-  144,
-  149,
-  183,
-  184,
-  189,
-  190,
-  192,
-  193,
-  198,
-  202,
-  203,
-  206,
-  207,
-  208,
-  209,
-  210,
-  211,
-  212,
-  222,
-  232,
-  233,
-  234,
-  235,
-  236,
-  237,
-  238,
-  239,
-  251,
-  252,
-  253,
-  254,
-  255,
-  256,
-  257,
-  258,
-  259,
-  260,
-  263,
-  301,
-  302,
-  303,
-  304,
-  305,
-  306,
-  307,
-  308,
-  309,
-  310,
-  311,
-  312,
-  313,
-  314,
-  315,
-  316,
-  321,
-  330,
-  331,
-  332,
-  333,
-  334,
-  335,
-  336
-];
+'use static'
+import {foo} from "./binary_operation_js_obj_js"
+let a = foo.a
+let b = foo.b
+a + b
+a - b
+a * b
+a / b
+a % b
+a ** b

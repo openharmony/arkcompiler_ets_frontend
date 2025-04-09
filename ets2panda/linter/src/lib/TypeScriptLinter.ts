@@ -132,6 +132,7 @@ export class TypeScriptLinter {
 
   private sourceFile?: ts.SourceFile;
   private useStatic?: boolean;
+
   private readonly compatibleSdkVersion: number;
   private readonly compatibleSdkVersionStage: string;
   private static sharedModulesCache: Map<string, boolean>;
@@ -970,6 +971,7 @@ export class TypeScriptLinter {
     this.checkFunctionProperty(propertyAccessNode, baseExprSym, baseExprType);
     this.handleSdkForConstructorFuncs(propertyAccessNode);
     this.fixJsImportPropertyAccessExpression(node);
+    this.handleArkTSPropertyAccess(propertyAccessNode);
   }
 
   propertyAccessExpressionForInterop(
@@ -5775,6 +5777,13 @@ export class TypeScriptLinter {
       }
     }
   }
+  private handleArkTSPropertyAccess(node: ts.PropertyAccessExpression): void {
+    if (this.useStatic && this.options.arkts2) {
+      if (this.isFromJSModule(node.expression)) {
+        this.incrementCounters(node, FaultID.BinaryOperations);
+      }
+    }
+  }
 
   private handleQuotedHyphenPropsDeprecated(typeRef: ts.TypeReferenceNode): void {
     if (!this.options.arkts2 || !ts.isQualifiedName(typeRef.typeName)) {
@@ -6156,5 +6165,14 @@ export class TypeScriptLinter {
       return decl;
     }
     return undefined;
+  }
+  
+  private isFromJSModule(node: ts.Node): boolean {
+    const symbol = this.tsUtils.trueSymbolAtLocation(node);
+    if (symbol?.declarations?.[0]) {
+      const sourceFile = symbol.declarations[0].getSourceFile();
+      return sourceFile.fileName.endsWith(EXTNAME_JS);
+    }
+    return false;
   }
 }

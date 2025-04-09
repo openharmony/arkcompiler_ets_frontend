@@ -205,3 +205,4 @@ faultsAttrs[FaultID.InteropObjectProperty] = new FaultAttributes(332);
 faultsAttrs[FaultID.InterOpConvertImport] = new FaultAttributes(333);
 faultsAttrs[FaultID.InterOpImportJsForTypeOf] = new FaultAttributes(334);
 faultsAttrs[FaultID.InteropNoHaveNum] = new FaultAttributes(335);
+faultsAttrs[FaultID.BinaryOperations] = new FaultAttributes(336);
