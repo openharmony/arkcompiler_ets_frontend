@@ -192,3 +192,4 @@ faultsAttrs[FaultID.LimitedVoidTypeFromSdk] = new FaultAttributes(308);
 faultsAttrs[FaultID.OptionalMethodFromSdk] = new FaultAttributes(309);
 faultsAttrs[FaultID.SendablePropTypeFromSdk] = new FaultAttributes(312);
 faultsAttrs[FaultID.ConstructorIfaceFromSdk] = new FaultAttributes(313);
+faultsAttrs[FaultID.PropertyAccessByIndexFromSdk] = new FaultAttributes(314);

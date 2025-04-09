@@ -13,5 +13,36 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "result": []
+    "result": [
+        {
+            "line": 44,
+            "column": 29,
+            "endLine": 44,
+            "endColumn": 54,
+            "problem": "IndexedAccessType",
+            "suggest": "",
+            "rule": "Indexed access types are not supported (arkts-no-aliases-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 85,
+            "endLine": 46,
+            "endColumn": 110,
+            "problem": "IndexedAccessType",
+            "suggest": "",
+            "rule": "Indexed access types are not supported (arkts-no-aliases-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 17,
+            "endLine": 50,
+            "endColumn": 18,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        }
+    ]
 }
