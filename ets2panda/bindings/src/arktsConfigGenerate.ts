@@ -35,8 +35,9 @@ function processBuildConfig(projectConfig: BuildConfig): BuildConfig {
 export function generateArkTsConfigByModules(buildSdkPath: string, projectRoot: string, modules?: ModuleDescriptor[]) {
   const allBuildConfig = generateBuildConfigs(buildSdkPath, projectRoot, modules);
   let compileFileInfos: Record<string, string> = {};
+  const cacheDir = path.join(projectRoot, '.idea', '.deveco');
   const compileFileInfosPath = path.join(
-    path.join(projectRoot, '.idea', '.deveco'),
+    cacheDir,
     'lsp_compileFileInfos.json'
   )
   Object.keys(allBuildConfig).forEach(moduleName => {
@@ -48,6 +49,9 @@ export function generateArkTsConfigByModules(buildSdkPath: string, projectRoot: 
   });
   try {
     const jsonCompileFileInfos = JSON.stringify(compileFileInfos, null, 2);
+    if (!fs.existsSync(cacheDir)) { 
+      fs.mkdirSync(cacheDir, { recursive: true });
+    }
     fs.writeFileSync(compileFileInfosPath, jsonCompileFileInfos, 'utf-8');
   } catch (err) {
     console.error(`Failed to write compileFileInfos to ${compileFileInfosPath} with error: ${err}`);
