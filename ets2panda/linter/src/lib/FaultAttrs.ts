@@ -201,6 +201,7 @@ faultsAttrs[FaultID.UseSharedDeprecated] = new FaultAttributes(317);
 faultsAttrs[FaultID.UseConcurrentDeprecated] = new FaultAttributes(318);
 faultsAttrs[FaultID.InteropJsObjectUsage] = new FaultAttributes(319);
 faultsAttrs[FaultID.LimitedStdLibNoImportConcurrency] = new FaultAttributes(321);
+faultsAttrs[FaultID.IsConcurrentDeprecated] = new FaultAttributes(322);
 faultsAttrs[FaultID.InterOpImportJs] = new FaultAttributes(330);
 faultsAttrs[FaultID.CallJSFunction] = new FaultAttributes(331);
 faultsAttrs[FaultID.InteropObjectProperty] = new FaultAttributes(332);

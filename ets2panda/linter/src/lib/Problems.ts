@@ -188,6 +188,7 @@ export enum FaultID {
   QuotedHyphenPropsDeprecated,
   ApiPathChanged,
   SdkTypeQuery,
+  IsConcurrentDeprecated,
   InteropJsObjectUsage,
   LimitedStdLibNoImportConcurrency,
   InterOpImportJs,
