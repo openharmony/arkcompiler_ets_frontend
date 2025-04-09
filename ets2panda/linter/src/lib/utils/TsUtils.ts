@@ -3491,7 +3491,7 @@ export class TsUtils {
 
     return undefined;
   }
-
+  
   static isArkts12File(sourceFile: ts.SourceFile): boolean {
     if (!sourceFile) {
       return false;

@@ -194,6 +194,7 @@ export enum FaultID {
   InterOpConvertImport,
   InterOpImportJsForTypeOf,
   InteropNoHaveNum,
+  BinaryOperations,
   // this should always be last enum
   LAST_ID
 }
