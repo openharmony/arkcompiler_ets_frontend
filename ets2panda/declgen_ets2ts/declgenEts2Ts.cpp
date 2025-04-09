@@ -32,6 +32,7 @@
 #include "ir/ts/tsTypeAliasDeclaration.h"
 #include "ir/ts/tsTypeParameter.h"
 
+/* CC-OFFNXT(G.PRE.01) Disabled check still occasionally triggered in CI */
 #define DEBUG_PRINT 0
 
 namespace ark::es2panda::declgen_ets2ts {
