@@ -3887,6 +3887,17 @@ export class TypeScriptLinter {
       this.handleGenericCallWithNoTypeArgs(tsNewExpr, callSignature);
     }
     this.handleSendableGenericTypes(tsNewExpr);
+    this.handleInstantiatedJsObject(tsNewExpr, sym);
+  }
+
+  handleInstantiatedJsObject(tsNewExpr: ts.NewExpression, sym: ts.Symbol | undefined): void {
+    if (this.useStatic && this.options.arkts2) {
+      if (sym?.declarations?.[0]?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
+        const args = tsNewExpr.arguments;
+        const autofix = this.autofixer?.fixInteropInstantiateExpression(tsNewExpr, args);
+        this.incrementCounters(tsNewExpr, FaultID.InstantiatedJsOjbect, autofix);
+      }
+    }
   }
 
   private handleSendableGenericTypes(node: ts.NewExpression): void {

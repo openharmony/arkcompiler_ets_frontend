@@ -16,6 +16,8 @@
 export const USE_STATIC = '\'use static\'';
 export const ARE_EQUAL = 'areEqual';
 export const ARE_STRICTLY_EQUAL = 'areStrictlyEqual';
+export const WRAP = 'wrap';
+export const INSTANTIATE = 'instantiate';
 
 export const REFLECT_PROPERTIES = [
   'get',
