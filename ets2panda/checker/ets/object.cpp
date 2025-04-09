@@ -639,9 +639,9 @@ void ETSChecker::ResolveDeclaredMembersOfObject(const Type *type)
     auto savedContext = checker::SavedCheckerContext(this, status, objectType);
     checker::ScopeContext scopeCtx(this, scope);
 
+    ResolveDeclaredDeclsOfObject(this, objectType, scope->AsClassScope());
     ResolveDeclaredFieldsOfObject(this, objectType, scope->AsClassScope());
     ResolveDeclaredMethodsOfObject(this, objectType, scope->AsClassScope());
-    ResolveDeclaredDeclsOfObject(this, objectType, scope->AsClassScope());
 }
 
 bool ETSChecker::HasETSFunctionType(ir::TypeNode *typeAnnotation)
