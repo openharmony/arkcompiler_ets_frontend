@@ -24,7 +24,7 @@ import { ArkTSConfigGenerator } from './build/generate_arktsconfig';
 import { PluginDriver } from './plugins/plugins_driver';
 import { BuildConfig } from './types';
 
-export function build(projectConfig: BuildConfig): void {
+export async function build(projectConfig: BuildConfig): Promise<void> {
   Logger.getInstance(projectConfig);
   let buildConfig: BuildConfig = processBuildConfig(projectConfig);
 
@@ -33,7 +33,7 @@ export function build(projectConfig: BuildConfig): void {
     buildMode.generateDeclaration();
   } else if (projectConfig.buildType === BUILD_TYPE_BUILD) {
     let buildMode: BuildMode = new BuildMode(buildConfig);
-    buildMode.run();
+    await buildMode.run();
   }
 
   clean();

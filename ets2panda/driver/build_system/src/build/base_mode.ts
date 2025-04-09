@@ -17,11 +17,15 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as child_process from 'child_process';
-
+import cluster, {
+  Cluster,
+  Worker
+} from 'cluster';
 import {
   ABC_SUFFIX,
   ARKTSCONFIG_JSON_FILE,
   BUILD_MODE,
+  DEFAULT_WOKER_NUMS,
   DECL_ETS_SUFFIX,
   LANGUAGE_VERSION,
   LINKER_INPUT_FILE,
@@ -50,7 +54,7 @@ import {
   CompileFileInfo
 } from '../types';
 import { ArkTSConfigGenerator } from './generate_arktsconfig';
-
+import { SetupClusterOptions } from '../types';
 export abstract class BaseMode {
   buildConfig: BuildConfig;
   entryFiles: Set<string>;
@@ -122,12 +126,12 @@ export abstract class BaseMode {
     try {
       arktsGlobal.filePath = fileInfo.filePath;
       arktsGlobal.config = arkts.Config.create([
-          '_',
-          '--extension',
-          'ets',
-          '--arktsconfig',
-          fileInfo.arktsConfigFile,
-          fileInfo.filePath
+        '_',
+        '--extension',
+        'ets',
+        '--arktsconfig',
+        fileInfo.arktsConfigFile,
+        fileInfo.filePath
       ]).peer;
       arktsGlobal.compilerContext = arkts.Context.createFromString(source);
       PluginDriver.getInstance().getPluginContext().setArkTSProgram(arktsGlobal.compilerContext.program);
@@ -143,7 +147,7 @@ export abstract class BaseMode {
       ast = arkts.EtsScript.fromContext();
       PluginDriver.getInstance().getPluginContext().setArkTSAst(ast);
       PluginDriver.getInstance().runPluginHook(PluginHook.CHECKED);
-      
+
       arkts.generateTsDeclarationsFromContext(
         declEtsOutputPath,
         etsOutputPath,
@@ -242,7 +246,7 @@ export abstract class BaseMode {
     ensurePathExists(this.mergedAbcFile);
     try {
       child_process.execSync(abcLinkerCmdStr).toString();
-    } catch(error) {
+    } catch (error) {
       if (error instanceof Error) {
         const logData: LogData = LogDataFactory.newInstance(
           ErrorCode.BUILDSYSTEM_LINK_ABC_FAIL,
@@ -264,7 +268,7 @@ export abstract class BaseMode {
           return;
         }
         module.language === LANGUAGE_VERSION.ARKTS_1_2 ?
-        staticDepModules.set(packageName, module) : dynamicDepModules.set(packageName, module);
+          staticDepModules.set(packageName, module) : dynamicDepModules.set(packageName, module);
       });
       return [dynamicDepModules, staticDepModules];
     }
@@ -288,7 +292,7 @@ export abstract class BaseMode {
   }
 
   private generateArkTSConfigForModules(): void {
-    this.moduleInfos.forEach((moduleInfo: ModuleInfo, moduleRootPath: string)=> {
+    this.moduleInfos.forEach((moduleInfo: ModuleInfo, moduleRootPath: string) => {
       ArkTSConfigGenerator.getInstance(this.buildConfig, this.moduleInfos).writeArkTSConfigFile(moduleInfo);
     });
   }
@@ -434,5 +438,129 @@ export abstract class BaseMode {
     await Promise.all(compilePromises);
 
     this.mergeAbcFiles();
+  }
+
+  private terminateAllWorkers() {
+    Object.values(cluster.workers || {}).forEach(worker => {
+      worker?.kill();
+    });
+  };
+
+  public async runParallell(): Promise<void> {
+    this.generateModuleInfos();
+    this.generateArkTSConfigForModules();
+
+    if (!cluster.isPrimary) {
+      return;
+    }
+
+    try {
+      this.setupCluster(cluster, {
+        clearExitListeners: true,
+        execPath: path.resolve(__dirname, 'compile_worker.js'),
+      });
+      await this.dispatchTasks();
+      this.logger.printInfo('All tasks complete, merging...');
+      this.mergeAbcFiles();
+    } catch (error) {
+      this.logger.printError(LogDataFactory.newInstance(
+        ErrorCode.BUILDSYSTEM_COMPILE_ABC_FAIL,
+        'Compile abc files failed.'
+      ));
+    } finally {
+      this.terminateAllWorkers();
+    }
+  }
+
+  private async dispatchTasks(): Promise<void> {
+    const numCPUs = os.cpus().length;
+    const taskQueue = Array.from(this.compileFiles.values());
+
+    const configuredWorkers = this.buildConfig?.maxWorkers;
+    const defaultWorkers = DEFAULT_WOKER_NUMS;
+
+    let effectiveWorkers: number;
+
+    if (configuredWorkers) {
+      effectiveWorkers = Math.min(configuredWorkers, numCPUs - 1);
+    } else {
+      effectiveWorkers = Math.min(defaultWorkers, numCPUs - 1);
+    }
+
+    const maxWorkers = Math.min(taskQueue.length, effectiveWorkers);
+
+    const chunkSize = Math.ceil(taskQueue.length / maxWorkers);
+    const serializableConfig = this.getSerializableConfig();
+    const workerExitPromises: Promise<void>[] = [];
+
+    for (let i = 0; i < maxWorkers; i++) {
+      const taskChunk = taskQueue.slice(i * chunkSize, (i + 1) * chunkSize);
+      const worker = cluster.fork();
+
+      this.setupWorkerMessageHandler(worker);
+      worker.send({ taskList: taskChunk, buildConfig: serializableConfig });
+
+      const exitPromise = new Promise<void>((resolve, reject) => {
+        worker.on('exit', (status) => status === 0 ? resolve() : reject());
+      });
+
+      workerExitPromises.push(exitPromise);
+    }
+
+    await Promise.all(workerExitPromises);
+  }
+
+  private setupWorkerMessageHandler(worker: Worker) {
+    worker.on('message', (message: {
+      success: boolean;
+      filePath?: string;
+      error?: string;
+    }) => {
+      if (message.success) {
+        return;
+      }
+      this.logger.printError(LogDataFactory.newInstance(
+        ErrorCode.BUILDSYSTEM_COMPILE_ABC_FAIL,
+        'Compile abc files failed in worker.',
+        message.error || 'Unknown error',
+        message.filePath
+      ));
+    });
+  }
+
+
+  private getSerializableConfig(): Object {
+    const ignoreList = [
+      'compileFiles',
+      'arkts',
+      'dependentModuleList',
+    ];
+    const jsonStr = JSON.stringify(this.buildConfig, (key, value) => {
+      if (typeof value === 'bigint') {
+        return undefined;
+      }
+      //remove useless data from buildConfig
+      if (ignoreList.includes(key)) {
+        return undefined;
+      }
+      return value;
+    });
+    return JSON.parse(jsonStr);
+  }
+  setupCluster(cluster: Cluster, options: SetupClusterOptions): void {
+    const {
+      clearExitListeners,
+      execPath,
+      execArgs = [],
+    } = options;
+  
+    if (clearExitListeners) {
+      cluster.removeAllListeners('exit');
+    }
+  
+    cluster.setupPrimary({
+      exec: execPath,
+      execArgv: execArgs,
+    });
   }
 }
