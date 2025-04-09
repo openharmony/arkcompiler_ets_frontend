@@ -500,14 +500,22 @@ bool ETSParser::CheckAccessorDeclaration(ir::ModifierFlags memberModifiers)
         Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_SET) {
         return false;
     }
-    if (Lexer()->Lookahead() == lexer::LEX_CHAR_LEFT_PAREN || Lexer()->Lookahead() == lexer::LEX_CHAR_LESS_THAN) {
-        return false;
-    }
+
     ir::ModifierFlags methodModifiersNotAccessorModifiers = ir::ModifierFlags::ASYNC;
     if ((memberModifiers & methodModifiersNotAccessorModifiers) != 0) {
         LogError(diagnostic::MODIFIERS_OF_GET_SET_LIMITED);
     }
-    return true;
+
+    auto pos = Lexer()->Save();
+    Lexer()->NextToken();
+    if (Lexer()->TryEatTokenType(lexer::TokenType::LITERAL_IDENT) ||
+        Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_FORMAT)) {
+        Lexer()->Rewind(pos);
+        return true;
+    }
+    Lexer()->Rewind(pos);
+
+    return false;
 }
 
 ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &properties,
