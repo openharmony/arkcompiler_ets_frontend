@@ -55,3 +55,33 @@ class C4 implements E {
 export declare class Bar<T extends Something> {
     constructor(arg: { new(): T });
 }
+
+function getBaseClass(isAdmin: boolean) {
+  class A{
+    adminMethod() {
+      console.log('这是管理员方法');
+    }
+  }
+  class B{
+    adminMethod() {
+      console.log('这是用户方法');
+    }
+  }
+  if (isAdmin) {
+    return A;
+  } else {
+    return B;
+  }
+}
+
+class User extends getBaseClass(false) {
+  commonMethod() {
+    console.log('这是通用方法');
+  }
+}
+
+class Admin extends getBaseClass(true) {
+  commonMethod() {
+    console.log('这是通用方法');
+  }
+}

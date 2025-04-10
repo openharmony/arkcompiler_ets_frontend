@@ -596,7 +596,7 @@ export class TypeScriptLinter {
 
   private handleStructDeclaration(node: ts.StructDeclaration): void {
     if (!this.options.arkts2) {
-        return;
+      return;
     }
     this.handleInvalidIdentifier(node);
   }
@@ -4425,9 +4425,9 @@ export class TypeScriptLinter {
 
     const checkIdentifier = (identifier: ts.Identifier | undefined): void => {
       const text = identifier && ts.isIdentifier(identifier) ? identifier.text : '';
-      if (identifier && text && INVALID_IDENTIFIER_KEYWORDS.includes(text)) {       
-        this.incrementCounters(identifier, FaultID.InvalidIdentifier);      
-      } 
+      if (identifier && text && INVALID_IDENTIFIER_KEYWORDS.includes(text)) {
+        this.incrementCounters(identifier, FaultID.InvalidIdentifier);
+      }
     };
 
     if (ts.isImportDeclaration(decl)) {
@@ -4439,7 +4439,7 @@ export class TypeScriptLinter {
       }
       checkIdentifier(importClause?.name);
     } else if (isStructDeclaration(decl)) {
-      checkIdentifier((decl as ts.StructDeclaration).name); 
+      checkIdentifier((decl as ts.StructDeclaration).name);
     } else {
       checkIdentifier(decl.name as ts.Identifier);
     }
@@ -4449,9 +4449,13 @@ export class TypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
-    if (node.token === ts.SyntaxKind.ExtendsKeyword) {
+    if (node.token === ts.SyntaxKind.ExtendsKeyword || node.token === ts.SyntaxKind.ImplementsKeyword) {
       node.types.forEach((type) => {
         const expr = type.expression;
+        if (ts.isCallExpression(expr)) {
+          this.incrementCounters(expr, FaultID.ExtendsExpression);
+          return;
+        }
         if (
           ts.isIdentifier(expr) &&
           this.isVariableReference(expr) &&
