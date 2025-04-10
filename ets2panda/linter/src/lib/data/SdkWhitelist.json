@@ -1,0 +1,54 @@
+{
+  "api_list": [
+    {
+      "import_path": ["@ohos.arkui.Prefetcher", "@kit.ArkUI"],
+      "file_path": ["api/@ohos.arkui.Prefetcher.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "",
+        "api_name": "prefetch",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [{ "name": "index", "type": "number", "is_optional": false, "hasDefault": false }],
+        "parent_api": [
+          {
+            "api_name": "IDataSourcePrefetching",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "methd_return_type": "void | Promise<void>",
+        "codeKind": 173
+      }
+    },
+    {
+      "import_path": ["@hms.collaboration.rcp", "@kit.RemoteCommunicationKit"],
+      "file_path": ["api/@hms.collaboration.rcp.d.ts"],
+      "is_global": false,
+      "api_info": {
+        "problem": "LimitiedVoidType",
+        "api_name": "write",
+        "api_type": "MethodSignature",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [{ "name": "buffer", "type": "ArrayBuffer", "is_optional": false, "hasDefault": false }],
+        "parent_api": [
+          {
+            "api_name": "WriteFile",
+            "api_type": "InterfaceDeclaration"
+          },
+          {
+            "api_name": "rcp",
+            "api_type": "ModuleDeclaration"
+          }
+        ],
+        "methd_return_type": "void | Promise<void>",
+        "codeKind": 115
+      }
+    }
+  ]
+}

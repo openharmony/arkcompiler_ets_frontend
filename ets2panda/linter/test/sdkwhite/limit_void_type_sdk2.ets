@@ -13,59 +13,13 @@
  * limitations under the License.
  */
 
-export const arkts2Rules: number[] = [
-  1,
-  25,
-  30,
-  34,
-  37,
-  29,
-  111,
-  137,
-  139,
-  140,
-  144,
-  149,
-  183,
-  184,
-  189,
-  190,
-  192,
-  193,
-  198,
-  202,
-  203,
-  206,
-  207,
-  208,
-  209,
-  210,
-  211,
-  212,
-  222,
-  232,
-  233,
-  234,
-  235,
-  236,
-  237,
-  238,
-  239,
-  251,
-  252,
-  253,
-  254,
-  255,
-  256,
-  257,
-  258,
-  259,
-  301,
-  302,
-  303,
-  304,
-  305,
-  306,
-  307,
-  308
-];
+import { rcp } from '@kit.RemoteCommunicationKit';
+class LI implements rcp.WriteFile {
+  write(buffer: ArrayBuffer): Promise<number | void> {
+    throw new Error()
+  }
+}
+
+const sp:rcp.IncomingDataCallback = (incomingData) => {
+  console.log('');
+}
