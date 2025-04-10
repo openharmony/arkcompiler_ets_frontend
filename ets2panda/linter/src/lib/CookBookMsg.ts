@@ -291,3 +291,4 @@ cookBookTag[316] = 'Using typeof as a type is not allowed in this API (arkts-sdk
 cookBookTag[319] = 'Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)';
 cookBookTag[321] = 'Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)';
 cookBookTag[330] = 'Importing directly from "JS" module is not supported (arkts-no-js-import)';
+cookBookTag[331] = 'ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)';

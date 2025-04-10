@@ -23,8 +23,8 @@
       "suggest": "",
       "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
       "severity": "ERROR"
-    },
-    {
+  },
+  {
       "line": 30,
       "column": 5,
       "endLine": 30,
@@ -33,8 +33,8 @@
       "suggest": "",
       "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
       "severity": "ERROR"
-    },
-    {
+  },
+  {
       "line": 34,
       "column": 1,
       "endLine": 34,
@@ -43,8 +43,8 @@
       "suggest": "",
       "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
       "severity": "ERROR"
-    },
-    {
+  },
+  {
       "line": 38,
       "column": 1,
       "endLine": 38,
@@ -53,8 +53,8 @@
       "suggest": "",
       "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
       "severity": "ERROR"
-    },
-    {
+  },
+  {
       "line": 41,
       "column": 3,
       "endLine": 41,
@@ -63,8 +63,18 @@
       "suggest": "",
       "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
       "severity": "ERROR"
-    },
-    {
+  },
+  {
+      "line": 41,
+      "column": 3,
+      "endLine": 41,
+      "endColumn": 8,
+      "problem": "CallJSFunction",
+      "suggest": "",
+      "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+      "severity": "ERROR"
+  },
+  {
       "line": 46,
       "column": 11,
       "endLine": 46,
@@ -73,8 +83,8 @@
       "suggest": "",
       "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
       "severity": "ERROR"
-    },
-    {
+  },
+  {
       "line": 47,
       "column": 11,
       "endLine": 47,
@@ -83,8 +93,8 @@
       "suggest": "",
       "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
       "severity": "ERROR"
-    },
-    {
+  },
+  {
       "line": 48,
       "column": 10,
       "endLine": 48,
@@ -93,8 +103,8 @@
       "suggest": "",
       "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
       "severity": "ERROR"
-    },
-    {
+  },
+  {
       "line": 49,
       "column": 11,
       "endLine": 49,
@@ -103,8 +113,8 @@
       "suggest": "",
       "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
       "severity": "ERROR"
-    },
-    {
+  },
+  {
       "line": 50,
       "column": 3,
       "endLine": 50,
@@ -113,8 +123,8 @@
       "suggest": "",
       "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
       "severity": "ERROR"
-    },
-    {
+  },
+  {
       "line": 60,
       "column": 1,
       "endLine": 60,
@@ -123,8 +133,18 @@
       "suggest": "",
       "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
       "severity": "ERROR"
-    },
-    {
+  },
+  {
+      "line": 60,
+      "column": 1,
+      "endLine": 60,
+      "endColumn": 13,
+      "problem": "CallJSFunction",
+      "suggest": "",
+      "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+      "severity": "ERROR"
+  },
+  {
       "line": 61,
       "column": 1,
       "endLine": 61,
@@ -133,6 +153,16 @@
       "suggest": "",
       "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
       "severity": "ERROR"
-    }
+  },
+  {
+      "line": 61,
+      "column": 1,
+      "endLine": 61,
+      "endColumn": 15,
+      "problem": "CallJSFunction",
+      "suggest": "",
+      "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+      "severity": "ERROR"
+  }
   ]
 }
