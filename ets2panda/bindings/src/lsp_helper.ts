@@ -293,7 +293,7 @@ export class Lsp {
       } else {
         source += wildcard;
       }
-      offset += wildcard.length - 1;
+      offset += wildcard.length;
     }
     let localCtx = lspDriverHelper.createCtx(source, filePath, localCfg)
     PluginDriver.getInstance().getPluginContext().setContextPtr(localCtx)

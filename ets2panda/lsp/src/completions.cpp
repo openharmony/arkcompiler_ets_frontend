@@ -309,10 +309,133 @@ std::vector<CompletionEntry> GetEntriesForEnumDeclaration(
     return completions;
 }
 
+ir::AstNode *GetIdentifierFromSuper(ir::AstNode *super)
+{
+    if (super == nullptr || !super->IsETSTypeReference()) {
+        return nullptr;
+    }
+    auto part = super->AsETSTypeReference()->Part();
+    if (part == nullptr || !part->IsETSTypeReferencePart()) {
+        return nullptr;
+    }
+    return part->AsETSTypeReferencePart()->Name();
+}
+
+std::vector<CompletionEntry> GetCompletionFromClassDefinition(ir::ClassDefinition *decl, const std::string &triggerWord)
+{
+    // After enum refactoring, enum declaration is transformed to a class declaration
+    if (compiler::ClassDefinitionIsEnumTransformed(decl)) {
+        if (decl->AsClassDefinition()->OrigEnumDecl() == nullptr) {
+            return {};
+        }
+        auto members = decl->AsClassDefinition()->OrigEnumDecl()->AsTSEnumDeclaration()->Members();
+        auto qualifiedMembers = FilterFromEnumMember(members, triggerWord);
+        return GetEntriesForEnumDeclaration(qualifiedMembers);
+    }
+    auto bodyNodes = decl->AsClassDefinition()->Body();
+    std::vector<CompletionEntry> extendCompletions;
+    auto super = decl->AsClassDefinition()->Super();
+    if (super != nullptr) {
+        auto ident = GetIdentifierFromSuper(super);
+        extendCompletions = GetPropertyCompletions(ident, triggerWord);
+    }
+    auto propertyNodes = FilterFromBody(bodyNodes, triggerWord);
+    auto res = GetEntriesForClassDeclaration(propertyNodes);
+    res.insert(res.end(), extendCompletions.begin(), extendCompletions.end());
+    return res;
+}
+
+ir::AstNode *GetIdentifierFromTSInterfaceHeritage(ir::TSInterfaceHeritage *extend)
+{
+    if (extend == nullptr) {
+        return nullptr;
+    }
+    auto expr = extend->Expr();
+    if (expr == nullptr) {
+        return nullptr;
+    }
+    auto part = expr->AsETSTypeReference()->Part();
+    if (part == nullptr) {
+        return nullptr;
+    }
+    return part->AsETSTypeReferencePart()->Name();
+}
+
+std::vector<CompletionEntry> GetCompletionFromTSInterfaceDeclaration(ir::TSInterfaceDeclaration *decl,
+                                                                     const std::string &triggerWord)
+{
+    std::vector<CompletionEntry> completions;
+    auto body = decl->AsTSInterfaceDeclaration()->Body();
+    if (body == nullptr) {
+        return {};
+    }
+    auto bodies = body->Body();
+    std::vector<CompletionEntry> extendCompletions;
+    auto extends = decl->AsTSInterfaceDeclaration()->Extends();
+    for (auto extend : extends) {
+        auto ident = GetIdentifierFromTSInterfaceHeritage(extend);
+        if (ident != nullptr && ident->IsIdentifier()) {
+            auto extendInterf = compiler::DeclarationFromIdentifier(ident->AsIdentifier());
+            auto extendCom =
+                extendInterf->IsTSInterfaceDeclaration()
+                    ? GetCompletionFromTSInterfaceDeclaration(extendInterf->AsTSInterfaceDeclaration(), triggerWord)
+                    : completions;
+            extendCompletions.insert(extendCompletions.end(), extendCom.begin(), extendCom.end());
+        }
+    }
+    auto qualifiedBodies = FilterFromInterfaceBody(bodies, triggerWord);
+    auto res = GetEntriesForTSInterfaceDeclaration(qualifiedBodies);
+    res.insert(res.end(), extendCompletions.begin(), extendCompletions.end());
+    return res;
+}
+
+std::vector<CompletionEntry> GetCompletionFromMethodDefinition(ir::MethodDefinition *decl,
+                                                               const std::string &triggerWord)
+{
+    auto value = decl->AsMethodDefinition()->Value();
+    if (value == nullptr && !value->IsFunctionExpression()) {
+        return {};
+    }
+    auto func = value->AsFunctionExpression()->Function();
+    if (func == nullptr && func->ReturnTypeAnnotation() == nullptr) {
+        return {};
+    }
+    auto returnType = func->ReturnTypeAnnotation();
+    if (returnType == nullptr || !returnType->IsETSTypeReference()) {
+        return {};
+    }
+    auto ident = returnType->AsETSTypeReference()->Part()->Name();
+    if (ident == nullptr || !ident->IsIdentifier()) {
+        return {};
+    }
+    return GetPropertyCompletions(reinterpret_cast<ir::AstNode *>(ident), triggerWord);
+}
+
+ir::AstNode *GetIndentifierFromCallExpression(ir::AstNode *node)
+{
+    if (!node->IsCallExpression()) {
+        return nullptr;
+    }
+    auto callee = node->AsCallExpression()->Callee();
+    if (callee != nullptr && callee->IsMemberExpression()) {
+        auto object = callee->AsMemberExpression()->Object();
+        if (object->IsCallExpression()) {
+            return GetIndentifierFromCallExpression(object);
+        }
+    }
+    return callee;
+}
+
 std::vector<CompletionEntry> GetPropertyCompletions(ir::AstNode *preNode, const std::string &triggerWord)
 {
     std::vector<CompletionEntry> completions;
-    if (preNode == nullptr || !preNode->IsIdentifier()) {
+    if (preNode == nullptr) {
+        return completions;
+    }
+    if (preNode->IsCallExpression()) {
+        preNode = GetIndentifierFromCallExpression(preNode);
+    }
+    if (!preNode->IsIdentifier()) {
         return completions;
     }
     auto decl = compiler::DeclarationFromIdentifier(preNode->AsIdentifier());
@@ -328,29 +451,14 @@ std::vector<CompletionEntry> GetPropertyCompletions(ir::AstNode *preNode, const 
     if (decl == nullptr) {
         return completions;
     }
+    if (decl->IsMethodDefinition()) {
+        return GetCompletionFromMethodDefinition(decl->AsMethodDefinition(), triggerWord);
+    }
     if (decl->IsTSInterfaceDeclaration()) {
-        auto body = decl->AsTSInterfaceDeclaration()->Body();
-        if (body == nullptr) {
-            return completions;
-        }
-        auto bodies = body->Body();
-        auto qualifiedBodies = FilterFromInterfaceBody(bodies, triggerWord);
-        return GetEntriesForTSInterfaceDeclaration(qualifiedBodies);
+        return GetCompletionFromTSInterfaceDeclaration(decl->AsTSInterfaceDeclaration(), triggerWord);
     }
     if (decl->IsClassDefinition()) {
-        // After enum refactoring, enum declaration is transformed to a class declaration
-        if (compiler::ClassDefinitionIsEnumTransformed(decl)) {
-            if (decl->AsClassDefinition()->OrigEnumDecl() == nullptr) {
-                return completions;
-            }
-            auto members = decl->AsClassDefinition()->OrigEnumDecl()->AsTSEnumDeclaration()->Members();
-            auto qualifiedMembers = FilterFromEnumMember(members, triggerWord);
-            completions = GetEntriesForEnumDeclaration(qualifiedMembers);
-        } else {
-            auto bodyNodes = decl->AsClassDefinition()->Body();
-            auto propertyNodes = FilterFromBody(bodyNodes, triggerWord);
-            completions = GetEntriesForClassDeclaration(propertyNodes);
-        }
+        return GetCompletionFromClassDefinition(decl->AsClassDefinition(), triggerWord);
     }
     return completions;
 }
@@ -563,12 +671,11 @@ std::vector<CompletionEntry> GetCompletionsAtPositionImpl(es2panda_Context *cont
     auto allocator = ctx->allocator;
     std::string sourceCode(ctx->parserProgram->SourceCode());
     // Current GetPrecedingPosition cannot get token of "obj." with position.
-    auto position = GetPrecedingTokenPosition(sourceCode, pos);
-    auto precedingToken = FindPrecedingToken(position, ctx->parserProgram->Ast(), allocator);
+    auto precedingToken = FindPrecedingToken(pos, ctx->parserProgram->Ast(), allocator);
     if (precedingToken == nullptr) {
         return {};
     }
-    auto triggerValue = sourceCode.substr(precedingToken->Start().index, pos - precedingToken->Start().index + 1);
+    auto triggerValue = GetCurrentTokenValueImpl(context, pos);
     // Unsupported yet because of ast parsing problem
     if (IsEndWithValidPoint(triggerValue)) {
         return GetPropertyCompletions(precedingToken, "");
