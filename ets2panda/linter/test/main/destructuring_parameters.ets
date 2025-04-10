@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+// issue: 24982: Enable 'autofix' mode for this test to ensure it finishes without crashing
+
 function drawText({ text = '', position: [x, y] = [0, 0] }): void { // NOT OK
   // Draw text
 }
