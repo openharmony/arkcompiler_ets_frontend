@@ -8,14 +8,12 @@ struct-init2.ets
 type_param_in_union.ets
 #FailKind.ABORT_FAIL - 1 tests:
 ArrowFunctionWithNestedNameSpace.ets
-#FailKind.TSC_FAIL - 88 tests:
-AccessNBody.ets
+#FailKind.TSC_FAIL - 69 tests:
 AliasClass.ets
 ClassNewInstance.ets
 Enum7.ets
 GenericBridges_01.ets
 GenericBridges_02.ets
-Morph3d.ets
 RecordKeyTypeCheck.ets
 RecursiveTypeAlias8.ets
 annotation_tests/AnnotationForArrayType.ets
@@ -27,6 +25,7 @@ annotation_tests/AnnotationForTypeAliaDecl.ets
 annotation_tests/AnnotationForTypesInArray.ets
 annotation_tests/AnnotationForTypesInClass.ets
 annotation_tests/AnnotationForTypesInInterface.ets
+annotation_tests/AnnotationForVariableDecl.ets
 annotation_tests/AnnotationNoNeedToSetProperties01.ets
 annotation_tests/AnnotationNoNeedToSetProperties02.ets
 annotation_tests/AnnotationNoNeedToSetProperties03.ets
@@ -48,11 +47,6 @@ annotation_tests/annotationUsage_scope_check02.ets
 annotation_tests/annotationUsage_scope_check03.ets
 classGetterSetter.ets
 class_implements_interface.ets
-defaultTypeParam_with_qualifiedname.ets
-enum_namespace.ets
-enum_switch.ets
-exportDefault_1.ets
-exportDefault_2.ets
 function_type_with_receiver/extensionFunctionTypeGeneric.ets
 function_type_with_receiver/validReturnThisOfExtensionFunction.ets
 generic_constraint_implicit.ets
@@ -65,36 +59,22 @@ implementsClassPropertyFunctionType2.ets
 implementsClassPropertyUnionType1.ets
 implementsClassPropertyUnionType2.ets
 import_self_head_tests/A/test.ets
-import_self_head_tests/B/test.d.ets
 inherited_getter_setter_implementation_1.ets
 inherited_getter_setter_implementation_2.ets
+interfacePropertyTypeAnnotationWithParameter.ets
 interface_prop.ets
 interface_with_optional_property_cycle_import/class_file.ets
-interface_with_optional_property_cycle_import/interface_file.ets
 lambda_with_receiver/lambda_with_receiver_generics1.ets
 lambda_with_receiver/lambda_with_receiver_generics_return_this_rotate.ets
 lambda_with_receiver/lambda_with_receiver_return_this3.ets
 lambda_with_receiver/lambda_with_receiver_trailing_in_function_return_this_rotate.ets
-namespace_tests/namespace_basic.ets
-namespace_tests/namespace_deeplt_nested.ets
-namespace_tests/namespace_execution_statements_test01.ets
+multiple_inheritance.ets
+multiple_inheritance_2.ets
 namespace_tests/namespace_execution_statements_test02.ets
-namespace_tests/namespace_import_type_test/namespace_export.ets
-namespace_tests/namespace_merge_test.ets
-namespace_tests/namespace_merged.ets
-namespace_tests/namespace_nested.ets
-namespace_tests/namespace_qualified.ets
 namespace_tests/namespace_with_annotations.ets
-namespace_tests/nested_namespace_plus_equal.ets
-nestedNameSpaceWithStaticField.ets
 override_for_partial_01.ets
 override_for_partial_02.ets
-qualifiedNameInForOfStmt1.ets
-qualifiedNameInForOfStmt2.ets
-qualifierNameInTypeParam.ets
 readonly_simple_form_pos.ets
-record_namespace.ets
 simple_form_pos.ets
 static-invoke.ets
 top_level_03.ets
-declareExport.ets
