@@ -97,4 +97,24 @@ function main(): void {
     assertEQ(+c, 60.0)
     assertEQ(-c, -60.0)
   }
+
+  {
+    let a = -(-1);
+    assertEQ(a, 1);
+
+    let b = -(1);
+    assertEQ(b, -1);
+
+    let c = - -1;
+    assertEQ(c, 1);
+
+    let d = +(1);
+    assertEQ(d, 1);
+
+    let e = +(-1);
+    assertEQ(e, -1);
+
+    let f = + -1;
+    assertEQ(f, -1);
+  }
 }

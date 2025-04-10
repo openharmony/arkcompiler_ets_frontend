@@ -120,6 +120,24 @@ ir::Expression *ETSParser::ResolveArgumentUnaryExpr(ExpressionParseFlags flags)
     }
 }
 
+ir::Expression *ETSParser::CreateUnaryExpressionFromArgument(ir::Expression *argument, lexer::TokenType operatorType,
+                                                             char32_t beginningChar)
+{
+    ir::Expression *returnExpr = nullptr;
+    if (lexer::Token::IsUpdateToken(operatorType)) {
+        returnExpr = AllocNode<ir::UpdateExpression>(argument, operatorType, true);
+    } else if (operatorType == lexer::TokenType::KEYW_TYPEOF) {
+        returnExpr = AllocNode<ir::TypeofExpression>(argument);
+    } else if (operatorType == lexer::TokenType::PUNCTUATOR_MINUS && argument->IsNumberLiteral()) {
+        bool argBeginWithDigitOrDot = (beginningChar >= '0' && beginningChar <= '9') || (beginningChar == '.');
+        returnExpr = argBeginWithDigitOrDot ? argument : AllocNode<ir::UnaryExpression>(argument, operatorType);
+    } else {
+        returnExpr = AllocNode<ir::UnaryExpression>(argument, operatorType);
+    }
+
+    return returnExpr;
+}
+
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFlags flags)
 {
@@ -150,11 +168,11 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
         }
     }
 
+    char32_t beginningChar = Lexer()->Lookahead();
     auto start = Lexer()->GetToken().Start();
     Lexer()->NextToken(tokenFlags);
 
     ir::Expression *argument = ResolveArgumentUnaryExpr(flags);
-
     if (argument == nullptr) {
         return nullptr;
     }
@@ -165,19 +183,8 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
         }
     }
 
-    ir::Expression *returnExpr = nullptr;
-    if (lexer::Token::IsUpdateToken(operatorType)) {
-        returnExpr = AllocNode<ir::UpdateExpression>(argument, operatorType, true);
-    } else if (operatorType == lexer::TokenType::KEYW_TYPEOF) {
-        returnExpr = AllocNode<ir::TypeofExpression>(argument);
-    } else if (operatorType == lexer::TokenType::PUNCTUATOR_MINUS) {
-        returnExpr = !argument->IsNumberLiteral() ? AllocNode<ir::UnaryExpression>(argument, operatorType) : argument;
-    } else {
-        returnExpr = AllocNode<ir::UnaryExpression>(argument, operatorType);
-    }
-
+    ir::Expression *returnExpr = CreateUnaryExpressionFromArgument(argument, operatorType, beginningChar);
     returnExpr->SetRange({start, argument->End()});
-
     return returnExpr;
 }
 
