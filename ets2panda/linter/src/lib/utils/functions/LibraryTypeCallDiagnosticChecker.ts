@@ -133,7 +133,6 @@ export class LibraryTypeCallDiagnosticChecker {
     });
   }
 
-  // eslint-disable-next-line max-lines-per-function
   filterDiagnostics(
     tscDiagnostics: readonly ts.Diagnostic[],
     expr: ts.CallExpression | ts.NewExpression,
