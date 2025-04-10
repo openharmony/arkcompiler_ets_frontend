@@ -22,7 +22,7 @@ import { NameGenerator } from '../utils/functions/NameGenerator';
 import { isAssignmentOperator } from '../utils/functions/isAssignmentOperator';
 import { SymbolCache } from './SymbolCache';
 import { SENDABLE_DECORATOR } from '../utils/consts/SendableAPI';
-import { PATH_SEPARATOR, SRC_AND_MAIN } from '../utils/consts/OhmUrl';
+import { DEFAULT_MODULE_NAME, PATH_SEPARATOR, SRC_AND_MAIN } from '../utils/consts/OhmUrl';
 import { STRINGLITERAL_NUMBER, STRINGLITERAL_NUMBER_ARRAY } from '../utils/consts/StringLiteral';
 import {
   DOUBLE_DOLLAR_IDENTIFIER,
@@ -937,6 +937,16 @@ export class Autofixer {
 
     this.renameSymbolAsIdentifierCache.set(symbol, result);
     return result;
+  }
+
+  static addDefaultModuleToPath(parts: string[], importDeclNode: ts.ImportDeclaration): Autofix[] | undefined {
+    const moduleSpecifier = importDeclNode.moduleSpecifier;
+
+    const newPathParts = [DEFAULT_MODULE_NAME, SRC_AND_MAIN, ...parts];
+    const newPath = newPathParts.join(PATH_SEPARATOR);
+    const newPathString = '\'' + newPath + '\'';
+
+    return [{ start: moduleSpecifier.getStart(), end: moduleSpecifier.getEnd(), replacementText: newPathString }];
   }
 
   static fixImportPath(parts: string[], index: number, importDeclNode: ts.ImportDeclaration): Autofix[] | undefined {

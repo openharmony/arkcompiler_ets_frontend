@@ -791,7 +791,8 @@ export class TypeScriptLinter {
     const etsIdx = pathParts.indexOf(ETS_PART);
 
     if (etsIdx === 0) {
-      this.incrementCounters(importDeclNode, FaultID.OhmUrlFullPath);
+      const autofix = Autofixer.addDefaultModuleToPath(pathParts, importDeclNode);
+      this.incrementCounters(importDeclNode, FaultID.OhmUrlFullPath, autofix);
       return;
     }
 
