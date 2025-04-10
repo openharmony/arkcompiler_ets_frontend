@@ -59,6 +59,129 @@ void AssertCompletionsContainAndNotContainEntries(const std::vector<CompletionEn
     }
 }
 
+TEST_F(LSPCompletionsTests, getCompletionsAtPosition15)
+{
+    std::vector<std::string> files = {"getCompletionsAtPosition16.ets"};
+    std::vector<std::string> texts = {R"delimiter(
+export interface Method {
+  get(value: number): this;
+}
+export interface CommonMethod {
+  width(value: number): this;
+  height(value: number): this;
+}
+export interface TextAttribute extends CommonMethod {
+  font(value: number): this;
+  fontColor(value: number): this;
+}
+export declare function Text(
+  content?: string,
+  value?: string
+): TextAttribute
+Text("Hello").font()._WILDCARD
+)delimiter"};
+    auto filePaths = CreateTempFile(files, texts);
+
+    int const expectedFileCount = 1;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+
+    LSPAPI const *lspApi = GetImpl();
+    size_t const offset = 385;  // after 'j._WILDCARD'
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    auto res = lspApi->getCompletionsAtPosition(ctx, offset);
+    auto expectedEntries = std::vector<CompletionEntry> {
+        CompletionEntry("font", ark::es2panda::lsp::CompletionEntryKind::METHOD, std::string(CLASS_MEMBER_SNIPPETS)),
+        CompletionEntry("fontColor", ark::es2panda::lsp::CompletionEntryKind::METHOD,
+                        std::string(CLASS_MEMBER_SNIPPETS)),
+        CompletionEntry("width", ark::es2panda::lsp::CompletionEntryKind::METHOD, std::string(CLASS_MEMBER_SNIPPETS)),
+        CompletionEntry("height", ark::es2panda::lsp::CompletionEntryKind::METHOD, std::string(CLASS_MEMBER_SNIPPETS))};
+    AssertCompletionsContainAndNotContainEntries(res.GetEntries(), expectedEntries, {});
+    initializer.DestroyContext(ctx);
+}
+
+TEST_F(LSPCompletionsTests, getCompletionsAtPosition14)
+{
+    std::vector<std::string> files = {"getCompletionsAtPosition15.ets"};
+    std::vector<std::string> texts = {R"delimiter(
+export class MyClass0 {
+  public property0: string = '0'
+  public get0() {}
+}
+export class MyClass extends MyClass0 {
+  public property: string = '1'
+  public get() {}
+}
+export class MySonClass extends MyClass {
+  public property2: string = '2'
+}
+let c = new MySonClass()
+let p = c._WILDCARD
+)delimiter"};
+    auto filePaths = CreateTempFile(files, texts);
+
+    int const expectedFileCount = 1;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+
+    LSPAPI const *lspApi = GetImpl();
+    size_t const offset = 292;  // after 'j._WILDCARD'
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    auto res = lspApi->getCompletionsAtPosition(ctx, offset);
+    auto expectedEntries = std::vector<CompletionEntry> {
+        CompletionEntry("property", ark::es2panda::lsp::CompletionEntryKind::PROPERTY,
+                        std::string(SUGGESTED_CLASS_MEMBERS)),
+        CompletionEntry("property", ark::es2panda::lsp::CompletionEntryKind::PROPERTY,
+                        std::string(SUGGESTED_CLASS_MEMBERS)),
+        CompletionEntry("property2", ark::es2panda::lsp::CompletionEntryKind::PROPERTY,
+                        std::string(SUGGESTED_CLASS_MEMBERS)),
+        CompletionEntry("get", ark::es2panda::lsp::CompletionEntryKind::METHOD, std::string(CLASS_MEMBER_SNIPPETS)),
+        CompletionEntry("get0", ark::es2panda::lsp::CompletionEntryKind::METHOD, std::string(CLASS_MEMBER_SNIPPETS))};
+    AssertCompletionsContainAndNotContainEntries(res.GetEntries(), expectedEntries, {});
+    initializer.DestroyContext(ctx);
+}
+
+TEST_F(LSPCompletionsTests, getCompletionsAtPosition13)
+{
+    std::vector<std::string> files = {"getCompletionsAtPosition14.ets"};
+    std::vector<std::string> texts = {R"delimiter(
+export interface Method {
+  get(value: number): this;
+}
+export interface CommonMethod {
+  width(value: number): this;
+  height(value: number): this;
+}
+export interface TextAttribute extends CommonMethod {
+  font(value: number): this;
+  fontColor(value: number): this;
+}
+export declare function Text(
+  content?: string,
+  value?: string
+): TextAttribute
+Text("Hello")._WILDCARD
+)delimiter"};
+    auto filePaths = CreateTempFile(files, texts);
+
+    int const expectedFileCount = 1;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+
+    LSPAPI const *lspApi = GetImpl();
+    size_t const offset = 378;  // after 'j._WILDCARD'
+    Initializer initializer = Initializer();
+    auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
+    auto res = lspApi->getCompletionsAtPosition(ctx, offset);
+    auto expectedEntries = std::vector<CompletionEntry> {
+        CompletionEntry("font", ark::es2panda::lsp::CompletionEntryKind::METHOD, std::string(CLASS_MEMBER_SNIPPETS)),
+        CompletionEntry("fontColor", ark::es2panda::lsp::CompletionEntryKind::METHOD,
+                        std::string(CLASS_MEMBER_SNIPPETS)),
+        CompletionEntry("width", ark::es2panda::lsp::CompletionEntryKind::METHOD, std::string(CLASS_MEMBER_SNIPPETS)),
+        CompletionEntry("height", ark::es2panda::lsp::CompletionEntryKind::METHOD, std::string(CLASS_MEMBER_SNIPPETS))};
+    AssertCompletionsContainAndNotContainEntries(res.GetEntries(), expectedEntries, {});
+    initializer.DestroyContext(ctx);
+}
+
 TEST_F(LSPCompletionsTests, getCompletionsAtPosition12)
 {
     std::vector<std::string> files = {"getCompletionsAtPosition13.ets"};
@@ -76,7 +199,7 @@ let res = j._WILDCARD
     ASSERT_EQ(filePaths.size(), expectedFileCount);
 
     LSPAPI const *lspApi = GetImpl();
-    size_t const offset = 141;  // after 'j._WILDCARD'
+    size_t const offset = 142;  // after 'j._WILDCARD'
     Initializer initializer = Initializer();
     auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
     auto res = lspApi->getCompletionsAtPosition(ctx, offset);
@@ -99,7 +222,7 @@ let a = 1;)delimiter"};
     ASSERT_EQ(filePaths.size(), expectedFileCount);
 
     LSPAPI const *lspApi = GetImpl();
-    size_t const offset = 50;  // after 'i.k'
+    size_t const offset = 51;  // after 'i.k'
     Initializer initializer = Initializer();
     auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
     auto res = lspApi->getCompletionsAtPosition(ctx, offset);
@@ -122,7 +245,7 @@ let a = 1;)delimiter"};
     ASSERT_EQ(filePaths.size(), expectedFileCount);
 
     LSPAPI const *lspApi = GetImpl();
-    size_t const offset = 58;  // after 'i._WILDCARD'
+    size_t const offset = 59;  // after 'i._WILDCARD'
     Initializer initializer = Initializer();
     auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
     auto res = lspApi->getCompletionsAtPosition(ctx, offset);
@@ -148,7 +271,7 @@ let a = 1;)delimiter"};
     ASSERT_EQ(filePaths.size(), expectedFileCount);
 
     LSPAPI const *lspApi = GetImpl();
-    size_t const offset = 120;  // after 'obj._WILDCARD' in 'let p = obj._WILDCARD'
+    size_t const offset = 121;  // after 'obj._WILDCARD' in 'let p = obj._WILDCARD'
     Initializer initializer = Initializer();
     auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
     auto res = lspApi->getCompletionsAtPosition(ctx, offset);
@@ -175,7 +298,7 @@ let myColor: Color = Color._WILDCARD)delimiter"};
     ASSERT_EQ(filePaths.size(), expectedFileCount);
 
     LSPAPI const *lspApi = GetImpl();
-    size_t const offset = 82;  // after 'Color._WILDCARD'
+    size_t const offset = 83;  // after 'Color._WILDCARD'
     Initializer initializer = Initializer();
     auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
     auto res = lspApi->getCompletionsAtPosition(ctx, offset);
@@ -202,7 +325,7 @@ let numOfSpace: space._WILDCARD)delimiter"};
     Initializer initializer = Initializer();
     auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
     LSPAPI const *lspApi = GetImpl();
-    const size_t offset = 112;
+    const size_t offset = 113;
     auto res = lspApi->getCompletionsAtPosition(ctx, offset);
     auto entries = res.GetEntries();
     std::string propertyName1 = "classInSpace";
@@ -246,7 +369,7 @@ class
     ASSERT_EQ(filePaths.size(), expectedFileCount);
 
     LSPAPI const *lspApi = GetImpl();
-    size_t const offset = 5;  // after 'n' in 'let a = n'
+    size_t const offset = 6;  // after 'ss' in 'class'
     Initializer initializer = Initializer();
     auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
     auto res = lspApi->getCompletionsAtPosition(ctx, offset);
@@ -451,7 +574,7 @@ let prop = obj1.yp)delimiter"};
     Initializer initializer = Initializer();
     auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
     LSPAPI const *lspApi = GetImpl();
-    const size_t offset = 119;
+    const size_t offset = 120;
     auto res = lspApi->getCompletionsAtPosition(ctx, offset);
     auto entries = res.GetEntries();
     ASSERT_TRUE(entries.size() == 1);
@@ -479,7 +602,7 @@ let numOfSpace: space.classi)delimiter"};
     Initializer initializer = Initializer();
     auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
     LSPAPI const *lspApi = GetImpl();
-    const size_t offset = 109;
+    const size_t offset = 110;
     auto res = lspApi->getCompletionsAtPosition(ctx, offset);
     auto entries = res.GetEntries();
     std::string propertyName1 = "classInSpace";
@@ -506,7 +629,7 @@ let myColor: Color = Color.R)delimiter"};
     Initializer initializer = Initializer();
     auto ctx = initializer.CreateContext(filePaths[0].c_str(), ES2PANDA_STATE_CHECKED);
     LSPAPI const *lspApi = GetImpl();
-    const size_t offset = 74;
+    const size_t offset = 75;
     auto res = lspApi->getCompletionsAtPosition(ctx, offset);
     auto entries = res.GetEntries();
     ASSERT_TRUE(entries.size() == 1);
