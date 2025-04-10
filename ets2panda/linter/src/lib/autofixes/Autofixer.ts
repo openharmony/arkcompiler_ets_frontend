@@ -15,7 +15,6 @@
 
 import * as ts from 'typescript';
 import { TsUtils } from '../utils/TsUtils';
-import { FaultID } from '../Problems';
 import { scopeContainsThis } from '../utils/functions/ContainsThis';
 import { forEachNodeInSubtree } from '../utils/functions/ForEachNodeInSubtree';
 import { NameGenerator } from '../utils/functions/NameGenerator';
@@ -159,13 +158,13 @@ export class Autofixer {
 
   /**
    * Creates autofix suggestions for destructuring assignment.
-   * @param variableDeclaration - The variable or parameter declaration to fix.
+   * @param variableDeclaration - The variable declaration to fix.
    * @param newObjectName - Name of the new object to use for destructuring.
    * @param destructElementText - Generated text for destructuring elements.
    * @returns Array of autofix suggestions or undefined.
    */
   private static genAutofixForObjDecls(
-    variableDeclaration: ts.VariableDeclaration | ts.ParameterDeclaration,
+    variableDeclaration: ts.VariableDeclaration,
     newObjectName: string | undefined,
     destructElementText: string,
     isIdentifier: boolean
@@ -207,13 +206,9 @@ export class Autofixer {
    * @param variableDeclaration - The variable or parameter declaration to check for boundary conditions.
    * @returns A boolean indicating if the declaration passes the boundary checks.
    */
-  private static passBoundaryCheckForObjDecls(
-    faultId: number,
-    variableDeclaration: ts.VariableDeclaration | ts.ParameterDeclaration
-  ): boolean {
+  private static passBoundaryCheckForObjDecls(variableDeclaration: ts.VariableDeclaration): boolean {
     // Check if the fault ID is for a destructuring parameter or if the declaration has a spread operator
     if (
-      faultId === FaultID.DestructuringParameter ||
       TsUtils.destructuringDeclarationHasSpreadOperator(variableDeclaration.name as ts.BindingPattern) ||
       TsUtils.destructuringDeclarationHasDefaultValue(variableDeclaration.name as ts.BindingPattern)
     ) {
@@ -235,15 +230,12 @@ export class Autofixer {
 
   /**
    ** Fixes object binding pattern declarations by generating appropriate autofix suggestions.
-   * @param variableDeclaration - The variable or parameter declaration to fix.
+   * @param variableDeclaration - The variable declaration to fix.
    * @param faultId - The fault ID indicating the type of check to perform.
    * @returns Array of autofix suggestions or undefined.
    */
-  fixObjectBindingPatternDeclarations(
-    variableDeclaration: ts.VariableDeclaration | ts.ParameterDeclaration,
-    faultId: number
-  ): Autofix[] | undefined {
-    if (!Autofixer.passBoundaryCheckForObjDecls(faultId, variableDeclaration)) {
+  fixObjectBindingPatternDeclarations(variableDeclaration: ts.VariableDeclaration): Autofix[] | undefined {
+    if (!Autofixer.passBoundaryCheckForObjDecls(variableDeclaration)) {
       return undefined;
     }
     // Map to hold variable names and their corresponding property names
@@ -336,13 +328,13 @@ export class Autofixer {
 
   /**
    * Creates autofix suggestions for array destructuring assignment.
-   * @param variableDeclaration - The variable or parameter declaration to fix.
+   * @param variableDeclaration - The variable declaration to fix.
    * @param newArrayName - Name of the new array to use for destructuring.
    * @param destructElementText - Generated text for destructuring elements.
    * @returns Array of autofix suggestions.
    */
   private static genAutofixForArrayDecls(
-    variableDeclaration: ts.VariableDeclaration | ts.ParameterDeclaration,
+    variableDeclaration: ts.VariableDeclaration,
     newArrayName: string | undefined,
     destructElementText: string,
     isIdentifierOrElementAccess: boolean
@@ -385,7 +377,7 @@ export class Autofixer {
    * @returns A boolean indicating if the declaration passes the boundary checks.
    */
   private static passBoundaryCheckForArrayDecls(
-    variableDeclaration: ts.VariableDeclaration | ts.ParameterDeclaration,
+    variableDeclaration: ts.VariableDeclaration,
     isArrayOrTuple: boolean
   ): boolean {
     // If it's not an array/tuple or the declaration has a spread operator in destructuring
@@ -416,12 +408,12 @@ export class Autofixer {
   /**
    * Fixes array binding pattern declarations by generating appropriate autofix suggestions.
    *
-   * @param variableDeclaration - The variable or parameter declaration to fix.
+   * @param variableDeclaration - The variable declaration to fix.
    * @param isArrayOrTuple - Flag indicating if the declaration is for an array or tuple.
    * @returns Array of autofix suggestions or undefined.
    */
   fixArrayBindingPatternDeclarations(
-    variableDeclaration: ts.VariableDeclaration | ts.ParameterDeclaration,
+    variableDeclaration: ts.VariableDeclaration,
     isArrayOrTuple: boolean
   ): Autofix[] | undefined {
     if (!Autofixer.passBoundaryCheckForArrayDecls(variableDeclaration, isArrayOrTuple)) {
