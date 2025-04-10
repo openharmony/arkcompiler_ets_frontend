@@ -32,4 +32,5 @@ char *GetStringCopy(KStringPtr &ptr);
 
 inline KUInt UnpackUInt(const KByte *bytes);
 
+static std::string g_pandaLibPath;
 #endif  // COMMON_H_

@@ -71,14 +71,14 @@ export class Config extends ArktsObject {
   }
 
   static create(
-    input: string[], fpath: string, isEditingMode: boolean = false
+    input: string[], fpath: string, pandaLibPath: string = '', isEditingMode: boolean = false
   ): Config {
     if (isEditingMode) {
-      let cfg = global.es2panda._CreateConfig(input.length, passStringArray(input))
+      let cfg = global.es2panda._CreateConfig(input.length, passStringArray(input), pandaLibPath)
       return new Config(cfg, fpath)
     }
     if (!global.configIsInitialized()) {
-      let cfg = global.es2panda._CreateConfig(input.length, passStringArray(input))
+      let cfg = global.es2panda._CreateConfig(input.length, passStringArray(input), pandaLibPath)
       global.config = cfg
       return new Config(
         cfg, fpath
