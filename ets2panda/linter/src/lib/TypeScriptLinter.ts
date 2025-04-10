@@ -3260,6 +3260,7 @@ export class TypeScriptLinter {
     this.checkArkTSObjectInterop(tsCallExpr);
     this.handleAppStorageCallExpression(tsCallExpr);
     this.fixJsImportCallExpression(tsCallExpr);
+    this.handleCallJSFunction(tsCallExpr, calleeSym, callSignature);
   }
 
   private handleAppStorageCallExpression(tsCallExpr: ts.CallExpression): void {
@@ -3304,6 +3305,17 @@ export class TypeScriptLinter {
     if (isNumberGeneric && !isNumberReturnType) {
       const autofix = this.autofixer?.fixAppStorageCallExpression(tsCallExpr);
       this.incrementCounters(tsCallExpr, FaultID.NumericSemantics, autofix);
+    }
+  }
+
+  handleCallJSFunction(tsCallExpr: ts.CallExpression, sym: ts.Symbol | undefined, callSignature: ts.Signature | undefined): void {
+    if (!callSignature) {
+      return;
+    }
+    if (TypeScriptLinter.isDeclaredInArkTs2(callSignature) && this.options.arkts2) {
+      if (sym?.declarations?.[0]?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
+        this.incrementCounters(tsCallExpr, FaultID.CallJSFunction);
+      }
     }
   }
 

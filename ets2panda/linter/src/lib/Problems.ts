@@ -189,6 +189,7 @@ export enum FaultID {
   InteropJsObjectUsage,
   LimitedStdLibNoImportConcurrency,
   InterOpImportJs,
+  CallJSFunction,
   // this should always be last enum
   LAST_ID
 }
