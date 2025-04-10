@@ -73,6 +73,56 @@
             "suggest": "",
             "rule": "Use \"class\" instead of a type with constructor signature (arkts-no-ctor-signatures-type)",
             "severity": "ERROR"
+        },
+        {
+            "line": 59,
+            "column": 10,
+            "endLine": 59,
+            "endColumn": 22,
+            "problem": "LimitedReturnTypeInference",
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 71,
+            "column": 12,
+            "endLine": 71,
+            "endColumn": 13,
+            "problem": "ClassAsObjectError",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 73,
+            "column": 12,
+            "endLine": 73,
+            "endColumn": 13,
+            "problem": "ClassAsObjectError",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 77,
+            "column": 20,
+            "endLine": 77,
+            "endColumn": 39,
+            "problem": "ExtendsExpression",
+            "suggest": "",
+            "rule": "Extends or implemetns expression are not supported(arkts-no-extends-expression)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 83,
+            "column": 21,
+            "endLine": 83,
+            "endColumn": 39,
+            "problem": "ExtendsExpression",
+            "suggest": "",
+            "rule": "Extends or implemetns expression are not supported(arkts-no-extends-expression)",
+            "severity": "ERROR"
         }
     ]
 }

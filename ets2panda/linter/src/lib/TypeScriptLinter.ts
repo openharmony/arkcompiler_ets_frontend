@@ -4768,9 +4768,13 @@ export class TypeScriptLinter {
     if (!this.options.arkts2) {
       return;
     }
-    if (node.token === ts.SyntaxKind.ExtendsKeyword) {
+    if (node.token === ts.SyntaxKind.ExtendsKeyword || node.token === ts.SyntaxKind.ImplementsKeyword) {
       node.types.forEach((type) => {
         const expr = type.expression;
+        if (ts.isCallExpression(expr)) {
+          this.incrementCounters(expr, FaultID.ExtendsExpression);
+          return;
+        }
         if (
           ts.isIdentifier(expr) &&
           this.isVariableReference(expr) &&
