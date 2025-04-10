@@ -172,3 +172,5 @@ faultDesc[FaultID.DataObservation] = 'Data observation';
 faultDesc[FaultID.InteropCallReflect] = 'Interop call with Reflect API';
 faultDesc[FaultID.InteropCallObjectParam] = 'Interop call with "Object" parameter';
 faultDesc[FaultID.InteropNoDecorators] = 'Interop decorators not supported';
+faultDesc[FaultID.InteropDirectAccessToTSTypes] = 'TS Types Access';
+faultDesc[FaultID.InteropTSFunctionInvoke] = 'TS Function Invoke';

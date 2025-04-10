@@ -128,7 +128,10 @@ export class TsUtils {
     return !!(tsSymbol.flags & ts.SymbolFlags.Enum);
   }
 
-  static hasModifier(tsModifiers: readonly ts.Modifier[] | ts.NodeArray<ts.ModifierLike> | undefined, tsModifierKind: number): boolean {
+  static hasModifier(
+    tsModifiers: readonly ts.Modifier[] | ts.NodeArray<ts.ModifierLike> | undefined,
+    tsModifierKind: number
+  ): boolean {
     if (!tsModifiers) {
       return false;
     }
@@ -3377,6 +3380,38 @@ export class TsUtils {
       return true;
     }
 
+    return false;
+  }
+
+  isMixedEnumType(enumType: ts.EnumType): boolean {
+    let hasNumber = false;
+    let hasString = false;
+    for (const member of enumType.getProperties()) {
+      if (!member.valueDeclaration) {
+        continue;
+      }
+      const memberType = this.tsTypeChecker.getTypeOfSymbolAtLocation(member, member.valueDeclaration);
+
+      // Check the type of the enum value (number or string)
+      if (memberType.flags & ts.TypeFlags.Number) {
+        hasNumber = true;
+      } else if (memberType.flags & ts.TypeFlags.String) {
+        hasString = true;
+      }
+    }
+
+    return hasString && hasNumber;
+  }
+
+  static isStringLiteralUnionType(baseType: ts.Type): boolean {
+    if (baseType.isUnion()) {
+      const unionType = baseType;
+      for (const type of unionType.types) {
+        if (type.isStringLiteral()) {
+          return true;
+        }
+      }
+    }
     return false;
   }
 }

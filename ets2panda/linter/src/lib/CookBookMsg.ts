@@ -272,3 +272,5 @@ cookBookTag[303] =
   'Reflect API usage is not allowed in interop calls when an "Object" parameter receives a class instance (arkts-interop-call-reflect)';
 cookBookTag[304] = 'Duplicate function name in namespace are not allowed (arkts-no-duplicate-function-name)';
 cookBookTag[305] = 'Typescript class decorators are not allowed (arkts-interop-no-decorators)';
+cookBookTag[306] = 'Cannot access typescript types directly (arkts-interop-access-ts-types)';
+cookBookTag[307] = 'Cannot invoke functions implemented in TypeScript (arkts-interop-ts-function)';

@@ -184,3 +184,5 @@ faultsAttrs[FaultID.InteropCallObjectParam] = new FaultAttributes(302);
 faultsAttrs[FaultID.InteropCallReflect] = new FaultAttributes(303);
 faultsAttrs[FaultID.NoDuplicateFunctionName] = new FaultAttributes(304);
 faultsAttrs[FaultID.InteropNoDecorators] = new FaultAttributes(305);
+faultsAttrs[FaultID.InteropDirectAccessToTSTypes] = new FaultAttributes(306);
+faultsAttrs[FaultID.InteropTSFunctionInvoke] = new FaultAttributes(307);
