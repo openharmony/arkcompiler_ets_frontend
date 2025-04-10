@@ -134,3 +134,90 @@ switch (day) {
     default:
         dayName = "Unknown";
 }
+
+const number01: number = 100;
+function Foo(number01: number) {
+  switch (number01) {
+    case 1:
+      console.log('It\'s 1');
+      break;
+    case 2:
+      console.log('It\'s 2')
+      break;
+  }
+}
+Foo(number01)
+
+const num11: number = 2;
+switch (num11) {
+  case 1: {
+    console.log('One');
+    break;
+  }
+  case 2: {
+    console.log('Two');
+    break;
+  }
+}
+
+let num0 = 2;
+switch (num0) {
+  case 1: {
+    console.log('One');
+    break;
+  }
+  case 2: {
+    console.log('Two');
+    break;
+  }
+}
+
+let num00: number = 2;
+switch (num00) {
+  case 1: {
+    console.log('One');
+    break;
+  }
+  case 2: {
+    console.log('Two');
+    break;
+  }
+}
+
+let num1 = 0;
+switch (num1) {
+  case 0:
+    console.log('One');
+    break;
+  default:
+    console.log('Other number');
+}
+
+1.0
+let num111 = 1.0;
+switch (num111) {
+  case 1.0:
+    console.log('One');
+    break;
+  case 2.0:
+    console.log('Other number');
+}
+
+const number134 = 100;
+switch (number134) {
+  case 1:
+    console.log('It\'s 1');
+    break;
+  case 2:
+    console.log('It\'s 2')
+    break;
+}
+
+let str11 = new String("hello");
+switch (str11) {
+  case "hello":
+    console.log("Case 1")
+    break
+  case "world":
+    console.log("Default Case")
+}

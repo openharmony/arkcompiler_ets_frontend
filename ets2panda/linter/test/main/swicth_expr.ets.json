@@ -33,6 +33,16 @@
       "suggest": "",
       "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
       "severity": "ERROR"
+    },
+    {
+        "line": 139,
+        "column": 1,
+        "endLine": 139,
+        "endColumn": 9,
+        "problem": "LocalFunction",
+        "suggest": "",
+        "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+        "severity": "ERROR"
     }
   ]
 }
