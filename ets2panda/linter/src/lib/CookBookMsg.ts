@@ -299,3 +299,5 @@ cookBookTag[335] = 'Interop object does not have property num (arkts-interop-doe
 cookBookTag[336] = 'Binary operations on js objects (arkts-no-js-obj-binary-operation)';
 cookBookTag[337] =
   'Importing data directly from the "JS" module for comparison is not supported (arkts-js-data-compare)';
+cookBookTag[338] =
+  '"JS" objects can\'t be used directly as operands of the equality operators (arkts-js-equality-judgment)';
