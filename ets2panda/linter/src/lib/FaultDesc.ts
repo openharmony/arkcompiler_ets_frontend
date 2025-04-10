@@ -199,3 +199,4 @@ faultDesc[FaultID.InteropEqualityJudgment] = 'Equality operator with JS objects'
 faultDesc[FaultID.InterOpImportJsIndex] = 'No js index import';
 faultDesc[FaultID.NoJsImportAwait] = 'No js import await';
 faultDesc[FaultID.InstantiatedJsOjbect] = 'Instantiated js ojbect';
+faultDesc[FaultID.InteropCallObjectMethods] = 'Interop call methods in object';

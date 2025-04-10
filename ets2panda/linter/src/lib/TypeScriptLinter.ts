@@ -3434,6 +3434,7 @@ export class TypeScriptLinter {
     this.handleAppStorageCallExpression(tsCallExpr);
     this.fixJsImportCallExpression(tsCallExpr);
     this.handleCallJSFunction(tsCallExpr, calleeSym, callSignature);
+    this.handleInteropForCallObjectMethods(tsCallExpr, calleeSym, callSignature);
   }
 
   private handleAppStorageCallExpression(tsCallExpr: ts.CallExpression): void {
@@ -3504,6 +3505,17 @@ export class TypeScriptLinter {
 
     this.checkInteropFunctionParameters(callSignature, tsCallExpr);
     this.checkForReflectAPIUse(callSignature, tsCallExpr);
+  }
+
+  private handleInteropForCallObjectMethods(tsCallExpr: ts.CallExpression, sym: ts.Symbol | undefined, callSignature: ts.Signature | undefined): void {
+    if (!callSignature) {
+      return;
+    }
+    if (TypeScriptLinter.isDeclaredInArkTs2(callSignature) && this.options.arkts2) {
+      if (sym?.declarations?.[0]?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
+        this.incrementCounters(tsCallExpr, FaultID.InteropCallObjectMethods);
+      }
+    }
   }
 
   private static isDeclaredInArkTs2(callSignature: ts.Signature): boolean | undefined {
