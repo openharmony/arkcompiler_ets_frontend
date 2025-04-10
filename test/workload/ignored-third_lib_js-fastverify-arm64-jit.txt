@@ -4,14 +4,8 @@ gson_test
 #19623
 rebound_test
 
-#21251
-validator_test
-
 #23990
 hamcrest_test
-
-#24760
-dayjs_test
 
 #19247
 jsDiff_test

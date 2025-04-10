@@ -4,11 +4,5 @@ jsDiff_test
 #21663
 crypto-js_test
 
-#21251
-validator_test
-
-#24119
-dayjs_test
-
 #23119
 jBox2d_test
