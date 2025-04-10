@@ -195,3 +195,4 @@ faultDesc[FaultID.InterOpImportJsForTypeOf] = 'TypeOf import from JS';
 faultDesc[FaultID.InteropNoHaveNum] = 'Interop obj with "num" property';
 faultDesc[FaultID.BinaryOperations] = 'Binary operations on js objects';
 faultDesc[FaultID.InterOpImportJsDataCompare] = 'NO js import data compare';
+faultDesc[FaultID.InteropEqualityJudgment] = 'Equality operator with JS objects';

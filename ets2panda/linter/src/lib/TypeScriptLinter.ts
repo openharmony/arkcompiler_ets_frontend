@@ -1623,6 +1623,7 @@ export class TypeScriptLinter {
     }
     this.checkNumericSemantics(tsBinaryExpr);
     this.checkInterOpImportJsDataCompare(tsBinaryExpr);
+    this.checkInteropEqualityJudgment(tsBinaryExpr);
   }
 
   private checkInterOpImportJsDataCompare(expr: ts.BinaryExpression): void {
@@ -1675,6 +1676,30 @@ export class TypeScriptLinter {
       ts.SyntaxKind.LessThanEqualsToken,
       ts.SyntaxKind.EqualsToken
     ].includes(kind);
+  }
+
+  private checkInteropEqualityJudgment(tsBinaryExpr: ts.BinaryExpression): void {
+    if (this.useStatic && this.options.arkts2) {
+      const leftSym = this.tsUtils.trueSymbolAtLocation(tsBinaryExpr.left);
+      const rightSym = this.tsUtils.trueSymbolAtLocation(tsBinaryExpr.right);
+      switch (tsBinaryExpr.operatorToken.kind) {
+        case ts.SyntaxKind.EqualsEqualsToken:
+        case ts.SyntaxKind.ExclamationEqualsToken:
+        case ts.SyntaxKind.EqualsEqualsEqualsToken:
+        case ts.SyntaxKind.ExclamationEqualsEqualsToken:
+          if (this.isJsType(leftSym) || this.isJsType(rightSym)) {
+            const autofix = this.autofixer?.fixInteropEqualityOperator(tsBinaryExpr, tsBinaryExpr.operatorToken.kind);
+            this.incrementCounters(tsBinaryExpr, FaultID.InteropEqualityJudgment, autofix);
+          }
+          break;
+        default:
+      }
+    }
+  }
+
+  isJsType(sym: ts.Symbol | undefined): boolean {
+    void this;
+    return !!sym && !!sym.declarations && sym.declarations[0].getSourceFile().fileName.endsWith(EXTNAME_JS);
   }
 
   private handleTsInterop(nodeToCheck: ts.Node, handler: { (): void }): void {
@@ -6222,7 +6247,7 @@ export class TypeScriptLinter {
     }
     return undefined;
   }
-  
+
   private isFromJSModule(node: ts.Node): boolean {
     const symbol = this.tsUtils.trueSymbolAtLocation(node);
     if (symbol?.declarations?.[0]) {

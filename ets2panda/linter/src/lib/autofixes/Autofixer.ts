@@ -43,7 +43,7 @@ import {
   PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME
 } from '../utils/consts/ArkuiConstants';
 import { ES_OBJECT } from '../utils/consts/ESObject';
-import { LOAD, GET_PROPERTY_BY_NAME } from '../utils/consts/InteropAPI';
+import { LOAD, GET_PROPERTY_BY_NAME, ARE_EQUAL, ARE_STRICTLY_EQUAL } from '../utils/consts/InteropAPI';
 
 const UNDEFINED_NAME = 'undefined';
 
@@ -3376,5 +3376,61 @@ export class Autofixer {
       text = this.printer.printNode(ts.EmitHint.Unspecified, states, express.getSourceFile());
     }
     return [{ start: express.operand.getStart(), end: express.operand.getEnd(), replacementText: text }];
+  }
+  
+  fixInteropEqualityOperator(
+    tsBinaryExpr: ts.BinaryExpression,
+    binaryOperator: ts.BinaryOperator
+  ): Autofix[] | undefined {
+    const text = this.replaceInteropEqualityOperator(tsBinaryExpr, binaryOperator);
+    if (text) {
+      return [{ start: tsBinaryExpr.getStart(), end: tsBinaryExpr.getEnd(), replacementText: text }];
+    }
+    return undefined;
+  }
+
+  replaceInteropEqualityOperator(
+    tsBinaryExpr: ts.BinaryExpression,
+    binaryOperator: ts.BinaryOperator
+  ): string | undefined {
+    const info = this.getInteropEqualityReplacementInfo(binaryOperator);
+    if (!info) {
+      return undefined;
+    }
+
+    const tsLhsExpr = tsBinaryExpr.left;
+    const tsRhsExpr = tsBinaryExpr.right;
+    const callExpression = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(tsLhsExpr.getText()),
+        ts.factory.createIdentifier(info.functionName)
+      ),
+      undefined,
+      [ts.factory.createIdentifier(tsRhsExpr.getText())]
+    );
+
+    let text = this.printer.printNode(ts.EmitHint.Unspecified, callExpression, tsBinaryExpr.getSourceFile());
+    if (info.isNegative) {
+      text = '!' + text;
+    }
+    return text;
+  }
+
+  getInteropEqualityReplacementInfo(
+    binaryOperator: ts.BinaryOperator
+  ): { functionName: string; isNegative: boolean } | undefined {
+    void this;
+    switch (binaryOperator) {
+      case ts.SyntaxKind.EqualsEqualsToken:
+        return { functionName: ARE_EQUAL, isNegative: false };
+      case ts.SyntaxKind.ExclamationEqualsToken:
+        return { functionName: ARE_EQUAL, isNegative: true };
+      case ts.SyntaxKind.EqualsEqualsEqualsToken:
+        return { functionName: ARE_STRICTLY_EQUAL, isNegative: false };
+      case ts.SyntaxKind.ExclamationEqualsEqualsToken:
+        return { functionName: ARE_STRICTLY_EQUAL, isNegative: true };
+      default:
+        return undefined;
+    }
   }
 }
