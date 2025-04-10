@@ -52,7 +52,11 @@ void *FindLibrary()
     if (envValue) {
         libraryName = string(envValue) + ("/" PLUGIN_DIR "/lib/") + LIB_ES2PANDA_PUBLIC;
     } else {
-        libraryName = LIB_ES2PANDA_PUBLIC;
+        if (g_pandaLibPath == "") {
+            libraryName = LIB_ES2PANDA_PUBLIC;
+        } else {
+            libraryName = g_pandaLibPath + "/" + LIB_ES2PANDA_PUBLIC;
+        }
     }
     return LoadLibrary(libraryName);
 }
@@ -89,10 +93,10 @@ inline KUInt UnpackUInt(const KByte *bytes)
     return (bytes[0] | (bytes[1] << 8U) | (bytes[2U] << 16U) | (bytes[3U] << 24U));
 }
 
-KNativePointer impl_CreateConfig(KInt argc, KStringArray argvPtr)
+KNativePointer impl_CreateConfig(KInt argc, KStringArray argvPtr, KStringPtr &pandaLibPath)
 {
     const std::size_t HEADER_LEN = 4;
-
+    g_pandaLibPath = GetStringCopy(pandaLibPath);
     const char **argv = new const char *[static_cast<unsigned int>(argc)];
     std::size_t position = HEADER_LEN;
     std::size_t strLen;
@@ -104,7 +108,7 @@ KNativePointer impl_CreateConfig(KInt argc, KStringArray argvPtr)
     }
     return GetPublicImpl()->CreateConfig(argc, argv);
 }
-TS_INTEROP_2(CreateConfig, KNativePointer, KInt, KStringArray)
+TS_INTEROP_3(CreateConfig, KNativePointer, KInt, KStringArray, KStringPtr)
 
 KNativePointer impl_DestroyConfig(KNativePointer configPtr)
 {

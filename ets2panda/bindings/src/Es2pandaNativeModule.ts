@@ -14,7 +14,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path'
-import { KNativePointer as KPtr, KInt, KBoolean, KNativePointer, KDouble, KUInt } from "./InteropTypes"
+import { KNativePointer as KPtr, KInt, KBoolean, KNativePointer, KDouble, KUInt, KStringPtr } from "./InteropTypes"
 import { Es2pandaNativeModule as GeneratedEs2pandaNativeModule } from "./generated/Es2pandaNativeModule"
 import { loadNativeModuleLibrary, registerNativeModuleLibraryName } from "./loadLibraries"
 import { throwError } from "./utils"
@@ -43,7 +43,7 @@ export class Es2pandaNativeModule {
     throw new Error("Not implemented")
   }
 
-  _CreateConfig(argc: number, argv: string[] | Uint8Array): KPtr {
+  _CreateConfig(argc: number, argv: string[] | Uint8Array, pandaLibPath: KStringPtr): KPtr {
     throw new Error("Not implemented")
   }
   _DestroyConfig(config: KPtr): void {

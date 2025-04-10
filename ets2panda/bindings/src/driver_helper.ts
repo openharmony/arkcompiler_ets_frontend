@@ -83,8 +83,8 @@ export class DriverHelper {
 }
 
 export class LspDriverHelper {
-  public createCfg(cmd: string[], filePath: string): Config {
-    return Config.create(cmd, filePath, true)
+  public createCfg(cmd: string[], filePath: string, pandaLibPath: string): Config {
+    return Config.create(cmd, filePath, pandaLibPath, true)
   }
 
   public createCtx(source: string, filePath: string, cfg: Config): KNativePointer {
