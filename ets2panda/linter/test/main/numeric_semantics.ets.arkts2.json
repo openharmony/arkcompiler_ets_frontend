@@ -445,6 +445,26 @@
             "severity": "ERROR"
         },
         {
+            "line": 143,
+            "column": 7,
+            "endLine": 143,
+            "endColumn": 123,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 143,
+            "column": 30,
+            "endLine": 143,
+            "endColumn": 118,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
             "line": 117,
             "column": 2,
             "endLine": 117,
@@ -489,6 +509,16 @@
             "column": 7,
             "endLine": 130,
             "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 143,
+            "column": 30,
+            "endLine": 143,
+            "endColumn": 40,
             "problem": "UIInterfaceImport",
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",

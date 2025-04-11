@@ -30,7 +30,12 @@ import { SYMBOL, SYMBOL_CONSTRUCTOR, TsUtils } from './utils/TsUtils';
 import { FUNCTION_HAS_NO_RETURN_ERROR_CODE } from './utils/consts/FunctionHasNoReturnErrorCode';
 import { LIMITED_STANDARD_UTILITY_TYPES } from './utils/consts/LimitedStandardUtilityTypes';
 import { LIKE_FUNCTION } from './utils/consts/LikeFunction';
-import { STRINGLITERAL_NUMBER, STRINGLITERAL_STRING, STRINGLITERAL_INT } from './utils/consts/StringLiteral';
+import {
+  STRINGLITERAL_NUMBER,
+  STRINGLITERAL_STRING,
+  STRINGLITERAL_INT,
+  STRINGLITERAL_ANY
+} from './utils/consts/StringLiteral';
 import {
   NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS,
   NON_INITIALIZABLE_PROPERTY_DECORATORS,
@@ -2822,6 +2827,52 @@ export class TypeScriptLinter {
     }
 
     this.checkArkTSObjectInterop(tsCallExpr);
+    this.handleAppStorageCallExpression(tsCallExpr);
+  }
+
+  private handleAppStorageCallExpression(tsCallExpr: ts.CallExpression): void {
+    if (!this.options.arkts2 || !tsCallExpr) {
+      return;
+    }
+    if (
+      !ts.isBinaryExpression(tsCallExpr.parent) ||
+      tsCallExpr.parent.operatorToken.kind !== ts.SyntaxKind.QuestionQuestionToken
+    ) {
+      return;
+    }
+
+    const varDecl = tsCallExpr.parent.parent;
+    if (!ts.isVariableDeclaration(varDecl)) {
+      return;
+    }
+
+    if (varDecl.type && ts.isTypeReferenceNode(varDecl.type)) {
+      if (varDecl.type.typeName.getText() === STRINGLITERAL_ANY) {
+        return;
+      }
+    }
+
+    const callReturnType = this.tsTypeChecker.getTypeAtLocation(tsCallExpr);
+    const isNumberReturnType = callReturnType.flags & ts.TypeFlags.Number;
+    const isNumberGeneric = ((): boolean => {
+      if (tsCallExpr.typeArguments?.length !== 1) {
+        return false;
+      }
+      const typeArg = tsCallExpr.typeArguments[0];
+      if (typeArg.kind === ts.SyntaxKind.NumberKeyword) {
+        return true;
+      }
+
+      if (ts.isTypeReferenceNode(typeArg)) {
+        return ts.isIdentifier(typeArg.typeName) && typeArg.typeName.text === STRINGLITERAL_NUMBER;
+      }
+      return typeArg.getText().trim() === STRINGLITERAL_NUMBER;
+    })();
+
+    if (isNumberGeneric && !isNumberReturnType) {
+      const autofix = this.autofixer?.fixAppStorageCallExpression(tsCallExpr);
+      this.incrementCounters(tsCallExpr, FaultID.NumericSemantics, autofix);
+    }
   }
 
   private handleInteropForCallExpression(tsCallExpr: ts.CallExpression): void {
@@ -4206,7 +4257,7 @@ export class TypeScriptLinter {
     }
     return null;
   }
-  
+
   private handleLimitedLiteralType(literalTypeNode: ts.LiteralTypeNode): void {
     if (!this.options.arkts2 || !literalTypeNode) {
       return;
