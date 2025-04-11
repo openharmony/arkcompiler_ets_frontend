@@ -660,6 +660,11 @@ export class TypeScriptLinter {
     this.options.cancellationToken?.throwIfCancellationRequested();
 
     const interfaceNode = node as ts.InterfaceDeclaration;
+
+    if (this.options.arkts2) {
+      this.handleInvalidIdentifier(interfaceNode);
+    }
+
     const iSymbol = this.tsUtils.trueSymbolAtLocation(interfaceNode.name);
     const iDecls = iSymbol ? iSymbol.getDeclarations() : null;
     if (iDecls) {
@@ -4549,6 +4554,7 @@ export class TypeScriptLinter {
       | ts.EnumDeclaration
       | ts.EnumMember
       | ts.ModuleDeclaration
+      | ts.InterfaceDeclaration
   ): void {
     if (!this.options.arkts2) {
       return;
