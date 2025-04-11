@@ -66,8 +66,9 @@ bool LoadNapiFunctions()
     FARPROC fn_addr = GetProcAddress(nodeModule, "napi_module_register");
     if (fn_addr == NULL) {
         nodeModule = GetModuleHandleA("node.dll");
-        if (nodeModule == NULL)
+        if (nodeModule == NULL) {
             return false;
+        }
         fn_addr = GetProcAddress(nodeModule, "napi_module_register");
         if (fn_addr == NULL) {
             return false;
@@ -87,8 +88,9 @@ bool LoadNapiFunctions()
     NAPI_FUNCTIONS(GET_NAPI_IMPL);
 
     // If any required APIs failed to load, return false
-    if (apiLoadFailed)
+    if (apiLoadFailed) {
         return false;
+    }
 
     isLoaded = true;
 

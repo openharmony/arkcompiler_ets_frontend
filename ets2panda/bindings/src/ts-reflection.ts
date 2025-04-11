@@ -14,22 +14,22 @@
  */
 
 export function className(object?: Object): string {
-  return object?.constructor.name ?? "<null>"
+  return object?.constructor.name ?? '<null>';
 }
 
 export function isFunction(object?: Object): boolean {
-  return typeof object === 'function'
+  return typeof object === 'function';
 }
 
 // TODO: this is to match arkts counterpart
 export function functionOverValue<Value>(value: Value | (() => Value)): boolean {
-  return typeof value === 'function'
+  return typeof value === 'function';
 }
 
 export function refEqual<Value>(a: Value, b: Value): boolean {
-  return a === b
+  return a === b;
 }
 
 export function isNotPrimitive(value: Object): boolean {
-  return true
+  return true;
 }

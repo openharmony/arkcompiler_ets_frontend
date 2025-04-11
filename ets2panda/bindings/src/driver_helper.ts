@@ -13,111 +13,111 @@
  * limitations under the License.
  */
 
-import { Context, Config } from "./types"
-import { global } from "./global"
-import { throwError } from "./utils"
-import { Es2pandaContextState } from "./generated/Es2pandaEnums"
-import { withStringResult } from "./Platform"
-import { KBoolean, KNativePointer, KPointer } from "./InteropTypes"
+import { Context, Config } from './types';
+import { global } from './global';
+import { throwError } from './utils';
+import { Es2pandaContextState } from './generated/Es2pandaEnums';
+import { withStringResult } from './Platform';
+import { KBoolean, KNativePointer, KPointer } from './InteropTypes';
 
 export class DriverHelper {
   constructor(filePath: string, cmd: string[]) {
-    this._filePath = filePath
-    global.filePath = this._filePath
-    this._cfg = Config.create(cmd, filePath)
+    this._filePath = filePath;
+    global.filePath = this._filePath;
+    this._cfg = Config.create(cmd, filePath);
   }
-  private _ctx: Context | undefined
-  private _cfg: Config
-  private _filePath: string
+  private _ctx: Context | undefined;
+  private _cfg: Config;
+  private _filePath: string;
 
   public createCtx(source: string): KPointer {
-    this._ctx = Context.createFromString(source)
-    return this._ctx.peer
+    this._ctx = Context.createFromString(source);
+    return this._ctx.peer;
   }
 
   public toString(): string {
-    return `DriverHelper (filepath = ${this._filePath}, config = ${this._cfg}, context = ${this._ctx})`
+    return `DriverHelper (filepath = ${this._filePath}, config = ${this._cfg}, context = ${this._ctx})`;
   }
 
-  public proceedToState(state: Es2pandaContextState) {
+  public proceedToState(state: Es2pandaContextState): void {
     if (this._ctx === undefined) {
-      throwError("Trying to proceed to state while cts is undefined")
+      throwError('Trying to proceed to state while cts is undefined');
     }
     if (state <= global.es2panda._ContextState(this._ctx.peer)) {
-      return
+      return;
     }
 
     try {
-      global.es2panda._ProceedToState(this._ctx.peer, state)
+      global.es2panda._ProceedToState(this._ctx.peer, state);
       if (global.es2panda._ContextState(this._ctx.peer) === Es2pandaContextState.ES2PANDA_STATE_ERROR) {
-        const errMsg = withStringResult(global.es2panda._ContextErrorMessage(this._ctx.peer))
+        const errMsg = withStringResult(global.es2panda._ContextErrorMessage(this._ctx.peer));
         if (errMsg === undefined) {
-          throwError(`Couldn't get context error msg`)
+          throwError(`Couldn't get context error msg`);
         } else {
-          throwError("Failed proceed to: " + Es2pandaContextState[state] + "\n" + errMsg)
+          throwError('Failed proceed to: ' + Es2pandaContextState[state] + '\n' + errMsg);
         }
       }
     } catch (e) {
-      global.es2panda._DestroyContext(this._ctx.peer)
-      throw e
+      global.es2panda._DestroyContext(this._ctx.peer);
+      throw e;
     }
   }
 
-  public finalize() {
+  public finalize(): void {
     if (this._cfg === undefined) {
-      throwError("Call finalize before initialized config")
+      throwError('Call finalize before initialized config');
     }
     if (this._ctx === undefined) {
-      throwError("Call finalize before initialized context")
+      throwError('Call finalize before initialized context');
     }
-    global.es2panda._DestroyContext(this._ctx.peer)
-    global.es2panda._DestroyConfig(this._cfg.peer)
-    this._ctx = undefined
-    global.destroyCfg()
+    global.es2panda._DestroyContext(this._ctx.peer);
+    global.es2panda._DestroyConfig(this._cfg.peer);
+    this._ctx = undefined;
+    global.destroyCfg();
   }
 
-  public generateTsDecl(declOutPath: string, etsOutPath: string, exportAll: boolean) {
-    let exportAll_: KBoolean = exportAll ? 1 : 0
-    global.es2panda._GenerateTsDeclarationsFromContext(this._cfg.peer, declOutPath, etsOutPath, exportAll_)
+  public generateTsDecl(declOutPath: string, etsOutPath: string, exportAll: boolean): void {
+    let exportAll_: KBoolean = exportAll ? 1 : 0;
+    global.es2panda._GenerateTsDeclarationsFromContext(this._cfg.peer, declOutPath, etsOutPath, exportAll_);
   }
 }
 
 export class LspDriverHelper {
   public createCfg(cmd: string[], filePath: string, pandaLibPath: string): Config {
-    return Config.create(cmd, filePath, pandaLibPath, true)
+    return Config.create(cmd, filePath, pandaLibPath, true);
   }
 
   public createCtx(source: string, filePath: string, cfg: Config): KNativePointer {
-    return Context.lspCreateFromString(source, filePath, cfg)
+    return Context.lspCreateFromString(source, filePath, cfg);
   }
 
-  public proceedToState(ctx: KNativePointer, state: Es2pandaContextState) {
+  public proceedToState(ctx: KNativePointer, state: Es2pandaContextState): void {
     if (ctx === undefined) {
-      throwError("Trying to proceed to state while cts is undefined")
+      throwError('Trying to proceed to state while cts is undefined');
     }
     if (state <= global.es2pandaPublic._ContextState(ctx)) {
-      return
+      return;
     }
 
     try {
-      global.es2pandaPublic._ProceedToState(ctx, state)
+      global.es2pandaPublic._ProceedToState(ctx, state);
     } catch (e) {
-      global.es2pandaPublic._DestroyContext(ctx)
-      throw e
+      global.es2pandaPublic._DestroyContext(ctx);
+      throw e;
     }
   }
 
-  public destroyContext(ctx: KNativePointer) {
+  public destroyContext(ctx: KNativePointer): void {
     if (ctx === undefined) {
-      return
+      return;
     }
-    global.es2pandaPublic._DestroyContext(ctx)
+    global.es2pandaPublic._DestroyContext(ctx);
   }
 
-  public destroyConfig(cfg: Config) {
+  public destroyConfig(cfg: Config): void {
     if (cfg === undefined) {
-      return
+      return;
     }
-    global.es2pandaPublic._DestroyConfig(cfg.peer)
+    global.es2pandaPublic._DestroyConfig(cfg.peer);
   }
 }
