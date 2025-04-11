@@ -16,6 +16,7 @@
 @Component
 struct MyComponent {
   @State count: number = 0
+
   build() {
     Column() {
       MyCounter({
@@ -27,7 +28,8 @@ struct MyComponent {
 
 @Component
 struct MyCounter {
-  @Link count: number;
+  @Link count: number
+
   build() {
     Row() {
       Text(`${this.count}`)

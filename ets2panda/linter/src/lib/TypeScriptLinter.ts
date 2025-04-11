@@ -4993,7 +4993,7 @@ export class TypeScriptLinter {
       }
     }
 
-    return this.importedInterfaces.has(callExpr.expression.getText());
+    return this.interfacesAlreadyImported.has(callExpr.expression.getText());
   }
 
   private handleDoubleDollar(node: ts.Node): void {
@@ -5232,22 +5232,25 @@ export class TypeScriptLinter {
     }
   }
 
-  interfaceIdentifiers: ts.Identifier[] = [];
+  interfacesNeedToAlarm: ts.Identifier[] = [];
   interfacesNeedToImport: Set<string> = new Set<string>();
-  importedInterfaces: Set<string> = new Set<string>();
+  interfacesAlreadyImported: Set<string> = new Set<string>();
 
   private handleInterfaceImport(identifier: ts.Identifier): void {
     if (!this.options.arkts2) {
       return;
     }
 
-    const name = identifier.getText();
     if (this.shouldSkipIdentifier(identifier)) {
       return;
     }
 
-    this.interfaceIdentifiers.push(identifier);
-    this.interfacesNeedToImport.add(name);
+    const name = identifier.getText();
+    if (!this.interfacesNeedToImport.has(name)) {
+      this.interfacesNeedToImport.add(name);
+    }
+
+    this.interfacesNeedToAlarm.push(identifier);
   }
 
   private shouldSkipIdentifier(identifier: ts.Identifier): boolean {
@@ -5277,7 +5280,7 @@ export class TypeScriptLinter {
       }
     }
 
-    return this.interfacesNeedToImport.has(name) || this.importedInterfaces.has(name);
+    return this.interfacesAlreadyImported.has(name);
   }
 
   private processInterfacesToImport(): void {
@@ -5285,22 +5288,22 @@ export class TypeScriptLinter {
       return;
     }
 
-    this.interfaceIdentifiers.forEach((identifier, index) => {
-      if (index === this.interfaceIdentifiers.length - 1) {
-        const autofix = this.autofixer?.fixSingleImport(
+    this.interfacesNeedToAlarm.forEach((identifier, index) => {
+      if (index === this.interfacesNeedToAlarm.length - 1) {
+        const autofix = this.autofixer?.fixInterfaceImport(
           this.interfacesNeedToImport,
-          this.importedInterfaces,
+          this.interfacesAlreadyImported,
           identifier.getSourceFile()
         );
         this.incrementCounters(identifier, FaultID.UIInterfaceImport, autofix);
       } else {
-        this.incrementCounters(identifier, FaultID.UIInterfaceImport);
+        this.incrementCounters(identifier, FaultID.UIInterfaceImport, []);
       }
     });
 
-    this.interfaceIdentifiers = [];
+    this.interfacesNeedToAlarm = [];
     this.interfacesNeedToImport.clear();
-    this.importedInterfaces.clear();
+    this.interfacesAlreadyImported.clear();
   }
 
   private extractImportedNames(sourceFile: ts.SourceFile): void {
@@ -5324,7 +5327,7 @@ export class TypeScriptLinter {
 
       for (const specifier of namedBindings.elements) {
         const importedName = specifier.name.getText(sourceFile);
-        this.importedInterfaces.add(importedName);
+        this.interfacesAlreadyImported.add(importedName);
       }
     }
   }
@@ -5406,7 +5409,7 @@ export class TypeScriptLinter {
     return functionCalls;
   }
 
-  needObservation: Set<string> = new Set<string>();
+  addObservedDecorator: Set<ts.ClassDeclaration> = new Set<ts.ClassDeclaration>();
 
   private handleDataObservation(node: ts.PropertyDeclaration): void {
     if (!this.options.arkts2) {
@@ -5417,7 +5420,6 @@ export class TypeScriptLinter {
     if (!decorators || decorators.length === 0) {
       return;
     }
-
     const decorator = decorators[0];
     let decoratorName = '';
     if (ts.isIdentifier(decorator.expression)) {
@@ -5425,53 +5427,95 @@ export class TypeScriptLinter {
     } else if (ts.isCallExpression(decorator.expression)) {
       decoratorName = decorator.expression.expression.getText();
     }
-
     if (!observedDecoratorName.has(decoratorName)) {
       return;
     }
 
+    let firstClassDecls: ts.ClassDeclaration[] | undefined;
+    const expr = node.initializer;
+    if (expr && ts.isNewExpression(expr)) {
+      firstClassDecls = this.addFromNewExpression(expr);
+    }
+
+    let secondClassDecls: ts.ClassDeclaration[] | undefined;
     const type = node.type;
-    if (!type) {
+    if (type) {
+      secondClassDecls = this.addFromTypeNode(type);
+    }
+
+    const classDecls = (firstClassDecls || []).concat(secondClassDecls || []);
+    if (classDecls.length === 0) {
       return;
     }
 
+    const filteredClassDecls = classDecls.filter((classDecl) => {
+      if (this.addObservedDecorator.has(classDecl)) {
+        return false;
+      }
+      this.addObservedDecorator.add(classDecl);
+      return true;
+    });
+    if (filteredClassDecls.length !== 0) {
+      this.interfacesNeedToImport.add(CustomDecoratorName.Observed);
+    }
+    const autofix = this.autofixer?.fixDataObservation(filteredClassDecls);
+    this.incrementCounters(node, FaultID.DataObservation, autofix);
+  }
+
+  private addFromNewExpression(expr: ts.NewExpression): ts.ClassDeclaration[] | undefined {
+    const identifier = expr.expression;
+    if (!ts.isIdentifier(identifier)) {
+      return undefined;
+    }
+
+    const decl: ts.ClassDeclaration | undefined = this.getClassDeclaration(identifier);
+    if (!decl) {
+      return undefined;
+    }
+
+    const classDecls: ts.ClassDeclaration[] = this.getClassHierarchy(decl);
+    const filteredClassDecls = classDecls.filter((classDecl) => {
+      if (TypeScriptLinter.hasObservedDecorator(classDecl)) {
+        return false;
+      }
+      return true;
+    });
+    return filteredClassDecls;
+  }
+
+  private addFromTypeNode(type: ts.TypeNode): ts.ClassDeclaration[] | undefined {
     const targets: ts.Node[] = [];
     if (ts.isUnionTypeNode(type)) {
       const types = type.types;
       types.forEach((typeNode) => {
-        this.processTypeNode(typeNode, targets);
+        if (ts.isTypeReferenceNode(typeNode)) {
+          targets.push(typeNode.typeName);
+        }
       });
-    } else {
-      this.processTypeNode(type, targets);
+    } else if (ts.isTypeReferenceNode(type)) {
+      targets.push(type.typeName);
     }
 
+    const classDecls: ts.ClassDeclaration[] = [];
     targets.forEach((target) => {
-      const targetName = target.getText();
-      const classDecl = this.findClassDeclaration(targetName);
-      if (TypeScriptLinter.hasObservedDecorator(classDecl)) {
+      const decl: ts.ClassDeclaration | undefined = this.getClassDeclaration(target);
+      if (!decl) {
         return;
       }
-      const autofix = this.autofixer?.fixDataObservation(classDecl);
-      this.incrementCounters(target, FaultID.DataObservation, autofix);
+
+      const decls: ts.ClassDeclaration[] = this.getClassHierarchy(decl);
+      classDecls.push(...decls);
     });
-  }
-
-  private processTypeNode(typeNode: ts.TypeNode, targets: ts.Node[]): void {
-    if (ts.isTypeReferenceNode(typeNode)) {
-      const target = typeNode.typeName;
-      const targetName = target.getText();
-      if (!this.needObservation.has(targetName)) {
-        targets.push(target);
-        this.needObservation.add(targetName);
+    const filteredClassDecls = classDecls.filter((classDecl) => {
+      if (TypeScriptLinter.hasObservedDecorator(classDecl)) {
+        return false;
       }
-    }
+      return true;
+    });
+    return filteredClassDecls;
   }
 
-  private static hasObservedDecorator(classDecl: ts.ClassDeclaration | undefined): boolean {
-    if (!classDecl || !ts.isClassDeclaration(classDecl)) {
-      return false;
-    }
-
+  private static hasObservedDecorator(classDecl: ts.ClassDeclaration): boolean {
     return (
       ts.getDecorators(classDecl)?.some((decorator) => {
         return decorator.getText() === '@' + CustomDecoratorName.Observed;
@@ -5479,22 +5523,40 @@ export class TypeScriptLinter {
     );
   }
 
-  private findClassDeclaration(targetName: string): ts.ClassDeclaration | undefined {
-    const sourceFile = this.sourceFile as ts.SourceFile;
-    const statements = sourceFile.statements;
-    if (!statements) {
+  private getClassDeclaration(node: ts.Node): ts.ClassDeclaration | undefined {
+    const symbol = this.tsTypeChecker.getSymbolAtLocation(node);
+    let decl: ts.Declaration | undefined;
+    if (symbol) {
+      decl = this.tsUtils.getDeclarationNode(node);
+      if (decl?.getSourceFile() !== node.getSourceFile()) {
+        return undefined;
+      }
+    }
+
+    if (!decl || !ts.isClassDeclaration(decl)) {
       return undefined;
     }
 
-    const classDecl = statements.find((statement) => {
-      return ts.isClassDeclaration(statement) && statement.name?.getText() === targetName;
-    });
+    return decl;
+  }
 
-    if (!classDecl || !ts.isClassDeclaration(classDecl)) {
-      return undefined;
+  private getClassHierarchy(classDecl: ts.ClassDeclaration): ts.ClassDeclaration[] {
+    const hierarchy: ts.ClassDeclaration[] = [];
+    let currentClass: ts.ClassDeclaration | undefined = classDecl;
+
+    while (currentClass) {
+      hierarchy.push(currentClass);
+      const heritageClause = currentClass.heritageClauses?.find((clause) => {
+        return clause.token === ts.SyntaxKind.ExtendsKeyword;
+      });
+      const identifier = heritageClause?.types[0]?.expression as ts.Identifier | undefined;
+      if (!identifier) {
+        break;
+      }
+      currentClass = this.getClassDeclaration(identifier);
     }
 
-    return classDecl;
+    return hierarchy;
   }
 
   private checkArkTSObjectInterop(tsCallExpr: ts.CallExpression): void {

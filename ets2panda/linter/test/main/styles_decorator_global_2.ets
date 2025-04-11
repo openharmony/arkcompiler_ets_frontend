@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import { CommonMethod, Color, Component, Column, BuilderParam, Require, Button } from '@kit.ArkUI';
+
 const mycolor: string = "#ffff00"
 
 function cardStyle1(instance: CommonMethod): void {

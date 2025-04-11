@@ -15,10 +15,20 @@
     ],
     "result": [
         {
-            "line": 61,
-            "column": 3,
-            "endLine": 61,
-            "endColumn": 7,
+            "line": 63,
+            "column": 5,
+            "endLine": 63,
+            "endColumn": 9,
+            "problem": "FunctionContainsThis",
+            "suggest": "",
+            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 64,
+            "column": 12,
+            "endLine": 64,
+            "endColumn": 16,
             "problem": "FunctionContainsThis",
             "suggest": "",
             "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
@@ -26,18 +36,8 @@
         },
         {
             "line": 62,
-            "column": 10,
-            "endLine": 62,
-            "endColumn": 14,
-            "problem": "FunctionContainsThis",
-            "suggest": "",
-            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 59,
             "column": 20,
-            "endLine": 59,
+            "endLine": 62,
             "endColumn": 24,
             "problem": "InvalidIdentifier",
             "suggest": "",
@@ -45,10 +45,30 @@
             "severity": "ERROR"
         },
         {
-            "line": 67,
-            "column": 3,
-            "endLine": 67,
-            "endColumn": 7,
+            "line": 62,
+            "column": 42,
+            "endLine": 62,
+            "endColumn": 46,
+            "problem": "ThisType",
+            "suggest": "",
+            "rule": "Type notation using \"this\" is not supported (arkts-no-typing-with-this)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 69,
+            "column": 5,
+            "endLine": 69,
+            "endColumn": 9,
+            "problem": "FunctionContainsThis",
+            "suggest": "",
+            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 70,
+            "column": 12,
+            "endLine": 70,
+            "endColumn": 16,
             "problem": "FunctionContainsThis",
             "suggest": "",
             "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
@@ -56,22 +76,22 @@
         },
         {
             "line": 68,
-            "column": 10,
-            "endLine": 68,
-            "endColumn": 14,
-            "problem": "FunctionContainsThis",
-            "suggest": "",
-            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 66,
             "column": 26,
-            "endLine": 66,
+            "endLine": 68,
             "endColumn": 30,
             "problem": "InvalidIdentifier",
             "suggest": "",
             "rule": "This keyword cannot be used as identifiers (arkts-invalid-identifier)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 68,
+            "column": 65,
+            "endLine": 68,
+            "endColumn": 69,
+            "problem": "ThisType",
+            "suggest": "",
+            "rule": "Type notation using \"this\" is not supported (arkts-no-typing-with-this)",
             "severity": "ERROR"
         }
     ]

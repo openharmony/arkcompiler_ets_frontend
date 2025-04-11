@@ -592,6 +592,7 @@
             "endLine": 115,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -606,7 +607,7 @@
                 {
                     "start": 608,
                     "end": 608,
-                    "replacementText": "\n\nimport { Component, State } from '@kits.ArkUI';"
+                    "replacementText": "\n\nimport { Component, State } from '@kit.ArkUI';"
                 }
             ],
             "suggest": "",

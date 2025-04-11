@@ -13,13 +13,14 @@
  * limitations under the License.
  */
 
-import { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kits.ArkUI';
+import { Component, State, Row, Slider, $$, Checkbox, Blank, Text, Entry, ComponentV2, Local, Column, Button, Param, Event } from '@kit.ArkUI';
 
 import { MyCard } from './'
 
 @Component
-struct Myomponent {
-  @State value: number = 0;
+struct MyComponent {
+  @State value: number = 0
+
   build() {
     Row() {
       Slider({
@@ -32,11 +33,48 @@ struct Myomponent {
 @Component
 struct Test {
   @State checked: boolean = false
+
   build() {
     Row() {
       Checkbox().select($$(this.checked))
       Blank()
       Text(this.checked ? '开启': '关闭')
+    }
+  }
+}
+
+@Component
+struct MyComponent2 {
+  @State value: number = 0;
+  build() {
+    Row() {
+      Slider({
+        value: this.value!!!
+      })
+    }
+  }
+}
+
+@Component
+struct MyComponent3 {
+  @State value: number = 0;
+  build() {
+    Row() {
+      Slider({
+        value: this.value!!!!
+      })
+    }
+  }
+}
+
+@Component
+struct MyComponent4 {
+  @State value: number = 0;
+  build() {
+    Row() {
+      Slider({
+        value: this.value!!!!!
+      })
     }
   }
 }
