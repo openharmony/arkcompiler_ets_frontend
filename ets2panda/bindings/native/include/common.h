@@ -32,5 +32,7 @@ char *GetStringCopy(KStringPtr &ptr);
 
 inline KUInt UnpackUInt(const KByte *bytes);
 
+// NOLINTBEGIN(fuchsia-statically-constructed-objects)
 static std::string g_pandaLibPath;
+// NOLINTEND(fuchsia-statically-constructed-objects)
 #endif  // COMMON_H_
