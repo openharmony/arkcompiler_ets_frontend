@@ -13,117 +13,101 @@
  * limitations under the License.
  */
 
-import { KNativePointer as KPtr } from "./InteropTypes"
-import { global } from "./global"
-import { throwError } from "./utils"
-import { passString, passStringArray, unpackString } from "./private"
-import { isNullPtr } from "./Wrapper"
+import { KNativePointer as KPtr } from './InteropTypes';
+import { global } from './global';
+import { throwError } from './utils';
+import { passString, passStringArray, unpackString } from './private';
+import { isNullPtr } from './Wrapper';
 
-export const arrayOfNullptr = new BigUint64Array([BigInt(0)])
+export const arrayOfNullptr = new BigUint64Array([BigInt(0)]);
 
 export abstract class ArktsObject {
   protected constructor(peer: KPtr) {
-    this.peer = peer
+    this.peer = peer;
   }
 
-  readonly peer: KPtr
+  readonly peer: KPtr;
 }
 
 export abstract class Node extends ArktsObject {
   protected constructor(peer: KPtr) {
     if (isNullPtr(peer)) {
-      throw new Error('trying to create new Node on NULLPTR')
+      throw new Error('trying to create new Node on NULLPTR');
     }
-    super(peer)
+    super(peer);
   }
 
   public get originalPeer(): KPtr {
-    return global.es2panda._AstNodeOriginalNodeConst(global.context, this.peer)
+    return global.es2panda._AstNodeOriginalNodeConst(global.context, this.peer);
   }
 
   public set originalPeer(peer: KPtr) {
-    global.es2panda._AstNodeSetOriginalNode(global.context, this.peer, peer)
+    global.es2panda._AstNodeSetOriginalNode(global.context, this.peer, peer);
   }
 
   protected dumpMessage(): string {
-    return ``
+    return ``;
   }
 
   public dumpJson(): string {
-    return unpackString(global.es2panda._AstNodeDumpJsonConst(global.context, this.peer))
+    return unpackString(global.es2panda._AstNodeDumpJsonConst(global.context, this.peer));
   }
 
   public dumpSrc(): string {
-    return unpackString(global.es2panda._AstNodeDumpEtsSrcConst(global.context, this.peer))
+    return unpackString(global.es2panda._AstNodeDumpEtsSrcConst(global.context, this.peer));
   }
 }
 
 export class Config extends ArktsObject {
-  readonly path: string
+  readonly path: string;
   constructor(peer: KPtr, fpath: string) {
-    super(peer)
+    super(peer);
     // TODO: wait for getter from api
-    this.path = fpath
+    this.path = fpath;
   }
 
   public toString(): string {
-    return `Config (peer = ${this.peer}, path = ${this.path})`
+    return `Config (peer = ${this.peer}, path = ${this.path})`;
   }
 
-  static create(
-    input: string[], fpath: string, pandaLibPath: string = '', isEditingMode: boolean = false
-  ): Config {
+  static create(input: string[], fpath: string, pandaLibPath: string = '', isEditingMode: boolean = false): Config {
     if (isEditingMode) {
-      let cfg = global.es2pandaPublic._CreateConfig(input.length, passStringArray(input), pandaLibPath)
-      return new Config(cfg, fpath)
+      let cfg = global.es2pandaPublic._CreateConfig(input.length, passStringArray(input), pandaLibPath);
+      return new Config(cfg, fpath);
     }
     if (!global.configIsInitialized()) {
-      let cfg = global.es2panda._CreateConfig(input.length, passStringArray(input), pandaLibPath)
-      global.config = cfg
-      return new Config(
-        cfg, fpath
-      )
+      let cfg = global.es2panda._CreateConfig(input.length, passStringArray(input), pandaLibPath);
+      global.config = cfg;
+      return new Config(cfg, fpath);
     } else {
-      return new Config(global.config, fpath)
+      return new Config(global.config, fpath);
     }
   }
 }
 
 export class Context extends ArktsObject {
   constructor(peer: KPtr) {
-    super(peer)
+    super(peer);
   }
 
   public toString(): string {
-    return `Context (peer = ${this.peer})`
+    return `Context (peer = ${this.peer})`;
   }
 
-  static createFromString(
-    source: string
-  ): Context {
+  static createFromString(source: string): Context {
     if (!global.configIsInitialized()) {
-      throwError(`Config not initialized`)
+      throwError(`Config not initialized`);
     }
     return new Context(
-      global.es2panda._CreateContextFromString(
-        global.config,
-        passString(source),
-        passString(global.filePath)
-      )
-    )
+      global.es2panda._CreateContextFromString(global.config, passString(source), passString(global.filePath))
+    );
   }
 
-  static lspCreateFromString(
-    source: string, filePath: string, cfg: Config
-  ): KPtr {
+  static lspCreateFromString(source: string, filePath: string, cfg: Config): KPtr {
     if (cfg === undefined) {
-      throwError(`Config not initialized`)
+      throwError(`Config not initialized`);
     }
-    return global.es2pandaPublic._CreateContextFromString(
-      cfg.peer,
-      passString(source),
-      passString(filePath)
-    )
+    return global.es2pandaPublic._CreateContextFromString(cfg.peer, passString(source), passString(filePath));
   }
 }
 
@@ -149,10 +133,12 @@ export interface ModuleConfig {
 
 export interface PathConfig {
   loaderOutPath: string;
+  declgenDtsOutPath: string;
+  declgenTsOutPath: string;
   cachePath: string;
   buildSdkPath: string;
-  pandaSdkPath?: string;  // path to panda sdk lib/bin, for local test
-  pandaStdlibPath?: string;  // path to panda sdk stdlib, for local test
+  pandaSdkPath?: string; // path to panda sdk lib/bin, for local test
+  pandaStdlibPath?: string; // path to panda sdk stdlib, for local test
   abcLinkerPath?: string;
 }
 
@@ -173,9 +159,9 @@ export interface DependentModuleConfig {
   modulePath: string;
   sourceRoots: string[];
   entryFile: string;
-  language: string,
-  declFilesPath?: string,
-  dependencies?: string[]
+  language: string;
+  declFilesPath?: string;
+  dependencies?: string[];
 }
 
 export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfig, ModuleConfig, PathConfig {
@@ -186,25 +172,25 @@ export interface BuildConfig extends BuildBaseConfig, DeclgenConfig, LoggerConfi
 // ProjectConfig ends
 
 export interface CompileFileInfo {
-  filePath: string,
-  dependentFiles: string[],
-  abcFilePath: string,
-  arktsConfigFile: string,
-  packageName: string,
-};
+  filePath: string;
+  dependentFiles: string[];
+  abcFilePath: string;
+  arktsConfigFile: string;
+  packageName: string;
+}
 
 export interface ModuleInfo {
-  isMainModule: boolean,
-  packageName: string,
-  moduleRootPath: string,
-  moduleType: string,
-  sourceRoots: string[],
-  entryFile: string,
-  arktsConfigFile: string,
-  compileFileInfos: CompileFileInfo[],
-  declgenV1OutPath: string | undefined,
-  declgenBridgeCodePath: string | undefined,
-  dependencies?: string[]
+  isMainModule: boolean;
+  packageName: string;
+  moduleRootPath: string;
+  moduleType: string;
+  sourceRoots: string[];
+  entryFile: string;
+  arktsConfigFile: string;
+  compileFileInfos: CompileFileInfo[];
+  declgenV1OutPath: string | undefined;
+  declgenBridgeCodePath: string | undefined;
+  dependencies?: string[];
   staticDepModuleInfos: Map<string, ModuleInfo>;
   dynamicDepModuleInfos: Map<string, ModuleInfo>;
   language?: string;

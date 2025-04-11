@@ -15,20 +15,9 @@
 
 import * as path from 'path';
 
-import {
-  ABC_SUFFIX,
-  ARKTSCONFIG_JSON_FILE,
-  LANGUAGE_VERSION,
-} from '../preDefine';
-import {
-  changeFileExtension,
-} from '../utils';
-import {
-  BuildConfig,
-  DependentModuleConfig,
-  ModuleInfo,
-  CompileFileInfo
-} from '../types';
+import { ABC_SUFFIX, ARKTSCONFIG_JSON_FILE, LANGUAGE_VERSION } from '../preDefine';
+import { changeFileExtension } from '../utils';
+import { BuildConfig, DependentModuleConfig, ModuleInfo, CompileFileInfo } from '../types';
 import { ArkTSConfigGenerator } from './generateArkTSConfig';
 
 export class BuildMode {
@@ -77,8 +66,9 @@ export class BuildMode {
         if (module.isMainModule) {
           return;
         }
-        module.language === LANGUAGE_VERSION.ARKTS_1_2 ?
-          staticDepModules.set(packageName, module) : dynamicDepModules.set(packageName, module);
+        module.language === LANGUAGE_VERSION.ARKTS_1_2
+          ? staticDepModules.set(packageName, module)
+          : dynamicDepModules.set(packageName, module);
       });
       return [dynamicDepModules, staticDepModules];
     }
@@ -89,8 +79,9 @@ export class BuildMode {
         if (!depModuleInfo) {
           console.error(`Module ${packageName} not found in moduleInfos`);
         } else {
-          depModuleInfo.language === LANGUAGE_VERSION.ARKTS_1_2 ?
-            staticDepModules.set(packageName, depModuleInfo) : dynamicDepModules.set(packageName, depModuleInfo);
+          depModuleInfo.language === LANGUAGE_VERSION.ARKTS_1_2
+            ? staticDepModules.set(packageName, depModuleInfo)
+            : dynamicDepModules.set(packageName, depModuleInfo);
         }
       });
     }
@@ -132,7 +123,7 @@ export class BuildMode {
       compileFileInfos: [],
       declgenV1OutPath: this.declgenV1OutPath,
       declgenBridgeCodePath: this.declgenBridgeCodePath
-    }
+    };
     this.moduleInfos.set(this.packageName, mainModuleInfo);
     this.dependentModuleList.forEach((module: DependentModuleConfig) => {
       if (!module.packageName || !module.modulePath || !module.sourceRoots || !module.entryFile) {
@@ -154,7 +145,7 @@ export class BuildMode {
         language: module.language,
         declFilesPath: module.declFilesPath,
         dependencies: module.dependencies
-      }
+      };
       this.moduleInfos.set(module.packageName, moduleInfo);
     });
     this.collectDepModuleInfos();

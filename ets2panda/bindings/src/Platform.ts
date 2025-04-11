@@ -13,46 +13,45 @@
  * limitations under the License.
  */
 
-import { isNullPtr } from "./Wrapper"
-import { decodeToString } from "./arrays"
-import { Wrapper } from "./mainWrapper"
-import { global } from "./global"
-import { int32, KPointer, nullptr } from "./InteropTypes"
+import { isNullPtr } from './Wrapper';
+import { decodeToString } from './arrays';
+import { Wrapper } from './mainWrapper';
+import { global } from './global';
+import { int32, KInt, KPointer, nullptr } from './InteropTypes';
 
 export abstract class NativeStringBase extends Wrapper {
   constructor(ptr: KPointer) {
-    super(ptr)
+    super(ptr);
   }
 
-  protected abstract bytesLength(): int32
-  protected abstract getData(data: Uint8Array): void
+  protected abstract bytesLength(): int32;
+  protected abstract getData(data: Uint8Array): void;
 
   toString(): string {
-    let length = this.bytesLength()
-    let data = new Uint8Array(length)
-    this.getData(data)
-    return decodeToString(data)
+    let length = this.bytesLength();
+    let data = new Uint8Array(length);
+    this.getData(data);
+    return decodeToString(data);
   }
 
-  abstract close(): void
+  abstract close(): void;
 }
 
 export abstract class ArrayDecoder<T> {
-  abstract getArraySize(blob: KPointer): int32
-  abstract disposeArray(blob: KPointer): void
-  abstract getArrayElement(blob: KPointer, index: int32): T
+  abstract getArraySize(blob: KPointer): int32;
+  abstract disposeArray(blob: KPointer): void;
+  abstract getArrayElement(blob: KPointer, index: int32): T;
 
   decode(blob: KPointer): Array<T> {
-    const size = this.getArraySize(blob)
-    const result = new Array<T>(size)
+    const size = this.getArraySize(blob);
+    const result = new Array<T>(size);
     for (let index = 0; index < size; index++) {
-      result[index] = this.getArrayElement(blob, index)
+      result[index] = this.getArrayElement(blob, index);
     }
-    this.disposeArray(blob)
-    return result
+    this.disposeArray(blob);
+    return result;
   }
 }
-
 
 // TODO: the semicolons after methods in these interfaces are to
 // workaround ArkTS compiler parser bug
@@ -67,37 +66,37 @@ export interface PlatformDefinedData {
 }
 
 export function withStringResult(ptr: KPointer): string | undefined {
-  if (isNullPtr(ptr)) return undefined
-  let managedString = new NativeString(ptr)
-  let result = managedString?.toString()
-  managedString?.close()
-  return result
+  if (isNullPtr(ptr)) return undefined;
+  let managedString = new NativeString(ptr);
+  let result = managedString?.toString();
+  managedString?.close();
+  return result;
 }
 
 export class NativeString extends NativeStringBase {
   constructor(ptr: KPointer) {
-    super(ptr)
+    super(ptr);
   }
   protected bytesLength(): int32 {
-    return global.interop._StringLength(this.ptr)
+    return global.interop._StringLength(this.ptr);
   }
   protected getData(data: Uint8Array): void {
-    global.interop._StringData(this.ptr, data, data.length)
+    global.interop._StringData(this.ptr, data, data.length);
   }
   close(): void {
-    global.interop._InvokeFinalizer(this.ptr, global.interop._GetStringFinalizer())
-    this.ptr = nullptr
+    global.interop._InvokeFinalizer(this.ptr, global.interop._GetStringFinalizer());
+    this.ptr = nullptr;
   }
 }
 
 export class NativePtrDecoder extends ArrayDecoder<KPointer> {
-  getArraySize(blob: KPointer) {
-    return global.interop._GetPtrVectorSize(blob)
+  getArraySize(blob: KPointer): KInt {
+    return global.interop._GetPtrVectorSize(blob);
   }
   disposeArray(blob: KPointer): void {
     // TODO
   }
   getArrayElement(blob: KPointer, index: int32): KPointer {
-    return global.interop._GetPtrVectorElement(blob, index)
+    return global.interop._GetPtrVectorElement(blob, index);
   }
 }

@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-import { KNativePointer } from "./InteropTypes";
-import { BuildConfig } from "./types";
+import { KNativePointer } from './InteropTypes';
+import { BuildConfig } from './types';
 
 export enum PluginHook {
   NEW = 'afterNew',
@@ -24,40 +24,40 @@ export enum PluginHook {
   LOWERED = 'lowered',
   ASM_GENERATED = 'asmGenerated',
   BIN_GENERATED = 'binGenerated',
-  CLEAN = 'clean',
-};
+  CLEAN = 'clean'
+}
 
 type PluginHandlerFunction = () => void;
 
 type PluginHandlerObject = {
-  order: 'pre' | 'post' | undefined
-  handler: PluginHandlerFunction
+  order: 'pre' | 'post' | undefined;
+  handler: PluginHandlerFunction;
 };
 
 type PluginHandler = PluginHandlerFunction | PluginHandlerObject;
 
 interface Plugins {
-  name: string,
-  afterNew?: PluginHandler,
-  parsed?: PluginHandler,
-  scopeInited?: PluginHandler,
-  checked?: PluginHandler,
-  lowered?: PluginHandler,
-  asmGenerated?: PluginHandler,
-  binGenerated?: PluginHandler,
-  clean?: PluginHandler,
+  name: string;
+  afterNew?: PluginHandler;
+  parsed?: PluginHandler;
+  scopeInited?: PluginHandler;
+  checked?: PluginHandler;
+  lowered?: PluginHandler;
+  asmGenerated?: PluginHandler;
+  binGenerated?: PluginHandler;
+  clean?: PluginHandler;
 }
 
 type PluginExecutor = {
-  name: string
-  handler: PluginHandler
+  name: string;
+  handler: PluginHandler;
 };
 
 type PluginInitFunction = () => Plugins;
 
 type RawPlugins = {
-  name: string,
-  init: PluginInitFunction | undefined
+  name: string;
+  init: PluginInitFunction | undefined;
 };
 
 class PluginContext {
@@ -98,11 +98,11 @@ class PluginContext {
   }
 
   public setContextPtr(ptr: KNativePointer): void {
-    this.contextPtr = ptr
+    this.contextPtr = ptr;
   }
 
   public getContextPtr(): KNativePointer | undefined {
-    return this.contextPtr
+    return this.contextPtr;
   }
 }
 
@@ -167,7 +167,7 @@ export class PluginDriver {
     let post: PluginExecutor[] = [];
 
     this.allPlugins.forEach((pluginObject: Plugins, name: string) => {
-      if (!(pluginObject[hook])) {
+      if (!pluginObject[hook]) {
         return;
       }
 

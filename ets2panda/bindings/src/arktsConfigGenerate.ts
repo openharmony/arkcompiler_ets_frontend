@@ -16,9 +16,7 @@
 import { BuildMode } from './build/buildMode';
 import { BuildConfig } from './types';
 import { ModuleDescriptor, generateBuildConfigs } from './buildConfigGenerate';
-import {
-  PANDA_SDK_PATH_FROM_SDK
-} from './preDefine';
+import { PANDA_SDK_PATH_FROM_SDK } from './preDefine';
 
 import * as fs from 'fs';
 import * as path from 'path';
@@ -32,15 +30,16 @@ function processBuildConfig(projectConfig: BuildConfig): BuildConfig {
   return buildConfig;
 }
 
-export function generateArkTsConfigByModules(buildSdkPath: string, projectRoot: string, modules?: ModuleDescriptor[]) {
+export function generateArkTsConfigByModules(
+  buildSdkPath: string,
+  projectRoot: string,
+  modules?: ModuleDescriptor[]
+): void {
   const allBuildConfig = generateBuildConfigs(buildSdkPath, projectRoot, modules);
   let compileFileInfos: Record<string, string> = {};
   const cacheDir = path.join(projectRoot, '.idea', '.deveco');
-  const compileFileInfosPath = path.join(
-    cacheDir,
-    'lsp_compileFileInfos.json'
-  )
-  Object.keys(allBuildConfig).forEach(moduleName => {
+  const compileFileInfosPath = path.join(cacheDir, 'lsp_compileFileInfos.json');
+  Object.keys(allBuildConfig).forEach((moduleName) => {
     const moduleConfig = allBuildConfig[moduleName] as BuildConfig;
     const processedConfig = processBuildConfig(moduleConfig);
 
@@ -49,7 +48,7 @@ export function generateArkTsConfigByModules(buildSdkPath: string, projectRoot: 
   });
   try {
     const jsonCompileFileInfos = JSON.stringify(compileFileInfos, null, 2);
-    if (!fs.existsSync(cacheDir)) { 
+    if (!fs.existsSync(cacheDir)) {
       fs.mkdirSync(cacheDir, { recursive: true });
     }
     fs.writeFileSync(compileFileInfosPath, jsonCompileFileInfos, 'utf-8');

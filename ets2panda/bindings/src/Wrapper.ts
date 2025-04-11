@@ -13,30 +13,30 @@
  * limitations under the License.
  */
 
-import { int32, KPointer, nullptr } from "./InteropTypes"
+import { int32, KPointer, nullptr } from './InteropTypes';
 
 export function isNullPtr(value: KPointer): boolean {
-  return value === nullptr
+  return value === nullptr;
 }
 
 export function ptrToString(ptr: KPointer) {
-  return `0x${ptr!.toString(16).padStart(8, "0")}`
+  return `0x${ptr!.toString(16).padStart(8, '0')}`;
 }
 
 export function isSamePtr(a: KPointer, b: KPointer) {
-  return (a === b)
+  return a === b;
 }
 
 export function ptrToBits(ptr: KPointer): Uint32Array | null {
-  let result = new Uint32Array(2)
-  let ptrBigInt = ptr as bigint
-  result[0] = Number(ptrBigInt & BigInt(0xFFFFFFFF))
-  result[1] = Number((ptrBigInt >> BigInt(32)) & BigInt(0xFFFFFFFF))
-  return result
+  let result = new Uint32Array(2);
+  let ptrBigInt = ptr as bigint;
+  result[0] = Number(ptrBigInt & BigInt(0xffffffff));
+  result[1] = Number((ptrBigInt >> BigInt(32)) & BigInt(0xffffffff));
+  return result;
 }
 
 export function bitsToPtr(array: Int32Array, offset: int32): KPointer {
-  let ptrBigInt: bigint = BigInt(array[offset + 1]) & BigInt(0xFFFFFFFF)
-  ptrBigInt = (ptrBigInt << BigInt(32)) | (BigInt(array[offset]) & BigInt(0xFFFFFFFF))
-  return ptrBigInt
+  let ptrBigInt: bigint = BigInt(array[offset + 1]) & BigInt(0xffffffff);
+  ptrBigInt = (ptrBigInt << BigInt(32)) | (BigInt(array[offset]) & BigInt(0xffffffff));
+  return ptrBigInt;
 }
