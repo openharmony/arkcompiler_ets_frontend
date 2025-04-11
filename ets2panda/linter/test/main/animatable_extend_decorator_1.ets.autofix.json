@@ -37,6 +37,7 @@
             "endLine": 16,
             "endColumn": 18,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -47,6 +48,7 @@
             "endLine": 21,
             "endColumn": 7,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -57,6 +59,7 @@
             "endLine": 22,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -67,6 +70,7 @@
             "endLine": 24,
             "endColumn": 9,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -77,6 +81,7 @@
             "endLine": 27,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -87,6 +92,7 @@
             "endLine": 28,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -97,6 +103,7 @@
             "endLine": 30,
             "endColumn": 50,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -111,7 +118,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kits.ArkUI';"
+                    "replacementText": "\n\nimport { TextAttribute, AnimatableExtend, Entry, Component, State, Column, Text, Curve, Button } from '@kit.ArkUI';"
                 }
             ],
             "suggest": "",

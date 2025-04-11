@@ -83,6 +83,17 @@ struct MyButton {
   }
 }
 
+const TAG: string = 'common_ImageTest';
+
+class MediaItem {
+  public path: string = '';
+  public uri: string = '';
+
+  public getDateModified(): string {
+    return ''
+  }
+}
+
 @Component
 struct imageTest {
   private mediaItem: MediaItem | undefined;

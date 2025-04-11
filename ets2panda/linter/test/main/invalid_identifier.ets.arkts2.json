@@ -783,6 +783,36 @@
         "suggest": "",
         "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
         "severity": "ERROR"
+    },
+    {
+        "line": 194,
+        "column": 4,
+        "endLine": 194,
+        "endColumn": 9,
+        "problem": "UIInterfaceImport",
+        "suggest": "",
+        "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 197,
+        "column": 5,
+        "endLine": 197,
+        "endColumn": 22,
+        "problem": "UIInterfaceImport",
+        "suggest": "",
+        "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+        "severity": "ERROR"
+    },
+    {
+        "line": 198,
+        "column": 7,
+        "endLine": 198,
+        "endColumn": 11,
+        "problem": "UIInterfaceImport",
+        "suggest": "",
+        "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+        "severity": "ERROR"
     }
   ]
 }

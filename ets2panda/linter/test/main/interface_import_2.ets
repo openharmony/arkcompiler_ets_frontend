@@ -13,13 +13,15 @@
  * limitations under the License.
  */
 
-import { Row, Slider, Entry, Component, State, Column, Button, Text, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kits.ArkUI';
+import { Entry, Component, State, Observed, Column, Button, Text, Row, TextAttribute, ColumnAttribute, AnimatableExtend, $$, ImageFit } from '@kit.ArkUI';
+
+import { Slider } from '@kit.ArkUI';
 
 @Entry
 @Component
 struct Test {
-
-  @State col: number = 0;
+  @State num: number = 0
+  @State a: MyClassA = new MyClassA()
 
   build() {
     Column() {
@@ -29,7 +31,7 @@ struct Test {
         
       }
 
-      MyComponent() {
+      MyComponent1() {
 
       }
 
@@ -47,8 +49,9 @@ function Circle() {
 }
 
 @Component
-struct MyComponent {
+struct MyComponent1 {
   @State count: number = 0;
+
   build() {
     Row() {
       Slider(){}
@@ -56,21 +59,21 @@ struct MyComponent {
   }
 }
 
-function cardStyle(this: TextAttribute): TextAttribute
-{
-  this.backgroundColor('#ffffff');
-  return this;
+function cardStyle(this: TextAttribute): this {
+    this.backgroundColor(Color.Green);
+    return this;
 }
 
 @AnimatableExtend
-function animatableWidth(this: ColumnAttribute, width: number) {
-  this.width(width)
-  return this;
+function animatableWidth(this: ColumnAttribute, width: number): this {
+    this.width(width);
+    return this;
 }
 
 @Component
-struct Myomponent {
+struct MyComponent2 {
   @State value: number = 0;
+
   build() {
     Row() {
       Slider({
@@ -78,4 +81,14 @@ struct Myomponent {
       })
     }
   }
+}
+
+@Observed
+class MyClassA {}
+
+function processImageFit(imageFit: ImageFit): void {
+}
+
+function Calendar() {
+
 }

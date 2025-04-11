@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 63,
+            "line": 101,
             "column": 15,
-            "endLine": 63,
+            "endLine": 101,
             "endColumn": 20,
             "problem": "AnyType",
             "suggest": "",

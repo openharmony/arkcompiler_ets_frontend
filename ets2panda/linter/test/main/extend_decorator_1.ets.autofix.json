@@ -11,7 +11,7 @@
       "distributed under the License is distributed on an 'AS IS' BASIS,",
       "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
       "See the License for the specific language governing permissions and",
-      "limitations under the License."
+      "limitations under the License." 
     ],
     "result": [
         {
@@ -54,6 +54,7 @@
             "endLine": 16,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -64,6 +65,7 @@
             "endLine": 19,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -74,6 +76,7 @@
             "endLine": 20,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -88,7 +91,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { Component, Column, Text, ColumnAttribute, Color } from '@kits.ArkUI';"
+                    "replacementText": "\n\nimport { Component, Column, Text, ColumnAttribute, Color } from '@kit.ArkUI';"
                 }
             ],
             "suggest": "",

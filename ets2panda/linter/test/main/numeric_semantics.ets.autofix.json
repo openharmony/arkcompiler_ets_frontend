@@ -735,6 +735,7 @@
             "endLine": 117,
             "endColumn": 7,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -745,6 +746,7 @@
             "endLine": 118,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -755,6 +757,7 @@
             "endLine": 120,
             "endColumn": 9,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -765,6 +768,7 @@
             "endLine": 129,
             "endColumn": 22,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -775,6 +779,7 @@
             "endLine": 130,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -789,7 +794,7 @@
                 {
                     "start": 738,
                     "end": 738,
-                    "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kits.ArkUI';\n"
+                    "replacementText": "\n\nimport { Entry, Component, State, RelativeContainer, Text, AppStorage } from '@kit.ArkUI';\n"
                 }
             ],
             "suggest": "",

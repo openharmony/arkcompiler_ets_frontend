@@ -2742,14 +2742,71 @@ export class Autofixer {
     ];
   }
 
-  fixSingleImport(
+  checkEnumMemberNameConflict(tsEnumMember: ts.EnumMember, autofix: Autofix[] | undefined): void {
+    if (!autofix?.length) {
+      return;
+    }
+
+    const parentEnum = tsEnumMember.parent;
+    if (!this.hasNameConflict(parentEnum, tsEnumMember, autofix)) {
+      return;
+    }
+
+    const existingNames = this.collectExistingNames(parentEnum, tsEnumMember);
+    this.adjustAutofixNames(autofix, existingNames);
+  }
+
+  hasNameConflict(parentEnum: ts.EnumDeclaration, tsEnumMember: ts.EnumMember, autofix: Autofix[]): boolean {
+    void this;
+    return parentEnum.members.some((member) => {
+      return (
+        member !== tsEnumMember &&
+        (ts.isStringLiteral(member.name) || member.name.getText() === autofix[0].replacementText)
+      );
+    });
+  }
+
+  collectExistingNames(parentEnum: ts.EnumDeclaration, tsEnumMember: ts.EnumMember): Set<string> {
+    void this;
+    return new Set(
+      parentEnum.members.
+        filter((m) => {
+          return m !== tsEnumMember;
+        }).
+        map((m) => {
+          const nameNode = m.name;
+          if (ts.isStringLiteral(nameNode)) {
+            const fix = this.fixLiteralAsPropertyNamePropertyName(nameNode);
+            return fix?.[0]?.replacementText || nameNode.text;
+          }
+          return nameNode.getText();
+        })
+    );
+  }
+
+  adjustAutofixNames(autofix: Autofix[], existingNames: Set<string>): void {
+    void this;
+    const baseName = autofix[0].replacementText;
+    let newName = baseName;
+    let counter = 1;
+
+    while (existingNames.has(newName)) {
+      newName = `${baseName}_${counter++}`;
+    }
+
+    autofix.forEach((fix) => {
+      fix.replacementText = newName;
+    });
+  }
+
+  fixInterfaceImport(
     interfacesNeedToImport: Set<string>,
-    importedInterfaces: Set<string>,
+    interfacesAlreadyImported: Set<string>,
     sourceFile: ts.SourceFile
   ): Autofix[] {
     const importSpecifiers: ts.ImportSpecifier[] = [];
     interfacesNeedToImport.forEach((interfaceName) => {
-      if (importedInterfaces.has(interfaceName)) {
+      if (interfacesAlreadyImported.has(interfaceName)) {
         return;
       }
       const identifier = ts.factory.createIdentifier(interfaceName);
@@ -2969,15 +3026,16 @@ export class Autofixer {
     return newProperties;
   }
 
-  fixDataObservation(classDecl: ts.ClassDeclaration | undefined): Autofix[] | undefined {
-    if (!classDecl) {
-      return undefined;
-    }
-
-    const observedDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Observed));
-    const sourceFile = classDecl.getSourceFile();
-    const text = this.printer.printNode(ts.EmitHint.Unspecified, observedDecorator, sourceFile) + '\n';
-    return [{ start: classDecl.getStart(), end: classDecl.getStart(), replacementText: text }];
+  fixDataObservation(classDecls: ts.ClassDeclaration[]): Autofix[] | undefined {
+    const autofixes: Autofix[] = [];
+    classDecls.forEach((classDecl) => {
+      const observedDecorator = ts.factory.createDecorator(ts.factory.createIdentifier(CustomDecoratorName.Observed));
+      const sourceFile = classDecl.getSourceFile();
+      const text = this.printer.printNode(ts.EmitHint.Unspecified, observedDecorator, sourceFile) + '\n';
+      const autofix = { start: classDecl.getStart(), end: classDecl.getStart(), replacementText: text };
+      autofixes.push(autofix);
+    });
+    return autofixes.length !== 0 ? autofixes : undefined;
   }
 
   static fixInteropTsType(
