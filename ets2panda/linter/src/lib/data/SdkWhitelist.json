@@ -128,6 +128,148 @@
         "methd_return_type": "void",
         "codeKind": 173
       }
+    },
+    {
+      "import_path": ["@ohos.file.sendablePhotoAccessHelper", "@kit.MediaLibraryKit"],
+      "file_path": ["api/@ohos.file.sendablePhotoAccessHelper.d.ets"],
+      "is_global": false,
+      "api_info": {
+        "problem": "SendablePropType",
+        "api_name": "position",
+        "api_type": "PropertySignatrue",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+            {
+                "api_name": "SharedPhotoAsset",
+                "api_type": "InterfaceDeclaration"
+            },
+            {
+                "api_name": "sendablePhotoAccessHelper",
+                "api_type": "ModuleDeclaration"
+            }
+            ],
+      "methd_return_type": "",
+      "codeKind": 170
+      }
+    },
+    {
+      "import_path": [],
+      "file_path": ["component/progress.d.ts"],
+      "is_global": true,
+      "api_info": {
+      "problem": "ComputedPropertyName",
+      "api_name": "[ProgressType.Linear]",
+      "api_type": "PropertySignatrue",
+      "api_optional": false,
+      "api_auto_fix": false,
+      "api_auto_fix_context": "",
+      "target_type": "",
+      "api_func_args": [],
+      "parent_api": [
+        {
+          "api_name": "ProgressStyleMap",
+          "api_type": "InterfaceDeclaration"
+        }
+      ],
+      "methd_return_type": "",
+      "codeKind": 170
+      }
+    },
+    {
+      "import_path": [],
+      "file_path": ["component/progress.d.ts"],
+      "is_global": true,
+      "api_info": {
+        "problem": "ComputedPropertyName",
+        "api_name": "[ProgressType.Ring]",
+        "api_type": "PropertySignatrue",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+          {
+            "api_name": "ProgressStyleMap",
+            "api_type": "InterfaceDeclaration"
+          }
+        ],
+        "methd_return_type": "",
+        "codeKind": 170
+      }
+    },
+    {
+      "import_path": [],
+      "file_path": ["component/progress.d.ts"],
+      "is_global": true,
+      "api_info": {
+        "problem": "ComputedPropertyName",
+        "api_name": "[ProgressType.Eclipse]",
+        "api_type": "PropertySignatrue",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+        {
+          "api_name": "ProgressStyleMap",
+          "api_type": "InterfaceDeclaration"
+        }
+        ],
+        "methd_return_type": "",
+        "codeKind": 170
+      }
+    },
+    {
+      "import_path": [],
+      "file_path": ["component/progress.d.ts"],
+      "is_global": true,
+      "api_info": {
+        "problem": "ComputedPropertyName",
+        "api_name": "[ProgressType.ScaleRing]",
+        "api_type": "PropertySignatrue",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+        {
+          "api_name": "ProgressStyleMap",
+          "api_type": "InterfaceDeclaration"
+        }
+        ],
+        "methd_return_type": "",
+        "codeKind": 170
+      }
+    },
+    {
+      "import_path": [],
+      "file_path": ["component/progress.d.ts"],
+      "is_global": true,
+      "api_info": {
+        "problem": "ComputedPropertyName",
+        "api_name": "[ProgressType.Capsule]",
+        "api_type": "PropertySignatrue",
+        "api_optional": false,
+        "api_auto_fix": false,
+        "api_auto_fix_context": "",
+        "target_type": "",
+        "api_func_args": [],
+        "parent_api": [
+        {
+          "api_name": "ProgressStyleMap",
+          "api_type": "InterfaceDeclaration"
+        }
+        ],
+        "methd_return_type": "",
+        "codeKind": 170
+      }
     }
   ]
 }

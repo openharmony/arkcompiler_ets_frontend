@@ -818,12 +818,30 @@ export class TypeScriptLinter {
       if (importDeclNode.assertClause) {
         this.incrementCounters(importDeclNode.assertClause, FaultID.ImportAssertion);
       }
+      const stringLiteral = expr as ts.StringLiteral;
+      this.handleSdkSendable(stringLiteral);
     }
 
     // handle no side effect import in sendable module
     this.handleSharedModuleNoSideEffectImport(importDeclNode);
     this.handleInvalidIdentifier(importDeclNode);
     this.checkWorkerImport(importDeclNode);
+  }
+
+  private handleSdkSendable(tsStringLiteral: ts.StringLiteral): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const moduleSpecifierValue = tsStringLiteral.getText();
+    const sdkInfos = TypeScriptLinter.pathMap.get(moduleSpecifierValue);
+
+    if (!sdkInfos || sdkInfos.size === 0) {
+      return;
+    }
+    if (moduleSpecifierValue.includes('sendable')) {
+      this.incrementCounters(tsStringLiteral, FaultID.SendablePropTypeFromSdk);
+    }
   }
 
   private handleImportModule(importDeclNode: ts.ImportDeclaration): void {
