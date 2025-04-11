@@ -93,10 +93,15 @@ inline KUInt UnpackUInt(const KByte *bytes)
     return (bytes[0] | (bytes[1] << 8U) | (bytes[2U] << 16U) | (bytes[3U] << 24U));
 }
 
+inline std::string_view GetStringView(KStringPtr &ptr)
+{
+    return std::string_view(ptr.c_str(), static_cast<size_t>(ptr.length()));
+}
+
 KNativePointer impl_CreateConfig(KInt argc, KStringArray argvPtr, KStringPtr &pandaLibPath)
 {
     const std::size_t HEADER_LEN = 4;
-    g_pandaLibPath = GetStringCopy(pandaLibPath);
+    g_pandaLibPath = GetStringView(pandaLibPath);
     const char **argv = new const char *[static_cast<unsigned int>(argc)];
     std::size_t position = HEADER_LEN;
     std::size_t strLen;
