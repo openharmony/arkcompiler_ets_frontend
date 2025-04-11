@@ -139,3 +139,5 @@ const c1 = 1;
 export class G{
   readonly a5 = 4;
 }
+
+const fingerprintPositionY = AppStorage.get<number>(FingerprintConstants.COORDINATE_Y_OF_FINGERPRINT_UD_SCREEN_IN_PX) ?? 0;
