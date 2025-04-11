@@ -2841,6 +2841,9 @@ export class TsUtils {
     }
 
     const symbol = tsType.symbol;
+    if (symbol === undefined) {
+      return false;
+    }
     const name = this.tsTypeChecker.getFullyQualifiedName(symbol);
     return name === 'String' && this.isGlobalSymbol(symbol);
   }
