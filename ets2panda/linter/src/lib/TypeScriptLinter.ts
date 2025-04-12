@@ -84,6 +84,9 @@ import { arkuiImportList } from './utils/consts/ArkuiImportList';
 import { REFLECT_PROPERTIES, USE_STATIC } from './utils/consts/InteropAPI';
 import { EXTNAME_TS, EXTNAME_D_TS } from './utils/consts/ExtensionName';
 import { ARKTS_IGNORE_DIRS_OH_MODULES } from './utils/consts/ArktsIgnorePaths';
+import type { ApiInfo } from './utils/consts/SdkWhitelist';
+import { ApiList } from './utils/consts/SdkWhitelist';
+import * as apiWhiteList from './data/SdkWhitelist.json';
 
 export class TypeScriptLinter {
   totalVisitedNodes: number = 0;
@@ -112,10 +115,19 @@ export class TypeScriptLinter {
   private static sharedModulesCache: Map<string, boolean>;
   static nameSpaceFunctionCache: Map<string, Set<string>>;
   private readonly constVariableInitCache: Map<ts.Symbol, number | null> = new Map();
+  private funcMap: Map<string, Set<ApiInfo>> = new Map<string, Set<ApiInfo>>();
+  private interfaceMap: Map<string, Set<ApiInfo>> = new Map<string, Set<ApiInfo>>();
+  static pathMap: Map<string, Set<ApiInfo>>;
 
   static initGlobals(): void {
     TypeScriptLinter.sharedModulesCache = new Map<string, boolean>();
     TypeScriptLinter.nameSpaceFunctionCache = new Map<string, Set<string>>();
+    TypeScriptLinter.pathMap = new Map<string, Set<ApiInfo>>();
+  }
+
+  initSdkInfo(): void {
+    this.funcMap = new Map<string, Set<ApiInfo>>();
+    this.interfaceMap = new Map<string, Set<ApiInfo>>();
   }
 
   private initEtsHandlers(): void {
@@ -137,6 +149,29 @@ export class TypeScriptLinter {
     }
   }
 
+  private static initSdkWhitelist(): void {
+    const list: ApiList = new ApiList(apiWhiteList);
+    if (list?.api_list?.length > 0) {
+      for (const item of list.api_list) {
+        item.file_path.forEach((path) => {
+          TypeScriptLinter.addOrUpdateData(TypeScriptLinter.pathMap, `'${path}'`, item.api_info);
+        });
+        item.import_path.forEach((path) => {
+          TypeScriptLinter.addOrUpdateData(TypeScriptLinter.pathMap, `'${path}'`, item.api_info);
+        });
+      }
+    }
+  }
+
+  private static addOrUpdateData(map: Map<string, Set<ApiInfo>>, path: string, data: ApiInfo): void {
+    let apiInfos = map.get(path);
+    if (!apiInfos) {
+      apiInfos = new Set<ApiInfo>();
+      map.set(path, apiInfos);
+    }
+    apiInfos.add(data);
+  }
+
   constructor(
     private readonly tsTypeChecker: ts.TypeChecker,
     readonly options: LinterOptions,
@@ -150,6 +185,7 @@ export class TypeScriptLinter {
     this.compatibleSdkVersionStage = options.compatibleSdkVersionStage || DEFAULT_COMPATIBLE_SDK_VERSION_STAGE;
     this.initEtsHandlers();
     this.initCounters();
+    TypeScriptLinter.initSdkWhitelist();
   }
 
   readonly handlersMap = new Map([
@@ -738,6 +774,19 @@ export class TypeScriptLinter {
     this.checkForLoopDestructuring(tsForOfInit);
   }
 
+  private updateDataSdkJsonInfo(importDeclNode: ts.ImportDeclaration, importClause: ts.ImportClause): void {
+    const sdkInfo = TypeScriptLinter.pathMap.get(importDeclNode.moduleSpecifier.getText());
+    if (sdkInfo && importClause.namedBindings) {
+      const namedImports = importClause.namedBindings as ts.NamedImports;
+      namedImports.elements.forEach((element) => {
+        const elementName = element.name.getText();
+        sdkInfo.forEach((info) => {
+          TypeScriptLinter.addOrUpdateData(this.interfaceMap, elementName, info);
+        });
+      });
+    }
+  }
+
   private handleImportDeclaration(node: ts.Node): void {
     // early exit via exception if cancellation was requested
     this.options.cancellationToken?.throwIfCancellationRequested();
@@ -747,6 +796,8 @@ export class TypeScriptLinter {
       const importClause = importDeclNode.importClause;
       if (!importClause || !importClause.name && !importClause.namedBindings) {
         this.incrementCounters(node, FaultID.NoSideEffectImport);
+      } else {
+        this.updateDataSdkJsonInfo(importDeclNode, importClause);
       }
     }
     for (const stmt of importDeclNode.parent.statements) {
@@ -1988,6 +2039,78 @@ export class TypeScriptLinter {
 
     this.processClassStaticBlocks(tsClassDecl);
     this.handleInvalidIdentifier(tsClassDecl);
+    this.handleSdkMethod(tsClassDecl);
+  }
+
+  private static findFinalExpression(typeNode: ts.TypeNode): ts.Node {
+    let currentNode = typeNode;
+    while ((currentNode as any).expression) {
+      currentNode = (currentNode as any).expression;
+    }
+    return currentNode;
+  }
+
+  private processSdkMethodClauseTypes(tsClassDecl: ts.ClassDeclaration, heritageClause: ts.HeritageClause): void {
+    for (const type of heritageClause.types) {
+      const fullTypeName = TypeScriptLinter.findFinalExpression(type).getText();
+      const sdkInfos = this.interfaceMap.get(fullTypeName);
+      if (!sdkInfos || sdkInfos.size === 0) {
+        continue;
+      }
+
+      for (const sdkInfo of sdkInfos) {
+        if (sdkInfo.api_type !== 'MethodSignature') {
+          continue;
+        }
+        this.processSdkInfoWithMembers(sdkInfo, tsClassDecl.members);
+      }
+    }
+  }
+
+  private handleSdkMethod(tsClassDecl: ts.ClassDeclaration): void {
+    if (
+      !this.options.arkts2 ||
+      !tsClassDecl.heritageClauses ||
+      tsClassDecl.heritageClauses.length === 0 ||
+      !tsClassDecl.members ||
+      tsClassDecl.members.length === 0
+    ) {
+      return;
+    }
+
+    for (const heritageClause of tsClassDecl.heritageClauses) {
+      if (!heritageClause.types || heritageClause.types.length === 0) {
+        continue;
+      }
+      this.processSdkMethodClauseTypes(tsClassDecl, heritageClause);
+    }
+  }
+
+  private processSdkInfoWithMembers(sdkInfo: ApiInfo, members: ts.NodeArray<ts.ClassElement>): void {
+    for (const member of members) {
+      if (!ts.isMethodDeclaration(member)) {
+        continue;
+      }
+
+      const memberName = member.name?.getText();
+      if (sdkInfo.api_name === memberName && sdkInfo.api_func_args.length === member.parameters.length) {
+        if (TypeScriptLinter.areParametersEqual(sdkInfo.api_func_args, member.parameters)) {
+          this.incrementCounters(member, FaultID.LimitedVoidTypeFromSdk);
+        }
+      }
+    }
+  }
+
+  private static areParametersEqual(
+    sdkFuncArgs: { name: string; type: string }[],
+    memberParams: ts.NodeArray<ts.ParameterDeclaration>
+  ): boolean {
+    for (let i = 0; i < sdkFuncArgs.length; i++) {
+      if (sdkFuncArgs[i].type !== memberParams[i].type?.getText()) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private handleNotSupportCustomDecorators(decorator: ts.Decorator): void {

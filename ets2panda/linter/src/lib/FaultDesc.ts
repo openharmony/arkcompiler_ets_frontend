@@ -174,3 +174,5 @@ faultDesc[FaultID.InteropCallObjectParam] = 'Interop call with "Object" paramete
 faultDesc[FaultID.InteropNoDecorators] = 'Interop decorators not supported';
 faultDesc[FaultID.InteropDirectAccessToTSTypes] = 'TS Types Access';
 faultDesc[FaultID.InteropTSFunctionInvoke] = 'TS Function Invoke';
+faultDesc[FaultID.LimitedVoidTypeFromSdk] = 'Limited void type from sdk';
+

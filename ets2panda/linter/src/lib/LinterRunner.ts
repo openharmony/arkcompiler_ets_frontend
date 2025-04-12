@@ -174,6 +174,9 @@ function lintFiles(srcFiles: ts.SourceFile[], linter: TypeScriptLinter | Interop
   const problemsInfos: Map<string, ProblemInfo[]> = new Map();
 
   for (const srcFile of srcFiles) {
+    if (linter instanceof TypeScriptLinter) {
+      linter.initSdkInfo();
+    }
     const prevVisitedNodes = linter.totalVisitedNodes;
     const prevErrorLines = linter.totalErrorLines;
     const prevWarningLines = linter.totalWarningLines;
