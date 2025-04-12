@@ -28,5 +28,4 @@ function main(): void {
 /* @@? 18:37 Error SyntaxError: Unexpected token ']'. */
 /* @@? 18:37 Error SyntaxError: Unexpected token ']'. */
 /* @@? 18:39 Error SyntaxError: Unexpected token '='. */
-/* @@? 18:45 Error TypeError: Array element type '"a"' is not assignable to explicit type 'int' */
-/* @@@ label Error TypeError: Type '[Double, String, *ERROR_TYPE*]' cannot be assigned to type '[Double, String, Int]'  */
+/* @@@ label Error TypeError: Type '[double, String, *ERROR_TYPE*]' cannot be assigned to type '[double, String, Int]'  */

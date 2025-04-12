@@ -37,8 +37,8 @@ class B{
 
 /* @@? 29:24 Error TypeError: Type 'int' cannot be assigned to type 'String' */
 /* @@? 30:24 Error TypeError: Type '"false"' cannot be assigned to type 'boolean' */
-/* @@? 31:25 Error TypeError: Array element type 'double' is not assignable to explicit type 'int' */
-/* @@? 31:30 Error TypeError: Array element type 'double' is not assignable to explicit type 'int' */
+/* @@? 31:25 Error TypeError: Array element at index 0 with type 'double' is not compatible with the target array element type 'int' */
+/* @@? 31:30 Error TypeError: Array element at index 1 with type 'double' is not compatible with the target array element type 'int' */
 /* @@? 32:24 Error TypeError: Type 'Size' cannot be assigned to type 'Color' */
-/* @@? 33:25 Error TypeError: Array element type 'Color' is not assignable to explicit type 'Size' */
-/* @@? 33:38 Error TypeError: Array element type 'Color' is not assignable to explicit type 'Size' */
+/* @@? 33:25 Error TypeError: Array element at index 0 with type 'Color' is not compatible with the target array element type 'Size' */
+/* @@? 33:38 Error TypeError: Array element at index 1 with type 'Color' is not compatible with the target array element type 'Size' */

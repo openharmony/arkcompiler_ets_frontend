@@ -56,13 +56,10 @@ function main(): void {
     const sum = tup_3[0][1][0] + tup_3[1][1][0] + tup_3[1][1][1] + tup_3[2][1][0] + tup_3[2][1][1] + tup_3[2][1][2];
     assertEQ(sum, 1660);
 
-    // Runs correctly, but fails on verifier
-    // It sees the type of `tup_3[0][0]` as an `Object`, what it really is an Array type.
-
-    // tup_3[0][0][0]++;
-    // assertEQ(tup_3[0][0][0], 14)
-    // tup_3[0][0][0] = 4;
-    // assertEQ(tup_3[0][0][0], 4)
+    tup_3[0][0][0]++;
+    assertEQ(tup_3[0][0][0], 14)
+    tup_3[0][0][0] = 4;
+    assertEQ(tup_3[0][0][0], 4)
 
     let int_update: [int] = [42];
     assertEQ(int_update[0], 42)

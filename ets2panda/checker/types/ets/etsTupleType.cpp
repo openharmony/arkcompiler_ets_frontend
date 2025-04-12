@@ -41,22 +41,26 @@ void ETSTupleType::ToString(std::stringstream &ss, bool precise) const
 
 void ETSTupleType::ToAssemblerType(std::stringstream &ss) const
 {
-    GetHolderArrayType()->ToAssemblerType(ss);
-}
-
-void ETSTupleType::ToAssemblerTypeWithRank(std::stringstream &ss) const
-{
-    GetHolderArrayType()->ToAssemblerTypeWithRank(ss);
+    wrapperType_->ToAssemblerType(ss);
 }
 
 void ETSTupleType::ToDebugInfoType(std::stringstream &ss) const
 {
-    GetHolderArrayType()->ToDebugInfoType(ss);
-}
+    if (HasTypeFlag(TypeFlag::READONLY)) {
+        ss << "readonly ";
+    }
 
-uint32_t ETSTupleType::Rank() const
-{
-    return GetHolderArrayType()->Rank();
+    ss << "[";
+
+    for (auto it = typeList_.begin(); it != typeList_.end(); it++) {
+        (*it)->ToDebugInfoType(ss);
+
+        if (std::next(it) != typeList_.end()) {
+            ss << ", ";
+        }
+    }
+
+    ss << "]";
 }
 
 Type *ETSTupleType::GetTypeAtIndex(const TupleSizeType index) const
@@ -130,9 +134,7 @@ Type *ETSTupleType::Substitute(TypeRelation *relation, const Substitution *subst
         newTypeList.emplace_back(tupleTypeListElement->Substitute(relation, substitution));
     }
 
-    auto *newElementType = ir::ETSTuple::GetHolderTypeForTuple(checker, newTypeList);
-    auto *holderArrayType = checker->CreateETSArrayType(newElementType, HasTypeFlag(TypeFlag::READONLY));
-    return checker->Allocator()->New<ETSTupleType>(std::move(newTypeList), newElementType, holderArrayType);
+    return checker->Allocator()->New<ETSTupleType>(checker, std::move(newTypeList));
 }
 
 void ETSTupleType::IsSubtypeOf(TypeRelation *const relation, Type *target)
@@ -145,8 +147,6 @@ void ETSTupleType::IsSubtypeOf(TypeRelation *const relation, Type *target)
 
 void ETSTupleType::Cast(TypeRelation *const relation, Type *const target)
 {
-    // NOTE(mmartin): Might be not the correct casting rules, as these aren't defined yet
-
     if (!(target->IsETSTupleType() || target->IsETSArrayType())) {
         conversion::Forbidden(relation);
         return;
@@ -194,11 +194,8 @@ void ETSTupleType::Cast(TypeRelation *const relation, Type *const target)
 Type *ETSTupleType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
                                 [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {
-    auto *const instantiatedLubType = GetLubType()->Instantiate(allocator, relation, globalTypes);
-    auto *const instantiatedArrayType =
-        GetHolderArrayType()->Instantiate(allocator, relation, globalTypes)->AsETSArrayType();
-    auto *const tupleType =
-        allocator->New<ETSTupleType>(GetTupleTypesList(), instantiatedLubType, instantiatedArrayType);
+    auto *const checker = relation->GetChecker()->AsETSChecker();
+    auto *const tupleType = allocator->New<ETSTupleType>(checker, GetTupleTypesList());
     tupleType->typeFlags_ = typeFlags_;
     return tupleType;
 }
@@ -206,7 +203,7 @@ Type *ETSTupleType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[ma
 void ETSTupleType::CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag)
 {
     for (auto const &ctype : typeList_) {
-        relation->CheckVarianceRecursively(ctype, relation->TransferVariant(varianceFlag, VarianceFlag::COVARIANT));
+        relation->CheckVarianceRecursively(ctype, relation->TransferVariant(varianceFlag, VarianceFlag::INVARIANT));
     }
 }
 

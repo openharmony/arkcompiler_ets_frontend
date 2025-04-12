@@ -110,6 +110,13 @@ checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
     }
     checker->CheckAnnotations(Annotations());
 
+    // NOTE (smartin): Remove, when TupleN is handled in codegen
+    constexpr uint8_t MAX_TUPLE_ARITY = 16;
+    if (GetTupleTypeAnnotationsList().size() > MAX_TUPLE_ARITY) {
+        checker->LogError(diagnostic::TUPLEN_NOT_IMPLEMENTED, {}, Start());
+        return checker->InvalidateType(this);
+    }
+
     ArenaVector<checker::Type *> typeList(checker->Allocator()->Adapter());
 
     for (auto *const typeAnnotation : GetTupleTypeAnnotationsList()) {
@@ -117,15 +124,12 @@ checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
         typeList.emplace_back(checkedType);
     }
 
-    auto *lubType = GetHolderTypeForTuple(checker, typeList);
-    checker::ETSTupleType *tupleType =
-        checker->Allocator()
-            ->New<checker::ETSTupleType>(typeList, lubType, checker->CreateETSArrayType(lubType))
-            ->AsETSTupleType();
+    auto *tupleType = checker->Allocator()->New<checker::ETSTupleType>(checker, typeList);
 
     if (IsReadonlyType()) {
         tupleType = checker->GetReadonlyType(tupleType)->AsETSTupleType();
     }
+
     SetTsType(tupleType);
     return TsType();
 }

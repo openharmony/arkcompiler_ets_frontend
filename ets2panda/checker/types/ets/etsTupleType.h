@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_TYPES_ETS_TUPLE_TYPE_H
 #define ES2PANDA_COMPILER_CHECKER_TYPES_ETS_TUPLE_TYPE_H
 
+#include "checker/ETSchecker.h"
 #include "checker/types/type.h"
 
 namespace ark::es2panda::checker {
@@ -24,49 +25,17 @@ class ETSTupleType : public Type {
     using TupleSizeType = std::size_t;
 
 public:
-    explicit ETSTupleType(ArenaAllocator *const allocator, Type *const lubType, ETSArrayType *const holderArrayType)
-        : Type(checker::TypeFlag::ETS_TUPLE),
-          typeList_(allocator->Adapter()),
-          lubType_(lubType),
-          holderArrayType_(holderArrayType)
-    {
-        typeFlags_ |= TypeFlag::ETS_TUPLE;
-    }
-
-    explicit ETSTupleType(ArenaAllocator *const allocator, const TupleSizeType size, Type *const lubType,
-                          ETSArrayType *const holderArrayType)
-        : Type(checker::TypeFlag::ETS_TUPLE),
-          typeList_(allocator->Adapter()),
-          lubType_(lubType),
-          holderArrayType_(holderArrayType),
-          size_(size)
-    {
-        typeFlags_ |= TypeFlag::ETS_TUPLE;
-    }
-
-    explicit ETSTupleType(const ArenaVector<Type *> &typeList, Type *const lubType, ETSArrayType *const holderArrayType)
+    explicit ETSTupleType(ETSChecker *checker, const ArenaVector<Type *> &typeList)
         : Type(checker::TypeFlag::ETS_TUPLE),
           typeList_(typeList),
-          lubType_(lubType),
-          holderArrayType_(holderArrayType),
-          size_(typeList.size())
+          wrapperType_(checker->GlobalBuiltinTupleType(typeList_.size())->AsETSObjectType())
     {
         typeFlags_ |= TypeFlag::ETS_TUPLE;
-    }
-
-    [[nodiscard]] Type *GetLubType() const
-    {
-        return lubType_;
     }
 
     [[nodiscard]] TupleSizeType GetTupleSize() const
     {
-        return size_;
-    }
-
-    [[nodiscard]] ETSArrayType *GetHolderArrayType() const
-    {
-        return holderArrayType_;
+        return typeList_.size();
     }
 
     [[nodiscard]] ArenaVector<Type *> const &GetTupleTypesList() const
@@ -77,6 +46,11 @@ public:
     std::tuple<bool, bool> ResolveConditionExpr() const override
     {
         return {false, false};
+    }
+
+    [[nodiscard]] ETSObjectType *GetWrapperType() const
+    {
+        return wrapperType_;
     }
 
     [[nodiscard]] Type *GetTypeAtIndex(TupleSizeType index) const;
@@ -93,15 +67,11 @@ public:
     void CheckVarianceRecursively(TypeRelation *relation, VarianceFlag varianceFlag) override;
 
     void ToAssemblerType(std::stringstream &ss) const override;
-    void ToAssemblerTypeWithRank(std::stringstream &ss) const override;
     void ToDebugInfoType(std::stringstream &ss) const override;
-    uint32_t Rank() const override;
 
 private:
-    ArenaVector<Type *> const typeList_;
-    Type *const lubType_ {};
-    ETSArrayType *const holderArrayType_ {};
-    TupleSizeType size_ {0};
+    const ArenaVector<Type *> typeList_;
+    ETSObjectType *wrapperType_;
 };
 
 }  // namespace ark::es2panda::checker

@@ -32,4 +32,3 @@ function main(): void {
 /* @@? 18:47 Error SyntaxError: Unexpected token ']'. */
 /* @@? 18:47 Error SyntaxError: Unexpected token ']'. */
 /* @@? 18:49 Error SyntaxError: Unexpected token '='. */
-/* @@? 18:55 Error TypeError: Array element type '"a"' is not assignable to explicit type 'int' */

@@ -86,6 +86,19 @@ void GlobalTypesHolder::AddFunctionTypes(ArenaAllocator *allocator)
     builtinNameMappings_.emplace("LambdaN", GlobalTypeId::ETS_FUNCTIONN_CLASS);
 }
 
+void GlobalTypesHolder::AddTupleTypes(ArenaAllocator *allocator)
+{
+    auto addTypes = [this, allocator](const std::string &name, GlobalTypeId from, GlobalTypeId to) {
+        for (size_t id = static_cast<size_t>(from), nargs = 0; id <= static_cast<size_t>(to); id++, nargs++) {
+            builtinNameMappings_.emplace(util::UString(name + std::to_string(nargs), allocator).View(),
+                                         static_cast<GlobalTypeId>(id));
+        }
+    };
+
+    addTypes("Tuple", GlobalTypeId::ETS_TUPLE0_CLASS, GlobalTypeId::ETS_TUPLE16_CLASS);
+    builtinNameMappings_.emplace("TupleN", GlobalTypeId::ETS_TUPLEN_CLASS);
+}
+
 void GlobalTypesHolder::AddTSSpecificTypes(ArenaAllocator *allocator)
 {
     globalTypes_[static_cast<size_t>(GlobalTypeId::NUMBER)] = allocator->New<NumberType>();
@@ -200,6 +213,9 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator)
 
     // Function types
     AddFunctionTypes(allocator);
+
+    // Tuple types
+    AddTupleTypes(allocator);
 
     // ETS interop js specific types
     builtinNameMappings_.emplace("JSRuntime", GlobalTypeId::ETS_INTEROP_JSRUNTIME_BUILTIN);
@@ -663,6 +679,19 @@ Type *GlobalTypesHolder::GlobalLambdaBuiltinType(size_t nargs, bool hasRest)
         return globalTypes_.at(static_cast<size_t>(base) + nargs);
     }
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_LAMBDAN_CLASS));
+}
+
+size_t GlobalTypesHolder::VariadicTupleTypeThreshold()
+{
+    return static_cast<size_t>(GlobalTypeId::ETS_TUPLEN_CLASS) - static_cast<size_t>(GlobalTypeId::ETS_TUPLE0_CLASS);
+}
+
+Type *GlobalTypesHolder::GlobalTupleBuiltinType(size_t nargs)
+{
+    const auto tupleClassIdPos = nargs < VariadicTupleTypeThreshold()
+                                     ? static_cast<size_t>(GlobalTypeId::ETS_TUPLE0_CLASS) + nargs
+                                     : static_cast<size_t>(GlobalTypeId::ETS_TUPLEN_CLASS);
+    return globalTypes_.at(tupleClassIdPos);
 }
 
 Type *GlobalTypesHolder::GlobalTypeError()

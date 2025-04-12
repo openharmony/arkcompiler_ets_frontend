@@ -144,6 +144,8 @@ public:
     ETSObjectType *GlobalBuiltinLambdaType(size_t nargs, bool hasRest) const;
     size_t GlobalBuiltinFunctionTypeVariadicThreshold() const;
 
+    ETSObjectType *GlobalBuiltinTupleType(size_t nargs) const;
+
     ETSObjectType *GlobalBuiltinDynamicType(Language lang) const;
 
     GlobalArraySignatureMap &GlobalArrayTypes();
@@ -189,7 +191,7 @@ public:
     void ResolveDeclaredMembersOfObject(const Type *type);
     std::optional<std::size_t> GetTupleElementAccessValue(const Type *type);
     bool ValidateArrayIndex(ir::Expression *expr, bool relaxed = false);
-    bool ValidateTupleIndex(const ETSTupleType *tuple, ir::MemberExpression *expr);
+    bool ValidateTupleIndex(const ETSTupleType *tuple, ir::MemberExpression *expr, bool reportError = true);
     bool ValidateTupleIndexFromEtsObject(const ETSTupleType *const tuple, ir::MemberExpression *expr);
     ETSObjectType *CheckThisOrSuperAccess(ir::Expression *node, ETSObjectType *classType, std::string_view msg);
     void CreateTypeForClassOrInterfaceTypeParameters(ETSObjectType *type);

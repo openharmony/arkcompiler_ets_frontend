@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,8 +13,13 @@
  * limitations under the License.
  */
 
-
-function foo (x: Readonly<[int, string]>) {
-    let y: [int, string] = /* @@ label */x
+function foo(a: [byte, int, long]) {
+    assertEQ(a[0], 3)
+    assertEQ(a[1], 42)
+    assertEQ(a[2], -9223372036854775808)
 }
-/* @@@ label Error TypeError: Type 'readonly [int, String]' cannot be assigned to type '[int, String]' */
+
+function main() {
+    // call context, tuple of primitives
+    foo([0b11, 42, -9223372036854775808])
+}

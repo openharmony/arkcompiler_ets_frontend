@@ -30,7 +30,7 @@ function main() {
     let v1: [double] = [new Int(1)];                            //  [double]
     let v2: [double, Int] = [new Double(2), new Int(3)];        //  [Double, Int]
 
-    let v3: Alias1Tuple<double> = [new Int(4)];                 //  [double] 
+    let v3: Alias1Tuple<double> = [new Int(4)];                 //  [double]
     let v4: Alias2Tuple<double> = [new Double(5), new Int(6)];  //  [Double, Int]
 
     let v5: Alias3Tuple<double> = [new C<double>(7), 8];        //  [C<Double>, Double]
