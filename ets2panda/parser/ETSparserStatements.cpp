@@ -192,8 +192,7 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
         return ParseExport(startLoc, memberModifiers);
     }
 
-    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_GET ||
-        Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_SET) {
+    if (CheckAccessorDeclaration(memberModifiers)) {
         return ParseAccessorWithReceiver(memberModifiers);
     }
 
