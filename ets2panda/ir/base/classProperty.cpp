@@ -19,6 +19,7 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "compiler/lowering/util.h"
 
 namespace ark::es2panda::ir {
 void ClassProperty::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
@@ -95,10 +96,15 @@ void ClassProperty::Dump(ir::AstDumper *dumper) const
                  {"annotations", AstDumper::Optional(Annotations())}});
 }
 
-void ClassProperty::Dump(ir::SrcDumper *dumper) const
+void ClassProperty::DumpPrefix(ir::SrcDumper *dumper) const
 {
     for (auto *anno : Annotations()) {
         anno->Dump(dumper);
+    }
+
+    if (compiler::HasGlobalClassParent(this)) {
+        dumper->Add("let ");
+        return;
     }
 
     if (Parent() != nullptr && Parent()->IsClassDefinition() && !Parent()->AsClassDefinition()->IsLocal()) {
@@ -120,6 +126,11 @@ void ClassProperty::Dump(ir::SrcDumper *dumper) const
     if (IsReadonly()) {
         dumper->Add("readonly ");
     }
+}
+
+void ClassProperty::Dump(ir::SrcDumper *dumper) const
+{
+    DumpPrefix(dumper);
 
     if (key_ != nullptr) {
         key_->Dump(dumper);
