@@ -871,13 +871,13 @@ export class Autofixer {
     return this.renameSymbolAsIdentifier(symbol);
   }
 
-  fixLiteralAsPropertyNamePropertyName(node: ts.PropertyName): Autofix[] | undefined {
+  fixLiteralAsPropertyNamePropertyName(node: ts.PropertyName, enumMember?: ts.EnumMember): Autofix[] | undefined {
     const symbol = this.typeChecker.getSymbolAtLocation(node);
     if (symbol === undefined) {
       return undefined;
     }
 
-    return this.renameSymbolAsIdentifier(symbol);
+    return this.renameSymbolAsIdentifier(symbol, enumMember);
   }
 
   fixPropertyAccessByIndex(node: ts.ElementAccessExpression): Autofix[] | undefined {
@@ -889,7 +889,7 @@ export class Autofixer {
     return this.renameSymbolAsIdentifier(symbol);
   }
 
-  private renameSymbolAsIdentifier(symbol: ts.Symbol): Autofix[] | undefined {
+  private renameSymbolAsIdentifier(symbol: ts.Symbol, enumMember?: ts.EnumMember): Autofix[] | undefined {
     if (this.renameSymbolAsIdentifierCache.has(symbol)) {
       return this.renameSymbolAsIdentifierCache.get(symbol);
     }
@@ -899,7 +899,7 @@ export class Autofixer {
       return undefined;
     }
 
-    const newName = this.utils.findIdentifierNameForSymbol(symbol);
+    const newName = this.utils.findIdentifierNameForSymbol(symbol, enumMember);
     if (newName === undefined) {
       this.renameSymbolAsIdentifierCache.set(symbol, undefined);
       return undefined;
@@ -2740,63 +2740,6 @@ export class Autofixer {
         replacementText: text
       }
     ];
-  }
-
-  checkEnumMemberNameConflict(tsEnumMember: ts.EnumMember, autofix: Autofix[] | undefined): void {
-    if (!autofix?.length) {
-      return;
-    }
-
-    const parentEnum = tsEnumMember.parent;
-    if (!this.hasNameConflict(parentEnum, tsEnumMember, autofix)) {
-      return;
-    }
-
-    const existingNames = this.collectExistingNames(parentEnum, tsEnumMember);
-    this.adjustAutofixNames(autofix, existingNames);
-  }
-
-  hasNameConflict(parentEnum: ts.EnumDeclaration, tsEnumMember: ts.EnumMember, autofix: Autofix[]): boolean {
-    void this;
-    return parentEnum.members.some((member) => {
-      return (
-        member !== tsEnumMember &&
-        (ts.isStringLiteral(member.name) || member.name.getText() === autofix[0].replacementText)
-      );
-    });
-  }
-
-  collectExistingNames(parentEnum: ts.EnumDeclaration, tsEnumMember: ts.EnumMember): Set<string> {
-    void this;
-    return new Set(
-      parentEnum.members.
-        filter((m) => {
-          return m !== tsEnumMember;
-        }).
-        map((m) => {
-          const nameNode = m.name;
-          if (ts.isStringLiteral(nameNode)) {
-            const fix = this.fixLiteralAsPropertyNamePropertyName(nameNode);
-            return fix?.[0]?.replacementText || nameNode.text;
-          }
-          return nameNode.getText();
-        })
-    );
-  }
-
-  adjustAutofixNames(autofix: Autofix[], existingNames: Set<string>): void {
-    void this;
-    const baseName = autofix[0].replacementText;
-    let newName = baseName;
-    let counter = 1;
-
-    while (existingNames.has(newName)) {
-      newName = `${baseName}_${counter++}`;
-    }
-
-    autofix.forEach((fix) => {
-      fix.replacementText = newName;
-    });
   }
 
   fixSingleImport(

@@ -1016,7 +1016,7 @@ export class TypeScriptLinter {
     }
   }
 
-  private handleLiteralAsPropertyName(node: ts.PropertyDeclaration): void {
+  private handleLiteralAsPropertyName(node: ts.PropertyDeclaration | ts.PropertySignature): void {
     const propName = node.name;
     if (!!propName && (ts.isNumericLiteral(propName) || this.options.arkts2 && ts.isStringLiteral(propName))) {
       const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(propName);
@@ -1027,10 +1027,6 @@ export class TypeScriptLinter {
   private handlePropertyDeclaration(node: ts.PropertyDeclaration): void {
     this.handleDataObservation(node);
     const propName = node.name;
-    if (!!propName && (ts.isNumericLiteral(propName) || this.options.arkts2 && ts.isStringLiteral(propName))) {
-      const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(propName);
-      this.incrementCounters(node.name, FaultID.LiteralAsPropertyName, autofix);
-    }
     this.handleLiteralAsPropertyName(node);
     const decorators = ts.getDecorators(node);
     this.filterOutDecoratorsDiagnostics(
@@ -1136,16 +1132,8 @@ export class TypeScriptLinter {
   }
 
   private handlePropertySignature(node: ts.PropertySignature): void {
-    const propName = node.name;
     this.handleInterfaceProperty(node);
-    if (!!propName && (ts.isNumericLiteral(propName) || this.options.arkts2 && ts.isStringLiteral(propName))) {
-      const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(propName);
-      this.incrementCounters(node.name, FaultID.LiteralAsPropertyName, autofix);
-    }
-    if (!!propName && (ts.isNumericLiteral(propName) || this.options.arkts2 && ts.isStringLiteral(propName))) {
-      const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(propName);
-      this.incrementCounters(node.name, FaultID.LiteralAsPropertyName, autofix);
-    }
+    this.handleLiteralAsPropertyName(node);
     this.handleSendableInterfaceProperty(node);
     this.handleInvalidIdentifier(node);
   }
@@ -2854,8 +2842,7 @@ export class TypeScriptLinter {
     tsEnumMemberName: ts.StringLiteral,
     node: ts.Node
   ): void {
-    const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(tsEnumMemberName);
-    this.autofixer?.checkEnumMemberNameConflict(tsEnumMember, autofix);
+    const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(tsEnumMemberName, tsEnumMember);
     this.incrementCounters(node, FaultID.LiteralAsPropertyName, autofix);
   }
 

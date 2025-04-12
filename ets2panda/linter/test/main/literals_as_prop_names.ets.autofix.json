@@ -1,6 +1,6 @@
 {
     "copyright": [
-        "Copyright (c) 2023-2024 Huawei Device Co., Ltd.",
+        "Copyright (c) 2023-2025 Huawei Device Co., Ltd.",
         "Licensed under the Apache License, Version 2.0 (the 'License');",
         "you may not use this file except in compliance with the License.",
         "You may obtain a copy of the License at",
@@ -57,60 +57,6 @@
                     "replacementText": "litAsPropName.__2",
                     "start": 1001,
                     "end": 1017
-                }
-            ],
-            "suggest": "",
-            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 26,
-            "column": 11,
-            "endLine": 26,
-            "endColumn": 12,
-            "problem": "LiteralAsPropertyName",
-            "autofix": [
-                {
-                    "replacementText": "__2",
-                    "start": 836,
-                    "end": 837
-                },
-                {
-                    "replacementText": "__2",
-                    "start": 928,
-                    "end": 929
-                },
-                {
-                    "replacementText": "litAsPropName.__2",
-                    "start": 1001,
-                    "end": 1017
-                }
-            ],
-            "suggest": "",
-            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 27,
-            "column": 3,
-            "endLine": 27,
-            "endColumn": 8,
-            "problem": "LiteralAsPropertyName",
-            "autofix": [
-                {
-                    "replacementText": "Two",
-                    "start": 849,
-                    "end": 854
-                },
-                {
-                    "replacementText": "Two",
-                    "start": 940,
-                    "end": 945
-                },
-                {
-                    "replacementText": "litAsPropName.Two",
-                    "start": 1032,
-                    "end": 1052
                 }
             ],
             "suggest": "",
@@ -379,50 +325,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 75,
-            "column": 3,
-            "endLine": 75,
-            "endColumn": 4,
-            "problem": "LiteralAsPropertyName",
-            "autofix": [
-                {
-                    "replacementText": "___2",
-                    "start": 1726,
-                    "end": 1727
-                },
-                {
-                    "replacementText": "___2",
-                    "start": 1808,
-                    "end": 1809
-                }
-            ],
-            "suggest": "",
-            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 76,
-            "column": 3,
-            "endLine": 76,
-            "endColumn": 8,
-            "problem": "LiteralAsPropertyName",
-            "autofix": [
-                {
-                    "replacementText": "__2",
-                    "start": 1739,
-                    "end": 1744
-                },
-                {
-                    "replacementText": "__2",
-                    "start": 1824,
-                    "end": 1829
-                }
-            ],
-            "suggest": "",
-            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
-            "severity": "ERROR"
-        },
-        {
             "line": 76,
             "column": 3,
             "endLine": 76,
@@ -541,7 +443,7 @@
             "problem": "LiteralAsPropertyName",
             "autofix": [
                 {
-                    "replacementText": "__x5c_1",
+                    "replacementText": "___x5c",
                     "start": 2033,
                     "end": 2037
                 }
@@ -565,6 +467,150 @@
             ],
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 102,
+            "column": 3,
+            "endLine": 102,
+            "endColumn": 11,
+            "problem": "LiteralAsPropertyName",
+            "autofix": [
+                {
+                    "replacementText": "___x5c",
+                    "start": 2088,
+                    "end": 2092
+                },
+                {
+                    "replacementText": "Direction17.___x5c",
+                    "start": 2128,
+                    "end": 2145
+                }
+            ],
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 103,
+            "column": 3,
+            "endLine": 103,
+            "endColumn": 14,
+            "problem": "LiteralAsPropertyName",
+            "autofix": [
+                {
+                    "replacementText": "__x5c",
+                    "start": 2100,
+                    "end": 2107
+                },
+                {
+                    "replacementText": "Direction17.__x5c",
+                    "start": 2160,
+                    "end": 2180
+                }
+            ],
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 105,
+            "column": 5,
+            "endLine": 105,
+            "endColumn": 31,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2119,
+                    "end": 2145,
+                    "replacementText": "case17: number = Direction17[\"\\\\\"]"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 106,
+            "column": 5,
+            "endLine": 106,
+            "endColumn": 35,
+            "problem": "NumericSemantics",
+            "autofix": [
+                {
+                    "start": 2150,
+                    "end": 2180,
+                    "replacementText": "case172: number = Direction17[\"__x5c\"]"
+                }
+            ],
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 109,
+            "column": 1,
+            "endLine": 109,
+            "endColumn": 9,
+            "problem": "LiteralAsPropertyName",
+            "autofix": [
+                {
+                    "replacementText": "__x21x21",
+                    "start": 2207,
+                    "end": 2211
+                },
+                {
+                    "replacementText": "Direction11.__x21x21",
+                    "start": 2349,
+                    "end": 2366
+                }
+            ],
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 112,
+            "column": 1,
+            "endLine": 112,
+            "endColumn": 10,
+            "problem": "LiteralAsPropertyName",
+            "autofix": [
+                {
+                    "replacementText": "aaa",
+                    "start": 2244,
+                    "end": 2249
+                }
+            ],
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 115,
+            "column": 2,
+            "endLine": 115,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 117,
+            "column": 2,
+            "endLine": 117,
+            "endColumn": 7,
+            "problem": "UIInterfaceImport",
+            "autofix": [
+                {
+                    "start": 608,
+                    "end": 608,
+                    "replacementText": "\n\nimport { Component, State } from '@kits.ArkUI';"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
         },
         {
