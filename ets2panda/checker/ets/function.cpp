@@ -369,8 +369,6 @@ bool ETSChecker::IsValidRestArgument(ir::Expression *const argument, Signature *
     const auto argumentType = argument->Check(this);
     auto *targetType = substitutedSig->RestVar()->TsType();
     if (targetType->IsETSTupleType()) {
-        // NOTE (mmartin): check tuple assignability for rest arguments
-        LogTypeError("Tuple types for rest arguments are not yet implemented", argument->Start());
         return false;
     }
 
@@ -388,12 +386,16 @@ bool ETSChecker::IsValidRestArgument(ir::Expression *const argument, Signature *
 }
 
 bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const ArenaVector<ir::Expression *> &arguments,
-                                             TypeRelationFlag flags, bool reportError, const bool unique)
+                                             TypeRelationFlag flags, bool reportError,
+                                             [[maybe_unused]] const bool unique)
 {
     size_t const argumentCount = arguments.size();
     auto const commonArity = std::min(substitutedSig->ArgCount(), argumentCount);
     auto const restCount = argumentCount - commonArity;
 
+    if (argumentCount == commonArity && substitutedSig->RestVar()->TsType()->IsETSTupleType()) {
+        return false;
+    }
     for (size_t index = commonArity; index < argumentCount; ++index) {
         auto &argument = arguments[index];
 
@@ -415,7 +417,7 @@ bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const Ar
         Type *targetType = substitutedSig->RestVar()->TsType();
         // backing out of check that results in a signature mismatch would be difficult
         // so only attempt it if there is only one candidate signature
-        if (unique && restArgument->IsArrayExpression()) {
+        if (restArgument->IsArrayExpression()) {
             restArgument->AsArrayExpression()->SetPreferredType(targetType);
         }
         auto const argumentType = restArgument->Check(this);
@@ -426,6 +428,9 @@ bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const Ar
              substitutedSig->RestVar()->TsType(), "' at index ", index + 1},
             flags);
         if (!invocationCtx.IsInvocable()) {
+            if (restArgument->IsArrayExpression()) {
+                ModifyPreferredType(restArgument->AsArrayExpression(), nullptr);
+            }
             return false;
         }
     }
@@ -473,7 +478,7 @@ Signature *ETSChecker::ValidateSignature(
     }
 
     // Check rest parameter(s) if any exists
-    if (!hasRestParameter || count >= argCount) {
+    if (!hasRestParameter || (count >= argCount && !signature->RestVar()->TsType()->IsETSTupleType())) {
         return signature;
     }
     if (!ValidateSignatureRestParams(signature, arguments, flags, reportError, unique)) {

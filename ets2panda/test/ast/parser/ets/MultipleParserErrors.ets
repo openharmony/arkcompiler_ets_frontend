@@ -170,9 +170,9 @@ function main(): void {
 /* @@? 28:29 Error TypeError: Native, Abstract and Declare methods cannot have body. */
 /* @@? 34:14 Error SyntaxError: The modifier for a constructor should be limited to access modifiers (private, internal, protected, public), and 'native' modifiers. */
 /* @@? 37:41 Error SyntaxError: Only 'throws' can be used with function types. */
-/* @@? 39:14 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 39:14 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 39:14 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 39:14 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 39:24 Error SyntaxError: Unexpected token 'int'. */
 /* @@? 39:24 Error TypeError: Unresolved reference int */
 /* @@? 39:27 Error SyntaxError: Unexpected token ')'. */
@@ -203,8 +203,8 @@ function main(): void {
 /* @@? 52:12 Error TypeError: Unresolved reference q */
 /* @@? 52:12 Error TypeError: All return statements in the function should be empty or have a value. */
 /* @@? 52:23 Error TypeError: Unresolved reference p */
-/* @@? 55:26 Error SyntaxError: Rest parameter should be of an array type. */
-/* @@? 59:23 Error SyntaxError: Rest parameter should be of an array type. */
+/* @@? 55:26 Error SyntaxError: Rest parameter should be either array or tuple type. */
+/* @@? 59:23 Error SyntaxError: Rest parameter should be either array or tuple type. */
 /* @@? 63:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 67:7 Error TypeError: Variable 'A' has already been declared. */
 /* @@? 68:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
@@ -217,8 +217,8 @@ function main(): void {
 /* @@? 84:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
 /* @@? 92:7 Error TypeError: Variable 'A' has already been declared. */
 /* @@? 93:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
-/* @@? 103:25 Error SyntaxError: Rest parameter should be of an array type. */
-/* @@? 104:32 Error SyntaxError: Rest parameter should be of an array type. */
+/* @@? 103:25 Error SyntaxError: Rest parameter should be either array or tuple type. */
+/* @@? 104:32 Error SyntaxError: Rest parameter should be either array or tuple type. */
 /* @@? 115:26 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 115:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 115:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
