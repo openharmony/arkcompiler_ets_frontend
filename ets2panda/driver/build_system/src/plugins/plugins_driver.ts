@@ -18,7 +18,7 @@ import {
   LogData,
   LogDataFactory
 } from '../logger';
-import { BuildConfig } from '../types'
+import { BuildConfig } from '../types';
 import { ErrorCode } from '../error_code';
 
 export enum PluginHook {
@@ -144,7 +144,7 @@ export class PluginDriver {
         let pluginObject = require(value as string);
         let initFunction = Object.values(pluginObject)[0] as PluginInitFunction;
         if (typeof initFunction !== 'function') {
-          throw('Failed to load plugin: plugin in wrong format');
+          throw ('Failed to load plugin: plugin in wrong format');
         }
         this.logger.printInfo(`Loaded plugin: ', ${key}, ${pluginObject}`);
 

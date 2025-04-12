@@ -58,7 +58,9 @@ process.on('message', (message: {
         '--arktsconfig', fileInfo.arktsConfigFile,
         '--output', fileInfo.abcFilePath,
       ];
-      if (isDebug) ets2pandaCmd.push('--debug-info');
+      if (isDebug) {
+        ets2pandaCmd.push('--debug-info');
+      }
       ets2pandaCmd.push(fileInfo.filePath);
 
       arktsGlobal.filePath = fileInfo.filePath;
@@ -89,6 +91,7 @@ process.on('message', (message: {
         error: 'Compile abc files failed.'
       });
     } finally {
+      arktsGlobal.es2panda._DestroyContext(arktsGlobal.compilerContext.peer);
       PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
       arkts.destroyConfig(arktsGlobal.config);
     }
