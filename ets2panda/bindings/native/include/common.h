@@ -23,7 +23,7 @@
 #include <vector>
 #include "public/es2panda_lib.h"
 
-es2panda_Impl *GetPublicImpl();
+const es2panda_Impl *GetPublicImpl();
 
 // CC-OFFNXT(G.NAM.01) false positive
 std::string GetString(KStringPtr ptr);

@@ -62,7 +62,7 @@ def copy_output(options):
         copy_files(os.path.join(options.root_out_dir, 'libts_bindings.dll'),
                 os.path.join(options.output_path, 'ts_bindings.node'), True)
 
-    if options.current_os == "linux" :
+    if options.current_os == "linux" or options.current_os == "mac":
         copy_files(os.path.join(options.root_out_dir, 'ts_bindings.node'),
                 os.path.join(options.output_path, 'ts_bindings.node'), True)
 

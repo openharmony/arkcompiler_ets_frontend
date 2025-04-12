@@ -161,6 +161,25 @@ shared_library("ts_bindings") {
       "x86_64-pc-windows-gnu",
     ]
     sources += [ "./native/src/win-dynamic-node.cpp" ]
+  } else if (is_mac) {
+    cflags_cc = [
+      "-std=c++17",
+      "-Wall",
+      "-Werror",
+      "-Wno-unused-variable",
+      "-fPIC",
+    ]
+
+    ldflags = [
+      "-fPIC",
+      "-fuse-ld=lld",
+      "-Wl,--icf=all",
+      "-Wl,--color-diagnostics",
+      "-m64",
+      "-Wl,-undefined,dynamic_lookup",
+    ]
+    output_extension = "node"
+    output_prefix_override = true
   }
 }
 
