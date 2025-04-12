@@ -3788,6 +3788,30 @@ export class TypeScriptLinter {
         this.incrementCounters(node, FaultID.StructuralIdentity);
       }
     }
+    this.handleAsExpressionNumber(tsAsExpr);
+  }
+
+  private handleAsExpressionNumber(tsAsExpr): void {
+    const type = tsAsExpr.type;
+
+    if (
+      this.useStatic &&
+      this.options.arkts2 &&
+      ts.isAsExpression(tsAsExpr) &&
+      type.kind === ts.SyntaxKind.NumberKeyword
+    ) {
+      const expr = ts.isPropertyAccessExpression(tsAsExpr.expression)
+        ? tsAsExpr.expression.expression
+        : tsAsExpr.expression;
+
+      if (ts.isIdentifier(expr)) {
+        const sym = this.tsUtils.trueSymbolAtLocation(expr);
+        const decl = TsUtils.getDeclaration(sym);
+        if (decl?.getSourceFile().fileName.endsWith(EXTNAME_JS)) {
+          this.incrementCounters(tsAsExpr, FaultID.InterOpConvertImport);
+        }
+      }
+    }
   }
 
   private handleSdkConstructorIface(typeRef: ts.TypeReferenceNode): void {

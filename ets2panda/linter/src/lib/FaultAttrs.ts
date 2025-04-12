@@ -202,3 +202,4 @@ faultsAttrs[FaultID.LimitedStdLibNoImportConcurrency] = new FaultAttributes(321)
 faultsAttrs[FaultID.InterOpImportJs] = new FaultAttributes(330);
 faultsAttrs[FaultID.CallJSFunction] = new FaultAttributes(331);
 faultsAttrs[FaultID.InteropObjectProperty] = new FaultAttributes(332);
+faultsAttrs[FaultID.InterOpConvertImport] = new FaultAttributes(333);

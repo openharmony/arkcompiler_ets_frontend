@@ -190,3 +190,4 @@ faultDesc[FaultID.LimitedStdLibNoImportConcurrency] = 'Import Concurrency Deprec
 faultDesc[FaultID.InterOpImportJs] = 'No JS import';
 faultDesc[FaultID.CallJSFunction] = 'Call JS Function';
 faultDesc[FaultID.InteropObjectProperty] = 'Interop property access';
+faultDesc[FaultID.InterOpConvertImport] = 'No import number from js file';
