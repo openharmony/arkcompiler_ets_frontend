@@ -129,6 +129,10 @@ enum es2panda_ContextState {
 
     ES2PANDA_STATE_ERROR
 };
+
+enum es2panda_PluginDiagnosticType { ES2PANDA_PLUGIN_WARNING, ES2PANDA_PLUGIN_ERROR };
+
+typedef enum es2panda_PluginDiagnosticType es2panda_PluginDiagnosticType;
 typedef enum es2panda_ContextState es2panda_ContextState;
 // CC-OFFNXT(G.INC.08) project code style
 #include "generated/es2panda_lib/es2panda_lib_enums.inc"
@@ -180,7 +184,8 @@ struct CAPI_EXPORT es2panda_Impl {
     size_t (*SourcePositionLine)(es2panda_Context *context, es2panda_SourcePosition *position);
     es2panda_SourcePosition *(*SourceRangeStart)(es2panda_Context *context, es2panda_SourceRange *range);
     es2panda_SourcePosition *(*SourceRangeEnd)(es2panda_Context *context, es2panda_SourceRange *range);
-    const es2panda_DiagnosticKind *(*CreateDiagnosticKind)(es2panda_Context *context, const char *dmessage);
+    const es2panda_DiagnosticKind *(*CreateDiagnosticKind)(es2panda_Context *context, const char *dmessage,
+                                                           es2panda_PluginDiagnosticType etype);
     void (*LogDiagnostic)(es2panda_Context *context, const es2panda_DiagnosticKind *kind, const char **args,
                           size_t argc, es2panda_SourcePosition *pos);
     const es2panda_DiagnosticStorage *(*GetSemanticErrors)(es2panda_Context *context);

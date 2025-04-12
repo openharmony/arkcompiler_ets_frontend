@@ -94,6 +94,7 @@ set(PLUGIN_TESTS
     "plugin_proceed_to_state_set_from_struct_modifier compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_default_access_modifier compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_assignment_expression_set_result compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_create_diagnostic_kind compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "use_plugin_to_test_export_table compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_test_global_func_call_dump compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
 )
