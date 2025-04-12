@@ -4184,11 +4184,18 @@ export class TypeScriptLinter {
     }
     if (decl.name) {
       const symbol = this.tsTypeChecker.getSymbolAtLocation(decl.name);
-      if (symbol) {
-        const declarations = symbol.getDeclarations();
-        if (declarations && declarations.length > 1) {
-          this.incrementCounters(decl, FaultID.TsOverload);
-        }
+      if (!symbol) {
+        return;
+      }
+      const declarations = symbol.getDeclarations();
+      if (!declarations) {
+        return;
+      }
+      const filterDecl = declarations.filter((name) => {
+        return ts.isFunctionDeclaration(name) || ts.isMethodDeclaration(name);
+      });
+      if (filterDecl.length > 1) {
+        this.incrementCounters(decl, FaultID.TsOverload);
       }
     } else if (ts.isConstructorDeclaration(decl)) {
       const parent = decl.parent;
