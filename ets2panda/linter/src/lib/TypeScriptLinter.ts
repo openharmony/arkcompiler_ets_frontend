@@ -4754,10 +4754,6 @@ export class TypeScriptLinter {
       return;
     }
     if (TsUtils.getDecoratorName(decorator) === CONCURRENT_DECORATOR) {
-      const parent: ts.Node = decorator.parent;
-      if (parent && parent.kind !== ts.SyntaxKind.FunctionDeclaration) {
-        return;
-      }
       const autofix = this.autofixer?.removeDecorator(decorator);
       this.incrementCounters(decorator, FaultID.LimitedStdLibApi, autofix);
     }

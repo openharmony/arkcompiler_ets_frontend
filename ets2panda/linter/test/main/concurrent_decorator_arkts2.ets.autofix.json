@@ -30,6 +30,67 @@
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
             "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 1,
+            "endLine": 19,
+            "endColumn": 12,
+            "problem": "LimitedStdLibApi",
+            "autofix": [
+                {
+                    "start": 651,
+                    "end": 662,
+                    "replacementText": ""
+                }
+            ],
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 1,
+            "endLine": 23,
+            "endColumn": 12,
+            "problem": "LimitedStdLibApi",
+            "autofix": [
+                {
+                    "start": 699,
+                    "end": 710,
+                    "replacementText": ""
+                }
+            ],
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 1,
+            "endLine": 26,
+            "endColumn": 12,
+            "problem": "LimitedStdLibApi",
+            "autofix": [
+                {
+                    "start": 740,
+                    "end": 751,
+                    "replacementText": ""
+                }
+            ],
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 24,
+            "endLine": 27,
+            "endColumn": 28,
+            "problem": "LimitedVoidType",
+            "suggest": "",
+            "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
         }
     ]
 }
