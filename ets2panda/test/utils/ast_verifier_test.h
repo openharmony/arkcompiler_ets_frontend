@@ -173,18 +173,31 @@ public:
     [[nodiscard]] auto Verify(ExpectVerifierMessage expected = {})
     {
         ASSERT(ctx_ != nullptr);
-        auto *inv = &std::get<Invariant>(invariants_);
+        auto *inv = Get<Invariant>();
         inv->Init();
-        inv->VerifyAst(GetAst());
+
+        std::function<void(const ir_alias::AstNode *)> aux {};
+        aux = [inv, &aux](const ir_alias::AstNode *child) -> void {
+            // Required invariants need to be manually called in tests:
+            std::apply([child](auto &...requiredInv) { (((void)(requiredInv)(child)), ...); }, inv->GetRequired());
+            const auto [_, action] = (*inv)(child);
+            if (action == verifier_alias::CheckAction::SKIP_SUBTREE) {
+                return;
+            }
+            child->Iterate(aux);
+        };
+        aux(GetAst());
         return expected.CheckMessages(inv->ViewMessages());
     }
 
     template <typename Invariant>
     [[nodiscard]] auto VerifyNode(const ir_alias::AstNode *ast, ExpectVerifierMessage expected = {})
     {
-        auto *inv = &std::get<Invariant>(invariants_);
+        auto *inv = Get<Invariant>();
         inv->Init();
-        inv->VerifyNode(ast);
+        // Required invariants need to be manually called in tests:
+        std::apply([ast](auto &...requiredInv) { (((void)(requiredInv)(ast)), ...); }, inv->GetRequired());
+        (void)(*inv)(ast);
         return expected.CheckMessages(inv->ViewMessages());
     }
 
