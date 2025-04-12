@@ -15,7 +15,7 @@
 
 #include "dep_analyzer.h"
 
-void FilterArgs(ark::Span<const char *const> args, int &newArgc, const char **&newArgv)
+static void FilterArgs(ark::Span<const char *const> args, int &newArgc, const char **&newArgv)
 {
     ASSERT(args.size() > 1);
     std::vector<const char *> filteredArgs;

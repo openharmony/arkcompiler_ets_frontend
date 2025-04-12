@@ -20,10 +20,10 @@ import {
   Logger,
   LogData,
   LogDataFactory
-} from '../logger'
+} from '../logger';
 import {
   ErrorCode
-} from '../error_code'
+} from '../error_code';
 import {
   changeFileExtension,
   ensurePathExists
@@ -95,7 +95,7 @@ export class ArkTSConfigGenerator {
   }
 
   private generateSystemSdkPathSection(pathSection: Record<string, string[]>): void {
-    function traverse(currentDir: string, relativePath: string = '', isExcludedDir: boolean = false) {
+    function traverse(currentDir: string, relativePath: string = '', isExcludedDir: boolean = false): void {
       const items = fs.readdirSync(currentDir);
       for (const item of items) {
         const itemPath = path.join(currentDir, item);
@@ -133,8 +133,8 @@ export class ArkTSConfigGenerator {
         return this.pathSection;
     }
 
-    this.pathSection['std'] = [this.stdlibStdPath];
-    this.pathSection['escompat'] = [this.stdlibEscompatPath];
+    this.pathSection.std = [this.stdlibStdPath];
+    this.pathSection.escompat = [this.stdlibEscompatPath];
 
     this.generateSystemSdkPathSection(this.pathSection);
 
@@ -142,7 +142,7 @@ export class ArkTSConfigGenerator {
        if (moduleInfo.language === LANGUAGE_VERSION.ARKTS_1_2) {
           this.pathSection[moduleInfo.packageName] = [
             path.resolve(moduleInfo.moduleRootPath, moduleInfo.sourceRoots[0])
-          ]
+          ];
        }
 
     });
@@ -157,13 +157,13 @@ export class ArkTSConfigGenerator {
     });
   }
 
-  private getOhmurl(file: string, moduleInfo: ModuleInfo): string{
+  private getOhmurl(file: string, moduleInfo: ModuleInfo): string {
     let unixFilePath: string = file.replace(/\\/g, '/');
     let ohmurl: string = moduleInfo.packageName + '/' + unixFilePath;
     return changeFileExtension(ohmurl, '');
   }
 
-  private getDynamicPathSection(moduleInfo: ModuleInfo, dynamicPathSection: Record<string, DynamicPathItem>) {
+  private getDynamicPathSection(moduleInfo: ModuleInfo, dynamicPathSection: Record<string, DynamicPathItem>): void {
     let depModules: Map<string, ModuleInfo> = moduleInfo.dynamicDepModuleInfos;
 
     depModules.forEach((depModuleInfo: ModuleInfo) => {
@@ -176,10 +176,10 @@ export class ArkTSConfigGenerator {
       Object.keys(declFilesObject.files).forEach((file: string)=> {
         let ohmurl: string = this.getOhmurl(file, depModuleInfo);
         dynamicPathSection[ohmurl] = {
-          language: "js",
+          language: 'js',
           declPath: declFilesObject.files[file].declPath,
           ohmUrl: declFilesObject.files[file].ohmUrl
-        }
+        };
 
         let absFilePath: string = path.resolve(depModuleInfo.moduleRootPath, file);
         let entryFileWithoutExtension: string = changeFileExtension(depModuleInfo.entryFile, '');
@@ -191,7 +191,7 @@ export class ArkTSConfigGenerator {
   }
 
   public writeArkTSConfigFile(moduleInfo: ModuleInfo): void {
-    if (!moduleInfo.sourceRoots || moduleInfo.sourceRoots.length == 0) {
+    if (!moduleInfo.sourceRoots || moduleInfo.sourceRoots.length === 0) {
       const logData: LogData = LogDataFactory.newInstance(
         ErrorCode.BUILDSYSTEM_SOURCEROOTS_NOT_SET_FAIL,
         'SourceRoots not set from hvigor.'
