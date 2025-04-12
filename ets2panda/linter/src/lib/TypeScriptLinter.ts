@@ -2637,7 +2637,7 @@ export class TypeScriptLinter {
 
     if (
       (tsIdentSym.flags & illegalValues) === 0 &&
-        !(this.options.arkts2 && this.isStdlibClassVarDecl(tsIdentifier, tsIdentSym)) ||
+        !this.isStdlibClassVarDecl(tsIdentifier, tsIdentSym) ||
       isStruct(tsIdentSym) ||
       !identiferUseInValueContext(tsIdentifier, tsIdentSym)
     ) {

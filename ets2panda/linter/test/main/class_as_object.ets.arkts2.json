@@ -345,14 +345,14 @@
             "severity": "ERROR"
         },
         {
-          "line": 128,
-          "column": 15,
-          "endLine": 128,
-          "endColumn": 23,
-          "problem": "ExplicitFunctionType",
-          "suggest": "",
-          "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-          "severity": "ERROR"
+            "line": 128,
+            "column": 15,
+            "endLine": 128,
+            "endColumn": 23,
+            "problem": "ExplicitFunctionType",
+            "suggest": "",
+            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+            "severity": "ERROR"
         },
         {
             "line": 129,
@@ -775,14 +775,14 @@
             "severity": "ERROR"
         },
         {
-          "line": 178,
-          "column": 14,
-          "endLine": 178,
-          "endColumn": 22,
-          "problem": "ExplicitFunctionType",
-          "suggest": "",
-          "rule": "The function type should be explicit (arkts-no-ts-like-function)",
-          "severity": "ERROR"
+            "line": 178,
+            "column": 14,
+            "endLine": 178,
+            "endColumn": 22,
+            "problem": "ExplicitFunctionType",
+            "suggest": "",
+            "rule": "The function type should be explicit (arkts-no-ts-like-function)",
+            "severity": "ERROR"
         },
         {
             "line": 179,
@@ -822,6 +822,56 @@
             "problem": "SymbolType",
             "suggest": "",
             "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 190,
+            "column": 19,
+            "endLine": 190,
+            "endColumn": 27,
+            "problem": "ClassAsObjectError",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 193,
+            "column": 9,
+            "endLine": 193,
+            "endColumn": 12,
+            "problem": "SwitchExpression",
+            "suggest": "",
+            "rule": "The switch expression type must be of type number,string or enum (arkts-switch-expr)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 194,
+            "column": 8,
+            "endLine": 194,
+            "endColumn": 14,
+            "problem": "ClassAsObjectError",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 205,
+            "column": 56,
+            "endLine": 205,
+            "endColumn": 94,
+            "problem": "NumericSemantics",
+            "suggest": "",
+            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 205,
+            "column": 87,
+            "endLine": 205,
+            "endColumn": 93,
+            "problem": "ClassAsObjectError",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
             "severity": "ERROR"
         }
     ]
