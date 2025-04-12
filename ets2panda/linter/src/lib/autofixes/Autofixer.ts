@@ -2005,9 +2005,9 @@ export class Autofixer {
     return found;
   }
 
-  removeDecorator(decorator: ts.Decorator): Autofix[] {
+  removeNode(node: ts.Node): Autofix[] {
     void this;
-    return [{ start: decorator.getStart(), end: decorator.getEnd(), replacementText: '' }];
+    return [{ start: node.getStart(), end: node.getEnd(), replacementText: '' }];
   }
 
   fixSendableExplicitFieldType(node: ts.PropertyDeclaration): Autofix[] | undefined {

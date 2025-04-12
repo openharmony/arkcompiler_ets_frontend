@@ -2636,8 +2636,7 @@ export class TypeScriptLinter {
     }
 
     if (
-      (tsIdentSym.flags & illegalValues) === 0 &&
-        !this.isStdlibClassVarDecl(tsIdentifier, tsIdentSym) ||
+      (tsIdentSym.flags & illegalValues) === 0 && !this.isStdlibClassVarDecl(tsIdentifier, tsIdentSym) ||
       isStruct(tsIdentSym) ||
       !identiferUseInValueContext(tsIdentifier, tsIdentSym)
     ) {
@@ -4057,14 +4056,13 @@ export class TypeScriptLinter {
     this.handleExtendDecorator(node);
 
     const decorator: ts.Decorator = node as ts.Decorator;
-    this.handleSendableDecorator(decorator);
-    this.handleConcurrentDecorator(decorator);
+    this.checkSendableAndConcurrentDecorator(decorator);
     this.handleStylesDecorator(decorator);
     this.handleTypescriptDecorators(decorator);
     if (TsUtils.getDecoratorName(decorator) === SENDABLE_DECORATOR) {
       const parent: ts.Node = decorator.parent;
       if (!parent || !SENDABLE_DECORATOR_NODES.includes(parent.kind)) {
-        const autofix = this.autofixer?.removeDecorator(decorator);
+        const autofix = this.autofixer?.removeNode(decorator);
         this.incrementCounters(decorator, FaultID.SendableDecoratorLimited, autofix);
       }
     }
@@ -4298,7 +4296,7 @@ export class TypeScriptLinter {
     }
 
     const typeString = this.tsTypeChecker.typeToString(type);
-    return (typeString === 'String' || typeString === 'int');
+    return typeString === 'String' || typeString === 'int';
   }
 
   private static isValidNumber(value: number): boolean {
@@ -4341,7 +4339,7 @@ export class TypeScriptLinter {
     }
     return null;
   }
-  
+
   private handleLimitedLiteralType(literalTypeNode: ts.LiteralTypeNode): void {
     if (!this.options.arkts2 || !literalTypeNode) {
       return;
@@ -4735,26 +4733,13 @@ export class TypeScriptLinter {
     return !!symbol && (symbol.flags & ts.SymbolFlags.Variable) !== 0;
   }
 
-  private handleSendableDecorator(decorator: ts.Decorator): void {
+  private checkSendableAndConcurrentDecorator(decorator: ts.Decorator): void {
     if (!this.options.arkts2) {
       return;
     }
-    if (TsUtils.getDecoratorName(decorator) === SENDABLE_DECORATOR) {
-      const parent: ts.Node = decorator.parent;
-      if (parent && parent.kind !== ts.SyntaxKind.ClassDeclaration) {
-        return;
-      }
-      const autofix = this.autofixer?.removeDecorator(decorator);
-      this.incrementCounters(decorator, FaultID.LimitedStdLibApi, autofix);
-    }
-  }
-
-  private handleConcurrentDecorator(decorator: ts.Decorator): void {
-    if (!this.options.arkts2) {
-      return;
-    }
-    if (TsUtils.getDecoratorName(decorator) === CONCURRENT_DECORATOR) {
-      const autofix = this.autofixer?.removeDecorator(decorator);
+    const decoratorName = TsUtils.getDecoratorName(decorator);
+    if (decoratorName === SENDABLE_DECORATOR || decoratorName === CONCURRENT_DECORATOR) {
+      const autofix = this.autofixer?.removeNode(decorator);
       this.incrementCounters(decorator, FaultID.LimitedStdLibApi, autofix);
     }
   }
