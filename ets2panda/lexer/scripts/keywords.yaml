@@ -271,7 +271,8 @@ keywords:
 
   - name: 'instanceof'
     token: KEYW_INSTANCEOF
-    keyword: [as, js, ets, ts]
+    keyword: [as, js, ts]
+    keyword_like: [ets]
     flags: [binary]
 
   - name: 'int'
@@ -466,8 +467,9 @@ keywords:
 
   - name: 'typeof'
     token: KEYW_TYPEOF
-    keyword: [js, ets, ts]
-    flags: [unary, reserved_type_name, definable_type_name]
+    keyword: [js, ts]
+    keyword_like: [ets]
+    flags: [unary]
 
   - name: 'u8'
     token: KEYW_U8

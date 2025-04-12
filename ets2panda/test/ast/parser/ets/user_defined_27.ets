@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-struct typeof{
+struct instanceof{
   a : string = "15";
 }
 
