@@ -2718,17 +2718,22 @@ export class TsUtils {
     return false;
   }
 
-  findIdentifierNameForSymbol(symbol: ts.Symbol): string | undefined {
+  findIdentifierNameForSymbol(symbol: ts.Symbol, enumMember?: ts.EnumMember): string | undefined {
     let name = TsUtils.getIdentifierNameFromString(symbol.name);
     if (name === undefined || name === symbol.name) {
       return name;
     }
 
+    const enumExpress = enumMember?.parent;
     const parentType = this.getTypeByProperty(symbol);
     if (parentType === undefined) {
       return undefined;
     }
-
+    if (enumExpress) {
+      while (this.findEnumMember(enumExpress, name)) {
+        name = '_' + name;
+      }
+    }
     while (this.findProperty(parentType, name) !== undefined) {
       name = '_' + name;
     }
@@ -3402,5 +3407,27 @@ export class TsUtils {
       }
     }
     return false;
+  }
+
+  findEnumMember(enumDecl: ts.EnumDeclaration | undefined, name: string): ts.Symbol | undefined {
+    if (!enumDecl) {
+      return undefined;
+    }
+
+    const syms: ts.Symbol[] = [];
+    for (const enumMember of enumDecl.members) {
+      const sym = this.trueSymbolAtLocation(enumMember.name);
+      if (sym) {
+        syms.push(sym);
+      }
+    }
+
+    for (const sym of syms) {
+      if (sym.name === name) {
+        return sym;
+      }
+    }
+
+    return undefined;
   }
 }
