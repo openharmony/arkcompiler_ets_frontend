@@ -188,6 +188,10 @@ interface es2panda_Impl {
     Es2pandaEnum Es2pandaEnumFromString(es2panda_Context ctx, String str);
     String Es2pandaEnumToString(es2panda_Context ctx, Es2pandaEnum id);
     AstNode DeclarationFromIdentifier(es2panda_Context ctx, Identifier node);
+    AstNode FirstDeclarationByNameFromNode(es2panda_Context ctx, AstNode node, String name);
+    AstNode FirstDeclarationByNameFromProgram(es2panda_Context ctx, es2panda_Program program, String name);
+    sequence<AstNode> AllDeclarationsByNameFromNode(es2panda_Context ctx, AstNode node, String name);
+    sequence<AstNode> AllDeclarationsByNameFromProgram(es2panda_Context ctx, es2panda_Program program, String name);
     void InsertETSImportDeclarationAndParse(es2panda_Context context, es2panda_Program program,
                                             ETSImportDeclaration node);
 

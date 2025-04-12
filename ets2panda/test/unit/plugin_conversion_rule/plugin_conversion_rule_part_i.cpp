@@ -273,7 +273,7 @@ es2panda_RecordTable *classInstance/*return_args:*/, size_t *returnTypeLen)
  	    size_t i = 0;
  	    for (auto elem : resultSet) {
  		    auto toPush = reinterpret_cast< es2panda_AstNode *>(elem);
- 		    apiRes[i] = reinterpret_cast< es2panda_AstNode *>(toPush);
+ 		    apiRes[i++] = reinterpret_cast< es2panda_AstNode *>(toPush);
  	    };
 	    return apiRes;
     }

@@ -748,6 +748,132 @@ extern "C" es2panda_AstNode *DeclarationFromIdentifier([[maybe_unused]] es2panda
     return reinterpret_cast<es2panda_AstNode *>(compiler::DeclarationFromIdentifier(E2pNode));
 }
 
+extern "C" es2panda_AstNode *FirstDeclarationByNameFromNode([[maybe_unused]] es2panda_Context *ctx,
+                                                            const es2panda_AstNode *node, const char *name)
+{
+    if (node == nullptr) {
+        return nullptr;
+    }
+
+    util::StringView nameE2p {name};
+    ir::AstNode *res = reinterpret_cast<const ir::AstNode *>(node)->FindChild([&nameE2p](const ir::AstNode *ast) {
+        if (ast != nullptr && ast->IsMethodDefinition() && ast->AsMethodDefinition()->Key() != nullptr &&
+            ast->AsMethodDefinition()->Key()->IsIdentifier() &&
+            ast->AsMethodDefinition()->Key()->AsIdentifier()->Name() == nameE2p) {
+            return true;
+        }
+
+        return false;
+    });
+
+    return reinterpret_cast<es2panda_AstNode *>(res);
+}
+
+extern "C" es2panda_AstNode *FirstDeclarationByNameFromProgram([[maybe_unused]] es2panda_Context *ctx,
+                                                               const es2panda_Program *program, const char *name)
+{
+    if (program == nullptr) {
+        return nullptr;
+    }
+
+    auto programE2p = reinterpret_cast<const parser::Program *>(program);
+    es2panda_AstNode *res =
+        FirstDeclarationByNameFromNode(ctx, reinterpret_cast<const es2panda_AstNode *>(programE2p->Ast()), name);
+    if (res != nullptr) {
+        return res;
+    }
+
+    for (const auto &ext_source : programE2p->DirectExternalSources()) {
+        for (const auto *ext_program : ext_source.second) {
+            if (ext_program != nullptr) {
+                res = FirstDeclarationByNameFromNode(
+                    ctx, reinterpret_cast<const es2panda_AstNode *>(ext_program->Ast()), name);
+            }
+            if (res != nullptr) {
+                return res;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+static ArenaSet<ir::AstNode *> AllDeclarationsByNameFromNodeHelper(ArenaAllocator *const allocator,
+                                                                   const ir::AstNode *node,
+                                                                   const util::StringView &name)
+{
+    auto result = ArenaSet<ir::AstNode *> {allocator->Adapter()};
+
+    if (node == nullptr) {
+        return result;
+    }
+
+    node->IterateRecursively([&result, &name](ir::AstNode *ast) {
+        if (ast != nullptr && ast->IsMethodDefinition() && ast->AsMethodDefinition()->Key() != nullptr &&
+            ast->AsMethodDefinition()->Key()->IsIdentifier() &&
+            ast->AsMethodDefinition()->Key()->AsIdentifier()->Name() == name) {
+            result.insert(ast);
+        }
+    });
+
+    return result;
+}
+
+extern "C" es2panda_AstNode **AllDeclarationsByNameFromNode([[maybe_unused]] es2panda_Context *ctx,
+                                                            const es2panda_AstNode *node, const char *name,
+                                                            size_t *declsLen)
+{
+    util::StringView nameE2p {name};
+    auto nodeE2p = reinterpret_cast<const ir::AstNode *>(node);
+    auto allocator = reinterpret_cast<Context *>(ctx)->allocator;
+    auto result = AllDeclarationsByNameFromNodeHelper(allocator, nodeE2p, nameE2p);
+    *declsLen = result.size();
+    auto apiRes = allocator->New<es2panda_AstNode *[]>(*declsLen);
+    size_t i = 0;
+    for (auto elem : result) {
+        auto toPush = reinterpret_cast<es2panda_AstNode *>(elem);
+        apiRes[i++] = toPush;
+    };
+    return apiRes;
+}
+
+extern "C" es2panda_AstNode **AllDeclarationsByNameFromProgram([[maybe_unused]] es2panda_Context *ctx,
+                                                               const es2panda_Program *program, const char *name,
+                                                               size_t *declsLen)
+{
+    auto allocator = reinterpret_cast<Context *>(ctx)->allocator;
+    if (program == nullptr) {
+        *declsLen = 0;
+        return allocator->New<es2panda_AstNode *[]>(0);
+    }
+
+    util::StringView nameE2p {name};
+    auto programE2p = reinterpret_cast<const parser::Program *>(program);
+    auto result = ArenaSet<ir::AstNode *> {allocator->Adapter()};
+
+    ArenaSet<ir::AstNode *> res = AllDeclarationsByNameFromNodeHelper(allocator, programE2p->Ast(), nameE2p);
+    result.insert(res.begin(), res.end());
+
+    for (const auto &ext_source : programE2p->DirectExternalSources()) {
+        for (const auto *ext_program : ext_source.second) {
+            if (ext_program != nullptr) {
+                res = AllDeclarationsByNameFromNodeHelper(allocator, ext_program->Ast(), nameE2p);
+                result.insert(res.begin(), res.end());
+            }
+        }
+    }
+
+    *declsLen = result.size();
+    auto apiRes = allocator->New<es2panda_AstNode *[]>(*declsLen);
+    size_t i = 0;
+    for (auto elem : result) {
+        auto toPush = reinterpret_cast<es2panda_AstNode *>(elem);
+        apiRes[i++] = toPush;
+    };
+
+    return apiRes;
+}
+
 extern "C" __attribute__((unused)) int GenerateTsDeclarationsFromContext(es2panda_Context *ctx,
                                                                          const char *outputDeclEts,
                                                                          const char *outputEts, bool exportAll)
@@ -827,6 +953,10 @@ es2panda_Impl g_impl = {
     Es2pandaEnumFromString,
     Es2pandaEnumToString,
     DeclarationFromIdentifier,
+    FirstDeclarationByNameFromNode,
+    FirstDeclarationByNameFromProgram,
+    AllDeclarationsByNameFromNode,
+    AllDeclarationsByNameFromProgram,
     GenerateTsDeclarationsFromContext,
     InsertETSImportDeclarationAndParse,
 

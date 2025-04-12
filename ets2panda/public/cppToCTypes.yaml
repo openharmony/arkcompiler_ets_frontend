@@ -282,7 +282,7 @@ change_types:
             \tsize_t i = 0;\n
             \tfor (auto elem : resultSet) {\n
             \t\tauto toPush = |reverse_template_nested_expression_1_start|(elem)|reverse_template_nested_expression_1_end|;\n
-            \t\tapiRes[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
+            \t\tapiRes[i++] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
   - es2panda_arg:
@@ -328,7 +328,7 @@ change_types:
             \tsize_t i = 0;\n
             \tfor (auto elem : resultSet) {\n
             \t\tauto toPush = |reverse_template_nested_expression_1_start|(elem)|reverse_template_nested_expression_1_end|;\n
-            \t\tapiRes[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
+            \t\tapiRes[i++] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
   - es2panda_arg:
@@ -374,7 +374,7 @@ change_types:
             \tsize_t i = 0;\n
             \tfor (auto elem : resultSet) {\n
             \t\tauto toPush = |reverse_template_nested_expression_1_start|(elem)|reverse_template_nested_expression_1_end|;\n
-            \t\tapiRes[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
+            \t\tapiRes[i++] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
   - es2panda_arg:
@@ -420,7 +420,7 @@ change_types:
             \tsize_t i = 0;\n
             \tfor (auto elem : resultSet) {\n
             \t\tauto toPush = |reverse_template_nested_expression_1_start|(elem)|reverse_template_nested_expression_1_end|;\n
-            \t\tres[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
+            \t\tres[i++] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
   - es2panda_arg:
@@ -466,7 +466,7 @@ change_types:
             \tsize_t i = 0;\n
             \tfor (auto elem : resultSet) {\n
             \t\tauto toPush = |reverse_template_nested_expression_1_start|(elem)|reverse_template_nested_expression_1_end|;\n
-            \t\tres[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
+            \t\tres[i++] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
   - es2panda_arg:

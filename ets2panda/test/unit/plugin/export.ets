@@ -21,5 +21,8 @@ export class A {
     foo() : int {
         return 2;
     }
+    too() : int {
+        return 2;
+    }
     b: int = 2
 }
