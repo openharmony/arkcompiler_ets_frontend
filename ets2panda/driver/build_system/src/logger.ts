@@ -21,7 +21,7 @@ import {
 
 export class Logger {
   private static instance: Logger | undefined;
-  private loggerMap: { [key in SubsystemCode]?: Object };
+  private loggerMap: { [key in SubsystemCode]?: ILogger };
 
   private constructor(projectConfig: BuildConfig) {
     if (typeof projectConfig.getHvigorConsoleLogger !== 'function') {
@@ -48,27 +48,27 @@ export class Logger {
   }
 
   public printInfo(message: string, subsystemCode: SubsystemCode = SubsystemCode.BUILDSYSTEM): void {
-    const logger = this.getLoggerFromSubsystemCode(subsystemCode) as any;
+    const logger: ILogger = this.getLoggerFromSubsystemCode(subsystemCode);
     logger.printInfo(message);
   }
 
   public printWarn(message: string, subsystemCode: SubsystemCode = SubsystemCode.BUILDSYSTEM): void {
-    const logger = this.getLoggerFromSubsystemCode(subsystemCode) as any;
+    const logger: ILogger = this.getLoggerFromSubsystemCode(subsystemCode);
     logger.printWarn(message);
   }
 
   public printDebug(message: string, subsystemCode: SubsystemCode = SubsystemCode.BUILDSYSTEM): void {
-    const logger = this.getLoggerFromSubsystemCode(subsystemCode) as any;
+    const logger: ILogger = this.getLoggerFromSubsystemCode(subsystemCode);
     logger.printDebug(message);
   }
 
   public printError(error: LogData): void {
-    const logger = this.getLoggerFromErrorCode(error.code) as any;
+    const logger: ILogger = this.getLoggerFromErrorCode(error.code);
     logger.printError(error);
   }
 
   public printErrorAndExit(error: LogData): void {
-    const logger = this.getLoggerFromErrorCode(error.code) as any;
+    const logger: ILogger = this.getLoggerFromErrorCode(error.code);
     logger.printErrorAndExit(error);
   }
 
@@ -76,7 +76,7 @@ export class Logger {
     return /^\d{8}$/.test(errorCode);
   }
 
-  private getLoggerFromErrorCode(errorCode: ErrorCode): Object {
+  private getLoggerFromErrorCode(errorCode: ErrorCode): ILogger {
     if (!this.isValidErrorCode(errorCode)) {
       throw new Error('Invalid errorCode.');
     }
@@ -85,14 +85,21 @@ export class Logger {
     return logger;
   }
 
-  private getLoggerFromSubsystemCode(subsystemCode: SubsystemCode): Object {
-    if(!this.loggerMap[subsystemCode]) {
+  private getLoggerFromSubsystemCode(subsystemCode: SubsystemCode): ILogger {
+    if (!this.loggerMap[subsystemCode]) {
       throw new Error('Invalid subsystemCode.');
     }
-    return this.loggerMap[subsystemCode]
+    return this.loggerMap[subsystemCode];
   }
 }
 
+interface ILogger {
+  printInfo(message: string): void;
+  printWarn(message: string): void;
+  printDebug(message: string): void;
+  printError(error: LogData): void;
+  printErrorAndExit(error: LogData): void;
+}
 
 export class LogDataFactory {
 
