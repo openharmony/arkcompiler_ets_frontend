@@ -4298,7 +4298,7 @@ export class TypeScriptLinter {
     }
 
     const typeString = this.tsTypeChecker.typeToString(type);
-    return (typeString === 'String' || typeString === 'int');
+    return typeString === 'String' || typeString === 'int';
   }
 
   private static isValidNumber(value: number): boolean {
@@ -4341,7 +4341,7 @@ export class TypeScriptLinter {
     }
     return null;
   }
-  
+
   private handleLimitedLiteralType(literalTypeNode: ts.LiteralTypeNode): void {
     if (!this.options.arkts2 || !literalTypeNode) {
       return;
