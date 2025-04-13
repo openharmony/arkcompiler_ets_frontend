@@ -222,7 +222,7 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
             result = ParseTopLevelAnnotation(memberModifiers);
             break;
         case lexer::TokenType::LITERAL_IDENT: {
-            if (((memberModifiers & ir::ModifierFlags::DECLARE) != 0U) || IsNamespaceDecl()) {
+            if (IsNamespaceDecl()) {
                 return ParseNamespaceStatement(memberModifiers);
             }
             result = ParseIdentKeyword();

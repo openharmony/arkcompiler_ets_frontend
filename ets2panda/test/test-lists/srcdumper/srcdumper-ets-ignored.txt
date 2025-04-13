@@ -156,6 +156,7 @@ ast/compiler/ets/package_static_block_multi_files/P1/P1_0.ets
 ast/compiler/ets/package_static_block_multi_files/P1/P1_1.ets
 ast/compiler/ets/package_initializer_warning/P3/P3.ets
 ast/compiler/ets/package_initializer_warning/main_test.ets
+runtime/ets/import_declare_type_alias.ets
 
 # FailKind.ES2PANDA_FAIL
 runtime/ets/StringFasta.ets
