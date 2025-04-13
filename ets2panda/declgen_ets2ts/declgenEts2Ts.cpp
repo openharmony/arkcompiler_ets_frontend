@@ -1005,6 +1005,9 @@ std::vector<ir::AstNode *> TSDeclGen::FilterValidImportSpecifiers(const ArenaVec
     std::vector<ir::AstNode *> importSpecifiers;
     for (std::size_t i = 0; i < specifiers.size(); i++) {
         const auto local = specifiers[i]->AsImportSpecifier()->Local()->Name().Mutf8();
+        if (specifiers[i]->AsImportSpecifier()->IsRemovable()) {
+            continue;
+        }
         if (importSet_.find(local) != importSet_.end()) {
             importSpecifiers.push_back(specifiers[i]);
         }
