@@ -820,6 +820,7 @@ export class TypeScriptLinter {
     // handle no side effect import in sendable module
     this.handleSharedModuleNoSideEffectImport(importDeclNode);
     this.handleInvalidIdentifier(importDeclNode);
+    this.checkWorkerImport(importDeclNode);
   }
 
   private handleImportModule(importDeclNode: ts.ImportDeclaration): void {
@@ -2521,10 +2522,6 @@ export class TypeScriptLinter {
 
     if (isArkTs2 && this.tsTypeChecker.isArgumentsSymbol(tsIdentSym)) {
       this.incrementCounters(node, FaultID.ArgumentsObject);
-    }
-
-    if (isArkTs2) {
-      this.checkWorkerSymbol(tsIdentSym, node);
     }
     if (isArkTs2 && tsIdentifier.text === LIKE_FUNCTION && isStdLibrarySymbol(tsIdentSym)) {
       this.incrementCounters(node, FaultID.ExplicitFunctionType);
@@ -4784,21 +4781,25 @@ export class TypeScriptLinter {
     }
   }
 
-  private checkWorkerSymbol(symbol: ts.Symbol, node: ts.Node): void {
-    if (symbol.name === WORKER_TEXT) {
-      const decl = TsUtils.getDeclaration(symbol);
+  private checkWorkerImport(node: ts.ImportDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const moduleSpecifier = (node.moduleSpecifier as ts.StringLiteral).text;
+    if (!WORKER_MODULES.includes(moduleSpecifier)) {
+      return;
+    }
 
-      if (!decl) {
-        return;
-      }
-      const sourceFile = decl.getSourceFile();
-      const fileName = path.basename(sourceFile.fileName);
-      if (
-        WORKER_MODULES.some((moduleName) => {
-          return fileName.startsWith(moduleName);
-        })
-      ) {
+    const namedBindings = node.importClause?.namedBindings;
+    if (!namedBindings || namedBindings.kind !== ts.SyntaxKind.NamedImports) {
+      return;
+    }
+    const elements = namedBindings.elements;
+    for (const el of elements) {
+      const importedName = el.propertyName?.text ?? el.name.text;
+      if (importedName === WORKER_TEXT) {
         this.incrementCounters(node, FaultID.LimitedStdLibApi);
+        return;
       }
     }
   }
