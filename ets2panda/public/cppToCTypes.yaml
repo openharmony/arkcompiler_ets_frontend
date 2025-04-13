@@ -2109,7 +2109,7 @@ change_types:
         reinterpret_cast<parser::Program *>(|arg_name|);
       var_name: '|arg_name|E2p'
       reverse_cast:
-          start: reinterpret_cast<?const? parser::Program *>
+          start: reinterpret_cast<?const? es2panda_Program *>
       call_cast:
           call_var:
             name: classInstance
@@ -2134,6 +2134,11 @@ change_types:
     cast:
       expression: auto &|arg_name|E2p = *reinterpret_cast<parser::Program *>(|arg_name|);
       var_name: '|arg_name|E2p'
+      reverse_cast:
+          start: >- 
+            reinterpret_cast<?const? es2panda_Program *>(
+            reinterpret_cast<Context *>(context)->allocator->New<parser::Program>(
+          end: '))'
 
   - es2panda_arg:
       name: '|arg_name|'
