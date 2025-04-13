@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,13 +13,18 @@
  * limitations under the License.
  */
 
-
-function main(): void {
-    let s = "str"
-    s.toString()
-    let a: int [] = [1, 2]
-    let b = s ?? a;
-    /* @@ label */b.toString();
+class A {
+    foo(v: string): void {}
+    foo(v: int): void {}
 }
 
-/* @@@ label Error TypeError: Type String|int[] is illegal in union member expression.  */
+class B {
+    foo(v: string): void {}
+    foo(v: int): void {}
+}
+
+function foo(x: A|B) {
+    /* @@ label */x.foo("123")
+}
+
+/* @@@ label Error TypeError: Union constituent types should have only one common method signature. */
