@@ -18,6 +18,7 @@
 #include <iostream>
 #include <ostream>
 #include <string>
+#include <vector>
 #include "util.h"
 #include "public/es2panda_lib.h"
 
@@ -26,31 +27,18 @@
 static es2panda_Impl *impl = nullptr;
 
 static auto source = std::string("function main() { \nlet a = 5;\n assertEQ(a, 5);\n  }");
+constexpr int NUM_OF_CHANGE_IDENTIFIERS = 2;
 
-static es2panda_AstNode *letStatement = nullptr;
-static es2panda_AstNode *assertStatement = nullptr;
 static es2panda_AstNode *mainScriptFunc = nullptr;
+static std::vector<es2panda_AstNode *> changeIdentifiers {};
 static es2panda_Context *ctx = nullptr;
 
-es2panda_AstNode *parNode;
-es2panda_Context *newCtx;
-
-static void FindLet(es2panda_AstNode *ast)
+static void FindChangeIdentifiers(es2panda_AstNode *ast)
 {
-    if (!impl->IsVariableDeclaration(ast)) {
-        impl->AstNodeIterateConst(ctx, ast, FindLet);
-        return;
+    if (impl->IsIdentifier(ast) && std::string(impl->IdentifierName(ctx, ast)) == "a") {
+        changeIdentifiers.emplace_back(ast);
     }
-    letStatement = ast;
-}
-
-static void FindAssert(es2panda_AstNode *ast)
-{
-    if (!IsAssertCall(ast)) {
-        impl->AstNodeIterateConst(ctx, ast, FindAssert);
-        return;
-    }
-    assertStatement = ast;
+    impl->AstNodeIterateConst(ctx, ast, FindChangeIdentifiers);
 }
 
 static void FindMainDef(es2panda_AstNode *ast)
@@ -68,112 +56,37 @@ static void FindMainDef(es2panda_AstNode *ast)
     mainScriptFunc = scriptFunc;
 }
 
-static void changeParent(es2panda_AstNode *child)
+static bool ChangeAst(es2panda_Context *context)
 {
-    impl->AstNodeSetParent(newCtx, child, parNode);
-}
-
-static void SetRightParent(es2panda_AstNode *node, void *arg)
-{
-    es2panda_Context *context = static_cast<es2panda_Context *>(arg);
-    newCtx = context;
-    parNode = node;
-    impl->AstNodeIterateConst(context, node, changeParent);
-}
-
-static bool ChangeAst(es2panda_Context *context, es2panda_AstNode *ast)
-{
-    std::cout << impl->AstNodeDumpJSONConst(context, ast) << std::endl;
-    size_t n = 0;
+    auto Ast = impl->ProgramAst(context, impl->ContextProgram(context));
     ctx = context;
-    impl->AstNodeIterateConst(context, ast, FindLet);
-    impl->AstNodeIterateConst(context, ast, FindAssert);
-    impl->AstNodeIterateConst(context, ast, FindMainDef);
-    if (mainScriptFunc == nullptr || letStatement == nullptr || assertStatement == nullptr) {
+    impl->AstNodeIterateConst(context, Ast, FindMainDef);
+    if (mainScriptFunc == nullptr) {
         return false;
     }
-    auto mainFuncBody = impl->ScriptFunctionBody(context, mainScriptFunc);
-    std::cout << impl->AstNodeDumpJSONConst(context, mainScriptFunc) << std::endl;
-    auto assertStatementTest = AssertStatementTest(context, assertStatement);
-    std::cout << impl->AstNodeDumpJSONConst(context, letStatement) << std::endl;
-    std::cout << impl->AstNodeDumpJSONConst(context, assertStatementTest) << std::endl;
+    impl->AstNodeIterateConst(context, mainScriptFunc, FindChangeIdentifiers);
+    if (changeIdentifiers.size() != NUM_OF_CHANGE_IDENTIFIERS) {
+        return false;
+    }
 
     std::string className = std::string("b");
     auto *memForName = static_cast<char *>(impl->AllocMemory(context, className.size() + 1, 1));
     std::copy_n(className.c_str(), className.size() + 1, memForName);
 
-    auto varIdent = impl->CreateIdentifier1(context, memForName);
-    auto assertIdent = impl->CreateIdentifier1(context, memForName);
-    auto declarator = impl->CreateVariableDeclarator1(
-        context, Es2pandaVariableDeclaratorFlag::VARIABLE_DECLARATOR_FLAG_LET, varIdent,
-        impl->VariableDeclaratorInit(context, impl->VariableDeclarationDeclaratorsConst(context, letStatement, &n)[0]));
-    auto declaration = impl->CreateVariableDeclaration(
-        context, Es2pandaVariableDeclarationKind::VARIABLE_DECLARATION_KIND_LET, &declarator, 1);
-
-    impl->BinaryExpressionSetLeft(context, assertStatementTest, assertIdent);
-    auto newAssertStatement = CreateAssertStatement(context, assertStatementTest, nullptr);
-
-    es2panda_AstNode *newMainStatements[2] = {declaration, newAssertStatement};
-    impl->BlockStatementSetStatements(context, mainFuncBody, newMainStatements, 2U);
-    impl->AstNodeForEach(ast, SetRightParent, context);
-    std::cout << impl->AstNodeDumpJSONConst(context, ast) << std::endl;
-
-    impl->AstNodeRecheck(context, declaration);
-    impl->AstNodeRecheck(context, newAssertStatement);
-
-    std::cout << impl->AstNodeDumpEtsSrcConst(context, ast) << std::endl;
+    for (auto ident : changeIdentifiers) {
+        impl->IdentifierSetName(context, ident, memForName);
+    }
+    std::cout << impl->AstNodeDumpEtsSrcConst(context, Ast) << std::endl;
+    impl->AstNodeRecheck(context, Ast);
     return true;
 }
 
 int main(int argc, char **argv)
 {
-    if (argc < MIN_ARGC) {
-        return INVALID_ARGC_ERROR_CODE;
-    }
-
-    if (GetImpl() == nullptr) {
-        return NULLPTR_IMPL_ERROR_CODE;
-    }
-    impl = GetImpl();
-    std::cout << "LOAD SUCCESS" << std::endl;
-    const char **args = const_cast<const char **>(&(argv[1]));
-    auto config = impl->CreateConfig(argc - 1, args);
-    auto context = impl->CreateContextFromString(config, source.data(), argv[argc - 1]);
-    if (context == nullptr) {
-        std::cerr << "FAILED TO CREATE CONTEXT" << std::endl;
-        return NULLPTR_CONTEXT_ERROR_CODE;
-    }
-
-    impl->ProceedToState(context, ES2PANDA_STATE_PARSED);
-    CheckForErrors("PARSE", context);
-
-    impl->ProceedToState(context, ES2PANDA_STATE_BOUND);
-    CheckForErrors("BOUND", context);
-
-    impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
-    CheckForErrors("CHECKED", context);
-
-    auto ast = impl->ProgramAst(context, impl->ContextProgram(context));
-    if (!ChangeAst(context, ast)) {
-        return TEST_ERROR_CODE;
-    }
-
-    impl->AstNodeRecheck(context, ast);
-
-    impl->ProceedToState(context, ES2PANDA_STATE_LOWERED);
-    CheckForErrors("LOWERED", context);
-
-    impl->ProceedToState(context, ES2PANDA_STATE_ASM_GENERATED);
-    CheckForErrors("ASM", context);
-
-    impl->ProceedToState(context, ES2PANDA_STATE_BIN_GENERATED);
-    CheckForErrors("BIN", context);
-    if (impl->ContextState(context) == ES2PANDA_STATE_ERROR) {
-        return PROCEED_ERROR_CODE;
-    }
-    impl->DestroyConfig(config);
-
-    return 0;
+    std::map<es2panda_ContextState, std::vector<std::function<bool(es2panda_Context *)>>> testFunctions;
+    testFunctions[ES2PANDA_STATE_CHECKED] = {ChangeAst};
+    ProccedToStatePluginTestData data = {argc, argv, &impl, testFunctions, true, source};
+    return RunAllStagesWithTestFunction(data);
 }
 
 // NOLINTEND

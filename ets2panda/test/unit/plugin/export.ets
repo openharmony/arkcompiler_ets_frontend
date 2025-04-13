@@ -26,3 +26,10 @@ export class A {
     }
     b: int = 2
 }
+
+export class B {
+    foo() : int {
+        return 5;
+    }
+    b: int = 5
+}
