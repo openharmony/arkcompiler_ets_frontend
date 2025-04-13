@@ -152,6 +152,7 @@ parser/ets/array_creation_expression.ets
 runtime/ets/re_export/export/reexport_elements1.ets
 runtime/ets/re_export/export/reexport_elements2.ets
 runtime/ets/re_export/import.ets
+runtime/ets/import_declare_type_alias.ets
 
 # FailKind.ES2PANDA_FAIL
 runtime/ets/StringFasta.ets
