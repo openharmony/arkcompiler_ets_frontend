@@ -66,11 +66,3 @@ KNativePointer impl_ContextErrorMessage(KNativePointer contextPtr)
     return new std::string(GetPublicImpl()->ContextErrorMessage(context));
 }
 TS_INTEROP_1(ContextErrorMessage, KNativePointer, KNativePointer)
-
-KNativePointer impl_ProgramAst(KNativePointer programPtr)
-{
-    auto context = reinterpret_cast<es2panda_Context *>(programPtr);
-    auto program = reinterpret_cast<es2panda_Program *>(programPtr);
-    return GetPublicImpl()->ProgramAst(context, program);
-}
-TS_INTEROP_1(ProgramAst, KNativePointer, KNativePointer)
