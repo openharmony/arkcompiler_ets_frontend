@@ -1114,3 +1114,15 @@ semantic:
 - name: UNION_METHOD_SIGNATURE
   id: 280
   message: "Union constituent types should have only one common method signature."
+
+- name: NOT_ALLOWED_THIS_IN_UNION_TYPE
+  id: 281
+  message: "A 'this' cannot be used as a part of union type."
+
+- name: NOT_ALLOWED_THIS_IN_TUPLE_TYPE
+  id: 282
+  message: "A 'this' cannot be used as a part of tuple type."
+
+- name: NOT_ALLOWED_THIS_IN_ARRAY_TYPE
+  id: 283
+  message: "A 'this' cannot be used as type of array."

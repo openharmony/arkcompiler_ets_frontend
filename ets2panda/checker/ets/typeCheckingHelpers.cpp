@@ -36,6 +36,7 @@
 #include "ir/ts/tsEnumMember.h"
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ets/etsUnionType.h"
+#include "ir/ets/etsTuple.h"
 #include "varbinder/declaration.h"
 #include "checker/ETSchecker.h"
 #include "varbinder/ETSBinder.h"
@@ -904,7 +905,49 @@ void ETSChecker::CheckFunctionSignatureAnnotations(const ArenaVector<ir::Express
     }
 
     if (returnTypeAnnotation != nullptr) {
+        ValidateThisUsage(returnTypeAnnotation);
         CheckAnnotations(returnTypeAnnotation->Annotations());
+    }
+}
+
+bool ETSChecker::CheckAndLogInvalidThisUsage(const ir::TypeNode *type, const diagnostic::DiagnosticKind &diagnostic)
+{
+    if (type->IsTSThisType()) {
+        LogError(diagnostic, {}, type->Start());
+        return true;
+    }
+    return false;
+}
+
+void ETSChecker::ValidateThisUsage(const ir::TypeNode *returnTypeAnnotation)
+{
+    if (returnTypeAnnotation->IsETSUnionType()) {
+        auto types = returnTypeAnnotation->AsETSUnionType()->Types();
+        for (auto type : types) {
+            if (CheckAndLogInvalidThisUsage(type, diagnostic::NOT_ALLOWED_THIS_IN_UNION_TYPE)) {
+                return;
+            }
+            ValidateThisUsage(type);
+        }
+        return;
+    }
+    if (returnTypeAnnotation->IsETSTuple()) {
+        auto types = returnTypeAnnotation->AsETSTuple()->GetTupleTypeAnnotationsList();
+        for (auto type : types) {
+            if (CheckAndLogInvalidThisUsage(type, diagnostic::NOT_ALLOWED_THIS_IN_TUPLE_TYPE)) {
+                return;
+            }
+            ValidateThisUsage(type);
+        }
+        return;
+    }
+    if (returnTypeAnnotation->IsTSArrayType()) {
+        auto elementType = returnTypeAnnotation->AsTSArrayType()->ElementType();
+        if (CheckAndLogInvalidThisUsage(elementType, diagnostic::NOT_ALLOWED_THIS_IN_ARRAY_TYPE)) {
+            return;
+        }
+        ValidateThisUsage(elementType);
+        return;
     }
 }
 

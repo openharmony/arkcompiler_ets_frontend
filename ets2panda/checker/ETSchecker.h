@@ -552,6 +552,8 @@ public:
     void CheckFunctionSignatureAnnotations(const ArenaVector<ir::Expression *> &params,
                                            ir::TSTypeParameterDeclaration *typeParams,
                                            ir::TypeNode *returnTypeAnnotation);
+    bool CheckAndLogInvalidThisUsage(const ir::TypeNode *type, const diagnostic::DiagnosticKind &diagnostic);
+    void ValidateThisUsage(const ir::TypeNode *returnTypeAnnotation);
     void CheckAnnotations(const ArenaVector<ir::AnnotationUsage *> &annotations);
     void CheckAmbientAnnotation(ir::AnnotationDeclaration *annoImpl, ir::AnnotationDeclaration *annoDecl);
     bool CheckAmbientAnnotationFieldInitializerValue(ir::Expression *init, ir::Expression *expected);
