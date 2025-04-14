@@ -265,6 +265,16 @@
             "severity": "ERROR"
         },
         {
+            "line": 32,
+            "column": 20,
+            "endLine": 32,
+            "endColumn": 43,
+            "problem": "ArrayIndexExprType",
+            "suggest": "",
+            "rule": "The index expression must be of a numeric type (arkts-array-index-expr-type)",
+            "severity": "ERROR"
+        },
+        {
             "line": 35,
             "column": 5,
             "endLine": 35,

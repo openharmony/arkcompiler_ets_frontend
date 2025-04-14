@@ -71,3 +71,15 @@ arr1[-0];
 arr1[+1];
 arr1[-1];
 arr1[1.1 as number];
+
+let a:short = 1;
+let b:byte = 1;
+let c:int = 1;
+let d:long = 1;
+
+let arr:number[] = [1,2,3]
+
+arr[a] = 1;
+arr[b] = 1;
+arr[c] = 1;
+arr[d] = 1;
