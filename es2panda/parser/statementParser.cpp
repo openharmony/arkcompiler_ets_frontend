@@ -690,7 +690,7 @@ ir::ClassDeclaration *ParserImpl::ParseClassDeclaration(bool idRequired, ArenaVe
                                                         bool isAbstract, bool isExported, bool isAnnotation)
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
-    ir::ClassDefinition *classDefinition = ParseClassDefinition(true, idRequired, isDeclare, isAbstract);
+    ir::ClassDefinition *classDefinition = ParseClassDefinition(true, idRequired, isDeclare, isAbstract, isAnnotation);
     if (isExported && !idRequired) {
         classDefinition->SetAsExportDefault();
     }
@@ -2610,6 +2610,10 @@ ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::
         }
 
         lexer::Token localToken = lexer_->GetToken();
+        if (program_.IsEnableAnnotations() && CheckAnnotationPrefix(lexer_->GetToken().Ident())) {
+            localToken.SetIdent(lexer_->GetToken().Ident().Substr(std::strlen(ir::Annotation::annotationPrefix),
+                                                                  lexer_->GetToken().Ident().Length()));
+        }
         auto *local = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
         local->SetRange(lexer_->GetToken().Loc());
 
@@ -2990,6 +2994,10 @@ void ParserImpl::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifie
         }
 
         lexer::Token importedToken = lexer_->GetToken();
+        if (program_.IsEnableAnnotations() && CheckAnnotationPrefix(lexer_->GetToken().Ident())) {
+            importedToken.SetIdent(lexer_->GetToken().Ident().Substr(std::strlen(ir::Annotation::annotationPrefix),
+                                                                     lexer_->GetToken().Ident().Length()));
+        }
         auto *imported = AllocNode<ir::Identifier>(importedToken.Ident());
         ir::Identifier *local = nullptr;
         imported->SetRange(lexer_->GetToken().Loc());

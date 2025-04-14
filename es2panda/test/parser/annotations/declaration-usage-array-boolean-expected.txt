@@ -14,7 +14,7 @@
             },
             "end": {
               "line": 16,
-              "column": 16
+              "column": 38
             }
           }
         },
@@ -164,7 +164,7 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 17
+            "column": 39
           },
           "end": {
             "line": 18,
@@ -278,7 +278,7 @@
                 "type": "CallExpression",
                 "callee": {
                   "type": "Identifier",
-                  "name": "__$$ETS_ANNOTATION$$__Anno",
+                  "name": "Anno",
                   "loc": {
                     "start": {
                       "line": 20,
@@ -507,7 +507,7 @@
                   "type": "CallExpression",
                   "callee": {
                     "type": "Identifier",
-                    "name": "__$$ETS_ANNOTATION$$__Anno",
+                    "name": "Anno",
                     "loc": {
                       "start": {
                         "line": 22,

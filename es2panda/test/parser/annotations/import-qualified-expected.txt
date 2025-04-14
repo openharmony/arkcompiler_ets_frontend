@@ -152,7 +152,7 @@
                   "type": "MemberExpression",
                   "object": {
                     "type": "Identifier",
-                    "name": "__$$ETS_ANNOTATION$$__Namespace1",
+                    "name": "Namespace1",
                     "loc": {
                       "start": {
                         "line": 18,
@@ -160,7 +160,7 @@
                       },
                       "end": {
                         "line": 18,
-                        "column": 34
+                        "column": 12
                       }
                     }
                   },
@@ -170,7 +170,7 @@
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 35
+                        "column": 13
                       },
                       "end": {
                         "line": 18,
@@ -348,7 +348,7 @@
                 "type": "MemberExpression",
                 "object": {
                   "type": "Identifier",
-                  "name": "__$$ETS_ANNOTATION$$__Namespace1",
+                  "name": "Namespace1",
                   "loc": {
                     "start": {
                       "line": 21,
@@ -356,7 +356,7 @@
                     },
                     "end": {
                       "line": 21,
-                      "column": 34
+                      "column": 12
                     }
                   }
                 },
@@ -366,7 +366,7 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 35
+                      "column": 13
                     },
                     "end": {
                       "line": 21,
@@ -533,7 +533,7 @@
                   "type": "MemberExpression",
                   "object": {
                     "type": "Identifier",
-                    "name": "__$$ETS_ANNOTATION$$__Namespace1",
+                    "name": "Namespace1",
                     "loc": {
                       "start": {
                         "line": 24,
@@ -541,7 +541,7 @@
                       },
                       "end": {
                         "line": 24,
-                        "column": 34
+                        "column": 12
                       }
                     }
                   },
@@ -551,7 +551,7 @@
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 35
+                        "column": 13
                       },
                       "end": {
                         "line": 24,
@@ -841,7 +841,7 @@
                       "type": "MemberExpression",
                       "object": {
                         "type": "Identifier",
-                        "name": "__$$ETS_ANNOTATION$$__Namespace1",
+                        "name": "Namespace1",
                         "loc": {
                           "start": {
                             "line": 27,
@@ -849,7 +849,7 @@
                           },
                           "end": {
                             "line": 27,
-                            "column": 34
+                            "column": 12
                           }
                         }
                       },
@@ -859,11 +859,11 @@
                         "loc": {
                           "start": {
                             "line": 27,
-                            "column": 35
+                            "column": 13
                           },
                           "end": {
                             "line": 27,
-                            "column": 45
+                            "column": 23
                           }
                         }
                       },
@@ -876,7 +876,7 @@
                         },
                         "end": {
                           "line": 27,
-                          "column": 45
+                          "column": 23
                         }
                       }
                     },
@@ -886,11 +886,11 @@
                       "loc": {
                         "start": {
                           "line": 27,
-                          "column": 46
+                          "column": 24
                         },
                         "end": {
                           "line": 27,
-                          "column": 56
+                          "column": 34
                         }
                       }
                     },
@@ -903,7 +903,7 @@
                       },
                       "end": {
                         "line": 27,
-                        "column": 56
+                        "column": 34
                       }
                     }
                   },
@@ -913,7 +913,7 @@
                     "loc": {
                       "start": {
                         "line": 27,
-                        "column": 57
+                        "column": 35
                       },
                       "end": {
                         "line": 27,
@@ -1095,7 +1095,7 @@
                     "type": "MemberExpression",
                     "object": {
                       "type": "Identifier",
-                      "name": "__$$ETS_ANNOTATION$$__Namespace1",
+                      "name": "Namespace1",
                       "loc": {
                         "start": {
                           "line": 30,
@@ -1103,7 +1103,7 @@
                         },
                         "end": {
                           "line": 30,
-                          "column": 34
+                          "column": 12
                         }
                       }
                     },
@@ -1113,11 +1113,11 @@
                       "loc": {
                         "start": {
                           "line": 30,
-                          "column": 35
+                          "column": 13
                         },
                         "end": {
                           "line": 30,
-                          "column": 45
+                          "column": 23
                         }
                       }
                     },
@@ -1130,7 +1130,7 @@
                       },
                       "end": {
                         "line": 30,
-                        "column": 45
+                        "column": 23
                       }
                     }
                   },
@@ -1140,11 +1140,11 @@
                     "loc": {
                       "start": {
                         "line": 30,
-                        "column": 46
+                        "column": 24
                       },
                       "end": {
                         "line": 30,
-                        "column": 56
+                        "column": 34
                       }
                     }
                   },
@@ -1157,7 +1157,7 @@
                     },
                     "end": {
                       "line": 30,
-                      "column": 56
+                      "column": 34
                     }
                   }
                 },
@@ -1167,7 +1167,7 @@
                   "loc": {
                     "start": {
                       "line": 30,
-                      "column": 57
+                      "column": 35
                     },
                     "end": {
                       "line": 30,
@@ -1338,7 +1338,7 @@
                       "type": "MemberExpression",
                       "object": {
                         "type": "Identifier",
-                        "name": "__$$ETS_ANNOTATION$$__Namespace1",
+                        "name": "Namespace1",
                         "loc": {
                           "start": {
                             "line": 33,
@@ -1346,7 +1346,7 @@
                           },
                           "end": {
                             "line": 33,
-                            "column": 34
+                            "column": 12
                           }
                         }
                       },
@@ -1356,11 +1356,11 @@
                         "loc": {
                           "start": {
                             "line": 33,
-                            "column": 35
+                            "column": 13
                           },
                           "end": {
                             "line": 33,
-                            "column": 45
+                            "column": 23
                           }
                         }
                       },
@@ -1373,7 +1373,7 @@
                         },
                         "end": {
                           "line": 33,
-                          "column": 45
+                          "column": 23
                         }
                       }
                     },
@@ -1383,11 +1383,11 @@
                       "loc": {
                         "start": {
                           "line": 33,
-                          "column": 46
+                          "column": 24
                         },
                         "end": {
                           "line": 33,
-                          "column": 56
+                          "column": 34
                         }
                       }
                     },
@@ -1400,7 +1400,7 @@
                       },
                       "end": {
                         "line": 33,
-                        "column": 56
+                        "column": 34
                       }
                     }
                   },
@@ -1410,7 +1410,7 @@
                     "loc": {
                       "start": {
                         "line": 33,
-                        "column": 57
+                        "column": 35
                       },
                       "end": {
                         "line": 33,
