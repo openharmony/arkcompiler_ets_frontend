@@ -34,8 +34,10 @@ import {
   STRINGLITERAL_NUMBER,
   STRINGLITERAL_STRING,
   STRINGLITERAL_INT,
-  STRINGLITERAL_ANY
-} from './utils/consts/StringLiteral';
+  STRINGLITERAL_ANY,
+  STRINGLITERAL_BYTE,
+  STRINGLITERAL_SHORT,
+  STRINGLITERAL_LONG } from './utils/consts/StringLiteral';
 import {
   NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS,
   NON_INITIALIZABLE_PROPERTY_DECORATORS,
@@ -2996,9 +2998,12 @@ export class TypeScriptLinter {
 
     const argExpr = TypeScriptLinter.getUnwrappedArgumentExpression(expr.argumentExpression);
 
+    const validStringLiteralTypes = [STRINGLITERAL_INT, STRINGLITERAL_BYTE, STRINGLITERAL_SHORT, STRINGLITERAL_LONG];
+    const argTypeString = this.tsTypeChecker.typeToString(argType);
+
     if (this.tsUtils.isNumberLikeType(argType)) {
       this.handleNumericArgument(argExpr);
-    } else if (this.tsTypeChecker.typeToString(argType) !== STRINGLITERAL_INT) {
+    } else if (!validStringLiteralTypes.includes(argTypeString)) {
       this.incrementCounters(argExpr, FaultID.ArrayIndexExprType);
     }
   }
@@ -3037,8 +3042,7 @@ export class TypeScriptLinter {
     const initializerNumber = isNumericInitializer ? Number(initializerText) : NaN;
     const isUnsafeNumber = isNumericInitializer && !Number.isInteger(initializerNumber);
     const isConstDeclaration = firstDeclaration.parent.flags === ts.NodeFlags.Let;
-    const isUndefinedButNotMaxSafeInteger =
-      initializerText === 'undefined' && argExpr.getText() !== 'Number.MAX_SAFE_INTEGER';
+    const isUndefinedButNotMaxSafeInteger = initializerText === 'undefined';
 
     if (
       isUnsafeNumber ||
