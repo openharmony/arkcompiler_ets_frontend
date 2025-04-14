@@ -178,6 +178,14 @@ export enum FaultID {
   LimitedVoidTypeFromSdk,
   EntryAnnotation,
   ProvideAnnotation,
+  OptionalMethodFromSdk,
+  SendablePropTypeFromSdk,
+  ConstructorIfaceFromSdk,
+  PropertyAccessByIndexFromSdk,
+  ConstructorTypesDeprecated,
+  QuotedHyphenPropsDeprecated,
+  ApiPathChanged,
+  SdkTypeQuery,
   // this should always be last enum
   LAST_ID
 }

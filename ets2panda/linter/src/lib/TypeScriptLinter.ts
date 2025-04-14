@@ -87,9 +87,10 @@ import { arkuiImportList } from './utils/consts/ArkuiImportList';
 import { REFLECT_PROPERTIES, USE_STATIC } from './utils/consts/InteropAPI';
 import { EXTNAME_TS, EXTNAME_D_TS } from './utils/consts/ExtensionName';
 import { ARKTS_IGNORE_DIRS_OH_MODULES } from './utils/consts/ArktsIgnorePaths';
-import type { ApiInfo } from './utils/consts/SdkWhitelist';
+import type { ApiInfo, ApiListItem } from './utils/consts/SdkWhitelist';
 import { ApiList } from './utils/consts/SdkWhitelist';
 import * as apiWhiteList from './data/SdkWhitelist.json';
+import { SdkProblem, ARKTS_WHITE_API_PATH_TEXTSTYLE } from './utils/consts/WhiteListProblemType';
 
 export class TypeScriptLinter {
   totalVisitedNodes: number = 0;
@@ -121,6 +122,7 @@ export class TypeScriptLinter {
   private funcMap: Map<string, Set<ApiInfo>> = new Map<string, Set<ApiInfo>>();
   private interfaceMap: Map<string, Set<ApiInfo>> = new Map<string, Set<ApiInfo>>();
   static pathMap: Map<string, Set<ApiInfo>>;
+  static indexedTypeSet: Set<ApiListItem>;
 
   static initGlobals(): void {
     TypeScriptLinter.sharedModulesCache = new Map<string, boolean>();
@@ -152,7 +154,14 @@ export class TypeScriptLinter {
     }
   }
 
+  private static addSdkIndexedTypeSetData(item: ApiListItem): void {
+    if (item.api_info.problem === SdkProblem.IndexedAccessType) {
+      TypeScriptLinter.indexedTypeSet.add(item);
+    }
+  }
+
   private static initSdkWhitelist(): void {
+    TypeScriptLinter.indexedTypeSet = new Set<ApiListItem>();
     const list: ApiList = new ApiList(apiWhiteList);
     if (list?.api_list?.length > 0) {
       for (const item of list.api_list) {
@@ -162,6 +171,7 @@ export class TypeScriptLinter {
         item.import_path.forEach((path) => {
           TypeScriptLinter.addOrUpdateData(TypeScriptLinter.pathMap, `'${path}'`, item.api_info);
         });
+        TypeScriptLinter.addSdkIndexedTypeSetData(item);
       }
     }
   }
@@ -818,12 +828,30 @@ export class TypeScriptLinter {
       if (importDeclNode.assertClause) {
         this.incrementCounters(importDeclNode.assertClause, FaultID.ImportAssertion);
       }
+      const stringLiteral = expr as ts.StringLiteral;
+      this.handleSdkSendable(stringLiteral);
     }
 
     // handle no side effect import in sendable module
     this.handleSharedModuleNoSideEffectImport(importDeclNode);
     this.handleInvalidIdentifier(importDeclNode);
     this.checkWorkerImport(importDeclNode);
+  }
+
+  private handleSdkSendable(tsStringLiteral: ts.StringLiteral): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const moduleSpecifierValue = tsStringLiteral.getText();
+    const sdkInfos = TypeScriptLinter.pathMap.get(moduleSpecifierValue);
+
+    if (!sdkInfos || sdkInfos.size === 0) {
+      return;
+    }
+    if (moduleSpecifierValue.includes('sendable')) {
+      this.incrementCounters(tsStringLiteral, FaultID.SendablePropTypeFromSdk);
+    }
   }
 
   private handleImportModule(importDeclNode: ts.ImportDeclaration): void {
@@ -880,7 +908,7 @@ export class TypeScriptLinter {
 
   private handlePropertyAccessExpression(node: ts.Node): void {
     this.handleDoubleDollar(node);
-
+    this.handleSdkTypeQuery(node as ts.PropertyAccessExpression);
     this.checkUnionTypes(node as ts.PropertyAccessExpression);
     if (ts.isCallExpression(node.parent) && node === node.parent.expression) {
       return;
@@ -919,6 +947,7 @@ export class TypeScriptLinter {
       this.incrementCounters(propertyAccessNode, FaultID.SendableFunctionProperty);
     }
     this.checkFunctionProperty(propertyAccessNode, baseExprSym, baseExprType);
+    this.handleSdkForConstructorFuncs(propertyAccessNode);
   }
 
   checkFunctionProperty(
@@ -1056,6 +1085,7 @@ export class TypeScriptLinter {
     this.checkAssignmentNumericSemanticslyPro(node);
     this.handleInvalidIdentifier(node);
     this.handleStructPropertyDecl(node);
+    this.handleApipathChanged(node);
   }
 
   private handleSendableClassProperty(node: ts.PropertyDeclaration): void {
@@ -1871,6 +1901,27 @@ export class TypeScriptLinter {
     this.handleLimitedVoidType(tsVarDecl);
     this.handleInvalidIdentifier(tsVarDecl);
     this.checkAssignmentNumericSemanticsly(tsVarDecl);
+    this.checkTypeFromSdk(tsVarDecl.type);
+  }
+
+  private checkTypeFromSdk(type: ts.TypeNode | undefined): void {
+    if (!this.options.arkts2 || !type) {
+      return;
+    }
+
+    const fullTypeName = type.getText();
+    const nameArr = fullTypeName.split('.');
+    const sdkInfos = this.interfaceMap.get(nameArr[0]);
+    if (!sdkInfos || sdkInfos.size === 0) {
+      return;
+    }
+
+    for (const sdkInfo of sdkInfos) {
+      if (nameArr.includes(sdkInfo.api_name)) {
+        this.incrementCounters(type, FaultID.LimitedVoidTypeFromSdk);
+        return;
+      }
+    }
   }
 
   private handleDeclarationDestructuring(decl: ts.VariableDeclaration | ts.ParameterDeclaration): void {
@@ -2101,9 +2152,12 @@ export class TypeScriptLinter {
       }
 
       const memberName = member.name?.getText();
-      if (sdkInfo.api_name === memberName && sdkInfo.api_func_args.length === member.parameters.length) {
+      if (sdkInfo.api_name === memberName) {
         if (TypeScriptLinter.areParametersEqual(sdkInfo.api_func_args, member.parameters)) {
-          this.incrementCounters(member, FaultID.LimitedVoidTypeFromSdk);
+          this.incrementCounters(
+            member,
+            sdkInfo.problem === 'OptionalMethod' ? FaultID.OptionalMethodFromSdk : FaultID.LimitedVoidTypeFromSdk
+          );
         }
       }
     }
@@ -2113,8 +2167,15 @@ export class TypeScriptLinter {
     sdkFuncArgs: { name: string; type: string }[],
     memberParams: ts.NodeArray<ts.ParameterDeclaration>
   ): boolean {
-    for (let i = 0; i < sdkFuncArgs.length; i++) {
-      if (sdkFuncArgs[i].type !== memberParams[i].type?.getText()) {
+    const apiParamCout = sdkFuncArgs.length;
+    const memberParamCout = memberParams.length;
+    if (apiParamCout > memberParamCout && sdkFuncArgs[memberParamCout + 1]) {
+      return false;
+    }
+
+    for (let i = 0; i < apiParamCout; i++) {
+      const typeName = memberParams[i].type?.getText();
+      if (!typeName?.match(sdkFuncArgs[i].type)) {
         return false;
       }
     }
@@ -2916,9 +2977,47 @@ export class TypeScriptLinter {
     }
   }
 
+  private handleSdkPropertyAccessByIndex(tsCallExpr: ts.CallExpression): void {
+    const propertyAccessNode = tsCallExpr.expression as ts.PropertyAccessExpression;
+    if (!ts.isPropertyAccessExpression(propertyAccessNode)) {
+      return;
+    }
+
+    const funcName = propertyAccessNode.name;
+    const indexedTypeSdkInfos = Array.from(TypeScriptLinter.indexedTypeSet);
+    const isCallInDeprecatedApi = indexedTypeSdkInfos.some((indexedTypeSdkInfo) => {
+      const isApiNameMismatch = funcName?.getText() !== indexedTypeSdkInfo.api_info.api_name;
+      if (isApiNameMismatch) {
+        return false;
+      }
+
+      const funcDecls = this.tsTypeChecker.getTypeAtLocation(funcName).symbol?.declarations;
+      return funcDecls?.some((declaration) => {
+        const interfaceDecl = declaration.parent as ts.InterfaceDeclaration;
+        if (!(ts.isMethodSignature(declaration) && ts.isInterfaceDeclaration(interfaceDecl))) {
+          return false;
+        }
+        const declFileFromJson = path.normalize(interfaceDecl.getSourceFile().fileName);
+        const declFileFromSdk =
+          indexedTypeSdkInfo.file_path.length > 0 ? path.normalize(indexedTypeSdkInfo.file_path[0]) : '';
+        const isSameSdkFilePath = declFileFromJson.endsWith(declFileFromSdk);
+        const interfaceNameData = indexedTypeSdkInfo.api_info.parent_api[0].api_name;
+        const isSameInterfaceName = interfaceDecl.name.getText() === interfaceNameData;
+        return isSameSdkFilePath && isSameInterfaceName;
+      });
+    });
+    if (isCallInDeprecatedApi) {
+      this.incrementCounters(tsCallExpr.expression, FaultID.PropertyAccessByIndexFromSdk);
+    }
+  }
+
   private handleCallExpression(node: ts.Node): void {
     const tsCallExpr = node as ts.CallExpression;
     this.handleStateStyles(tsCallExpr);
+
+    if (this.options.arkts2 && tsCallExpr.typeArguments !== undefined) {
+      this.handleSdkPropertyAccessByIndex(tsCallExpr);
+    }
 
     this.handleTsInterop(tsCallExpr.expression, () => {
       this.checkInteropFunctionCall(tsCallExpr);
@@ -3406,8 +3505,33 @@ export class TypeScriptLinter {
     }
   }
 
+  private handleSdkConstructorIface(typeRef: ts.TypeReferenceNode): void {
+    if (!this.options.arkts2 && typeRef?.typeName === undefined && !ts.isQualifiedName(typeRef.typeName)) {
+      return;
+    }
+    const qualifiedName = typeRef.typeName as ts.QualifiedName;
+    // tsc version diff
+    const topName = qualifiedName.left?.getText();
+    const sdkInfos = this.interfaceMap.get(topName);
+    if (!sdkInfos) {
+      return;
+    }
+    for (const sdkInfo of sdkInfos) {
+      if (sdkInfo.api_type !== 'ConstructSignature') {
+        continue;
+      }
+      // sdk api from json has 3 overload. need consider these case.
+      if (sdkInfo.parent_api[0].api_name === qualifiedName.right.getText()) {
+        this.incrementCounters(typeRef, FaultID.ConstructorIfaceFromSdk);
+        break;
+      }
+    }
+  }
+
   private handleTypeReference(node: ts.Node): void {
     const typeRef = node as ts.TypeReferenceNode;
+
+    this.handleSdkConstructorIface(typeRef);
 
     const isESObject = TsUtils.isEsObjectType(typeRef);
     const isPossiblyValidContext = TsUtils.isEsObjectPossiblyAllowed(typeRef);
@@ -3433,6 +3557,7 @@ export class TypeScriptLinter {
     if (this.tsUtils.isSendableClassOrInterface(typeNameType)) {
       this.checkSendableTypeArguments(typeRef);
     }
+    this.handleQuotedHyphenPropsDeprecated(typeRef);
   }
 
   private checkPartialType(node: ts.Node): void {
@@ -5243,5 +5368,145 @@ export class TypeScriptLinter {
     node: ts.Node
   ): node is ts.FunctionDeclaration | ts.MethodDeclaration | ts.FunctionExpression {
     return ts.isFunctionDeclaration(node) || ts.isMethodDeclaration(node) || ts.isFunctionExpression(node);
+  }
+
+  private handleSdkForConstructorFuncs(node: ts.PropertyAccessExpression): void {
+    if (!this.options.arkts2 || !node) {
+      return;
+    }
+    const sdkInfos = this.interfaceMap.get(node.expression.getText());
+    if (!sdkInfos || sdkInfos.size === 0) {
+      return;
+    }
+
+    for (const sdkInfo of sdkInfos) {
+      const propertyName = node.name.getText();
+      if (propertyName === sdkInfo.api_name) {
+        this.incrementCounters(node.name, FaultID.ConstructorTypesDeprecated);
+      }
+    }
+  }
+
+  private handleQuotedHyphenPropsDeprecated(typeRef: ts.TypeReferenceNode): void {
+    if (!this.options.arkts2 || !ts.isQualifiedName(typeRef.typeName)) {
+      return;
+    }
+    const qualNode = typeRef.typeName;
+    const parent = typeRef.parent;
+    const sdkInfos = this.interfaceMap.get(qualNode.left.getText());
+    if (!sdkInfos || sdkInfos.size === 0) {
+      return;
+    }
+
+    for (const sdkInfo of sdkInfos) {
+      this.processQuotedHyphenPropsDeprecated(parent, sdkInfo.api_name);
+    }
+  }
+
+  private processQuotedHyphenPropsDeprecated(node: ts.Node, apiName: string): void {
+    if (ts.isVariableDeclaration(node)) {
+      this.handleQuotedHyphenPropsDeprecatedOnVarDecl(node, apiName);
+    } else if (ts.isFunctionDeclaration(node)) {
+      this.handleQuotedHyphenPropsDeprecatedOnFunDecl(node, apiName);
+    }
+  }
+
+  private handleQuotedHyphenPropsDeprecatedOnVarDecl(node: ts.VariableDeclaration, apiName: string): void {
+    const initializer = node.initializer;
+    if (!(initializer && ts.isObjectLiteralExpression(initializer))) {
+      return;
+    }
+    initializer.properties.forEach((property) => {
+      if (!ts.isPropertyAssignment(property)) {
+        return;
+      }
+      const propertyName = property.name.getText();
+      if (propertyName === apiName) {
+        this.incrementCounters(property.name, FaultID.QuotedHyphenPropsDeprecated);
+      }
+    });
+  }
+
+  private handleQuotedHyphenPropsDeprecatedOnFunDecl(node: ts.FunctionDeclaration, apiName: string): void {
+    const body = node.body;
+    if (!body || !ts.isBlock(body)) {
+      return;
+    }
+
+    body.statements.forEach(this.processStatement.bind(this, apiName));
+  }
+
+  private processStatement(apiName: string, statement: ts.Statement): void {
+    if (!ts.isReturnStatement(statement)) {
+      return;
+    }
+
+    const returnValue = statement.expression;
+    if (!returnValue || !ts.isObjectLiteralExpression(returnValue)) {
+      return;
+    }
+
+    returnValue.properties.forEach(this.processProperty.bind(this, apiName));
+  }
+
+  private processProperty(apiName: string, property: ts.ObjectLiteralElementLike): void {
+    if (!ts.isPropertyAssignment(property)) {
+      return;
+    }
+
+    const isMatch = property.name.getText() === apiName;
+    if (isMatch) {
+      this.incrementCounters(property.name, FaultID.QuotedHyphenPropsDeprecated);
+    }
+  }
+
+  private handleApipathChanged(node: ts.PropertyDeclaration): void {
+    if (!this.options.arkts2 || !ts.isPropertyDeclaration(node)) {
+      return;
+    }
+    const processApiNode = (apiName: string, errorNode: ts.Node): void => {
+      const sdkInfos = TypeScriptLinter.pathMap.get(`'${ARKTS_WHITE_API_PATH_TEXTSTYLE}'`);
+      if (!sdkInfos) {
+        return;
+      }
+      const matchedApi = [...sdkInfos].find((sdkInfo) => {
+        return sdkInfo.api_name === apiName;
+      });
+      if (matchedApi) {
+        this.incrementCounters(errorNode, FaultID.ApiPathChanged);
+      }
+    };
+    if (node.type && ts.isTypeReferenceNode(node.type)) {
+      const typeName = node.type.typeName;
+      if (ts.isIdentifier(typeName)) {
+        processApiNode(typeName.text, node.type);
+      }
+    }
+    if (node.initializer && ts.isNewExpression(node.initializer)) {
+      const expression = node.initializer.expression;
+      if (ts.isIdentifier(expression)) {
+        processApiNode(expression.text, expression);
+      }
+    }
+  }
+
+  private handleSdkTypeQuery(decl: ts.PropertyAccessExpression): void {
+    if (!this.options.arkts2 || !ts.isPropertyAccessExpression(decl)) {
+      return;
+    }
+    if (ts.isPropertyAccessExpression(decl.expression)) {
+      const importApiName = ts.isIdentifier(decl.expression.expression) && decl.expression.expression.text || '';
+      const sdkInfos = importApiName && this.interfaceMap.get(importApiName);
+      if (!sdkInfos) {
+        return;
+      }
+      const apiName = ts.isIdentifier(decl.name) && decl.name.text || '';
+      const matchedApi = [...sdkInfos].find((sdkInfo) => {
+        return sdkInfo.api_name === apiName;
+      });
+      if (matchedApi) {
+        this.incrementCounters(decl.name, FaultID.SdkTypeQuery);
+      }
+    }
   }
 }

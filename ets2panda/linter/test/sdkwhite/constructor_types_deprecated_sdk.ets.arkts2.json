@@ -15,33 +15,23 @@
     ],
     "result": [
         {
-            "line": 44,
-            "column": 29,
-            "endLine": 44,
-            "endColumn": 54,
-            "problem": "IndexedAccessType",
+            "line": 20,
+            "column": 5,
+            "endLine": 20,
+            "endColumn": 32,
+            "problem": "DynamicCtorCall",
             "suggest": "",
-            "rule": "Indexed access types are not supported (arkts-no-aliases-by-index)",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
             "severity": "ERROR"
         },
         {
-            "line": 46,
-            "column": 85,
-            "endLine": 46,
-            "endColumn": 110,
-            "problem": "IndexedAccessType",
+            "line": 20,
+            "column": 19,
+            "endLine": 20,
+            "endColumn": 32,
+            "problem": "ConstructorTypesDeprecated",
             "suggest": "",
-            "rule": "Indexed access types are not supported (arkts-no-aliases-by-index)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 50,
-            "column": 17,
-            "endLine": 50,
-            "endColumn": 18,
-            "problem": "ObjectLiteralNoContextType",
-            "suggest": "",
-            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "rule": "Constructor types are not supported - use lambda functions instead. (sdk-constructor-funcs)",
             "severity": "ERROR"
         }
     ]

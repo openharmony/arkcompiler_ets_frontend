@@ -14,6 +14,45 @@
         "limitations under the License."
     ],
     "result": [
-        
+        {
+            "line": 24,
+            "column": 7,
+            "endLine": 24,
+            "endColumn": 26,
+            "problem": "PropertyAccessByIndexFromSdk",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (sdk-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 29,
+            "endLine": 44,
+            "endColumn": 54,
+            "problem": "IndexedAccessType",
+            "suggest": "",
+            "rule": "Indexed access types are not supported (arkts-no-aliases-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 46,
+            "column": 85,
+            "endLine": 46,
+            "endColumn": 110,
+            "problem": "IndexedAccessType",
+            "suggest": "",
+            "rule": "Indexed access types are not supported (arkts-no-aliases-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 17,
+            "endLine": 50,
+            "endColumn": 18,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        }
     ]
 }

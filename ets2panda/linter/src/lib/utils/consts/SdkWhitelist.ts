@@ -18,11 +18,13 @@ export class ApiFuncArg {
   name: string;
   type: string;
   is_optional: boolean;
+  hasDefault: boolean;
 
   constructor(data: Partial<ApiFuncArg>) {
     this.name = data.name || '';
     this.type = data.type || '';
     this.is_optional = data.is_optional || false;
+    this.hasDefault = data.hasDefault || false;
   }
 }
 
@@ -75,13 +77,11 @@ export class ApiListItem {
   import_path: string[];
   file_path: string[];
   api_info: ApiInfo;
-  is_global: boolean;
 
   constructor(data: Partial<ApiListItem>) {
     this.import_path = data.import_path || [];
     this.file_path = data.file_path || [];
     this.api_info = new ApiInfo(data.api_info || {});
-    this.is_global = data.is_global || false;
   }
 }
 

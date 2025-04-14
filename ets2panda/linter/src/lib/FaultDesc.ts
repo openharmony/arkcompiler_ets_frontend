@@ -177,4 +177,11 @@ faultDesc[FaultID.InteropTSFunctionInvoke] = 'TS Function Invoke';
 faultDesc[FaultID.LimitedVoidTypeFromSdk] = 'Limited void type from sdk';
 faultDesc[FaultID.EntryAnnotation] = '"@Entry" decorator parameter';
 faultDesc[FaultID.ProvideAnnotation] = '"@Provide" decorator parameter';
-
+faultDesc[FaultID.OptionalMethodFromSdk] = 'Optional method from sdk';
+faultDesc[FaultID.SendablePropTypeFromSdk] = 'ISendable is no longer supported';
+faultDesc[FaultID.ConstructorIfaceFromSdk] = 'Construct signatures are not supported in interfaces from sdk';
+faultDesc[FaultID.PropertyAccessByIndexFromSdk] = 'property access by index from sdk';
+faultDesc[FaultID.ConstructorTypesDeprecated] = 'Constructor funcs';
+faultDesc[FaultID.QuotedHyphenPropsDeprecated] = 'Quoted hyphen props deprecated';
+faultDesc[FaultID.ApiPathChanged] = 'API path have changed';
+faultDesc[FaultID.SdkTypeQuery] = 'NO typeof as a type in API';
