@@ -19,6 +19,7 @@ import { exit } from 'node:process'
 import { dirname } from 'path'
 import shell from 'shelljs'
 import { fileURLToPath } from 'url'
+import path from 'node:path'
 
 // waitTime in ms
 function sleep(waitTime) {
@@ -45,6 +46,32 @@ function detectOS() {
     return detectedOS
 }
 
+function backupPackageJson(dirPath) {
+    const pkgPath = path.join(dirPath, 'package.json')
+    const backupName = `package.json.bak-${Date.now()}`
+    
+    if (!fs.existsSync(pkgPath)) {
+      console.error(`[ERROR] package.json not found in ${dirPath}`)
+      process.exit(1)
+    }
+  
+    fs.copyFileSync(pkgPath, path.join(dirPath, backupName))
+    return backupName
+}
+
+function restorePackageJson(dirPath, backupFile) {
+   const currentPkg = path.join(dirPath, 'package.json')
+   const backupPath = path.join(dirPath, backupFile)
+
+   if (!fs.existsSync(backupPath)) {
+      console.error(`[ERROR] Backup file not found: ${backupPath}`)
+      process.exit(1)
+   }
+
+   fs.rmSync(currentPkg, { force: true })
+   fs.renameSync(backupPath, currentPkg)
+}
+
 function getTypescript(detectedOS) {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = dirname(__filename);
@@ -52,6 +79,8 @@ function getTypescript(detectedOS) {
     const linter = __dirname + '/..'
     const third_party = __dirname + '/../third_party'
     const typescript_dir = third_party + '/third_party_typescript'
+    const arkanalyzer = __dirname + '/../arkanalyzer'
+    const homecheck = __dirname + '/../homecheck'
     
     if (!fs.existsSync(third_party)) {
         fs.mkdirSync(third_party);
@@ -103,15 +132,36 @@ function getTypescript(detectedOS) {
         exit(1)
     }
     
-    const npm_package = shell.exec('npm pack').stdout.trim()
+    const npm_typescript_package = shell.exec('npm pack').stdout.trim()
+    
+    shell.cd(arkanalyzer)
+    const arkanalyzerBackFile = backupPackageJson(arkanalyzer)
+    shell.exec(`npm install ${typescript_dir}/${npm_typescript_package}`)
+    shell.exec('npm run compile')
+    const npm_arkanalyzer_package = shell.exec('npm pack').stdout.trim()
+    restorePackageJson(arkanalyzer, arkanalyzerBackFile)
+    shell.rm('-rf', 'lib')
+    
+    shell.cd(homecheck)
+    const homecheckBackFile = backupPackageJson(homecheck)
+
+    shell.exec(`npm install ${arkanalyzer}/${npm_arkanalyzer_package}`)
+    shell.exec(`npm install --no-save ${typescript_dir}/${npm_typescript_package}`)
+    shell.exec('npm run compile')
+    const npm_homecheck_package = shell.exec('npm pack').stdout.trim()
+    restorePackageJson(homecheck, homecheckBackFile)
+    shell.rm('-rf', 'lib')
+
     shell.cd(linter)
-    shell.exec(`npm install --no-save ${typescript_dir}/${npm_package}`)
+    shell.exec(`npm install --no-save ${typescript_dir}/${npm_typescript_package}  ${homecheck}/${npm_homecheck_package}`)
     
     const node_modules = linter + '/node_modules'
     
     fs.rmSync(node_modules + '/typescript', {recursive: true, force: true})
-    shell.exec(`tar -xzf "${typescript_dir}/${npm_package}" -C node_modules --strip-components 1 --one-top-level=typescript`);
-    shell.rm(`${typescript_dir}/${npm_package}`)
+    shell.exec(`tar -xzf "${typescript_dir}/${npm_typescript_package}" -C node_modules --strip-components 1 --one-top-level=typescript`)
+    shell.rm(`${typescript_dir}/${npm_typescript_package}`)
+    shell.rm(`${arkanalyzer}/${npm_arkanalyzer_package}`)
+    shell.rm(`${homecheck}/${npm_homecheck_package}`)
 }
 
 const detectedOS = detectOS()

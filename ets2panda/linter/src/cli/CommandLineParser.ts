@@ -144,6 +144,9 @@ function formCommandLineOptions(parsedCmd: ParsedCommand): CommandLineOptions {
     opts.linterOptions.migratorMode = options.migrate;
     opts.linterOptions.enableAutofix = true;
   }
+  if (options.homecheck) {
+    opts.homecheck = true;
+  }
   return formOptionPaths(opts, options);
 }
 
@@ -174,6 +177,7 @@ function createCommand(): Command {
     option('--ide-interactive', 'Migration Helper IDE interactive mode').
     option('-w, --arkts-whole-project-path <path>', 'path to whole project').
     option('--migrate', 'run as ArkTS migrator').
+    option('--homecheck', 'added homecheck rule validation').
     addOption(new Option('--warnings-as-errors', 'treat warnings as errors').hideHelp(true)).
     addOption(new Option('--no-check-ts-as-source', 'check TS files as third-party libary').hideHelp(true)).
     addOption(new Option('--no-use-rt-logic', 'run linter with SDK logic').hideHelp(true)).
