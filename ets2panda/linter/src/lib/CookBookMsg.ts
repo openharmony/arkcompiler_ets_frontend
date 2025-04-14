@@ -288,3 +288,4 @@ cookBookTag[314] =
 cookBookTag[315] =
   'API path have changed - please update your imports accordingly (arkts-sdk-no-decl-with-duplicate-name)';
 cookBookTag[316] = 'Using typeof as a type is not allowed in this API (arkts-sdk-Type-Query)';
+cookBookTag[321] = 'Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)';
