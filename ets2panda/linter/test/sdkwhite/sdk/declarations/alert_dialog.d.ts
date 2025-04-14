@@ -13,5 +13,6 @@
  * limitations under the License.
  */
 
-import { SharedPhotoAsset } from '@ohos.file.sendablePhotoAccessHelper';
-import { SharedPhotoAsset } from '@ohos.file.photoAccessHelper';
+export declare interface TextStyle {
+    wordBreak?: WordBreak;
+}

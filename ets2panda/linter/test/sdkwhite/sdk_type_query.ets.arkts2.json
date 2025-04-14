@@ -31,7 +31,7 @@
             "endColumn": 23,
             "problem": "SdkTypeQuery",
             "suggest": "",
-            "rule": "Using typeof as a type is not allowed in this API (arkts-sdk-Type-Query)",
+            "rule": "Using typeof as a type is not allowed in this API (sdk-type-query)",
             "severity": "ERROR"
         },
         {
@@ -51,7 +51,7 @@
             "endColumn": 36,
             "problem": "SdkTypeQuery",
             "suggest": "",
-            "rule": "Using typeof as a type is not allowed in this API (arkts-sdk-Type-Query)",
+            "rule": "Using typeof as a type is not allowed in this API (sdk-type-query)",
             "severity": "ERROR"
         },
         {
@@ -61,7 +61,7 @@
             "endColumn": 35,
             "problem": "SdkTypeQuery",
             "suggest": "",
-            "rule": "Using typeof as a type is not allowed in this API (arkts-sdk-Type-Query)",
+            "rule": "Using typeof as a type is not allowed in this API (sdk-type-query)",
             "severity": "ERROR"
         }
     ]

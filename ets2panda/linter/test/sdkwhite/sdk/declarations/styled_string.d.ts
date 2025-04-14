@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,14 +13,11 @@
  * limitations under the License.
  */
 
-import { TextStyle } from './sdk/declarations/styled_string'
-
-@Entry
-@Component
-struct Index {
-  fontStyleAttr1: TextStyle = new TextStyle({fontColor: Color.Blue});
-  fontStyleAttr2: TextStyle;
-  build() {
-    Text();
-  }
+export declare class TextStyle {
+    constructor(value?: TextStyleInterface);
+    readonly fontColor?: ResourceColor;
+    readonly fontFamily?: string;
+    readonly fontSize?: number;
+    readonly fontWeight?: number;
+    readonly fontStyle?: FontStyle;
 }

@@ -13,5 +13,16 @@
     "See the License for the specific language governing permissions and",
     "limitations under the License."
     ],
-    "result": []
+    "result": [
+        {
+            "line": 22,
+            "column": 3,
+            "endLine": 22,
+            "endColumn": 17,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'fontStyleAttr2' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'fontStyleAttr2' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        }
+    ]
 }

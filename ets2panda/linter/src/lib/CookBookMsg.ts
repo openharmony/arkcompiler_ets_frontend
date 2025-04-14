@@ -277,7 +277,7 @@ cookBookTag[304] = 'Duplicate function name in namespace are not allowed (arkts-
 cookBookTag[305] = 'Typescript class decorators are not allowed (arkts-interop-no-decorators)';
 cookBookTag[306] = 'Cannot access typescript types directly (arkts-interop-access-ts-types)';
 cookBookTag[307] = 'Cannot invoke functions implemented in TypeScript (arkts-interop-ts-function)';
-cookBookTag[308] = 'Type "void" has no instances.(arkts-sdk-limited-void-type)';
+cookBookTag[308] = 'Type "void" has no instances.(sdk-limited-void-type)';
 cookBookTag[309] = 'API no longer supports optional methods (sdk-optional-methods)';
 cookBookTag[310] =
   'Properties in "Sendable" classes and interfaces must have a Sendable data type (sdk-no-sendable-prop-types)';
@@ -286,9 +286,8 @@ cookBookTag[312] = 'Indexed access is not supported for fields (sdk-no-props-by-
 cookBookTag[313] = 'Constructor types are not supported - use lambda functions instead. (sdk-constructor-funcs)';
 cookBookTag[314] =
   'Object property names must be valid identifiers.Single-quoted and hyphenated properties are not supported. (sdk-no-literal-as-property-name)';
-cookBookTag[315] =
-  'API path have changed - please update your imports accordingly (arkts-sdk-no-decl-with-duplicate-name)';
-cookBookTag[316] = 'Using typeof as a type is not allowed in this API (arkts-sdk-Type-Query)';
+cookBookTag[315] = 'API path have changed - please update your imports accordingly (sdk-no-decl-with-duplicate-name)';
+cookBookTag[316] = 'Using typeof as a type is not allowed in this API (sdk-type-query)';
 cookBookTag[317] = '"use shared" is not supported (arkts-limited-stdlib-no-use-shared)';
 cookBookTag[318] = '"use concurrent" is not supported (arkts-limited-stdlib-no-use-concurrent)';
 cookBookTag[319] = 'Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)';

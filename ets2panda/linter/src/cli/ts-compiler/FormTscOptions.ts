@@ -15,7 +15,7 @@
 
 import * as ts from 'typescript';
 import type { CommandLineOptions } from '../../lib/CommandLineOptions';
-import { createCompilerHost } from './ResolveSdks';
+import { createCompilerHost, readDeclareFiles } from './ResolveSdks';
 
 export function formTscOptions(
   cmdOptions: CommandLineOptions,
@@ -31,8 +31,9 @@ export function formTscOptions(
     options.options = Object.assign(options.options, overrideCompilerOptions);
     return options;
   }
+  const rootNames = cmdOptions.inputFiles.concat(readDeclareFiles(cmdOptions.sdkDefaultApiPath ?? ''));
   const options: ts.CreateProgramOptions = {
-    rootNames: cmdOptions.inputFiles,
+    rootNames: rootNames,
     options: {
       target: ts.ScriptTarget.Latest,
       module: ts.ModuleKind.CommonJS,
