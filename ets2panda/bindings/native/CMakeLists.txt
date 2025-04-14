@@ -65,12 +65,9 @@ set(NODE_BINARY ${PANDA_ROOT}/third_party/nodejs/node-${NODE_VERSION}-${DISTRO}/
 set(NAPI_BINDINGS_LIB "ts_bindings")
 
 set(BINDINGS_NAPI_SRC
-  ./src/bridges.cpp
-  ./src/common.cpp
   ./src/common-interop.cpp
   ./src/convertors-napi.cpp
   ./src/callback-resource.cpp
-  ./src/generated/bridges.cpp
   ./src/lsp.cpp
 )
 
