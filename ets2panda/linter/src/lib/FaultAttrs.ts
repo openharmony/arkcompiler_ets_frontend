@@ -197,3 +197,4 @@ faultsAttrs[FaultID.ConstructorTypesDeprecated] = new FaultAttributes(313);
 faultsAttrs[FaultID.QuotedHyphenPropsDeprecated] = new FaultAttributes(314);
 faultsAttrs[FaultID.ApiPathChanged] = new FaultAttributes(315);
 faultsAttrs[FaultID.SdkTypeQuery] = new FaultAttributes(316);
+faultsAttrs[FaultID.LimitedStdLibNoImportConcurrency] = new FaultAttributes(321);

@@ -60,7 +60,8 @@ import {
   LIMITED_STD_GLOBAL_API,
   LIMITED_STD_OBJECT_API,
   LIMITED_STD_PROXYHANDLER_API,
-  LIMITED_STD_REFLECT_API
+  LIMITED_STD_REFLECT_API,
+  MODULE_IMPORTS
 } from './utils/consts/LimitedStdAPI';
 import { SupportedStdCallApiChecker } from './utils/functions/SupportedStdCallAPI';
 import { identiferUseInValueContext } from './utils/functions/identiferUseInValueContext';
@@ -836,6 +837,7 @@ export class TypeScriptLinter {
     this.handleSharedModuleNoSideEffectImport(importDeclNode);
     this.handleInvalidIdentifier(importDeclNode);
     this.checkWorkerImport(importDeclNode);
+    this.checkStdLibConcurrencyImport(importDeclNode);
   }
 
   private handleSdkSendable(tsStringLiteral: ts.StringLiteral): void {
@@ -5491,6 +5493,39 @@ export class TypeScriptLinter {
       });
       if (matchedApi) {
         this.incrementCounters(decl.name, FaultID.SdkTypeQuery);
+      }
+    }
+  }
+
+  private checkStdLibConcurrencyImport(importDeclaration: ts.ImportDeclaration): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const importClause = importDeclaration.importClause;
+    if (!importClause) {
+      return;
+    }
+
+    const moduleName = (importDeclaration.moduleSpecifier as ts.StringLiteral).text;
+    const expectedImports = MODULE_IMPORTS[moduleName];
+    if (!expectedImports) {
+      return;
+    }
+
+    const namedBindings = importClause.namedBindings;
+    const defaultImportName = importClause.name?.getText();
+
+    if (defaultImportName && expectedImports.includes(defaultImportName)) {
+      this.incrementCounters(importDeclaration, FaultID.LimitedStdLibNoImportConcurrency);
+    }
+
+    if (namedBindings && ts.isNamedImports(namedBindings)) {
+      for (const element of namedBindings.elements) {
+        const name = element.name.getText();
+        if (expectedImports.includes(name)) {
+          this.incrementCounters(importDeclaration, FaultID.LimitedStdLibNoImportConcurrency);
+        }
       }
     }
   }
