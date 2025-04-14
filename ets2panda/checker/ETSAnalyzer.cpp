@@ -597,18 +597,31 @@ checker::Type *ETSAnalyzer::Check(ir::ETSTypeReferencePart *node) const
     return node->GetType(checker);
 }
 
+checker::Type *ETSAnalyzer::Check(ir::ETSNonNullishTypeNode *node) const
+{
+    if (node->TsType() != nullptr) {
+        return node->TsType();
+    }
+    ETSChecker *checker = GetETSChecker();
+    checker::Type *originalType = node->GetTypeNode()->Check(checker);
+    if (!originalType->IsETSTypeParameter()) {
+        checker->LogError(diagnostic::ILLEGAL_NON_NULLISH_TYPE, {}, node->GetTypeNode()->Start());
+    }
+    return node->SetTsType(checker->GetNonNullishType(originalType));
+}
+
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSNullType *node) const
 {
     ETSChecker *checker = GetETSChecker();
     checker->CheckAnnotations(node->Annotations());
-    return checker->GlobalETSNullType();
+    return node->SetTsType(checker->GlobalETSNullType());
 }
 
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSUndefinedType *node) const
 {
     ETSChecker *checker = GetETSChecker();
     checker->CheckAnnotations(node->Annotations());
-    return checker->GlobalETSUndefinedType();
+    return node->SetTsType(checker->GlobalETSUndefinedType());
 }
 
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSNeverType *node) const

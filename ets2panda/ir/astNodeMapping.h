@@ -81,6 +81,7 @@
     _(SCRIPT_FUNCTION, ScriptFunction)                                                    \
     _(SEQUENCE_EXPRESSION, SequenceExpression)                                            \
     _(STRING_LITERAL, StringLiteral)                                                      \
+    _(ETS_NON_NULLISH_TYPE, ETSNonNullishTypeNode)                                        \
     _(ETS_NULL_TYPE, ETSNullType)                                                         \
     _(ETS_UNDEFINED_TYPE, ETSUndefinedType)                                               \
     _(ETS_NEVER_TYPE, ETSNeverType)                                                       \
