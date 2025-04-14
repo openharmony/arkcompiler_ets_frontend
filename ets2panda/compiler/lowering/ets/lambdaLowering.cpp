@@ -14,6 +14,7 @@
  */
 
 #include "lambdaLowering.h"
+#include <sstream>
 
 #include "checker/ets/typeRelationContext.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
@@ -26,6 +27,7 @@ struct LambdaInfo {
     ir::ClassDeclaration *calleeClass = nullptr;
     ir::ScriptFunction *enclosingFunction = nullptr;
     util::StringView name = "";
+    util::StringView originalFuncName = "";
     ArenaSet<varbinder::Variable *> *capturedVars = nullptr;
     ir::Expression *callReceiver = nullptr;
 };
@@ -463,8 +465,7 @@ static void CreateLambdaClassConstructor(public_lib::Context *ctx, ir::ClassDefi
     auto bodyStmts = ArenaVector<ir::Statement *>(allocator->Adapter());
     auto makeStatement = [&parser, &bodyStmts](util::StringView name) {
         auto adjustedName = AvoidMandatoryThis(name);
-        auto *statement = parser->CreateFormattedStatement("this.@@I1 = @@I2", adjustedName, adjustedName);
-        bodyStmts.push_back(statement);
+        bodyStmts.push_back(parser->CreateFormattedStatement("this.@@I1 = @@I2", adjustedName, adjustedName));
     };
     if (info->callReceiver != nullptr) {
         makeStatement("$this");
@@ -472,10 +473,10 @@ static void CreateLambdaClassConstructor(public_lib::Context *ctx, ir::ClassDefi
     for (auto *var : *info->capturedVars) {
         makeStatement(var->Name());
     }
+
     auto *body = util::NodeAllocator::ForceSetParent<ir::BlockStatement>(allocator, allocator, std::move(bodyStmts));
 
     auto *constructorId = allocator->New<ir::Identifier>("constructor", allocator);
-    auto *constructorIdClone = constructorId->Clone(allocator, nullptr);
 
     auto *func = util::NodeAllocator::ForceSetParent<ir::ScriptFunction>(
         allocator, allocator,
@@ -486,8 +487,8 @@ static void CreateLambdaClassConstructor(public_lib::Context *ctx, ir::ClassDefi
     auto *funcExpr = util::NodeAllocator::ForceSetParent<ir::FunctionExpression>(allocator, func);
 
     auto *ctor = util::NodeAllocator::ForceSetParent<ir::MethodDefinition>(
-        allocator, ir::MethodDefinitionKind::CONSTRUCTOR, constructorIdClone, funcExpr, ir::ModifierFlags::NONE,
-        allocator, false);
+        allocator, ir::MethodDefinitionKind::CONSTRUCTOR, constructorId->Clone(allocator, nullptr), funcExpr,
+        ir::ModifierFlags::NONE, allocator, false);
 
     classDefinition->Body().push_back(ctor);
     ctor->SetParent(classDefinition);
@@ -524,8 +525,11 @@ static ArenaVector<ark::es2panda::ir::Statement *> CreateRestArgumentsArrayReall
             statements << "let @@I2: FixedArray<@@T3> = new (@@T4)[@@I5.length];";
         }
         statements << "let @@I6 = @@I7 as FixedArray<@@T8>;"
+                   // CC-OFFNXT(G.FMT.06) false positive
                    << "for (let @@I9: @@T10 of @@I11){"
+                   // CC-OFFNXT(G.FMT.06) false positive
                    << "    @@I12[@@I13] = @@I14 as @@T15 as @@T16;"
+                   // CC-OFFNXT(G.FMT.06) false positive
                    << "    @@I17 = @@I18 + 1;"
                    << "}";
         args = parser->CreateFormattedStatement(
@@ -538,10 +542,15 @@ static ArenaVector<ark::es2panda::ir::Statement *> CreateRestArgumentsArrayReall
         auto *typeNode = allocator->New<ir::OpaqueTypeNode>(
             checker->GetElementTypeOfArray(lciInfo->lambdaSignature->RestVar()->TsType()), allocator);
         statements << "let @@I1: int = 0;"
+                   // CC-OFFNXT(G.FMT.06) false positive
                    << "let @@I2 = new Array<@@T3>(@@I4.length);"
+                   // CC-OFFNXT(G.FMT.06) false positive
                    << "for (let @@I5:@@T6 of @@I7){"
+                   // CC-OFFNXT(G.FMT.06) false positive
                    << "    @@I8.$_set(@@I9, @@I10 as @@T11);"
+                   // CC-OFFNXT(G.FMT.06) false positive
                    << "    @@I12 = @@I13 + 1;"
+                   // CC-OFFNXT(G.FMT.06) false positive
                    << "}";
         args = parser->CreateFormattedStatement(
             statements.str(), restParameterIndex, lciInfo->restArgumentIdentifier, typeNode,
@@ -801,10 +810,14 @@ static ir::ClassDeclaration *CreateEmptyLambdaClassDeclaration(public_lib::Conte
             checker->AllocNode<ir::Identifier>(lambdaProviderClass->AsETSObjectType()->Name(), checker->Allocator()),
             nullptr, nullptr, allocator),
         allocator);
-    auto *classDeclaration = parser
-                                 ->CreateFormattedTopLevelStatement("final class @@I1 extends @@T2 implements @@T3 {}",
-                                                                    lambdaClassName, providerTypeReference, fnInterface)
-                                 ->AsClassDeclaration();
+
+    std::stringstream stream;
+    stream << "@" << Signatures::NAMED_FUNCTION_OBJECT << "({name: \"" << info->originalFuncName
+           << "\"}) final class @@I1 extends @@T2 implements @@T3 {}";
+
+    auto *classDeclaration =
+        parser->CreateFormattedTopLevelStatement(stream.str(), lambdaClassName, providerTypeReference, fnInterface)
+            ->AsClassDeclaration();
     auto *classDefinition = classDeclaration->Definition();
 
     // Adjust the class definition compared to what the parser gives.
@@ -923,6 +936,13 @@ static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExp
     LambdaInfo info;
     std::tie(info.calleeClass, info.enclosingFunction) = FindEnclosingClassAndFunction(lambda);
     info.name = CreateCalleeName(allocator);
+
+    if ((lambda->Parent() != nullptr) && lambda->Parent()->IsVariableDeclarator()) {
+        info.originalFuncName = lambda->Parent()->AsVariableDeclarator()->Id()->AsIdentifier()->Name();
+    } else if ((lambda->Parent() != nullptr) && lambda->Parent()->IsClassProperty()) {
+        info.originalFuncName = lambda->Parent()->AsClassProperty()->Id()->Name();
+    }
+
     auto capturedVars = FindCaptured(allocator, lambda);
     info.capturedVars = &capturedVars;
     info.callReceiver = CheckIfNeedThis(lambda, checker) ? allocator->New<ir::ThisExpression>() : nullptr;
@@ -1044,6 +1064,7 @@ static ir::AstNode *ConvertFunctionReference(public_lib::Context *ctx, ir::Expre
     info.calleeClass = method->Parent()->Parent()->AsClassDeclaration();
     info.enclosingFunction = nullptr;
     info.name = CreateCalleeName(allocator);
+    info.originalFuncName = method->Id()->Name();
     auto emptySet = ArenaSet<varbinder::Variable *>(allocator->Adapter());
     info.capturedVars = &emptySet;
     if (method->IsStatic()) {
