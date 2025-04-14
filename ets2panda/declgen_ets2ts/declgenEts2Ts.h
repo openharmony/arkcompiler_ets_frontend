@@ -59,7 +59,7 @@ public:
         return declgenOptions_;
     }
 
-    void Generate();
+    bool Generate();
     void GenImportDeclarations();
 
     std::string GetDtsOutput() const
@@ -149,7 +149,7 @@ private:
     void GenPartName(std::string &partName);
     void ProcessIndent();
 
-    void GenGlobalDescriptor();
+    bool GenGlobalDescriptor();
     void CollectIndirectExportDependencies();
     void ProcessTypeAliasDependencies(const ir::TSTypeAliasDeclaration *typeAliasDecl);
     void ProcessTypeAnnotationDependencies(const ir::TypeNode *typeAnnotation);
