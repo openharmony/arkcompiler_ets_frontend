@@ -322,7 +322,11 @@ private:
     void CheckClassGeneratorMethod(ClassElmentDescriptor *desc);
     void CheckClassPrivateIdentifier(ClassElmentDescriptor *desc);
     void CheckFieldKey(ir::Expression *propName);
+    bool CheckAnnotationPrefix(const util::StringView &Ident);
+    void ThrowAnnotationNotEnable();
+
     ir::Expression *ParseClassKeyAnnotation();
+    ir::Statement *ParseAnnotationUsage(ir::Expression *expr, lexer::SourcePosition start);
     ir::Statement *ParseDecoratorAndAnnotation();
     std::pair<ArenaVector<ir::Decorator *>, ArenaVector<ir::Annotation *>> ParseDecoratorsAndAnnotations();
     ir::Statement *ParseClassElement(const ArenaVector<ir::Statement *> &properties,
@@ -335,9 +339,9 @@ private:
     ir::MethodDefinition *CheckClassMethodOverload(ir::Statement *property, ir::MethodDefinition **ctor, bool isDeclare,
                                                    lexer::SourcePosition errorInfo, ir::MethodDefinition *lastOverload,
                                                    bool implExists, bool isAbstract = false);
-    ir::Identifier *SetIdentNodeInClassDefinition(bool isDeclare, binder::ConstDecl **decl);
+    ir::Identifier *SetIdentNodeInClassDefinition(bool isDeclare, binder::ConstDecl **decl, bool isAnnotation = false);
     ir::ClassDefinition *ParseClassDefinition(bool isDeclaration, bool idRequired = true, bool isDeclare = false,
-                                              bool isAbstract = false);
+                                              bool isAbstract = false, bool isAnnotation = false);
     ir::Expression *ParseSuperClass(bool isDeclare, bool *hasSuperClass, bool *isExtendsFromNull);
     ArenaVector<ir::TSClassImplements *> ParseTSClassImplements(bool isDeclare);
     void ValidateClassConstructor(const ir::MethodDefinition *ctor,

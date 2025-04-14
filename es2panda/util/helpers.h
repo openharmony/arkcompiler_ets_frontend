@@ -176,11 +176,14 @@ public:
     static bool IsSpecialScopeName(const util::StringView &str);
     static bool BelongingToRecords(const std::string &name, const std::unordered_set<std::string> &retainRecordSet,
                                    const std::string &delimiter = std::string(DOT));
+    static bool IsInnerAnnotationRecordName(const std::string &name);
+    static std::string RemoveRecordSuffixAnnotationName(const std::string &name);
     static void RemoveProgramsRedundantData(std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
         const std::map<std::string, std::unordered_set<std::string>> &resolveDepsRelation);
     static bool IsDefaultApiVersion(int apiVersion, std::string subApiVersion);
     static bool IsSupportLazyImportVersion(int apiVersion, std::string subApiVersion);
     static bool IsEnableExpectedPropertyCountApiVersion(int apiVersion);
+    static bool IsSupportAnnotationVersion(int apiVersion);
 
     static const uint32_t MAX_DOUBLE_DIGIT = 310;
     static const uint32_t MAX_DOUBLE_PRECISION_DIGIT = 17;
@@ -220,6 +223,7 @@ public:
     static const int8_t SUPER_CALL_OPT_MIN_SUPPORTED_API_VERSION = 18;
     static const int8_t SENDABLE_CLASS_USING_LOCAL_MODULE_VAR_MIN_SUPPORTED_API_VERSION = 18;
     static const int8_t ENABLE_EXPECTED_PROPERTY_COUNT_MIN_SUPPORTED_API_VERSION = 18;
+    static const int8_t ANNOTATION_SUPPORTED_API_VERSION = 20;
     static constexpr std::string_view SUB_API_VERSION_1 = "beta1";
     static constexpr std::string_view SUB_API_VERSION_2 = "beta2";
     static constexpr std::string_view DEFAULT_SUB_API_VERSION = SUB_API_VERSION_1;

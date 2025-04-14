@@ -205,7 +205,7 @@
               "type": "Annotation",
               "expression": {
                 "type": "Identifier",
-                "name": "__$$ETS_ANNOTATION$$__Anno1",
+                "name": "Anno1",
                 "loc": {
                   "start": {
                     "line": 18,
@@ -361,7 +361,7 @@
                 "type": "CallExpression",
                 "callee": {
                   "type": "Identifier",
-                  "name": "__$$ETS_ANNOTATION$$__Anno1",
+                  "name": "Anno1",
                   "loc": {
                     "start": {
                       "line": 21,
@@ -530,7 +530,7 @@
                 "type": "CallExpression",
                 "callee": {
                   "type": "Identifier",
-                  "name": "__$$ETS_ANNOTATION$$__Anno1",
+                  "name": "Anno1",
                   "loc": {
                     "start": {
                       "line": 24,
@@ -714,7 +714,7 @@
                 "type": "CallExpression",
                 "callee": {
                   "type": "Identifier",
-                  "name": "__$$ETS_ANNOTATION$$__Anno2",
+                  "name": "Anno2",
                   "loc": {
                     "start": {
                       "line": 27,

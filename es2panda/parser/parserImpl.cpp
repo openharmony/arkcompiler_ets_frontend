@@ -117,7 +117,9 @@ Program ParserImpl::Parse(const SourceFile &sourceFile, const CompilerOptions &o
     program_.SetDebug(options.isDebug);
     program_.SetTargetApiVersion(options.targetApiVersion);
     program_.SetTargetApiSubVersion(options.targetApiSubVersion);
-    program_.SetEnableAnnotations(options.enableAnnotations);
+    if (util::Helpers::IsSupportAnnotationVersion(program_.TargetApiVersion())) {
+        program_.SetEnableAnnotations(options.enableAnnotations);
+    }
     program_.SetShared(sourceFile.isSharedModule);
     program_.SetModuleRecordFieldName(options.moduleRecordFieldName);
     program_.SetSourceLang(sourceFile.sourceLang);
@@ -2786,6 +2788,47 @@ ir::Expression *ParserImpl::ParseClassKeyAnnotation()
     return nullptr;
 }
 
+bool ParserImpl::CheckAnnotationPrefix(const util::StringView &Ident)
+{
+    auto prefixLen = std::strlen(ir::Annotation::annotationPrefix);
+    return Ident.Length() >= prefixLen &&
+           Ident.Substr(0, prefixLen) == ir::Annotation::annotationPrefix;
+}
+
+void ParserImpl::ThrowAnnotationNotEnable()
+{
+    std::string errMessage =
+        "Current configuration does not support using annotations. "
+        "Annotations can be used in the version of API 20 or higher versions.\n"
+        "Solutions: > Check the compatibleSdkVersion in build-profile.json5."
+        "> If compatibleSdkVersion is set to API 20 or higher version."
+        "> If you're running es2abc in commandline without IDE, please check whether target-api-version and "
+        "enable-annotations options are correctly configured.";
+    ThrowSyntaxError(errMessage);
+}
+
+ir::Statement *ParserImpl::ParseAnnotationUsage(ir::Expression *expr, lexer::SourcePosition start)
+{
+    auto *exprTemp = expr;
+    if (exprTemp->IsCallExpression()) {
+        exprTemp = expr->AsCallExpression()->Callee();
+    }
+    if (exprTemp->IsMemberExpression() || exprTemp->IsIdentifier()) {
+        auto *ident = exprTemp->IsIdentifier() ? exprTemp->AsIdentifier()
+                                               : exprTemp->AsMemberExpression()->Property()->AsIdentifier();
+        if (CheckAnnotationPrefix(ident->Name())) {
+            if (!program_.IsEnableAnnotations()) {
+                ThrowAnnotationNotEnable();
+            }
+            ident->SetName(ident->Name().Substr(std::strlen(ir::Annotation::annotationPrefix), ident->Name().Length()));
+            ir::Statement *resultAnnotation = static_cast<ir::Statement *>(AllocNode<ir::Annotation>(expr));
+            resultAnnotation->SetRange({start, expr->End()});
+            return resultAnnotation;
+        }
+    }
+    return nullptr;
+}
+
 ir::Statement *ParserImpl::ParseDecoratorAndAnnotation()
 {
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT);
@@ -2794,23 +2837,22 @@ ir::Statement *ParserImpl::ParseDecoratorAndAnnotation()
     lexer::SourcePosition start = lexer_->GetToken().Start();
     lexer_->NextToken();  // eat '@'
 
-    if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
-        lexer_->GetToken().Ident().Utf8().rfind(ir::Annotation::annotationPrefix, 0) != std::string_view::npos) {
-        // Annotation usage case
-        if (!program_.IsEnableAnnotations()) {
-            ThrowSyntaxError("Annotations are not enabled");
-        }
-        ir::Expression *expr = ParseLeftHandSideExpression();
-        ir::Statement *resultAnnotation = static_cast<ir::Statement *>(AllocNode<ir::Annotation>(expr));
-        resultAnnotation->SetRange({start, expr->End()});
+    ir::Expression *expr = ParseLeftHandSideExpression();
+    auto *resultAnnotation = ParseAnnotationUsage(expr, start);
+    if (resultAnnotation != nullptr) {
         return resultAnnotation;
     }
 
-    ir::Expression *expr = ParseLeftHandSideExpression();
     if (expr->IsIdentifier() && expr->AsIdentifier()->Name().Utf8() == ir::Annotation::interfaceString) {
         // Annotation declaration case
         if (!program_.IsEnableAnnotations()) {
-            ThrowSyntaxError("Annotations are not enabled");
+            ThrowAnnotationNotEnable();
+        }
+
+        if (!CheckAnnotationPrefix(lexer_->GetToken().Ident())) {
+            std::stringstream ss;
+            ss << "Annotation declaration need to be prefixed with '" << ir::Annotation::annotationPrefix << "'";
+            ThrowSyntaxError(ss.str());
         }
         lexer_->Rewind(lexPos);
         return nullptr;
@@ -3134,13 +3176,16 @@ bool ParserImpl::IsMethodDefinitionsAreSame(const ir::MethodDefinition *property
     return IsPropertyKeysAreSame(property->Key(), overload->Key());
 }
 
-ir::Identifier *ParserImpl::SetIdentNodeInClassDefinition(bool isDeclare, binder::ConstDecl **decl)
+ir::Identifier *ParserImpl::SetIdentNodeInClassDefinition(bool isDeclare, binder::ConstDecl **decl, bool isAnnotation)
 {
     if (!isDeclare) {
         CheckStrictReservedWord();
     }
 
-    const util::StringView &identStr = lexer_->GetToken().Ident();
+    const util::StringView &identStr =
+        isAnnotation ? lexer_->GetToken().Ident().Substr(std::strlen(ir::Annotation::annotationPrefix),
+                                                         lexer_->GetToken().Ident().Length())
+                     : lexer_->GetToken().Ident();
 
     *decl = Binder()->AddDecl<binder::ConstDecl>(lexer_->GetToken().Start(), isDeclare, identStr);
 
@@ -3153,7 +3198,7 @@ ir::Identifier *ParserImpl::SetIdentNodeInClassDefinition(bool isDeclare, binder
 }
 
 ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool idRequired, bool isDeclare,
-                                                      bool isAbstract)
+                                                      bool isAbstract, bool isAnnotation)
 {
     isDeclare = isDeclare | (context_.Status() & ParserStatus::IN_AMBIENT_CONTEXT);
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
@@ -3167,7 +3212,7 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
     if ((lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT ||
         lexer_->GetToken().Type() == lexer::TokenType::KEYW_AWAIT) && (Extension() != ScriptExtension::TS ||
         lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_IMPLEMENTS)) {
-        identNode = SetIdentNodeInClassDefinition(isDeclare, &decl);
+        identNode = SetIdentNodeInClassDefinition(isDeclare, &decl, isAnnotation);
     } else if (isDeclaration && idRequired) {
         ThrowSyntaxError("Unexpected token, expected an identifier.");
     }

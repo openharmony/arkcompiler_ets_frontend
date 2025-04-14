@@ -25,7 +25,7 @@ import re
 import shutil
 import subprocess
 import sys
-from config import API_VERSION_MAP, MIN_SUPPORT_BC_VERSION, MIX_COMPILE_ENTRY_POINT
+from config import API_VERSION_MAP, ARK_JS_VM_LIST, MIN_SUPPORT_BC_VERSION, MIX_COMPILE_ENTRY_POINT
 
 
 def is_directory(parser, arg):
@@ -1412,7 +1412,9 @@ class BcVersionTest(Test):
             15: "12.0.6.0",
             16: "12.0.6.0",
             17: "12.0.6.0",
-            18: "13.0.1.0"
+            18: "13.0.1.0",
+            19: "13.0.1.0",
+            20: "13.0.1.0",
         }
         self.es2abc_script_expect = {
             8: "0.0.0.2",
@@ -1428,7 +1430,9 @@ class BcVersionTest(Test):
             15: "12.0.6.0",
             16: "12.0.6.0",
             17: "12.0.6.0",
-            18: "13.0.1.0"
+            18: "13.0.1.0",
+            19: "13.0.1.0",
+            20: "13.0.1.0",
         }
 
     def run(self):
@@ -2123,18 +2127,12 @@ class TestAbcVersionControl(Test):
             self.passed = False
         return stderr
 
-    def execute_abc(self, runner, vm_api_version, vm_api_sub_version="", entry_point=""):
+    def execute_abc(self, runner, vm_version, entry_point=""):
         cmd = []
-        if vm_api_version != "12":
-            vm_api_sub_version = ""
-        # there is no virtual machine with version api12beta2 available.
-        # chosen api12beta1 as a replacement.
-        elif vm_api_version == "12" and vm_api_sub_version == "beta2":
-            vm_api_sub_version = "beta1"
         ark_js_vm_dir = os.path.join(
             runner.build_dir,
             "ark_js_vm_version",
-            "API%s%s" % (vm_api_version, vm_api_sub_version),
+            vm_version,
         )
         ld_library_path = os.path.join(ark_js_vm_dir, "lib")
         os.environ["LD_LIBRARY_PATH"] = ld_library_path
@@ -2150,11 +2148,9 @@ class TestAbcVersionControl(Test):
         stderr = None
         target_version = "API" + target_api_version + target_api_sub_version
         target_version_number = API_VERSION_MAP.get(target_version)
-        for api_version in API_VERSION_MAP:
-            vm_api_version, vm_api_sub_version = AbcTestCasesPrepare.split_api_version(api_version)
-            vm_version = "API" + vm_api_version + vm_api_sub_version
+        for vm_version in ARK_JS_VM_LIST:
             vm_version_number = API_VERSION_MAP.get(vm_version)
-            _, stderr = self.execute_abc(runner, vm_api_version, vm_api_sub_version, self.entry_point)
+            _, stderr = self.execute_abc(runner, vm_version, self.entry_point)
             self.is_support = (
                 TestAbcVersionControl.compare_version_number(vm_version_number, target_version_number) >= 0
             )
@@ -2204,8 +2200,8 @@ class TestVersionControl(Test):
     def __init__(self, test_path, flags, test_version, feature_type, module_path_list):
         Test.__init__(self, test_path, flags)
         self.beta_version_default = 3
-        self.version_with_sub_version_list = [12]
-        self.target_api_version_list = ["9", "10", "11", "12", "18"]
+        self.version_with_sub_version_list = ["12"]
+        self.target_api_version_list = ["9", "10", "11", "12", "18", "20"]
         self.target_api_sub_version_list = ["beta1", "beta2", "beta3"]
         self.specific_api_version_list = ["API11", "API12beta3"]
         self.output = None
@@ -2347,7 +2343,7 @@ class TestVersionControl(Test):
     def run_process(self, cmd):
         self.process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = self.process.communicate()
-        self.output = stdout.decode("utf-8", errors="ignore") + stderr.decode("utf-8", errors="ignore").split("\n")[0]
+        self.output = stdout.decode("utf-8", errors="ignore") + stderr.decode("utf-8", errors="ignore")
         return stdout, stderr
 
     def run_process_compile(self, runner, target_api_version, target_api_sub_version="bata3", dump_type=""):
@@ -2397,7 +2393,7 @@ class TestVersionControl(Test):
         self.output = stdout.decode("utf-8", errors="ignore") + stderr.decode("utf-8", errors="ignore").split("\n")[0]
         return stdout, stderr
 
-    def run_for_single_version(self, runner, target_api_version, target_api_sub_version="beta3"):
+    def run_for_single_version(self, runner, target_api_version, target_api_sub_version=""):
         cur_api_version = "API" + target_api_version + target_api_sub_version
         is_support = True if self.compare_two_versions(cur_api_version, self.test_version) >= 0 else False
         compile_expected_path = None
@@ -2418,6 +2414,7 @@ class TestVersionControl(Test):
             self.passed = False
         if not self.passed or (stderr and self.passed):
             return stderr
+        cur_api_version_number = API_VERSION_MAP.get(cur_api_version)
         for api_version in self.target_api_version_list:
             # The interception capability of API9 version of ark_js_vm has not yet been launched.
             if api_version == "9":
@@ -2425,9 +2422,18 @@ class TestVersionControl(Test):
             for api_sub_version in self.target_api_sub_version_list:
                 if not api_version in self.version_with_sub_version_list and api_sub_version != "beta3":
                     continue
+                elif not api_version in self.version_with_sub_version_list:
+                    api_sub_version = ""
                 cur_runtime_api_version = "API" + api_version + api_sub_version
+                cur_runtime_api_version_number = API_VERSION_MAP.get(cur_runtime_api_version)
                 is_below_abc_version = (
-                    False if self.compare_two_versions(cur_runtime_api_version, cur_api_version) >= 0 else True
+                    False
+                    if TestAbcVersionControl.compare_version_number(
+                        cur_runtime_api_version_number,
+                        cur_api_version_number,
+                    )
+                    >= 0
+                    else True
                 )
                 self.generate_module_abc(runner, cur_runtime_api_version)
                 _, stderr = self.runtime_for_target_version(runner, api_version, api_sub_version)
@@ -2594,17 +2600,24 @@ def add_directory_for_version_control(runners, args):
         "version_control/API12beta3/bytecode_feature/import_target",
     )
     runner.add_directory(
-        "version_control/API16/bytecode_feature",
+        "version_control/API18/bytecode_feature",
         "js",
         [],
-        "API16",
+        "API18",
         "bytecode_feature",
     )
     runner.add_directory(
-        "version_control/API16/bytecode_feature",
+        "version_control/API18/bytecode_feature",
         "ts",
         ["--module"],
-        "API16",
+        "API18",
+        "bytecode_feature",
+    )
+    runner.add_directory(
+        "version_control/API20/bytecode_feature",
+        "ts",
+        ["--module", "--enable-annotations"],
+        "API20",
         "bytecode_feature",
     )
     runners.append(runner)
@@ -2775,7 +2788,7 @@ def add_directory_for_compiler(runners, args):
                                                 "--file-threads=8"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/projects", "ts",
                                                 ["--merge-abc", "--dump-assembly", "--enable-abc-input",
-                                                 "--dump-deps-info", "--remove-redundant-file",
+                                                 "--dump-deps-info", "--remove-redundant-file", "--enable-annotations",
                                                  "--dump-literal-buffer", "--dump-string", "--abc-class-threads=4"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/js/projects", "js",
                                                 ["--merge-abc", "--dump-assembly", "--enable-abc-input",
@@ -2786,7 +2799,7 @@ def add_directory_for_compiler(runners, args):
                                                  "--abc-class-threads=4"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/cache_projects", "ts",
                                                 ["--merge-abc", "--dump-assembly", "--enable-abc-input",
-                                                 "--dump-deps-info", "--remove-redundant-file",
+                                                 "--dump-deps-info", "--remove-redundant-file", "--enable-annotations",
                                                  "--dump-literal-buffer", "--dump-string", "--abc-class-threads=4",
                                                  "--cache-file"]))
 

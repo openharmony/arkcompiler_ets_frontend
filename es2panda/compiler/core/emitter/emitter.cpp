@@ -71,7 +71,9 @@ void FunctionEmitter::Generate(util::PatchFix *patchFixHelper)
     GenFunctionCatchTables();
     GenLiteralBuffers();
     GenConcurrentFunctionModuleRequests();
-    GenAnnotations();
+    if (pg_->Binder()->Program()->IsEnableAnnotations()) {
+        GenAnnotations();
+    }
     if (patchFixHelper != nullptr) {
         patchFixHelper->ProcessFunction(pg_, func_, literalBuffers_);
     }
