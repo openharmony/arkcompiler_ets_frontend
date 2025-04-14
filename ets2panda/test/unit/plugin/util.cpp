@@ -19,6 +19,7 @@
 #include <functional>
 #include <ostream>
 #include <string>
+#include "macros.h"
 
 static es2panda_Impl *g_implPtr = nullptr;
 
@@ -75,7 +76,7 @@ void AppendStatementToProgram(es2panda_Context *context, es2panda_AstNode *progr
     auto impl = GetImpl();
     size_t sizeOfStatements = 0;
     auto *statements = impl->BlockStatementStatements(context, program, &sizeOfStatements);
-    es2panda_AstNode **newStatements =
+    auto **newStatements =
         static_cast<es2panda_AstNode **>(impl->AllocMemory(context, sizeOfStatements + 1, sizeof(es2panda_AstNode *)));
     for (size_t i = 0; i < sizeOfStatements; i++) {
         newStatements[i] = statements[i];
@@ -90,7 +91,7 @@ void PrependStatementToProgram(es2panda_Context *context, es2panda_AstNode *prog
     auto impl = GetImpl();
     size_t sizeOfStatements = 0;
     auto *statements = impl->BlockStatementStatements(context, program, &sizeOfStatements);
-    es2panda_AstNode **newStatements =
+    auto **newStatements =
         static_cast<es2panda_AstNode **>(impl->AllocMemory(context, sizeOfStatements + 1, sizeof(es2panda_AstNode *)));
     for (size_t i = 0; i < sizeOfStatements; i++) {
         newStatements[i + 1] = statements[i];
@@ -184,7 +185,7 @@ int RunAllStagesWithTestFunction(ProccedToStatePluginTestData &data)
         }
         g_implPtr->ProceedToState(context, state);
         CheckForErrors(GetPhaseName(state), context);
-        for (auto testFunc : data.testFunctions[state]) {
+        for (const auto &testFunc : data.testFunctions[state]) {
             if (!testFunc(context)) {
                 DestroyTest(context, config);
                 return TEST_ERROR_CODE;
@@ -201,12 +202,12 @@ int RunAllStagesWithTestFunction(ProccedToStatePluginTestData &data)
 }
 
 int Test(es2panda_Context *context, es2panda_Impl *impl, int stage,
-         std::function<bool(es2panda_Context *, es2panda_AstNode *)> handle)
+         const std::function<bool(es2panda_Context *, es2panda_AstNode *)> &handle)
 {
     impl->ProceedToState(context, ES2PANDA_STATE_PARSED);
     CheckForErrors("PARSE", context);
     es2panda_AstNode *ast = impl->ProgramAst(context, impl->ContextProgram(context));
-    if (!ast) {
+    if (ast == nullptr) {
         return TEST_ERROR_CODE;
     }
     switch (stage) {
@@ -227,6 +228,9 @@ int Test(es2panda_Context *context, es2panda_Impl *impl, int stage,
             impl->ProceedToState(context, ES2PANDA_STATE_LOWERED);
             CheckForErrors("LOWERED", context);
             break;
+        }
+        default: {
+            UNREACHABLE();
         }
     }
     if (impl->ContextState(context) == ES2PANDA_STATE_ERROR) {
