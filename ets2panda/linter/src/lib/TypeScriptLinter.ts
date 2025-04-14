@@ -1876,7 +1876,9 @@ export class TypeScriptLinter {
   private handleDeclarationDestructuring(decl: ts.VariableDeclaration | ts.ParameterDeclaration): void {
     const faultId = ts.isVariableDeclaration(decl) ? FaultID.DestructuringDeclaration : FaultID.DestructuringParameter;
     if (ts.isObjectBindingPattern(decl.name)) {
-      const autofix = this.autofixer?.fixObjectBindingPatternDeclarations(decl, faultId);
+      const autofix = ts.isVariableDeclaration(decl) ?
+        this.autofixer?.fixObjectBindingPatternDeclarations(decl) :
+        undefined;
       this.incrementCounters(decl, faultId, autofix);
     } else if (ts.isArrayBindingPattern(decl.name)) {
       // Array destructuring is allowed only for Arrays/Tuples and without spread operator.
@@ -1893,7 +1895,9 @@ export class TypeScriptLinter {
         hasNestedObjectDestructuring ||
         TsUtils.destructuringDeclarationHasSpreadOperator(decl.name)
       ) {
-        const autofix = this.autofixer?.fixArrayBindingPatternDeclarations(decl, isArrayOrTuple);
+        const autofix = ts.isVariableDeclaration(decl) ?
+          this.autofixer?.fixArrayBindingPatternDeclarations(decl, isArrayOrTuple) :
+          undefined;
         this.incrementCounters(decl, faultId, autofix);
       }
     }
