@@ -32,7 +32,6 @@
 #include "ir/ts/tsTypeAliasDeclaration.h"
 #include "ir/ts/tsTypeParameter.h"
 
-/* CC-OFFNXT(G.PRE.01) Disabled check still occasionally triggered in CI */
 #define DEBUG_PRINT 0
 
 namespace ark::es2panda::declgen_ets2ts {
@@ -388,9 +387,9 @@ bool TSDeclGen::HandleObjectType(const checker::Type *checkerType)
     std::string typeStr = checkerType->ToString();
     if (typeStr == "Boolean") {
         OutDts("boolean");
-    } else if (stringTypes_.count(typeStr)) {
+    } else if (stringTypes_.count(typeStr) != 0U) {
         OutDts("string");
-    } else if (numberTypes_.count(typeStr)) {
+    } else if (numberTypes_.count(typeStr) != 0U) {
         OutDts("number");
     } else if (typeStr == "BigInt") {
         OutDts("bigint");
@@ -642,26 +641,26 @@ void TSDeclGen::ProcessFunctionReturnTypeRef(const checker::Signature *sig, cons
 void TSDeclGen::GenUnionType(const checker::ETSUnionType *unionType)
 {
     state_.inUnionBodyStack.push(true);
-    const auto originTypes = unionType->ConstituentTypes();
+    const auto &originTypes = unionType->ConstituentTypes();
     bool hasNumber = false;
     bool hasString = false;
     std::vector<checker::Type *> filteredTypes;
-    for (std::size_t i = 0; i < originTypes.size(); ++i) {
-        std::string typeStr = originTypes[i]->ToString();
-        if (stringTypes_.count(typeStr)) {
+    for (auto originType : originTypes) {
+        std::string typeStr = originType->ToString();
+        if (stringTypes_.count(typeStr) != 0U) {
             if (hasString) {
                 continue;
             }
-            filteredTypes.push_back(originTypes[i]);
+            filteredTypes.push_back(originType);
             hasString = true;
-        } else if (numberTypes_.count(typeStr)) {
+        } else if (numberTypes_.count(typeStr) != 0U) {
             if (hasNumber) {
                 continue;
             }
-            filteredTypes.push_back(originTypes[i]);
+            filteredTypes.push_back(originType);
             hasNumber = true;
         } else {
-            filteredTypes.push_back(originTypes[i]);
+            filteredTypes.push_back(originType);
         }
     }
     GenSeparated(
@@ -706,7 +705,7 @@ bool TSDeclGen::HandleSpecificObjectTypes(const checker::ETSObjectType *objectTy
 
 void TSDeclGen::HandleTypeArgument(checker::Type *arg, const std::string &typeStr)
 {
-    if (typeStr == "Promise" && arg && arg->HasTypeFlag(checker::TypeFlag::ETS_UNDEFINED)) {
+    if (typeStr == "Promise" && arg != nullptr && arg->HasTypeFlag(checker::TypeFlag::ETS_UNDEFINED)) {
         OutDts("void");
     } else if (arg != nullptr) {
         if (!state_.currentTypeAliasName.empty() && !arg->HasTypeFlag(checker::TypeFlag::ETS_TYPE_PARAMETER)) {
@@ -778,9 +777,9 @@ void TSDeclGen::GenTypeParameters(const ir::TSTypeParameterInstantiation *typePa
     GenSeparated(typeParams->Params(), [this](ir::TypeNode *param) {
         if (param->IsETSTypeReference()) {
             const auto paramName = param->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name().Mutf8();
-            if (stringTypes_.count(paramName)) {
+            if (stringTypes_.count(paramName) != 0U) {
                 OutDts("string");
-            } else if (numberTypes_.count(paramName)) {
+            } else if (numberTypes_.count(paramName) != 0U) {
                 OutDts("number");
             } else if (paramName == "NullPointerError") {
                 OutDts("Error");
@@ -907,7 +906,7 @@ void TSDeclGen::GenAnnotationProperties(const ir::AnnotationUsage *anno)
         return;
     }
 
-    const auto properties = anno->Properties();
+    const auto &properties = anno->Properties();
     if (properties.size() == 1 &&
         properties.at(0)->AsClassProperty()->Id()->Name() == compiler::Signatures::ANNOTATION_KEY_VALUE) {
         OutDts("(");
@@ -1003,13 +1002,10 @@ void TSDeclGen::GenImportDeclaration(const ir::ETSImportDeclaration *importDecla
 std::vector<ir::AstNode *> TSDeclGen::FilterValidImportSpecifiers(const ArenaVector<ir::AstNode *> &specifiers)
 {
     std::vector<ir::AstNode *> importSpecifiers;
-    for (std::size_t i = 0; i < specifiers.size(); i++) {
-        const auto local = specifiers[i]->AsImportSpecifier()->Local()->Name().Mutf8();
-        if (specifiers[i]->AsImportSpecifier()->IsRemovable()) {
-            continue;
-        }
+    for (auto specifier : specifiers) {
+        const auto local = specifier->AsImportSpecifier()->Local()->Name().Mutf8();
         if (importSet_.find(local) != importSet_.end()) {
-            importSpecifiers.push_back(specifiers[i]);
+            importSpecifiers.push_back(specifier);
         }
     }
     return importSpecifiers;
@@ -1268,9 +1264,9 @@ void TSDeclGen::GenPartName(std::string &partName)
 {
     if (partName == "Boolean") {
         partName = "boolean";
-    } else if (stringTypes_.count(partName)) {
+    } else if (stringTypes_.count(partName) != 0U) {
         partName = "string";
-    } else if (numberTypes_.count(partName)) {
+    } else if (numberTypes_.count(partName) != 0U) {
         partName = "number";
     } else if (partName == "ESObject") {
         partName = "ESObject";
