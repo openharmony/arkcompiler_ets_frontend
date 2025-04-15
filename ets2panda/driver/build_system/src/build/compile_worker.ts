@@ -49,6 +49,7 @@ process.on('message', (message: {
   let { arkts, arktsGlobal } = require(koalaWrapperPath);
 
   for (const fileInfo of taskList) {
+    let errorStatus = false;
     try {
       ensurePathExists(fileInfo.abcFilePath);
       const source = fs.readFileSync(fileInfo.filePath).toString();
@@ -77,6 +78,7 @@ process.on('message', (message: {
 
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_BIN_GENERATED);
     } catch (error) {
+      errorStatus = true;
       if (error instanceof Error) {
         const logData: LogData = LogDataFactory.newInstance(
           ErrorCode.BUILDSYSTEM_COMPILE_ABC_FAIL,
@@ -91,7 +93,10 @@ process.on('message', (message: {
         error: 'Compile abc files failed.'
       });
     } finally {
-      arktsGlobal.es2panda._DestroyContext(arktsGlobal.compilerContext.peer);
+      if (!errorStatus) {
+        // when error occur,wrapper will destroy context.
+        arktsGlobal.es2panda._DestroyContext(arktsGlobal.compilerContext.peer);
+      }
       PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
       arkts.destroyConfig(arktsGlobal.config);
     }
