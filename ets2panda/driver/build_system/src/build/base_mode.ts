@@ -35,7 +35,8 @@ import {
 import {
   changeFileExtension,
   ensurePathExists,
-  isFileExistSync
+  isFileExistSync,
+  isMac
 } from '../utils';
 import {
   PluginDriver,
@@ -245,6 +246,10 @@ export abstract class BaseMode {
     this.abcLinkerCmd.push('@' + '"' + linkerInputFile + '"');
 
     let abcLinkerCmdStr: string = this.abcLinkerCmd.join(' ');
+    if (isMac()) {
+      const loadLibrary = "DYLD_LIBRARY_PATH=" + process.env.DYLD_LIBRARY_PATH;
+      abcLinkerCmdStr = loadLibrary + " " + abcLinkerCmdStr;
+    }
     this.logger.printInfo(abcLinkerCmdStr);
 
     ensurePathExists(this.mergedAbcFile);
