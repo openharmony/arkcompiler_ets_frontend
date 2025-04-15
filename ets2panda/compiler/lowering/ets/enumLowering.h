@@ -34,6 +34,9 @@ public:
     static constexpr std::string_view const NAMES_ARRAY_NAME {"#NamesArray"};
     static constexpr std::string_view const VALUES_ARRAY_NAME {"#ValuesArray"};
     static constexpr std::string_view const ORDINAL_NAME {"#ordinal"};
+    static constexpr std::string_view const BASE_CLASS_NAME {"BaseEnum"};
+
+    enum EnumType { INT = 0, LONG = 1, STRING = 2 };
 
     struct DeclarationFlags {
         // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
@@ -84,12 +87,12 @@ private:
 
     [[nodiscard]] ir::ScriptFunction *MakeFunction(FunctionInfo &&functionInfo);
     ir::ClassDeclaration *CreateClass(ir::TSEnumDeclaration *const enumDecl, const DeclarationFlags flags,
-                                      bool isIntEnum);
+                                      EnumType enumType);
     ir::ClassProperty *CreateOrdinalField(ir::ClassDefinition *const enumClass);
     ir::MemberExpression *CreateOrdinalAccessExpression();
     void CreateCCtorForEnumClass(ir::ClassDefinition *const enumClass);
-    void CreateCtorForEnumClass(ir::ClassDefinition *const enumClass);
-    ir::ScriptFunction *CreateFunctionForCtorOfEnumClass(ir::ClassDefinition *const enumClass);
+    void CreateCtorForEnumClass(ir::ClassDefinition *const enumClass, EnumType enumType);
+    ir::ScriptFunction *CreateFunctionForCtorOfEnumClass(ir::ClassDefinition *const enumClass, EnumType enumType);
 
     void ProcessEnumClassDeclaration(ir::TSEnumDeclaration *const enumDecl, const DeclarationFlags &flags,
                                      ir::ClassDeclaration *enumClassDecl);
@@ -103,7 +106,8 @@ private:
     [[nodiscard]] ir::Identifier *MakeArray(const ir::TSEnumDeclaration *const enumDecl, ir::ClassDefinition *enumClass,
                                             const util::StringView &name, ir::TypeNode *const typeAnnotation,
                                             ElementMaker &&elementMaker);
-    void CreateEnumItemFields(const ir::TSEnumDeclaration *const enumDecl, ir::ClassDefinition *enumClass);
+    void CreateEnumItemFields(const ir::TSEnumDeclaration *const enumDecl, ir::ClassDefinition *enumClass,
+                              EnumType enumType);
     ir::Identifier *CreateEnumNamesArray(const ir::TSEnumDeclaration *const enumDecl, ir::ClassDefinition *enumClass);
     template <ir::PrimitiveType TYPE>
     ir::Identifier *CreateEnumValuesArray(const ir::TSEnumDeclaration *const enumDecl, ir::ClassDefinition *enumClass);

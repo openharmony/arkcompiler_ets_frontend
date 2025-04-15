@@ -529,9 +529,6 @@ void ProcessExclamationMark(ETSChecker *checker, ir::UnaryExpression *expr, chec
         expr->SetTsType(tsType);
         return;
     }
-    if (operandType->IsETSEnumType()) {
-        expr->Argument()->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
-    }
     expr->SetTsType(checker->GlobalETSBooleanType());
 }
 

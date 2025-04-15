@@ -17,5 +17,5 @@ enum Color { Red }
 enum Color2 { Red }
 
 function main(): void {
-    assertNE(Color.Red, Color2.Red)
+    assertEQ(Color.Red, Color2.Red)
 }
