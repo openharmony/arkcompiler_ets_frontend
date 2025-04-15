@@ -167,6 +167,34 @@ defines:
     ref: BUILTIN_RETENTION
   - name: 'Symbol'
     ref: SYMBOL
+  - name: 'escompat.Array'
+    ref: ESCOMPAT_ARRAY
+  - name: 'ByteType.VAL'
+    ref: BYTETYPE_VAL
+  - name: 'IntType.VAL'
+    ref: INTTYPE_VAL
+  - name: 'LongType.VAL'
+    ref: LONGTYPE_VAL
+  - name: 'ShortType.VAL'
+    ref: SHORTTYPE_VAL
+  - name: 'FloatType.VAL'
+    ref: FLOATTYPE_VAL
+  - name: 'DoubleType.VAL'
+    ref: DOUBLETYPE_VAL
+  - name: 'BooleanType.VAL'
+    ref: BOOLEANTYPE_VAL
+  - name: 'CharType.VAL'
+    ref: CHARTYPE_VAL
+  - name: 'VoidType.VAL'
+    ref: VOIDTYPE_VAL
+  - name: 'UndefinedType.REF'
+    ref: UNDEFINEDTYPE_REF
+  - name: 'NullType.REF'
+    ref: NULLTYPE_REF
+  - name: 'Type'
+    ref: TYPE
+  - name: 'from'
+    ref: FROM
 
 packages:
   - name: 'std.core'
