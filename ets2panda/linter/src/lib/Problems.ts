@@ -186,6 +186,7 @@ export enum FaultID {
   QuotedHyphenPropsDeprecated,
   ApiPathChanged,
   SdkTypeQuery,
+  LimitedStdLibNoImportConcurrency,
   // this should always be last enum
   LAST_ID
 }
