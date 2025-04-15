@@ -61,12 +61,12 @@ void ETSChecker::CheckObjectLiteralKeys(const ArenaVector<ir::Expression *> &pro
         }
         auto propertyDecl = property->AsProperty();
         auto propKey = propertyDecl->Key();
-        if (!propKey->IsIdentifier()) {
+        if (!propKey->IsIdentifier() && !propKey->IsStringLiteral()) {
             continue;
         }
 
         // number kind only used here
-        auto propName = propKey->AsIdentifier()->Name();
+        auto propName = propKey->IsIdentifier() ? propKey->AsIdentifier()->Name() : propKey->AsStringLiteral()->Str();
         if (names.find(propName) != names.end()) {
             LogError(diagnostic::OBJ_LIT_PROPERTY_REDECLARATION, {}, property->Start());
         }
