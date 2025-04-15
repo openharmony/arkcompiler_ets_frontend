@@ -3048,4 +3048,39 @@ export class Autofixer {
 
     return [{ start: binaryExpr.getStart(), end: binaryExpr.getEnd(), replacementText }];
   }
+
+  fixAppStorageCallExpression(callExpr: ts.CallExpression): Autofix[] | undefined {
+    const varDecl = Autofixer.findParentVariableDeclaration(callExpr);
+    if (!varDecl || varDecl.type) {
+      return undefined;
+    }
+
+    const updatedVarDecl = ts.factory.updateVariableDeclaration(
+      varDecl,
+      varDecl.name,
+      undefined,
+      ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+      varDecl.initializer
+    );
+
+    const replacementText = this.printer.printNode(ts.EmitHint.Unspecified, updatedVarDecl, varDecl.getSourceFile());
+
+    return [
+      {
+        replacementText,
+        start: varDecl.getStart(),
+        end: varDecl.getEnd()
+      }
+    ];
+  }
+
+  private static findParentVariableDeclaration(node: ts.Node): ts.VariableDeclaration | undefined {
+    while (node) {
+      if (ts.isVariableDeclaration(node)) {
+        return node;
+      }
+      node = node.parent;
+    }
+    return undefined;
+  }
 }
