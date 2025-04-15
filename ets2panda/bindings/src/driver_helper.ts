@@ -95,14 +95,14 @@ export class LspDriverHelper {
     if (ctx === undefined) {
       throwError("Trying to proceed to state while cts is undefined")
     }
-    if (state <= global.es2panda._ContextState(ctx)) {
+    if (state <= global.es2pandaPublic._ContextState(ctx)) {
       return
     }
 
     try {
-      global.es2panda._ProceedToState(ctx, state)
+      global.es2pandaPublic._ProceedToState(ctx, state)
     } catch (e) {
-      global.es2panda._DestroyContext(ctx)
+      global.es2pandaPublic._DestroyContext(ctx)
       throw e
     }
   }
@@ -111,13 +111,13 @@ export class LspDriverHelper {
     if (ctx === undefined) {
       return
     }
-    global.es2panda._DestroyContext(ctx)
+    global.es2pandaPublic._DestroyContext(ctx)
   }
 
   public destroyConfig(cfg: Config) {
     if (cfg === undefined) {
       return
     }
-    global.es2panda._DestroyConfig(cfg.peer)
+    global.es2pandaPublic._DestroyConfig(cfg.peer)
   }
 }

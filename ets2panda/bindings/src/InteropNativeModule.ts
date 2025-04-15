@@ -73,3 +73,19 @@ export function initInterop(): InteropNativeModule {
   loadNativeModuleLibrary("InteropNativeModule", instance)
   return instance
 }
+
+export function initPublicInterop(): InteropNativeModule {
+  let libPath = process.env.BINDINGS_PATH
+  if (libPath == undefined) {
+    libPath = path.resolve(__dirname, "../public.node")
+  } else {
+    libPath = path.join(libPath, "public.node")
+  }
+  if (!fs.existsSync(libPath)) {
+    throwError(`Cannot find lib path ${libPath}`)
+  }
+  registerNativeModuleLibraryName("InteropNativeModule", libPath)
+  const instance = new InteropNativeModule()
+  loadNativeModuleLibrary("InteropNativeModule", instance)
+  return instance
+}

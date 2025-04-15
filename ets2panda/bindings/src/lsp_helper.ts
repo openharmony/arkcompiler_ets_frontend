@@ -18,7 +18,7 @@ import { global } from "./global"
 import { LspDefinitionData, LspDiagsNode, LspReferences, LspQuickInfo, LspDocumentHighlightsReferences, LspCompletionInfo, LspReferenceLocationList, LspLineAndCharacter, LspReferenceData } from "./lspNode"
 import { unpackString } from "./private"
 import { Es2pandaContextState } from "./generated/Es2pandaEnums"
-import { BuildConfig, EtsScript } from './types'
+import { BuildConfig } from './types'
 import { PluginDriver, PluginHook } from './ui_plugins_driver'
 
 import * as fs from "fs"
