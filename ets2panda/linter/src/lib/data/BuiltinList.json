@@ -546,7 +546,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1220,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "every",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -560,7 +560,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -580,7 +580,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1229,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "every",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -594,7 +594,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -614,7 +614,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1238,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "some",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -628,7 +628,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -648,7 +648,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1244,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "forEach",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -662,7 +662,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -682,7 +682,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1250,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "map",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -696,7 +696,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -716,7 +716,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1256,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "filter",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -730,7 +730,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -750,7 +750,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1262,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "filter",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -764,7 +764,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -832,7 +832,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1411,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "every",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -846,7 +846,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -866,7 +866,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1420,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "every",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -880,7 +880,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -900,7 +900,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1429,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "some",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -914,7 +914,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -934,7 +934,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1435,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "forEach",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -948,7 +948,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -968,7 +968,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1441,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "map",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -982,7 +982,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1002,7 +1002,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1453,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "filter",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1016,7 +1016,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1302,7 +1302,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1887,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "every",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1316,7 +1316,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1336,7 +1336,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1906,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "filter",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1350,7 +1350,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1370,7 +1370,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1917,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "find",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1384,7 +1384,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1404,7 +1404,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1928,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "findIndex",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1418,7 +1418,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1438,7 +1438,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1937,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "forEach",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1452,7 +1452,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1472,7 +1472,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 1975,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "map",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1486,7 +1486,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1506,7 +1506,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2054,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "some",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1520,7 +1520,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1540,7 +1540,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2169,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "every",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1554,7 +1554,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1574,7 +1574,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2188,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "filter",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1588,7 +1588,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1608,7 +1608,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2199,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "find",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1622,7 +1622,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1642,7 +1642,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2210,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "findIndex",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1656,7 +1656,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1676,7 +1676,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2219,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "forEach",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1690,7 +1690,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1710,7 +1710,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2257,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "map",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1724,7 +1724,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1744,7 +1744,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2336,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "some",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1758,7 +1758,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1778,7 +1778,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2451,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "every",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1792,7 +1792,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1812,7 +1812,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2470,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "filter",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1826,7 +1826,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1846,7 +1846,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2481,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "find",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1860,7 +1860,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1880,7 +1880,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2492,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "findIndex",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1894,7 +1894,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1914,7 +1914,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2501,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "forEach",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1928,7 +1928,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1948,7 +1948,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2539,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "map",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1962,7 +1962,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -1982,7 +1982,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2618,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "some",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -1996,7 +1996,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2016,7 +2016,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2732,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "every",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2030,7 +2030,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2050,7 +2050,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2751,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "filter",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2064,7 +2064,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2084,7 +2084,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2762,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "find",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2098,7 +2098,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2118,7 +2118,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2773,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "findIndex",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2132,7 +2132,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2152,7 +2152,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2782,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "forEach",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2166,7 +2166,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2186,7 +2186,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2819,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "map",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2200,7 +2200,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2220,7 +2220,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 2898,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "some",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2234,7 +2234,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2254,7 +2254,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3014,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "every",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2268,7 +2268,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2288,7 +2288,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3033,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "filter",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2302,7 +2302,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2322,7 +2322,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3044,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "find",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2336,7 +2336,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2356,7 +2356,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3055,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "findIndex",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2370,7 +2370,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2390,7 +2390,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3064,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "forEach",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2404,7 +2404,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2424,7 +2424,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3102,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "map",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2438,7 +2438,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2458,7 +2458,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3181,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "some",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2472,7 +2472,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2492,7 +2492,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3296,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "every",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2506,7 +2506,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2526,7 +2526,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3315,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "filter",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2540,7 +2540,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2560,7 +2560,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3326,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "find",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2574,7 +2574,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2594,7 +2594,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3337,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "findIndex",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2608,7 +2608,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2628,7 +2628,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3346,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "forEach",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2642,7 +2642,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2662,7 +2662,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3384,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "map",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2676,7 +2676,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2696,7 +2696,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3463,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "some",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2710,7 +2710,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2730,7 +2730,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3578,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "every",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2744,7 +2744,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2764,7 +2764,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3597,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "filter",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2778,7 +2778,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2798,7 +2798,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3608,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "find",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2812,7 +2812,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2832,7 +2832,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3619,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "findIndex",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2846,7 +2846,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2866,7 +2866,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3628,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "forEach",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2880,7 +2880,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2900,7 +2900,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3665,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "map",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2914,7 +2914,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2934,7 +2934,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3744,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "some",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2948,7 +2948,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -2968,7 +2968,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3859,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "every",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -2982,7 +2982,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -3002,7 +3002,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3878,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "filter",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3016,7 +3016,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -3036,7 +3036,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3889,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "find",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3050,7 +3050,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -3070,7 +3070,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3900,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "findIndex",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3084,7 +3084,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -3104,7 +3104,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3909,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "forEach",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3118,7 +3118,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -3138,7 +3138,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 3947,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "map",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3152,7 +3152,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -3172,7 +3172,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 4026,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "some",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3186,7 +3186,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -3206,7 +3206,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 4142,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "every",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3220,7 +3220,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -3240,7 +3240,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 4161,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "filter",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3254,7 +3254,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -3274,7 +3274,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 4172,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "find",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3288,7 +3288,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -3308,7 +3308,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 4183,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "findIndex",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3322,7 +3322,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -3342,7 +3342,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 4192,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "forEach",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3356,7 +3356,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -3376,7 +3376,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 4230,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "map",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3390,7 +3390,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -3410,7 +3410,7 @@
       "file_path": "lib.es5.d.ts",
       "api_info": {
         "line": 4309,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "some",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3424,7 +3424,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -3956,7 +3956,7 @@
       "file_path": "lib.es2020.bigint.d.ts",
       "api_info": {
         "line": 186,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "every",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -3970,7 +3970,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -3990,7 +3990,7 @@
       "file_path": "lib.es2020.bigint.d.ts",
       "api_info": {
         "line": 205,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "filter",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -4004,7 +4004,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -4024,7 +4024,7 @@
       "file_path": "lib.es2020.bigint.d.ts",
       "api_info": {
         "line": 216,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "find",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -4038,7 +4038,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -4058,7 +4058,7 @@
       "file_path": "lib.es2020.bigint.d.ts",
       "api_info": {
         "line": 227,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "findIndex",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -4072,7 +4072,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -4092,7 +4092,7 @@
       "file_path": "lib.es2020.bigint.d.ts",
       "api_info": {
         "line": 236,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "forEach",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -4106,7 +4106,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -4126,7 +4126,7 @@
       "file_path": "lib.es2020.bigint.d.ts",
       "api_info": {
         "line": 282,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "map",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -4140,7 +4140,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -4160,7 +4160,7 @@
       "file_path": "lib.es2020.bigint.d.ts",
       "api_info": {
         "line": 357,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "some",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -4174,7 +4174,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -4215,7 +4215,7 @@
       "file_path": "lib.es2020.bigint.d.ts",
       "api_info": {
         "line": 458,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "every",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -4229,7 +4229,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -4249,7 +4249,7 @@
       "file_path": "lib.es2020.bigint.d.ts",
       "api_info": {
         "line": 477,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "filter",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -4263,7 +4263,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -4283,7 +4283,7 @@
       "file_path": "lib.es2020.bigint.d.ts",
       "api_info": {
         "line": 488,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "find",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -4297,7 +4297,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -4317,7 +4317,7 @@
       "file_path": "lib.es2020.bigint.d.ts",
       "api_info": {
         "line": 499,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "findIndex",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -4331,7 +4331,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -4351,7 +4351,7 @@
       "file_path": "lib.es2020.bigint.d.ts",
       "api_info": {
         "line": 508,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "forEach",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -4365,7 +4365,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -4385,7 +4385,7 @@
       "file_path": "lib.es2020.bigint.d.ts",
       "api_info": {
         "line": 554,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "map",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -4399,7 +4399,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -4419,7 +4419,7 @@
       "file_path": "lib.es2020.bigint.d.ts",
       "api_info": {
         "line": 629,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "some",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -4433,7 +4433,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -4474,7 +4474,7 @@
       "file_path": "lib.es2015.collection.d.ts",
       "api_info": {
         "line": 31,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "forEach",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -4488,7 +4488,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -4508,7 +4508,7 @@
       "file_path": "lib.es2015.collection.d.ts",
       "api_info": {
         "line": 59,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "forEach",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -4522,7 +4522,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -4542,7 +4542,7 @@
       "file_path": "lib.es2015.collection.d.ts",
       "api_info": {
         "line": 107,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "forEach",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -4556,7 +4556,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],
@@ -4576,7 +4576,7 @@
       "file_path": "lib.es2015.collection.d.ts",
       "api_info": {
         "line": 125,
-        "problem": "BuiltinAll",
+        "problem": "ThisArg",
         "api_name": "forEach",
         "api_type": "MethodSignature",
         "api_optional": false,
@@ -4590,7 +4590,7 @@
           {
             "name": "thisArg",
             "type": "any",
-            "is_optional": true,
+            "is_optional": false,
             "has_default": false
           }
         ],

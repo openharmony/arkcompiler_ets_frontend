@@ -102,5 +102,6 @@ export const arkts2Rules: number[] = [
   341,
   342,
   343,
-  344
+  344,
+  345
 ];

@@ -313,3 +313,4 @@ cookBookTag[341] = 'ArkTS directly instantiated JS objects is not supported (ark
 cookBookTag[342] = 'Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)';
 cookBookTag[343] = 'Usage of "instanceof" operator is not allowed with interop objects (arkts-no-import-obj-type)';
 cookBookTag[344] = 'Interop objects can\'t be incremented or decremented (arkts-no-js-obj-increases-decreases)';
+cookBookTag[345] = 'Using thisArgs as a type is not allowed in this API (arkts-builtin-thisArgs)';

@@ -209,6 +209,7 @@ export enum FaultID {
   InteropCallObjectMethods,
   InteropJsInstanceof,
   InteropIncrementDecrement,
+  BuiltinThisArgs,
   // this should always be last enum
   LAST_ID
 }

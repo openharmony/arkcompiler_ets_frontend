@@ -102,6 +102,7 @@ import { ARKTS_IGNORE_DIRS_OH_MODULES } from './utils/consts/ArktsIgnorePaths';
 import type { ApiInfo, ApiListItem } from './utils/consts/SdkWhitelist';
 import { ApiList, SdkProblem } from './utils/consts/SdkWhitelist';
 import * as apiWhiteList from './data/SdkWhitelist.json';
+import * as builtinWhiteList from './data/BuiltinList.json';
 import { USE_SHARED, USE_CONCURRENT } from './utils/consts/ConcurrentAPI';
 
 interface InterfaceSymbolTypeResult {
@@ -112,7 +113,8 @@ interface InterfaceSymbolTypeResult {
 interface InterfaceSymbolTypePropertyNames {
   propertyNames: string[];
   typeNames: string[];
-}
+}import { BuiltinProblem, FILE_PREFIX_PATH } from './utils/consts/BuiltinWhiteList';
+
 export class TypeScriptLinter {
   totalVisitedNodes: number = 0;
   nodeCounters: number[] = [];
@@ -142,7 +144,7 @@ export class TypeScriptLinter {
   private static sharedModulesCache: Map<string, boolean>;
   static nameSpaceFunctionCache: Map<string, Set<string>>;
   private readonly constVariableInitCache: Map<ts.Symbol, number | null> = new Map();
-  private funcMap: Map<string, Set<ApiInfo>> = new Map<string, Set<ApiInfo>>();
+  static funcMap: Map<string, Map<string, Set<ApiInfo>>> = new Map<string, Map<string, Set<ApiInfo>>>();
   private interfaceMap: Map<string, Set<ApiInfo>> = new Map<string, Set<ApiInfo>>();
   static pathMap: Map<string, Set<ApiInfo>>;
   static indexedTypeSet: Set<ApiListItem>;
@@ -153,11 +155,38 @@ export class TypeScriptLinter {
     TypeScriptLinter.nameSpaceFunctionCache = new Map<string, Set<string>>();
     TypeScriptLinter.pathMap = new Map<string, Set<ApiInfo>>();
     TypeScriptLinter.globalApiInfo = new Map<string, Set<ApiListItem>>();
+    TypeScriptLinter.funcMap = new Map<string, Map<string, Set<ApiInfo>>>();
   }
 
   initSdkInfo(): void {
-    this.funcMap = new Map<string, Set<ApiInfo>>();
     this.interfaceMap = new Map<string, Set<ApiInfo>>();
+  }
+
+  initSdkBuiltinInfo(): void {
+    const list: ApiList = new ApiList(builtinWhiteList);
+    if (list?.api_list?.length > 0) {
+      for (const item of list.api_list) {
+        switch (item.api_info.problem) {
+          case BuiltinProblem.LimitedThisArg:
+            this.initSdkBuiltinThisArgsWhitelist(item);
+            break;
+          default:
+        }
+      }
+    }
+  }
+
+  private initSdkBuiltinThisArgsWhitelist(item: ApiListItem): void {
+    if (item.file_path === '' || !item.api_info.api_name) {
+      return;
+    }
+
+    let funcApiInfos: Map<string, Set<ApiInfo>> | undefined = TypeScriptLinter.funcMap.get(item.api_info.api_name);
+    if (!funcApiInfos) {
+      funcApiInfos = new Map<string, Set<ApiInfo>>();
+      TypeScriptLinter.funcMap.set(item.api_info.api_name, funcApiInfos);
+    }
+    TypeScriptLinter.addOrUpdateData(funcApiInfos, item.file_path, item.api_info);
   }
 
   private initEtsHandlers(): void {
@@ -3516,9 +3545,13 @@ export class TypeScriptLinter {
   }
 
   private processCalleeSym(calleeSym: ts.Symbol, tsCallExpr: ts.CallExpression): void {
+    const name = calleeSym.getName();
+    const parName = this.tsUtils.getParentSymbolName(calleeSym);
     if (!this.options.arkts2) {
-      this.handleStdlibAPICall(tsCallExpr, calleeSym);
+      this.handleStdlibAPICall(tsCallExpr, calleeSym, name, parName);
       this.handleFunctionApplyBindPropCall(tsCallExpr, calleeSym);
+    } else {
+      this.handleBuiltinThisArgs(tsCallExpr, calleeSym, name, parName);
     }
     if (TsUtils.symbolHasEsObjectType(calleeSym)) {
       const faultId = this.options.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
@@ -4019,9 +4052,12 @@ export class TypeScriptLinter {
     [SYMBOL_CONSTRUCTOR, { arr: null, fault: FaultID.SymbolType }]
   ]);
 
-  private handleStdlibAPICall(callExpr: ts.CallExpression, calleeSym: ts.Symbol): void {
-    const name = calleeSym.getName();
-    const parName = this.tsUtils.getParentSymbolName(calleeSym);
+  private handleStdlibAPICall(
+    callExpr: ts.CallExpression,
+    calleeSym: ts.Symbol,
+    name: string,
+    parName: string | undefined
+  ): void {
     if (parName === undefined) {
       if (LIMITED_STD_GLOBAL_API.includes(name)) {
         this.incrementCounters(callExpr, FaultID.LimitedStdLibApi);
@@ -4040,6 +4076,41 @@ export class TypeScriptLinter {
       (!this.options.useRelaxedRules || !this.supportedStdCallApiChecker.isSupportedStdCallAPI(callExpr, parName, name))
     ) {
       this.incrementCounters(callExpr, lookup.fault);
+    }
+  }
+
+  private handleBuiltinThisArgs(
+    callExpr: ts.CallExpression,
+    calleeSym: ts.Symbol,
+    name: string,
+    parName: string | undefined
+  ): void {
+    if (parName === undefined) {
+      return; 
+    }
+
+    const builtinThisArgsInfos = TypeScriptLinter.funcMap.get(name);
+    if (!builtinThisArgsInfos) {
+      return;
+    }
+
+    const sourceFile = calleeSym?.declarations?.[0]?.getSourceFile();
+    if (!sourceFile) {
+      return;
+    }
+
+    const fileName = path.basename(sourceFile.fileName);
+    const builtinInfos = builtinThisArgsInfos.get(fileName);
+    if (builtinInfos && builtinInfos.size > 0) {
+      for (const info of builtinInfos) {
+        if (info.parent_api.length > 0 &&
+            info.parent_api[0].api_name === parName &&
+            info?.api_func_args?.length === callExpr.arguments.length
+          ) {
+            this.incrementCounters(callExpr, FaultID.BuiltinThisArgs);
+            return;
+        }
+      }
     }
   }
 

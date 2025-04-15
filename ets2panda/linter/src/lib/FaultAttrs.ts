@@ -220,3 +220,4 @@ faultsAttrs[FaultID.InstantiatedJsOjbect] = new FaultAttributes(341);
 faultsAttrs[FaultID.InteropCallObjectMethods] = new FaultAttributes(342);
 faultsAttrs[FaultID.InteropJsInstanceof] = new FaultAttributes(343);
 faultsAttrs[FaultID.InteropIncrementDecrement] = new FaultAttributes(344);
+faultsAttrs[FaultID.BuiltinThisArgs] = new FaultAttributes(345);
