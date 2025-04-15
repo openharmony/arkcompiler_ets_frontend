@@ -622,6 +622,9 @@ export class TsUtils {
     if (this.processExtendedParentTypes(typeA, typeB)) {
       return true;
     }
+    if (this.isStdIterableType(typeB) && this.hasSymbolIteratorMethod(typeA)) {
+      return true;
+    }
     if (!typeADecl.heritageClauses) {
       return false;
     }
@@ -632,6 +635,25 @@ export class TsUtils {
       }
     }
     return false;
+  }
+
+  hasSymbolIteratorMethod(type: ts.Type): boolean {
+    const rhsTypeProps = this.tsTypeChecker.getPropertiesOfType(type);
+    return rhsTypeProps.some((prop) => {
+      const propDecl = TsUtils.getDeclaration(prop);
+      return (
+        propDecl &&
+        (ts.isMethodSignature(propDecl) || ts.isMethodDeclaration(propDecl)) &&
+        ts.isComputedPropertyName(propDecl.name) &&
+        this.isSymbolIteratorExpression(propDecl.name.expression)
+      );
+    });
+  }
+
+  isStdIterableType(type: ts.Type): boolean {
+    void this;
+    const sym = type.getSymbol();
+    return !!sym && sym.getName() === 'Iterable' && isStdLibrarySymbol(sym);
   }
 
   static reduceReference(t: ts.Type): ts.Type {

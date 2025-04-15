@@ -189,3 +189,13 @@ class C {
     return;
   }
 }
+
+function foo(): void {}
+function bar(): void {}
+
+let aa = '1';
+let bb = aa === '1' ? foo() : bar(); // Error
+
+aa === '1' ? foo() : bar(); // No error
+let dd;
+dd = aa === '1' ? foo() : bar(); // Error

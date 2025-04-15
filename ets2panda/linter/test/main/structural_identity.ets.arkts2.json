@@ -1345,16 +1345,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 622,
-            "column": 50,
-            "endLine": 622,
-            "endColumn": 58,
-            "problem": "StructuralIdentity",
-            "suggest": "",
-            "rule": "Structural typing is not supported (arkts-no-structural-typing)",
-            "severity": "ERROR"
-        },
-        {
             "line": 626,
             "column": 5,
             "endLine": 626,

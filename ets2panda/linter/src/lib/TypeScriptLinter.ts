@@ -3244,7 +3244,8 @@ export class TypeScriptLinter {
     if (
       !ts.isExpressionStatement(tsCallExpr.parent) &&
       !ts.isVoidExpression(tsCallExpr.parent) &&
-      !ts.isArrowFunction(tsCallExpr.parent)
+      !ts.isArrowFunction(tsCallExpr.parent) &&
+      !(ts.isConditionalExpression(tsCallExpr.parent) && ts.isExpressionStatement(tsCallExpr.parent.parent))
     ) {
       this.handleLimitedVoidWithCall(tsCallExpr);
     }
