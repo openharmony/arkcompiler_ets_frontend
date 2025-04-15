@@ -598,6 +598,11 @@ void ETSEmitter::GenClassRecord(const ir::ClassDefinition *classDef, bool extern
     }
 
     std::vector<pandasm::AnnotationData> annotations = GenAnnotations(classDef);
+
+    if (classDef->IsNamespaceTransformed() || classDef->IsGlobalInitialized()) {
+        annotations.push_back(GenAnnotationModule(classDef));
+    }
+
     if (!annotations.empty()) {
         classRecord.metadata->AddAnnotations(annotations);
     }
@@ -901,6 +906,24 @@ std::vector<pandasm::AnnotationData> ETSEmitter::GenCustomAnnotations(
         }
     }
     return annotations;
+}
+
+pandasm::AnnotationData ETSEmitter::GenAnnotationModule(const ir::ClassDefinition *classDef)
+{
+    std::vector<pandasm::ScalarValue> exportedClasses {};
+
+    for (auto cls : classDef->ExportedClasses()) {
+        exportedClasses.emplace_back(pandasm::ScalarValue::Create<pandasm::Value::Type::RECORD>(
+            pandasm::Type::FromName(cls->Definition()->InternalName().Utf8(), true)));
+    }
+
+    GenAnnotationRecord(Signatures::ETS_ANNOTATION_MODULE);
+    pandasm::AnnotationData moduleAnno(Signatures::ETS_ANNOTATION_MODULE);
+    pandasm::AnnotationElement value(
+        Signatures::ANNOTATION_KEY_EXPORTED,
+        std::make_unique<pandasm::ArrayValue>(pandasm::Value::Type::RECORD, std::move(exportedClasses)));
+    moduleAnno.AddElement(std::move(value));
+    return moduleAnno;
 }
 
 pandasm::AnnotationData ETSEmitter::GenAnnotationSignature(const ir::ClassDefinition *classDef)

@@ -52,7 +52,9 @@ private:
     void CollectProgramGlobalClasses(parser::Program *program, ArenaVector<ir::ETSModule *> namespaces);
     ir::ClassDeclaration *TransformNamespace(ir::ETSModule *ns, parser::Program *program);
     ir::ClassDeclaration *CreateTransformedClass(ir::ETSModule *ns);
-    ir::AnnotationUsage *CreateModuleAnnotation(const lexer::SourceRange &range);
+    template <class Node>
+    void CollectExportedClasses(ir::ClassDefinition *classDef, const ArenaVector<Node *> &statements);
+    void CollectNamespaceExportedClasses(ir::ClassDefinition *classDef);
     void SetupGlobalMethods(parser::Program *program, ArenaVector<ir::Statement *> &&initStatements,
                             ArenaVector<ir::Statement *> &&initializerBlock, ir::ClassDefinition *globalClass,
                             bool isDeclare);

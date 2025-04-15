@@ -1437,40 +1437,6 @@
         },
         "superClass": null,
         "implements": [],
-        "annotations": [
-          {
-            "expr_": {
-              "type": "Identifier",
-              "name": "Module",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "methodOverrideDifferentSignature.ets"
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "methodOverrideDifferentSignature.ets"
-                }
-              }
-            },
-            "properties": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1,
-                "program": "methodOverrideDifferentSignature.ets"
-              },
-              "end": {
-                "line": 1,
-                "column": 1,
-                "program": "methodOverrideDifferentSignature.ets"
-              }
-            }
-          }
-        ],
         "body": [
           {
             "type": "MethodDefinition",

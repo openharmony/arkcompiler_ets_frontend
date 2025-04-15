@@ -1288,40 +1288,6 @@
         },
         "superClass": null,
         "implements": [],
-        "annotations": [
-          {
-            "expr_": {
-              "type": "Identifier",
-              "name": "Module",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "unary_operations.ets"
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "unary_operations.ets"
-                }
-              }
-            },
-            "properties": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1,
-                "program": "unary_operations.ets"
-              },
-              "end": {
-                "line": 1,
-                "column": 1,
-                "program": "unary_operations.ets"
-              }
-            }
-          }
-        ],
         "body": [
           {
             "type": "MethodDefinition",

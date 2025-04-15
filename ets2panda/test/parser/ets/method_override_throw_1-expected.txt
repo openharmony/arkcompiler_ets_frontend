@@ -2319,40 +2319,6 @@
         },
         "superClass": null,
         "implements": [],
-        "annotations": [
-          {
-            "expr_": {
-              "type": "Identifier",
-              "name": "Module",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "method_override_throw_1.ets"
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "method_override_throw_1.ets"
-                }
-              }
-            },
-            "properties": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1,
-                "program": "method_override_throw_1.ets"
-              },
-              "end": {
-                "line": 1,
-                "column": 1,
-                "program": "method_override_throw_1.ets"
-              }
-            }
-          }
-        ],
         "body": [
           {
             "type": "MethodDefinition",

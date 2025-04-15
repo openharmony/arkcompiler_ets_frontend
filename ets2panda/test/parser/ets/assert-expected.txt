@@ -874,40 +874,6 @@
         },
         "superClass": null,
         "implements": [],
-        "annotations": [
-          {
-            "expr_": {
-              "type": "Identifier",
-              "name": "Module",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "assert.ets"
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "assert.ets"
-                }
-              }
-            },
-            "properties": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1,
-                "program": "assert.ets"
-              },
-              "end": {
-                "line": 1,
-                "column": 1,
-                "program": "assert.ets"
-              }
-            }
-          }
-        ],
         "body": [
           {
             "type": "MethodDefinition",

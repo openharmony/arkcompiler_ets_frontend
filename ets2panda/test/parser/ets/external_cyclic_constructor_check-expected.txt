@@ -23,40 +23,6 @@
         },
         "superClass": null,
         "implements": [],
-        "annotations": [
-          {
-            "expr_": {
-              "type": "Identifier",
-              "name": "Module",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "external_cyclic_constructor_check.ets"
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "external_cyclic_constructor_check.ets"
-                }
-              }
-            },
-            "properties": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1,
-                "program": "external_cyclic_constructor_check.ets"
-              },
-              "end": {
-                "line": 1,
-                "column": 1,
-                "program": "external_cyclic_constructor_check.ets"
-              }
-            }
-          }
-        ],
         "body": [
           {
             "type": "MethodDefinition",

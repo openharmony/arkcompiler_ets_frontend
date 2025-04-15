@@ -23,40 +23,6 @@
         },
         "superClass": null,
         "implements": [],
-        "annotations": [
-          {
-            "expr_": {
-              "type": "Identifier",
-              "name": "Module",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "generic_func_rest_param_spread_infer.ets"
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1,
-                  "program": "generic_func_rest_param_spread_infer.ets"
-                }
-              }
-            },
-            "properties": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1,
-                "program": "generic_func_rest_param_spread_infer.ets"
-              },
-              "end": {
-                "line": 1,
-                "column": 1,
-                "program": "generic_func_rest_param_spread_infer.ets"
-              }
-            }
-          }
-        ],
         "body": [
           {
             "type": "MethodDefinition",
