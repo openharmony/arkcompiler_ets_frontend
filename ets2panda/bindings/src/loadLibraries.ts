@@ -22,8 +22,11 @@ export function loadNativeLibrary(name: string): Record<string, object> {
     return (globalThis as any).requireNapi(name, true)
   else {
     const suffixedName = name.endsWith(".node") ? name : `${name}.node`
-    const safePath = path.win32.resolve(process.cwd(), `${suffixedName}`).replace(/\\/g, '\\\\')
-    return eval(`let exports = {}; process.dlopen({ exports }, require.resolve("${safePath.replace(/ /g, '\\ ')}"), 2); exports`)
+    if (process.platform === 'win32') {
+      return require(suffixedName)
+    } else {
+      return eval(`let exports = {}; process.dlopen({ exports }, require.resolve("${suffixedName}"), 2); exports`);
+    }
   }
 }
 

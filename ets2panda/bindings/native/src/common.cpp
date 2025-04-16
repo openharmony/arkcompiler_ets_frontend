@@ -23,7 +23,7 @@
 
 using std::string, std::cout, std::endl, std::vector;
 
-static es2panda_Impl *impl = nullptr;
+static es2panda_Impl const *impl = nullptr;
 
 #ifdef _WIN32
 #include <windows.h>
@@ -61,8 +61,12 @@ void *FindLibrary()
     return LoadLibrary(libraryName);
 }
 
-es2panda_Impl *GetPublicImpl()
+const es2panda_Impl *GetPublicImpl()
 {
+#ifdef __APPLE__
+    impl = es2panda_GetImpl(ES2PANDA_LIB_VERSION);
+    return impl;
+#else
     if (impl) {
         return impl;
     }
@@ -76,6 +80,7 @@ es2panda_Impl *GetPublicImpl()
     }
     impl = reinterpret_cast<es2panda_Impl *(*)(int)>(symbol)(ES2PANDA_LIB_VERSION);
     return impl;
+#endif
 }
 
 std::string GetString(KStringPtr ptr)
