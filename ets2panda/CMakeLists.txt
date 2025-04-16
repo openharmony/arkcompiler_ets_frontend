@@ -294,6 +294,7 @@ set(ES2PANDA_LIB_SRC
   ir/astDump.cpp
   ir/srcDump.cpp
   ir/astNode.cpp
+  ir/astNodeHistory.cpp
   ir/irnode.cpp
   ir/typeNode.cpp
   ir/opaqueTypeNode.cpp
