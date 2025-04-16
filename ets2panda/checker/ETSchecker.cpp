@@ -284,9 +284,6 @@ bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const util::Optio
         debugInfoPlugin_->PostCheck();
     }
 
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    BuildDynamicImportClass();
-
 #ifndef NDEBUG
     for (auto *func : varbinder->Functions()) {
         ES2PANDA_ASSERT(!func->Node()->AsScriptFunction()->Scope()->Name().Empty());

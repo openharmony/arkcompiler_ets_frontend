@@ -212,6 +212,7 @@ libes2panda_sources = [
   "compiler/lowering/ets/declareOverloadLowering.cpp",
   "compiler/lowering/ets/defaultParametersInConstructorLowering.cpp",
   "compiler/lowering/ets/defaultParametersLowering.cpp",
+  "compiler/lowering/ets/dynamicImportLowering.cpp",
   "compiler/lowering/ets/enumLowering.cpp",
   "compiler/lowering/ets/enumPostCheckLowering.cpp",
   "compiler/lowering/ets/expandBrackets.cpp",
