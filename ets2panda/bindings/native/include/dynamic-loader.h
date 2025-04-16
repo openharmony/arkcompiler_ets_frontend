@@ -43,7 +43,7 @@ inline std::string LibName(const char *lib)
     return std::string(lib) + ".dll";
 }
 
-#elif defined(__linux__) || defined(__APPLE__)
+#elif defined(__linux__)
 #include <dlfcn.h>
 
 inline void *LoadLibrary(const std::string &libPath)
