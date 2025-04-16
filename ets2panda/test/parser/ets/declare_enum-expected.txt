@@ -21,7 +21,85 @@
             }
           }
         },
-        "superClass": null,
+        "superClass": {
+          "type": "ETSTypeReference",
+          "part": {
+            "type": "ETSTypeReferencePart",
+            "name": {
+              "type": "Identifier",
+              "name": "BaseEnum",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 16,
+                  "column": 9,
+                  "program": "declare_enum.ets"
+                },
+                "end": {
+                  "line": 16,
+                  "column": 9,
+                  "program": "declare_enum.ets"
+                }
+              }
+            },
+            "typeParams": {
+              "type": "TSTypeParameterInstantiation",
+              "params": [
+                {
+                  "type": "ETSPrimitiveType",
+                  "loc": {
+                    "start": {
+                      "line": 16,
+                      "column": 9,
+                      "program": "declare_enum.ets"
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 9,
+                      "program": "declare_enum.ets"
+                    }
+                  }
+                }
+              ],
+              "loc": {
+                "start": {
+                  "line": 16,
+                  "column": 9,
+                  "program": "declare_enum.ets"
+                },
+                "end": {
+                  "line": 16,
+                  "column": 9,
+                  "program": "declare_enum.ets"
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 9,
+                "program": "declare_enum.ets"
+              },
+              "end": {
+                "line": 16,
+                "column": 9,
+                "program": "declare_enum.ets"
+              }
+            }
+          },
+          "loc": {
+            "start": {
+              "line": 16,
+              "column": 9,
+              "program": "declare_enum.ets"
+            },
+            "end": {
+              "line": 16,
+              "column": 9,
+              "program": "declare_enum.ets"
+            }
+          }
+        },
         "implements": [],
         "body": [
           {
@@ -174,82 +252,14 @@
                         "program": "declare_enum.ets"
                       }
                     }
-                  }
-                ],
-                "body": {
-                  "type": "BlockStatement",
-                  "statements": [
-                    {
-                      "type": "ExpressionStatement",
-                      "expression": {
-                        "type": "AssignmentExpression",
-                        "operator": "=",
-                        "left": {
-                          "type": "MemberExpression",
-                          "object": {
-                            "type": "ThisExpression",
-                            "loc": {
-                              "start": {
-                                "line": 16,
-                                "column": 9,
-                                "program": "declare_enum.ets"
-                              },
-                              "end": {
-                                "line": 16,
-                                "column": 9,
-                                "program": "declare_enum.ets"
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "#ordinal",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 16,
-                                "column": 9,
-                                "program": "declare_enum.ets"
-                              },
-                              "end": {
-                                "line": 16,
-                                "column": 9,
-                                "program": "declare_enum.ets"
-                              }
-                            }
-                          },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 16,
-                              "column": 9,
-                              "program": "declare_enum.ets"
-                            },
-                            "end": {
-                              "line": 16,
-                              "column": 9,
-                              "program": "declare_enum.ets"
-                            }
-                          }
-                        },
-                        "right": {
-                          "type": "Identifier",
-                          "name": "ordinal",
-                          "decorators": [],
-                          "loc": {
-                            "start": {
-                              "line": 16,
-                              "column": 9,
-                              "program": "declare_enum.ets"
-                            },
-                            "end": {
-                              "line": 16,
-                              "column": 9,
-                              "program": "declare_enum.ets"
-                            }
-                          }
-                        },
+                  },
+                  {
+                    "type": "ETSParameterExpression",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "value",
+                      "typeAnnotation": {
+                        "type": "ETSPrimitiveType",
                         "loc": {
                           "start": {
                             "line": 16,
@@ -263,6 +273,7 @@
                           }
                         }
                       },
+                      "decorators": [],
                       "loc": {
                         "start": {
                           "line": 16,
@@ -275,8 +286,24 @@
                           "program": "declare_enum.ets"
                         }
                       }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 16,
+                        "column": 9,
+                        "program": "declare_enum.ets"
+                      },
+                      "end": {
+                        "line": 16,
+                        "column": 9,
+                        "program": "declare_enum.ets"
+                      }
                     }
-                  ],
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
                   "loc": {
                     "start": {
                       "line": 16,
@@ -400,6 +427,22 @@
                 }
               },
               "arguments": [
+                {
+                  "type": "NumberLiteral",
+                  "value": 0,
+                  "loc": {
+                    "start": {
+                      "line": 16,
+                      "column": 9,
+                      "program": "declare_enum.ets"
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 9,
+                      "program": "declare_enum.ets"
+                    }
+                  }
+                },
                 {
                   "type": "NumberLiteral",
                   "value": 0,
@@ -567,6 +610,22 @@
                 }
               },
               "arguments": [
+                {
+                  "type": "NumberLiteral",
+                  "value": 1,
+                  "loc": {
+                    "start": {
+                      "line": 16,
+                      "column": 9,
+                      "program": "declare_enum.ets"
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 9,
+                      "program": "declare_enum.ets"
+                    }
+                  }
+                },
                 {
                   "type": "NumberLiteral",
                   "value": 1,

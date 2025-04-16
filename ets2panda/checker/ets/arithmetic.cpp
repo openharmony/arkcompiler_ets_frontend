@@ -664,8 +664,11 @@ static Type *HandelReferenceBinaryEquality(ETSChecker *checker, BinaryArithmOper
         (typeL->IsETSNullType() && typeR->IsETSPrimitiveType())) {
         return checker->CreateETSUnionType({typeL, typeR});
     }
-    // Do not comparing reference equality for enum.
+
     if (typeL->IsETSEnumType() && typeR->IsETSEnumType()) {
+        if (checker->Relation()->IsIdenticalTo(typeL, typeR)) {
+            return typeL;
+        }
         return nullptr;
     }
 

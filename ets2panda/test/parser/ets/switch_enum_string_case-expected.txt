@@ -21,7 +21,117 @@
             }
           }
         },
-        "superClass": null,
+        "superClass": {
+          "type": "ETSTypeReference",
+          "part": {
+            "type": "ETSTypeReferencePart",
+            "name": {
+              "type": "Identifier",
+              "name": "BaseEnum",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 20,
+                  "column": 1,
+                  "program": "switch_enum_string_case.ets"
+                },
+                "end": {
+                  "line": 20,
+                  "column": 1,
+                  "program": "switch_enum_string_case.ets"
+                }
+              }
+            },
+            "typeParams": {
+              "type": "TSTypeParameterInstantiation",
+              "params": [
+                {
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "String",
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 20,
+                          "column": 1,
+                          "program": "switch_enum_string_case.ets"
+                        },
+                        "end": {
+                          "line": 20,
+                          "column": 1,
+                          "program": "switch_enum_string_case.ets"
+                        }
+                      }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 20,
+                        "column": 1,
+                        "program": "switch_enum_string_case.ets"
+                      },
+                      "end": {
+                        "line": 20,
+                        "column": 1,
+                        "program": "switch_enum_string_case.ets"
+                      }
+                    }
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 20,
+                      "column": 1,
+                      "program": "switch_enum_string_case.ets"
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 1,
+                      "program": "switch_enum_string_case.ets"
+                    }
+                  }
+                }
+              ],
+              "loc": {
+                "start": {
+                  "line": 20,
+                  "column": 1,
+                  "program": "switch_enum_string_case.ets"
+                },
+                "end": {
+                  "line": 20,
+                  "column": 1,
+                  "program": "switch_enum_string_case.ets"
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 20,
+                "column": 1,
+                "program": "switch_enum_string_case.ets"
+              },
+              "end": {
+                "line": 20,
+                "column": 1,
+                "program": "switch_enum_string_case.ets"
+              }
+            }
+          },
+          "loc": {
+            "start": {
+              "line": 20,
+              "column": 1,
+              "program": "switch_enum_string_case.ets"
+            },
+            "end": {
+              "line": 20,
+              "column": 1,
+              "program": "switch_enum_string_case.ets"
+            }
+          }
+        },
         "implements": [],
         "body": [
           {
@@ -280,11 +390,155 @@
                         "program": "switch_enum_string_case.ets"
                       }
                     }
+                  },
+                  {
+                    "type": "ETSParameterExpression",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "value",
+                      "typeAnnotation": {
+                        "type": "ETSTypeReference",
+                        "part": {
+                          "type": "ETSTypeReferencePart",
+                          "name": {
+                            "type": "Identifier",
+                            "name": "String",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 20,
+                                "column": 1,
+                                "program": "switch_enum_string_case.ets"
+                              },
+                              "end": {
+                                "line": 20,
+                                "column": 1,
+                                "program": "switch_enum_string_case.ets"
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 20,
+                              "column": 1,
+                              "program": "switch_enum_string_case.ets"
+                            },
+                            "end": {
+                              "line": 20,
+                              "column": 1,
+                              "program": "switch_enum_string_case.ets"
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 20,
+                            "column": 1,
+                            "program": "switch_enum_string_case.ets"
+                          },
+                          "end": {
+                            "line": 20,
+                            "column": 1,
+                            "program": "switch_enum_string_case.ets"
+                          }
+                        }
+                      },
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 20,
+                          "column": 1,
+                          "program": "switch_enum_string_case.ets"
+                        },
+                        "end": {
+                          "line": 20,
+                          "column": 1,
+                          "program": "switch_enum_string_case.ets"
+                        }
+                      }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 20,
+                        "column": 1,
+                        "program": "switch_enum_string_case.ets"
+                      },
+                      "end": {
+                        "line": 20,
+                        "column": 1,
+                        "program": "switch_enum_string_case.ets"
+                      }
+                    }
                   }
                 ],
                 "body": {
                   "type": "BlockStatement",
                   "statements": [
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "Super",
+                          "loc": {
+                            "start": {
+                              "line": 20,
+                              "column": 1,
+                              "program": "switch_enum_string_case.ets"
+                            },
+                            "end": {
+                              "line": 20,
+                              "column": 1,
+                              "program": "switch_enum_string_case.ets"
+                            }
+                          }
+                        },
+                        "arguments": [
+                          {
+                            "type": "Identifier",
+                            "name": "value",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 20,
+                                "column": 1,
+                                "program": "switch_enum_string_case.ets"
+                              },
+                              "end": {
+                                "line": 20,
+                                "column": 1,
+                                "program": "switch_enum_string_case.ets"
+                              }
+                            }
+                          }
+                        ],
+                        "optional": false,
+                        "loc": {
+                          "start": {
+                            "line": 20,
+                            "column": 1,
+                            "program": "switch_enum_string_case.ets"
+                          },
+                          "end": {
+                            "line": 20,
+                            "column": 1,
+                            "program": "switch_enum_string_case.ets"
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 20,
+                          "column": 1,
+                          "program": "switch_enum_string_case.ets"
+                        },
+                        "end": {
+                          "line": 20,
+                          "column": 1,
+                          "program": "switch_enum_string_case.ets"
+                        }
+                      }
+                    },
                     {
                       "type": "ExpressionStatement",
                       "expression": {
@@ -521,6 +775,22 @@
                       "program": "switch_enum_string_case.ets"
                     }
                   }
+                },
+                {
+                  "type": "StringLiteral",
+                  "value": "A",
+                  "loc": {
+                    "start": {
+                      "line": 20,
+                      "column": 1,
+                      "program": "switch_enum_string_case.ets"
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 1,
+                      "program": "switch_enum_string_case.ets"
+                    }
+                  }
                 }
               ],
               "loc": {
@@ -688,6 +958,22 @@
                       "program": "switch_enum_string_case.ets"
                     }
                   }
+                },
+                {
+                  "type": "StringLiteral",
+                  "value": "B",
+                  "loc": {
+                    "start": {
+                      "line": 20,
+                      "column": 1,
+                      "program": "switch_enum_string_case.ets"
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 1,
+                      "program": "switch_enum_string_case.ets"
+                    }
+                  }
                 }
               ],
               "loc": {
@@ -843,6 +1129,22 @@
                 {
                   "type": "NumberLiteral",
                   "value": 2,
+                  "loc": {
+                    "start": {
+                      "line": 20,
+                      "column": 1,
+                      "program": "switch_enum_string_case.ets"
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 1,
+                      "program": "switch_enum_string_case.ets"
+                    }
+                  }
+                },
+                {
+                  "type": "StringLiteral",
+                  "value": "C",
                   "loc": {
                     "start": {
                       "line": 20,
