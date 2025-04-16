@@ -48,19 +48,63 @@
         },
         {
             "line": 18,
-            "column": 5,
+            "column": 11,
             "endLine": 18,
             "endColumn": 18,
-            "problem": "NumericSemantics",
+            "problem": "InteropObjectProperty",
             "autofix": [
                 {
-                    "start": 672,
+                    "start": 678,
                     "end": 685,
-                    "replacementText": "arr: number[] = foo.arr"
+                    "replacementText": "foo.getPropertyByName(\"arr\")"
                 }
             ],
             "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 11,
+            "endLine": 18,
+            "endColumn": 18,
+            "problem": "InteropJsObjectUsage",
+            "autofix": [
+                {
+                    "replacementText": "foo.getPropertyByName('arr')",
+                    "start": 678,
+                    "end": 685
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 11,
+            "endLine": 18,
+            "endColumn": 18,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 1,
+            "endLine": 19,
+            "endColumn": 7,
+            "problem": "InteropJsObjectUsage",
+            "autofix": [
+                {
+                    "replacementText": "arr.getPropertyByIndex(1).toNumber()",
+                    "start": 686,
+                    "end": 692
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
             "severity": "ERROR"
         },
         {
@@ -77,7 +121,24 @@
                 }
             ],
             "suggest": "",
-            "rule": "Interop objects can't be indexed directly (arkts-no-js-index)",
+            "rule": "Interop objects can't be indexed directly (arkts-no-js-index-import)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 1,
+            "endLine": 20,
+            "endColumn": 7,
+            "problem": "InteropJsObjectUsage",
+            "autofix": [
+                {
+                    "replacementText": "arr.setPropertyByIndex(3, ESObject.wrap(4))",
+                    "start": 693,
+                    "end": 703
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
             "severity": "ERROR"
         },
         {
@@ -94,7 +155,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Interop objects can't be indexed directly (arkts-no-js-index)",
+            "rule": "Interop objects can't be indexed directly (arkts-no-js-index-import)",
             "severity": "ERROR"
         }
     ]

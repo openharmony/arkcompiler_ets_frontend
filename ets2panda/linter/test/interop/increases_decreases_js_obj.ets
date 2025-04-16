@@ -13,10 +13,9 @@
  * limitations under the License.
  */
 'use static'
-
-import {foo, person} from "./interop_not_have_property_js"
-
-foo.name
-foo.name = "456"
-person.age = 23
-person.male = [2, 3]
+import {foo} from "./increases_decreases_js_obj_js"
+let a: number =0
+a = foo.num++
+a = ++foo.num
+a = foo.num--
+a = --foo.num

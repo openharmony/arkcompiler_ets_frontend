@@ -17,5 +17,3 @@ export const KIT = '@kit';
 export const D_ETS = '.d.ets';
 export const D_TS = '.d.ts';
 export const ETS = '.ets';
-export const JS = '.js';
-export const TS = '.ts';

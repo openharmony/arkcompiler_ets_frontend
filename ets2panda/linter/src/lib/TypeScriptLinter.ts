@@ -293,7 +293,8 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.TaggedTemplateExpression, this.handleTaggedTemplatesExpression],
     [ts.SyntaxKind.StructDeclaration, this.handleStructDeclaration],
     [ts.SyntaxKind.TypeOfExpression, this.handleInterOpImportJsOnTypeOfNode],
-    [ts.SyntaxKind.AwaitExpression, this.handleAwaitExpression]
+    [ts.SyntaxKind.AwaitExpression, this.handleAwaitExpression],
+    [ts.SyntaxKind.PostfixUnaryExpression, this.handlePostfixUnaryExpression]
   ]);
 
   private getLineAndCharacterOfNode(node: ts.Node | ts.CommentRange): ts.LineAndCharacter {
@@ -1568,6 +1569,13 @@ export class TypeScriptLinter {
       }
     }
   }
+  
+  private handlePostfixUnaryExpression(node: ts.Node): void {
+    const unaryExpr = node as ts.PostfixUnaryExpression;
+    if (unaryExpr.operator === ts.SyntaxKind.PlusPlusToken || unaryExpr.operator === ts.SyntaxKind.MinusMinusToken) {
+      this.checkAutoIncrementDecrement(unaryExpr);
+    }
+  }
 
   private handlePrefixUnaryExpression(node: ts.Node): void {
     const tsUnaryArithm = node as ts.PrefixUnaryExpression;
@@ -1589,6 +1597,12 @@ export class TypeScriptLinter {
       if (!this.isValidTypeForUnaryArithmeticOperator(tsOperatndType) || isInvalidTilde) {
         this.incrementCounters(node, FaultID.UnaryArithmNotNumber);
       }
+    }
+    if (
+      tsUnaryArithm.operator === ts.SyntaxKind.PlusPlusToken ||
+      tsUnaryArithm.operator === ts.SyntaxKind.MinusMinusToken
+    ) {
+      this.checkAutoIncrementDecrement(tsUnaryArithm);
     }
   }
 
@@ -1682,14 +1696,12 @@ export class TypeScriptLinter {
 
   private checkInteropEqualityJudgment(tsBinaryExpr: ts.BinaryExpression): void {
     if (this.useStatic && this.options.arkts2) {
-      const leftSym = this.tsUtils.trueSymbolAtLocation(tsBinaryExpr.left);
-      const rightSym = this.tsUtils.trueSymbolAtLocation(tsBinaryExpr.right);
       switch (tsBinaryExpr.operatorToken.kind) {
         case ts.SyntaxKind.EqualsEqualsToken:
         case ts.SyntaxKind.ExclamationEqualsToken:
         case ts.SyntaxKind.EqualsEqualsEqualsToken:
         case ts.SyntaxKind.ExclamationEqualsEqualsToken:
-          if (this.isJsType(leftSym) || this.isJsType(rightSym)) {
+          if (this.tsUtils.isJsImport(tsBinaryExpr.left) || this.tsUtils.isJsImport(tsBinaryExpr.right)) {
             const autofix = this.autofixer?.fixInteropEqualityOperator(tsBinaryExpr, tsBinaryExpr.operatorToken.kind);
             this.incrementCounters(tsBinaryExpr, FaultID.InteropEqualityJudgment, autofix);
           }
@@ -1697,11 +1709,6 @@ export class TypeScriptLinter {
         default:
       }
     }
-  }
-
-  isJsType(sym: ts.Symbol | undefined): boolean {
-    void this;
-    return !!sym && !!sym.declarations && sym.declarations[0].getSourceFile().fileName.endsWith(EXTNAME_JS);
   }
 
   private handleTsInterop(nodeToCheck: ts.Node, handler: { (): void }): void {
@@ -6352,4 +6359,15 @@ export class TypeScriptLinter {
       this.incrementCounters(node, FaultID.InteropJsInstanceof); 
     }     
   } 
+
+  private checkAutoIncrementDecrement(unaryExpr: ts.PostfixUnaryExpression | ts.PrefixUnaryExpression): void {
+    if (ts.isPropertyAccessExpression(unaryExpr.operand)) {
+      const propertyAccess = unaryExpr.operand;
+      if (this.useStatic && this.options.arkts2) {
+        if (this.isFromJSModule(propertyAccess.expression)) {
+          this.incrementCounters(unaryExpr, FaultID.InteropIncrementDecrement);
+        }
+      }
+    }
+  }
 }

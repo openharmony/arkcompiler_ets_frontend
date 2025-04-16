@@ -25,6 +25,28 @@
             "severity": "ERROR"
         },
         {
+            "line": 17,
+            "column": 1,
+            "endLine": 17,
+            "endColumn": 52,
+            "problem": "InterOpImportJs",
+            "autofix": [
+                {
+                    "start": 618,
+                    "end": 669,
+                    "replacementText": ""
+                },
+                {
+                    "start": 669,
+                    "end": 669,
+                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./interop_equality_judgment_js');\nlet a = GeneratedImportVar_1.getPropertyByName('a');\nlet b = GeneratedImportVar_1.getPropertyByName('b');"
+                }
+            ],
+            "suggest": "",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "severity": "ERROR"
+        },
+        {
             "line": 18,
             "column": 1,
             "endLine": 18,

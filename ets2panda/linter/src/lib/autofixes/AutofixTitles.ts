@@ -51,6 +51,8 @@ export const cookBookRefToFixTitle: Map<number, string> = new Map([
   [263, '"@Provide" annotation fixed'],
   [330, 'Convert import named objects from JS to ESObject'],
   [332, 'Using the ESObject interface to access properties'],
+  [334, 'Call typeOf function'],
+  [335, 'Call toNumber function to convert'],
   [338, 'Replace with library function call'],
   [339, 'Using \'ESObject\' interface call'],
   [341, 'Create JS objects using instantite']

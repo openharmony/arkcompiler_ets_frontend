@@ -28,4 +28,3 @@ export const SENDABLE_CLOSURE_DECLS = [ts.SyntaxKind.ClassDeclaration, ts.Syntax
 
 export const SENDBALE_FUNCTION_START_VERSION = 12;
 export const SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12 = ['beta1', 'beta2'];
-export const ISINSTANCEOF = 'isInstanceOf';

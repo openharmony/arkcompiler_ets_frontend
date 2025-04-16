@@ -36,3 +36,7 @@ export const REFLECT_PROPERTIES = [
 ];
 export const LOAD = 'load';
 export const GET_PROPERTY_BY_NAME = 'getPropertyByName';
+export const SET_PROPERTY_BY_NAME = 'setPropertyByName';
+export const GET_PROPERTY_BY_INDEX = 'getPropertyByIndex';
+export const SET_PROPERTY_BY_INDEX = 'setPropertyByIndex';
+export const TO_NUMBER = 'toNumber';
