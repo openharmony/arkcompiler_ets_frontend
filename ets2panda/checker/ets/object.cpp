@@ -1463,6 +1463,37 @@ void ETSChecker::CheckInnerClassMembers(const ETSObjectType *classType)
     }
 }
 
+lexer::Number ETSChecker::ExtractNumericValue(Type const *const indexType)
+{
+    TypeFlag typeKind = ETSType(indexType);
+    lexer::Number resNum;
+    switch (typeKind) {
+        case TypeFlag::BYTE: {
+            resNum = lexer::Number(indexType->AsByteType()->GetValue());
+            break;
+        }
+        case TypeFlag::SHORT: {
+            resNum = lexer::Number(indexType->AsShortType()->GetValue());
+            break;
+        }
+        case TypeFlag::INT: {
+            resNum = lexer::Number(indexType->AsIntType()->GetValue());
+            break;
+        }
+        case TypeFlag::FLOAT: {
+            resNum = lexer::Number(indexType->AsFloatType()->GetValue());
+            break;
+        }
+        case TypeFlag::DOUBLE: {
+            resNum = lexer::Number(indexType->AsDoubleType()->GetValue());
+            break;
+        }
+        default:
+            break;
+    }
+    return resNum;
+}
+
 bool ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
 {
     auto const expressionType = expr->Check(this);
@@ -1476,23 +1507,29 @@ bool ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
     }
 
     Type const *const indexType = ApplyUnaryOperatorPromotion(expressionType);
-    if (relaxed && indexType != nullptr && indexType->HasTypeFlag(TypeFlag::ETS_FLOATING_POINT)) {
-        if (!expr->IsNumberLiteral()) {
-            return true;
-        }
 
-        auto num = expr->AsNumberLiteral()->Number();
-        ES2PANDA_ASSERT(num.IsReal());
-        double value = num.GetDouble();
+    if (relaxed && indexType != nullptr) {
+        lexer::Number resNum = ExtractNumericValue(indexType);
+        double value = resNum.GetDouble();
         double intpart;
         if (std::modf(value, &intpart) != 0.0) {
             LogError(diagnostic::INDEX_NONINTEGRAL_FLOAT, {}, expr->Start());
             return false;
         }
-        return true;
+        bool tildeFlag = false;
+        if (expr->IsUnaryExpression() &&
+            expr->AsUnaryExpression()->OperatorType() == lexer::TokenType::PUNCTUATOR_TILDE) {
+            tildeFlag = true;
+        }
+        if ((tildeFlag && value > 0) || (!tildeFlag && value < 0)) {
+            LogError(diagnostic::NEGATIVE_INDEX, {}, expr->Start());
+            return false;
+        }
     }
 
-    if (indexType == nullptr || !indexType->HasTypeFlag(TypeFlag::ETS_ARRAY_INDEX)) {
+    if (indexType == nullptr ||
+        (!indexType->HasTypeFlag(relaxed ? (TypeFlag::ETS_ARRAY_INDEX | TypeFlag::ETS_FLOATING_POINT)
+                                         : TypeFlag::ETS_ARRAY_INDEX))) {
         std::stringstream message("");
         expressionType->ToString(message);
 
