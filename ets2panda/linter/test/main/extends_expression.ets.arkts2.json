@@ -31,7 +31,7 @@
             "endColumn": 18,
             "problem": "ExtendsExpression",
             "suggest": "",
-            "rule": "Extends or implemetns expression are not supported(arkts-no-extends-expression)",
+            "rule": "Extends or implements expression are not supported(arkts-no-extends-expression)",
             "severity": "ERROR"
         },
         {
@@ -111,7 +111,7 @@
             "endColumn": 39,
             "problem": "ExtendsExpression",
             "suggest": "",
-            "rule": "Extends or implemetns expression are not supported(arkts-no-extends-expression)",
+            "rule": "Extends or implements expression are not supported(arkts-no-extends-expression)",
             "severity": "ERROR"
         },
         {
@@ -121,7 +121,7 @@
             "endColumn": 39,
             "problem": "ExtendsExpression",
             "suggest": "",
-            "rule": "Extends or implemetns expression are not supported(arkts-no-extends-expression)",
+            "rule": "Extends or implements expression are not supported(arkts-no-extends-expression)",
             "severity": "ERROR"
         }
     ]

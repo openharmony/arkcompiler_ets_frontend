@@ -258,7 +258,7 @@ cookBookTag[251] = '"!!" for bidirectional data binding is not supported (arkui-
 cookBookTag[252] = '"$$" for bidirectional data binding is not supported (arkui-no-$$-bidirectional-data-binding)';
 cookBookTag[253] = '"${variable}" for decorator binding is not supported (arkui-link-decorator-passing)';
 cookBookTag[254] = '"@Extend" decorator is not supported (arkui-no-extend-decorator)';
-cookBookTag[255] = 'Extends or implemetns expression are not supported(arkts-no-extends-expression)';
+cookBookTag[255] = 'Extends or implements expression are not supported(arkts-no-extends-expression)';
 cookBookTag[256] = '"@Styles" decorator is not supported (arkui-no-styles-decorator)';
 cookBookTag[257] =
   '"@AnimatableExtend" decorator should be transformed to use receiver (arkui-animatableextend-use-receiver)';
@@ -288,4 +288,5 @@ cookBookTag[314] =
 cookBookTag[315] =
   'API path have changed - please update your imports accordingly (arkts-sdk-no-decl-with-duplicate-name)';
 cookBookTag[316] = 'Using typeof as a type is not allowed in this API (arkts-sdk-Type-Query)';
+cookBookTag[319] = 'Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)';
 cookBookTag[321] = 'Import Concurrency is not required (arkts-limited-stdlib-no-import-concurrency)';
