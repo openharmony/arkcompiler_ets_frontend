@@ -303,8 +303,10 @@ public:
     bool SignatureIsSupertypeOf(Signature *super, Signature *sub);
     bool CheckVarianceRecursively(Type *type, VarianceFlag varianceFlag);
     VarianceFlag TransferVariant(VarianceFlag variance, VarianceFlag posVariance);
-    void RaiseError(const std::string &errMsg, const lexer::SourcePosition &loc) const;
-    void RaiseError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &loc) const;
+
+    void RaiseError(const diagnostic::DiagnosticKind &kind, const lexer::SourcePosition &loc) const;
+    void RaiseError(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &list,
+                    const lexer::SourcePosition &loc) const;
     void LogError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &loc) const;
 
     bool Result(bool res)

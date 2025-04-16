@@ -480,8 +480,12 @@ static Type *GetTypeFromVarLikeVariableDeclaration(ETSChecker *checker, varbinde
     if (var->Declaration()->Node()->IsIdentifier()) {
         declNode = declNode->Parent();
     }
-    util::DiagnosticMessageParams err = {"Circular dependency detected for identifier: ", var->Declaration()->Name()};
-    TypeStackElement tse(checker, var->Declaration(), err, declNode->Start());
+    TypeStackElement tse(
+        checker, var->Declaration(),
+        // OHOS CC thinks initializer lists are statement blocks...
+        // CC-OFFNXT(G.FMT.03-CPP) project code style
+        {{diagnostic::CIRCULAR_DEPENDENCY, util::DiagnosticMessageParams {var->Declaration()->Name()}}},
+        declNode->Start());
     if (tse.HasTypeError()) {
         var->SetTsType(checker->GlobalTypeError());
         return checker->GlobalTypeError();
@@ -693,8 +697,7 @@ Type *ETSChecker::GetTypeFromTypeAliasReference(varbinder::Variable *var)
     std::unordered_set<const ir::TSTypeAliasDeclaration *> typeAliases;
     auto isAllowedRecursion = IsAllowedTypeAliasRecursion(aliasTypeNode, typeAliases);
 
-    TypeStackElement tse(this, aliasTypeNode, "Circular type alias reference", aliasTypeNode->Start(),
-                         isAllowedRecursion);
+    TypeStackElement tse(this, aliasTypeNode, {{diagnostic::CYCLIC_ALIAS}}, aliasTypeNode->Start(), isAllowedRecursion);
 
     if (tse.HasTypeError()) {
         var->SetTsType(GlobalTypeError());
@@ -757,7 +760,7 @@ Type *ETSChecker::GetTypeFromTypeParameterReference(varbinder::LocalVariable *va
     if ((var->Declaration()->Node()->AsTSTypeParameter()->Parent()->Parent()->IsClassDefinition() ||
          var->Declaration()->Node()->AsTSTypeParameter()->Parent()->Parent()->IsTSInterfaceDeclaration()) &&
         HasStatus(CheckerStatus::IN_STATIC_CONTEXT)) {
-        return TypeError(var, {"Cannot make a static reference to the non-static type ", var->Name()}, pos);
+        return TypeError(var, diagnostic::STATIC_REF_TO_NONSTATIC, {var->Name()}, pos);
     }
 
     return var->TsType();
@@ -1398,7 +1401,7 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
         functionFlags |= TypeRelationFlag::NO_THROW;
 
         checker::InvocationContext invocationCtx(Relation(), arrowFuncExpr, argumentType, parameterType,
-                                                 arrowFuncExpr->Start(), {}, functionFlags);
+                                                 arrowFuncExpr->Start(), std::nullopt, functionFlags);
         return invocationCtx.IsInvocable();
     };
 
@@ -1488,14 +1491,14 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
         bool rc = CheckLambdaTypeAnnotation(typeAnn, arrowFuncExpr, parameterType, flags);
         if (!rc && (flags & TypeRelationFlag::NO_THROW) == 0) {
             Type *const argumentType = arrowFuncExpr->Check(this);
-            LogError(diagnostic::LAMBDA_TYPE_MISMATCH, {argumentType, parameterType, index + 1},
+            LogError(diagnostic::TYPE_MISMATCH_AT_IDX, {argumentType, parameterType, index + 1},
                      arrowFuncExpr->Start());
             rc = false;
         } else if ((lambda->Signature() != nullptr) && !lambda->HasReturnStatement()) {
             //  Need to check void return type here if there are no return statement(s) in the body.
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             if (!AssignmentContext(Relation(), AllocNode<ir::Identifier>(Allocator()), GlobalVoidType(),
-                                   lambda->Signature()->ReturnType(), lambda->Start(), {},
+                                   lambda->Signature()->ReturnType(), lambda->Start(), std::nullopt,
                                    checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
                      .IsAssignable()) {  // CC-OFF(G.FMT.02-CPP) project code style
                 LogError(diagnostic::ARROW_TYPE_MISMATCH, {GlobalVoidType(), lambda->Signature()->ReturnType()},

@@ -592,30 +592,29 @@ Type *ETSChecker::InvalidateType(ir::Typed<ir::AstNode> *node)
     return node->SetTsType(GlobalTypeError());
 }
 
-Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, std::string_view message, const lexer::SourcePosition &at)
+Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, const diagnostic::DiagnosticKind &diagKind,
+                            const lexer::SourcePosition &at)
 {
-    LogTypeError(message, at);
+    return TypeError(node, diagKind, util::DiagnosticMessageParams {}, at);
+}
+
+Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, const diagnostic::DiagnosticKind &diagKind,
+                            const util::DiagnosticMessageParams &list, const lexer::SourcePosition &at)
+{
+    LogError(diagKind, list, at);
     return InvalidateType(node);
 }
 
-Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, const util::DiagnosticMessageParams &list,
+Type *ETSChecker::TypeError(varbinder::Variable *var, const diagnostic::DiagnosticKind &diagKind,
                             const lexer::SourcePosition &at)
 {
-    LogTypeError(list, at);
-    return InvalidateType(node);
+    return TypeError(var, diagKind, {}, at);
 }
 
-Type *ETSChecker::TypeError(varbinder::Variable *var, std::string_view message, const lexer::SourcePosition &at)
+Type *ETSChecker::TypeError(varbinder::Variable *var, const diagnostic::DiagnosticKind &diagKind,
+                            const util::DiagnosticMessageParams &list, const lexer::SourcePosition &at)
 {
-    LogTypeError(message, at);
-    var->SetTsType(GlobalTypeError());
-    return var->TsType();
-}
-
-Type *ETSChecker::TypeError(varbinder::Variable *var, const util::DiagnosticMessageParams &list,
-                            const lexer::SourcePosition &at)
-{
-    LogTypeError(list, at);
+    LogError(diagKind, list, at);
     var->SetTsType(GlobalTypeError());
     return var->TsType();
 }

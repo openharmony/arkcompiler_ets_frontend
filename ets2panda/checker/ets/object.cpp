@@ -140,7 +140,7 @@ bool ETSChecker::ComputeSuperType(ETSObjectType *type)
     }
     auto *classDef = type->GetDeclNode()->AsClassDefinition();
 
-    TypeStackElement tse(this, type, {"Cyclic inheritance involving ", type->Name(), "."}, classDef->Ident()->Start());
+    TypeStackElement tse(this, type, {{diagnostic::CYCLIC_INHERITANCE, {type->Name()}}}, classDef->Ident()->Start());
     if (tse.HasTypeError()) {
         type->AddObjectFlag(ETSObjectFlags::RESOLVED_SUPER);
         return false;
@@ -230,7 +230,7 @@ void ETSChecker::GetInterfacesOfInterface(ETSObjectType *type)
 
     auto *declNode = type->GetDeclNode()->AsTSInterfaceDeclaration();
 
-    TypeStackElement tse(this, type, {"Cyclic inheritance involving ", type->Name(), "."}, declNode->Id()->Start());
+    TypeStackElement tse(this, type, {{diagnostic::CYCLIC_INHERITANCE, {type->Name()}}}, declNode->Id()->Start());
     if (tse.HasTypeError()) {
         type->AddObjectFlag(ETSObjectFlags::RESOLVED_INTERFACES);
         declNode->SetTsType(GlobalTypeError());
@@ -1685,7 +1685,7 @@ void ETSChecker::CheckCyclicConstructorCall(Signature *signature)
 
     auto *funcBody = signature->Function()->Body()->AsBlockStatement();
 
-    TypeStackElement tse(this, signature, "Recursive constructor invocation", signature->Function()->Start());
+    TypeStackElement tse(this, signature, {{diagnostic::RECURSIVE_CTOR}}, signature->Function()->Start());
     if (tse.HasTypeError()) {
         return;
     }

@@ -119,6 +119,11 @@ using DiagnosticMessageElement =
                  const checker::Type *const, const checker::Signature *const>;
 using DiagnosticMessageParams = std::vector<DiagnosticMessageElement>;
 
+struct DiagnosticWithParams {
+    const diagnostic::DiagnosticKind &kind;     // NOLINT(readability-identifier-naming)
+    const DiagnosticMessageParams params = {};  // NOLINT(readability-identifier-naming)
+};
+
 // NOLINTNEXTLINE(fuchsia-multiple-inheritance)
 class ThrowableDiagnostic : public DiagnosticBase, public std::exception {
 public:
