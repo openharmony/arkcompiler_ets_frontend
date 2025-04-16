@@ -13,15 +13,13 @@
  * limitations under the License.
  */
 
-import { Row, Slider } from '@kits.ArkUI';
+import { Slider } from '@kit.ArkUI';
 
 @Entry
 @Component
 struct Test {
-
-  @State num: number = 0;
-
-  @State a: MyClassA = new MyClassA();
+  @State num: number = 0
+  @State a: MyClassA = new MyClassA()
 
   build() {
     Column() {
@@ -31,7 +29,7 @@ struct Test {
         
       }
 
-      MyComponent() {
+      MyComponent1() {
 
       }
 
@@ -49,8 +47,9 @@ function Circle() {
 }
 
 @Component
-struct MyComponent {
+struct MyComponent1 {
   @State count: number = 0;
+
   build() {
     Row() {
       Slider(){}
@@ -70,8 +69,9 @@ function animatableWidth(width: number) {
 }
 
 @Component
-struct Myomponent {
+struct MyComponent2 {
   @State value: number = 0;
+
   build() {
     Row() {
       Slider({
@@ -81,11 +81,9 @@ struct Myomponent {
   }
 }
 
+class MyClassA {}
+
 function processImageFit(imageFit: ImageFit): void {
-}
-
-class MyClassA {
-
 }
 
 function Calendar() {

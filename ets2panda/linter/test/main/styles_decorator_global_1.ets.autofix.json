@@ -76,6 +76,7 @@
             "endLine": 22,
             "endColumn": 23,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -86,6 +87,7 @@
             "endLine": 31,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -96,6 +98,18 @@
             "endLine": 34,
             "endColumn": 15,
             "problem": "UIInterfaceImport",
+            "autofix": [],
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 2,
+            "endLine": 51,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -106,6 +120,7 @@
             "endLine": 53,
             "endColumn": 18,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -116,6 +131,7 @@
             "endLine": 54,
             "endColumn": 13,
             "problem": "UIInterfaceImport",
+            "autofix": [],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -130,7 +146,7 @@
                 {
                     "start": 603,
                     "end": 603,
-                    "replacementText": "\n\nimport { CommonMethod, Color, Component, Column, BuilderParam, Require, Button } from '@kits.ArkUI';"
+                    "replacementText": "\n\nimport { CommonMethod, Color, Component, Column, BuilderParam, Require, Button } from '@kit.ArkUI';"
                 }
             ],
             "suggest": "",

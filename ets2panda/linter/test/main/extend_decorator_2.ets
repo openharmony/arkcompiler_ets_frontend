@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { Component, Column, Text, ColumnAttribute, Color } from '@kits.ArkUI';
+import { Component, Column, Text, ColumnAttribute, Color } from '@kit.ArkUI';
 
 @Component
 struct MyCard {

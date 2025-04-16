@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 22,
+            "line": 23,
             "column": 16,
-            "endLine": 22,
+            "endLine": 23,
             "endColumn": 28,
             "problem": "DoubleDollarBindingNotSupported",
             "suggest": "",
@@ -25,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 33,
+            "line": 35,
             "column": 25,
-            "endLine": 33,
+            "endLine": 35,
             "endColumn": 39,
             "problem": "DoubleDollarBindingNotSupported",
             "suggest": "",
@@ -55,9 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 20,
+            "line": 21,
             "column": 5,
-            "endLine": 20,
+            "endLine": 21,
             "endColumn": 8,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -65,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 21,
+            "line": 22,
             "column": 7,
-            "endLine": 21,
+            "endLine": 22,
             "endColumn": 13,
             "problem": "UIInterfaceImport",
             "suggest": "",
@@ -75,10 +75,20 @@
             "severity": "ERROR"
         },
         {
-            "line": 33,
-            "column": 7,
-            "endLine": 33,
-            "endColumn": 15,
+            "line": 29,
+            "column": 2,
+            "endLine": 29,
+            "endColumn": 11,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 4,
+            "endLine": 31,
+            "endColumn": 9,
             "problem": "UIInterfaceImport",
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
@@ -86,9 +96,9 @@
         },
         {
             "line": 34,
-            "column": 7,
+            "column": 5,
             "endLine": 34,
-            "endColumn": 12,
+            "endColumn": 8,
             "problem": "UIInterfaceImport",
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
@@ -98,6 +108,26 @@
             "line": 35,
             "column": 7,
             "endLine": 35,
+            "endColumn": 15,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 7,
+            "endLine": 36,
+            "endColumn": 12,
+            "problem": "UIInterfaceImport",
+            "suggest": "",
+            "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 7,
+            "endLine": 37,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
             "suggest": "",

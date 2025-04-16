@@ -14,8 +14,9 @@
  */
 
 @Component
-struct Myomponent {
-  @State value: number = 0;
+struct MyComponent {
+  @State value: number = 0
+
   build() {
     Row() {
       Slider({
@@ -28,6 +29,7 @@ struct Myomponent {
 @Component
 struct Test {
   @State checked: boolean = false
+
   build() {
     Row() {
       Checkbox().select($$this.checked)
