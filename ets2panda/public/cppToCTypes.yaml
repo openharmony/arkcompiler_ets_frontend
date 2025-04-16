@@ -2895,6 +2895,28 @@ change_types:
   - es2panda_arg:
       name: '|arg_name|'
       type:
+        name: JsDocInfo
+      max_ptr_depth: 0
+    new_args:
+    - type:
+        name: es2panda_JsDocInfo
+        ptr_depth: 1
+      namespace: 'ir::'
+      name: '|arg_name|'
+    cast:
+        expression: "\
+          \tir::JsDocInfo |arg_name|ArenaUnorderedMap{reinterpret_cast<Context *>(context)->allocator->Adapter()};\n
+          \tfor (size_t j = 0; j < |arg_name|->len; ++j) {\n
+          \t\t|arg_name|ArenaUnorderedMap.emplace(|arg_name|->strings[j], JsDocRecordToE2p(|arg_name|->jsDocRecords[j]));\n
+          \t}"
+        var_name: '|arg_name|ArenaUnorderedMap'
+        reverse_cast:
+          start: JsDocInfoFromE2p(reinterpret_cast<Context *>(context)->allocator,
+          end: )
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
         name: 'Signature'
         namespace: 'checker'
       min_ptr_depth: 1

@@ -37,16 +37,15 @@ void ETSParser::ExcludeInvalidStart()
         Lexer()->ForwardToken(Lexer()->GetToken().Type());
         cp = Lexer()->Lookahead();
     }
-
-    Lexer()->NextToken();
 }
 
 std::string ETSParser::ParseJsDocInfoItemParam()
 {
     ExcludeInvalidStart();
+    Lexer()->NextToken();
     auto token = Lexer()->GetToken();
     std::string jsDocInfoParamStr {};
-    bool needAppendToken = true;
+    bool needAppendToken = token.Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE;
     bool needBackwardBlank = lexer::KeywordsUtil::IsIdentifierStart(Lexer()->Lookahead());
     size_t leftBraceCount = 1;
     while (token.Type() != lexer::TokenType::EOS && token.Type() != lexer::TokenType::JS_DOC_END) {
@@ -90,6 +89,23 @@ std::string ETSParser::ParseJsDocInfoItemParam()
     }
 
     return jsDocInfoParamStr;
+}
+
+static void RegularCommentStr(std::string &str)
+{
+    if (str.empty()) {
+        return;
+    }
+
+    auto backChar = static_cast<char32_t>(static_cast<unsigned char>(str.back()));
+    while (backChar == lexer::LEX_CHAR_CR || backChar == lexer::LEX_CHAR_LF || backChar == lexer::LEX_CHAR_ASTERISK ||
+           backChar == lexer::LEX_CHAR_NBSP || backChar == lexer::LEX_CHAR_SP) {
+        str.pop_back();
+        if (str.empty()) {
+            return;
+        }
+        backChar = static_cast<char32_t>(static_cast<unsigned char>(str.back()));
+    }
 }
 
 std::tuple<util::StringView, util::StringView> ETSParser::ParseJsDocInfoItemValue()
@@ -139,8 +155,11 @@ std::tuple<util::StringView, util::StringView> ETSParser::ParseJsDocInfoItemValu
         break;
     } while (true);
 
+    std::string commentStr = std::string(jsDocInfoItemCommentStr.View());
+    RegularCommentStr(commentStr);
     util::UString jsDocInfoItemParam {jsDocInfoParamStr, Allocator()};
-    return std::make_tuple(jsDocInfoItemParam.View(), jsDocInfoItemCommentStr.View());
+    util::UString jsDocInfoCommentStr {commentStr, Allocator()};
+    return std::make_tuple(jsDocInfoItemParam.View(), jsDocInfoCommentStr.View());
 }
 
 ir::JsDocInfo ETSParser::ParseJsDocInfo()

@@ -74,6 +74,11 @@ options:
   default: false
   description: Print names of files that are part of compilation
 
+- name: parse-jsdoc
+  type: bool
+  default: false
+  description: Enable the ability to parse jsdoc
+
 # Compiler
 - name: dump-assembly
   type: bool

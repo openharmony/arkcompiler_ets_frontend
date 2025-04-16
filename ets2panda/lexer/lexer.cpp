@@ -17,6 +17,8 @@
 
 #include "generated/keywords.h"
 
+#include <public/public.h>
+
 namespace ark::es2panda::lexer {
 LexerPosition::LexerPosition(const util::StringView &source) : iterator_(source) {}
 
@@ -1291,8 +1293,17 @@ bool Lexer::SkipWhiteSpacesHelperSlash(char32_t *cp)
     return false;
 }
 
+bool Lexer::IsEnableParseJsdoc() const
+{
+    return parserContext_->IsEnableJsdocParse();
+}
+
 bool Lexer::IsValidJsDocStart(char32_t *cp)
 {
+    if (!IsEnableParseJsdoc()) {
+        return false;
+    }
+
     for (size_t idx = 0; idx < JS_DOC_START_SIZE; ++idx) {
         Iterator().Forward(1);
         *cp = Iterator().Peek();
