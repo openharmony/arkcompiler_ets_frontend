@@ -14,9 +14,10 @@
  */
 
 import {foo_1 as foo} from "./imported_module_1.ets"
-import {foo_2_1param as foo} from /* @@ label */"./imported_module_2.ets"
+import {foo_2 as foo} from "./imported_module_2.ets"
 
 
 function main() : void {}
 
-/* @@@ label Error TypeError: Function 'foo' is already defined.  */
+// NOTE(kaskov): Add more precise error, when will be suggestions
+/* @@? imported_module_2.ets:27:8 Error TypeError: Function foo_1 is already declared. */

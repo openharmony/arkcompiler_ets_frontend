@@ -830,13 +830,13 @@ void ETSBinder::ValidateImportVariable(const ir::AstNode *node, const ir::ETSImp
 }
 
 bool ETSBinder::DetectNameConflict(const util::StringView localName, Variable *const var, Variable *const otherVar,
-                                   const ir::StringLiteral *const importPath, bool overloadAllowed)
+                                   const ir::StringLiteral *const importPath)
 {
     if (otherVar == nullptr || var == otherVar) {
         return false;
     }
 
-    if (overloadAllowed && var->Declaration()->IsFunctionDecl() && otherVar->Declaration()->IsFunctionDecl()) {
+    if (var->Declaration()->IsFunctionDecl() && otherVar->Declaration()->IsFunctionDecl()) {
         AddOverloadFlag(Allocator(), util::Helpers::IsStdLib(Program()), var, otherVar);
         return true;
     }
@@ -898,8 +898,8 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(Span<parser::Program *const> re
     const auto localName = importSpecifier->Local()->Name();
     auto varInGlobalClassScope = Program()->GlobalClassScope()->FindLocal(localName, ResolveBindingOptions::ALL);
     auto previouslyImportedVariable = TopScope()->FindLocal(localName, ResolveBindingOptions::ALL);
-    if (DetectNameConflict(localName, var, varInGlobalClassScope, importPath, true) ||
-        DetectNameConflict(localName, var, previouslyImportedVariable, importPath, false)) {
+    if (DetectNameConflict(localName, var, varInGlobalClassScope, importPath) ||
+        DetectNameConflict(localName, var, previouslyImportedVariable, importPath)) {
         return true;
     }
 
