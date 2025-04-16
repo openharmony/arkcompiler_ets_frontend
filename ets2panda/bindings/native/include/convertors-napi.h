@@ -726,6 +726,7 @@ public:
 
 // CC-OFFNXT(G.DCL.01) false positive
 // CC-OFFNXT(G.NAM.01) false positive
+// CC-OFFNXT(G.EXP.01) false positive
 #define __QUOTE(x) #x
 #define QUOTE(x) __QUOTE(x)
 
