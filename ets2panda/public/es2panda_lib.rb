@@ -1097,6 +1097,10 @@ module Es2pandaLibApi
       type = 'AST Verifier functions'
     elsif class_base_namespace == 'util'
       type = 'Import path manager'
+    elsif class_base_namespace == 'gen'
+      type = 'Compiler options'
+    elsif class_base_namespace == 'es2panda'
+      type = 'Arkts config'
     else
       raise "Unsupported class type for stats class name: \"" +
       class_name + "\" class namespace: \"" + class_base_namespace + "\""
@@ -1207,6 +1211,9 @@ module Es2pandaLibApi
       CheckMessage
       Program
       ImportPathManager
+      Options
+      ArkTsConfig
+      Path
     ]
   end
 
@@ -1306,6 +1313,9 @@ module Es2pandaLibApi
       es2panda_AstVerifier
       es2panda_VerifierMessage
       es2panda_ImportPathManager
+      es2panda_Options
+      es2panda_Path
+      es2panda_OverloadInfo
     ]
   end
 
@@ -1349,6 +1359,19 @@ module Es2pandaLibApi
       res << extend if extends.include?(extend)
     end
     res
+  end
+
+  def extract_classes_in_namespace(data, namespace_name, &is_class_needed)
+    @classes[namespace_name] = {} unless @classes[namespace_name]
+    data[namespace_name]&.class_definitions&.each do |class_definition|
+      if is_class_needed.call(class_definition.name)
+        class_data = ClassData.new(class_definition&.public)
+        class_data.class_base_namespace = namespace_name
+        class_data.extends_classname = extends_to_idl(class_definition.extends)
+        class_data.template_extends = []
+        @classes[namespace_name][class_definition.name] = class_data
+      end
+    end
   end
 
   def wrap_data(data)
@@ -1408,52 +1431,18 @@ module Es2pandaLibApi
       @classes['ir'][class_definition.name] = class_data
     end
 
-    @classes['checker'] = {} unless @classes['checker']
-    data['checker']&.class_definitions&.each do |class_definition|
-      if @ast_types.include?(class_definition.name) || ast_type_additional_children.include?(class_definition.name) ||
-         additional_classes_to_generate.include?(class_definition.name)
-        class_data = ClassData.new(class_definition&.public)
-        class_data.class_base_namespace = 'checker'
-        class_data.extends_classname = extends_to_idl(class_definition.extends)
-        class_data.template_extends = []
-        @classes['checker'][class_definition.name] = class_data
-      end
-    end
-
-    @classes['varbinder'] = {} unless @classes['varbinder']
-    data['varbinder']&.class_definitions&.each do |class_definition|
-      if scopes.include?(class_definition.name) || declarations.include?(class_definition.name) ||
-         ast_variables.find { |x| x[1] == class_definition.name } ||
-         additional_classes_to_generate.include?(class_definition.name)
-        class_data = ClassData.new(class_definition&.public)
-        class_data.class_base_namespace = 'varbinder'
-        class_data.extends_classname = extends_to_idl(class_definition.extends)
-        class_data.template_extends = []
-        @classes['varbinder'][class_definition.name] = class_data
-      end
-    end
-
-    @classes['parser'] = {} unless @classes['parser']
-    data['parser']&.class_definitions&.each do |class_definition|
-      if additional_classes_to_generate.include?(class_definition.name)
-        class_data = ClassData.new(class_definition&.public)
-        class_data.class_base_namespace = 'parser'
-        class_data.extends_classname = extends_to_idl(class_definition.extends)
-        class_data.template_extends = []
-        @classes['parser'][class_definition.name] = class_data
-      end
-    end
-
-    @classes['util'] = {} unless @classes['util']
-    data['util']&.class_definitions&.each do |class_definition|
-      if additional_classes_to_generate.include?(class_definition.name)
-        class_data = ClassData.new(class_definition&.public)
-        class_data.class_base_namespace = 'util'
-        class_data.extends_classname = extends_to_idl(class_definition.extends)
-        class_data.template_extends = []
-        @classes['util'][class_definition.name] = class_data
-      end
-    end
+    extract_classes_in_namespace(data, 'checker') { |class_name|
+        @ast_types.include?(class_name) || ast_type_additional_children.include?(class_name) ||
+          additional_classes_to_generate.include?(class_name)
+    }
+    extract_classes_in_namespace(data, 'varbinder') { |class_name|
+      scopes.include?(class_name) || declarations.include?(class_name) ||
+        ast_variables.find { |x| x[1] == class_name } || additional_classes_to_generate.include?(class_name)
+    }
+    extract_classes_in_namespace(data, 'parser') { |class_name| additional_classes_to_generate.include?(class_name) }
+    extract_classes_in_namespace(data, 'util') { |class_name| additional_classes_to_generate.include?(class_name) }
+    extract_classes_in_namespace(data, 'gen') { |class_name| additional_classes_to_generate.include?(class_name) }
+    extract_classes_in_namespace(data, 'es2panda') { |class_name| additional_classes_to_generate.include?(class_name) }
 
     @classes['ast_verifier'] = {} unless @classes['ast_verifier']
     data['ast_verifier']&.class_definitions&.each do |class_definition|
@@ -1472,7 +1461,7 @@ module Es2pandaLibApi
                   :additional_classes_to_generate, :ast_type_additional_children, :scopes, :ast_variables, :deep_to_h,
                   :no_usings_replace_info, :declarations, :check_template_type_presents, :structs,
                   :additional_containers, :stat_add_constructor_type, :stat_add_method_type, :check_class_type,
-                  :extends_to_idl, :template_extends, :template_extends_classes
+                  :extends_to_idl, :template_extends, :template_extends_classes, :extract_classes_in_namespace
 end
 
 def Gen.on_require(data)

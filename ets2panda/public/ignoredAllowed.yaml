@@ -104,7 +104,12 @@ ignored_list:
     - name: ScriptExtension
     - name: function
       namespace: std
+    - name: path
+      namespace: fs
     - name: ImportData
+    - name: PathsMap
+    - name: Level
+      namespace: Logger
 
 
   # Method and constructors will not be generated if c++ postfix contains any element listed below
@@ -181,8 +186,11 @@ ignored_list:
       name: function
       namespace: std
   - type:
-      name: Path
-      namespace: 'util'
+      name: DiagnosticMessageParams
+      namespace: util
+  - type:
+      name: PandArgParser
+      namespace: gen
   - type:
       name: T
   - type:
@@ -242,3 +250,4 @@ allowed_list:
   - ClassDefinition
   - StringView
   - TypeNode
+  - ArkTsConfig

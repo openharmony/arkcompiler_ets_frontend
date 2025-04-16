@@ -100,6 +100,8 @@ typedef struct es2panda_ImportPathManager es2panda_ImportPathManager;
 typedef struct es2panda_DiagnosticKind es2panda_DiagnosticKind;
 typedef struct es2panda_DiagnosticMessageParams es2panda_DiagnosticMessageParams;
 typedef struct es2panda_DiagnosticStorage es2panda_DiagnosticStorage;
+typedef struct es2panda_Path es2panda_Path;
+typedef struct es2panda_Options es2panda_Options;
 typedef void (*NodeTraverser)(es2panda_AstNode *);
 typedef es2panda_AstNode *(*NodeTransformer)(es2panda_AstNode *);
 typedef bool (*NodePredicate)(es2panda_AstNode *);
@@ -116,6 +118,15 @@ typedef struct es2panda_DynamicImportData {
     const es2panda_AstNode *specifier;
     es2panda_Variable *variable;
 } es2panda_DynamicImportData;
+
+typedef struct es2panda_OverloadInfo {
+    uint32_t minArg;
+    size_t maxArg;
+    bool needHelperOverload;
+    bool isDeclare;
+    bool hasRestVar;
+    bool returnVoid;
+} es2panda_OverloadInfo;
 
 enum es2panda_ContextState {
     ES2PANDA_STATE_NEW,
@@ -142,6 +153,7 @@ struct CAPI_EXPORT es2panda_Impl {
 
     es2panda_Config *(*CreateConfig)(int argc, char const *const *argv);
     void (*DestroyConfig)(es2panda_Config *config);
+    const es2panda_Options *(*ConfigGetOptions)(es2panda_Config *config);
 
     es2panda_Context *(*CreateContextFromFile)(es2panda_Config *config, char const *source_file_name);
     es2panda_Context *(*CreateContextFromString)(es2panda_Config *config, const char *source, char const *file_name);

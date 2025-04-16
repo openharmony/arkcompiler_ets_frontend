@@ -59,6 +59,7 @@ set(PLUGIN_TESTS
     # "plugin_proceed_to_state_run_verifier compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_ast_node_check compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_resolve_path compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_arktsconfig compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_find_method_decl compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_find_method_decl_by_name import.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_find_identifier_decl compile.ets ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
