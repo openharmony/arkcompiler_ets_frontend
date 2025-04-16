@@ -2992,6 +2992,57 @@ export class Autofixer {
     return [{ start: binaryExpr.getStart(), end: binaryExpr.getEnd(), replacementText }];
   }
 
+  createReplacementForJsIndirectImportPropertyAccessExpression(node: ts.PropertyAccessExpression): Autofix[] {
+    // Bypass eslint-check
+    void this;
+
+    const objName = node.expression.getText();
+    const propName = node.name.getText();
+
+    let start = node.getStart();
+    let end = node.getEnd();
+    let replacementText = `${objName}.getPropertyByName('${propName}')`;
+
+    // Check if there is an "as number" type assertion in the statement
+    if (ts.isAsExpression(node.parent) && node.parent.type.kind === ts.SyntaxKind.NumberKeyword) {
+      replacementText += '.toNumber()';
+      start = node.parent.getStart();
+      end = node.parent.getEnd();
+    }
+
+    return [{ replacementText, start, end }];
+  }
+
+  createReplacementForJsImportPropertyAccessExpression(node: ts.PropertyAccessExpression): Autofix[] {
+    const objName = node.expression.getText();
+    const propName = node.name.getText();
+
+    const start = node.getStart();
+    const end = node.getEnd();
+
+    const replacement = `${objName}.getPropertyByName('${propName}')${this.utils.findTypeOfNodeForConversion(node)}`;
+
+    return [{ replacementText: replacement, start, end }];
+  }
+
+  createReplacementJsImportElementAccessExpression(
+    elementAccessExpr: ts.ElementAccessExpression,
+    identifier: ts.Identifier
+  ): Autofix[] {
+    const isParentBinaryExp = ts.isBinaryExpression(elementAccessExpr.parent);
+    const exprText = elementAccessExpr.argumentExpression.getText();
+    const start = isParentBinaryExp ? elementAccessExpr.parent.getStart() : elementAccessExpr.getStart();
+    const end = isParentBinaryExp ? elementAccessExpr.parent.getEnd() : elementAccessExpr.getEnd();
+
+    const replacementText =
+      isParentBinaryExp && elementAccessExpr.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken ?
+        `${identifier.text}.setPropertyByIndex(${exprText},` +
+        ` ESObject.wrap(${elementAccessExpr.parent.right.getText()}))` :
+        `${identifier.text}.getPropertyByIndex(${exprText})` +
+        this.utils.findTypeOfNodeForConversion(elementAccessExpr);
+    return [{ replacementText, start, end }];
+  }
+
   fixAppStorageCallExpression(callExpr: ts.CallExpression): Autofix[] | undefined {
     const varDecl = Autofixer.findParentVariableDeclaration(callExpr);
     if (!varDecl || varDecl.type) {
