@@ -287,7 +287,7 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.ArrayType, this.handleArrayType],
     [ts.SyntaxKind.LiteralType, this.handleLimitedLiteralType],
     [ts.SyntaxKind.NonNullExpression, this.handleNonNullExpression],
-    [ts.SyntaxKind.HeritageClause, this.checkExtendsExpression],
+    [ts.SyntaxKind.HeritageClause, this.handleHeritageClause],
     [ts.SyntaxKind.TaggedTemplateExpression, this.handleTaggedTemplatesExpression],
     [ts.SyntaxKind.StructDeclaration, this.handleStructDeclaration]
   ]);
@@ -966,6 +966,7 @@ export class TypeScriptLinter {
     }
     this.checkFunctionProperty(propertyAccessNode, baseExprSym, baseExprType);
     this.handleSdkForConstructorFuncs(propertyAccessNode);
+    this.fixJsImportPropertyAccessExpression(node);
   }
 
   checkFunctionProperty(
@@ -1646,6 +1647,11 @@ export class TypeScriptLinter {
     const initializer = node.initializer;
     const name = node.name;
     if (node.type || !initializer || !ts.isIdentifier(name)) {
+      return;
+    }
+
+    // Early return if the variable is imported from JS
+    if (this.tsUtils.isPossiblyImportedFromJS(name) || this.tsUtils.isPossiblyImportedFromJS(initializer)) {
       return;
     }
 
@@ -2989,6 +2995,8 @@ export class TypeScriptLinter {
       this.handleIndexNegative(node);
     }
     this.checkArrayIndexType(tsElemAccessBaseExprType, tsElemAccessArgType, tsElementAccessExpr);
+
+    this.fixJsImportElementAccessExpression(tsElementAccessExpr);
   }
 
   private checkArrayIndexType(exprType: ts.Type, argType: ts.Type, expr: ts.ElementAccessExpression): void {
@@ -3249,6 +3257,7 @@ export class TypeScriptLinter {
 
     this.checkArkTSObjectInterop(tsCallExpr);
     this.handleAppStorageCallExpression(tsCallExpr);
+    this.fixJsImportCallExpression(tsCallExpr);
   }
 
   private handleAppStorageCallExpression(tsCallExpr: ts.CallExpression): void {
@@ -5150,7 +5159,7 @@ export class TypeScriptLinter {
     }
   }
 
-  private checkExtendsExpression(node: ts.HeritageClause): void {
+  private handleHeritageClause(node: ts.HeritageClause): void {
     if (!this.options.arkts2) {
       return;
     }
@@ -5167,6 +5176,8 @@ export class TypeScriptLinter {
           this.tsUtils.isBuiltinClassHeritageClause(node)
         ) {
           this.incrementCounters(expr, FaultID.ExtendsExpression);
+        } else if (ts.isIdentifier(expr)) {
+          this.fixJsImportExtendsClass(node.parent, expr);
         }
       });
     }
@@ -5797,6 +5808,102 @@ export class TypeScriptLinter {
         this.incrementCounters(decl.name, FaultID.SdkTypeQuery);
       }
     }
+  }
+
+  private fixJsImportCallExpression(callExpr: ts.CallExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const identifier = this.tsUtils.findIdentifierInExpression(callExpr);
+    if (!identifier) {
+      return;
+    }
+
+    if (!this.tsUtils.isImportedFromJS(identifier)) {
+      return;
+    }
+
+    this.incrementCounters(callExpr, FaultID.InteropJsObjectUsage);
+  }
+
+  private fixJsImportExtendsClass(
+    node: ts.ClassLikeDeclaration | ts.InterfaceDeclaration,
+    identifier: ts.Identifier
+  ): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    if (!this.tsUtils.isImportedFromJS(identifier)) {
+      return;
+    }
+
+    const className = node.name?.text;
+    if (!className) {
+      return;
+    }
+    this.incrementCounters(node, FaultID.InteropJsObjectUsage);
+  }
+
+  private fixJsImportPropertyAccessExpression(node: ts.Node): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const identifier = this.tsUtils.findIdentifierInExpression(node);
+    if (!identifier) {
+      return;
+    }
+
+    // Try direct check first
+    if (this.tsUtils.isImportedFromJS(identifier)) {
+      const autofix =
+        this.autofixer?.createReplacementForJsImportPropertyAccessExpression(node as ts.PropertyAccessExpression);
+      this.incrementCounters(node, FaultID.InteropJsObjectUsage, autofix);
+      return;
+    }
+
+    // Try indirect reference (e.g., const foo = importedObj;)
+    const originalIdentifier = this.tsUtils.findOriginalIdentifier(identifier);
+    if (originalIdentifier && this.tsUtils.isImportedFromJS(originalIdentifier)) {
+      const autofix =
+        this.autofixer?.createReplacementForJsIndirectImportPropertyAccessExpression(
+          node as ts.PropertyAccessExpression
+        );
+      this.incrementCounters(node, FaultID.InteropJsObjectUsage, autofix);
+    }
+  }
+
+  private fixJsImportElementAccessExpression(elementAccessExpr: ts.ElementAccessExpression): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+
+    const variableDeclaration = ts.isIdentifier(elementAccessExpr.expression) ?
+      this.tsUtils.findVariableDeclaration(elementAccessExpr.expression) :
+      undefined;
+    if (!variableDeclaration?.initializer) {
+      return;
+    }
+
+    const identifier = ts.isPropertyAccessExpression(variableDeclaration.initializer) ?
+      variableDeclaration.initializer.expression as ts.Identifier :
+      undefined;
+    if (!identifier) {
+      return;
+    }
+
+    if (!this.tsUtils.isImportedFromJS(identifier)) {
+      return;
+    }
+
+    const autofix = this.autofixer?.createReplacementJsImportElementAccessExpression(
+      elementAccessExpr,
+      elementAccessExpr.expression as ts.Identifier
+    );
+
+    this.incrementCounters(elementAccessExpr, FaultID.InteropJsObjectUsage, autofix);
   }
 
   private checkStdLibConcurrencyImport(importDeclaration: ts.ImportDeclaration): void {

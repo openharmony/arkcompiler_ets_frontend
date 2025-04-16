@@ -164,6 +164,7 @@ faultDesc[FaultID.InvalidIdentifier] = 'Invalid identifiers';
 faultDesc[FaultID.ExtendsExpression] = 'Extends Expression';
 faultDesc[FaultID.NumericSemantics] = 'Numeric semantics';
 faultDesc[FaultID.AnimatableExtendDecoratorTransform] = '"@AnimatableExtend" decorator';
+faultDesc[FaultID.InteropJsObjectUsage] = 'Interop JS object usage';
 faultDesc[FaultID.NoDuplicateFunctionName] = 'No duplicate function name';
 faultDesc[FaultID.OhmUrlFullPath] = 'Require full path file name';
 faultDesc[FaultID.UIInterfaceImport] = 'UI interface';
