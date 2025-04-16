@@ -442,3 +442,35 @@ export function initGeneratedEs2panda(): GeneratedEs2pandaNativeModule {
   loadNativeModuleLibrary("NativeModule", instance)
   return instance
 }
+
+export function initPublicEs2panda(): Es2pandaNativeModule {
+  let libPath = process.env.BINDINGS_PATH
+  if (libPath == undefined) {
+    libPath = path.resolve(__dirname, "../public.node")
+  } else {
+    libPath = path.join(libPath, "public.node")
+  }
+  if (!fs.existsSync(libPath)) {
+    throwError(`Cannot find lib path ${libPath}`)
+  }
+  registerNativeModuleLibraryName("NativeModule", libPath)
+  const instance = new Es2pandaNativeModule()
+  loadNativeModuleLibrary("NativeModule", instance)
+  return instance
+}
+
+export function initPublicGeneratedEs2panda(): GeneratedEs2pandaNativeModule {
+  let libPath = process.env.BINDINGS_PATH
+  if (libPath == undefined) {
+    libPath = path.resolve(__dirname, "../public.node")
+  } else {
+    libPath = path.join(libPath, "public.node")
+  }
+  if (!fs.existsSync(libPath)) {
+    throwError(`Cannot find lib path ${libPath}`)
+  }
+  registerNativeModuleLibraryName("NativeModule", libPath)
+  const instance = new GeneratedEs2pandaNativeModule()
+  loadNativeModuleLibrary("NativeModule", instance)
+  return instance
+}

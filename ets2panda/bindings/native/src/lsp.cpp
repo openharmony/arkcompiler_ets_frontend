@@ -25,6 +25,11 @@
 #include <string>
 #include <variant>
 
+char *GetStringCopy(KStringPtr &ptr)
+{
+    return strdup(ptr.c_str());
+}
+
 KNativePointer impl_getCurrentTokenValue(KNativePointer context, KInt position)
 {
     LSPAPI const *ctx = GetImpl();

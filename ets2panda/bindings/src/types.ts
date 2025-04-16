@@ -74,7 +74,7 @@ export class Config extends ArktsObject {
     input: string[], fpath: string, pandaLibPath: string = '', isEditingMode: boolean = false
   ): Config {
     if (isEditingMode) {
-      let cfg = global.es2panda._CreateConfig(input.length, passStringArray(input), pandaLibPath)
+      let cfg = global.es2pandaPublic._CreateConfig(input.length, passStringArray(input), pandaLibPath)
       return new Config(cfg, fpath)
     }
     if (!global.configIsInitialized()) {
@@ -86,26 +86,6 @@ export class Config extends ArktsObject {
     } else {
       return new Config(global.config, fpath)
     }
-  }
-}
-
-export class EtsScript extends Node {
-  constructor(peer: KPtr) {
-    super(peer)
-  }
-
-  static fromContext(ctx: Context): EtsScript {
-    return new EtsScript(global.es2panda._ProgramAst(global.es2panda._ContextProgram(ctx.peer)))
-  }
-}
-
-export class Program extends ArktsObject {
-  constructor(peer: KPtr) {
-    super(peer)
-  }
-
-  get astNode(): EtsScript {
-    return new EtsScript(global.es2panda._ProgramAst(this.peer));
   }
 }
 
@@ -139,14 +119,11 @@ export class Context extends ArktsObject {
     if (cfg === undefined) {
       throwError(`Config not initialized`)
     }
-    return global.es2panda._CreateContextFromString(
+    return global.es2pandaPublic._CreateContextFromString(
       cfg.peer,
       passString(source),
       passString(filePath)
     )
-  }
-  get program(): Program {
-    return new Program(global.es2panda._ContextProgram(this.peer));
   }
 }
 

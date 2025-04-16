@@ -61,10 +61,14 @@ def copy_output(options):
     if options.current_os == "mingw" :
         copy_files(os.path.join(options.root_out_dir, 'libts_bindings.dll'),
                 os.path.join(options.output_path, 'ts_bindings.node'), True)
+        copy_files(os.path.join(options.root_out_dir, 'libpublic.dll'),
+                os.path.join(options.output_path, 'public.node'), True)
 
     if options.current_os == "linux" or options.current_os == "mac":
         copy_files(os.path.join(options.root_out_dir, 'ts_bindings.node'),
                 os.path.join(options.output_path, 'ts_bindings.node'), True)
+        copy_files(os.path.join(options.root_out_dir, 'public.node'),
+                os.path.join(options.output_path, 'public.node'), True)
 
 
 def parse_args():

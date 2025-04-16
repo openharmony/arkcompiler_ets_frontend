@@ -15,9 +15,9 @@
 
 import { throwError } from "./utils"
 import { KNativePointer } from "./InteropTypes"
-import { initEs2panda, Es2pandaNativeModule, initGeneratedEs2panda } from "./Es2pandaNativeModule"
+import { initEs2panda, Es2pandaNativeModule, initGeneratedEs2panda, initPublicEs2panda, initPublicGeneratedEs2panda } from "./Es2pandaNativeModule"
 import { Es2pandaNativeModule as GeneratedEs2pandaNativeModule } from "./generated/Es2pandaNativeModule"
-import { initInterop, InteropNativeModule } from "./InteropNativeModule"
+import { initInterop, InteropNativeModule, initPublicInterop } from "./InteropNativeModule"
 import { Context } from "./types"
 
 export class global {
@@ -52,6 +52,7 @@ export class global {
   }
 
   private static _es2panda: Es2pandaNativeModule | undefined = undefined
+  private static _es2pandaPublic: Es2pandaNativeModule | undefined = undefined
   public static get es2panda(): Es2pandaNativeModule {
     if (this._es2panda === undefined) {
       this._es2panda = initEs2panda()
@@ -59,7 +60,15 @@ export class global {
     return this._es2panda
   }
 
+  public static get es2pandaPublic(): Es2pandaNativeModule {
+    if (this._es2pandaPublic === undefined) {
+      this._es2pandaPublic = initPublicEs2panda()
+    }
+    return this._es2pandaPublic
+  }
+
   private static _generatedEs2panda: GeneratedEs2pandaNativeModule | undefined = undefined
+  private static _generatedEs2pandaPublic: GeneratedEs2pandaNativeModule | undefined = undefined
   public static get generatedEs2panda(): GeneratedEs2pandaNativeModule {
     if (this._generatedEs2panda === undefined) {
       this._generatedEs2panda = initGeneratedEs2panda()
@@ -67,9 +76,22 @@ export class global {
     return this._generatedEs2panda
   }
 
+  public static get generatedEs2pandaPublic(): GeneratedEs2pandaNativeModule {
+    if (this._generatedEs2pandaPublic === undefined) {
+      this._generatedEs2pandaPublic = initPublicGeneratedEs2panda()
+    }
+    return this._generatedEs2pandaPublic
+  }
+
   private static _interop: InteropNativeModule | undefined = undefined
+  private static _interopPublic: InteropNativeModule | undefined = undefined
   public static get interop(): InteropNativeModule {
     if (this._interop === undefined) this._interop = initInterop()
     return this._interop
+  }
+
+  public static get interopPublic(): InteropNativeModule {
+    if (this._interopPublic === undefined) this._interopPublic = initPublicInterop()
+    return this._interopPublic
   }
 }
