@@ -32,9 +32,6 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/regSpiller.h"
 #include "compiler/lowering/phase.h"
-#include "compiler/lowering/checkerPhase.h"
-#include "compiler/lowering/resolveIdentifiers.h"
-#include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "ir/astNode.h"
 #include "ir/expressions/arrowFunctionExpression.h"
 #include "ir/ts/tsAsExpression.h"
@@ -350,13 +347,12 @@ __attribute__((unused)) static Context *Parse(Context *ctx)
     ctx->phaseManager->Restart();
     ctx->parser->ParseScript(*ctx->sourceFile,
                              ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB);
-    ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_PARSED : ES2PANDA_STATE_ERROR;
+    ctx->state = ES2PANDA_STATE_PARSED;
     return ctx;
 }
 
 __attribute__((unused)) static Context *Bind(Context *ctx)
 {
-    // NOTE: Remove duplicated code in all phases
     if (ctx->state < ES2PANDA_STATE_PARSED) {
         ctx = Parse(ctx);
     }
@@ -366,12 +362,12 @@ __attribute__((unused)) static Context *Bind(Context *ctx)
 
     ES2PANDA_ASSERT(ctx->state == ES2PANDA_STATE_PARSED);
     while (auto phase = ctx->phaseManager->NextPhase()) {
-        phase->Apply(ctx, ctx->parserProgram);
-        if (phase->Name() == compiler::ResolveIdentifiers::NAME) {
+        if (phase->Name() == "plugins-after-bind") {
             break;
         }
+        phase->Apply(ctx, ctx->parserProgram);
     }
-    ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_BOUND : ES2PANDA_STATE_ERROR;
+    ctx->state = ES2PANDA_STATE_BOUND;
     return ctx;
 }
 
@@ -387,10 +383,10 @@ __attribute__((unused)) static Context *Check(Context *ctx)
 
     ES2PANDA_ASSERT(ctx->state >= ES2PANDA_STATE_PARSED && ctx->state < ES2PANDA_STATE_CHECKED);
     while (auto phase = ctx->phaseManager->NextPhase()) {
-        phase->Apply(ctx, ctx->parserProgram);
-        if (phase->Name() == compiler::CheckerPhase::NAME) {
+        if (phase->Name() == "plugins-after-check") {
             break;
         }
+        phase->Apply(ctx, ctx->parserProgram);
     }
     ctx->state = !ctx->diagnosticEngine->IsAnyError() ? ES2PANDA_STATE_CHECKED : ES2PANDA_STATE_ERROR;
     return ctx;
@@ -695,6 +691,11 @@ extern "C" const es2panda_DiagnosticStorage *GetWarnings(es2panda_Context *conte
     return GetDiagnostics(context, util::DiagnosticType::WARNING);
 }
 
+extern "C" bool IsAnyError(es2panda_Context *context)
+{
+    return reinterpret_cast<Context *>(context)->diagnosticEngine->IsAnyError();
+}
+
 extern "C" size_t SourcePositionIndex([[maybe_unused]] es2panda_Context *context, es2panda_SourcePosition *position)
 {
     return reinterpret_cast<lexer::SourcePosition *>(position)->index;
@@ -980,6 +981,7 @@ es2panda_Impl g_impl = {
     GetSyntaxErrors,
     GetPluginErrors,
     GetWarnings,
+    IsAnyError,
     AstNodeFindNearestScope,
     AstNodeRebind,
     AstNodeRecheck,

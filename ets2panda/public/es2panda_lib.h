@@ -131,7 +131,6 @@ typedef struct es2panda_OverloadInfo {
 enum es2panda_ContextState {
     ES2PANDA_STATE_NEW,
     ES2PANDA_STATE_PARSED,
-    ES2PANDA_STATE_SCOPE_INITED,
     ES2PANDA_STATE_BOUND,
     ES2PANDA_STATE_CHECKED,
     ES2PANDA_STATE_LOWERED,
@@ -204,6 +203,7 @@ struct CAPI_EXPORT es2panda_Impl {
     const es2panda_DiagnosticStorage *(*GetSyntaxErrors)(es2panda_Context *context);
     const es2panda_DiagnosticStorage *(*GetPluginErrors)(es2panda_Context *context);
     const es2panda_DiagnosticStorage *(*GetWarnings)(es2panda_Context *context);
+    bool (*IsAnyError)(es2panda_Context *context);
     es2panda_Scope *(*AstNodeFindNearestScope)(es2panda_Context *ctx, es2panda_AstNode *node);
     es2panda_Scope *(*AstNodeRebind)(es2panda_Context *ctx, es2panda_AstNode *node);
     void (*AstNodeRecheck)(es2panda_Context *ctx, es2panda_AstNode *node);

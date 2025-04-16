@@ -163,7 +163,10 @@ TEST_F(ASTVerifierTest, StructInStruct)
     }
     )";
 
-    CONTEXT(ES2PANDA_STATE_PARSED, ES2PANDA_STATE_ERROR, text) {}
+    CONTEXT(ES2PANDA_STATE_PARSED, text)
+    {
+        ASSERT_TRUE(GetImpl()->IsAnyError(GetContext()));
+    }
 }
 
 }  // namespace

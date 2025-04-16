@@ -108,8 +108,6 @@ static const char *GetPhaseName(es2panda_ContextState state)
             return "NEW";
         case ES2PANDA_STATE_PARSED:
             return "PARSE";
-        case ES2PANDA_STATE_SCOPE_INITED:
-            return "SCOPE_INITED";
         case ES2PANDA_STATE_BOUND:
             return "BOUND";
         case ES2PANDA_STATE_CHECKED:
@@ -131,8 +129,6 @@ static bool IsAllowedStage(es2panda_ContextState state)
 {
     switch (state) {
         case ES2PANDA_STATE_NEW:
-            return false;
-        case ES2PANDA_STATE_SCOPE_INITED:
             return false;
         case ES2PANDA_STATE_ERROR:
             return false;

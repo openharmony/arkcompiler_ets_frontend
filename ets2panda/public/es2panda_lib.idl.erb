@@ -117,13 +117,12 @@ interface es2panda_OverloadInfo {
 dictionary es2panda_ContextState {
     i32 ES2PANDA_STATE_NEW = 0;
     i32 ES2PANDA_STATE_PARSED = 1;
-    i32 ES2PANDA_STATE_SCOPE_INITED = 2;
-    i32 ES2PANDA_STATE_BOUND = 3;
-    i32 ES2PANDA_STATE_CHECKED = 4;
-    i32 ES2PANDA_STATE_LOWERED = 5;
-    i32 ES2PANDA_STATE_ASM_GENERATED = 6;
-    i32 ES2PANDA_STATE_BIN_GENERATED = 7;
-    i32 ES2PANDA_STATE_ERROR = 8;
+    i32 ES2PANDA_STATE_BOUND = 2;
+    i32 ES2PANDA_STATE_CHECKED = 3;
+    i32 ES2PANDA_STATE_LOWERED = 4;
+    i32 ES2PANDA_STATE_ASM_GENERATED = 5;
+    i32 ES2PANDA_STATE_BIN_GENERATED = 6;
+    i32 ES2PANDA_STATE_ERROR = 7;
 };
 
 [Entity=Class] interface VoidPtr {}; // void *
@@ -178,6 +177,7 @@ interface es2panda_Impl {
     void LogTypeError(es2panda_Context context, String errorMsg, es2panda_SourcePosition pos);
     void LogWarning(es2panda_Context context, String warnMsg, es2panda_SourcePosition pos);
     void LogSyntaxError(es2panda_Context context, String errorMsg, es2panda_SourcePosition pos);
+    boolean IsAnyError(es2panda_Context context);
     varbinder.Scope AstNodeFindNearestScope(es2panda_Context ctx, ir.AstNode node);
     varbinder.Scope AstNodeRebind(es2panda_Context ctx, ir.AstNode node);
     void AstNodeRecheck(es2panda_Context ctx, ir.AstNode node);
