@@ -13,22 +13,22 @@
  * limitations under the License.
  */
 
-import { KPointer } from "./InteropTypes"
-import { ptrToString } from "./Wrapper"
-import { className } from "./ts-reflection"
+import { KPointer } from './InteropTypes';
+import { ptrToString } from './Wrapper';
+import { className } from './ts-reflection';
 
 /**
  * An object holding reference to the native pointer.
  */
 export class Wrapper {
-  ptr: KPointer
+  ptr: KPointer;
   constructor(ptr: KPointer) {
-    if (ptr == null)
-      throw new Error(`Init <${className(this)}> with null native peer`)
-    this.ptr = ptr
+    if (ptr == null) {
+      throw new Error(`Init <${className(this)}> with null native peer`);
+    }
+    this.ptr = ptr;
   }
   toString(): string {
-    return `[native object <${className(this)}> at ${ptrToString(this.ptr)}]`
+    return `[native object <${className(this)}> at ${ptrToString(this.ptr)}]`;
   }
 }
-

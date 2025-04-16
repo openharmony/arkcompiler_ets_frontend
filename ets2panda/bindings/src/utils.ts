@@ -17,12 +17,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export function throwError(error: string): never {
-  throw new Error(error)
+  throw new Error(error);
 }
 
 export function withWarning<T>(value: T, message: string): T {
-  console.warn(message)
-  return value
+  console.warn(message);
+  return value;
 }
 
 export function changeFileExtension(file: string, targetExt: string, originExt = ''): string {
