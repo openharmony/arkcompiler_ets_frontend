@@ -45,13 +45,15 @@ import {
   Logger,
   LogData,
   LogDataFactory
-} from '../logger'
-import { ErrorCode } from '../error_code'
+} from '../logger';
+import { ErrorCode } from '../error_code';
 import {
+  ArkTS,
+  ArkTSGlobal,
   BuildConfig,
+  CompileFileInfo,
   DependentModuleConfig,
-  ModuleInfo,
-  CompileFileInfo
+  ModuleInfo
 } from '../types';
 import { ArkTSConfigGenerator } from './generate_arktsconfig';
 import { SetupClusterOptions } from '../types';
@@ -121,8 +123,8 @@ export abstract class BaseMode {
     );
     ensurePathExists(declEtsOutputPath);
     ensurePathExists(etsOutputPath);
-    let arktsGlobal = this.buildConfig.arktsGlobal as any;
-    let arkts = this.buildConfig.arkts as any;
+    let arktsGlobal: ArkTSGlobal = this.buildConfig.arktsGlobal;
+    let arkts: ArkTS = this.buildConfig.arkts;
     try {
       arktsGlobal.filePath = fileInfo.filePath;
       arktsGlobal.config = arkts.Config.create([
@@ -153,7 +155,7 @@ export abstract class BaseMode {
         etsOutputPath,
         false
       ); // Generate 1.0 declaration files & 1.0 glue code
-      this.logger.printInfo("declaration files generated");
+      this.logger.printInfo('declaration files generated');
     } catch (error) {
       if (error instanceof Error) {
         const logData: LogData = LogDataFactory.newInstance(
@@ -164,6 +166,7 @@ export abstract class BaseMode {
         this.logger.printError(logData);
       }
     } finally {
+      arktsGlobal.es2panda._DestroyContext(arktsGlobal.compilerContext.peer);
       arkts.destroyConfig(arktsGlobal.config);
     }
   }
@@ -187,8 +190,8 @@ export abstract class BaseMode {
     ets2pandaCmd.push(fileInfo.filePath);
     this.logger.printInfo('ets2pandaCmd: ' + ets2pandaCmd.join(' '));
 
-    let arktsGlobal = this.buildConfig.arktsGlobal as any;
-    let arkts = this.buildConfig.arkts as any;
+    let arktsGlobal = this.buildConfig.arktsGlobal;
+    let arkts = this.buildConfig.arkts;
     try {
       arktsGlobal.filePath = fileInfo.filePath;
       arktsGlobal.config = arkts.Config.create(ets2pandaCmd).peer;
@@ -222,6 +225,7 @@ export abstract class BaseMode {
         this.logger.printError(logData);
       }
     } finally {
+      arktsGlobal.es2panda._DestroyContext(arktsGlobal.compilerContext.peer);
       PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
       arkts.destroyConfig(arktsGlobal.config);
     }
@@ -232,7 +236,7 @@ export abstract class BaseMode {
     let linkerInputContent: string = '';
     this.abcFiles.forEach((abcFile: string) => {
       linkerInputContent += abcFile + os.EOL;
-    })
+    });
     fs.writeFileSync(linkerInputFile, linkerInputContent);
 
     this.abcLinkerCmd.push('--output');
@@ -326,7 +330,7 @@ export abstract class BaseMode {
       compileFileInfos: [],
       declgenV1OutPath: this.declgenV1OutPath,
       declgenBridgeCodePath: this.declgenBridgeCodePath
-    }
+    };
     this.moduleInfos.set(this.packageName, mainModuleInfo);
     this.dependentModuleList.forEach((module: DependentModuleConfig) => {
       if (!module.packageName || !module.modulePath || !module.sourceRoots || !module.entryFile) {
@@ -352,7 +356,7 @@ export abstract class BaseMode {
         language: module.language,
         declFilesPath: module.declFilesPath,
         dependencies: module.dependencies
-      }
+      };
       this.moduleInfos.set(module.packageName, moduleInfo);
     });
     this.collectDepModuleInfos();
@@ -440,7 +444,7 @@ export abstract class BaseMode {
     this.mergeAbcFiles();
   }
 
-  private terminateAllWorkers() {
+  private terminateAllWorkers(): void {
     Object.values(cluster.workers || {}).forEach(worker => {
       worker?.kill();
     });
@@ -510,7 +514,7 @@ export abstract class BaseMode {
     await Promise.all(workerExitPromises);
   }
 
-  private setupWorkerMessageHandler(worker: Worker) {
+  private setupWorkerMessageHandler(worker: Worker): void {
     worker.on('message', (message: {
       success: boolean;
       filePath?: string;
