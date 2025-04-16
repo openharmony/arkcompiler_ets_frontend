@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,13 +13,26 @@
  * limitations under the License.
  */
 
-
-function main(): void {
-    let s = "str"
-    s.toString()
-    let a: int [] = [1, 2]
-    let b = s ?? a;
-    /* @@ label */b.toString();
+class A {
+    short(v: string): void {}
+    ordinary(a: int, b: int, c: int): void {}
+    range(a: int, b: int, c: int, d: int, e: int, f: int): void {}
 }
 
-/* @@@ label Error TypeError: Type String|int[] is illegal in union member expression.  */
+class B {
+    short(v: string): void {}
+    ordinary(a: int, b: int, c: int): void {}
+    range(a: int, b: int, c: int, d: int, e: int, f: int): void {}
+}
+
+function short(x: A|B) {
+    x.short("123")
+}
+
+function ordinary(x: A|B) {
+    x.ordinary(1, 2, 3)
+}
+
+function range(x: A|B) {
+    x.range(1, 2, 3, 4, 5, 6)
+}

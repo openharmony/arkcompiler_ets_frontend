@@ -350,6 +350,17 @@ public:
         Ra().Emit<Call, 3U>(node, name, arg0, arg1, arg2, dummyReg_);
     }
 
+    void CallByName([[maybe_unused]] const ir::AstNode *const node,
+                    [[maybe_unused]] const checker::Signature *signature, [[maybe_unused]] const VReg arg0,
+                    [[maybe_unused]] const ArenaVector<ir::Expression *> &arguments)
+    {
+#ifdef PANDA_WITH_ETS
+        CallArgStart<EtsCallNameShort, EtsCallName, EtsCallNameRange>(node, signature, arg0, arguments);
+#else
+        ES2PANDA_UNREACHABLE();
+#endif
+    }
+
     void CallVirtual(const ir::AstNode *const node, const checker::Signature *signature, const VReg athis,
                      const ArenaVector<ir::Expression *> &arguments)
     {

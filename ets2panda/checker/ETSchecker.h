@@ -870,6 +870,11 @@ public:
         overloadSigContainer_.clear();
     }
 
+    // This helper finds the intersection of two callSignatures sets
+    // The result is stored in callSignatures of newly created ETSFunctionType
+    checker::ETSFunctionType *IntersectSignatureSets(const checker::ETSFunctionType *left,
+                                                     const checker::ETSFunctionType *right);
+
 private:
     std::pair<const ir::Identifier *, ir::TypeNode *> GetTargetIdentifierAndType(ir::Identifier *ident);
     void NotResolvedError(ir::Identifier *const ident, const varbinder::Variable *classVar,

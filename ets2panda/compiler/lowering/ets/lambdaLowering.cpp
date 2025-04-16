@@ -1044,6 +1044,16 @@ static bool IsFunctionOrMethodCall(ir::CallExpression const *node)
         return true;
     }
 
+    // NOTE: Skip if invoke pattern Union.<method>()
+    // Not skip if invoke pattern Union.<field>() where field is of ETSArrowType
+    if (callee->IsMemberExpression()) {
+        auto me = callee->AsMemberExpression();
+        if (me->Object()->TsType() != nullptr && me->Object()->TsType()->IsETSUnionType() &&
+            me->TsType()->IsETSMethodType()) {
+            return true;
+        }
+    }
+
     varbinder::Variable *var = nullptr;
     if (callee->IsMemberExpression() &&
         (callee->AsMemberExpression()->Kind() & ir::MemberExpressionKind::PROPERTY_ACCESS) != 0) {

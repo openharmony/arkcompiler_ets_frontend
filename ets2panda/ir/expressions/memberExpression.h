@@ -246,8 +246,7 @@ private:
     checker::Type *SetAndAdjustType(checker::ETSChecker *checker, checker::ETSObjectType *objectType);
     checker::Type *CheckComputed(checker::ETSChecker *checker, checker::Type *baseType);
     checker::Type *CheckUnionMember(checker::ETSChecker *checker, checker::Type *baseType);
-    checker::Type *TraverseUnionMember(checker::ETSChecker *checker, checker::ETSUnionType *unionType,
-                                       checker::Type *commonPropType);
+    checker::Type *TraverseUnionMember(checker::ETSChecker *checker, checker::ETSUnionType *unionType);
 
     bool CheckArrayIndexValue(checker::ETSChecker *checker) const;
     checker::Type *CheckIndexAccessMethod(checker::ETSChecker *checker);
