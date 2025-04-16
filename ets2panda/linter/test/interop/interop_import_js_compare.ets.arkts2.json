@@ -36,22 +36,62 @@
         },
         {
             "line": 19,
-            "column": 5,
+            "column": 9,
             "endLine": 19,
             "endColumn": 14,
-            "problem": "NumericSemantics",
+            "problem": "InteropObjectProperty",
             "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 9,
+            "endLine": 19,
+            "endColumn": 14,
+            "problem": "InteropJsObjectUsage",
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 9,
+            "endLine": 19,
+            "endColumn": 14,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
             "severity": "ERROR"
         },
         {
             "line": 20,
-            "column": 5,
+            "column": 9,
             "endLine": 20,
             "endColumn": 14,
-            "problem": "NumericSemantics",
+            "problem": "InteropObjectProperty",
             "suggest": "",
-            "rule": "Numeric semantics is different for integer values (arkts-numeric-semantic)",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 9,
+            "endLine": 20,
+            "endColumn": 14,
+            "problem": "InteropJsObjectUsage",
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 9,
+            "endLine": 20,
+            "endColumn": 14,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
             "severity": "ERROR"
         },
         {

@@ -26,6 +26,28 @@
             "severity": "ERROR"
         },
         {
+            "line": 16,
+            "column": 1,
+            "endLine": 16,
+            "endColumn": 47,
+            "problem": "InterOpImportJs",
+            "autofix": [
+                {
+                    "start": 632,
+                    "end": 678,
+                    "replacementText": ""
+                },
+                {
+                    "start": 678,
+                    "end": 678,
+                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./call_object_methods_js');\nlet foo = GeneratedImportVar_1.getPropertyByName('foo');"
+                }
+            ],
+            "suggest": "",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "severity": "ERROR"
+        },
+        {
             "line": 18,
             "column": 1,
             "endLine": 18,
@@ -40,9 +62,19 @@
             "column": 1,
             "endLine": 18,
             "endColumn": 13,
+            "problem": "CallJSFunction",
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 1,
+            "endLine": 18,
+            "endColumn": 13,
             "problem": "InteropCallObjectMethods",
             "suggest": "",
-            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-interop-method-call)",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
             "severity": "ERROR"
         }
     ]

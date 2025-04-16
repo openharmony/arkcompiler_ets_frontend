@@ -25,13 +25,23 @@
             "severity": "ERROR"
         },
         {
+            "line": 17,
+            "column": 1,
+            "endLine": 17,
+            "endColumn": 88,
+            "problem": "InterOpImportJs",
+            "suggest": "",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "severity": "ERROR"
+        },
+        {
             "line": 27,
             "column": 4,
             "endLine": 27,
             "endColumn": 22,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-js-instanceof)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
             "severity": "ERROR"
         },
         {
@@ -41,7 +51,7 @@
             "endColumn": 23,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-js-instanceof)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
             "severity": "ERROR"
         },
         {
@@ -51,7 +61,37 @@
             "endColumn": 23,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-js-instanceof)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 28,
+            "endLine": 39,
+            "endColumn": 50,
+            "problem": "InteropJsObjectUsage",
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 28,
+            "endLine": 39,
+            "endColumn": 50,
+            "problem": "CallJSFunction",
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 28,
+            "endLine": 39,
+            "endColumn": 50,
+            "problem": "InteropCallObjectMethods",
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
             "severity": "ERROR"
         },
         {
@@ -61,7 +101,7 @@
             "endColumn": 34,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-js-instanceof)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
             "severity": "ERROR"
         },
         {
@@ -71,7 +111,7 @@
             "endColumn": 38,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-js-instanceof)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
             "severity": "ERROR"
         },
         {
@@ -81,7 +121,7 @@
             "endColumn": 38,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-js-instanceof)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
             "severity": "ERROR"
         },
         {
@@ -91,7 +131,7 @@
             "endColumn": 42,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-js-instanceof)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
             "severity": "ERROR"
         },
         {
@@ -101,7 +141,7 @@
             "endColumn": 22,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-js-instanceof)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
             "severity": "ERROR"
         },
         {
@@ -111,7 +151,37 @@
             "endColumn": 24,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-js-instanceof)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 69,
+            "column": 4,
+            "endLine": 69,
+            "endColumn": 7,
+            "problem": "InteropJsObjectUsage",
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 69,
+            "column": 4,
+            "endLine": 69,
+            "endColumn": 7,
+            "problem": "CallJSFunction",
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 69,
+            "column": 4,
+            "endLine": 69,
+            "endColumn": 7,
+            "problem": "InteropCallObjectMethods",
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
             "severity": "ERROR"
         },
         {
@@ -125,13 +195,53 @@
             "severity": "ERROR"
         },
         {
+            "line": 73,
+            "column": 36,
+            "endLine": 73,
+            "endColumn": 51,
+            "problem": "InteropJsObjectUsage",
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 73,
+            "column": 36,
+            "endLine": 73,
+            "endColumn": 51,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "severity": "ERROR"
+        },
+        {
             "line": 75,
             "column": 5,
             "endLine": 75,
             "endColumn": 37,
             "problem": "InteropJsInstanceof",
             "suggest": "",
-            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-js-instanceof)",
+            "rule": "Usage of \"instanceof\" operator is not allowed with interop objects (arkts-no-import-obj-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 75,
+            "column": 22,
+            "endLine": 75,
+            "endColumn": 37,
+            "problem": "InteropJsObjectUsage",
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 75,
+            "column": 22,
+            "endLine": 75,
+            "endColumn": 37,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
             "severity": "ERROR"
         }
     ]

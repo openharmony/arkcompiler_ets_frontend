@@ -25,13 +25,43 @@
             "severity": "ERROR"
         },
         {
+            "line": 17,
+            "column": 2,
+            "endLine": 17,
+            "endColumn": 52,
+            "problem": "InterOpImportJs",
+            "suggest": "",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "severity": "ERROR"
+        },
+        {
             "line": 19,
             "column": 18,
             "endLine": 19,
             "endColumn": 35,
             "problem": "InterOpConvertImport",
             "suggest": "",
-            "rule": "Casting interop JS objects to \"number\" type is not allowed (arkts-no-js-number-cast)",
+            "rule": "Casting interop JS objects to \"number\" type is not allowed (arkts-no-js-number-import)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 18,
+            "endLine": 19,
+            "endColumn": 25,
+            "problem": "InteropJsObjectUsage",
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 18,
+            "endLine": 19,
+            "endColumn": 25,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
             "severity": "ERROR"
         }
     ]

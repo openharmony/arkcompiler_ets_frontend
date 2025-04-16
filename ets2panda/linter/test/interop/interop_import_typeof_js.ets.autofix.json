@@ -25,6 +25,28 @@
             "severity": "ERROR"
         },
         {
+            "line": 17,
+            "column": 1,
+            "endLine": 17,
+            "endColumn": 69,
+            "problem": "InterOpImportJs",
+            "autofix": [
+                {
+                    "start": 619,
+                    "end": 687,
+                    "replacementText": ""
+                },
+                {
+                    "start": 796,
+                    "end": 796,
+                    "replacementText": "let GeneratedImportVar_1 = ESObject.load('./interop_import_js_js');\nlet myAaa = GeneratedImportVar_1.getPropertyByName('aaa');\nlet ClassA = GeneratedImportVar_1.getPropertyByName('ClassA');\nlet Dog = GeneratedImportVar_1.getPropertyByName('Dog');\nlet Person = GeneratedImportVar_1.getPropertyByName('Person');\nlet Wiki = GeneratedImportVar_1.getPropertyByName('Wiki');"
+                }
+            ],
+            "suggest": "",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "severity": "ERROR"
+        },
+        {
             "line": 18,
             "column": 1,
             "endLine": 18,
@@ -35,6 +57,28 @@
             "severity": "ERROR"
         },
         {
+            "line": 18,
+            "column": 1,
+            "endLine": 18,
+            "endColumn": 54,
+            "problem": "InterOpImportJs",
+            "autofix": [
+                {
+                    "start": 688,
+                    "end": 741,
+                    "replacementText": ""
+                },
+                {
+                    "start": 796,
+                    "end": 796,
+                    "replacementText": "let GeneratedImportVar_2 = ESObject.load('./interop_import_js_js');\nlet Doge = GeneratedImportVar_2.getPropertyByName('Dog');"
+                }
+            ],
+            "suggest": "",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
+            "severity": "ERROR"
+        },
+        {
             "line": 19,
             "column": 1,
             "endLine": 19,
@@ -42,6 +86,28 @@
             "problem": "ImportAfterStatement",
             "suggest": "",
             "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 1,
+            "endLine": 19,
+            "endColumn": 55,
+            "problem": "InterOpImportJs",
+            "autofix": [
+                {
+                    "start": 742,
+                    "end": 796,
+                    "replacementText": ""
+                },
+                {
+                    "start": 796,
+                    "end": 796,
+                    "replacementText": "let GeneratedImportVar_3 = ESObject.load('./interop_import_js_js');\nlet wiki = GeneratedImportVar_3.getPropertyByName('Wiki');"
+                }
+            ],
+            "suggest": "",
+            "rule": "Importing directly from \"JS\" module is not supported (arkts-no-js-import)",
             "severity": "ERROR"
         },
         {
@@ -58,7 +124,67 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js-typeof)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 8,
+            "endLine": 21,
+            "endColumn": 15,
+            "problem": "InteropJsObjectUsage",
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 8,
+            "endLine": 21,
+            "endColumn": 15,
+            "problem": "CallJSFunction",
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 8,
+            "endLine": 21,
+            "endColumn": 15,
+            "problem": "InteropCallObjectMethods",
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 11,
+            "endLine": 22,
+            "endColumn": 18,
+            "problem": "InteropJsObjectUsage",
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 11,
+            "endLine": 22,
+            "endColumn": 18,
+            "problem": "CallJSFunction",
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 11,
+            "endLine": 22,
+            "endColumn": 18,
+            "problem": "InteropCallObjectMethods",
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
             "severity": "ERROR"
         },
         {
@@ -75,7 +201,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js-typeof)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
             "severity": "ERROR"
         },
         {
@@ -92,7 +218,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js-typeof)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
             "severity": "ERROR"
         },
         {
@@ -103,6 +229,36 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 8,
+            "endLine": 25,
+            "endColumn": 19,
+            "problem": "InteropJsObjectUsage",
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 8,
+            "endLine": 25,
+            "endColumn": 19,
+            "problem": "CallJSFunction",
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 25,
+            "column": 8,
+            "endLine": 25,
+            "endColumn": 19,
+            "problem": "InteropCallObjectMethods",
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
             "severity": "ERROR"
         },
         {
@@ -119,7 +275,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js-typeof)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
             "severity": "ERROR"
         },
         {
@@ -130,6 +286,36 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 8,
+            "endLine": 26,
+            "endColumn": 20,
+            "problem": "InteropJsObjectUsage",
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 8,
+            "endLine": 26,
+            "endColumn": 20,
+            "problem": "CallJSFunction",
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 8,
+            "endLine": 26,
+            "endColumn": 20,
+            "problem": "InteropCallObjectMethods",
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
             "severity": "ERROR"
         },
         {
@@ -146,7 +332,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js-typeof)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
             "severity": "ERROR"
         },
         {
@@ -163,7 +349,51 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js-typeof)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 8,
+            "endLine": 28,
+            "endColumn": 17,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 957,
+                    "end": 966,
+                    "replacementText": "Wiki.getPropertyByName(\"name\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 8,
+            "endLine": 28,
+            "endColumn": 17,
+            "problem": "InteropJsObjectUsage",
+            "autofix": [
+                {
+                    "replacementText": "Wiki.getPropertyByName('name').toString()",
+                    "start": 957,
+                    "end": 966
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 8,
+            "endLine": 28,
+            "endColumn": 17,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
             "severity": "ERROR"
         },
         {
@@ -180,7 +410,68 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js-typeof)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 11,
+            "endLine": 30,
+            "endColumn": 20,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1005,
+                    "end": 1014,
+                    "replacementText": "wiki.getPropertyByName(\"name\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 11,
+            "endLine": 30,
+            "endColumn": 20,
+            "problem": "InteropJsObjectUsage",
+            "autofix": [
+                {
+                    "replacementText": "wiki.getPropertyByName('name').toString()",
+                    "start": 1005,
+                    "end": 1014
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 11,
+            "endLine": 30,
+            "endColumn": 20,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 23,
+            "endLine": 32,
+            "endColumn": 35,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1049,
+                    "end": 1061,
+                    "replacementText": "ClassA.instantiate()"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
             "severity": "ERROR"
         },
         {
@@ -197,7 +488,98 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js-typeof)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 33,
+            "column": 8,
+            "endLine": 33,
+            "endColumn": 20,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1069,
+                    "end": 1081,
+                    "replacementText": "ClassA.instantiate()"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 21,
+            "endLine": 35,
+            "endColumn": 33,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1125,
+                    "end": 1137,
+                    "replacementText": "Person.instantiate()"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 11,
+            "endLine": 36,
+            "endColumn": 22,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1149,
+                    "end": 1160,
+                    "replacementText": "person.getPropertyByName(\"name\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 12,
+            "endLine": 37,
+            "endColumn": 28,
+            "problem": "CallJSFunction",
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 12,
+            "endLine": 37,
+            "endColumn": 28,
+            "problem": "InteropCallObjectMethods",
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 40,
+            "column": 12,
+            "endLine": 40,
+            "endColumn": 28,
+            "problem": "CallJSFunction",
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 40,
+            "column": 12,
+            "endLine": 40,
+            "endColumn": 28,
+            "problem": "InteropCallObjectMethods",
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
             "severity": "ERROR"
         },
         {
@@ -208,6 +590,26 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
+            "column": 12,
+            "endLine": 43,
+            "endColumn": 30,
+            "problem": "CallJSFunction",
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
+            "column": 12,
+            "endLine": 43,
+            "endColumn": 30,
+            "problem": "InteropCallObjectMethods",
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
             "severity": "ERROR"
         },
         {
@@ -224,7 +626,24 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js-typeof)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 12,
+            "endLine": 45,
+            "endColumn": 24,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1359,
+                    "end": 1371,
+                    "replacementText": "Person.instantiate()"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
             "severity": "ERROR"
         },
         {
@@ -235,6 +654,26 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 21,
+            "endLine": 48,
+            "endColumn": 39,
+            "problem": "CallJSFunction",
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 21,
+            "endLine": 48,
+            "endColumn": 39,
+            "problem": "InteropCallObjectMethods",
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
             "severity": "ERROR"
         },
         {
@@ -261,7 +700,51 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js-typeof)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 62,
+            "column": 12,
+            "endLine": 62,
+            "endColumn": 21,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1736,
+                    "end": 1745,
+                    "replacementText": "wiki.getPropertyByName(\"name\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 62,
+            "column": 12,
+            "endLine": 62,
+            "endColumn": 21,
+            "problem": "InteropJsObjectUsage",
+            "autofix": [
+                {
+                    "replacementText": "wiki.getPropertyByName('name').toString()",
+                    "start": 1736,
+                    "end": 1745
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 62,
+            "column": 12,
+            "endLine": 62,
+            "endColumn": 21,
+            "problem": "BinaryOperations",
+            "suggest": "",
+            "rule": "Binary operations on js objects (arkts-no-js-obj-binary-operation)",
             "severity": "ERROR"
         },
         {
@@ -278,7 +761,24 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js-typeof)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 66,
+            "column": 35,
+            "endLine": 66,
+            "endColumn": 47,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1841,
+                    "end": 1853,
+                    "replacementText": "ClassA.instantiate()"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
             "severity": "ERROR"
         },
         {
@@ -295,7 +795,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js-typeof)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
             "severity": "ERROR"
         },
         {
@@ -312,7 +812,58 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js-typeof)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 71,
+            "column": 8,
+            "endLine": 71,
+            "endColumn": 25,
+            "problem": "InteropObjectProperty",
+            "autofix": [
+                {
+                    "start": 1903,
+                    "end": 1920,
+                    "replacementText": "new Person().getPropertyByName(\"name\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "Properties of interop objects can't be accessed directly (arkts-no-js-obj-property)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 71,
+            "column": 8,
+            "endLine": 71,
+            "endColumn": 25,
+            "problem": "InteropJsObjectUsage",
+            "autofix": [
+                {
+                    "replacementText": "new Person().getPropertyByName('name').toString()",
+                    "start": 1903,
+                    "end": 1920
+                }
+            ],
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 71,
+            "column": 8,
+            "endLine": 71,
+            "endColumn": 20,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1903,
+                    "end": 1915,
+                    "replacementText": "Person.instantiate()"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
             "severity": "ERROR"
         },
         {
@@ -329,7 +880,54 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js-typeof)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 8,
+            "endLine": 72,
+            "endColumn": 30,
+            "problem": "InteropJsObjectUsage",
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 8,
+            "endLine": 72,
+            "endColumn": 30,
+            "problem": "CallJSFunction",
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 8,
+            "endLine": 72,
+            "endColumn": 30,
+            "problem": "InteropCallObjectMethods",
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 72,
+            "column": 8,
+            "endLine": 72,
+            "endColumn": 20,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1937,
+                    "end": 1949,
+                    "replacementText": "Person.instantiate()"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
             "severity": "ERROR"
         },
         {
@@ -346,7 +944,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-js-typeof)",
+            "rule": "The \"typeof\" expression can't be used with interop JS objects (arkts-interop-import-typeof-js)",
             "severity": "ERROR"
         },
         {
@@ -357,6 +955,53 @@
             "problem": "LimitedVoidType",
             "suggest": "",
             "rule": "Type \"void\" has no instances.(arkts-limited-void-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 73,
+            "column": 8,
+            "endLine": 73,
+            "endColumn": 31,
+            "problem": "InteropJsObjectUsage",
+            "suggest": "",
+            "rule": "Direct usage of interop JS objects is not supported (arkts-interop-js-object-usage)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 73,
+            "column": 8,
+            "endLine": 73,
+            "endColumn": 31,
+            "problem": "CallJSFunction",
+            "suggest": "",
+            "rule": "ArkTS directly call JS functions or parameters is not supported (arkts-no-call-js-function)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 73,
+            "column": 8,
+            "endLine": 73,
+            "endColumn": 31,
+            "problem": "InteropCallObjectMethods",
+            "suggest": "",
+            "rule": "Calling methods of JS Object directly in interop is not allowed (arkts-no-call-class-method)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 73,
+            "column": 8,
+            "endLine": 73,
+            "endColumn": 20,
+            "problem": "InstantiatedJsOjbect",
+            "autofix": [
+                {
+                    "start": 1975,
+                    "end": 1987,
+                    "replacementText": "Person.instantiate()"
+                }
+            ],
+            "suggest": "",
+            "rule": "ArkTS directly instantiated JS objects is not supported (arkts-no-js-obj-instantiated)",
             "severity": "ERROR"
         }
     ]

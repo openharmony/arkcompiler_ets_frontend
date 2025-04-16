@@ -43,8 +43,18 @@ import {
   PROVIDE_ALLOW_OVERRIDE_PROPERTY_NAME
 } from '../utils/consts/ArkuiConstants';
 import { ES_OBJECT } from '../utils/consts/ESObject';
-import { LOAD, GET_PROPERTY_BY_NAME, ARE_EQUAL, ARE_STRICTLY_EQUAL } from '../utils/consts/InteropAPI';
-import { WRAP, INSTANTIATE } from '../utils/consts/InteropAPI';
+import { 
+  LOAD, 
+  GET_PROPERTY_BY_NAME,
+  SET_PROPERTY_BY_NAME,
+  GET_PROPERTY_BY_INDEX,
+  SET_PROPERTY_BY_INDEX,
+  ARE_EQUAL, 
+  ARE_STRICTLY_EQUAL,
+  WRAP,
+  INSTANTIATE,
+  TO_NUMBER
+} from '../utils/consts/InteropAPI';
 
 const UNDEFINED_NAME = 'undefined';
 
@@ -3339,7 +3349,7 @@ export class Autofixer {
   fixInteropPropertyAccessExpression(express: ts.PropertyAccessExpression): Autofix[] | undefined {
     let text: string = '';
     const statements = ts.factory.createCallExpression(
-      ts.factory.createPropertyAccessExpression(express.expression, ts.factory.createIdentifier('getPropertyByName')),
+      ts.factory.createPropertyAccessExpression(express.expression, ts.factory.createIdentifier(GET_PROPERTY_BY_NAME)),
       undefined,
       [ts.factory.createStringLiteral(express.name.getText())]
     );
@@ -3361,7 +3371,7 @@ export class Autofixer {
     const statements = ts.factory.createCallExpression(
       ts.factory.createPropertyAccessExpression(
         ts.factory.createIdentifier(objectName),
-        ts.factory.createIdentifier('setPropertyByName')
+        ts.factory.createIdentifier(SET_PROPERTY_BY_NAME)
       ),
       undefined,
       [
@@ -3369,7 +3379,7 @@ export class Autofixer {
         ts.factory.createCallExpression(
           ts.factory.createPropertyAccessExpression(
             ts.factory.createIdentifier(ES_OBJECT),
-            ts.factory.createIdentifier('wrap')
+            ts.factory.createIdentifier(WRAP)
           ),
           undefined,
           [ts.factory.createIdentifier(right.getText())]
@@ -3382,7 +3392,7 @@ export class Autofixer {
 
   fixInteropArrayElementAccessExpression(express: ts.ElementAccessExpression): Autofix[] | undefined {
     const statements = ts.factory.createCallExpression(
-      ts.factory.createPropertyAccessExpression(express.expression, ts.factory.createIdentifier('getPropertyByIndex')),
+      ts.factory.createPropertyAccessExpression(express.expression, ts.factory.createIdentifier(GET_PROPERTY_BY_INDEX)),
       undefined,
       [express.argumentExpression]
     );
@@ -3396,7 +3406,7 @@ export class Autofixer {
     const statements = ts.factory.createCallExpression(
       ts.factory.createPropertyAccessExpression(
         ts.factory.createIdentifier(left.expression.getText()),
-        ts.factory.createIdentifier('setPropertyByIndex')
+        ts.factory.createIdentifier(SET_PROPERTY_BY_INDEX)
       ),
       undefined,
       [
@@ -3404,7 +3414,7 @@ export class Autofixer {
         ts.factory.createCallExpression(
           ts.factory.createPropertyAccessExpression(
             ts.factory.createIdentifier(ES_OBJECT),
-            ts.factory.createIdentifier('wrap')
+            ts.factory.createIdentifier(WRAP)
           ),
           undefined,
           [ts.factory.createIdentifier(right.getText())]
@@ -3432,12 +3442,12 @@ export class Autofixer {
           ts.factory.createCallExpression(
             ts.factory.createPropertyAccessExpression(
               ts.factory.createIdentifier(express.operand.expression.getText()),
-              ts.factory.createIdentifier('getPropertyByName')
+              ts.factory.createIdentifier(GET_PROPERTY_BY_NAME)
             ),
             undefined,
             [ts.factory.createStringLiteral(express.operand.name.getText())]
           ),
-          ts.factory.createIdentifier('toNumber')
+          ts.factory.createIdentifier(TO_NUMBER)
         ),
         undefined,
         []
