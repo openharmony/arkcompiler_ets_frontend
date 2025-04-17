@@ -68,6 +68,7 @@ protected:
     void GenFunctionAnnotations(pandasm::Function *func) override;
     void GenVariableSignature(pandasm::debuginfo::LocalVariable &variableDebug,
                               varbinder::LocalVariable *variable) const override;
+    void GenSourceFileDebugInfo(pandasm::Function *func) override;
 };
 
 class ETSEmitter : public Emitter {
