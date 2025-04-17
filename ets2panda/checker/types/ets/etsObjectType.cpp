@@ -146,11 +146,18 @@ bool ETSObjectType::IsDescendantOf(const ETSObjectType *ascendant) const
     return this->SuperType()->IsDescendantOf(ascendant);
 }
 
+static bool HasAccessor(const PropertySearchFlags &flags, const ETSFunctionType *funcType)
+{
+    if ((flags & (PropertySearchFlags::IS_GETTER | PropertySearchFlags::IS_SETTER)) != 0) {
+        return true;
+    }
+    return funcType->HasTypeFlag(TypeFlag::GETTER) || funcType->HasTypeFlag(TypeFlag::SETTER);
+}
+
 static void UpdateDeclarationForGetterSetter(varbinder::LocalVariable *res, const ETSFunctionType *funcType,
                                              const PropertySearchFlags &flags)
 {
-    if ((flags & (PropertySearchFlags::IS_GETTER | PropertySearchFlags::IS_SETTER)) == 0 ||
-        res->Declaration() != nullptr) {
+    if (!HasAccessor(flags, funcType) || res->Declaration() != nullptr) {
         return;
     }
     auto var = funcType->CallSignatures().front()->OwnerVar();
