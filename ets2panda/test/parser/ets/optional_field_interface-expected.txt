@@ -532,7 +532,7 @@
             "static": false,
             "readonly": false,
             "declare": false,
-            "optional": false,
+            "optional": true,
             "computed": false,
             "typeAnnotation": {
               "type": "ETSUnionType",
