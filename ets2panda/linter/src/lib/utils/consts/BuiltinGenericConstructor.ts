@@ -19,5 +19,6 @@ export const BUILTIN_GENERIC_CONSTRUCTORS = new Set([
   'ReadonlyArray',
   'Promise',
   'WeakMap',
-  'WeakSet'
+  'WeakSet',
+  'Deque'
 ]);

@@ -14,7 +14,7 @@
  */
 
 import { bad_func } from "./dynamic_lib"
-
+import { Deque } from '@kit.ArkTS';
 function choose<T>(x: T, y: T): T {
   return Math.random() < 0.5 ? x : y
 }
@@ -89,3 +89,18 @@ const stringBox1: Box1<string> = new Box1(); // NOK
 const stringBox2: Box1 = new Box1<string>(); // OK
 const stringBox3: Box1<string> = new Box1<string>(); // OK
 const stringBox4 = new Box1(); // NOK
+
+let de: Deque = new Deque(); //error
+function newDeque():Deque{
+  return new Deque(); //error
+}
+class D{
+  dd: Deque;
+  constructor(){
+    new Deque(); //error
+  }
+
+  initDD(){
+    dd = new Deque<number>();
+  }
+}
