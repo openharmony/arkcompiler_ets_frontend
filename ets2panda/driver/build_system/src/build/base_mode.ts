@@ -126,6 +126,7 @@ export abstract class BaseMode {
     ensurePathExists(etsOutputPath);
     let arktsGlobal: ArkTSGlobal = this.buildConfig.arktsGlobal;
     let arkts: ArkTS = this.buildConfig.arkts;
+    let errorStatus = false;
     try {
       arktsGlobal.filePath = fileInfo.filePath;
       arktsGlobal.config = arkts.Config.create([
@@ -158,6 +159,7 @@ export abstract class BaseMode {
       ); // Generate 1.0 declaration files & 1.0 glue code
       this.logger.printInfo('declaration files generated');
     } catch (error) {
+      errorStatus = true;
       if (error instanceof Error) {
         const logData: LogData = LogDataFactory.newInstance(
           ErrorCode.BUILDSYSTEM_DECLGEN_FAIL,
@@ -167,7 +169,10 @@ export abstract class BaseMode {
         this.logger.printError(logData);
       }
     } finally {
-      arktsGlobal.es2panda._DestroyContext(arktsGlobal.compilerContext.peer);
+      if (!errorStatus) {
+        // when error occur,wrapper will destroy context.
+        arktsGlobal.es2panda._DestroyContext(arktsGlobal.compilerContext.peer);
+      }
       arkts.destroyConfig(arktsGlobal.config);
     }
   }
@@ -193,6 +198,7 @@ export abstract class BaseMode {
 
     let arktsGlobal = this.buildConfig.arktsGlobal;
     let arkts = this.buildConfig.arkts;
+    let errorStatus = false;
     try {
       arktsGlobal.filePath = fileInfo.filePath;
       arktsGlobal.config = arkts.Config.create(ets2pandaCmd).peer;
@@ -217,6 +223,7 @@ export abstract class BaseMode {
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_BIN_GENERATED);
       this.logger.printInfo('es2panda bin generated');
     } catch (error) {
+      errorStatus = true;
       if (error instanceof Error) {
         const logData: LogData = LogDataFactory.newInstance(
           ErrorCode.BUILDSYSTEM_COMPILE_ABC_FAIL,
@@ -226,7 +233,10 @@ export abstract class BaseMode {
         this.logger.printError(logData);
       }
     } finally {
-      arktsGlobal.es2panda._DestroyContext(arktsGlobal.compilerContext.peer);
+      if (!errorStatus) {
+        // when error occur,wrapper will destroy context.
+        arktsGlobal.es2panda._DestroyContext(arktsGlobal.compilerContext.peer);
+      }
       PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
       arkts.destroyConfig(arktsGlobal.config);
     }
