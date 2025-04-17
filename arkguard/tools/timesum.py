@@ -19,6 +19,8 @@ limitations under the License.
 from collections import defaultdict
 import json
 import logging
+import os
+import stat
 
 # Configure logging to display timestamps and messages
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
@@ -33,7 +35,8 @@ def gen_parent(data):
     """
     # Sort the data by timestamp (ts)
     data = sorted(data, key=lambda x: x["ts"])
-    for i in range(len(data)):
+    data_length = len(data)
+    for i in range(data_length):
         current = data[i]  # Current event
         current_end = current["ts"] + current["dur"]  # End time of the current event
         for j in range(i - 1, -1, -1):  # Candidate parent event
@@ -136,7 +139,11 @@ def re_gen_ts_and_dur(data_with_parent):
         flattened.extend(nodes)
 
     # Save the flattened data to a JSON file
-    with open("data.json", "w") as f:
+    if os.path.exists('data.json'):
+        os.remove('data.json')
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    modes = stat.S_IWUSR | stat.S_IRUSR
+    with os.fdopen(os.open('data.json', flags, modes), 'w') as f:
         json.dump(flattened, f, indent=2)
     return groups
 

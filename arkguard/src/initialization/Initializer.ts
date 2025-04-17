@@ -56,12 +56,12 @@ export function initObfuscationConfig(projectConfig: any, arkProjectConfig: any,
   const obConfig: ObConfigResolver = new ObConfigResolver(projectConfig, printObfLogger, true);
   const mergedObConfig: MergedConfig = obConfig.resolveObfuscationConfigs();
   const isHarCompiled: boolean = projectConfig.compileHar;
-  getObfuscationCacheDir(projectConfig);
   if (mergedObConfig.options.disableObfuscation) {
     blockPrinter();
     blockTimeAndMemPrinter();
     return;
   }
+  getObfuscationCacheDir(projectConfig);
 
   if (mergedObConfig.options.enableFileNameObfuscation) {
     const ohPackagePath = path.join(projectConfig.modulePath, 'oh-package.json5');
