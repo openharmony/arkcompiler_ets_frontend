@@ -80,6 +80,7 @@ export interface PathConfig {
   buildSdkPath: string;
   pandaSdkPath?: string; // path to panda sdk lib/bin, for local test
   pandaStdlibPath?: string; // path to panda sdk stdlib, for local test
+  externalApiPaths: string[];
   abcLinkerPath?: string;
 }
 
