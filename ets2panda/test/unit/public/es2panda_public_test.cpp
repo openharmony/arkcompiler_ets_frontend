@@ -20,6 +20,8 @@
 #include "test/utils/ast_verifier_test.h"
 #include "util/diagnostic.h"
 
+namespace {
+
 using Es2PandaLibTest = test::utils::AstVerifierTest;
 
 TEST_F(Es2PandaLibTest, NoError)
@@ -93,3 +95,5 @@ TEST_F(Es2PandaLibTest, LogDiagnostic)
         ASSERT_EQ((*diagnosticStorage)[0]->Message(), "Test 1");
     }
 }
+
+}  // namespace
