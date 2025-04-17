@@ -74,13 +74,13 @@ protected:
     virtual void GenFunctionAnnotations(pandasm::Function *func) = 0;
     virtual void GenVariableSignature(pandasm::debuginfo::LocalVariable &variableDebug,
                                       varbinder::LocalVariable *variable) const = 0;
+    virtual void GenSourceFileDebugInfo(pandasm::Function *func) = 0;
 
     void GenInstructionDebugInfo(const IRNode *ins, ark::pandasm::Ins *pandaIns);
     void GenFunctionInstructions(pandasm::Function *func);
     void GenScopeVariableInfo(pandasm::Function *func, const varbinder::Scope *scope) const;
     void GenScopeVariableInfoEnd(pandasm::Function *func, const varbinder::Scope *scope, uint32_t count,
                                  uint32_t scopeStart, const VariablesStartsMap &starts) const;
-    void GenSourceFileDebugInfo(pandasm::Function *func);
     void GenFunctionCatchTables(ark::pandasm::Function *func);
     void GenVariablesDebugInfo(pandasm::Function *func);
     util::StringView SourceCode() const;
