@@ -23,6 +23,8 @@
 #include "public/es2panda_lib.h"
 #include "utils/arena_containers.h"
 
+namespace {
+
 class LSPCreateTypeHelpItems : public LSPAPITests {};
 
 TEST_F(LSPCreateTypeHelpItems, GetTypeHelpItemClassTest)
@@ -158,3 +160,5 @@ TEST_F(LSPCreateTypeHelpItems, GetTypeHelpItemTest)
     }
     initializer.DestroyContext(ctxTypeHelp);
 }
+
+}  // namespace

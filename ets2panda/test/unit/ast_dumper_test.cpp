@@ -105,8 +105,6 @@ TestParams DumpEtsSrcSimple()
                         "--dump-ets-src-before-phases=plugins-after-parse,plugins-after-check,plugins-after-lowering"}};
 }
 
-}  // namespace
-
 class ASTDumperTest : public testing::TestWithParam<TestParams> {
 public:
     ASTDumperTest()
@@ -156,3 +154,5 @@ TEST_F(ASTDumperTest, CheckSrcDump)
     ASSERT(program);
     ASSERT(!dumpStr.str().empty());
 }
+
+}  // namespace

@@ -22,6 +22,8 @@
 #include "lsp/include/internal_api.h"
 #include "public/es2panda_lib.h"
 
+namespace {
+
 using ark::es2panda::lsp::Initializer;
 
 TEST_F(LSPAPITests, GetPrecedingToken1)
@@ -104,3 +106,5 @@ TEST_F(LSPAPITests, GetPrecedingToken2)
     ASSERT_EQ(result->End().index, stringLiteral->End().index);
     initializer.DestroyContext(context);
 }
+
+}  // namespace

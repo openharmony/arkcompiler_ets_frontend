@@ -249,7 +249,7 @@ protected:
     void BuildForInOfLoop(varbinder::LoopScope *loopScope, ir::AstNode *left, ir::Expression *right,
                           ir::Statement *body);
     void BuildCatchClause(ir::CatchClause *catchClauseStmt);
-    void BuildTypeAliasDeclaration(ir::TSTypeAliasDeclaration *typeAliasDecl);
+    void BuildTypeAliasDeclaration(ir::TSTypeAliasDeclaration *const typeAliasDecl);
     void ResolveReferences(const ir::AstNode *parent);
     void VisitScriptFunctionWithPotentialTypeParams(ir::ScriptFunction *func);
     void VisitScriptFunction(ir::ScriptFunction *func);

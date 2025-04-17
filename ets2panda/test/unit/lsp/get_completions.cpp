@@ -59,6 +59,8 @@ static void AssertCompletionsContainAndNotContainEntries(const std::vector<Compl
     }
 }
 
+namespace {
+
 TEST_F(LSPCompletionsTests, getCompletionsAtPosition16)
 {
     std::vector<std::string> files = {"getCompletionsAtPosition17.ets"};
@@ -670,3 +672,5 @@ let myColor: Color = Color.R)delimiter"};
     initializer.DestroyContext(ctx);
     ASSERT_EQ(entry1, entries[0]);
 }
+
+}  // namespace

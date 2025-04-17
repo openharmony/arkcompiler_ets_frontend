@@ -22,6 +22,8 @@
 #include "public/es2panda_lib.h"
 #include "public/public.h"
 
+namespace {
+
 using ark::es2panda::lsp::Initializer;
 
 TEST_F(LSPAPITests, GetFileReferencesImpl1)
@@ -150,3 +152,5 @@ console.log(PI);)"};
     ASSERT_EQ(result.referenceInfos.at(0).length, expectedLength);
     initializer.DestroyContext(ctx);
 }
+
+}  // namespace

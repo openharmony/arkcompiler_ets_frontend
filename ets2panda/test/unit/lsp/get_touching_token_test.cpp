@@ -22,6 +22,8 @@
 #include "lsp/include/internal_api.h"
 #include "public/es2panda_lib.h"
 
+namespace {
+
 using ark::es2panda::lsp::Initializer;
 
 TEST_F(LSPAPITests, GetTouchingToken1)
@@ -71,3 +73,5 @@ TEST_F(LSPAPITests, GetTouchingToken3)
     ASSERT_EQ(result->End().index, expectedNode->End().index);
     initializer.DestroyContext(ctx);
 }
+
+}  // namespace

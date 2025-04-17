@@ -16,6 +16,8 @@
 #include "ast_verifier_test.h"
 #include "checker/ETSchecker.h"
 
+namespace {
+
 using ark::es2panda::compiler::ast_verifier::ModifierAccessValid;
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestNegative1)
@@ -225,3 +227,5 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative6)
         EXPECT_TRUE(Verify<ModifierAccessValid>(ExpectVerifierMessage {"PROPERTY_NOT_VISIBLE_HERE"}));
     }
 }
+
+}  // namespace
