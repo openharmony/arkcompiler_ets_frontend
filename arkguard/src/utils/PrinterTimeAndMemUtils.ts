@@ -20,6 +20,12 @@ import type { IPrinterOption } from '../configs/INameObfuscationOption';
 import { performanceTimeAndMemPrinter } from '../ArkObfuscator';
 import { printerTimeAndMemDataConfig } from '../initialization/Initializer';
 
+// DevEco Studio perf mode
+export enum PerfMode {
+  NORMAL = 0, // Normal mode
+  ADVANCED = 1, // Advanced mode
+};
+
 export enum EventList {
   OBFUSCATION_INITIALIZATION = 'Obfuscation initialization',
   SCAN_SYSTEMAPI = 'Scan system api',
@@ -194,21 +200,28 @@ export class TimeAndMemTimeTracker {
 /**
  * Initialize performance printer
  */
-export function initPerformanceTimeAndMemPrinter(mCustomProfiles: IOptions): void {
-  const printerConfig: IPrinterOption | undefined = mCustomProfiles.mPerformanceTimeAndMemPrinter;
-
-  // If no performance printer configuration is provided, disable the printer and return.
-  if (!printerConfig) {
+export function initPerformanceTimeAndMemPrinter(): void {
+  if (!printerTimeAndMemDataConfig.mTimeAndMemPrinter) {
     blockTimeAndMemPrinter();
-    return;
   }
+}
 
-  // Disable performance printer if no specific printer types (files, single file) are enabled.
-  const isPrinterDisabled = !(printerConfig.mFilesPrinter || printerConfig.mSingleFilePrinter);
+/**
+ * Configures the performance printer based on the specified performance mode
+ */
+export function configurePerformancePrinter(perf: number): void {
+  if (perf === PerfMode.ADVANCED) {
+    initPrinterTimeAndMemConfig();
 
-  if (isPrinterDisabled) {
+    // If singleFilePrinter and filesPrinter do not exist, create the corresponding instance
+    if (!performanceTimeAndMemPrinter.singleFilePrinter) {
+      performanceTimeAndMemPrinter.singleFilePrinter = new TimeAndMemTimeTracker();
+    }
+    if (!performanceTimeAndMemPrinter.filesPrinter) {
+      performanceTimeAndMemPrinter.filesPrinter = new TimeAndMemTimeTracker();
+    }
+  } else {
     blockTimeAndMemPrinter();
-    return;
   }
 }
 
@@ -216,6 +229,7 @@ export function initPerformanceTimeAndMemPrinter(mCustomProfiles: IOptions): voi
  * Disable performance printer
  */
 export function blockTimeAndMemPrinter(): void {
+  disablePrinterTimeAndMemConfig();
   performanceTimeAndMemPrinter.filesPrinter = undefined;
   performanceTimeAndMemPrinter.singleFilePrinter = undefined;
 }
@@ -232,6 +246,20 @@ export function clearTimeAndMemPrinterData(): void {
     performanceTimeAndMemPrinter.filesPrinter.timeDataArr = [];
     performanceTimeAndMemPrinter.filesPrinter.memoryDataArr = [];
   }
+}
+
+/**
+ * Initialize the configuration of the TimeAndMem performance printer
+ */
+export function initPrinterTimeAndMemConfig() {
+  printerTimeAndMemDataConfig.mTimeAndMemPrinter = true;
+}
+
+/**
+ * Disable the configuration of the TimeAndMem performance printer
+ */
+export function disablePrinterTimeAndMemConfig(): void {
+  printerTimeAndMemDataConfig.mTimeAndMemPrinter = false;
 }
 
 /**
