@@ -77,6 +77,9 @@ export function initBuildEnv(buildConfig: BuildConfig): void {
   let pandaLibPath: string = path.resolve(pandaSdkPath, 'lib');
 
   process.env.PATH = `${currentPath}${path.delimiter}${pandaLibPath}`;
+  if (isMac()) {
+    process.env.DYLD_LIBRARY_PATH = `${currentPath}${path.delimiter}${pandaLibPath}`;
+  }
   logger.printInfo(`Updated PATH: ${process.env.PATH}`);
 }
 
