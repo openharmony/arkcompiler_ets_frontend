@@ -91,8 +91,9 @@ export class FileUtils {
             let lines: string[] = [];
             let readLineNo = 1;
 
-            let rl = createInterface({
-                input: fs.createReadStream(filePath),
+            const readStream = fs.createReadStream(filePath);
+            const rl = createInterface({
+                input: readStream,
                 crlfDelay: Infinity
             });
 
@@ -111,10 +112,17 @@ export class FileUtils {
             rl.on('line', handleLine);
 
             rl.on('close', () => {
+                readStream.destroy();
                 resolve(lines);
             });
 
             rl.on('error', (err) => {
+                readStream.destroy();
+                reject(err);
+            });
+
+            readStream.on('error', (err) => {
+                rl.close();
                 reject(err);
             });
         })

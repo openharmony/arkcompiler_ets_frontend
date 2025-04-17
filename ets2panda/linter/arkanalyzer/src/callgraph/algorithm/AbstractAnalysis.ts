@@ -24,6 +24,7 @@ import Logger, { LOG_MODULE_TYPE } from '../../utils/logger';
 import { NodeID } from '../../core/graph/BaseExplicitGraph';
 import { CallGraph, FuncID, CallSite, CallGraphNode } from '../model/CallGraph';
 import { CallGraphBuilder } from '../model/builder/CallGraphBuilder';
+import { createPtsCollectionCtor, IPtsCollection, PtsCollectionType } from '../pointerAnalysis/PtsDS';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.ARKANALYZER, 'CG');
 
@@ -32,7 +33,7 @@ export abstract class AbstractAnalysis {
     protected cg!: CallGraph;
     protected cgBuilder!: CallGraphBuilder;
     protected workList: FuncID[] = [];
-    protected processedMethod!: Set<FuncID>;
+    protected processedMethod!: IPtsCollection<FuncID>;
 
     constructor(s: Scene) {
         this.scene = s;
@@ -78,7 +79,7 @@ export abstract class AbstractAnalysis {
             const method = this.workList.shift() as FuncID;
             const cgNode = this.cg.getNode(method) as CallGraphNode;
 
-            if (this.processedMethod.has(method) || cgNode.isSdkMethod()) {
+            if (this.processedMethod.contains(method) || cgNode.isSdkMethod()) {
                 continue;
             }
 
@@ -88,22 +89,29 @@ export abstract class AbstractAnalysis {
             })
 
             this.processMethod(method).forEach((cs: CallSite) => {
-                let me = this.cg.getArkMethodByFuncID(cs.calleeFuncID);
-
-                this.addCallGraphEdge(method, me, cs, displayGeneratedMethod);
-
-                if (!this.processedMethod.has(cs.calleeFuncID)) {
-                    this.workList.push(cs.calleeFuncID);
-                    logger.info(`New workList item ${cs.calleeFuncID}: ${this.cg.getArkMethodByFuncID(cs.calleeFuncID)?.getSignature().toString()}`);
-
-                    this.processedMethod.add(cs.callerFuncID);
-                }
+                this.processCallSite(method, cs, displayGeneratedMethod);
             })
         }
     }
 
+    private processCallSite(method: FuncID, cs: CallSite, displayGeneratedMethod: boolean): void {
+        let me = this.cg.getArkMethodByFuncID(cs.calleeFuncID);
+        let meNode = this.cg.getNode(cs.calleeFuncID) as CallGraphNode;
+        this.processedMethod.insert(cs.callerFuncID);
+        this.addCallGraphEdge(method, me, cs, displayGeneratedMethod);
+
+        if (this.processedMethod.contains(cs.calleeFuncID) || meNode.isSdkMethod()) {
+            return;
+        }
+
+        if (displayGeneratedMethod || !(me?.isGenerated())) {
+            this.workList.push(cs.calleeFuncID);
+            logger.info(`New workList item ${cs.calleeFuncID}: ${this.cg.getArkMethodByFuncID(cs.calleeFuncID)?.getSignature().toString()}`);
+        }
+    }
+
     protected init(): void {
-        this.processedMethod = new Set();
+        this.processedMethod = new (createPtsCollectionCtor(PtsCollectionType.BitVector))();
         this.cg.getEntries().forEach((entryFunc) => {
             this.workList.push(entryFunc);
         })

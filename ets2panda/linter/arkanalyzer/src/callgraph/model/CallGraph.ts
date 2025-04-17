@@ -223,7 +223,7 @@ export class CallGraph extends BaseExplicitGraph {
             // The method can't be found
             // means the method has no implementation, or base type is unclear to find it
             // Create a virtual CG Node
-            // TODO: this virtual CG Node need be remove once the base type is clear
+            // TODO: this virtual CG Node need be remove once the base type is clear 
             return this.addCallGraphNode(method, CallGraphNodeKind.vitual);
         }
 
@@ -249,7 +249,7 @@ export class CallGraph extends BaseExplicitGraph {
             // TODO: check stmt exists
         }
 
-        // TODO: check if edge exists
+        // TODO: check if edge exists 
         let callEdge = this.getCallEdgeByPair(callerNode.getID(), calleeNode.getID());
         if (callEdge === undefined) {
             callEdge = new CallGraphEdge(callerNode, calleeNode);
@@ -372,7 +372,6 @@ export class CallGraph extends BaseExplicitGraph {
         if (node !== undefined) {
             return (node as CallGraphNode).getMethod();
         }
-        //return undefined;
         return null;
     }
 

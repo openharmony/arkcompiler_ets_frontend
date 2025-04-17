@@ -13,21 +13,30 @@
  * limitations under the License.
  */
 
-import { ArkAssignStmt, ArkIfStmt, ArkInstanceFieldRef, ArkInstanceInvokeExpr, ArkMethod, ClassType, FunctionType, Local, Stmt, Value } from "arkanalyzer";
+import { ArkAssignStmt, ArkIfStmt, ArkInstanceFieldRef, ArkInstanceInvokeExpr, ArkMethod, ClassType, FunctionType, Local, Stmt, Value, Scene } from "arkanalyzer";
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from "../BaseChecker";
 import { Rule, Defects, MatcherTypes, MethodMatcher, MatcherCallback } from "../../Index";
 import { IssueReport } from "../../model/Defects";
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'ThisBindCheck');
-const gMetaData: BaseMetaData = {
+
+const ARKTS_RULE_ID = '@migration/arkts-instance-method-bind-this'
+const arktsMetaData: BaseMetaData = {
     severity: 1,
     ruleDocPath: "",
-    description: 'Instance method shall bind the \'this\' by dafault.'
+    description: 'Instance method shall bind the \'this\' by default.'
+};
+
+const ARKUI_RULE_ID = '@migration/arkui-buildparam-passing';
+const arkuiMetaData: BaseMetaData = {
+    severity: 1,
+    ruleDocPath: "",
+    description: 'Instance method shall bind the \'this\' by default.'
 };
 
 export class ThisBindCheck implements BaseChecker {
-    readonly metaData: BaseMetaData = gMetaData;
+    readonly metaData: BaseMetaData = arktsMetaData;
     public rule: Rule;
     public defects: Defects[] = [];
     public issues: IssueReport[] = [];
@@ -80,7 +89,7 @@ export class ThisBindCheck implements BaseChecker {
             const leftOp = stmt.getLeftOp();
             if (i + 1 >= stmts.length || !this.hasBindThis(leftOp, stmts[i + 1])) {
                 if (!this.isSafeUse(leftOp)) {
-                    this.addIssueReport(stmt, base);
+                    this.addIssueReport(stmt, base, scene);
                 }
             }
         }
@@ -134,15 +143,64 @@ export class ThisBindCheck implements BaseChecker {
         return true;
     }
 
-    private addIssueReport(stmt: Stmt, operand: Value) {
+    private addIssueReport(stmt: ArkAssignStmt, operand: Value, scene: Scene) {
+        const assignToBuilderParam = (assign: ArkAssignStmt) => {
+            const leftOp = assign.getLeftOp();
+            if (!(leftOp instanceof Local)) {
+                return false;
+            }
+            const usedStmts = leftOp.getUsedStmts();
+            if (usedStmts.length !== 1) {
+                return false;
+            }
+            const usedStmt = usedStmts[0];
+            if (!(usedStmt instanceof ArkAssignStmt)) {
+                return false;
+            }
+            const target = usedStmt.getLeftOp();
+            if (!(target instanceof ArkInstanceFieldRef)) {
+                return false;
+            }
+            const baseTy = target.getBase().getType();
+            if (!(baseTy instanceof ClassType)) {
+                return false;
+            }
+            const baseClassTy = scene.getClass((baseTy as ClassType).getClassSignature());
+            if (!baseClassTy) {
+                return false;
+            }
+            const arkField = baseClassTy.getFieldWithName(target.getFieldName());
+            if (!arkField) {
+                logger.error("cannot find field while checking if it's an assign to a builder param.");
+                return false;
+            }
+            return arkField.hasBuilderParamDecorator();
+        }
+
+        if (assignToBuilderParam(stmt)) {
+            this.reportArkUIIssue(stmt, operand);
+        } else {
+            this.reportArkTSIssue(stmt, operand);
+        }
+    }
+
+    private reportArkTSIssue(stmt: ArkAssignStmt, operand: Value) {
         const severity = this.rule.alert ?? this.metaData.severity;
         const warnInfo = this.getLineAndColumn(stmt, operand);
-        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, this.metaData.description, severity, this.rule.ruleId,
+        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, this.metaData.description, severity, ARKTS_RULE_ID,
             warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
         this.issues.push(new IssueReport(defects, undefined));
     }
 
-    private getLineAndColumn(stmt: Stmt, operand: Value) {
+    private reportArkUIIssue(stmt: ArkAssignStmt, operand: Value) {
+        const severity = this.rule.alert ?? arkuiMetaData.severity;
+        const warnInfo = this.getLineAndColumn(stmt, operand);
+        let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, arkuiMetaData.description, severity, ARKUI_RULE_ID,
+            warnInfo.filePath, arkuiMetaData.ruleDocPath, true, false, false);
+        this.issues.push(new IssueReport(defects, undefined));
+    }
+
+    private getLineAndColumn(stmt: ArkAssignStmt, operand: Value) {
         const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
         const originPosition = stmt.getOperandOriginalPosition(operand);
         if (arkFile && originPosition) {

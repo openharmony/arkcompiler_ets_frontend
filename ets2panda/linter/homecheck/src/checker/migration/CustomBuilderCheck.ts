@@ -13,11 +13,14 @@
  * limitations under the License.
  */
 
-import { ArkAssignStmt, Scene, Local, Stmt, Type, ArkMethod, AliasType, AbstractInvokeExpr, Value } from "arkanalyzer";
+import { ArkAssignStmt, Scene, Local, Stmt, Type, ArkMethod, AliasType, AbstractInvokeExpr,
+    Value, ArkFile, AstTreeUtils, ts, FunctionType, ArkClass, ANONYMOUS_METHOD_PREFIX, ArkInvokeStmt } from "arkanalyzer";
 import Logger, { LOG_MODULE_TYPE } from 'arkanalyzer/lib/utils/logger';
 import { BaseChecker, BaseMetaData } from "../BaseChecker";
 import { Rule, Defects, MatcherTypes, MatcherCallback, MethodMatcher } from "../../Index";
 import { IssueReport } from "../../model/Defects";
+import {FixInfo, RuleFix} from "../../model/Fix";
+import { FixPosition, FixUtils } from "../../utils/common/FixUtils";
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'CustomBuilderCheck');
 const gMetaData: BaseMetaData = {
@@ -49,6 +52,7 @@ export class CustomBuilderCheck implements BaseChecker {
         const stmts = target.getBody()?.getCfg().getStmts() ?? [];
         let locals = new Set<Local>();
         for (const stmt of stmts) {
+            // 场景1：函数调用赋值给CustomBuilder类型的对象
             const local = this.isCallToBuilder(stmt, scene);
             if (local) {
                 locals.add(local);
@@ -58,8 +62,51 @@ export class CustomBuilderCheck implements BaseChecker {
             if (usage) {
                 this.addIssueReport(usage.getDeclaringStmt()!, usage);
             }
+
+            // 场景2：函数调用包在箭头函数中赋值给CustomBuilder类型的对象
+            if (stmt instanceof ArkAssignStmt) {
+                const arrowMethod = this.findPotentialArrowFunction(stmt, target.getDeclaringArkClass());
+                if (arrowMethod !== null && this.isCallToBuilderWrapWithArrow(arrowMethod)) {
+                    this.addIssueReport(stmt, stmt.getRightOp());
+                }
+            }
         }
     };
+
+    // 只有当赋值语句leftOp为CustomBuilder类型时，若rightOp是匿名箭头函数，则返回该箭头函数
+    private findPotentialArrowFunction(stmt: Stmt, arkClass: ArkClass): ArkMethod | null {
+        if (!(stmt instanceof ArkAssignStmt) || !this.isCustomBuilderTy(stmt.getLeftOp().getType())) {
+            return null;
+        }
+
+        const rightOpType = stmt.getRightOp().getType();
+        if (!(rightOpType instanceof FunctionType)) {
+            return null;
+        }
+
+        const methodName = rightOpType.getMethodSignature().getMethodSubSignature().getMethodName();
+        const method = arkClass.getMethodWithName(methodName);
+        if (method === null || !method.isAnonymousMethod()) {
+            return null;
+        }
+        return method;
+    }
+
+    private isCallToBuilderWrapWithArrow(arrowMethod: ArkMethod): boolean {
+        const scene = arrowMethod.getDeclaringArkFile().getScene();
+        const stmts = arrowMethod.getBody()?.getCfg().getStmts() ?? [];
+        for (const stmt of stmts) {
+            if (!(stmt instanceof ArkInvokeStmt)) {
+                continue;
+            }
+            const invokeExpr = stmt.getInvokeExpr();
+            const method = scene.getMethod(invokeExpr.getMethodSignature());
+            if (method && method.hasBuilderDecorator()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private isCallToBuilder(stmt: Stmt, scene: Scene): Local | undefined {
         if (!(stmt instanceof ArkAssignStmt)) {
@@ -80,13 +127,13 @@ export class CustomBuilderCheck implements BaseChecker {
         return undefined;
     }
 
-    private isCumtomBuilderTy(ty: Type) {
+    private isCustomBuilderTy(ty: Type): boolean {
         return ty instanceof AliasType && ty.getName() === 'CustomBuilder';
     }
 
     private isPassToCustomBuilder(stmt: Stmt, locals: Set<Local>): Local | undefined {
         if (stmt instanceof ArkAssignStmt) {
-            if (!this.isCumtomBuilderTy(stmt.getLeftOp().getType())) {
+            if (!this.isCustomBuilderTy(stmt.getLeftOp().getType())) {
                 return undefined;
             }
             const rightOp = stmt.getRightOp();
@@ -99,7 +146,7 @@ export class CustomBuilderCheck implements BaseChecker {
             const paramTys = invokeExpr.getMethodSignature().getMethodSubSignature().getParameterTypes();
             const args = invokeExpr.getArgs();
             for (let i = 0; i < paramTys.length && i < args.length; ++i) {
-                if (!this.isCumtomBuilderTy(paramTys[i])) {
+                if (!this.isCustomBuilderTy(paramTys[i])) {
                     continue;
                 }
                 const arg = args[i];
@@ -111,12 +158,19 @@ export class CustomBuilderCheck implements BaseChecker {
         return undefined;
     }
 
-    private addIssueReport(stmt: Stmt, operand: Value) {
+    private addIssueReport(stmt: Stmt, operand: Value): void {
         const severity = this.rule.alert ?? this.metaData.severity;
         const warnInfo = this.getLineAndColumn(stmt, operand);
         let defects = new Defects(warnInfo.line, warnInfo.startCol, warnInfo.endCol, this.metaData.description, severity, this.rule.ruleId,
             warnInfo.filePath, this.metaData.ruleDocPath, true, false, false);
-        this.issues.push(new IssueReport(defects, undefined));
+        const fixPosition: FixPosition = {
+            startLine: warnInfo.line,
+            startCol: warnInfo.startCol,
+            endLine: -1,
+            endCol: -1
+        }
+        const ruleFix = this.generateRuleFix(fixPosition, stmt);
+        this.issues.push(new IssueReport(defects, ruleFix));
     }
 
     private getLineAndColumn(stmt: Stmt, operand: Value) {
@@ -132,5 +186,64 @@ export class CustomBuilderCheck implements BaseChecker {
             logger.debug('ArkFile is null.');
         }
         return { line: -1, startCol: -1, endCol: -1, filePath: '' };
+    }
+
+    private generateRuleFix(fixPosition: FixPosition, stmt: Stmt): RuleFix {
+        let ruleFix: RuleFix = new RuleFix();
+        const endPosition = this.getEndPositionOfStmt(stmt);
+        if (endPosition) {
+            fixPosition.endLine = endPosition.line;
+            fixPosition.endCol = endPosition.col;
+        }
+        const arkFile = stmt.getCfg()?.getDeclaringMethod().getDeclaringArkFile();
+        const sourceFile = AstTreeUtils.getASTNode(arkFile.getName(), arkFile.getCode());
+        const range = FixUtils.getRangeWithAst(sourceFile, fixPosition);
+        ruleFix.range = range;
+        const originalText = FixUtils.getSourceWithRange(sourceFile, range);
+        if (originalText !== null) {
+            ruleFix.text =  this.generateReplaceText(sourceFile, originalText, fixPosition);
+        }
+        return ruleFix;
+    }
+
+    private getEndPositionOfStmt(stmt: Stmt): { line: number, col: number } | null {
+        const allPositions = stmt.getOperandOriginalPositions();
+        if (allPositions === undefined) {
+            return null;
+        }
+        let res = { line: -1, col: -1};
+        allPositions.forEach(position => {
+            if (position.getLastLine() > res.line) {
+                res = { line: position.getLastLine(), col: position.getLastCol()};
+                return;
+            }
+            if (position.getLastLine() === res.line && position.getLastCol() > res.col) {
+                res = { line: position.getLastLine(), col: position.getLastCol()};
+                return;
+            }
+        });
+        return res;
+    }
+
+    private generateReplaceText(sourceFile: ts.SourceFile, originalText: string, fixPosition: FixPosition,): string {
+        // 已经是箭头函数的场景，仅需要加上@Memo即可
+        if (originalText.includes('=>') && !originalText.trimStart().startsWith('@Memo')) {
+            return `@Memo ${originalText}`;
+        }
+
+        // 非箭头函数包裹的函数调用，需要使用箭头函数包裹，并添加@Memo
+        const eol = FixUtils.getEolSymbol(sourceFile, fixPosition.startLine);
+        const startLineIndent = FixUtils.getIndentOfLine(sourceFile, fixPosition.startLine) ?? 0;
+        const increaseSpaces = FixUtils.getIndentWidth(sourceFile, fixPosition.startLine);
+        const space = ' ';
+
+        let res = `@Memo () => {${eol}`;
+        const originalLineStrs = originalText.split(eol);
+        res += `${space.repeat(startLineIndent + increaseSpaces)}${originalLineStrs[0]}${eol}`;
+        for (let index = 1; index < originalLineStrs.length; index++) {
+            res += `${space.repeat(increaseSpaces)}${originalLineStrs[index]}${eol}`;
+        }
+        res += `${space.repeat(startLineIndent)}}`;
+        return res;
     }
 }

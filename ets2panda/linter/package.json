@@ -16,7 +16,7 @@
     "compile": "npm run tsc",
     "postcompile": "node scripts/testRunner/post-compile.mjs",
     "build": "npm run clean && npm run compile && npm run webpack && npm run pack:linter",
-    "preinstall": "npm install --prefix arkanalyzer && npm install --prefix homecheck",
+    "preinstall": "npm install --production --prefix arkanalyzer && npm install --production --prefix homecheck",
     "install-ohos-typescript": "node scripts/install-ohos-typescript-and-homecheck.mjs",
     "pack:linter": "rimraf bundle && mkdir bundle && npm pack --pack-destination bundle",
     "pretest": " npm run fix",

@@ -43,7 +43,7 @@ import Logger, { LOG_MODULE_TYPE } from '../../utils/logger';
 import { Scene } from '../../Scene';
 import { ArkClass } from '../model/ArkClass';
 import { findArkExport, ModelUtils } from './ModelUtils';
-import { ArkField } from '../model/ArkField';
+import { ArkField, FieldCategory } from '../model/ArkField';
 import { CALL_BACK } from './EtsConst';
 import {
     AliasClassSignature,
@@ -129,6 +129,7 @@ export class IRInference {
     public static inferStaticInvokeExpr(expr: ArkStaticInvokeExpr, arkMethod: ArkMethod): AbstractInvokeExpr {
         const arkClass = arkMethod.getDeclaringArkClass();
         const methodName = expr.getMethodSignature().getMethodSubSignature().getMethodName();
+        expr.getArgs().forEach(arg => TypeInference.inferValueType(arg, arkMethod));
         if (methodName === IMPORT) {
             const arg = expr.getArg(0);
             let type;
@@ -139,9 +140,7 @@ export class IRInference {
                 expr.getMethodSignature().getMethodSubSignature().setReturnType(type);
             }
             return expr;
-        }
-        expr.getArgs().forEach(arg => TypeInference.inferValueType(arg, arkMethod));
-        if (methodName === SUPER_NAME) {
+        } else if (methodName === SUPER_NAME) {
             const superClass = arkClass.getSuperClass();
             if (superClass !== null) {
                 const newMethodSignature = new MethodSignature(superClass.getSignature(), expr.getMethodSignature().getMethodSubSignature());
@@ -275,9 +274,14 @@ export class IRInference {
     private static inferBase(instance: ArkInstanceFieldRef | ArkInstanceInvokeExpr, arkMethod: ArkMethod): void {
         const base = instance.getBase();
         if (base.getName() === THIS_NAME) {
-            let newBase = this.inferThisLocal(arkMethod);
-            if (newBase) {
-                instance.setBase(newBase);
+            const declaringArkClass = arkMethod.getDeclaringArkClass();
+            if (declaringArkClass.isAnonymousClass()) {
+                let newBase = this.inferThisLocal(arkMethod);
+                if (newBase) {
+                    instance.setBase(newBase);
+                }
+            } else if (base.getType() instanceof UnknownType) {
+                base.setType(new ClassType(declaringArkClass.getSignature(), declaringArkClass.getRealTypes()));
             }
         } else {
             this.inferLocal(instance.getBase(), arkMethod);
@@ -347,9 +351,11 @@ export class IRInference {
         } else if (paramType instanceof GenericType || paramType instanceof AnyType) {
             realTypes.push(argType);
         } else if (paramType instanceof FunctionType && argType instanceof FunctionType) {
-            const method = scene.getMethod(argType.getMethodSignature());
-            if (method) {
-                TypeInference.inferTypeInMethod(method);
+            if (paramType.getMethodSignature().getType() instanceof GenericType) {
+                const method = scene.getMethod(argType.getMethodSignature());
+                if (method) {
+                    TypeInference.inferTypeInMethod(method);
+                }
             }
             const realTypes = expr.getRealGenericTypes();
             TypeInference.inferFunctionType(argType, paramType.getMethodSignature().getMethodSubSignature(), realTypes);
@@ -608,11 +614,11 @@ export class IRInference {
         let signature: BaseSignature;
         if (baseType instanceof ClassType) {
             const property = propertyAndType?.[0];
-            if (property instanceof ArkField) {
+            if (property instanceof ArkField && property.getCategory() !== FieldCategory.ENUM_MEMBER) {
                 return property.getSignature();
             }
             staticFlag = baseType.getClassSignature().getClassName() === DEFAULT_ARK_CLASS_NAME ||
-                (property instanceof ArkMethod && property.isStatic());
+                ((property instanceof ArkField || property instanceof ArkMethod) && property.isStatic());
             signature = property instanceof ArkMethod ? property.getSignature().getDeclaringClassSignature() : baseType.getClassSignature();
         } else if (baseType instanceof AnnotationNamespaceType) {
             staticFlag = true;

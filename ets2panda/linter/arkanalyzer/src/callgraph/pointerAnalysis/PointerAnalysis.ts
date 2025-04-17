@@ -180,6 +180,7 @@ export class PointerAnalysis extends AbstractAnalysis {
      */
     private initWorklist(): boolean {
         let changed: boolean = false;
+        this.addToReanalyze(this.pagBuilder.getRetriggerNodes());
         for (let e of this.pag.getAddrEdges()) {
             this.ptaStat.numProcessedAddr++;
 

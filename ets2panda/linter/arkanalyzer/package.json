@@ -27,7 +27,6 @@
   "devDependencies": {
     "@vitest/coverage-v8": "^1.5.0",
     "ts-node": "^10.9.1",
-    "typedoc": "^0.25.13",
     "vitest": "^1.5.0"
   }
 }

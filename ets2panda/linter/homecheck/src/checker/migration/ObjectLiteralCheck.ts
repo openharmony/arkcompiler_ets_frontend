@@ -19,6 +19,7 @@ import { BaseChecker, BaseMetaData } from "../BaseChecker";
 import { Rule, Defects, MatcherCallback } from "../../Index";
 import { IssueReport } from "../../model/Defects";
 import { DVFG, DVFGNode } from "arkanalyzer/lib/VFG/DVFG";
+import { CALL_DEPTH_LIMIT } from './Utils';
 
 const logger = Logger.getLogger(LOG_MODULE_TYPE.HOMECHECK, 'ObjectLiteralCheck');
 const gMetaData: BaseMetaData = {
@@ -34,6 +35,8 @@ export class ObjectLiteralCheck implements BaseChecker {
     public issues: IssueReport[] = [];
     private cg: CallGraph;
     private dvfg: DVFG;
+    private dvfgBuilder: DVFGBuilder;
+    private visited: Set<ArkMethod> = new Set();
 
     public registerMatchers(): MatcherCallback[] {
         const matchBuildCb: MatcherCallback = {
@@ -51,8 +54,7 @@ export class ObjectLiteralCheck implements BaseChecker {
         cgBuilder.buildClassHierarchyCallGraph(entries, true);
 
         this.dvfg = new DVFG(this.cg);
-        const dvfgBuilder = new DVFGBuilder(this.dvfg, scene);
-        dvfgBuilder.build();
+        this.dvfgBuilder = new DVFGBuilder(this.dvfg, scene);
 
         for (let arkFile of scene.getFiles()) {
             for (let clazz of arkFile.getClasses()) {
@@ -80,9 +82,15 @@ export class ObjectLiteralCheck implements BaseChecker {
             if (!(rightOp instanceof ArkInstanceOfExpr)) {
                 continue;
             }
+            if (!this.visited.has(target)) {
+                this.dvfgBuilder.buildForSingleMethod(target);
+                this.visited.add(target);
+            }
+
             let result: Stmt[] = [];
             let checkAll = { value: true };
-            this.checkFromStmt(stmt, scene, result, checkAll);
+            let visited: Set<Stmt> = new Set();
+            this.checkFromStmt(stmt, scene, result, checkAll, visited);
             result.forEach(s => this.addIssueReport(s, (s as ArkAssignStmt).getRightOp()));
             if (!checkAll.value) {
                 this.addIssueReport(stmt, rightOp);
@@ -91,8 +99,8 @@ export class ObjectLiteralCheck implements BaseChecker {
 
     }
 
-    private checkFromStmt(stmt: Stmt, scene: Scene, res: Stmt[], checkAll: { value: boolean }, depth: number = 0) {
-        if (depth > 2) {
+    private checkFromStmt(stmt: Stmt, scene: Scene, res: Stmt[], checkAll: { value: boolean }, visited: Set<Stmt>, depth: number = 0) {
+        if (depth > CALL_DEPTH_LIMIT) {
             checkAll.value = false;
             return;
         }
@@ -101,20 +109,38 @@ export class ObjectLiteralCheck implements BaseChecker {
         while (worklist.length > 0) {
             const current = worklist.shift()!;
             const currentStmt = current.getStmt();
+            if (visited.has(currentStmt)) {
+                continue;
+            }
+            visited.add(currentStmt);
             if (this.isObjectLiteral(currentStmt, scene)) {
                 res.push(currentStmt);
                 continue;
             }
             const callsite = this.cg.getCallSiteByStmt(currentStmt);
             callsite.forEach(cs => {
-                let returnStmts = this.cg.getArkMethodByFuncID(cs.calleeFuncID)?.getReturnStmt();
-                returnStmts?.forEach(r => this.checkFromStmt(r, scene, res, checkAll, depth + 1));
+                const declaringMtd = this.cg.getArkMethodByFuncID(cs.calleeFuncID);
+                if (!declaringMtd || !declaringMtd.getCfg()) {
+                    return;
+                }
+                if (!this.visited.has(declaringMtd)) {
+                    this.dvfgBuilder.buildForSingleMethod(declaringMtd);
+                    this.visited.add(declaringMtd);
+                }
+                declaringMtd.getReturnStmt().forEach(r => this.checkFromStmt(r, scene, res, checkAll, visited, depth + 1));
             })
             const paramRef = this.isFromParameter(currentStmt);
             if (paramRef) {
                 const paramIdx = paramRef.getIndex();
                 const callsites = this.cg.getInvokeStmtByMethod(currentStmt.getCfg().getDeclaringMethod().getSignature());
-                this.collectArgDefs(paramIdx, callsites).forEach(d => this.checkFromStmt(d, scene, res, checkAll, depth + 1));
+                callsites.forEach(cs => {
+                    const declaringMtd = cs.getCfg().getDeclaringMethod();
+                    if (!this.visited.has(declaringMtd)) {
+                        this.dvfgBuilder.buildForSingleMethod(declaringMtd);
+                        this.visited.add(declaringMtd);
+                    }
+                });
+                this.collectArgDefs(paramIdx, callsites).forEach(d => this.checkFromStmt(d, scene, res, checkAll, visited, depth + 1));
             }
             current.getIncomingEdge().forEach(e => worklist.push(e.getSrcNode() as DVFGNode));
         }
