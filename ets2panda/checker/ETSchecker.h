@@ -263,6 +263,7 @@ public:
     void CheckValidInheritance(ETSObjectType *classType, ir::ClassDefinition *classDef);
     void CheckProperties(ETSObjectType *classType, ir::ClassDefinition *classDef, varbinder::LocalVariable *it,
                          varbinder::LocalVariable *found, ETSObjectType *interfaceFound);
+    void CheckReadonlyClassPropertyInImplementedInterface(ETSObjectType *classType, varbinder::LocalVariable *field);
     void TransformProperties(ETSObjectType *classType);
     void CheckGetterSetterProperties(ETSObjectType *classType);
     void AddElementsToModuleObject(ETSObjectType *moduleObj, const util::StringView &str);
