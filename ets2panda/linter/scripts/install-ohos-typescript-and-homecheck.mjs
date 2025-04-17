@@ -34,13 +34,17 @@ function sleep(waitTime) {
 function detectOS() {
     let windowsPlatforms = ['win32', 'win64', 'windows', 'wince']
     let linuxPlatforms = ['linux']
-    let detectedOS = null
-    const opetaringSystemName = os.platform().toLowerCase()
+    let macosPlatforms = ['darwin']
 
-    if (windowsPlatforms.indexOf(opetaringSystemName) !== -1) {
+    let detectedOS = null
+    const operatingSystemName = os.platform().toLowerCase()
+
+    if (windowsPlatforms.indexOf(operatingSystemName) !== -1) {
         detectedOS = 'Windows'
-    } else if (linuxPlatforms.indexOf(opetaringSystemName) !== -1) {
+    } else if (linuxPlatforms.indexOf(operatingSystemName) !== -1) {
         detectedOS = 'Linux'
+    } else if (macosPlatforms.indexOf(operatingSystemName) !== -1) {
+      detectedOS = 'macOS'
     }
 
     return detectedOS
@@ -49,12 +53,12 @@ function detectOS() {
 function backupPackageJson(dirPath) {
     const pkgPath = path.join(dirPath, 'package.json')
     const backupName = `package.json.bak-${Date.now()}`
-    
+
     if (!fs.existsSync(pkgPath)) {
       console.error(`[ERROR] package.json not found in ${dirPath}`)
       process.exit(1)
     }
-  
+
     fs.copyFileSync(pkgPath, path.join(dirPath, backupName))
     return backupName
 }
@@ -75,20 +79,20 @@ function restorePackageJson(dirPath, backupFile) {
 function getTypescript(detectedOS) {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = dirname(__filename);
-    
+
     const linter = __dirname + '/..'
     const third_party = __dirname + '/../third_party'
     const typescript_dir = third_party + '/third_party_typescript'
     const arkanalyzer = __dirname + '/../arkanalyzer'
     const homecheck = __dirname + '/../homecheck'
-    
+
     if (!fs.existsSync(third_party)) {
         fs.mkdirSync(third_party);
     }
 
     let branch = process.env.TYPESCRIPT_BRANCH ?? 'master'
 
-    if (detectedOS === 'Linux') {
+    if (detectedOS === 'Linux' || detectedOS === 'macOS') {
         let timeToWait = 5000
         const iterations = 4
         if (!fs.existsSync(typescript_dir)) {
@@ -131,9 +135,9 @@ function getTypescript(detectedOS) {
         console.log('OS was detected, but was not expected')
         exit(1)
     }
-    
+
     const npm_typescript_package = shell.exec('npm pack').stdout.trim()
-    
+
     shell.cd(arkanalyzer)
     const arkanalyzerBackFile = backupPackageJson(arkanalyzer)
     shell.exec(`npm install ${typescript_dir}/${npm_typescript_package}`)
@@ -141,7 +145,7 @@ function getTypescript(detectedOS) {
     const npm_arkanalyzer_package = shell.exec('npm pack').stdout.trim()
     restorePackageJson(arkanalyzer, arkanalyzerBackFile)
     shell.rm('-rf', 'lib')
-    
+
     shell.cd(homecheck)
     const homecheckBackFile = backupPackageJson(homecheck)
 
@@ -154,11 +158,15 @@ function getTypescript(detectedOS) {
 
     shell.cd(linter)
     shell.exec(`npm install --no-save ${typescript_dir}/${npm_typescript_package}  ${homecheck}/${npm_homecheck_package}`)
-    
+
     const node_modules = linter + '/node_modules'
-    
+
     fs.rmSync(node_modules + '/typescript', {recursive: true, force: true})
-    shell.exec(`tar -xzf "${typescript_dir}/${npm_typescript_package}" -C node_modules --strip-components 1 --one-top-level=typescript`)
+
+    const targetDir = path.join('node_modules', 'typescript')
+    fs.mkdirSync(targetDir, { recursive: true })
+
+    shell.exec(`tar -xzf "${typescript_dir}/${npm_typescript_package}" -C "${targetDir}" --strip-components 1`)
     shell.rm(`${typescript_dir}/${npm_typescript_package}`)
     shell.rm(`${arkanalyzer}/${npm_arkanalyzer_package}`)
     shell.rm(`${homecheck}/${npm_homecheck_package}`)
