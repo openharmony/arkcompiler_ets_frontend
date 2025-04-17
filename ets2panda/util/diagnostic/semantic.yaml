@@ -1126,3 +1126,7 @@ semantic:
 - name: NOT_ALLOWED_THIS_IN_ARRAY_TYPE
   id: 283
   message: "A 'this' cannot be used as type of array."
+
+- name: INTERFACE_PROPERTY_REQUIRES_SETTER
+  id: 284
+  message: "Cannot implement interface {}: property '{}' must have a setter, but the implementation is readonly"
