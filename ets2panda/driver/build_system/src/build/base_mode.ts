@@ -257,8 +257,8 @@ export abstract class BaseMode {
 
     let abcLinkerCmdStr: string = this.abcLinkerCmd.join(' ');
     if (isMac()) {
-      const loadLibrary = "DYLD_LIBRARY_PATH=" + process.env.DYLD_LIBRARY_PATH;
-      abcLinkerCmdStr = loadLibrary + " " + abcLinkerCmdStr;
+      const loadLibrary = 'DYLD_LIBRARY_PATH=' + '"' + process.env.DYLD_LIBRARY_PATH + '"';
+      abcLinkerCmdStr = loadLibrary + ' ' + abcLinkerCmdStr;
     }
     this.logger.printInfo(abcLinkerCmdStr);
 
