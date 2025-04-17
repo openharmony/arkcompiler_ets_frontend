@@ -202,7 +202,13 @@
             "endLine": 36,
             "endColumn": 10,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -213,7 +219,13 @@
             "endLine": 45,
             "endColumn": 10,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -224,7 +236,13 @@
             "endLine": 48,
             "endColumn": 10,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -235,7 +253,13 @@
             "endLine": 51,
             "endColumn": 7,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -246,7 +270,13 @@
             "endLine": 52,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -257,7 +287,13 @@
             "endLine": 54,
             "endColumn": 9,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -268,7 +304,13 @@
             "endLine": 55,
             "endColumn": 9,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -279,7 +321,13 @@
             "endLine": 56,
             "endColumn": 9,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -290,7 +338,13 @@
             "endLine": 57,
             "endColumn": 9,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -301,7 +355,13 @@
             "endLine": 58,
             "endColumn": 9,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -312,7 +372,13 @@
             "endLine": 59,
             "endColumn": 8,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -323,7 +389,13 @@
             "endLine": 60,
             "endColumn": 8,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -334,7 +406,13 @@
             "endLine": 61,
             "endColumn": 8,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -345,7 +423,13 @@
             "endLine": 62,
             "endColumn": 8,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -356,7 +440,13 @@
             "endLine": 63,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -367,7 +457,13 @@
             "endLine": 64,
             "endColumn": 15,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -378,7 +474,13 @@
             "endLine": 65,
             "endColumn": 20,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -389,7 +491,13 @@
             "endLine": 66,
             "endColumn": 15,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -400,7 +508,13 @@
             "endLine": 67,
             "endColumn": 20,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -411,7 +525,13 @@
             "endLine": 74,
             "endColumn": 11,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
@@ -422,7 +542,13 @@
             "endLine": 76,
             "endColumn": 8,
             "problem": "UIInterfaceImport",
-            "autofix": [],
+            "autofix": [
+                {
+                    "start": 603,
+                    "end": 603,
+                    "replacementText": "\n\nimport { Observed, Entry, Component, State, Prop, Provide, StorageLink, LocalStorageLink, StorageProp, LocalStorageProp, Link, Consume } from '@kit.ArkUI';"
+                }
+            ],
             "suggest": "",
             "rule": "ArkUI interface should be imported before using (arkui-modular-interface)",
             "severity": "ERROR"
