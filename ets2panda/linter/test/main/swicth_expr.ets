@@ -31,7 +31,7 @@ switch (objValue) {
     break;
   default:
     console.log("Non-matching object");
-
+}
 
 let arrayValue = [1, 2, 3];
 
@@ -220,4 +220,162 @@ switch (str11) {
     break
   case "world":
     console.log("Default Case")
+}
+
+let isnum1: string | number = 1;
+switch (isnum1) {
+  case 1.1:
+    console.log('It's num');
+    break;
+  default:
+    console.log('F');
+}
+// 整型 5.2fail
+type sw1 = number
+
+function FunSw4(): sw1 {
+  return 1
+}
+
+switch (FunSw4()) {
+  case 1:
+    console.log('A');
+    break;
+  default:
+    console.log('F');
+}
+
+// 浮点 5.2fail
+type sw2 = number | string
+
+function FunSw5(): sw2 {
+  return 1.11
+}
+
+switch (FunSw5()) {
+  case 1.11:
+    console.log('A');
+    break;
+  default:
+    console.log('F');
+}
+
+let number7 = Math.floor(1.5);
+switch (number7) {
+  case Math.floor(1.5):
+    console.log("Case 1");
+    break;
+  default:
+    console.log("Default case");
+}
+switch (85 + 5.5) {
+  case 90.5:
+    console.log('A');
+    break;
+  default:
+    console.log('F');
+}
+const add = (a: number, b: number): number => a + b;
+const result1 = add(10, 5);
+switch (result1) {
+  case 15:
+    console.log('A');
+    break;
+  case 14:
+    console.log('B');
+    break;
+  default:
+    console.log('F');
+}
+function FunSw2(): number {
+  return 1.1
+}
+
+switch (FunSw2()) {
+  case 1.1:
+    console.log('A');
+    break;
+  default:
+    console.log('F');
+}
+
+// 正无穷
+let number4 = Infinity;
+switch (number4) {
+  case Infinity:
+    console.log("Case 1");
+    break;
+  default:
+    console.log("Default case");
+}
+
+// 负无穷
+let number5 = -Infinity;
+switch (number5) {
+  case -Infinity:
+    console.log("Case 1");
+    break;
+  default:
+    console.log("Default case");
+}
+
+// NaN
+let number6 = NaN;
+switch (number6) {
+  case NaN:
+    console.log("Case 1");
+    break;
+  default:
+    console.log("Default case");
+}
+// 1.0
+let num111 = 1.0;
+switch (num111) {
+  case 1.0:
+    console.log('One');
+    break;
+  case 2.0:
+    console.log('Other number');
+}
+
+// let声明整型，case浮点
+let number33: number = 1;
+switch (number33) {
+  case 1.1:
+    console.log("Case 1");
+    break;
+  case 2:
+    console.log("Case 2");
+    break;
+  case 3:
+    console.log("Case 3");
+    break;
+  default:
+    console.log("Default case");
+}
+
+// const声明，整型number，有类型
+const num11: number = 2;
+switch (num11) {
+  case 1: {
+    console.log('One');
+    break;
+  }
+  case 2: {
+    console.log('Two');
+    break;
+  }
+}
+
+// let声明，整型number，有类型
+let num00: number = 2;
+switch (num00) {
+  case 1: {
+    console.log('One');
+    break;
+  }
+  case 2: {
+    console.log('Two');
+    break;
+  }
 }

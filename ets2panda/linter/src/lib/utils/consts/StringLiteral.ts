@@ -22,3 +22,4 @@ export const STRINGLITERAL_SHORT = 'short';
 export const STRINGLITERAL_LONG = 'long';
 export const STRINGLITERAL_CHAR = 'char';
 export const STRINGLITERAL_ANY = 'ANY';
+export const STRINGLITERAL_ENUM = 'enum';
